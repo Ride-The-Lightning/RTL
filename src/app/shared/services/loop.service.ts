@@ -34,7 +34,7 @@ export class LoopService implements OnDestroy {
     this.httpClient.get(this.loopUrl)
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe({next: (swapResponse: LoopSwapStatus[]) => {
-      this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_LOOP_SWAPS));      
+      this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_LOOP_SWAPS));
       this.swaps = swapResponse;
       this.swapsChanged.next(this.swaps);
     }, error: err => {

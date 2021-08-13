@@ -132,7 +132,7 @@ export interface LightningBalance {
 
 export interface ChannelStatus {
   channels?: number;
-  capacity?:number;
+  capacity?: number;
 }
 
 export interface ChannelsStatus {
@@ -184,7 +184,7 @@ export interface Invoice {
   expiry?: number;
   amount?: number;
   amountSettled?: number;
-  features?: { activated: Feature[], unknown: Feature[] }
+  features?: { activated: Feature[], unknown: Feature[] };
 }
 
 export interface Feature {

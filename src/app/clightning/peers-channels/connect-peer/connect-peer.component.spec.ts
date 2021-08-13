@@ -18,7 +18,7 @@ describe('CLConnectPeerComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [CLConnectPeerComponent],
-      imports: [ 
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
@@ -29,7 +29,7 @@ describe('CLConnectPeerComponent', () => {
         }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
-      providers: [ 
+      providers: [
         LoggerService,
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {alertTitle: '', titleMessage: '', message: {}, newlyAdded: true}}

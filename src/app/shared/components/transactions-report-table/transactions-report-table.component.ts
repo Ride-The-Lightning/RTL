@@ -17,7 +17,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./transactions-report-table.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Transactions') }
-  ]  
+  ]
 })
 export class TransactionsReportTableComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() dataRange = SCROLL_RANGES[0];
@@ -66,7 +66,7 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
     if (changes.filterValue && !changes.filterValue.firstChange) {
       this.applyFilter();
     }
-  }  
+  }
 
   onTransactionClick(selTransaction: any) {
     const reorderedTransactions = [

@@ -22,9 +22,9 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class CLQueryRoutesComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild('queryRoutesForm', { static: true }) form: any;  
+  @ViewChild('queryRoutesForm', { static: true }) form: any;
   public destinationPubkey = '';
-  public amount:number = null;
+  public amount: number = null;
   public qrHops: any;
   public flgSticky = false;
   public displayedColumns: any[] = [];
@@ -70,7 +70,7 @@ export class CLQueryRoutesComponent implements OnInit, OnDestroy {
     });
   }
 
-  onQueryRoutes():boolean|void {
+  onQueryRoutes(): boolean|void {
     if(!this.destinationPubkey || !this.amount) { return true; }
     this.flgLoading[0] = true;
     this.store.dispatch(new CLActions.GetQueryRoutes({destPubkey: this.destinationPubkey, amount: this.amount*1000}));

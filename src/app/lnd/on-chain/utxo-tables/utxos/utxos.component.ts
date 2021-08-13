@@ -26,7 +26,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   styleUrls: ['./utxos.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('UTXOs') }
-  ]  
+  ]
 })
 export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
@@ -123,7 +123,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
         case 'output': return +data.outpoint.output_index;
         default: return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
-    }
+    };
     this.listUTXOs.sort = this.sort;
     this.listUTXOs.filterPredicate = (utxo: UTXO, fltr: string) => JSON.stringify(utxo).toLowerCase().includes(fltr);
     this.listUTXOs.paginator = this.paginator;
@@ -145,7 +145,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
     if (utxo.label) {
       utxoDetails.splice(1, 0, [{key: 'label', value: utxo.label, title: 'Label', width: 100}]);
     }
-    this.store.dispatch(new RTLActions.OpenConfirmation({ data: { 
+    this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
       type: AlertTypeEnum.CONFIRM,
       alertTitle: 'Lease UTXO',
       informationMessage: 'The UTXO will be leased for 10 minutes.',

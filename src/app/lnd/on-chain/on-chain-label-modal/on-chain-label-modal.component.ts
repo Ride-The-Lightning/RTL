@@ -21,7 +21,7 @@ import { CommonService } from '../../../shared/services/common.service';
   styleUrls: ['./on-chain-label-modal.component.scss']
 })
 export class OnChainLabelModalComponent implements OnInit, OnDestroy {
-  @ViewChild('form', { static: true }) form: any;  
+  @ViewChild('form', { static: true }) form: any;
   public faExclamationTriangle = faExclamationTriangle;
   public utxo: UTXO = null;
   public label = '';
@@ -51,8 +51,8 @@ export class OnChainLabelModalComponent implements OnInit, OnDestroy {
   }
 
   resetData() {
-    this.labelError = '';    
-    this.label = '';      
+    this.labelError = '';
+    this.label = '';
   }
 
   ngOnDestroy() {

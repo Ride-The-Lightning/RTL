@@ -22,7 +22,7 @@ describe('OnChainComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [OnChainComponent, UTXOTablesComponent, OnChainTransactionHistoryComponent, OnChainUTXOsComponent],
-      imports: [ 
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,

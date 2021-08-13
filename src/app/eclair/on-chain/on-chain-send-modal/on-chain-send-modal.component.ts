@@ -63,14 +63,14 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
       if (action.type === ECLActions.SEND_ONCHAIN_FUNDS_RES_ECL) {
         this.store.dispatch(new RTLActions.OpenSnackBar('Fund Sent Successfully!'));
         this.dialogRef.close();
-      }    
+      }
       if (action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SendOnchainFunds') {
         this.sendFundError = action.payload.message;
       }
     });
   }
 
-  onSendFunds():boolean|void {
+  onSendFunds(): boolean|void {
     if(this.invalidValues) { return true; }
     this.sendFundError = '';
     if(this.transaction.amount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
@@ -97,7 +97,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
   }
 
   resetData() {
-    this.sendFundError = '';    
+    this.sendFundError = '';
     this.transaction = {};
   }
 
@@ -118,7 +118,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
         currSelectedUnit = prevSelectedUnit;
       }});
     }
-  }  
+  }
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {

@@ -43,7 +43,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListLND = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) {
@@ -135,12 +135,12 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   onBumpFee(selChannel: PendingOpenChannel) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       pendingChannel: selChannel,
       component: BumpFeeComponent
     }}));
   }
-  
+
   onForceClosingClick(selChannel: any) {
     const fcChannelObj1 = JSON.parse(JSON.stringify(selChannel, ['closing_txid', 'limbo_balance', 'maturity_height', 'blocks_til_maturity', 'recovered_balance'], 2));
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['remote_alias', 'channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));

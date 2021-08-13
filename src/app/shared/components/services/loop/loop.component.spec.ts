@@ -30,7 +30,7 @@ describe('LoopComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: DataService, useClass: mockDataService },
         { provide: LoopService, useClass: mockLoopService }

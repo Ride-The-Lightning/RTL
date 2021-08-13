@@ -30,9 +30,9 @@ describe('SideNavigationComponent', () => {
         }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
-      providers: [ 
+      providers: [
         CommonService,
-        { provide: LoggerService, useClass: mockLoggerService }, SessionService, 
+        { provide: LoggerService, useClass: mockLoggerService }, SessionService,
         { provide: DataService, useClass: mockDataService },
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]

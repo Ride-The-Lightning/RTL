@@ -31,7 +31,7 @@ describe('ECLOnChainSendModalComponent', () => {
         }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },

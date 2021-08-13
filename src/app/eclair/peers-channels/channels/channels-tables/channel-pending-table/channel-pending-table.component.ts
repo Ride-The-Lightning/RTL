@@ -24,7 +24,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   styleUrls: ['./channel-pending-table.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Channels') }
-  ]  
+  ]
 })
 export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
@@ -45,7 +45,7 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListECL = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) {
@@ -94,7 +94,7 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
   }
 
   onChannelClick(selChannel: Channel, event: any) {
-      this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+      this.store.dispatch(new RTLActions.OpenAlert({ data: {
         channel: selChannel,
         channelsType: 'pending',
         component: ECLChannelInformationComponent

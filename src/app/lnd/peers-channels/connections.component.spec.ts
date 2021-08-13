@@ -19,7 +19,7 @@ describe('ConnectionsComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ConnectionsComponent],
-      imports: [ 
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,

@@ -52,7 +52,7 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
     .subscribe((rtlStore) => {
       this.selNode = rtlStore.nodeSettings;
       this.logger.info(rtlStore);
-    });    
+    });
     this.lndEffects.setRestoreChannelList
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((resRCList) => {
@@ -76,7 +76,7 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
 
   onRestoreChannels(selChannel: Channel) {
     this.store.dispatch(new LNDActions.RestoreChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL'}));
-  }  
+  }
 
   applyFilter(selFilter: any) {
     this.channels.filter = selFilter.value.trim().toLowerCase();

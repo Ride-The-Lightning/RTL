@@ -23,7 +23,7 @@ describe('InitializeWalletComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         { provide: LNDEffects, useClass: mockLNDEffects }
       ]
     })

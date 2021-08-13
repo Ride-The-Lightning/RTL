@@ -8,19 +8,19 @@ import { CommonService } from '../../../../services/common.service';
   selector: 'rtl-loop-in-info-graphics',
   templateUrl: './info-graphics.component.html',
   styleUrls: ['./info-graphics.component.scss'],
-  animations: [sliderAnimation]  
+  animations: [sliderAnimation]
 })
 export class LoopInInfoGraphicsComponent implements OnInit {
   @Input() animationDirection = 'forward';
   @Input() stepNumber = 1;
-  @Output() stepNumberChange = new EventEmitter();
+  @Output() readonly stepNumberChange = new EventEmitter();
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
 
   constructor(private commonService: CommonService) {}
 
   ngOnInit() {
-    this.screenSize = this.commonService.getScreenSize();    
+    this.screenSize = this.commonService.getScreenSize();
   }
 
   onSwipe(event: any) {

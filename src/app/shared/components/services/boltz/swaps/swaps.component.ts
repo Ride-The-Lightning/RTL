@@ -22,7 +22,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   styleUrls: ['./swaps.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Swaps') }
-  ]  
+  ]
 })
 export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() selectedSwapType: SwapTypeEnum = SwapTypeEnum.SWAP_OUT;
@@ -83,7 +83,7 @@ export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy 
       ['status', 'id', 'claimAddress', 'onchainAmount', 'timeoutBlockHeight', 'actions'];
     }
   }
-    
+
   applyFilter(selFilter: any) {
     if (this.listSwaps) {
       this.listSwaps.filter = selFilter.value.trim().toLowerCase();

@@ -15,13 +15,13 @@ describe('CLSignComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [CLSignComponent],
-      imports: [ 
+      imports: [
         BrowserAnimationsModule,
         SharedModule
       ],
       providers: [
         LoggerService,
-        { provide: DataService, useClass: mockDataService }        
+        { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();

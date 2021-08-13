@@ -38,8 +38,8 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   public peerFormLabel = 'Peer Details';
   public channelFormLabel = 'Open Channel (Optional)';
   peerFormGroup: FormGroup;
-  channelFormGroup: FormGroup;  
-  statusFormGroup: FormGroup;  
+  channelFormGroup: FormGroup;
+  statusFormGroup: FormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<ConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private lndEffects: LNDEffects, private formBuilder: FormBuilder, private actions: Actions, private logger: LoggerService) {}
@@ -57,8 +57,8 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       transTypeValue: [{value: '', disabled: true}],
       spendUnconfirmed: [false],
       hiddenAmount: ['', [Validators.required]]
-    });    
-    this.statusFormGroup = this.formBuilder.group({}); 
+    });
+    this.statusFormGroup = this.formBuilder.group({});
     this.channelFormGroup.controls.selTransType.valueChanges.pipe(takeUntil(this.unSubs[0])).subscribe(transType => {
       if (transType === TRANS_TYPES[0].id) {
         this.channelFormGroup.controls.transTypeValue.setValue('');
@@ -74,17 +74,17 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
     this.actions.pipe(takeUntil(this.unSubs[1]),
     filter((action) => action.type === LNDActions.NEWLY_ADDED_PEER_LND || action.type === LNDActions.FETCH_PENDING_CHANNELS_LND || action.type === LNDActions.UPDATE_API_CALL_STATUS_LND))
     .subscribe((action: (LNDActions.NewlyAddedPeer | LNDActions.FetchPendingChannels | LNDActions.UpdateAPICallStatus)) => {
-      if (action.type === LNDActions.NEWLY_ADDED_PEER_LND) { 
+      if (action.type === LNDActions.NEWLY_ADDED_PEER_LND) {
         this.logger.info(action.payload);
         this.flgEditable = false;
         this.newlyAddedPeer = action.payload.peer;
         this.peerFormGroup.controls.hiddenAddress.setValue(this.peerFormGroup.controls.peerAddress.value);
         this.stepper.next();
       }
-      if (action.type === LNDActions.FETCH_PENDING_CHANNELS_LND) { 
+      if (action.type === LNDActions.FETCH_PENDING_CHANNELS_LND) {
         this.dialogRef.close();
       }
-      if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR) { 
+      if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR) {
         if (action.payload.action === 'SaveNewPeer' || action.payload.action === 'FetchGraphNode') {
           this.peerConnectionError = action.payload.message;
         } else if (action.payload.action === 'SaveNewChannel') {
@@ -94,7 +94,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
     });
   }
 
-  onConnectPeer():boolean|void {
+  onConnectPeer(): boolean|void {
     if(!this.peerFormGroup.controls.peerAddress.value) { return true; }
     this.peerConnectionError = '';
     const deviderIndex = this.peerFormGroup.controls.peerAddress.value.search('@');
@@ -119,7 +119,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
     this.store.dispatch(new LNDActions.SaveNewPeer({pubkey: pubkey, host: host, perm: false}));
   }
 
-  onOpenChannel():boolean|void {
+  onOpenChannel(): boolean|void {
     if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) || (this.channelFormGroup.controls.selTransType.value === '1' && !this.channelFormGroup.controls.transTypeValue.value) || (this.channelFormGroup.controls.selTransType.value === '2' && !this.channelFormGroup.controls.transTypeValue.value)) { return true; }
     this.channelConnectionError = '';
     this.store.dispatch(new LNDActions.SaveNewChannel({
@@ -138,7 +138,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
         this.peerFormLabel = 'Peer Details';
         this.channelFormLabel = 'Open Channel (Optional)';
         break;
-    
+
       case 1:
         if (this.peerFormGroup.controls.peerAddress.value) {
           this.peerFormLabel = 'Peer Added: ' + this.newlyAddedPeer.alias;
@@ -172,9 +172,9 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       } else if (event.selectedIndex === 1) {
         this.channelFormGroup.controls.hiddenAmount.setValue('');
       }
-    }    
+    }
   }
-  
+
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
       completeSub.next(null);

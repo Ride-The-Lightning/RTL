@@ -55,7 +55,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
     .subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.FetchInvoices) => { // NewlySavedInvoice
       if (action.type === LNDActions.FETCH_INVOICES_LND) { // NEWLY_SAVED_INVOICE && openModal: false at line 73
         this.dialogRef.close();
-      }    
+      }
       if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewInvoice') {
         this.invoiceError = action.payload.message;
       }

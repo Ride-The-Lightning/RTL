@@ -29,7 +29,7 @@ describe('TopMenuComponent', () => {
         }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
-      providers: [ 
+      providers: [
         SessionService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: RTLEffects, useClass: mockRTLEffects }

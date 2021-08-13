@@ -2,9 +2,9 @@ import { Action } from '@ngrx/store';
 
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { 
+import {
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices,
-  ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, 
+  ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq,
   SwitchRes, QueryRoutes, PendingChannelsGroup, LightningNode, UTXO, ListPayments }
 from '../../shared/models/lndModels';
 

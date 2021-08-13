@@ -15,11 +15,11 @@ describe('LoopOutInfoGraphicsComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [LoopOutInfoGraphicsComponent],
-      imports: [ 
+      imports: [
         BrowserAnimationsModule,
         SharedModule
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: DataService, useClass: mockDataService }
       ]

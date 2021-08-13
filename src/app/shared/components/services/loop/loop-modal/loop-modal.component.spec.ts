@@ -21,7 +21,7 @@ describe('LoopModalComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [LoopModalComponent],
-      imports: [ 
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
@@ -32,9 +32,9 @@ describe('LoopModalComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         CommonService,
-        { provide: LoggerService, useClass: mockLoggerService }, 
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: LoopService, useClass: mockLoopService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },

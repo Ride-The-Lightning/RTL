@@ -67,7 +67,7 @@ export class HelpComponent implements OnInit, OnDestroy {
       lnImplementation: 'ALL'
     }));
     this.helpTopics.push(new HelpTopic({
-      question: 'Channel Management', 
+      question: 'Channel Management',
       answer: 'Channel maintenance and balance score.\n' +
         'Go to "Peer/Channels" page under the "Lightning" menu:\n' +
         '1. A variety of actions can be perfomed on the open channels under the "Open" tab, with the "Actions" button:\n' +
@@ -90,7 +90,7 @@ export class HelpComponent implements OnInit, OnDestroy {
         'Payments tab is for making payments via your node\n' +
         '   1. Input a non-expired lightning invoice (Bolt11 format) in the "Payment request" field and click on "Send Payment" to send.\n' +
         '   2. Advanced option # 1 (LND only) - Specify a limit on the routing fee which you are willing to pay, for the payment.\n' +
-        '   3. Advanced option # 2 (LND only) - Specify the outgoing channel which you want the payment to go through.\n', 
+        '   3. Advanced option # 2 (LND only) - Specify the outgoing channel which you want the payment to go through.\n',
       link: 'transactions',
       linkCaption: 'Transactions page',
       lnImplementation: 'ALL'
@@ -102,13 +102,13 @@ export class HelpComponent implements OnInit, OnDestroy {
         'Invoices tab is for receiving payments on your node.\n' +
         '   1. Memo - Description you want to provide on the invoice.\n' +
         '   2. Expiry - The time period, after which the invoice will be invalid.\n' +
-        '   3. Private Routing Hints - Generate an invoice with routing hints for private channels.\n', 
+        '   3. Private Routing Hints - Generate an invoice with routing hints for private channels.\n',
       link: 'transactions',
       linkCaption: 'Transactions page',
       lnImplementation: 'ALL'
     }));
     this.helpTopics.push(new HelpTopic({
-      question: 'Lightning Transactions - Query Route', 
+      question: 'Lightning Transactions - Query Route',
       answer: 'Querying Payment Routes.\n' +
         'Go to the "Transactions" page under the "Lightning" menu :\n' +
         'Query Routes tab is for querying a potential path to a node and a routing fee estimate for a payment amount.\n'+
@@ -150,10 +150,10 @@ export class HelpComponent implements OnInit, OnDestroy {
         '10. Once the transactions are confirmed, the channels funds will be restored to your LND Wallet.\n',
       link: 'backup',
       linkCaption: 'Channel Backups',
-      lnImplementation: 'LND'      
+      lnImplementation: 'LND'
     }));
       this.helpTopics.push(new HelpTopic({
-        question: 'Forwarding History', 
+        question: 'Forwarding History',
         answer: 'Transactions routed by the node.\n' +
           'Go to "Routing" page under the "Lightning" menu :\n' +
           'Transactions routed by the node are listed on this page along with channels and the fee earned by transaction.\n',
@@ -162,7 +162,7 @@ export class HelpComponent implements OnInit, OnDestroy {
         lnImplementation: 'ALL'
     }));
     this.helpTopics.push(new HelpTopic({
-      question: 'Graph Lookup', 
+      question: 'Graph Lookup',
       answer: 'Querying your node graph for network node and channel information.\n' +
         'Go to "Graph Lookup" page under the "Lightning" menu :\n' +
         'Each node maintains a network graph for the information on all the nodes and channels on the network.\n'+
@@ -174,7 +174,7 @@ export class HelpComponent implements OnInit, OnDestroy {
       lnImplementation: 'ALL'
     }));
     this.helpTopics.push(new HelpTopic({
-      question: 'Settings', 
+      question: 'Settings',
       answer: 'RTL Offers certain customizations on the UI to personalize your experience on the app\n' +
         'Go to "Settings" page to access the customization options.\n' +
         'Node Layout Options\n'+
@@ -193,11 +193,11 @@ export class HelpComponent implements OnInit, OnDestroy {
       this.selNode = rtlStore.selNode;
       switch (this.selNode.lnImplementation.toUpperCase()) {
         case 'CLT':
-          this.LNPLink = '/cl/';  
+          this.LNPLink = '/cl/';
           break;
-      
+
         case 'ECL':
-          this.LNPLink = '/ecl/';  
+          this.LNPLink = '/ecl/';
           break;
 
         default:
@@ -218,6 +218,6 @@ export class HelpComponent implements OnInit, OnDestroy {
       completeSub.next(null);
       completeSub.complete();
     });
-  }  
+  }
 
 }

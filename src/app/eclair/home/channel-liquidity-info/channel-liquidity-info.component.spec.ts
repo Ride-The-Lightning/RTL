@@ -16,7 +16,7 @@ describe('ECLChannelLiquidityInfoComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ECLChannelLiquidityInfoComponent],
       imports: [SharedModule, RouterTestingModule],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: DataService, useClass: mockDataService }
       ]

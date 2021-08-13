@@ -27,7 +27,7 @@ describe('CurrencyUnitConverterComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: DataService, useClass: mockDataService }
       ]

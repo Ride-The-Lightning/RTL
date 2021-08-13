@@ -46,9 +46,9 @@ export class TopMenuComponent implements OnInit, OnDestroy {
     .subscribe((rtlStore) => {
       this.selNode = rtlStore.selNode;
       this.information = rtlStore.nodeData;
-      this.flgLoading = ( this.information.identity_pubkey) ? false : true;
-      if ( this.information.identity_pubkey) {
-        if ( this.information.chains && typeof this.information.chains[0] === 'string') {
+      this.flgLoading = (this.information.identity_pubkey) ? false : true;
+      if (this.information.identity_pubkey) {
+        if (this.information.chains && typeof this.information.chains[0] === 'string') {
           this.informationChain.chain = this.information.chains[0].toString();
           this.informationChain.network = (this.information.testnet) ? 'Testnet' : 'Mainnet';
         } else if (typeof this.information.chains[0] === 'object' && this.information.chains[0].hasOwnProperty('chain')) {

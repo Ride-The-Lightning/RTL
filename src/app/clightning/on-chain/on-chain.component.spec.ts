@@ -22,7 +22,7 @@ describe('CLOnChainComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [CLOnChainComponent, CurrencyUnitConverterComponent, CLUTXOTablesComponent, CLOnChainUtxosComponent, CLOnChainSendComponent, CLOnChainReceiveComponent],
-      imports: [ 
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,

@@ -28,7 +28,7 @@ describe('FeeReportComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: DataService, useClass: mockDataService }
       ]

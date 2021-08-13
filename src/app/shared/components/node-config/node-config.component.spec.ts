@@ -13,9 +13,9 @@ describe('NodeConfigComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [NodeConfigComponent],
-      imports: [ 
+      imports: [
         SharedModule,
-        RouterTestingModule, 
+        RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,

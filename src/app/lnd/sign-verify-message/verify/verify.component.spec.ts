@@ -17,7 +17,7 @@ describe('VerifyComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [VerifyComponent],
-      imports: [ 
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {

@@ -54,24 +54,30 @@ export class BoltzServiceSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  onUpdateService():boolean|void {
+  onUpdateService(): boolean|void {
     if(this.serverUrl && this.serverUrl.trim() !== '' && !this.form.controls.srvrUrl.value.includes('https://')) {
       this.form.controls.srvrUrl.setErrors({invalid: true});
     }
-    if(this.enableBoltz && 
-      (!this.serverUrl || 
-        this.serverUrl.trim() === '' || 
-        !this.serverUrl.includes('https://') || 
-        !this.macaroonPath || 
+    if(this.enableBoltz &&
+      (!this.serverUrl ||
+        this.serverUrl.trim() === '' ||
+        !this.serverUrl.includes('https://') ||
+        !this.macaroonPath ||
         this.macaroonPath.trim() === '')
     ) { return true; }
     this.logger.info(this.selNode);
     this.selNode.settings.boltzServerUrl = this.serverUrl;
     this.selNode.authentication.boltzMacaroonPath = this.macaroonPath;
     this.store.dispatch(new RTLActions.UpdateServiceSettings({uiMessage: UI_MESSAGES.UPDATE_BOLTZ_SETTINGS, service: ServicesEnum.BOLTZ, settings: { enable: this.enableBoltz, serverUrl: this.serverUrl, macaroonPath: this.macaroonPath }}));
-    this.store.dispatch(new LNDActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl}));
-    this.store.dispatch(new CLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl}));
-    this.store.dispatch(new ECLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl}));
+    this.store.dispatch(new LNDActions.SetChildNodeSettings(
+      {userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl}
+    ));
+    this.store.dispatch(new CLActions.SetChildNodeSettings(
+      {userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl}
+    ));
+    this.store.dispatch(new ECLActions.SetChildNodeSettings(
+      {userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl}
+    ));
   }
 
   onReset() {

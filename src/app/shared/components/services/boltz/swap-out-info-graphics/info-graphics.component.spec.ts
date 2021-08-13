@@ -15,11 +15,11 @@ describe('SwapOutInfoGraphicsComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [SwapOutInfoGraphicsComponent],
-      imports: [ 
+      imports: [
         BrowserAnimationsModule,
         SharedModule
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: DataService, useClass: mockDataService }
       ]

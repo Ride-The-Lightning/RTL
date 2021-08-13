@@ -57,7 +57,7 @@ export interface GetInfoRoot {
   alias?: string;
   testnet?: boolean;
   chains?: GetInfoChain[] | string[];
-  uris?: string[];  
+  uris?: string[];
   version?: string;
   api_version?: string;
 }
@@ -65,7 +65,7 @@ export interface GetInfoRoot {
 export interface SelNodeChild {
   userPersona?: string;
   channelBackupPath?: string;
-  selCurrencyUnit?: string;  
+  selCurrencyUnit?: string;
   currencyUnits?: string[];
   fiatConversion?: boolean;
   lnImplementation?: string;

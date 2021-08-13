@@ -20,7 +20,7 @@ describe('ECLTransactionsComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ECLTransactionsComponent, CurrencyUnitConverterComponent],
-      imports: [ 
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
@@ -31,7 +31,7 @@ describe('ECLTransactionsComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }

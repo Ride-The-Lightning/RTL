@@ -17,7 +17,7 @@ describe('ShowPubkeyComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ShowPubkeyComponent],
       imports: [SharedModule],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },

@@ -25,7 +25,7 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
   }
 
   openSendFundsModal() {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       sweepAll: this.sweepAll,
       component: OnChainSendModalComponent
     }}));

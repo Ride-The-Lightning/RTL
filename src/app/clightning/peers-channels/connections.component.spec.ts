@@ -19,7 +19,7 @@ describe('CLConnectionsComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [CLConnectionsComponent, CurrencyUnitConverterComponent],
-      imports: [ 
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,

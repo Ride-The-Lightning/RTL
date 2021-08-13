@@ -19,13 +19,13 @@ export class CLSignComponent implements OnDestroy {
 
   constructor(private dataService: DataService, private snackBar: MatSnackBar, private logger: LoggerService) {}
 
-  onSign():boolean|void {
+  onSign(): boolean|void {
     if (!this.message || this.message === '') { return true; }
-    this.dataService.signMessage(this.message).pipe(takeUntil(this.unSubs[0])).subscribe(res => { 
+    this.dataService.signMessage(this.message).pipe(takeUntil(this.unSubs[0])).subscribe(res => {
       this.signedMessage = this.message;
-      this.signature = res.zbase; 
+      this.signature = res.zbase;
     });
-  } 
+  }
 
   onMessageChange() {
     if (this.signedMessage !== this.message) { this.signature = ''; }
@@ -35,7 +35,7 @@ export class CLSignComponent implements OnDestroy {
     this.snackBar.open('Signature copied.');
     this.logger.info('Copied Text: ' + payload);
   }
-  
+
   resetData() {
     this.message = '';
     this.signature = '';

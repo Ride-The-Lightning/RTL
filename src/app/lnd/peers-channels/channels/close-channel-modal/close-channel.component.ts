@@ -28,7 +28,7 @@ export class CloseChannelComponent implements OnInit, OnDestroy {
   public faExclamationTriangle = faExclamationTriangle;
   public faInfoCircle = faInfoCircle;
   public flgPendingHtlcs = false;
-  public errorMsg = 'Please wait for pending HTLCs to settle before attempting channel closure.';  
+  public errorMsg = 'Please wait for pending HTLCs to settle before attempting channel closure.';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<CloseChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelInformation, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private logger: LoggerService) {}
@@ -43,14 +43,14 @@ export class CloseChannelComponent implements OnInit, OnDestroy {
         if (filteredChannel.pending_htlcs && filteredChannel.pending_htlcs.length && filteredChannel.pending_htlcs.length > 0) {
           this.flgPendingHtlcs = true;
         }
-      }    
+      }
       if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'FetchAllChannels') {
         this.logger.error('Fetching latest channel information failed!\n' + action.payload.message);
       }
     });
   }
 
-  onCloseChannel():boolean|void {
+  onCloseChannel(): boolean|void {
     if ((this.selTransType === '1' && (!this.blocks || this.blocks === 0)) || (this.selTransType === '2' && (!this.fees || this.fees === 0))) { return true; }
     let closeChannelParams: any = { channelPoint: this.channelToClose.channel_point, forcibly: !this.channelToClose.active };
     if (this.blocks) { closeChannelParams.targetConf = this.blocks; }
@@ -60,7 +60,7 @@ export class CloseChannelComponent implements OnInit, OnDestroy {
   }
 
   resetData() {
-    this.selTransType = '0';      
+    this.selTransType = '0';
     this.blocks = null;
     this.fees = null;
   }

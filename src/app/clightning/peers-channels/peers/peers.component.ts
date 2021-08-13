@@ -51,7 +51,7 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListCL = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions: Actions, private commonService: CommonService) {
@@ -129,11 +129,11 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onOpenChannel(peerToAddChannel: Peer) {
     const peerToAddChannelMessage = {
-      peer: peerToAddChannel, 
+      peer: peerToAddChannel,
       information: this.information,
       balance: this.availableBalance
     };
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       alertTitle: 'Open Channel',
       message: peerToAddChannelMessage,
       newlyAdded: false,
@@ -167,17 +167,17 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.peers = new MatTableDataSource<Peer>([...peersArr]);
     this.peers.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
-        case 'netaddr': 
+        case 'netaddr':
           if (data.netaddr && data.netaddr[0]) {
             let firstSplit = data.netaddr[0].toString().split('.');
             return (firstSplit[0]) ? +firstSplit[0] : data.netaddr[0];
           } else {
-            return ''; 
+            return '';
           }
 
         default: return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
-    }
+    };
     this.peers.sort = this.sort;
     this.peers.filterPredicate = (peer: Peer, fltr: string) => JSON.stringify(peer).toLowerCase().includes(fltr);
     this.peers.paginator = this.paginator;

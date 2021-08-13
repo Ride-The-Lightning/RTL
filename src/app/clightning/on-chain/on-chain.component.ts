@@ -47,7 +47,7 @@ export class CLOnChainComponent implements OnInit, OnDestroy {
   }
 
   openSendFundsModal(sweepAll: boolean) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       sweepAll: sweepAll,
       component: CLOnChainSendModalComponent
     }}));

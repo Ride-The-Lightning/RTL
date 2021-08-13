@@ -56,7 +56,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
           case 'CLT':
             this.router.navigate(['/cl/home']);
             break;
-        
+
           case 'ECL':
             this.router.navigate(['/ecl/home']);
             break;
@@ -70,7 +70,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  onChangePassword():boolean|void {
+  onChangePassword(): boolean|void {
     if(!this.currPassword || !this.newPassword || !this.confirmPassword || this.currPassword === this.newPassword || this.newPassword !== this.confirmPassword || PASSWORD_BLACKLIST.includes(this.newPassword.toLowerCase())) { return true; }
     this.store.dispatch(new RTLActions.ResetPassword({currPassword: sha256(this.currPassword), newPassword: sha256(this.newPassword)}));
   }
@@ -128,7 +128,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
 
   onResetPassword() {
     this.form.resetForm();
-  } 
+  }
 
   ngOnDestroy() {
     if(this.initializeNodeData) {

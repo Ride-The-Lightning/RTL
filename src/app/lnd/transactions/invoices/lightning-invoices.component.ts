@@ -30,7 +30,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   animations: [newlyAddedRowAnimation],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Invoices') }
-  ]  
+  ]
 })
 export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() calledFrom = 'transactions'; // transactions/home
@@ -62,7 +62,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListLND = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private datePipe: DatePipe) {
@@ -123,7 +123,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   }
 
   onInvoiceClick(selInvoice: Invoice, event: any) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
         invoice: selInvoice,
         newlyAdded: false,
         component: InvoiceInformationComponent
@@ -136,7 +136,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
     this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.invoices.filterPredicate = (invoice: Invoice, fltr: string) => {
       const newInvoice = ((invoice.creation_date) ? this.datePipe.transform(new Date(invoice.creation_date*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + ((invoice.settle_date) ? this.datePipe.transform(new Date(invoice.settle_date*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(invoice).toLowerCase();
-      return newInvoice.includes(fltr);   
+      return newInvoice.includes(fltr);
     };
     setTimeout(() => { this.flgAnimate = false; }, 5000);
     this.logger.info(this.invoices);
@@ -193,7 +193,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   }
 
   openCreateInvoiceModal() {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       pageSize: this.pageSize,
       component: CreateInvoiceComponent
     }}));

@@ -17,7 +17,7 @@ describe('OnChainGeneratedAddressComponent', () => {
     TestBed.configureTestingModule({
       declarations: [OnChainGeneratedAddressComponent],
       imports: [SharedModule],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },

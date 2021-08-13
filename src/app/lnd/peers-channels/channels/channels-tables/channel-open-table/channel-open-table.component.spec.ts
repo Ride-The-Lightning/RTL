@@ -31,7 +31,7 @@ describe('ChannelOpenTableComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService }, LoopService,
         { provide: DataService, useClass: mockDataService },

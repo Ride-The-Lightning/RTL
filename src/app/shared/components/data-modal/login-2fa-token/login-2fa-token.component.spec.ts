@@ -25,7 +25,7 @@ describe('LoginTokenComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {} }
       ]

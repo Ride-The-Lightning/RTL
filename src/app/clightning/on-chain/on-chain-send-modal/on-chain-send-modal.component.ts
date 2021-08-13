@@ -31,8 +31,8 @@ import * as sha256 from 'sha256';
   styleUrls: ['./on-chain-send-modal.component.scss']
 })
 export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
-  @ViewChild('form', { static: true }) form: any;  
-  @ViewChild('formSweepAll', { static: false }) formSweepAll: any;  
+  @ViewChild('form', { static: true }) form: any;
+  @ViewChild('formSweepAll', { static: false }) formSweepAll: any;
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
   public sweepAll = false;
@@ -67,8 +67,8 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
   public confirmFormLabel = 'Confirm sweep';
   public amountError = 'Amount is Required.';
   passwordFormGroup: FormGroup;
-  sendFundFormGroup: FormGroup;  
-  confirmFormGroup: FormGroup;  
+  sendFundFormGroup: FormGroup;
+  confirmFormGroup: FormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<CLOnChainSendModalComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOnChainSendFunds, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions, private formBuilder: FormBuilder, private rtlEffects: RTLEffects, private snackBar: MatSnackBar) {}
@@ -85,7 +85,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
       flgMinConf: [false],
       transactionBlocks: [{value: null, disabled: true}]
     });
-    this.confirmFormGroup = this.formBuilder.group({}); 
+    this.confirmFormGroup = this.formBuilder.group({});
     this.sendFundFormGroup.controls.flgMinConf.valueChanges.pipe(takeUntil(this.unSubs[4])).subscribe(flg => {
       if (flg) {
         this.sendFundFormGroup.controls.transactionBlocks.enable();
@@ -102,9 +102,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
         this.sendFundFormGroup.controls.transactionFeeRate.setValue(null);
       }
     });
-    combineLatest([
-      this.store.select('root'),
-      this.store.select('cl')])
+    combineLatest([this.store.select('root'), this.store.select('cl')])
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe(([rootStore, rtlStore]) => {
       this.fiatConversion = rootStore.selNode.settings.fiatConversion;
@@ -112,7 +110,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
       this.appConfig = rootStore.appConfig;
       this.nodeData = rootStore.nodeData;
       this.information = rtlStore.information;
-      this.isCompatibleVersion = 
+      this.isCompatibleVersion =
         this.commonService.isVersionCompatible(this.information.version, '0.9.0')
         && this.commonService.isVersionCompatible(this.information.api_version, '0.4.0');
       this.utxos = this.commonService.sortAscByKey(rtlStore.utxos.filter(utxo => utxo.status === 'confirmed'), 'value');
@@ -125,7 +123,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
       if (action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL) {
         this.store.dispatch(new RTLActions.OpenSnackBar('Fund Sent Successfully!'));
         this.dialogRef.close();
-      }    
+      }
       if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SetChannelTransaction') {
         this.sendFundError = action.payload.message;
       }
@@ -133,7 +131,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
 
   }
 
-  onAuthenticate():boolean|void {
+  onAuthenticate(): boolean|void {
     if (!this.passwordFormGroup.controls.password.value) { return true; }
     this.flgValidated = false;
     this.store.dispatch(new RTLActions.IsAuthorized(sha256(this.passwordFormGroup.controls.password.value)));
@@ -150,7 +148,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSendFunds():boolean|void {
+  onSendFunds(): boolean|void {
     if(this.invalidValues) { return true; }
     this.sendFundError = '';
     if (this.flgUseAllBalance) {
@@ -206,7 +204,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
   }
 
   resetData() {
-    this.sendFundError = '';    
+    this.sendFundError = '';
     this.transaction = {};
     this.flgMinConf = false;
     this.totalSelectedUTXOAmount = null;
@@ -220,33 +218,35 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
     switch (event.selectedIndex) {
       case 0:
         this.passwordFormLabel = 'Authenticate with your RTL password';
-        this.sendFundFormLabel = 'Sweep funds'
+        this.sendFundFormLabel = 'Sweep funds';
         break;
-    
+
       case 1:
         this.passwordFormLabel = 'User authenticated successfully';
-        this.sendFundFormLabel = 'Sweep funds'
+        this.sendFundFormLabel = 'Sweep funds';
         break;
 
       case 2:
         this.passwordFormLabel = 'User authenticated successfully';
-        this.sendFundFormLabel = 'Sweep funds | Address: ' + this.sendFundFormGroup.controls.transactionAddress.value + (this.sendFundFormGroup.controls.flgMinConf.value ? (' | Min Confirmation Blocks: ' + this.sendFundFormGroup.controls.transactionBlocks.value) : (this.sendFundFormGroup.controls.transactionFeeRate.value ? (' | Fee Rate: ' + this.feeRateTypes.find(frType => frType.feeRateId === this.sendFundFormGroup.controls.transactionFeeRate.value).feeRateType) : ''));
+        this.sendFundFormLabel = 'Sweep funds | Address: ' + this.sendFundFormGroup.controls.transactionAddress.value +
+          (this.sendFundFormGroup.controls.flgMinConf.value ? (' | Min Confirmation Blocks: ' + this.sendFundFormGroup.controls.transactionBlocks.value) : (this.sendFundFormGroup.controls.transactionFeeRate.value ? (' | Fee Rate: ' +
+          this.feeRateTypes.find(frType => frType.feeRateId === this.sendFundFormGroup.controls.transactionFeeRate.value).feeRateType) : ''));
         break;
 
       default:
         this.passwordFormLabel = 'Authenticate with your RTL password';
-        this.sendFundFormLabel = 'Sweep funds'
+        this.sendFundFormLabel = 'Sweep funds';
         break;
     }
     if (event.selectedIndex < event.previouslySelectedIndex) {
       if (event.selectedIndex === 0) {
         this.passwordFormGroup.controls.hiddenPassword.setValue('');
       }
-    }    
+    }
   }
 
   onUTXOSelectionChange(event: any) {
-    let utxoNew = {value: 0}; 
+    let utxoNew = {value: 0};
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
       this.totalSelectedUTXOAmount = this.selUTXOs.reduce((a, b) => {utxoNew.value = a.value + b.value; return utxoNew;}).value;
       if (this.flgUseAllBalance) { this.onUTXOAllBalanceChange(); }
@@ -283,7 +283,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
         currSelectedUnit = prevSelectedUnit;
       }});
     }
-  }  
+  }
 
   onAdvancedPanelToggle(isClosed: boolean) {
     if (isClosed) {

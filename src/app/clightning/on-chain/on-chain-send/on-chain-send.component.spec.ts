@@ -13,7 +13,7 @@ describe('CLOnChainSendComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [CLOnChainSendComponent],
-      imports: [ 
+      imports: [
         SharedModule,
         RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {

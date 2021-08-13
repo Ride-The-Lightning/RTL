@@ -24,7 +24,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./on-chain-transaction-history.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Transactions') }
-  ]  
+  ]
 })
 export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
@@ -39,7 +39,7 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListECL = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe) {
@@ -104,7 +104,7 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
     this.listTransactions.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.listTransactions.filterPredicate = (rowData: Transaction, fltr: string) => {
       const newRowData = ((rowData.timestamp) ? this.datePipe.transform(new Date(rowData.timestamp*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
-      return newRowData.includes(fltr);   
+      return newRowData.includes(fltr);
     };
     this.listTransactions.paginator = this.paginator;
     this.logger.info(this.listTransactions);

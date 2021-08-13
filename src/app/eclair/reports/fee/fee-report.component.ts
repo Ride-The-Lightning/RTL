@@ -93,7 +93,7 @@ export class ECLFeeReportComponent implements OnInit, AfterContentInit, OnDestro
       this.eventFilterValue = '';
     }
   }
-  
+
   onChartBarSelected(event) {
     if(this.reportPeriod === SCROLL_RANGES[1]) {
       this.eventFilterValue = event.name + '/' + this.startDate.getFullYear();

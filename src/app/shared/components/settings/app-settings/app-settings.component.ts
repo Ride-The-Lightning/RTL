@@ -42,14 +42,14 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
     console.warn('ADD NEW NODE');
   }
 
-  onUpdateSettings():boolean|void {
+  onUpdateSettings(): boolean|void {
     let defaultNodeIndex = (this.appConfig.defaultNodeIndex) ? this.appConfig.defaultNodeIndex : +this.appConfig.nodes[0].index;
     this.store.dispatch(new RTLActions.SaveSettings({uiMessage: UI_MESSAGES.UPDATE_DEFAULT_NODE_SETTING, defaultNodeIndex: defaultNodeIndex}));
   }
 
   onResetSettings() {
     this.appConfig.defaultNodeIndex = this.previousDefaultNode;
-  }  
+  }
 
   ngOnDestroy() {
     this.unSubs.forEach(unsub => {

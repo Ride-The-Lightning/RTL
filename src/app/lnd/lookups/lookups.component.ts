@@ -34,7 +34,7 @@ export class LookupsComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListLND = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions) {
@@ -62,7 +62,7 @@ export class LookupsComponent implements OnInit, OnDestroy {
     });
   }
 
-  onLookup():boolean|void {
+  onLookup(): boolean|void {
     if(!this.lookupKey) { return true; }
     this.flgSetLookupValue = false;
     this.lookupValue = {};

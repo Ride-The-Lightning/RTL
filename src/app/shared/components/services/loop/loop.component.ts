@@ -28,7 +28,7 @@ export class LoopComponent implements OnInit, OnDestroy {
   public storedSwaps: LoopSwapStatus[] = [];
   public filteredSwaps: LoopSwapStatus[] = [];
   public emptyTableMessage = 'No swap data available.';
-  public flgLoading: Array<Boolean | 'error'> = [true];  
+  public flgLoading: Array<Boolean | 'error'> = [true];
   public links = [{link: 'loopout', name: 'Loop Out'}, {link: 'loopin', name: 'Loop In'}];
   public activeTab = this.links[0];
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
@@ -39,12 +39,12 @@ export class LoopComponent implements OnInit, OnDestroy {
     this.loopService.listSwaps();
     let linkFound = this.links.find(link => this.router.url.includes(link.link));
     this.activeTab = linkFound ? linkFound : this.links[0];
-    this.selectedSwapType = linkFound && linkFound.link === 'loopin' ? LoopTypeEnum.LOOP_IN : LoopTypeEnum.LOOP_OUT
+    this.selectedSwapType = linkFound && linkFound.link === 'loopin' ? LoopTypeEnum.LOOP_IN : LoopTypeEnum.LOOP_OUT;
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd))
     .subscribe((value: ResolveEnd) => {
       let linkFound = this.links.find(link => value.urlAfterRedirects.includes(link.link));
       this.activeTab = linkFound ? linkFound : this.links[0];
-      this.selectedSwapType = linkFound && linkFound.link === 'loopin' ? LoopTypeEnum.LOOP_IN : LoopTypeEnum.LOOP_OUT
+      this.selectedSwapType = linkFound && linkFound.link === 'loopin' ? LoopTypeEnum.LOOP_IN : LoopTypeEnum.LOOP_OUT;
     });
     this.loopService.swapsChanged
     .pipe(takeUntil(this.unSubs[1]))
@@ -73,7 +73,7 @@ export class LoopComponent implements OnInit, OnDestroy {
           maxQuote: response[1],
           direction: direction,
           component: LoopModalComponent
-        }}));    
+        }}));
       });
     } else {
       this.loopService.getLoopOutTermsAndQuotes(this.targetConf)
@@ -84,7 +84,7 @@ export class LoopComponent implements OnInit, OnDestroy {
           maxQuote: response[1],
           direction: direction,
           component: LoopModalComponent
-        }}));    
+        }}));
       });
     }
   }
@@ -95,5 +95,5 @@ export class LoopComponent implements OnInit, OnDestroy {
       completeSub.complete();
     });
   }
-  
+
 }

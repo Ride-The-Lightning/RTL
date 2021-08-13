@@ -34,7 +34,7 @@ export class DataService implements OnDestroy {
   }
 
   setChildAPIUrl(lnImplementation: string) {
-    this.lnImplementation = lnImplementation;    
+    this.lnImplementation = lnImplementation;
     switch (lnImplementation) {
       case 'CLT':
         this.childAPIUrl = API_URL + '/cl';
@@ -43,7 +43,7 @@ export class DataService implements OnDestroy {
       case 'ECL':
           this.childAPIUrl = API_URL + '/ecl';
           break;
-      
+
       default:
         this.childAPIUrl = API_URL + '/lnd';
         break;
@@ -86,7 +86,7 @@ export class DataService implements OnDestroy {
     return this.httpClient.post(url, {payments: payments})
     .pipe(takeUntil(this.unSubs[1]),
     map((res: any) => {
-      this.store.dispatch(new RTLActions.CloseSpinner(msg));      
+      this.store.dispatch(new RTLActions.CloseSpinner(msg));
       return res;
     }),
     catchError(err => {
@@ -105,11 +105,11 @@ export class DataService implements OnDestroy {
   }
 
   signMessage(msg: string) {
-    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SIGN_MESSAGE));    
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SIGN_MESSAGE));
     return this.httpClient.post(this.childAPIUrl + environment.MESSAGE_API + '/sign', {message: msg})
     .pipe(takeUntil(this.unSubs[2]),
     map((res: any) => {
-      this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.SIGN_MESSAGE));      
+      this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.SIGN_MESSAGE));
       return res;
     }),
     catchError(err => {
@@ -123,13 +123,13 @@ export class DataService implements OnDestroy {
     return this.httpClient.post(this.childAPIUrl + environment.MESSAGE_API + '/verify', {message: msg, signature: sign})
     .pipe(takeUntil(this.unSubs[3]),
     map((res: any) => {
-      this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.VERIFY_MESSAGE));      
+      this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.VERIFY_MESSAGE));
       return res;
     }),
     catchError(err => {
       this.handleErrorWithAlert('verifyMessageData', UI_MESSAGES.VERIFY_MESSAGE, 'Verify Message Failed', this.childAPIUrl + environment.MESSAGE_API + '/verify', err);
       return throwError(() => new Error(this.extractErrorMessage(err)));
-    }));    
+    }));
   }
 
   bumpFee(txid: string, outputIndex: number, targetConf: number, satPerByte: number) {
@@ -226,15 +226,15 @@ export class DataService implements OnDestroy {
 
   extractErrorMessage(err: any, genericErrorMessage: string = 'Unknown Error.') {
     return this.titleCasePipe.transform(
-      (err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error : 
-      (err.error && err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : 
-      (err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : 
-      (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error : 
-      (err.error && typeof err.error === 'string') ? err.error : 
-      (err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : 
-      (err.error && err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : 
-      (err.error && err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : 
-      (err.error && err.error.message && typeof err.error.message === 'string') ? err.error.message : 
+      (err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error :
+      (err.error && err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error :
+      (err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error :
+      (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error :
+      (err.error && typeof err.error === 'string') ? err.error :
+      (err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message :
+      (err.error && err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message :
+      (err.error && err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message :
+      (err.error && err.error.message && typeof err.error.message === 'string') ? err.error.message :
       (err.message && typeof err.message === 'string') ? err.message : genericErrorMessage);
   }
 

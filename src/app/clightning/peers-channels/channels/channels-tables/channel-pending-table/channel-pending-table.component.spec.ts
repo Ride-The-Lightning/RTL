@@ -54,5 +54,5 @@ describe('CLChannelPendingTableComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-  
+
 });

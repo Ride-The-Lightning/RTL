@@ -18,7 +18,7 @@ describe('CLChannelsTablesComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [CLChannelsTablesComponent],
-      imports: [ 
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
@@ -51,5 +51,5 @@ describe('CLChannelsTablesComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-  
+
 });

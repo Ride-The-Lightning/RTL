@@ -68,7 +68,7 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
     });
   }
 
-  onLookup():boolean|void {
+  onLookup(): boolean|void {
     if(!this.lookupKey) { return true; }
     this.flgSetLookupValue = false;
     this.nodeLookupValue = {nodeid: ''};

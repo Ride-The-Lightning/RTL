@@ -21,7 +21,7 @@ export class LoginTokenComponent {
     this.dialogRef.close(null);
   }
 
-  onVerifyToken():boolean|void {
+  onVerifyToken(): boolean|void {
     if (!this.token) { return true; }
     this.dialogRef.close();
     this.store.dispatch(new RTLActions.CloseAlert({twoFAToken: this.token}));

@@ -87,7 +87,7 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
       this.selectedPeer.setErrors({notfound: true});
     } else {
       this.selectedPeer.setErrors(null);
-    }  
+    }
   }
 
   onClose() {
@@ -101,7 +101,7 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
     this.isPrivate = false;
     this.channelConnectionError = '';
     this.advancedTitle = 'Advanced Options';
-    this.form.resetForm(); 
+    this.form.resetForm();
   }
 
   onAdvancedPanelToggle(isClosed: boolean) {
@@ -112,7 +112,7 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
     }
   }
 
-  onOpenChannel():boolean|void {
+  onOpenChannel(): boolean|void {
     if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0))) { return true; }
     this.store.dispatch(new ECLActions.SaveNewChannel({
       nodeId: ((!this.peer || !this.peer.nodeId) ? this.selectedPubkey : this.peer.nodeId), amount: this.fundingAmount, private: this.isPrivate, feeRate: this.feeRate

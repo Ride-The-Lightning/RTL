@@ -38,11 +38,11 @@ describe('RTL Root Effects', () => {
   let container: any;
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  
+
   beforeEach(() => {
     window.jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
     TestBed.configureTestingModule({
-      imports: [ 
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
@@ -102,7 +102,7 @@ describe('RTL Root Effects', () => {
     req.flush(expectedResponse);
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual({ selNodeIndex: setSelectedNodeAction.payload.lnNode.index });
-    
+
   });
 
   it('should throw error on dispatch set selected node', (done) => {
@@ -146,6 +146,6 @@ describe('RTL Root Effects', () => {
 
   afterEach(() => {
     httpTestingController.verify();
-  }); 
+  });
 
 });

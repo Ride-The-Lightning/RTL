@@ -51,7 +51,7 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListECL = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions: Actions, private commonService: CommonService) {
@@ -122,7 +122,7 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onConnectPeer(selPeer: Peer) {
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      message: { 
+      message: {
         peer: selPeer.nodeId ? selPeer : null,
         information: this.information,
         balance: this.availableBalance
@@ -133,11 +133,11 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onOpenChannel(peerToAddChannel: Peer) {
     const peerToAddChannelMessage = {
-      peer: peerToAddChannel, 
+      peer: peerToAddChannel,
       information: this.information,
       balance: this.availableBalance
     };
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       alertTitle: 'Open Channel',
       message: peerToAddChannelMessage,
       newlyAdded: false,

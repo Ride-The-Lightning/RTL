@@ -15,11 +15,11 @@ describe('CLVerifyComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [CLVerifyComponent],
-      imports: [ 
+      imports: [
         BrowserAnimationsModule,
         SharedModule
       ],
-      providers: [ 
+      providers: [
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]

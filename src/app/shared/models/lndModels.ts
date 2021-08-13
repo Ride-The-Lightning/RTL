@@ -1,6 +1,6 @@
 export interface ChannelStatus {
   channels?: number;
-  capacity?:number;
+  capacity?: number;
 }
 
 export interface ChannelsStatus {
@@ -65,7 +65,7 @@ export interface Channel {
   uptime?: string;
   uptime_str?: string;
   lifetime?: string;
-  static_remote_key?: boolean; 
+  static_remote_key?: boolean;
   balancedness?: number; // Between -1 to +1
 }
 
@@ -242,7 +242,7 @@ export interface HopHint {
 
 export interface PaymentHTLC {
   status?: string;
-  route?: Route; 
+  route?: Route;
   attempt_time_ns?: string;
   resolve_time_ns?: string;
   failure?: any;
@@ -286,7 +286,7 @@ export interface Invoice {
   state?: string;
   htlcs?: InvoiceHTLC[];
   features?: any;
-  is_keysend?: boolean;  
+  is_keysend?: boolean;
 }
 
 export interface ListInvoices {
@@ -390,7 +390,7 @@ export interface Hop {
   fee_msat?: string;
   pub_key?:	string;
   tlv_payload?: boolean;
-  mpp_record?: { payment_addr?: string; total_amt_msat?: number; }
+  mpp_record?: { payment_addr?: string, total_amt_msat?: number };
   custom_records?: any;
 }
 
@@ -443,7 +443,7 @@ export interface UTXO {
   address?: string;
   amount_sat?: string;
   pk_script?: string;
-  outpoint?: {txid_bytes?: string; txid_str?: string; output_index?: number;};
+  outpoint?: {txid_bytes?: string, txid_str?: string, output_index?: number};
   confirmations?: string;
   label?: string;
 }
@@ -460,9 +460,9 @@ export interface ForwardingEvent {
   chan_id_out?: string;
   alias_out?: string;
   amt_out?: string;
-  amt_out_msat?: string; 
+  amt_out_msat?: string;
   amt_in?: string;
-  amt_in_msat?: string;  
+  amt_in_msat?: string;
   chan_id_in?: string;
   alias_in?: string;
   fee?: string;

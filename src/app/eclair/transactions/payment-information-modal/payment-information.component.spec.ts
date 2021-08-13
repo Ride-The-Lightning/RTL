@@ -13,7 +13,7 @@ describe('ECLPaymentInformationComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ECLPaymentInformationComponent],
       imports: [SharedModule],
-      providers: [ 
+      providers: [
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {payment:{}, sentPaymentInfo:{}} }
       ]

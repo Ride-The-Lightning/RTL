@@ -24,7 +24,7 @@ describe('CLHomeComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [CLHomeComponent, CLNodeInfoComponent, CLBalancesInfoComponent, CLChannelCapacityInfoComponent, CLChannelStatusInfoComponent, CLFeeInfoComponent],
-      imports: [ 
+      imports: [
         SharedModule,
         RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {

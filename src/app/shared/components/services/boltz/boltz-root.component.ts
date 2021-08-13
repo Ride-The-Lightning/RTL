@@ -34,12 +34,12 @@ export class BoltzRootComponent implements OnInit, OnDestroy {
     this.boltzService.listSwaps();
     let linkFound = this.links.find(link => this.router.url.includes(link.link));
     this.activeTab = linkFound ? linkFound : this.links[0];
-    this.selectedSwapType = linkFound && linkFound.link === 'swapin' ? SwapTypeEnum.SWAP_IN : SwapTypeEnum.SWAP_OUT
+    this.selectedSwapType = linkFound && linkFound.link === 'swapin' ? SwapTypeEnum.SWAP_IN : SwapTypeEnum.SWAP_OUT;
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd))
     .subscribe((value: ResolveEnd) => {
       let linkFound = this.links.find(link => value.urlAfterRedirects.includes(link.link));
       this.activeTab = linkFound ? linkFound : this.links[0];
-      this.selectedSwapType = linkFound && linkFound.link === 'swapin' ? SwapTypeEnum.SWAP_IN : SwapTypeEnum.SWAP_OUT
+      this.selectedSwapType = linkFound && linkFound.link === 'swapin' ? SwapTypeEnum.SWAP_IN : SwapTypeEnum.SWAP_OUT;
     });
     this.boltzService.swapsChanged
     .pipe(takeUntil(this.unSubs[1]))
@@ -71,7 +71,7 @@ export class BoltzRootComponent implements OnInit, OnDestroy {
         serviceInfo: response,
         direction: direction,
         component: SwapModalComponent
-      }}));    
+      }}));
     });
   }
 
@@ -81,5 +81,5 @@ export class BoltzRootComponent implements OnInit, OnDestroy {
       completeSub.complete();
     });
   }
-  
+
 }

@@ -30,7 +30,7 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   public faChartPie = faChartPie;
   public faBolt = faBolt;
   public faServer = faServer;
-  public faNetworkWired = faNetworkWired;  
+  public faNetworkWired = faNetworkWired;
   public flgChildInfoUpdated = false;
   public userPersonaEnum = UserPersonaEnum;
   public channelBalances = {localBalance: 0, remoteBalance: 0, balancedness: 0};
@@ -54,7 +54,7 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   public sortField = 'Balance Score';
   public errorMessages = ['', '', '', '', '', ''];
   public apisCallStatus: ApiCallsListCL = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private commonService: CommonService, private router: Router) {
@@ -189,7 +189,7 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   onsortChannelsBy() {
     if (this.sortField === 'Balance Score') {
       this.sortField =  'Capacity';
-      this.allChannelsCapacity = this.allChannels.sort(function (a, b) {
+      this.allChannelsCapacity = this.allChannels.sort(function(a, b) {
         const x = +a.msatoshi_to_us + +a.msatoshi_to_them;
         const y = +b.msatoshi_to_them + +b.msatoshi_to_them;
         return ((x > y) ? -1 : ((x < y) ? 1 : 0));

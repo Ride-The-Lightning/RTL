@@ -44,7 +44,7 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
       this.numOfPendingChannels = (rtlStore.channelsStatus && rtlStore.channelsStatus.pending && rtlStore.channelsStatus.pending.channels) ? rtlStore.channelsStatus.pending.channels : 0;
       this.numOfInactiveChannels = (rtlStore.channelsStatus && rtlStore.channelsStatus.inactive && rtlStore.channelsStatus.inactive.channels) ? rtlStore.channelsStatus.inactive.channels : 0;
       this.selNode = rtlStore.nodeSettings;
-      this.information = rtlStore.information;    
+      this.information = rtlStore.information;
       this.peers = rtlStore.peers;
       this.totalBalance = rtlStore.onchainBalance.total;
       this.logger.info(rtlStore);
@@ -53,11 +53,11 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
 
   onOpenChannel() {
     const peerToAddChannelMessage = {
-      peers: this.peers, 
+      peers: this.peers,
       information: this.information,
       balance: this.totalBalance
     };
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       alertTitle: 'Open Channel',
       message: peerToAddChannelMessage,
       component: ECLOpenChannelComponent

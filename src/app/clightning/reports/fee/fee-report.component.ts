@@ -39,7 +39,7 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListCL = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
@@ -100,7 +100,7 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
       this.eventFilterValue = '';
     }
   }
-  
+
   onChartBarSelected(event) {
     if(this.reportPeriod === SCROLL_RANGES[1]) {
       this.eventFilterValue = event.name + '/' + this.startDate.getFullYear();

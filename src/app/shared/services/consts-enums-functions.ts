@@ -9,13 +9,13 @@ export function getPaginatorLabel(field: string) {
 export const CURRENCY_UNITS = ['Sats', 'BTC'];
 export const CURRENCY_UNIT_FORMATS = { Sats: '1.0-0', BTC: '1.6-6', OTHER: '1.2-2'};
 export const FIAT_CURRENCY_UNITS = [
-  {id: 'USD', name: 'USD'}, 
-  {id: 'AUD', name: 'AUD'}, {id: 'BRL', name: 'BRL'}, {id: 'CAD', name: 'CAD'}, 
-  {id: 'CHF', name: 'CHF'}, {id: 'CLP', name: 'CLP'}, {id: 'CNY', name: 'CNY'}, 
+  {id: 'USD', name: 'USD'},
+  {id: 'AUD', name: 'AUD'}, {id: 'BRL', name: 'BRL'}, {id: 'CAD', name: 'CAD'},
+  {id: 'CHF', name: 'CHF'}, {id: 'CLP', name: 'CLP'}, {id: 'CNY', name: 'CNY'},
   {id: 'DKK', name: 'DKK'}, {id: 'EUR', name: 'EUR'}, {id: 'GBP', name: 'GBP'},
-  {id: 'HKD', name: 'HKD'}, {id: 'INR', name: 'INR'}, {id: 'ISK', name: 'ISK'}, 
-  {id: 'JPY', name: 'JPY'}, {id: 'KRW', name: 'KRW'}, {id: 'NZD', name: 'NZD'}, 
-  {id: 'PLN', name: 'PLN'}, {id: 'RUB', name: 'RUB'}, {id: 'SEK', name: 'SEK'}, 
+  {id: 'HKD', name: 'HKD'}, {id: 'INR', name: 'INR'}, {id: 'ISK', name: 'ISK'},
+  {id: 'JPY', name: 'JPY'}, {id: 'KRW', name: 'KRW'}, {id: 'NZD', name: 'NZD'},
+  {id: 'PLN', name: 'PLN'}, {id: 'RUB', name: 'RUB'}, {id: 'SEK', name: 'SEK'},
   {id: 'SGD', name: 'SGD'}, {id: 'THB', name: 'THB'}, {id: 'TWD', name: 'TWD'}
 ];
 
@@ -45,12 +45,12 @@ export const FEE_RATE_TYPES = [
   { feeRateId: 'urgent', feeRateType: 'Urgent'},
   { feeRateId: 'normal', feeRateType: 'Normal'},
   { feeRateId: 'slow', feeRateType: 'Slow'}
-]
+];
 
 
 export const NODE_SETTINGS = {
   themes: [
-    {id: 'PURPLE', name: 'Diogo'}, 
+    {id: 'PURPLE', name: 'Diogo'},
     {id: 'TEAL', name: 'My2Sats'},
     {id: 'INDIGO', name: 'RTL'},
     {id: 'PINK', name: 'BK'},
@@ -116,14 +116,14 @@ export const CHANNEL_CLOSURE_TYPE = {
   BREACH_CLOSE: { name: 'Breach Close', tooltip: 'Remote node attempted to broadcast a prior revoked channel state' },
   FUNDING_CANCELED: { name: 'Funding Canceled', tooltip: 'Channel never fully opened' },
   ABANDONED: { name: 'Abandoned', tooltip: 'Channel abandoned by the local node' }
-}
+};
 
 export const WALLET_ADDRESS_TYPE = {
   WITNESS_PUBKEY_HASH: { name: 'Witness Pubkey Hash', tooltip: '' },
   NESTED_PUBKEY_HASH: { name: 'Nested Pubkey Hash', tooltip: '' },
   UNUSED_WITNESS_PUBKEY_HASH: { name: 'Unused Witness Pubkey Hash', tooltip: '' },
   UNUSED_NESTED_PUBKEY_HASH: { name: 'Unused Nested Pubkey Hash', tooltip: '' }
-}
+};
 
 export enum LoopStateEnum {
   INITIATED	= 'Initiated',
@@ -163,7 +163,7 @@ export enum SwapStateEnum {
 }
 
 export const MONTHS = [
-  {name: 'Jan', days: 31}, 
+  {name: 'Jan', days: 31},
   {name: 'Feb', days: 28},
   {name: 'Mar', days: 31},
   {name: 'Apr', days: 30},
@@ -248,4 +248,4 @@ export const UI_MESSAGES = {
   GET_LOOKUP_DETAILS: 'Getting lookup details...',
   GET_RTL_CONFIG: 'Getting RTL Config...',
   VERIFY_TOKEN: 'Verify Token...'
-}
+};

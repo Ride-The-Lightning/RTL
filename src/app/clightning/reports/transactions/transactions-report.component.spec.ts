@@ -17,7 +17,7 @@ describe('CLTransactionsReportComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [CLTransactionsReportComponent],
-      imports: [ 
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
@@ -27,14 +27,14 @@ describe('CLTransactionsReportComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();
   }));
-    
+
   beforeEach(() => {
     let service = TestBed.inject(CommonService);
     fixture = TestBed.createComponent(CLTransactionsReportComponent);

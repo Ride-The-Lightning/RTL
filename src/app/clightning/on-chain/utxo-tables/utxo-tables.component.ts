@@ -15,7 +15,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class CLUTXOTablesComponent implements OnInit, OnDestroy {
   @Input() selectedTableIndex = 0;
-  @Output() selectedTableIndexChange = new EventEmitter<number>();
+  @Output() readonly selectedTableIndexChange = new EventEmitter<number>();
   public utxos: UTXO[] = [];
   public numUtxos = 0;
   public dustUtxos: UTXO[] = [];

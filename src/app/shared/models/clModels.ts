@@ -5,7 +5,7 @@ export enum feeRateStyle {
 
 export interface ChannelStatus {
   channels?: number;
-  capacity?:number;
+  capacity?: number;
 }
 
 export interface ChannelsStatus {
@@ -242,13 +242,13 @@ export interface LookupNode {
 }
 
 export interface FeeRates {
-  perkb?: FeeRatePerObj,
-  perkw?: FeeRatePerObj,
+  perkb?: FeeRatePerObj;
+  perkw?: FeeRatePerObj;
   onchain_fee_estimates?: {
       opening_channel_satoshis?: number;
       mutual_close_satoshis?: number;
       unilateral_close_satoshis?: number;
-  }
+  };
 }
 
 export interface FeeRatePerObj {

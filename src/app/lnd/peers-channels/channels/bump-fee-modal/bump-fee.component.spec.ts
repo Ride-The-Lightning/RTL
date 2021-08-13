@@ -28,7 +28,7 @@ describe('BumpFeeComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {pendingChannel:{channel:{}}} },

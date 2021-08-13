@@ -29,7 +29,7 @@ describe('ECLPeersComponent', () => {
             strictActionImmutability: false
           }
         }),
-        EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])        
+        EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
         CommonService,

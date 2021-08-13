@@ -15,13 +15,13 @@ import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, LoopStateEnum } from '../.
 export class AlertMessageComponent implements OnInit, AfterViewChecked, OnDestroy {
   private scrollContainer: ElementRef;
   @ViewChild('scrollContainer') set container(containerContent: ElementRef) {
-    if(containerContent) { 
+    if(containerContent) {
       this.scrollContainer = containerContent;
       if (this.scrollContainer && this.scrollContainer.nativeElement) {
-        this.unlistenEnd = this.renderer.listen(this.scrollContainer.nativeElement, 'ps-y-reach-end', (event) => { 
+        this.unlistenEnd = this.renderer.listen(this.scrollContainer.nativeElement, 'ps-y-reach-end', (event) => {
           this.scrollDirection = 'UP';
         });
-        this.unlistenStart = this.renderer.listen(this.scrollContainer.nativeElement, 'ps-y-reach-start', (event) => { 
+        this.unlistenStart = this.renderer.listen(this.scrollContainer.nativeElement, 'ps-y-reach-start', (event) => {
           this.scrollDirection = 'DOWN';
         });
       }
@@ -31,7 +31,7 @@ export class AlertMessageComponent implements OnInit, AfterViewChecked, OnDestro
   private unlistenEnd: () => void;
   public LoopStateEnum = LoopStateEnum;
   public showQRField = '';
-  public showQRName = '';  
+  public showQRName = '';
   public showCopyName = '';
   public showCopyField = '';
   public errorMessage = '';

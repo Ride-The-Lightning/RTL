@@ -30,8 +30,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./on-chain-send-modal.component.scss']
 })
 export class OnChainSendModalComponent implements OnInit, OnDestroy {
-  @ViewChild('form', { static: true }) form: any;  
-  @ViewChild('formSweepAll', { static: false }) formSweepAll: any;  
+  @ViewChild('form', { static: true }) form: any;
+  @ViewChild('formSweepAll', { static: false }) formSweepAll: any;
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
   public sweepAll = false;
@@ -63,8 +63,8 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   public confirmFormLabel = 'Confirm sweep';
   public amountError = 'Amount is Required.';
   passwordFormGroup: FormGroup;
-  sendFundFormGroup: FormGroup;  
-  confirmFormGroup: FormGroup;  
+  sendFundFormGroup: FormGroup;
+  confirmFormGroup: FormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<OnChainSendModalComponent>, @Inject(MAT_DIALOG_DATA) public data: OnChainSendFunds, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private decimalPipe: DecimalPipe, private snackBar: MatSnackBar, private actions: Actions, private formBuilder: FormBuilder) {}
@@ -81,7 +81,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
       transactionFees: [null],
       selTransType: ['1', Validators.required]
     });
-    this.confirmFormGroup = this.formBuilder.group({}); 
+    this.confirmFormGroup = this.formBuilder.group({});
     this.sendFundFormGroup.controls.selTransType.valueChanges.pipe(takeUntil(this.unSubs[0])).subscribe(transType => {
       if (transType === '1') {
         this.sendFundFormGroup.controls.transactionBlocks.setValidators([Validators.required]);
@@ -110,7 +110,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
       if (action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND) {
         this.store.dispatch(new RTLActions.OpenSnackBar(this.sweepAll ? 'All Funds Sent Successfully!' : 'Fund Sent Successfully!'));
         this.dialogRef.close();
-      }    
+      }
       if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SetChannelTransaction') {
         this.sendFundError = action.payload.message;
       }
@@ -118,7 +118,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
 
   }
 
-  onAuthenticate():boolean|void {
+  onAuthenticate(): boolean|void {
     if (!this.passwordFormGroup.controls.password.value) { return true; }
     this.flgValidated = false;
     this.store.dispatch(new RTLActions.IsAuthorized(sha256(this.passwordFormGroup.controls.password.value)));
@@ -135,7 +135,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSendFunds():boolean|void {
+  onSendFunds(): boolean|void {
     if(this.invalidValues) { return true; }
     this.sendFundError = '';
     const postTransaction = {
@@ -178,7 +178,8 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
 
   get invalidValues(): boolean {
     if (this.sweepAll) {
-      return (!this.sendFundFormGroup.controls.transactionAddress.value || this.sendFundFormGroup.controls.transactionAddress.value === '') || (this.sendFundFormGroup.controls.selTransType.value === '1' && (!this.sendFundFormGroup.controls.transactionBlocks.value || this.sendFundFormGroup.controls.transactionBlocks.value <= 0)) || (this.sendFundFormGroup.controls.selTransType.value === '2' && (!this.sendFundFormGroup.controls.transactionFees.value || this.sendFundFormGroup.controls.transactionFees.value <= 0));
+      return (!this.sendFundFormGroup.controls.transactionAddress.value || this.sendFundFormGroup.controls.transactionAddress.value === '') ||
+        (this.sendFundFormGroup.controls.selTransType.value === '1' && (!this.sendFundFormGroup.controls.transactionBlocks.value || this.sendFundFormGroup.controls.transactionBlocks.value <= 0)) || (this.sendFundFormGroup.controls.selTransType.value === '2' && (!this.sendFundFormGroup.controls.transactionFees.value || this.sendFundFormGroup.controls.transactionFees.value <= 0));
     } else {
       return (!this.transactionAddress || this.transactionAddress === '') || (!this.transactionAmount || this.transactionAmount <= 0)
       || (this.selTransType === '1' && (!this.transactionBlocks || this.transactionBlocks <= 0)) || (this.selTransType === '2' && (!this.transactionFees || this.transactionFees <= 0));
@@ -186,8 +187,8 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   }
 
   resetData() {
-    this.sendFundError = '';    
-    this.selTransType = '1';      
+    this.sendFundError = '';
+    this.selTransType = '1';
     this.transactionAddress = '';
     this.transactionBlocks = null;
     this.transactionFees = null;
@@ -201,29 +202,32 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
     switch (event.selectedIndex) {
       case 0:
         this.passwordFormLabel = 'Authenticate with your RTL password';
-        this.sendFundFormLabel = 'Sweep funds'
+        this.sendFundFormLabel = 'Sweep funds';
         break;
-    
+
       case 1:
         this.passwordFormLabel = 'User authenticated successfully';
-        this.sendFundFormLabel = 'Sweep funds'
+        this.sendFundFormLabel = 'Sweep funds';
         break;
 
       case 2:
         this.passwordFormLabel = 'User authenticated successfully';
-        this.sendFundFormLabel = 'Sweep funds | Address: ' + this.sendFundFormGroup.controls.transactionAddress.value + ' | ' + this.transTypes[this.sendFundFormGroup.controls.selTransType.value-1].name + (this.sendFundFormGroup.controls.selTransType.value === '2' ? ' (Sats/vByte)' : '') + ': ' + (this.sendFundFormGroup.controls.selTransType.value === '1' ? this.sendFundFormGroup.controls.transactionBlocks.value : this.sendFundFormGroup.controls.transactionFees.value);
+        this.sendFundFormLabel = 'Sweep funds | Address: ' + this.sendFundFormGroup.controls.transactionAddress.value + ' | ' +
+          this.transTypes[this.sendFundFormGroup.controls.selTransType.value-1].name +
+          (this.sendFundFormGroup.controls.selTransType.value === '2' ? ' (Sats/vByte)' : '') + ': ' +
+          (this.sendFundFormGroup.controls.selTransType.value === '1' ? this.sendFundFormGroup.controls.transactionBlocks.value : this.sendFundFormGroup.controls.transactionFees.value);
         break;
 
       default:
         this.passwordFormLabel = 'Authenticate with your RTL password';
-        this.sendFundFormLabel = 'Sweep funds'
+        this.sendFundFormLabel = 'Sweep funds';
         break;
     }
     if (event.selectedIndex < event.previouslySelectedIndex) {
       if (event.selectedIndex === 0) {
         this.passwordFormGroup.controls.hiddenPassword.setValue('');
       }
-    }    
+    }
   }
 
   onAmountUnitChange(event: any) {
@@ -244,7 +248,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
         currSelectedUnit = prevSelectedUnit;
       }});
     }
-  }  
+  }
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {

@@ -26,7 +26,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   private paymentReq: NgModel;
-  @ViewChild('paymentReq') set payReq(paymReq: NgModel) {if(paymReq) { this.paymentReq = paymReq; }}  
+  @ViewChild('paymentReq') set payReq(paymReq: NgModel) {if(paymReq) { this.paymentReq = paymReq; }}
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: SelNodeChild = {};
   public paymentDecoded: PayRequest = {};
@@ -54,7 +54,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
     .subscribe((rtlStore) => {
       this.selNode = rtlStore.nodeSettings;
       this.activeChannels = rtlStore.allChannels.filter(channel => channel.state === 'CHANNELD_NORMAL' && channel.connected);
-      this.isCompatibleVersion = 
+      this.isCompatibleVersion =
         this.commonService.isVersionCompatible(rtlStore.information.version, '0.9.0')
         && this.commonService.isVersionCompatible(rtlStore.information.api_version, '0.4.0');
       this.logger.info(rtlStore);
@@ -62,9 +62,9 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
     this.actions.pipe(takeUntil(this.unSubs[1]),
     filter(action => action.type === CLActions.UPDATE_API_CALL_STATUS_CL || action.type === CLActions.SEND_PAYMENT_STATUS_CL))
     .subscribe((action: CLActions.UpdateAPICallStatus | CLActions.SendPaymentStatus) => {
-      if (action.type === CLActions.SEND_PAYMENT_STATUS_CL) { 
+      if (action.type === CLActions.SEND_PAYMENT_STATUS_CL) {
         this.dialogRef.close();
-      }    
+      }
       if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR) {
         if (action.payload.action === 'SendPayment') {
           delete this.paymentDecoded.msatoshi;
@@ -72,14 +72,14 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
         }
         if (action.payload.action === 'DecodePayment') {
           this.paymentDecodedHint = 'ERROR: ' + action.payload.message;
-          this.paymentReq.control.setErrors({'decodeError': true});
+          this.paymentReq.control.setErrors({decodeError: true});
         }
       }
     });
   }
 
-  onSendPayment():boolean|void {
-    if ((this.paymentType === 'invoice' && !this.paymentRequest) || (this.paymentType === 'keysend' && (!this.pubkey || this.pubkey.trim() === '' || !this.keysendAmount || this.keysendAmount <= 0))) { return true; } 
+  onSendPayment(): boolean|void {
+    if ((this.paymentType === 'invoice' && !this.paymentRequest) || (this.paymentType === 'keysend' && (!this.pubkey || this.pubkey.trim() === '' || !this.keysendAmount || this.keysendAmount <= 0))) { return true; }
     if (this.paymentType === 'keysend') {
       this.keysendPayment();
     } else {
@@ -89,7 +89,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
         this.paymentAmount = null;
         this.paymentError = '';
         this.paymentDecodedHint = '';
-        this.paymentReq.control.setErrors(null);      
+        this.paymentReq.control.setErrors(null);
         this.store.dispatch(new CLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
         this.clEffects.setDecodedPaymentCL.pipe(take(1)).subscribe(decodedPayment => {
           this.paymentDecoded = decodedPayment;

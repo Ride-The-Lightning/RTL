@@ -58,7 +58,7 @@ export class RoutingComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.resetData();
-    this.store.dispatch(new LNDActions.SetForwardingHistory({}));    
+    this.store.dispatch(new LNDActions.SetForwardingHistory({}));
     this.unSubs.forEach(completeSub => {
       completeSub.next(null);
       completeSub.complete();

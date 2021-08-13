@@ -32,7 +32,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   animations: [newlyAddedRowAnimation],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Payments') }
-  ]  
+  ]
 })
 export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() calledFrom = 'transactions'; // transactions/home
@@ -62,7 +62,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListLND = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private decimalPipe: DecimalPipe, private datePipe: DatePipe) {
@@ -105,7 +105,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       if (this.paymentJSONArr && this.paymentJSONArr.length > 0 && this.sort && this.paginator) {
         this.loadPaymentsTable(this.paymentJSONArr);
       } else if (this.paymentJSONArr && this.paymentJSONArr.length === 0) {
-        this.payments = new MatTableDataSource([]);        
+        this.payments = new MatTableDataSource([]);
       }
       setTimeout(() => { this.flgAnimate = false; }, 3000);
       this.logger.info(rtlStore);
@@ -118,9 +118,9 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
     }
   }
 
-  onSendPayment():boolean|void {
-    if(!this.paymentRequest) { return true; } 
-    if ( this.paymentDecoded.timestamp) {
+  onSendPayment(): boolean|void {
+    if(!this.paymentRequest) { return true; }
+    if (this.paymentDecoded.timestamp) {
       this.sendPayment();
     } else {
       this.dataService.decodePayment(this.paymentRequest, false)
@@ -207,7 +207,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   }
 
   openSendPaymentModal() {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       component: LightningSendPaymentsComponent
     }}));
   }
@@ -264,7 +264,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
 
   is_group(index: number, payment: Payment) {
     return payment.htlcs && payment.htlcs.length > 1;
-  }  
+  }
 
   resetData() {
     this.paymentDecoded = {};
@@ -274,7 +274,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
 
   getHopDetails(hops: Hop[]) {
     let self = this;
-    return hops.reduce(function (accumulator, currentHop) {
+    return hops.reduce(function(accumulator, currentHop) {
       let peerFound = self.peers.find(peer => peer.pub_key === currentHop.pub_key);
       if (peerFound && peerFound.alias) {
         accumulator.push('<pre>Channel: ' + peerFound.alias.padEnd(20) + '&Tab;&Tab;&Tab;Amount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward) + '</pre>');
@@ -328,11 +328,11 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
 
   onPaymentClick(selPayment: Payment) {
     if (selPayment.htlcs && selPayment.htlcs[0] && selPayment.htlcs[0].route && selPayment.htlcs[0].route.hops && selPayment.htlcs[0].route.hops.length > 0) {
-      let nodePubkeys = selPayment.htlcs[0].route.hops.reduce((pubkeys, hop) => { return pubkeys === '' ? hop.pub_key : pubkeys + ',' + hop.pub_key }, '');
+      let nodePubkeys = selPayment.htlcs[0].route.hops.reduce((pubkeys, hop) => { return pubkeys === '' ? hop.pub_key : pubkeys + ',' + hop.pub_key; }, '');
       this.dataService.getAliasesFromPubkeys(nodePubkeys, true)
       .pipe(takeUntil(this.unSubs[3]))
       .subscribe((nodes: any) => {
-        this.showPaymentView(selPayment, nodes.reduce((pathAliases, node) => { return pathAliases === '' ? node : pathAliases + '\n' + node }, ''));
+        this.showPaymentView(selPayment, nodes.reduce((pathAliases, node) => { return pathAliases === '' ? node : pathAliases + '\n' + node; }, ''));
       });
     } else {
       this.showPaymentView(selPayment, '');
@@ -381,23 +381,23 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
     this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
         case 'hops':
-          return (data.htlcs.length && data.htlcs[0] && data.htlcs[0].route && data.htlcs[0].route.hops && data.htlcs[0].route.hops.length ) ? data.htlcs[0].route.hops.length : 0;
+          return (data.htlcs.length && data.htlcs[0] && data.htlcs[0].route && data.htlcs[0].route.hops && data.htlcs[0].route.hops.length) ? data.htlcs[0].route.hops.length : 0;
 
-        default: 
+        default:
           return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
-    }
+    };
     this.payments.sort = this.sort;
     this.payments.filterPredicate = (payment: Payment, fltr: string) => {
       const newPayment = ((payment.creation_date) ? this.datePipe.transform(new Date(payment.creation_date*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(payment).toLowerCase();
-      return newPayment.includes(fltr);   
+      return newPayment.includes(fltr);
     };
   }
 
   onDownloadCSV() {
     if(this.payments.data && this.payments.data.length > 0) {
       let paymentsDataCopy = JSON.parse(JSON.stringify(this.payments.data));
-      let paymentRequests = paymentsDataCopy.reduce((paymentReqs, payment) => { 
+      let paymentRequests = paymentsDataCopy.reduce((paymentReqs, payment) => {
         if (payment.payment_request && payment.payment_request.trim() !== '') {
           paymentReqs = (paymentReqs === '') ? payment.payment_request : paymentReqs + ',' + payment.payment_request;
         }

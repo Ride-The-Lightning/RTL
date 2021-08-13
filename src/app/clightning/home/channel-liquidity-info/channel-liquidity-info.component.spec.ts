@@ -9,14 +9,14 @@ import { CLChannelLiquidityInfoComponent } from './channel-liquidity-info.compon
 import { DataService } from '../../../shared/services/data.service';
 
 describe('CLChannelLiquidityInfoComponent', () => {
-  let component: CLChannelLiquidityInfoComponent;  
+  let component: CLChannelLiquidityInfoComponent;
   let fixture: ComponentFixture<CLChannelLiquidityInfoComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [CLChannelLiquidityInfoComponent],
       imports: [SharedModule, RouterTestingModule],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: DataService, useClass: mockDataService }
       ]

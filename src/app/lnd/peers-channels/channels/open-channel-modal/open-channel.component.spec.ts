@@ -28,7 +28,7 @@ describe('OpenChannelComponent', () => {
         }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
-      providers: [ 
+      providers: [
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {message:{}} },
         { provide: RTLEffects, useClass: mockRTLEffects }

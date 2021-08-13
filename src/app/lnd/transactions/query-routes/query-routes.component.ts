@@ -56,7 +56,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe(queryRoute => {
       this.qrHops = new MatTableDataSource([]);
-      if ( queryRoute.routes &&  queryRoute.routes[0].hops) {
+      if (queryRoute.routes &&  queryRoute.routes[0].hops) {
         this.flgLoading[0] = false;
         this.qrHops = new MatTableDataSource<Hop>([...queryRoute.routes[0].hops]);
         this.qrHops.data = queryRoute.routes[0].hops;
@@ -68,7 +68,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
     });
   }
 
-  onQueryRoutes():boolean|void {
+  onQueryRoutes(): boolean|void {
     if(!this.destinationPubkey || !this.amount) { return true; }
     this.qrHops = new MatTableDataSource([]);
     this.flgLoading[0] = true;

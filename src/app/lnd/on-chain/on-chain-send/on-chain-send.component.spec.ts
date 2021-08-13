@@ -13,7 +13,7 @@ describe('OnChainSendComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [OnChainSendComponent],
-      imports: [ 
+      imports: [
         SharedModule,
         RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {

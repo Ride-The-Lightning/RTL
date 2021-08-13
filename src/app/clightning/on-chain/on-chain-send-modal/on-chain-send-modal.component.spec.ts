@@ -21,7 +21,7 @@ describe('CLOnChainSendModalComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [CLOnChainSendModalComponent],
-      imports: [ 
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
@@ -32,7 +32,7 @@ describe('CLOnChainSendModalComponent', () => {
         }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },

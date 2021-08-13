@@ -28,7 +28,7 @@ export class CLNodeLookupComponent implements OnInit {
 
   onCopyNodeURI(payload: string) {
     this.snackBar.open('Node URI copied.');
-    this.logger.info('Copied Text: ' + payload);    
+    this.logger.info('Copied Text: ' + payload);
   }
 
 }

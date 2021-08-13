@@ -21,7 +21,7 @@ export interface Tile {
   id: string;
   title: string;
   cols: number;
-  rows: number;  
+  rows: number;
   goTo?: string;
   link?: string;
   icon?: any;
@@ -40,7 +40,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public faChartPie = faChartPie;
   public faBolt = faBolt;
   public faServer = faServer;
-  public faNetworkWired = faNetworkWired;  
+  public faNetworkWired = faNetworkWired;
   public flgChildInfoUpdated = false;
   public userPersonaEnum = UserPersonaEnum;
   public activeChannels = 0;
@@ -66,7 +66,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessages = ['', '', '', '', ''];
   public apisCallStatus: ApiCallsListLND = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private commonService: CommonService, private router: Router) {
@@ -103,7 +103,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           { id: 'outboundLiq', goTo: 'Channels', link: '/lnd/connections', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 3, rows: 8 }
         ];
         break;
-        
+
       case ScreenSizeEnum.MD:
         this.operatorCards = [
           { id: 'node', icon: this.faServer, title: 'Node Information', cols: 5, rows: 1 },
@@ -176,7 +176,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         active: { channels: rtlStore.numberOfActiveChannels, capacity: rtlStore.totalCapacityActive },
         inactive: { channels: rtlStore.numberOfInactiveChannels, capacity: rtlStore.totalCapacityInactive },
         pending: { channels:  rtlStore.numberOfPendingChannels.open.num_channels, capacity: rtlStore.numberOfPendingChannels.open.limbo_balance },
-        closing: { 
+        closing: {
           channels: rtlStore.numberOfPendingChannels.closing.num_channels + rtlStore.numberOfPendingChannels.force_closing.num_channels + rtlStore.numberOfPendingChannels.waiting_close.num_channels,
           capacity: rtlStore.numberOfPendingChannels.total_limbo_balance
         }
@@ -217,7 +217,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   onsortChannelsBy() {
     if (this.sortField === 'Balance Score') {
       this.sortField =  'Capacity';
-      this.allChannelsCapacity = this.allChannels.sort(function (a, b) {
+      this.allChannelsCapacity = this.allChannels.sort(function(a, b) {
         const x = +a.local_balance + +a.remote_balance;
         const y = +b.local_balance + +b.remote_balance;
         return ((x > y) ? -1 : ((x < y) ? 1 : 0));

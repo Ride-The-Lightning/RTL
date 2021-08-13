@@ -64,7 +64,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.sortedPeers = this.peers.sort((p1, p2) => {
       x = p1.alias ? p1.alias.toLowerCase() : p1.pub_key ? p1.pub_key.toLowerCase() : '';
       y = p2.alias ? p2.alias.toLowerCase() : p1.pub_key.toLowerCase();
-      return ((x < y) ? -1 : ((x > y) ? 1 : 0));      
+      return ((x < y) ? -1 : ((x > y) ? 1 : 0));
     });
     this.filteredPeers = this.selectedPeer.valueChanges.pipe(takeUntil(this.unSubs[1]), startWith(''),
       map(peer => typeof peer === 'string' ? peer : peer.alias ? peer.alias : peer.pub_key),
@@ -107,10 +107,10 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.transTypeValue = '';
     this.channelConnectionError = '';
     this.advancedTitle = 'Advanced Options';
-    this.form.resetForm();  
+    this.form.resetForm();
   }
 
-  onOpenChannel():boolean|void {
+  onOpenChannel(): boolean|void {
     if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || ((this.selTransType === '1' || this.selTransType === '2') && !this.transTypeValue))) { return true; }
     this.store.dispatch(new LNDActions.SaveNewChannel({
       selectedPeerPubkey: ((!this.peer || !this.peer.pub_key) ? this.selectedPubkey : this.peer.pub_key), fundingAmount: this.fundingAmount, private: this.isPrivate,

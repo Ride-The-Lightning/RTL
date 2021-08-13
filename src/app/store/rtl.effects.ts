@@ -49,7 +49,7 @@ export class RTLEffects implements OnDestroy {
     private snackBar: MatSnackBar,
     private router: Router) {}
 
-  closeAllDialogs = createEffect(() => 
+  closeAllDialogs = createEffect(() =>
     this.actions.pipe(
     ofType(RTLActions.CLOSE_ALL_DIALOGS),
     map((action: RTLActions.CloseAllDialogs) => {
@@ -57,8 +57,8 @@ export class RTLEffects implements OnDestroy {
     })),
     { dispatch: false }
   );
-  
-  openSnackBar = createEffect(() => 
+
+  openSnackBar = createEffect(() =>
     this.actions.pipe(
     ofType(RTLActions.OPEN_SNACK_BAR),
     map((action: RTLActions.OpenSnackBar) => {
@@ -71,7 +71,7 @@ export class RTLEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  openSpinner = createEffect(() => 
+  openSpinner = createEffect(() =>
     this.actions.pipe(
     ofType(RTLActions.OPEN_SPINNER),
     map((action: RTLActions.OpenSpinner) => {
@@ -82,13 +82,13 @@ export class RTLEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  closeSpinner = createEffect(() => 
+  closeSpinner = createEffect(() =>
     this.actions.pipe(
     ofType(RTLActions.CLOSE_SPINNER),
     map((action: RTLActions.CloseSpinner) => {
       if(action.payload !== UI_MESSAGES.NO_SPINNER) {
         try {
-          if (this.dialogRef && (this.dialogRef.componentInstance && this.dialogRef.componentInstance.data && this.dialogRef.componentInstance.data.titleMessage && this.dialogRef.componentInstance.data.titleMessage === action.payload)) { 
+          if (this.dialogRef && (this.dialogRef.componentInstance && this.dialogRef.componentInstance.data && this.dialogRef.componentInstance.data.titleMessage && this.dialogRef.componentInstance.data.titleMessage === action.payload)) {
             this.dialogRef.close();
           } else {
             this.dialog.openDialogs.forEach(localDialog => {
@@ -105,7 +105,7 @@ export class RTLEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  openAlert = createEffect(() => 
+  openAlert = createEffect(() =>
     this.actions.pipe(
     ofType(RTLActions.OPEN_ALERT),
     map((action: RTLActions.OpenAlert) => {
@@ -119,7 +119,7 @@ export class RTLEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  closeAlert = createEffect(() => 
+  closeAlert = createEffect(() =>
     this.actions.pipe(
     ofType(RTLActions.CLOSE_ALERT),
     map((action: RTLActions.CloseAlert) => {
@@ -129,7 +129,7 @@ export class RTLEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  openConfirm = createEffect(() => 
+  openConfirm = createEffect(() =>
     this.actions.pipe(
     ofType(RTLActions.OPEN_CONFIRMATION),
     map((action: RTLActions.OpenConfirmation) => {
@@ -139,7 +139,7 @@ export class RTLEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  closeConfirm = createEffect(() => 
+  closeConfirm = createEffect(() =>
     this.actions.pipe(
     ofType(RTLActions.CLOSE_CONFIRMATION),
     take(1),
@@ -151,7 +151,7 @@ export class RTLEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  showNodePubkey = createEffect(() => 
+  showNodePubkey = createEffect(() =>
     this.actions.pipe(
     ofType(RTLActions.SHOW_PUBKEY),
     withLatestFrom(this.store.select('root')),
@@ -168,9 +168,7 @@ export class RTLEffects implements OnDestroy {
     }))
   );
 
-
-
-  appConfigFetch = createEffect(() => 
+  appConfigFetch = createEffect(() =>
     this.actions.pipe(
     ofType(RTLActions.FETCH_RTL_CONFIG),
     mergeMap((action: RTLActions.FetchRTLConfig) => {
@@ -199,7 +197,7 @@ export class RTLEffects implements OnDestroy {
         if(+node.index === rtlConfig.selectedNodeIndex) { searchNode = node; }
       });
       if(searchNode) {
-        this.store.dispatch(new RTLActions.SetSelelectedNode({uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: searchNode, isInitialSetup: true}))
+        this.store.dispatch(new RTLActions.SetSelelectedNode({uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: searchNode, isInitialSetup: true}));
         return {
           type: RTLActions.SET_RTL_CONFIG,
           payload: rtlConfig
@@ -207,7 +205,7 @@ export class RTLEffects implements OnDestroy {
       } else {
         return {
           type: RTLActions.VOID
-        }
+        };
       }
     }),
     catchError((err) => {
@@ -226,11 +224,11 @@ export class RTLEffects implements OnDestroy {
         if (action.payload.settings && action.payload.defaultNodeIndex) {
           let settingsRes = this.httpClient.post<Settings>(environment.CONF_API, { updatedSettings: action.payload.settings });
           let defaultNodeRes = this.httpClient.post(environment.CONF_API + '/updateDefaultNode', { defaultNodeIndex: action.payload.defaultNodeIndex });
-          updateSettingReq = forkJoin([settingsRes, defaultNodeRes])
+          updateSettingReq = forkJoin([settingsRes, defaultNodeRes]);
         } else if (action.payload.settings && !action.payload.defaultNodeIndex) {
-          updateSettingReq = this.httpClient.post(environment.CONF_API, { updatedSettings: action.payload.settings })
+          updateSettingReq = this.httpClient.post(environment.CONF_API, { updatedSettings: action.payload.settings });
         } else if (!action.payload.settings && action.payload.defaultNodeIndex) {
-          updateSettingReq = this.httpClient.post(environment.CONF_API + '/updateDefaultNode', { defaultNodeIndex: action.payload.defaultNodeIndex })
+          updateSettingReq = this.httpClient.post(environment.CONF_API + '/updateDefaultNode', { defaultNodeIndex: action.payload.defaultNodeIndex });
         }
         return updateSettingReq
           .pipe(map((updateStatus: any) => {
@@ -272,7 +270,7 @@ export class RTLEffects implements OnDestroy {
       }))
   );
 
-  twoFASettingSave = createEffect(() => 
+  twoFASettingSave = createEffect(() =>
     this.actions.pipe(
     ofType(RTLActions.TWO_FA_SAVE_SETTINGS),
     mergeMap((action: RTLActions.TwoFASaveSettings) => {
@@ -292,7 +290,7 @@ export class RTLEffects implements OnDestroy {
     }))
   );
 
-  configFetch = createEffect(() => 
+  configFetch = createEffect(() =>
     this.actions.pipe(
     ofType(RTLActions.FETCH_CONFIG),
     mergeMap((action: RTLActions.FetchConfig) => {
@@ -315,8 +313,8 @@ export class RTLEffects implements OnDestroy {
       ));
     }))
   );
-  
-  showLnConfig = createEffect(() => 
+
+  showLnConfig = createEffect(() =>
     this.actions.pipe(
     ofType(RTLActions.SHOW_CONFIG),
     map((action: RTLActions.ShowConfig) => {
@@ -325,15 +323,15 @@ export class RTLEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  isAuthorized = createEffect(() => 
+  isAuthorized = createEffect(() =>
     this.actions.pipe(
     ofType(RTLActions.IS_AUTHORIZED),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [RTLActions.IsAuthorized, any]) => {
     this.store.dispatch(new RTLActions.UpdateAPICallStatus({action: 'IsAuthorized', status: APICallStatusEnum.INITIATED}));
-    return this.httpClient.post(environment.AUTHENTICATE_API, { 
+    return this.httpClient.post(environment.AUTHENTICATE_API, {
       authenticateWith: (!action.payload || action.payload.trim() === '') ? AuthenticateWith.JWT : AuthenticateWith.PASSWORD,
-      authenticationValue: (!action.payload || action.payload.trim() === '') ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload 
+      authenticationValue: (!action.payload || action.payload.trim() === '') ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload
     })
     .pipe(
       map((postRes: any) => {
@@ -354,8 +352,8 @@ export class RTLEffects implements OnDestroy {
       }));
     }))
   );
-  
-  isAuthorizedRes = createEffect(() => 
+
+  isAuthorizedRes = createEffect(() =>
     this.actions.pipe(
     ofType(RTLActions.IS_AUTHORIZED_RES),
     map((action: RTLActions.IsAuthorizedRes) => {
@@ -364,7 +362,7 @@ export class RTLEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  authLogin = createEffect(() => 
+  authLogin = createEffect(() =>
     this.actions.pipe(
     ofType(RTLActions.LOGIN),
     withLatestFrom(this.store.select('root')),
@@ -373,7 +371,7 @@ export class RTLEffects implements OnDestroy {
       this.store.dispatch(new CLActions.ResetCLStore({}));
       this.store.dispatch(new ECLActions.ResetECLStore({}));
       this.store.dispatch(new RTLActions.UpdateAPICallStatus({action: 'Login', status: APICallStatusEnum.INITIATED}));
-      return this.httpClient.post(environment.AUTHENTICATE_API, { 
+      return this.httpClient.post(environment.AUTHENTICATE_API, {
         authenticateWith: (!action.payload.password) ? AuthenticateWith.JWT : AuthenticateWith.PASSWORD,
         authenticationValue: (!action.payload.password) ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload.password,
         twoFAToken: (action.payload.twoFAToken) ? action.payload.twoFAToken : ''
@@ -402,8 +400,8 @@ export class RTLEffects implements OnDestroy {
     })),
     { dispatch: false }
   );
-  
-  tokenVerify = createEffect(() => 
+
+  tokenVerify = createEffect(() =>
     this.actions.pipe(
     ofType(RTLActions.VERIFY_TWO_FA),
     withLatestFrom(this.store.select('root')),
@@ -417,7 +415,7 @@ export class RTLEffects implements OnDestroy {
           this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.VERIFY_TOKEN));
           this.store.dispatch(new RTLActions.UpdateAPICallStatus({action: 'VerifyToken', status: APICallStatusEnum.COMPLETED}));
           this.logger.info('Token Successfully Verified!');
-          this.setLoggedInDetails(false, action.payload.authResponse, rootStore);        
+          this.setLoggedInDetails(false, action.payload.authResponse, rootStore);
         }),
         catchError((err) => {
           this.handleErrorWithAlert('VerifyToken', UI_MESSAGES.VERIFY_TOKEN, 'Authorization Failed!', environment.AUTHENTICATE_API + '/token', err);
@@ -427,8 +425,8 @@ export class RTLEffects implements OnDestroy {
     })),
     { dispatch: false }
   );
-  
-  logOut = createEffect(() => 
+
+  logOut = createEffect(() =>
     this.actions.pipe(
     ofType(RTLActions.LOGOUT),
     withLatestFrom(this.store.select('root')),
@@ -472,7 +470,7 @@ export class RTLEffects implements OnDestroy {
     }))
   );
 
-  setSelectedNode = createEffect(() => 
+  setSelectedNode = createEffect(() =>
     this.actions.pipe(
     ofType(RTLActions.SET_SELECTED_NODE),
     mergeMap((action: RTLActions.SetSelelectedNode) => {
@@ -499,7 +497,7 @@ export class RTLEffects implements OnDestroy {
     }))
   );
 
-  fetchFile = createEffect(() => 
+  fetchFile = createEffect(() =>
     this.actions.pipe(
     ofType(RTLActions.FETCH_FILE),
     mergeMap((action: RTLActions.FetchFile) => {
@@ -523,8 +521,8 @@ export class RTLEffects implements OnDestroy {
       ));
     }))
   );
-  
-  showFile = createEffect(() => 
+
+  showFile = createEffect(() =>
     this.actions.pipe(
     ofType(RTLActions.SHOW_FILE),
     map((action: RTLActions.ShowFile) => {
@@ -559,14 +557,14 @@ export class RTLEffects implements OnDestroy {
         case 'ECL':
           this.store.dispatch(new ECLActions.FetchInfo({loadPage: landingPage}));
           break;
-            
+
         default:
           this.store.dispatch(new LNDActions.FetchInfo({loadPage: landingPage}));
           break;
       }
     }
   }
- 
+
  SetToken(token: string) {
     if (token) {
       this.sessionService.setItem('lndUnlocked', 'true');

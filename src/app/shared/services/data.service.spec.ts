@@ -14,12 +14,12 @@ describe('DataService', () => {
   let logger: LoggerService;
   let snackbar: MatSnackBar;
   let titleCasePipe: TitleCasePipe;
-  
+
   beforeEach(() => {
     httpClientSpy = jasmine.createSpyObj('HttpClient', ['get', 'post']);
     dataService = new DataService(httpClientSpy as any, store, logger, snackbar, titleCasePipe);
   });
-  
+
   it('should return expected rates (HttpClient called once)', (done: DoneFn) => {
     httpClientSpy.get.and.returnValue(of(mockResponseData.fiatRates));
     dataService.getFiatRates()
@@ -32,7 +32,7 @@ describe('DataService', () => {
     });
     expect(httpClientSpy.get.calls.count()).toBe(1);
   });
-  
+
   it('should return an error when the server returns a 401', (done: DoneFn) => {
     httpClientSpy.get.and.returnValue(throwError(() => mockResponseData.error401));
     dataService.getFiatRates().subscribe({

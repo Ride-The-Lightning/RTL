@@ -21,7 +21,7 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
 export class CLNetworkInfoComponent implements OnInit, OnDestroy {
   public faBolt = faBolt;
   public faServer = faServer;
-  public faNetworkWired = faNetworkWired;  
+  public faNetworkWired = faNetworkWired;
   public selNode: SelNodeChild = {};
   public information: GetInfo = {};
   public fees: Fees;
@@ -35,7 +35,7 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
   public userPersonaEnum = UserPersonaEnum;
   public errorMessages = ['', '', '', '', '', '', ''];
   public apisCallStatus: ApiCallsListCL = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
@@ -101,7 +101,7 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
       this.fees.totalTxCount = 0;
 
       if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length) {
-        this.fees.totalTxCount = rtlStore.forwardingHistory.forwarding_events.filter(event => event.status === 'settled').length
+        this.fees.totalTxCount = rtlStore.forwardingHistory.forwarding_events.filter(event => event.status === 'settled').length;
       }
 
       this.channelsStatus = {

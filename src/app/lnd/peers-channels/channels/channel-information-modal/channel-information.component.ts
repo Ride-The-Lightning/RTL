@@ -37,7 +37,7 @@ export class ChannelInformationComponent implements OnInit {
 
   onShowAdvanced() {
     this.showAdvanced = !this.showAdvanced;
-  }  
+  }
 
   onCopyChanID(payload: string) {
     this.snackBar.open('Channel ID ' + payload + ' copied.');

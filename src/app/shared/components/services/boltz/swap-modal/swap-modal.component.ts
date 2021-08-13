@@ -28,7 +28,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faInfoCircle = faInfoCircle;
-  public serviceInfo: ServiceInfo = {fees: {'percentage': null, 'miner': {'normal': null, 'reverse': null}}, 'limits': {'minimal': 10000, 'maximal': 50000000 }};
+  public serviceInfo: ServiceInfo = {fees: {percentage: null, miner: {normal: null, reverse: null}}, limits: {minimal: 10000, maximal: 50000000 }};
   public swapTypeEnum = SwapTypeEnum;
   public direction = SwapTypeEnum.SWAP_OUT;
   public swapDirectionCaption = 'Swap out';
@@ -43,7 +43,7 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
   public flgEditable = true;
   inputFormGroup: FormGroup;
   addressFormGroup: FormGroup;
-  statusFormGroup: FormGroup;  
+  statusFormGroup: FormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<SwapModalComponent>, @Inject(MAT_DIALOG_DATA) public data: SwapAlert, private store: Store<fromRTLReducer.RTLState>, private boltzService: BoltzService, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe, private logger: LoggerService, private router: Router, private commonService: CommonService) { }
@@ -53,7 +53,7 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.serviceInfo = this.data.serviceInfo;
     this.direction = this.data.direction;
     this.swapDirectionCaption = this.direction === SwapTypeEnum.SWAP_OUT ? 'Swap Out' : 'Swap in';
-    this.inputFormLabel = 'Amount to ' + this.swapDirectionCaption;    
+    this.inputFormLabel = 'Amount to ' + this.swapDirectionCaption;
     this.inputFormGroup = this.formBuilder.group({
       amount: [this.serviceInfo.limits.minimal, [Validators.required, Validators.min(this.serviceInfo.limits.minimal), Validators.max(this.serviceInfo.limits.maximal)]]});
     this.addressFormGroup = this.formBuilder.group({
@@ -66,14 +66,14 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     if (this.direction === SwapTypeEnum.SWAP_OUT) {
-      this.addressFormGroup.setErrors({'Invalid': true});
+      this.addressFormGroup.setErrors({Invalid: true});
     }
   }
 
   onFormValueChanges() {
     if (this.direction === SwapTypeEnum.SWAP_OUT) {
       this.addressFormGroup.valueChanges.pipe(takeUntil(this.unSubs[2])).subscribe(changedValues => {
-        this.addressFormGroup.setErrors({'Invalid': true});
+        this.addressFormGroup.setErrors({Invalid: true});
       });
     }
   }
@@ -89,11 +89,13 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
       this.addressFormGroup.controls.address.disable();
       this.addressFormGroup.controls.address.setValue('');
     }
-    this.addressFormGroup.setErrors({'Invalid': true});
+    this.addressFormGroup.setErrors({Invalid: true});
   }
 
-  onSwap():boolean|void {
-    if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < +this.serviceInfo.limits.minimal || this.inputFormGroup.controls.amount.value > +this.serviceInfo.limits.maximal || (this.direction === SwapTypeEnum.SWAP_OUT && this.addressFormGroup.controls.addressType.value === 'external' && (!this.addressFormGroup.controls.address.value || this.addressFormGroup.controls.address.value.trim() === ''))) { return true; }
+  onSwap(): boolean|void {
+    if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < +this.serviceInfo.limits.minimal || this.inputFormGroup.controls.amount.value > +this.serviceInfo.limits.maximal ||
+      (this.direction === SwapTypeEnum.SWAP_OUT && this.addressFormGroup.controls.addressType.value === 'external' &&
+      (!this.addressFormGroup.controls.address.value || this.addressFormGroup.controls.address.value.trim() === ''))) { return true; }
     this.flgEditable = false;
     this.stepper.selected.stepControl.setErrors(null);
     this.stepper.next();
@@ -104,7 +106,7 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
           this.swapStatus = swapStatus;
           this.boltzService.listSwaps();
           this.flgEditable = true;
-        }, 
+        },
         error: (err) => {
           this.swapStatus = { error: err };
           this.flgEditable = true;
@@ -135,7 +137,7 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
         this.inputFormLabel = 'Amount to ' + this.swapDirectionCaption;
         this.addressFormLabel = 'Withdrawal Address';
         break;
-    
+
       case 1:
         if (this.inputFormGroup.controls.amount.value) {
           if (this.direction === SwapTypeEnum.SWAP_IN) {
@@ -151,10 +153,10 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
       default:
         this.inputFormLabel = 'Amount to ' + this.swapDirectionCaption;
-        this.addressFormLabel = 'Withdrawal Address';        
+        this.addressFormLabel = 'Withdrawal Address';
         break;
     }
-    if (event.selectedIndex < event.previouslySelectedIndex) { event.selectedStep.stepControl.setErrors({'Invalid': true}); }
+    if (event.selectedIndex < event.previouslySelectedIndex) { event.selectedStep.stepControl.setErrors({Invalid: true}); }
   }
 
   onClose() {

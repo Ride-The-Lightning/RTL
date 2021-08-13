@@ -36,7 +36,7 @@ export class ECLChannelInformationComponent implements OnInit {
 
   onShowAdvanced() {
     this.showAdvanced = !this.showAdvanced;
-  }  
+  }
 
   onCopyChanID(payload: string) {
     this.snackBar.open((this.channelsType === 'open') ? ('Short channel ID ' + payload + ' copied.') : 'Channel ID copied.');

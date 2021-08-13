@@ -14,9 +14,9 @@ export class ChannelCapacityInfoComponent {
   public faDumbbell = faDumbbell;
   @Input() channelBalances: {localBalance: number, remoteBalance: number, balancedness: number};
   @Input() allChannels: Channel[];
-  @Input() sortBy: string = 'Balance Score';
+  @Input() sortBy = 'Balance Score';
   @Input() errorMessage: string;
-  
+
   constructor(private router: Router) {}
 
   goToChannels() {

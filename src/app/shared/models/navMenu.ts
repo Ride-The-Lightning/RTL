@@ -37,7 +37,7 @@ export const MENU_DATA: MenuRootNode = {
       {id: 38, parentId: 3, name: 'Node/Fee Rates', iconType: 'FA', icon: faServer, link: '/cl/rates', userPersona: UserPersonaEnum.MERCHANT}
       ]},
     {id: 4, parentId: 0, name: 'Node Config', iconType: 'FA', icon: faTools, link: '/config', userPersona: UserPersonaEnum.ALL},
-    {id: 5, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help', userPersona: UserPersonaEnum.ALL}    
+    {id: 5, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help', userPersona: UserPersonaEnum.ALL}
   ],
   ECLChildren: [
     {id: 1, parentId: 0, name: 'Dashboard', iconType: 'FA', icon: faTachometerAlt, link: '/ecl/home', userPersona: UserPersonaEnum.ALL},
@@ -50,7 +50,7 @@ export const MENU_DATA: MenuRootNode = {
       {id: 35, parentId: 3, name: 'Graph Lookup', iconType: 'FA', icon: faSearch, link: '/ecl/lookups', userPersona: UserPersonaEnum.ALL}
       ]},
     {id: 4, parentId: 0, name: 'Node Config', iconType: 'FA', icon: faTools, link: '/config', userPersona: UserPersonaEnum.ALL},
-    {id: 5, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help', userPersona: UserPersonaEnum.ALL}    
+    {id: 5, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help', userPersona: UserPersonaEnum.ALL}
   ]
 };
 

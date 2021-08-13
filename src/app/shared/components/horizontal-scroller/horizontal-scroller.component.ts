@@ -22,8 +22,8 @@ export class HorizontalScrollerComponent {
   public disableNext = true;
   public animationDirection = '';
   public selectedValue = this.last;
-  @Output() stepChanged = new EventEmitter<{selDate:Date, selScrollRange:string}>();
-  
+  @Output() readonly stepChanged = new EventEmitter<{selDate: Date, selScrollRange: string}>();
+
   constructor(private logger: LoggerService) {}
 
   onRangeChanged(event: any) {
@@ -53,7 +53,7 @@ export class HorizontalScrollerComponent {
           this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
         }
         break;
-    
+
       case 'PREVIOUS':
         if (this.selScrollRange === SCROLL_RANGES[1]) {
           this.selectedValue = new Date(this.selectedValue.getFullYear() - 1, 0, 1, 0, 0, 0);

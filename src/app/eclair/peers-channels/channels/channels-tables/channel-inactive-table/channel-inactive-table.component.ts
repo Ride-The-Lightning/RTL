@@ -25,7 +25,7 @@ import { ApiCallsListECL } from '../../../../../shared/models/apiCallsPayload';
   styleUrls: ['./channel-inactive-table.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Channels') }
-  ]  
+  ]
 })
 export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
@@ -48,7 +48,7 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListECL = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
@@ -96,7 +96,7 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
     const alertTitle = (forceClose) ? 'Force Close Channel' : 'Close Channel';
     const titleMessage = (forceClose) ? ('Force closing channel: ' + channelToClose.channelId) : ('Closing channel: ' + channelToClose.channelId);
     const yesBtnText = (forceClose) ? 'Force Close' : 'Close Channel';
-    this.store.dispatch(new RTLActions.OpenConfirmation({ data: { 
+    this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
       type: AlertTypeEnum.CONFIRM,
       alertTitle: alertTitle,
       titleMessage: titleMessage,
@@ -117,7 +117,7 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
   }
 
   onChannelClick(selChannel: Channel, event: any) {
-      this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+      this.store.dispatch(new RTLActions.OpenAlert({ data: {
         channel: selChannel,
         channelsType: 'inactive',
         component: ECLChannelInformationComponent

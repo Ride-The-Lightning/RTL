@@ -15,7 +15,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class UTXOTablesComponent implements OnInit, OnDestroy {
   @Input() selectedTableIndex = 0;
-  @Output() selectedTableIndexChange = new EventEmitter<number>();
+  @Output() readonly selectedTableIndexChange = new EventEmitter<number>();
   public numTransactions = 0;
   public numUtxos = 0;
   public numDustUtxos = 0;

@@ -22,9 +22,9 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild('queryRoutesForm', { static: true }) form: any;  
+  @ViewChild('queryRoutesForm', { static: true }) form: any;
   public nodeId = '';
-  public amount:number = 0;
+  public amount = 0;
   public qrHops: any;
   public flgSticky = false;
   public displayedColumns: any[] = [];
@@ -70,7 +70,7 @@ export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
     });
   }
 
-  onQueryRoutes():boolean|void {
+  onQueryRoutes(): boolean|void {
     if(!this.nodeId || !this.amount) { return true; }
     this.qrHops.data = [];
     this.flgLoading[0] = true;

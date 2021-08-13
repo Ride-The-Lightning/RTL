@@ -31,12 +31,12 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   animations: [newlyAddedRowAnimation],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Invoices') }
-  ]  
+  ]
 })
 export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() calledFrom = 'transactions'; // transactions/home
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;  
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   faHistory = faHistory;
   public selNode: SelNodeChild = {};
   public newlyAddedInvoiceMemo = '';
@@ -49,7 +49,7 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
   public displayedColumns: any[] = [];
   public invoicePaymentReq = '';
   public invoices: any;
-  public invoiceJSONArr: Invoice[] = [];  
+  public invoiceJSONArr: Invoice[] = [];
   public information: GetInfo = {};
   public flgSticky = false;
   public private = false;
@@ -60,7 +60,7 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListCL = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private rtlEffects: RTLEffects, private datePipe: DatePipe) {
@@ -107,14 +107,14 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
   }
 
   openCreateInvoiceModal() {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       pageSize: this.pageSize,
       component: CLCreateInvoiceComponent
     }}));
   }
 
   onAddInvoice(form: any) {
-    if(!this.invoiceValue) { this.invoiceValue = 0; }     
+    if(!this.invoiceValue) { this.invoiceValue = 0; }
     let expiryInSecs = (this.expiry ? this.expiry : 3600);
     this.flgAnimate = true;
     this.newlyAddedInvoiceMemo = 'ulbl' + Math.random().toString(36).slice(2) + Date.now();
@@ -135,7 +135,7 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
       if (confirmRes) {
         this.store.dispatch(new CLActions.DeleteExpiredInvoice());
       }
-    });    
+    });
   }
 
   onInvoiceClick(selInvoice: Invoice, event: any) {
@@ -150,7 +150,7 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
       status: selInvoice.status,
       msatoshi_received: selInvoice.msatoshi_received
     };
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
         invoice: reCreatedInvoice,
         newlyAdded: false,
         component: CLInvoiceInformationComponent
@@ -188,9 +188,9 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
     this.invoices.sort = this.sort;
     this.invoices.filterPredicate = (rowData: Invoice, fltr: string) => {
       const newRowData = ((rowData.paid_at) ? this.datePipe.transform(new Date(rowData.paid_at*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + ((rowData.expires_at) ? this.datePipe.transform(new Date(rowData.expires_at*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
-      return newRowData.includes(fltr);   
+      return newRowData.includes(fltr);
     };
-    this.invoices.paginator = this.paginator;    
+    this.invoices.paginator = this.paginator;
   }
 
   onDownloadCSV() {

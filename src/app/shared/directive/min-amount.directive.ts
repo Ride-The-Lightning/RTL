@@ -6,7 +6,7 @@ import { NG_VALIDATORS, Validator, Validators, AbstractControl } from '@angular/
   providers: [{provide: NG_VALIDATORS, useExisting: MinValidator, multi: true}]
 })
 export class MinValidator implements Validator {
-  @Input() min:number;
+  @Input() min: number;
 
   validate(control: AbstractControl): any {
     return this.min ? Validators.min(+this.min)(control) : null;

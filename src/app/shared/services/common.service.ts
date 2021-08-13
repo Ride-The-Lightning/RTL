@@ -50,7 +50,7 @@ export class CommonService {
   }
 
   sortDescByKey(array, key) {
-    return array.sort(function (a, b) {
+    return array.sort(function(a, b) {
       const x = +a[key];
       const y = +b[key];
       return ((x > y) ? -1 : ((x < y) ? 1 : 0));
@@ -58,7 +58,7 @@ export class CommonService {
   }
 
   sortAscByKey(array, key) {
-    return array.sort(function (a, b) {
+    return array.sort(function(a, b) {
       const x = +a[key];
       const y = +b[key];
       return ((x < y) ? -1 : ((x > y) ? 1 : 0));
@@ -66,14 +66,14 @@ export class CommonService {
   }
 
   camelCase(str) {
-    return str.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => { 
-        return index == 0 ? word.toLowerCase() : word.toUpperCase(); 
+    return str.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => {
+        return index == 0 ? word.toLowerCase() : word.toUpperCase();
     }).replace(/\s+/g, '');
-  } 
+  }
 
   titleCase(str) {
     return str.charAt(0).toUpperCase() + str.substring(1).toLowerCase();
-  } 
+  }
 
   convertCurrency(value: number, from: string, to: string, otherCurrencyUnit: string, fiatConversion: boolean): Observable<any> {
     let latest_date = new Date().valueOf();
@@ -243,7 +243,7 @@ export class CommonService {
     objArray.forEach((obj, i) => {
       for(var key in obj) {
         if (keys.findIndex(keyEle => keyEle === key) < 0) {
-          keys.push(key); 
+          keys.push(key);
         }
       }
     });
@@ -252,7 +252,7 @@ export class CommonService {
     objArray.forEach(obj => {
       dataRow = '';
       keys.forEach(key => {
-        if (obj.hasOwnProperty(key)) { 
+        if (obj.hasOwnProperty(key)) {
           if (Array.isArray(obj[key])) {
             arrayField = '';
             obj[key].forEach((arrEl, i) => {
@@ -265,13 +265,13 @@ export class CommonService {
             dataRow += arrayField + ',';
           } else {
             if(typeof obj[key] === 'object') {
-              dataRow += JSON.stringify(obj[key]).replace(/\,/g, ';') + ','; 
+              dataRow += JSON.stringify(obj[key]).replace(/\,/g, ';') + ',';
             } else {
-              dataRow += obj[key] + ','; 
+              dataRow += obj[key] + ',';
             }
           }
         } else {
-          dataRow += ','; 
+          dataRow += ',';
         }
       });
       csvStrArray += dataRow.slice(0, -1) + '\r\n';
@@ -289,34 +289,34 @@ export class CommonService {
 
   extractErrorMessage(err: any, genericErrorMessage: string = 'Unknown Error.') {
     const msg = this.titleCase(
-      (err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error : 
-      (err.error && err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : 
-      (err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : 
-      (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error : 
-      (err.error && typeof err.error === 'string') ? err.error : 
-      (err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : 
-      (err.error && err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : 
-      (err.error && err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : 
-      (err.error && err.error.message && typeof err.error.message === 'string') ? err.error.message : 
+      (err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error :
+      (err.error && err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error :
+      (err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error :
+      (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error :
+      (err.error && typeof err.error === 'string') ? err.error :
+      (err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message :
+      (err.error && err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message :
+      (err.error && err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message :
+      (err.error && err.error.message && typeof err.error.message === 'string') ? err.error.message :
       (err.message && typeof err.message === 'string') ? err.message : genericErrorMessage);
     this.logger.info('Error Message: ' + msg);
     return msg;
   }
 
   extractErrorCode(err: any, genericErrorCode: number = 500) {
-    const code = (err.error && err.error.error && err.error.error.message && err.error.error.message.code) ? err.error.error.message.code : 
-      (err.error && err.error.error && err.error.error.code) ? err.error.error.code : 
-      (err.error && err.error.code) ? err.error.code : 
-      err.code ? err.code : 
+    const code = (err.error && err.error.error && err.error.error.message && err.error.error.message.code) ? err.error.error.message.code :
+      (err.error && err.error.error && err.error.error.code) ? err.error.error.code :
+      (err.error && err.error.code) ? err.error.code :
+      err.code ? err.code :
       err.status ? err.status : genericErrorCode;
     this.logger.info('Error Code: ' + code);
     return code;
   }
 
   extractErrorNumber(err: any, genericErrorNumber: number = 500) {
-    const errNum = (err.error && err.error.error && err.error.error.errno) ? err.error.error.errno : 
-    (err.error && err.error.errno) ? err.error.errno : 
-    err.errno ? err.errno : 
+    const errNum = (err.error && err.error.error && err.error.error.errno) ? err.error.error.errno :
+    (err.error && err.error.errno) ? err.error.errno :
+    err.errno ? err.errno :
     err.status ? err.status : genericErrorNumber;
     this.logger.info('Error Number: ' + errNum);
     return errNum;

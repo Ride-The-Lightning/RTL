@@ -38,7 +38,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListECL = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe) {
@@ -71,7 +71,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
         this.eventsData = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
         if (this.eventsData.length > 0 && this.sort && this.paginator) {
           this.loadForwardingEventsTable(this.eventsData);
-        }        
+        }
         this.logger.info(this.eventsData);
       }
     });
@@ -123,14 +123,14 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
       switch (sortHeaderId) {
         case 'fee':
           return data.amountIn - data.amountOut;
-      
+
         default:
           return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
-    }
+    };
     this.forwardingHistoryEvents.filterPredicate = (rowData: PaymentRelayed, fltr: string) => {
       const newRowData = ((rowData.timestamp) ? this.datePipe.transform(new Date(rowData.timestamp), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
-      return newRowData.includes(fltr);   
+      return newRowData.includes(fltr);
     };
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.logger.info(this.forwardingHistoryEvents);

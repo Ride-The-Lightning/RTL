@@ -44,7 +44,7 @@ export class ServicesComponent implements OnInit, OnDestroy{
         case 'CLT':
           this.lnImplementationStr = 'C-Lightning Config';
           break;
-      
+
         case 'ECL':
           this.lnImplementationStr = 'Eclair Config';
           break;

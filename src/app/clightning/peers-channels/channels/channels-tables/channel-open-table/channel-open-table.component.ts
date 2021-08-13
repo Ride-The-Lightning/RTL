@@ -27,7 +27,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   styleUrls: ['./channel-open-table.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Channels') }
-  ]  
+  ]
 })
 export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
@@ -50,7 +50,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListCL = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects, private commonService: CommonService) {
@@ -95,12 +95,12 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
       this.loadChannelsTable(this.channelsData);
     }
   }
-  
+
   onViewRemotePolicy(selChannel: Channel) {
     this.store.dispatch(new CLActions.ChannelLookup({uiMessage: UI_MESSAGES.GET_REMOTE_POLICY, shortChannelID: selChannel.short_channel_id, showError: true}));
     this.clEffects.setLookupCL
     .pipe(take(1))
-    .subscribe((resLookup: ChannelEdge[]):boolean|void => {
+    .subscribe((resLookup: ChannelEdge[]): boolean|void => {
       if(resLookup.length === 0) { return false; }
       let remoteNode: ChannelEdge = {};
       if(resLookup[0].source !== this.information.id) {
@@ -112,8 +112,8 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
         [{key: 'base_fee_millisatoshi', value: remoteNode.base_fee_millisatoshi, title: 'Base Fees (mSats)', width: 34, type: DataTypeEnum.NUMBER},
           {key: 'fee_per_millionth', value: remoteNode.fee_per_millionth, title: 'Fee/Millionth', width: 33, type: DataTypeEnum.NUMBER},
           {key: 'delay', value: remoteNode.delay, title: 'Delay', width: 33, type: DataTypeEnum.NUMBER}]
-      ];      
-      this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+      ];
+      this.store.dispatch(new RTLActions.OpenAlert({ data: {
         type: AlertTypeEnum.INFORMATION,
         alertTitle: 'Remote Channel Policy',
         message: reorderedChannelPolicy
@@ -198,7 +198,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   onChannelClose(channelToClose: Channel) {
-    this.store.dispatch(new RTLActions.OpenConfirmation({ data: { 
+    this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
       type: AlertTypeEnum.CONFIRM,
       alertTitle: 'Close Channel',
       titleMessage: 'Closing channel: ' + channelToClose.channel_id,
@@ -219,7 +219,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   onChannelClick(selChannel: Channel, event: any) {
-      this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+      this.store.dispatch(new RTLActions.OpenAlert({ data: {
         channel: selChannel,
         showCopy: true,
         component: CLChannelInformationComponent

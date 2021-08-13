@@ -15,7 +15,7 @@ describe('CLChannelInformationComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [CLChannelInformationComponent],
-      imports: [ 
+      imports: [
         SharedModule
       ],
       providers: [

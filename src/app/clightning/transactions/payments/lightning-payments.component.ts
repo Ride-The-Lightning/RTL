@@ -31,7 +31,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   animations: [newlyAddedRowAnimation],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Payments') }
-  ]  
+  ]
 })
 export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() calledFrom = 'transactions'; // transactions/home
@@ -57,7 +57,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListCL = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects, private decimalPipe: DecimalPipe, private titleCasePipe: TitleCasePipe, private datePipe: DatePipe) {
@@ -107,12 +107,12 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
     }
   }
 
-  is_group(index: number, payment: Payment):boolean {
+  is_group(index: number, payment: Payment): boolean {
     return payment.is_group;
   }
 
-  onSendPayment():boolean|void {
-    if(!this.paymentRequest) { return true; } 
+  onSendPayment(): boolean|void {
+    if(!this.paymentRequest) { return true; }
     if (this.paymentDecoded.created_at) {
       this.sendPayment();
     } else {
@@ -223,7 +223,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   }
 
   openSendPaymentModal() {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       component: CLLightningSendPaymentsComponent
     }}));
   }
@@ -274,7 +274,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
     this.payments.filterPredicate = (payment: Payment, fltr: string) => JSON.stringify(payment).toLowerCase().includes(fltr);
     this.payments.filterPredicate = (rowData: Payment, fltr: string) => {
       const newRowData = ((rowData.created_at) ? this.datePipe.transform(new Date(rowData.created_at*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
-      return newRowData.includes(fltr);   
+      return newRowData.includes(fltr);
     };
     this.payments.paginator = this.paginator;
   }

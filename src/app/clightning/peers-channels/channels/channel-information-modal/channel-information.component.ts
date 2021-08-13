@@ -37,7 +37,7 @@ export class CLChannelInformationComponent implements OnInit {
 
   onShowAdvanced() {
     this.showAdvanced = !this.showAdvanced;
-  }  
+  }
 
   onCopyChanID(payload: string) {
     this.snackBar.open('Short channel ID ' + payload + ' copied.');

@@ -26,7 +26,7 @@ export class ChannelsTablesComponent implements OnInit, OnDestroy {
   public totalBalance = 0;
   public links = [{link: 'open', name: 'Open'}, {link: 'pending', name: 'Pending'}, {link: 'closed', name: 'Closed'}, {link: 'activehtlcs', name: 'Active HTLCs'}];
   public activeLink = 0;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private router: Router) {}
 
@@ -59,11 +59,11 @@ export class ChannelsTablesComponent implements OnInit, OnDestroy {
 
   onOpenChannel() {
     const peerToAddChannelMessage = {
-      peers: this.peers, 
+      peers: this.peers,
       information: this.information,
       balance: this.totalBalance
     };
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       alertTitle: 'Open Channel',
       message: peerToAddChannelMessage,
       component: OpenChannelComponent

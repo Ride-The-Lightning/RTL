@@ -55,14 +55,14 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
     .subscribe((action: ECLActions.UpdateAPICallStatus | ECLActions.AddInvoice) => {
       if (action.type === ECLActions.ADD_INVOICE_ECL) {
         this.dialogRef.close();
-      }    
+      }
       if (action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'CreateInvoice') {
         this.invoiceError = action.payload.message;
       }
     });
   }
 
-  onAddInvoice(form: any):boolean|void {
+  onAddInvoice(form: any): boolean|void {
     this.invoiceError = '';
     if(!this.description) { return true; }
     let expiryInSecs = (this.expiry ? this.expiry : 3600);

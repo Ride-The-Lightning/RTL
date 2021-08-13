@@ -22,7 +22,7 @@ describe('AuthSettingsComponent', () => {
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        RouterTestingModule, 
+        RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
@@ -31,7 +31,7 @@ describe('AuthSettingsComponent', () => {
         }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
-      providers: [ 
+      providers: [
         SessionService,
         { provide: LoggerService, useClass: mockLoggerService }
       ]

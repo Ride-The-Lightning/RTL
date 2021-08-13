@@ -22,7 +22,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   styleUrls: ['./channel-active-htlcs-table.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('HTLCs') }
-  ]  
+  ]
 })
 export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
@@ -38,7 +38,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListLND = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
@@ -93,7 +93,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
   }
 
   onChannelClick(selChannel: Channel, event: any) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       channel: selChannel,
       showCopy: true,
       component: ChannelInformationComponent
@@ -112,7 +112,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
         case 'amount':
           this.commonService.sortByKey(data.pending_htlcs, sortHeaderId, 'number', this.sort.direction);
           return data.pending_htlcs && data.pending_htlcs.length ? data.pending_htlcs.length : null;
-      
+
         case 'incoming':
           this.commonService.sortByKey(data.pending_htlcs, sortHeaderId, 'boolean', this.sort.direction);
           return data.remote_alias ? data.remote_alias : data.remote_pubkey ? data.remote_pubkey : null;
@@ -131,10 +131,10 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
     };
     this.channels.paginator = this.paginator;
     this.channels.filterPredicate = (channel: Channel, fltr: string) => {
-      const newChannel = (channel.remote_alias ? channel.remote_alias.toLowerCase() : '') + 
+      const newChannel = (channel.remote_alias ? channel.remote_alias.toLowerCase() : '') +
         channel.pending_htlcs.map(htlc => JSON.stringify(htlc) + (htlc.incoming ? 'yes' : 'no'));
       return newChannel.includes(fltr);
-    };    
+    };
   }
 
   onDownloadCSV() {

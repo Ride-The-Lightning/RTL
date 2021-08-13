@@ -57,22 +57,22 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     this.actions.pipe(takeUntil(this.unSubs[1]),
     filter(action => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.SEND_PAYMENT_STATUS_LND))
     .subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.SendPaymentStatus) => {
-      if (action.type === LNDActions.SEND_PAYMENT_STATUS_LND) { 
+      if (action.type === LNDActions.SEND_PAYMENT_STATUS_LND) {
         this.dialogRef.close();
-      }    
+      }
       if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SendPayment') {
-        delete this.paymentDecoded.num_satoshis;          
+        delete this.paymentDecoded.num_satoshis;
         this.paymentError = action.payload.message;
       }
     });
   }
 
-  onSendPayment():boolean|void {
-    if(!this.paymentRequest || (this.zeroAmtInvoice && (!this.paymentAmount || this.paymentAmount <= 0))) { return true; } 
+  onSendPayment(): boolean|void {
+    if(!this.paymentRequest || (this.zeroAmtInvoice && (!this.paymentAmount || this.paymentAmount <= 0))) { return true; }
     if (this.paymentDecoded.timestamp) {
       this.sendPayment();
     } else {
-      this.onPaymentRequestEntry(this.paymentRequest)
+      this.onPaymentRequestEntry(this.paymentRequest);
     }
   }
 
@@ -132,7 +132,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
       }, error: err => {
         this.logger.error(err);
         this.paymentDecodedHint = 'ERROR: ' + err.message;
-        this.paymentReq.control.setErrors({'decodeError': true});
+        this.paymentReq.control.setErrors({decodeError: true});
       }});
     }
   }

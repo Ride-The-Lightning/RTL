@@ -19,7 +19,7 @@ describe('QueryRoutesComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [QueryRoutesComponent],
-      imports: [ 
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
@@ -31,7 +31,7 @@ describe('QueryRoutesComponent', () => {
       ],
       providers: [
         CommonService,
-        { provide: LoggerService, useClass: mockLoggerService }, 
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: LNDEffects, useClass: mockLNDEffects }
       ]

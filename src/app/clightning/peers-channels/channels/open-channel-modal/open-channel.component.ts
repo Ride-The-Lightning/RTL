@@ -32,7 +32,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
   public filteredPeers: Observable<Peer[]>;
   public utxos: UTXO[] = [];
   public selUTXOs = [];
-  public flgUseAllBalance = false;  
+  public flgUseAllBalance = false;
   public totalSelectedUTXOAmount = 0;
   public channelConnectionError = '';
   public advancedTitle = 'Advanced Options';
@@ -98,7 +98,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
       this.selectedPeer.setErrors({notfound: true});
     } else {
       this.selectedPeer.setErrors(null);
-    }  
+    }
   }
 
   onClose() {
@@ -114,7 +114,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
     this.isPrivate = false;
     this.channelConnectionError = '';
     this.advancedTitle = 'Advanced Options';
-    this.form.resetForm(); 
+    this.form.resetForm();
   }
 
   onAdvancedPanelToggle(isClosed: boolean) {
@@ -139,7 +139,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
   }
 
   onUTXOSelectionChange(event: any) {
-    let utxoNew = {value: 0}; 
+    let utxoNew = {value: 0};
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
       this.totalSelectedUTXOAmount = this.selUTXOs.reduce((a, b) => {utxoNew.value = a.value + b.value; return utxoNew;}).value;
       if (this.flgUseAllBalance) { this.onUTXOAllBalanceChange(); }
@@ -158,7 +158,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
     }
   }
 
-  onOpenChannel():boolean|void {
+  onOpenChannel(): boolean|void {
     if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || (this.flgMinConf && !this.minConfValue))) { return true; }
     let newChannel = { peerId: ((!this.peer || !this.peer.id) ? this.selectedPubkey : this.peer.id), satoshis: (this.flgUseAllBalance) ? 'all' : this.fundingAmount.toString(), announce: !this.isPrivate, feeRate: this.selFeeRate, minconf: this.flgMinConf ? this.minConfValue : null };
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {

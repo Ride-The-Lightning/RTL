@@ -33,7 +33,7 @@ export class BoltzService implements OnDestroy {
     this.httpClient.get(this.swapUrl)
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe({next: (swapResponse: ListSwaps) => {
-      this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_BOLTZ_SWAPS));      
+      this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_BOLTZ_SWAPS));
       this.swaps = swapResponse;
       this.swapsChanged.next(this.swaps);
     }, error: (err) => {

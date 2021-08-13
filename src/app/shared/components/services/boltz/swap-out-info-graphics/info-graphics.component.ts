@@ -8,12 +8,12 @@ import { CommonService } from '../../../../services/common.service';
   selector: 'rtl-boltz-swapout-info-graphics',
   templateUrl: './info-graphics.component.html',
   styleUrls: ['./info-graphics.component.scss'],
-  animations: [sliderAnimation]  
+  animations: [sliderAnimation]
 })
 export class SwapOutInfoGraphicsComponent implements OnInit {
   @Input() animationDirection = 'forward';
   @Input() stepNumber = 1;
-  @Output() stepNumberChange = new EventEmitter();
+  @Output() readonly stepNumberChange = new EventEmitter();
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
 

@@ -22,7 +22,7 @@ export class NetworkInfoComponent implements OnInit, OnDestroy {
   public faProjectDiagram = faProjectDiagram;
   public faBolt = faBolt;
   public faServer = faServer;
-  public faNetworkWired = faNetworkWired;  
+  public faNetworkWired = faNetworkWired;
   public selNode: SelNodeChild = {};
   public information: GetInfo = {};
   public fees: Fees;
@@ -35,7 +35,7 @@ export class NetworkInfoComponent implements OnInit, OnDestroy {
   public userPersonaEnum = UserPersonaEnum;
   public errorMessages = ['', '', '', '', ''];
   public apisCallStatus: ApiCallsListLND = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
@@ -95,7 +95,7 @@ export class NetworkInfoComponent implements OnInit, OnDestroy {
         active: { channels: rtlStore.numberOfActiveChannels, capacity: rtlStore.totalCapacityActive },
         inactive: { channels: rtlStore.numberOfInactiveChannels, capacity: rtlStore.totalCapacityInactive },
         pending: { channels:  rtlStore.numberOfPendingChannels.open.num_channels, capacity: rtlStore.numberOfPendingChannels.open.limbo_balance },
-        closing: { 
+        closing: {
           channels: rtlStore.numberOfPendingChannels.closing.num_channels + rtlStore.numberOfPendingChannels.force_closing.num_channels + rtlStore.numberOfPendingChannels.waiting_close.num_channels,
           capacity: rtlStore.numberOfPendingChannels.total_limbo_balance
         }

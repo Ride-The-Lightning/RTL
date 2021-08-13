@@ -8,7 +8,7 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 })
 export class NotFoundComponent {
   public faTimes = faTimes;
-  
+
   constructor(public router: Router) {}
 
   goToHelp(): void {

@@ -23,7 +23,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   styleUrls: ['./swaps.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Swaps') }
-  ]  
+  ]
 })
 export class SwapsComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() selectedSwapType: LoopTypeEnum = LoopTypeEnum.LOOP_OUT;
@@ -71,7 +71,7 @@ export class SwapsComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.swapCaption = (this.selectedSwapType === LoopTypeEnum.LOOP_IN) ? 'Loop In' : 'Loop Out';
     this.loadSwapsTable(this.swapsData);
   }
-    
+
   applyFilter(selFilter: any) {
     this.listSwaps.filter = selFilter.value.trim().toLowerCase();
   }

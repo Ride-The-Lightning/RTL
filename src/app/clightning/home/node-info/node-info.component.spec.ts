@@ -17,7 +17,7 @@ describe('CLNodeInfoComponent', () => {
     TestBed.configureTestingModule({
       declarations: [CLNodeInfoComponent],
       imports: [SharedModule],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
@@ -28,7 +28,7 @@ describe('CLNodeInfoComponent', () => {
 
   beforeEach(() => {
     fixture = TestBed.createComponent(CLNodeInfoComponent);
-    commonService = TestBed.inject(CommonService);    
+    commonService = TestBed.inject(CommonService);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

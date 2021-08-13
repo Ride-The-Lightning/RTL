@@ -17,7 +17,7 @@ describe('ECLInvoiceInformationComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ECLInvoiceInformationComponent],
       imports: [SharedModule],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },

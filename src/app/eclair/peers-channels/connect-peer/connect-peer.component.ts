@@ -36,15 +36,15 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
   public peerFormLabel = 'Peer Details';
   public channelFormLabel = 'Open Channel (Optional)';
   peerFormGroup: FormGroup;
-  channelFormGroup: FormGroup;  
-  statusFormGroup: FormGroup;  
+  channelFormGroup: FormGroup;
+  statusFormGroup: FormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<ECLConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private formBuilder: FormBuilder, private actions: Actions, private logger: LoggerService) {}
 
   ngOnInit() {
     this.totalBalance = this.data.message.balance;
-    this.peerAddress = (this.data.message.peer && this.data.message.peer.nodeId && this.data.message.peer.address) ? (this.data.message.peer.nodeId + '@' + this.data.message.peer.address) : 
+    this.peerAddress = (this.data.message.peer && this.data.message.peer.nodeId && this.data.message.peer.address) ? (this.data.message.peer.nodeId + '@' + this.data.message.peer.address) :
     (this.data.message.peer && this.data.message.peer.nodeId && !this.data.message.peer.address) ? this.data.message.peer.nodeId : '';
     this.peerFormGroup = this.formBuilder.group({
       hiddenAddress: ['', [Validators.required]],
@@ -55,22 +55,22 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
       isPrivate: [false],
       feeRate: [null],
       hiddenAmount: ['', [Validators.required]]
-    });    
-    this.statusFormGroup = this.formBuilder.group({}); 
+    });
+    this.statusFormGroup = this.formBuilder.group({});
     this.actions.pipe(takeUntil(this.unSubs[1]),
     filter((action) => action.type === ECLActions.NEWLY_ADDED_PEER_ECL || action.type === ECLActions.FETCH_CHANNELS_ECL || action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL))
     .subscribe((action: (ECLActions.NewlyAddedPeer | ECLActions.FetchChannels | ECLActions.UpdateAPICallStatus)) => {
-      if (action.type === ECLActions.NEWLY_ADDED_PEER_ECL) { 
+      if (action.type === ECLActions.NEWLY_ADDED_PEER_ECL) {
         this.logger.info(action.payload);
         this.flgEditable = false;
         this.newlyAddedPeer = action.payload.peer;
         this.peerFormGroup.controls.hiddenAddress.setValue(this.peerFormGroup.controls.peerAddress.value);
         this.stepper.next();
       }
-      if (action.type === ECLActions.FETCH_CHANNELS_ECL) { 
+      if (action.type === ECLActions.FETCH_CHANNELS_ECL) {
         this.dialogRef.close();
       }
-      if (action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && action.payload.status === APICallStatusEnum.ERROR) { 
+      if (action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && action.payload.status === APICallStatusEnum.ERROR) {
         if (action.payload.action === 'SaveNewPeer') {
           this.peerConnectionError = action.payload.message;
         } else if (action.payload.action === 'SaveNewChannel') {
@@ -80,13 +80,13 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
     });
   }
 
-  onConnectPeer():boolean|void {
+  onConnectPeer(): boolean|void {
     if(!this.peerFormGroup.controls.peerAddress.value) { return true; }
     this.peerConnectionError = '';
     this.store.dispatch(new ECLActions.SaveNewPeer({id: this.peerFormGroup.controls.peerAddress.value}));
 }
 
-  onOpenChannel():boolean|void {
+  onOpenChannel(): boolean|void {
     if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0)) { return true; }
     this.channelConnectionError = '';
     this.store.dispatch(new ECLActions.SaveNewChannel({
@@ -104,7 +104,7 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
         this.peerFormLabel = 'Peer Details';
         this.channelFormLabel = 'Open Channel (Optional)';
         break;
-    
+
       case 1:
         if (this.peerFormGroup.controls.peerAddress.value) {
           this.peerFormLabel = 'Peer Added: ' + (this.newlyAddedPeer.alias ? this.newlyAddedPeer.alias : this.newlyAddedPeer.nodeId);
@@ -138,9 +138,9 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
       } else if (event.selectedIndex === 1) {
         this.channelFormGroup.controls.hiddenAmount.setValue('');
       }
-    }    
+    }
   }
-  
+
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
       completeSub.next(null);

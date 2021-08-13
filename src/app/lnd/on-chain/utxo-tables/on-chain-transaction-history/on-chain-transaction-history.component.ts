@@ -1,5 +1,5 @@
 import { Component, ViewChild, Input, OnChanges, OnInit, OnDestroy } from '@angular/core';
-import { DatePipe } from '@angular/common'
+import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -23,7 +23,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   styleUrls: ['./on-chain-transaction-history.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Transactions') }
-  ]  
+  ]
 })
 export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
@@ -112,7 +112,7 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
     this.listTransactions.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.listTransactions.filterPredicate = (rowData: Transaction, fltr: string) => {
       const newRowData = ((rowData.time_stamp) ? this.datePipe.transform(new Date(rowData.time_stamp*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
-      return newRowData.includes(fltr);   
+      return newRowData.includes(fltr);
     };
     this.listTransactions.paginator = this.paginator;
     this.logger.info(this.listTransactions);

@@ -15,7 +15,7 @@ describe('ServicesSettingsComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ServicesSettingsComponent, LoopServiceSettingsComponent, BoltzServiceSettingsComponent],
-      imports: [ 
+      imports: [
         SharedModule,
         RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {

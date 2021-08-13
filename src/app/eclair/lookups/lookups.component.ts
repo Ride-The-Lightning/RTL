@@ -73,7 +73,7 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
     });
   }
 
-  onLookup():boolean|void {
+  onLookup(): boolean|void {
     if (!this.lookupKeyCtrl.value) {
       this.lookupKeyCtrl.setErrors({required: true});
       return true;

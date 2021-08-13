@@ -7,7 +7,7 @@ export class ClipboardDirective {
   @Input() payload: string;
 
   @Output()
-  public copied: EventEmitter<string> = new EventEmitter<string>();
+  public readonly copied: EventEmitter<string> = new EventEmitter<string>();
 
   @HostListener('click', ['$event'])
   public onClick(event: MouseEvent): void {

@@ -15,37 +15,61 @@
         "project": "./tsconfig.json",
         "createDefaultProgram": true
       },
+      "plugins": ["deprecation"],
       "extends": [
+        "plugin:@angular-eslint/all",
         "plugin:@angular-eslint/recommended",
+        "plugin:@angular-eslint/recommended--extra",
         "plugin:@angular-eslint/template/process-inline-templates"
       ],
-      "plugins": ["deprecation"],
       "rules": {
         "deprecation/deprecation": "error",
-        "@angular-eslint/component-selector": [
-          "error",
-          {
-            "prefix": "rtl",
-            "style": "kebab-case",
-            "type": "element"
-          }
-        ],
-        "@angular-eslint/directive-selector": [
-          "error",
-          {
-            "style": "camelCase",
-            "type": "attribute"
-          }
-        ],
-        "@angular-eslint/use-lifecycle-interface": "error",
-        "curly": "error",
+        "@angular-eslint/use-injectable-provided-in": "off",
+        "@angular-eslint/prefer-on-push-component-change-detection": "off",
+        "@angular-eslint/use-component-view-encapsulation": "off",
+        "@angular-eslint/sort-ngmodule-metadata-arrays": "off",
+        "@angular-eslint/arrow-body-style": "off",
+        "@angular-eslint/component-selector": ["error", { "prefix": "rtl", "style": "kebab-case", "type": "element" }],
+        "@angular-eslint/directive-selector": ["error", { "style": "camelCase", "type": "attribute" }],
+        "@typescript-eslint/type-annotation-spacing": "error",
         "quotes": ["error", "single"],
-        "no-unused-expressions": "error",
-        "strict": "error",
         "comma-dangle": ["error", "never"],
         "comma-spacing": ["error", { "before": false, "after": true }],
         "computed-property-spacing": ["error", "never", { "enforceForClassMembers": true }],
-        "array-bracket-spacing": ["error", "never", { "objectsInArrays": false }]
+        "array-bracket-spacing": ["error", "never", { "objectsInArrays": false }],
+        "space-in-parens": ["error", "never"],
+        "eol-last": ["error", "always"],
+        "array-bracket-newline": ["error", "consistent"],
+        "curly": "error",
+        "no-unused-expressions": "error",
+        "strict": "error",
+        "max-len": ["error", { "code": 430 }],
+        "new-parens": "error",
+        "no-multiple-empty-lines": "error",
+        "no-trailing-spaces": "error",
+        "quote-props": ["error", "as-needed"],
+        "space-before-function-paren": [
+          "error",
+          {
+            "anonymous": "never",
+            "asyncArrow": "always",
+            "named": "never"
+          }
+        ],
+        "@typescript-eslint/member-delimiter-style": [
+          "error",
+          {
+            "multiline": {
+              "delimiter": "semi",
+              "requireLast": true
+            },
+            "singleline": {
+              "delimiter": "comma",
+              "requireLast": false
+            }
+          }
+        ],
+        "semi": ["error", "always"]
       }
     },
     {
@@ -53,12 +77,21 @@
         "*.html"
       ],
       "extends": [
+        "plugin:@angular-eslint/template/all",
         "plugin:@angular-eslint/template/recommended"
       ],
-      "rules": {}
+      "rules": {
+        "@angular-eslint/template/accessibility-elements-content": "off",
+        "@angular-eslint/template/click-events-have-key-events": "off",
+        "@angular-eslint/template/conditional-complexity": "off",
+        "@angular-eslint/template/cyclomatic-complexity": "off",
+        "@angular-eslint/template/i18n": "off",
+        "@angular-eslint/template/no-autofocus": "off",
+        "@angular-eslint/template/no-call-expression": "off",
+        "@angular-eslint/template/no-positive-tabindex": "off",
+        "@angular-eslint/template/use-track-by-function": "off"
+      }
     }
   ]
 }
-// https://eslint.org/docs/user-guide/getting-started
-// https://eslint.org/docs/user-guide/configuring/
-// Error level of the rule: off/warn/error
+// https://eslint.org/docs/rules/

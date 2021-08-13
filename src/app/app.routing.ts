@@ -51,7 +51,7 @@ export const routes: Routes = [
   { path: 'help', component: HelpComponent },
   { path: 'login', component: LoginComponent },
   { path: 'error', component: ErrorComponent },
-  { path: '**', component: NotFoundComponent } 
+  { path: '**', component: NotFoundComponent }
 ];
 
 // export const routing: ModuleWithProviders<RouterModule> = RouterModule.forRoot(routes, { enableTracing: true });

@@ -79,7 +79,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.settings = this.selNode.settings;
       this.appConfig = rtlStore.appConfig;
       this.information = rtlStore.nodeData;
-      this.flgLoading[0] = ( this.information.identity_pubkey) ? false : true;
+      this.flgLoading[0] = (this.information.identity_pubkey) ? false : true;
       this.logger.info(this.settings);
       if (!this.sessionService.getItem('token')) {
         this.flgLoggedIn = false;
@@ -91,7 +91,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     if (this.sessionService.getItem('defaultPassword') === 'true') {
       this.flgSideNavOpened = false;
-    }    
+    }
     this.actions.pipe(takeUntil(this.unSubs[2]),
     filter((action) => action.type === RTLActions.SET_RTL_CONFIG || action.type === RTLActions.LOGOUT))
     .subscribe((action: (RTLActions.SetRTLConfig | RTLActions.Logout)) => {
@@ -107,14 +107,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             this.router.navigate(['./login']);
           }
         }
-      }     
+      }
       if (action.type === RTLActions.LOGOUT) {
         this.flgLoggedIn = false;
         this.userIdle.stopWatching();
         this.userIdle.stopTimer();
       }
     });
-    this.userIdle.onTimerStart().pipe(takeUntil(this.unSubs[3])).subscribe(count => {this.logger.info('Counting Down: ' + (11 - count))});
+    this.userIdle.onTimerStart().pipe(takeUntil(this.unSubs[3])).subscribe(count => {this.logger.info('Counting Down: ' + (11 - count));});
     this.userIdle.onTimeout().pipe(takeUntil(this.unSubs[4])).subscribe(() => {
       this.logger.info('Time Out!');
       if (this.sessionService.getItem('token')) {
@@ -146,7 +146,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       setTimeout(() => {
         if (this.flgLoggedIn) {
-          this.renderer.setStyle(this.sideNavContent.elementRef.nativeElement, 'marginLeft', '22rem'); //$regular-sidenav-width          
+          this.renderer.setStyle(this.sideNavContent.elementRef.nativeElement, 'marginLeft', '22rem'); //$regular-sidenav-width
         }
         this.commonService.setContainerSize(this.sideNavContent.elementRef.nativeElement.clientWidth, this.sideNavContent.elementRef.nativeElement.clientHeight);
       }, 100);

@@ -20,7 +20,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./routing-peers.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') }
-  ]  
+  ]
 })
 export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sortIn: MatSort;
@@ -38,7 +38,7 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListECL = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {

@@ -48,7 +48,7 @@ export class ECLEffects implements OnDestroy {
       });
     }
 
-  infoFetchECL = createEffect(() => 
+  infoFetchECL = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.FETCH_INFO_ECL),
     withLatestFrom(this.store.select('root')),
@@ -79,7 +79,7 @@ export class ECLEffects implements OnDestroy {
     }))
   );
 
-  fetchFees = createEffect(() => 
+  fetchFees = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.FETCH_FEES_ECL),
     mergeMap((action: ECLActions.FetchFees) => {
@@ -101,7 +101,7 @@ export class ECLEffects implements OnDestroy {
     }))
   );
 
-  fetchPayments = createEffect(() => 
+  fetchPayments = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.FETCH_PAYMENTS_ECL),
     mergeMap((action: ECLActions.FetchPayments) => {
@@ -123,7 +123,7 @@ export class ECLEffects implements OnDestroy {
     }))
   );
 
-  channelsFetch = createEffect(() => 
+  channelsFetch = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.FETCH_CHANNELS_ECL),
     mergeMap((action: ECLActions.FetchChannels) => {
@@ -152,7 +152,7 @@ export class ECLEffects implements OnDestroy {
     }))
   );
 
-  channelStatsFetch = createEffect(() => 
+  channelStatsFetch = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.FETCH_CHANNEL_STATS_ECL),
     mergeMap((action: ECLActions.FetchChannelStats) => {
@@ -174,7 +174,7 @@ export class ECLEffects implements OnDestroy {
     }))
   );
 
-  fetchOnchainBalance = createEffect(() => 
+  fetchOnchainBalance = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.FETCH_ONCHAIN_BALANCE_ECL),
     mergeMap((action: ECLActions.FetchOnchainBalance) => {
@@ -195,7 +195,7 @@ export class ECLEffects implements OnDestroy {
     }))
   );
 
-  peersFetch = createEffect(() => 
+  peersFetch = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.FETCH_PEERS_ECL),
     mergeMap((action: ECLActions.FetchPeers) => {
@@ -218,7 +218,7 @@ export class ECLEffects implements OnDestroy {
     }))
   );
 
-  getNewAddress = createEffect(() => 
+  getNewAddress = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.GET_NEW_ADDRESS_ECL),
     mergeMap((action: ECLActions.GetNewAddress) => {
@@ -239,7 +239,7 @@ export class ECLEffects implements OnDestroy {
     }))
   );
 
-  setNewAddress = createEffect(() => 
+  setNewAddress = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.SET_NEW_ADDRESS_ECL),
     map((action: ECLActions.SetNewAddress) => {
@@ -249,7 +249,7 @@ export class ECLEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  saveNewPeer = createEffect(() => 
+  saveNewPeer = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.SAVE_NEW_PEER_ECL),
     withLatestFrom(this.store.select('ecl')),
@@ -277,7 +277,7 @@ export class ECLEffects implements OnDestroy {
     }))
   );
 
-  detachPeer = createEffect(() => 
+  detachPeer = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.DETACH_PEER_ECL),
     mergeMap((action: ECLActions.DisconnectPeer) => {
@@ -301,15 +301,15 @@ export class ECLEffects implements OnDestroy {
     }))
   );
 
-  openNewChannel = createEffect(() => 
+  openNewChannel = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.SAVE_NEW_CHANNEL_ECL),
     mergeMap((action: ECLActions.SaveNewChannel) => {
       this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.OPEN_CHANNEL));
       this.store.dispatch(new ECLActions.UpdateAPICallStatus({action: 'SaveNewChannel', status: APICallStatusEnum.INITIATED}));
-      const reqBody = action.payload.feeRate && action.payload.feeRate > 0 ? 
+      const reqBody = action.payload.feeRate && action.payload.feeRate > 0 ?
           { nodeId: action.payload.nodeId, fundingSatoshis: action.payload.amount, channelFlags: +!action.payload.private, fundingFeerateSatByte: action.payload.feeRate }
-        : { nodeId: action.payload.nodeId, fundingSatoshis: action.payload.amount, channelFlags: +!action.payload.private}
+        : { nodeId: action.payload.nodeId, fundingSatoshis: action.payload.amount, channelFlags: +!action.payload.private};
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API, reqBody)
         .pipe(
           map((postRes: any) => {
@@ -332,7 +332,7 @@ export class ECLEffects implements OnDestroy {
     }))
   );
 
-  updateChannel = createEffect(() => 
+  updateChannel = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.UPDATE_CHANNELS_ECL),
     mergeMap((action: ECLActions.UpdateChannels) => {
@@ -341,7 +341,7 @@ export class ECLEffects implements OnDestroy {
       if (action.payload.channelIds) {
         queryParam = queryParam + '&channelIds=' + action.payload.channelIds;
       } else {
-        queryParam = queryParam + '&channelId=' + action.payload.channelId;        
+        queryParam = queryParam + '&channelId=' + action.payload.channelId;
       }
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API + '/updateRelayFee' + queryParam, {})
         .pipe(
@@ -366,7 +366,7 @@ export class ECLEffects implements OnDestroy {
     }))
   );
 
-  closeChannel = createEffect(() => 
+  closeChannel = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.CLOSE_CHANNEL_ECL),
     mergeMap((action: ECLActions.CloseChannel) => {
@@ -392,7 +392,7 @@ export class ECLEffects implements OnDestroy {
     }))
   );
 
-  queryRoutesFetch = createEffect(() => 
+  queryRoutesFetch = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.GET_QUERY_ROUTES_ECL),
     mergeMap((action: ECLActions.GetQueryRoutes) => {
@@ -413,7 +413,7 @@ export class ECLEffects implements OnDestroy {
     }))
   );
 
-  setQueryRoutes = createEffect(() => 
+  setQueryRoutes = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.SET_QUERY_ROUTES_ECL),
     map((action: ECLActions.SetQueryRoutes) => {
@@ -422,7 +422,7 @@ export class ECLEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  sendPayment = createEffect(() => 
+  sendPayment = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.SEND_PAYMENT_ECL),
     withLatestFrom(this.store.select('root')),
@@ -455,7 +455,7 @@ export class ECLEffects implements OnDestroy {
     }))
   );
 
-  transactionsFetch = createEffect(() => 
+  transactionsFetch = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.FETCH_TRANSACTIONS_ECL),
     mergeMap((action: ECLActions.FetchTransactions) => {
@@ -476,7 +476,7 @@ export class ECLEffects implements OnDestroy {
     }))
   );
 
-  SendOnchainFunds = createEffect(() => 
+  SendOnchainFunds = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.SEND_ONCHAIN_FUNDS_ECL),
     mergeMap((action: ECLActions.SendOnchainFunds) => {
@@ -500,7 +500,7 @@ export class ECLEffects implements OnDestroy {
     }))
   );
 
-  createInvoice = createEffect(() => 
+  createInvoice = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.CREATE_INVOICE_ECL),
     mergeMap((action: ECLActions.CreateInvoice) => {
@@ -515,7 +515,7 @@ export class ECLEffects implements OnDestroy {
             postRes.expiresAt = Math.round(postRes.timestamp + action.payload.expireIn);
             postRes.description = action.payload.description;
             postRes.status = 'unpaid';
-            this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+            this.store.dispatch(new RTLActions.OpenAlert({ data: {
                 invoice: postRes,
                 newlyAdded: false,
                 component: ECLInvoiceInformationComponent
@@ -532,7 +532,7 @@ export class ECLEffects implements OnDestroy {
     }))
   );
 
-  invoicesFetch = createEffect(() => 
+  invoicesFetch = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.FETCH_INVOICES_ECL),
     mergeMap((action: ECLActions.FetchInvoices) => {
@@ -553,7 +553,7 @@ export class ECLEffects implements OnDestroy {
     }))
   );
 
-  peerLookup = createEffect(() => 
+  peerLookup = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.PEER_LOOKUP_ECL),
     mergeMap((action: ECLActions.PeerLookup) => {
@@ -577,7 +577,7 @@ export class ECLEffects implements OnDestroy {
     }))
   );
 
-  setLookup = createEffect(() => 
+  setLookup = createEffect(() =>
     this.actions.pipe(
     ofType(ECLActions.SET_LOOKUP_ECL),
     map((action: ECLActions.SetLookup) => {
@@ -594,7 +594,7 @@ export class ECLEffects implements OnDestroy {
       alias: info.alias,
       testnet: info.network === 'testnet',
       chains: info.publicAddresses,
-      uris: info.uris,      
+      uris: info.uris,
       version: info.version,
       numberOfPendingChannels: 0
     };
@@ -616,7 +616,7 @@ export class ECLEffects implements OnDestroy {
     }
     this.router.navigate([newRoute]);
   }
-  
+
   handleErrorWithoutAlert(actionName: string, uiMessage: string, genericErrorMessage: string, err: { status: number, error: any }) {
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
     if (err.status === 401) {
@@ -645,7 +645,7 @@ export class ECLEffects implements OnDestroy {
           type: 'ERROR',
           alertTitle: alertTitle,
           message: { code: err.status, message: errMsg, URL: errURL },
-          component: ErrorMessageComponent          
+          component: ErrorMessageComponent
         }
       }));
       this.store.dispatch(new ECLActions.UpdateAPICallStatus({action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: errMsg, URL: errURL}));

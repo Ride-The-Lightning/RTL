@@ -41,7 +41,7 @@ export function RootReducer(state = initRootState, action: RTLActions.RTLActions
         statusCode: action.payload.statusCode,
         message: action.payload.message,
         URL: action.payload.URL,
-        filePath: action.payload.filePath      
+        filePath: action.payload.filePath
       };
       return {
         ...state,

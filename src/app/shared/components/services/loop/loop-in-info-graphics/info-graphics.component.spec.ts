@@ -19,7 +19,7 @@ describe('LoopInInfoGraphicsComponent', () => {
         BrowserAnimationsModule,
         SharedModule
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: DataService, useClass: mockDataService }
       ]

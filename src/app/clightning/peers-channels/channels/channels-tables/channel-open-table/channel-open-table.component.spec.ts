@@ -36,7 +36,7 @@ describe('CLChannelOpenTableComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: RTLEffects, useClass: mockRTLEffects },
-        { provide: CLEffects, useClass: mockCLEffects }        
+        { provide: CLEffects, useClass: mockCLEffects }
       ]
     })
     .compileComponents();

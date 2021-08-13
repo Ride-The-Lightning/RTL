@@ -43,7 +43,7 @@ export class ECLOnChainComponent implements OnInit, OnDestroy {
   }
 
   openSendFundsModal() {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       component: ECLOnChainSendModalComponent
     }}));
   }

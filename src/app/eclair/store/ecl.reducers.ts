@@ -23,7 +23,16 @@ export interface ECLState {
 }
 
 export const initECLState: ECLState = {
-  apisCallStatus: { FetchInfo: { status: APICallStatusEnum.UN_INITIATED }, FetchFees: { status: APICallStatusEnum.UN_INITIATED }, FetchChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchOnchainBalance: { status: APICallStatusEnum.UN_INITIATED }, FetchPeers: { status: APICallStatusEnum.UN_INITIATED }, FetchPayments: { status: APICallStatusEnum.UN_INITIATED }, FetchInvoices: { status: APICallStatusEnum.UN_INITIATED }, FetchTransactions: { status: APICallStatusEnum.UN_INITIATED } },
+  apisCallStatus: {
+    FetchInfo: { status: APICallStatusEnum.UN_INITIATED },
+    FetchFees: { status: APICallStatusEnum.UN_INITIATED },
+    FetchChannels: { status: APICallStatusEnum.UN_INITIATED },
+    FetchOnchainBalance: { status: APICallStatusEnum.UN_INITIATED },
+    FetchPeers: { status: APICallStatusEnum.UN_INITIATED },
+    FetchPayments: { status: APICallStatusEnum.UN_INITIATED },
+    FetchInvoices: { status: APICallStatusEnum.UN_INITIATED },
+    FetchTransactions: { status: APICallStatusEnum.UN_INITIATED }
+  },
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
   information: {},
   fees: {},
@@ -38,7 +47,7 @@ export const initECLState: ECLState = {
   payments: {},
   transactions: [],
   invoices: []
-}
+};
 
 export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) {
   switch (action.type) {
@@ -49,7 +58,7 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
         statusCode: action.payload.statusCode,
         message: action.payload.message,
         URL: action.payload.URL,
-        filePath: action.payload.filePath      
+        filePath: action.payload.filePath
       };
       return {
         ...state,
@@ -59,7 +68,7 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
       return {
         ...state,
         nodeSettings: action.payload
-      }
+      };
     case ECLActions.RESET_ECL_STORE:
       return {
         ...initECLState,

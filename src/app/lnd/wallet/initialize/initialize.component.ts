@@ -15,12 +15,12 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export const matchedPasswords: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
   const initWalletPassword = control.get('initWalletPassword');
   const initWalletConfirmPassword = control.get('initWalletConfirmPassword');
-  return initWalletPassword && initWalletConfirmPassword && initWalletPassword.value !== initWalletConfirmPassword.value ? { 'unmatchedPasswords': true } : null;
+  return initWalletPassword && initWalletConfirmPassword && initWalletPassword.value !== initWalletConfirmPassword.value ? { unmatchedPasswords: true } : null;
 };
 
 export const cipherSeedLength: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
   const cipherArr = control.value ? control.value.toString().trim().split(',') : [];
-  return cipherArr && cipherArr.length !== 24 ? { 'invalidCipher': true } : null;
+  return cipherArr && cipherArr.length !== 24 ? { invalidCipher: true } : null;
 };
 
 @Component({
@@ -107,7 +107,7 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
 
   }
 
-  onInitWallet():boolean|void {
+  onInitWallet(): boolean|void {
     if (this.passwordFormGroup.invalid || this.cipherFormGroup.invalid || this.passphraseFormGroup.invalid) { return true; }
     if (this.cipherFormGroup.controls.existingCipher.value) {
       const cipherArr = this.cipherFormGroup.controls.cipherSeed.value.toString().trim().split(',');

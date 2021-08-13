@@ -13,7 +13,7 @@ let flgUTXOsSet = false;
 
 export interface LNDState {
   apisCallStatus: ApiCallsListLND;
-  nodeSettings: SelNodeChild;  
+  nodeSettings: SelNodeChild;
   information: GetInfo;
   peers: Peer[];
   fees: Fees;
@@ -39,7 +39,22 @@ export interface LNDState {
 }
 
 export const initLNDState: LNDState = {
-  apisCallStatus: { FetchInfo: { status: APICallStatusEnum.UN_INITIATED }, FetchFees: { status: APICallStatusEnum.UN_INITIATED }, FetchPeers: { status: APICallStatusEnum.UN_INITIATED }, FetchClosedChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchPendingChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchAllChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchBalanceBlockchain: { status: APICallStatusEnum.UN_INITIATED }, FetchInvoices: { status: APICallStatusEnum.UN_INITIATED }, FetchPayments: { status: APICallStatusEnum.UN_INITIATED }, GetForwardingHistory: { status: APICallStatusEnum.UN_INITIATED }, FetchUTXOs: { status: APICallStatusEnum.UN_INITIATED }, FetchTransactions: { status: APICallStatusEnum.UN_INITIATED }, FetchLightningTransactions: { status: APICallStatusEnum.UN_INITIATED }, FetchNetwork: { status: APICallStatusEnum.UN_INITIATED } },
+  apisCallStatus: {
+    FetchInfo: { status: APICallStatusEnum.UN_INITIATED },
+    FetchFees: { status: APICallStatusEnum.UN_INITIATED },
+    FetchPeers: { status: APICallStatusEnum.UN_INITIATED },
+    FetchClosedChannels: { status: APICallStatusEnum.UN_INITIATED },
+    FetchPendingChannels: { status: APICallStatusEnum.UN_INITIATED },
+    FetchAllChannels: { status: APICallStatusEnum.UN_INITIATED },
+    FetchBalanceBlockchain: { status: APICallStatusEnum.UN_INITIATED },
+    FetchInvoices: { status: APICallStatusEnum.UN_INITIATED },
+    FetchPayments: { status: APICallStatusEnum.UN_INITIATED },
+    GetForwardingHistory: { status: APICallStatusEnum.UN_INITIATED },
+    FetchUTXOs: { status: APICallStatusEnum.UN_INITIATED },
+    FetchTransactions: { status: APICallStatusEnum.UN_INITIATED },
+    FetchLightningTransactions: { status: APICallStatusEnum.UN_INITIATED },
+    FetchNetwork: { status: APICallStatusEnum.UN_INITIATED }
+  },
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, fiatConversion: false, channelBackupPath: '', currencyUnits: [], selCurrencyUnit: '', lnImplementation: '', swapServerUrl: '' },
   information: {},
   peers: [],
@@ -63,7 +78,7 @@ export const initLNDState: LNDState = {
   invoices: {invoices: []},
   allLightningTransactions: { paymentsAll: null, invoicesAll: null },
   forwardingHistory: {}
-}
+};
 
 export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) {
   switch (action.type) {
@@ -74,7 +89,7 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
         statusCode: action.payload.statusCode,
         message: action.payload.message,
         URL: action.payload.URL,
-        filePath: action.payload.filePath      
+        filePath: action.payload.filePath
       };
       return {
         ...state,
@@ -84,7 +99,7 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
       return {
         ...state,
         nodeSettings: action.payload
-      }
+      };
     case LNDActions.RESET_LND_STORE:
       return {
         ...initLNDState,

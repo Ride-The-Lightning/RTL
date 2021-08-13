@@ -22,7 +22,20 @@ export interface CLState {
 }
 
 export const initCLState: CLState = {
-  apisCallStatus: { FetchInfo: { status: APICallStatusEnum.UN_INITIATED }, FetchInvoices: { status: APICallStatusEnum.UN_INITIATED }, FetchFees: { status: APICallStatusEnum.UN_INITIATED }, FetchChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchBalance: { status: APICallStatusEnum.UN_INITIATED }, FetchLocalRemoteBalance: { status: APICallStatusEnum.UN_INITIATED }, FetchFeeRatesperkb: { status: APICallStatusEnum.UN_INITIATED }, FetchFeeRatesperkw: { status: APICallStatusEnum.UN_INITIATED }, FetchPeers: { status: APICallStatusEnum.UN_INITIATED }, FetchUTXOs: { status: APICallStatusEnum.UN_INITIATED }, FetchPayments: { status: APICallStatusEnum.UN_INITIATED }, GetForwardingHistory: { status: APICallStatusEnum.UN_INITIATED } },
+  apisCallStatus: {
+    FetchInfo: { status: APICallStatusEnum.UN_INITIATED },
+    FetchInvoices: { status: APICallStatusEnum.UN_INITIATED },
+    FetchFees: { status: APICallStatusEnum.UN_INITIATED },
+    FetchChannels: { status: APICallStatusEnum.UN_INITIATED },
+    FetchBalance: { status: APICallStatusEnum.UN_INITIATED },
+    FetchLocalRemoteBalance: { status: APICallStatusEnum.UN_INITIATED },
+    FetchFeeRatesperkb: { status: APICallStatusEnum.UN_INITIATED },
+    FetchFeeRatesperkw: { status: APICallStatusEnum.UN_INITIATED },
+    FetchPeers: { status: APICallStatusEnum.UN_INITIATED },
+    FetchUTXOs: { status: APICallStatusEnum.UN_INITIATED },
+    FetchPayments: { status: APICallStatusEnum.UN_INITIATED },
+    GetForwardingHistory: { status: APICallStatusEnum.UN_INITIATED }
+  },
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
   information: {},
   fees: {},
@@ -36,7 +49,7 @@ export const initCLState: CLState = {
   forwardingHistory: {},
   invoices: { invoices: [] },
   utxos: []
-}
+};
 
 export function CLReducer(state = initCLState, action: CLActions.CLActions) {
   switch (action.type) {
@@ -47,7 +60,7 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
         statusCode: action.payload.statusCode,
         message: action.payload.message,
         URL: action.payload.URL,
-        filePath: action.payload.filePath      
+        filePath: action.payload.filePath
       };
       return {
         ...state,
@@ -57,7 +70,7 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
       return {
         ...state,
         nodeSettings: action.payload
-      }
+      };
     case CLActions.RESET_CL_STORE:
       return {
         ...initCLState,
@@ -87,7 +100,7 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
       } else {
         return {
           ...state
-        }
+        };
       }
     case CLActions.SET_BALANCE_CL:
       return {

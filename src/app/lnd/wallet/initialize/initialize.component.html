@@ -59,7 +59,7 @@
       <div fxFlex="100" fxLayout="column" fxLayoutAlign="start stretch">
         <mat-slide-toggle [labelPosition]="'before'" fxFlex="20" tabindex="10" color="primary" class="chkbox-wallet" formControlName="enterPassphrase" name="enterPassphrase">Existing Passphrase</mat-slide-toggle>
         <mat-form-field fxFlex="75" fxLayoutAlign="start">
-          <input matInput type="input" type="password" placeholder="Passphrase" name="passphrase" formControlName="passphrase" tabindex="12" required>
+          <input matInput type="password" placeholder="Passphrase" name="passphrase" formControlName="passphrase" tabindex="12" required>
           <mat-hint>Enter Passphrase</mat-hint>
           <mat-error *ngIf="passphraseFormGroup.controls.passphrase.errors?.required">Passphrase is required.</mat-error>
         </mat-form-field>

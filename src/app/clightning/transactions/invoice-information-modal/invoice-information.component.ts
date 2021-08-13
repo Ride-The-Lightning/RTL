@@ -42,7 +42,7 @@ export class CLInvoiceInformationComponent implements OnInit {
 
   onShowAdvanced() {
     this.showAdvanced = !this.showAdvanced;
-  }  
+  }
 
   onCopyPayment(payload: string) {
     this.snackBar.open('Invoice copied.');

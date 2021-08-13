@@ -46,7 +46,7 @@ export class ConfirmationMessageComponent implements OnInit {
     }
   }
 
-  onClose(dialogRes: any):boolean|void {
+  onClose(dialogRes: any): boolean|void {
     if (dialogRes && this.getInputs && this.getInputs.some(input => !input.inputValue)) { return true; }
     this.store.dispatch(new RTLActions.CloseConfirmation(dialogRes));
   }

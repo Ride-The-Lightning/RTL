@@ -22,21 +22,21 @@ export class VerifyComponent implements OnDestroy {
 
   constructor(private dataService: DataService, private snackBar: MatSnackBar, private logger: LoggerService) {}
 
-  onVerify():boolean|void {
+  onVerify(): boolean|void {
     if ((!this.message || this.message === '') || (!this.signature || this.signature === '')) { return true; }
     this.dataService.verifyMessage(this.message, this.signature).pipe(takeUntil(this.unSubs[0]))
-    .subscribe(res => { 
-      this.verifyRes = res; 
+    .subscribe(res => {
+      this.verifyRes = res;
       this.showVerifyStatus = true;
       this.verifiedMessage = this.message;
       this.verifiedSignature = this.signature;
     });
-  } 
+  }
 
   onChange() {
-    if (this.verifiedMessage !== this.message || this.verifiedSignature !== this.signature) { 
+    if (this.verifiedMessage !== this.message || this.verifiedSignature !== this.signature) {
       this.showVerifyStatus = false;
-      this.verifyRes = {pubkey: '', valid: null}; 
+      this.verifyRes = {pubkey: '', valid: null};
     }
   }
 

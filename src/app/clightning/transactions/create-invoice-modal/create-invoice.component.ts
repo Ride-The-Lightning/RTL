@@ -56,7 +56,7 @@ export class CLCreateInvoiceComponent implements OnInit, OnDestroy {
     .subscribe((action: CLActions.UpdateAPICallStatus | CLActions.AddInvoice) => {
       if (action.type === CLActions.ADD_INVOICE_CL) {
         this.dialogRef.close();
-      }    
+      }
       if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewInvoice') {
         this.invoiceError = action.payload.message;
       }

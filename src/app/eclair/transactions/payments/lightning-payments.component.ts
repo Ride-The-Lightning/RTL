@@ -32,7 +32,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   animations: [newlyAddedRowAnimation],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Payments') }
-  ]  
+  ]
 })
 export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() calledFrom = 'transactions'; // transactions/home
@@ -58,7 +58,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListECL = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private dataService: DataService, private datePipe: DatePipe) {
@@ -107,7 +107,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       }
       this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.sent && rtlStore.payments.sent.length > 0) ? rtlStore.payments.sent : [];
       // FOR MPP TESTING START
-      // if(this.paymentJSONArr.length > 0) { 
+      // if(this.paymentJSONArr.length > 0) {
       //   this.paymentJSONArr[3].parts.push({
       //     id: '34b609a5-f0f1-474e-9e5d-d7783b48702d', amount: 26000, feesPaid: 22, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c87', toChannelAlias: 'ion.radar.tech1', timestamp: 1596389827075
       //   });
@@ -145,7 +145,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         case 'firstPartTimestamp':
           this.commonService.sortByKey(data.parts, 'timestamp', 'number', this.sort.direction);
           return data.firstPartTimestamp;
-      
+
         case 'id':
           this.commonService.sortByKey(data.parts, 'id', 'string', this.sort.direction);
           return data.id;
@@ -161,16 +161,16 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         default:
           return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
-    }
+    };
     this.payments.filterPredicate = (rowData: PaymentSent, fltr: string) => {
       const newRowData = ((rowData.firstPartTimestamp) ? this.datePipe.transform(new Date(rowData.firstPartTimestamp), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
-      return newRowData.includes(fltr);   
+      return newRowData.includes(fltr);
     };
     this.payments.paginator = this.paginator;
   }
 
-  onSendPayment():boolean|void {
-    if(!this.paymentRequest) { return true; } 
+  onSendPayment(): boolean|void {
+    if(!this.paymentRequest) { return true; }
     if (this.paymentDecoded.timestamp) {
       this.sendPayment();
     } else {
@@ -278,7 +278,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   }
 
   openSendPaymentModal() {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       component: ECLLightningSendPaymentsComponent
     }}));
   }
@@ -289,9 +289,9 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
     this.form.resetForm();
   }
 
-  is_group(index: number, payment: PaymentSent):boolean {
+  is_group(index: number, payment: PaymentSent): boolean {
     return payment.parts && payment.parts.length > 1;
-  }  
+  }
 
   onPaymentClick(selPayment: PaymentSent) {
     if (selPayment.paymentHash && selPayment.paymentHash.trim() !== '') {
@@ -309,7 +309,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
 
   showPaymentView(selPayment: PaymentSent, sentPaymentInfo?: any[]) {
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      sentPaymentInfo: sentPaymentInfo, 
+      sentPaymentInfo: sentPaymentInfo,
       payment: selPayment,
       component: ECLPaymentInformationComponent
     }}));
@@ -328,7 +328,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       this.showPartView(selPart, selPayment, []);
     }
   }
-  
+
   showPartView(selPart: PaymentSentPart, selPayment: PaymentSent, sentPaymentInfo?: any[]) {
     const reorderedPart = [
       [{key: 'paymentHash', value: selPayment.paymentHash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
@@ -356,7 +356,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   onDownloadCSV() {
     if(this.payments.data && this.payments.data.length > 0) {
       let paymentsDataCopy: PaymentSent[] = JSON.parse(JSON.stringify(this.payments.data));
-      let paymentRequests = paymentsDataCopy.reduce((paymentReqs, payment) => { 
+      let paymentRequests = paymentsDataCopy.reduce((paymentReqs, payment) => {
         if (payment.paymentHash && payment.paymentHash.trim() !== '') {
           paymentReqs = (paymentReqs === '') ? payment.paymentHash : paymentReqs + ',' + payment.paymentHash;
         }

@@ -30,7 +30,7 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
   public faChartPie = faChartPie;
   public faBolt = faBolt;
   public faServer = faServer;
-  public faNetworkWired = faNetworkWired;  
+  public faNetworkWired = faNetworkWired;
   public userPersonaEnum = UserPersonaEnum;
   public channelBalances = {localBalance: 0, remoteBalance: 0, balancedness: 0};
   public selNode: SelNodeChild = {};
@@ -53,7 +53,7 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
   public sortField = 'Balance Score';
   public errorMessages = ['', '', '', ''];
   public apisCallStatus: ApiCallsListECL = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private commonService: CommonService, private router: Router) {
@@ -157,7 +157,7 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
   onsortChannelsBy() {
     if (this.sortField === 'Balance Score') {
       this.sortField =  'Capacity';
-      this.allChannelsCapacity = this.channels.sort(function (a, b) {
+      this.allChannelsCapacity = this.channels.sort(function(a, b) {
         const x = +a.toLocal + +a.toRemote;
         const y = +b.toLocal + +b.toRemote;
         return ((x > y) ? -1 : ((x < y) ? 1 : 0));

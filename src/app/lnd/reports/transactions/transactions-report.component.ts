@@ -41,7 +41,7 @@ export class TransactionsReportComponent implements OnInit, AfterContentInit, On
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListLND = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}

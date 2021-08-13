@@ -34,7 +34,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   public loginErrorMessage = '';
   public apisCallStatus: ApiCallsListRoot = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) { }
@@ -60,7 +60,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     });
   }
 
-  onLogin():boolean|void {
+  onLogin(): boolean|void {
     if(!this.password) { return true; }
     this.loginErrorMessage = '';
     if (this.appConfig.enable2FA) {

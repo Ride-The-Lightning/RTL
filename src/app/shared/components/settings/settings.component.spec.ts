@@ -15,7 +15,7 @@ describe('SettingsComponent', () => {
       declarations: [SettingsComponent],
       imports: [
         SharedModule,
-        RouterTestingModule, 
+        RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,

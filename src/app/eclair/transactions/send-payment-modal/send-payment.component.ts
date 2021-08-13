@@ -54,9 +54,9 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
     this.actions.pipe(takeUntil(this.unSubs[1]),
     filter(action => action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL || action.type === ECLActions.SEND_PAYMENT_STATUS_ECL))
     .subscribe((action: ECLActions.UpdateAPICallStatus | ECLActions.SendPaymentStatus) => {
-      if (action.type === ECLActions.SEND_PAYMENT_STATUS_ECL) { 
+      if (action.type === ECLActions.SEND_PAYMENT_STATUS_ECL) {
         this.dialogRef.close();
-      }    
+      }
       if (action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SendPayment') {
         delete this.paymentDecoded.amount;
         this.paymentError = action.payload.message;
@@ -64,15 +64,15 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSendPayment():boolean|void {
-    if(!this.paymentRequest) { return true; } 
+  onSendPayment(): boolean|void {
+    if(!this.paymentRequest) { return true; }
     if (this.paymentDecoded.timestamp) {
       this.sendPayment();
     } else {
       this.paymentAmount = null;
       this.paymentError = '';
       this.paymentDecodedHint = '';
-      this.paymentReq.control.setErrors(null);      
+      this.paymentReq.control.setErrors(null);
       this.dataService.decodePayment(this.paymentRequest, true)
       .pipe(take(1)).subscribe({next: (decodedPayment: PayRequest) => {
         this.paymentDecoded = decodedPayment;
@@ -97,7 +97,7 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       }, error: err => {
         this.logger.error(err);
         this.paymentDecodedHint = 'ERROR: ' + ((err.message) ? err.message : ((typeof err === 'string') ? err : JSON.stringify(err)));
-        this.paymentReq.control.setErrors({'decodeError': true});
+        this.paymentReq.control.setErrors({decodeError: true});
       }});
     }
   }
@@ -142,7 +142,7 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       }, error: err => {
         this.logger.error(err);
         this.paymentDecodedHint = 'ERROR: ' + ((err.message) ? err.message : ((typeof err === 'string') ? err : JSON.stringify(err)));
-        this.paymentReq.control.setErrors({'decodeError': true});
+        this.paymentReq.control.setErrors({decodeError: true});
       }});
     }
   }

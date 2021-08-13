@@ -28,7 +28,7 @@ import { CommonService } from '../../../services/common.service';
 })
 export class SideNavigationComponent implements OnInit, OnDestroy {
   @ViewChild(MatTree, { static: false }) tree: any;
-  @Output() ChildNavClicked = new EventEmitter<any>();
+  @Output() readonly ChildNavClicked = new EventEmitter<any>();
   faEject = faEject;
   faEye = faEye;
   public appConfig: RTLConfiguration;
@@ -74,8 +74,8 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
       this.selNode = rtlStore.selNode;
       this.settings = this.selNode.settings;
       this.information = rtlStore.nodeData;
-      if ( this.information.identity_pubkey) {
-        if ( this.information.chains && typeof this.information.chains[0] === 'string') {
+      if (this.information.identity_pubkey) {
+        if (this.information.chains && typeof this.information.chains[0] === 'string') {
           this.informationChain.chain = this.information.chains[0].toString();
           this.informationChain.network = (this.information.testnet) ? 'Testnet' : 'Mainnet';
         } else if (typeof this.information.chains[0] === 'object' && this.information.chains[0].hasOwnProperty('chain')) {
@@ -88,7 +88,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
         this.informationChain.network = '';
       }
 
-      this.flgLoading = ( this.information.identity_pubkey) ? false : true;
+      this.flgLoading = (this.information.identity_pubkey) ? false : true;
       if (window.innerWidth <= 414) {
         this.smallScreen = true;
       }
@@ -110,7 +110,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     });
   }
 
-  hasChild = (_: number, node: MenuChildNode) => !!node.children && node.children.length > 0;  
+  hasChild = (_: number, node: MenuChildNode) => !!node.children && node.children.length > 0;
 
   onClick(node: MenuChildNode) {
     if (node.name === 'Logout') {
@@ -132,14 +132,14 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   onChildNavClicked(node) {
     this.ChildNavClicked.emit(node);
   }
-  
+
   filterSideMenuNodes() {
     if(this.selNode && this.selNode.lnImplementation) {
       switch (this.selNode.lnImplementation.toUpperCase()) {
         case 'CLT':
           this.loadCLTMenu();
           break;
-      
+
         case 'ECL':
           this.loadECLMenu();
           break;
@@ -151,7 +151,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     } else {
       this.loadLNDMenu();
     }
-  } 
+  }
 
   loadLNDMenu() {
     let clonedMenu = [];

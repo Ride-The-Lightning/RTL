@@ -56,7 +56,7 @@ export class CLChannelsTablesComponent implements OnInit, OnDestroy {
         this.pendingChannels = 0;
       }
       this.selNode = rtlStore.nodeSettings;
-      this.information = rtlStore.information;    
+      this.information = rtlStore.information;
       this.peers = rtlStore.peers;
       this.utxos = this.commonService.sortAscByKey(rtlStore.utxos.filter(utxo => utxo.status === 'confirmed'), 'value');
       this.totalBalance = rtlStore.balance.totalBalance;
@@ -66,14 +66,14 @@ export class CLChannelsTablesComponent implements OnInit, OnDestroy {
 
   onOpenChannel() {
     const peerToAddChannelMessage = {
-      peers: this.peers, 
+      peers: this.peers,
       information: this.information,
       balance: this.totalBalance,
       utxos: this.utxos,
       isCompatibleVersion: this.commonService.isVersionCompatible(this.information.version, '0.9.0') &&
       this.commonService.isVersionCompatible(this.information.api_version, '0.4.0')
     };
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       alertTitle: 'Open Channel',
       message: peerToAddChannelMessage,
       component: CLOpenChannelComponent

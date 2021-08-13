@@ -24,7 +24,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   styleUrls: ['./channel-pending-table.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Channels') }
-  ]  
+  ]
 })
 export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
@@ -46,7 +46,7 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListCL = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
@@ -100,7 +100,7 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
   }
 
   onChannelClick(selChannel: Channel, event: any) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       channel: selChannel,
       showCopy: true,
       component: CLChannelInformationComponent
@@ -108,7 +108,7 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
   }
 
   onChannelClose(channelToClose: Channel) {
-    this.store.dispatch(new RTLActions.OpenConfirmation({ data: { 
+    this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
       type: AlertTypeEnum.CONFIRM,
       alertTitle: 'Force Close Channel',
       titleMessage: 'Force closing channel: ' + channelToClose.channel_id,

@@ -28,7 +28,7 @@ describe('LightningSendPaymentsComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [LightningSendPaymentsComponent],
-      imports: [ 
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
@@ -73,10 +73,17 @@ describe('LightningSendPaymentsComponent', () => {
     component.zeroAmtInvoice = true;
     component.paymentAmount = 600;
     component.paymentRequest = 'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3';
-    component.paymentDecoded = {'destination':'031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', 'payment_hash':'a53968453af7ab6fc58d229a91bdf23d7c121963067f06cf02e1a7b581852c07', 'timestamp':'1623624612', 'expiry':'3600', 'description':'Testing ngrx Effects 4', 'description_hash':'', 'fallback_addr':'', 'cltv_expiry':'10', 'route_hints':[{'hop_hints':[{'node_id':'028ec70462207b57e3d4d9332d9e0aee676c92d89b7c9fb0850fc2a24814d4d83c', 'chan_id':'2166413939696009216', 'fee_base_msat':1000, 'fee_proportional_millionths':1, 'cltv_expiry_delta':40}]}], 'payment_addr':'NIXNBEqCTmqw89joe0m71Z9MrkkBcF1t1ri+9BZehKw=', 'num_msat':'400000', 'features':{'9':{'name':'tlv-onion', 'is_required':false, 'is_known':true}, '15':{'name':'payment-addr', 'is_required':false, 'is_known':true}, '17':{'name':'multi-path-payments', 'is_required':false, 'is_known':true}}};
+    component.paymentDecoded = {
+      destination:'031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', payment_hash:'a53968453af7ab6fc58d229a91bdf23d7c121963067f06cf02e1a7b581852c07', timestamp:'1623624612', expiry:'3600',
+      description:'Testing ngrx Effects 4', description_hash:'', fallback_addr:'', cltv_expiry:'10', route_hints:[{hop_hints:[{node_id:'028ec70462207b57e3d4d9332d9e0aee676c92d89b7c9fb0850fc2a24814d4d83c', chan_id:'2166413939696009216', fee_base_msat:1000, fee_proportional_millionths:1, cltv_expiry_delta:40}]}],
+      payment_addr:'NIXNBEqCTmqw89joe0m71Z9MrkkBcF1t1ri+9BZehKw=', num_msat:'400000', features:{9:{name:'tlv-onion', is_required:false, is_known:true}, 15:{name:'payment-addr', is_required:false, is_known:true}, 17:{name:'multi-path-payments', is_required:false, is_known:true}}
+    };
     const sendButton = fixture.debugElement.nativeElement.querySelector('.mat-flat-button');
     sendButton.click();
-    const expectedSendPaymentPayload = { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: 'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3', outgoingChannel: {}, feeLimitType: { id: 'none', name: 'No Fee Limit' }, feeLimit: null, fromDialog: true };
+    const expectedSendPaymentPayload = {
+      uiMessage: UI_MESSAGES.SEND_PAYMENT, outgoingChannel: {}, feeLimitType: { id: 'none', name: 'No Fee Limit' }, feeLimit: null, fromDialog: true,
+      paymentReq: 'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3'
+    };
     expect(storeSpy.calls.all()[0].args[0]).toEqual(new LNDActions.SendPayment(expectedSendPaymentPayload));
     expect(storeSpy).toHaveBeenCalledTimes(1);
   });
@@ -168,7 +175,10 @@ describe('LightningSendPaymentsComponent', () => {
     component.zeroAmtInvoice = true;
     component.paymentAmount = 600;
     component.paymentRequest = 'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3';
-    component.paymentDecoded = {'destination':'031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', 'payment_hash':'a53968453af7ab6fc58d229a91bdf23d7c121963067f06cf02e1a7b581852c07', 'timestamp':'1623624612', 'expiry':'3600', 'description':'Testing ngrx Effects 4', 'description_hash':'', 'fallback_addr':'', 'cltv_expiry':'10', 'route_hints':[{'hop_hints':[{'node_id':'028ec70462207b57e3d4d9332d9e0aee676c92d89b7c9fb0850fc2a24814d4d83c', 'chan_id':'2166413939696009216', 'fee_base_msat':1000, 'fee_proportional_millionths':1, 'cltv_expiry_delta':40}]}], 'payment_addr':'NIXNBEqCTmqw89joe0m71Z9MrkkBcF1t1ri+9BZehKw=', 'num_msat':'400000', 'features':{'9':{'name':'tlv-onion', 'is_required':false, 'is_known':true}, '15':{'name':'payment-addr', 'is_required':false, 'is_known':true}, '17':{'name':'multi-path-payments', 'is_required':false, 'is_known':true}}};
+    component.paymentDecoded = {
+      destination:'031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', payment_hash:'a53968453af7ab6fc58d229a91bdf23d7c121963067f06cf02e1a7b581852c07', timestamp:'1623624612', expiry:'3600',
+      description:'Testing ngrx Effects 4', description_hash:'', fallback_addr:'', cltv_expiry:'10', route_hints:[{hop_hints:[{node_id:'028ec70462207b57e3d4d9332d9e0aee676c92d89b7c9fb0850fc2a24814d4d83c', chan_id:'2166413939696009216', fee_base_msat:1000, fee_proportional_millionths:1, cltv_expiry_delta:40}]}],
+      payment_addr:'NIXNBEqCTmqw89joe0m71Z9MrkkBcF1t1ri+9BZehKw=', num_msat:'400000', features:{9:{name:'tlv-onion', is_required:false, is_known:true}, 15:{name:'payment-addr', is_required:false, is_known:true}, 17:{name:'multi-path-payments', is_required:false, is_known:true}}};
     component.onSendPayment();
     expect(component.paymentDecoded.num_satoshis).toEqual('400');
     expect(component.zeroAmtInvoice).toBe(false);

@@ -123,9 +123,12 @@ export class CLForwardingHistoryComponent implements OnInit, OnChanges, AfterVie
     this.forwardingHistoryEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.forwardingHistoryEvents.filterPredicate = (event: ForwardingEvent, fltr: string) => {
-      const newEvent = (event.received_time ? this.datePipe.transform(new Date(event.received_time*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + (event.resolved_time ? this.datePipe.transform(new Date(event.resolved_time*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + (event.in_channel ? event.in_channel.toLowerCase() : '') + (event.out_channel ? event.out_channel.toLowerCase() : '') + (event.in_msatoshi ? (event.in_msatoshi/1000) : '') + (event.out_msatoshi ? (event.out_msatoshi/1000) : '') + (event.fee ? event.fee : '');
+      const newEvent = (event.received_time ? this.datePipe.transform(new Date(event.received_time*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') +
+      (event.resolved_time ? this.datePipe.transform(new Date(event.resolved_time*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') +
+      (event.in_channel ? event.in_channel.toLowerCase() : '') + (event.out_channel ? event.out_channel.toLowerCase() : '') +
+      (event.in_msatoshi ? (event.in_msatoshi/1000) : '') + (event.out_msatoshi ? (event.out_msatoshi/1000) : '') + (event.fee ? event.fee : '');
       return newEvent.includes(fltr);
-    };    
+    };
     this.logger.info(this.forwardingHistoryEvents);
   }
 

@@ -27,7 +27,7 @@ describe('ECLTransactionsReportComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: DataService, useClass: mockDataService }
       ]

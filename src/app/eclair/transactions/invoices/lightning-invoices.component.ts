@@ -30,12 +30,12 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   animations: [newlyAddedRowAnimation],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Invoices') }
-  ]  
+  ]
 })
 export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() calledFrom = 'transactions'; // transactions/home
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;  
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   faHistory = faHistory;
   public selNode: SelNodeChild = {};
   public newlyAddedInvoiceMemo = '';
@@ -48,7 +48,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   public displayedColumns: any[] = [];
   public invoicePaymentReq = '';
   public invoices: any;
-  public invoiceJSONArr: Invoice[] = [];  
+  public invoiceJSONArr: Invoice[] = [];
   public information: GetInfo = {};
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
@@ -57,7 +57,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListECL = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private datePipe: DatePipe) {
@@ -104,14 +104,14 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   }
 
   openCreateInvoiceModal() {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       pageSize: this.pageSize,
       component: ECLCreateInvoiceComponent
     }}));
   }
 
-  onAddInvoice(form: any):boolean|void {
-    if(!this.description) { return true; }     
+  onAddInvoice(form: any): boolean|void {
+    if(!this.description) { return true; }
     let expiryInSecs = (this.expiry ? this.expiry : 3600);
     this.flgAnimate = true;
     this.newlyAddedInvoiceMemo = 'ulbl' + Math.random().toString(36).slice(2) + Date.now();
@@ -127,7 +127,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   }
 
   onInvoiceClick(selInvoice: Invoice, event: any) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
         invoice: selInvoice,
         newlyAdded: false,
         component: ECLInvoiceInformationComponent
@@ -140,7 +140,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
     this.invoices.sort = this.sort;
     this.invoices.filterPredicate = (rowData: Invoice, fltr: string) => {
       const newRowData = ((rowData.timestamp) ? this.datePipe.transform(new Date(rowData.timestamp*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
-      return newRowData.includes(fltr);   
+      return newRowData.includes(fltr);
     };
     this.invoices.paginator = this.paginator;
   }

@@ -37,7 +37,7 @@ export class LNDEffects implements OnDestroy {
     private sessionService: SessionService,
     public dialog: MatDialog,
     private router: Router,
-    private location: Location) { 
+    private location: Location) {
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
@@ -52,7 +52,7 @@ export class LNDEffects implements OnDestroy {
     });
   }
 
-  infoFetch = createEffect(() => 
+  infoFetch = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.FETCH_INFO_LND),
     withLatestFrom(this.store.select('root')),
@@ -87,7 +87,7 @@ export class LNDEffects implements OnDestroy {
                 payload: {}
               };
             } else {
-              info.lnImplementation = 'LND';    
+              info.lnImplementation = 'LND';
               this.initializeRemainingData(info, action.payload.loadPage);
               return {
                 type: LNDActions.SET_INFO_LND,
@@ -113,7 +113,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  peersFetch = createEffect(() => 
+  peersFetch = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.FETCH_PEERS_LND),
     mergeMap((action: LNDActions.FetchPeers) => {
@@ -137,7 +137,7 @@ export class LNDEffects implements OnDestroy {
     ))
   );
 
-  saveNewPeer = createEffect(() => 
+  saveNewPeer = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.SAVE_NEW_PEER_LND),
     withLatestFrom(this.store.select('lnd')),
@@ -165,7 +165,7 @@ export class LNDEffects implements OnDestroy {
     ))
   );
 
-  detachPeer = createEffect(() => 
+  detachPeer = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.DETACH_PEER_LND),
     mergeMap((action: LNDActions.DetachPeer) => {
@@ -190,7 +190,7 @@ export class LNDEffects implements OnDestroy {
     ))
   );
 
-  saveNewInvoice = createEffect(() => 
+  saveNewInvoice = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.SAVE_NEW_INVOICE_LND),
     mergeMap((action: LNDActions.SaveNewInvoice) => {
@@ -219,12 +219,12 @@ export class LNDEffects implements OnDestroy {
                 newlyAdded: true,
                 component: InvoiceInformationComponent
               }}
-            }
+            };
           } else {
             return {
               type: LNDActions.NEWLY_SAVED_INVOICE_LND,
               payload: { paymentRequest: postRes.payment_request }
-            }
+            };
           }
         }),
         catchError((err: any) => {
@@ -235,7 +235,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  openNewChannel = createEffect(() => 
+  openNewChannel = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.SAVE_NEW_CHANNEL_LND),
     mergeMap((action: LNDActions.SaveNewChannel) => {
@@ -265,7 +265,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  updateChannel = createEffect(() => 
+  updateChannel = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.UPDATE_CHANNELS_LND),
     mergeMap((action: LNDActions.UpdateChannels) => {
@@ -293,7 +293,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  closeChannel = createEffect(() => 
+  closeChannel = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.CLOSE_CHANNEL_LND),
     mergeMap((action: LNDActions.CloseChannel) => {
@@ -327,7 +327,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  backupChannels = createEffect(() => 
+  backupChannels = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.BACKUP_CHANNELS_LND),
     mergeMap((action: LNDActions.BackupChannels) => {
@@ -353,7 +353,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  verifyChannels = createEffect(() => 
+  verifyChannels = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.VERIFY_CHANNELS_LND),
     mergeMap((action: LNDActions.VerifyChannels) => {
@@ -379,7 +379,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  restoreChannels = createEffect(() => 
+  restoreChannels = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.RESTORE_CHANNELS_LND),
     mergeMap((action: LNDActions.RestoreChannels) => {
@@ -406,7 +406,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  fetchFees = createEffect(() => 
+  fetchFees = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.FETCH_FEES_LND),
     mergeMap((action: LNDActions.FetchFees) => {
@@ -431,7 +431,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  balanceFetch = createEffect(() => 
+  balanceFetch = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.FETCH_BALANCE_LND),
     mergeMap((action: LNDActions.FetchBalance) => {
@@ -455,7 +455,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  networkInfoFetch = createEffect(() => 
+  networkInfoFetch = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.FETCH_NETWORK_LND),
     mergeMap((action: LNDActions.FetchNetwork) => {
@@ -476,7 +476,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  channelsAllFetch = createEffect(() => 
+  channelsAllFetch = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.FETCH_ALL_CHANNELS_LND),
     mergeMap((action: LNDActions.FetchAllChannels) => {
@@ -499,7 +499,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  channelsPendingFetch = createEffect(() => 
+  channelsPendingFetch = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.FETCH_PENDING_CHANNELS_LND),
     mergeMap((action: LNDActions.FetchPendingChannels) => {
@@ -554,7 +554,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  channelsClosedFetch = createEffect(() => 
+  channelsClosedFetch = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.FETCH_CLOSED_CHANNELS_LND),
     mergeMap((action: LNDActions.FetchClosedChannels) => {
@@ -576,7 +576,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  invoicesFetch = createEffect(() => 
+  invoicesFetch = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.FETCH_INVOICES_LND),
     mergeMap((action: LNDActions.FetchInvoices) => {
@@ -603,7 +603,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  transactionsFetch = createEffect(() => 
+  transactionsFetch = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.FETCH_TRANSACTIONS_LND),
     mergeMap((action: LNDActions.FetchTransactions) => {
@@ -624,7 +624,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  utxosFetch = createEffect(() => 
+  utxosFetch = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.FETCH_UTXOS_LND),
     withLatestFrom(this.store.select('lnd')),
@@ -646,7 +646,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  paymentsFetch = createEffect(() => 
+  paymentsFetch = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.FETCH_PAYMENTS_LND),
     mergeMap((action: LNDActions.FetchPayments) => {
@@ -673,7 +673,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  sendPayment = createEffect(() => 
+  sendPayment = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.SEND_PAYMENT_LND),
     mergeMap((action: LNDActions.SendPayment) => {
@@ -696,7 +696,7 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(new RTLActions.CloseSpinner(action.payload.uiMessage));
             this.store.dispatch(new LNDActions.UpdateAPICallStatus({action: 'SendPayment', status: APICallStatusEnum.COMPLETED}));
             if (sendRes.payment_error) {
-              if (action.payload.allowSelfPayment) { 
+              if (action.payload.allowSelfPayment) {
                 this.store.dispatch(new LNDActions.FetchInvoices({ num_max_invoices: PAGE_SIZE, reversed: true }));
                 return {
                   type: LNDActions.SEND_PAYMENT_STATUS_LND,
@@ -715,7 +715,7 @@ export class LNDEffects implements OnDestroy {
               this.store.dispatch(new LNDActions.UpdateAPICallStatus({action: 'SendPayment', status: APICallStatusEnum.COMPLETED}));
               this.store.dispatch(new LNDActions.FetchAllChannels());
               this.store.dispatch(new LNDActions.FetchPayments({ max_payments: PAGE_SIZE, reversed: true }));
-              if (action.payload.allowSelfPayment) { 
+              if (action.payload.allowSelfPayment) {
                 this.store.dispatch(new LNDActions.FetchInvoices({ num_max_invoices: PAGE_SIZE, reversed: true }));
               } else {
                 let msg = 'Payment Sent Successfully.';
@@ -728,7 +728,7 @@ export class LNDEffects implements OnDestroy {
                 type: LNDActions.SEND_PAYMENT_STATUS_LND,
                 payload: sendRes
               };
-            }            
+            }
           }),
           catchError((err: any) => {
             this.logger.error('Error: ' + JSON.stringify(err));
@@ -752,7 +752,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  graphNodeFetch = createEffect(() => 
+  graphNodeFetch = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.FETCH_GRAPH_NODE_LND),
     mergeMap((action: LNDActions.FetchGraphNode) => {
@@ -775,7 +775,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  setGraphNode = createEffect(() => 
+  setGraphNode = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.SET_GRAPH_NODE_LND),
     map((action: LNDActions.SetGraphNode) => {
@@ -785,7 +785,7 @@ export class LNDEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  getNewAddress = createEffect(() => 
+  getNewAddress = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.GET_NEW_ADDRESS_LND),
     mergeMap((action: LNDActions.GetNewAddress) => {
@@ -806,7 +806,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  setNewAddress = createEffect(() => 
+  setNewAddress = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.SET_NEW_ADDRESS_LND),
     map((action: LNDActions.SetNewAddress) => {
@@ -816,7 +816,7 @@ export class LNDEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  SetChannelTransaction = createEffect(() => 
+  SetChannelTransaction = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.SET_CHANNEL_TRANSACTION_LND),
     mergeMap((action: LNDActions.SetChannelTransaction) => {
@@ -829,7 +829,7 @@ export class LNDEffects implements OnDestroy {
           this.logger.info(postRes);
           this.store.dispatch(new LNDActions.UpdateAPICallStatus({action: 'SetChannelTransaction', status: APICallStatusEnum.COMPLETED}));
           this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.SEND_FUNDS));
-          this.store.dispatch(new LNDActions.FetchTransactions());            
+          this.store.dispatch(new LNDActions.FetchTransactions());
           this.store.dispatch(new LNDActions.FetchBalance('Blockchain'));
           this.store.dispatch(new LNDActions.FetchAllChannels());
           return {
@@ -844,7 +844,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  fetchForwardingHistory = createEffect(() => 
+  fetchForwardingHistory = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.GET_FORWARDING_HISTORY_LND),
     mergeMap((action: LNDActions.GetForwardingHistory) => {
@@ -870,7 +870,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  queryRoutesFetch = createEffect(() => 
+  queryRoutesFetch = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.GET_QUERY_ROUTES_LND),
     mergeMap((action: LNDActions.GetQueryRoutes) => {
@@ -894,7 +894,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  setQueryRoutes = createEffect(() => 
+  setQueryRoutes = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.SET_QUERY_ROUTES_LND),
     map((action: LNDActions.SetQueryRoutes) => {
@@ -903,7 +903,7 @@ export class LNDEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  genSeed = createEffect(() => 
+  genSeed = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.GEN_SEED_LND),
     mergeMap((action: LNDActions.GenSeed) => {
@@ -927,7 +927,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  updateSelNodeOptions = createEffect(() => 
+  updateSelNodeOptions = createEffect(() =>
     this.actions.pipe(
     ofType(RTLActions.UPDATE_SELECTED_NODE_OPTIONS),
     mergeMap((action: RTLActions.UpdateSelectedNodeOptions) => {
@@ -948,7 +948,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  genSeedResponse = createEffect(() => 
+  genSeedResponse = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.GEN_SEED_RESPONSE_LND),
     map((action: LNDActions.GenSeedResponse) => {
@@ -957,7 +957,7 @@ export class LNDEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  initWalletRes = createEffect(() => 
+  initWalletRes = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.INIT_WALLET_RESPONSE_LND),
     map((action: LNDActions.InitWalletResponse) => {
@@ -966,7 +966,7 @@ export class LNDEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  initWallet = createEffect(() => 
+  initWallet = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.INIT_WALLET_LND),
     mergeMap((action: LNDActions.InitWallet) => {
@@ -993,7 +993,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  unlockWallet = createEffect(() => 
+  unlockWallet = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.UNLOCK_WALLET_LND),
     mergeMap((action: LNDActions.UnlockWallet) => {
@@ -1021,7 +1021,7 @@ export class LNDEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  peerLookup = createEffect(() => 
+  peerLookup = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.PEER_LOOKUP_LND),
     mergeMap((action: LNDActions.PeerLookup) => {
@@ -1045,7 +1045,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  channelLookup = createEffect(() => 
+  channelLookup = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.CHANNEL_LOOKUP_LND),
     mergeMap((action: LNDActions.ChannelLookup) => {
@@ -1070,7 +1070,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  invoiceLookup = createEffect(() => 
+  invoiceLookup = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.INVOICE_LOOKUP_LND),
     mergeMap((action: LNDActions.InvoiceLookup) => {
@@ -1094,7 +1094,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  setLookup = createEffect(() => 
+  setLookup = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.SET_LOOKUP_LND),
     map((action: LNDActions.SetLookup) => {
@@ -1104,7 +1104,7 @@ export class LNDEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  getRestoreChannelList = createEffect(() => 
+  getRestoreChannelList = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.RESTORE_CHANNELS_LIST_LND),
     mergeMap((action: LNDActions.RestoreChannelsList) => {
@@ -1126,7 +1126,7 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  setRestoreChannelList = createEffect(() => 
+  setRestoreChannelList = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.SET_RESTORE_CHANNELS_LIST_LND),
     map((action: LNDActions.SetRestoreChannelsList) => {
@@ -1136,7 +1136,7 @@ export class LNDEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  allLightningTransactionsFetch = createEffect(() => 
+  allLightningTransactionsFetch = createEffect(() =>
     this.actions.pipe(
     ofType(LNDActions.GET_ALL_LIGHTNING_TRANSATIONS_LND),
     mergeMap((action: LNDActions.GetAllLightningTransactions) => {

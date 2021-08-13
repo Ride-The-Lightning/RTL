@@ -32,7 +32,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   styleUrls: ['./channel-open-table.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Channels') }
-  ]  
+  ]
 })
 export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
@@ -59,7 +59,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   private targetConf = 6;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListLND = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private commonService: CommonService, private loopService: LoopService, private decimalPipe: DecimalPipe) {
@@ -111,15 +111,15 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     this.store.dispatch(new LNDActions.ChannelLookup({ uiMessage: UI_MESSAGES.GET_REMOTE_POLICY, channelID: selChannel.chan_id.toString() + '/' + this.information.identity_pubkey}));
     this.lndEffects.setLookup
     .pipe(take(1))
-    .subscribe((resLookup):boolean|void => {
-      if(!resLookup.fee_base_msat && !resLookup.fee_rate_milli_msat && !resLookup.time_lock_delta) { return false; }        
+    .subscribe((resLookup): boolean|void => {
+      if(!resLookup.fee_base_msat && !resLookup.fee_rate_milli_msat && !resLookup.time_lock_delta) { return false; }
       const reorderedChannelPolicy = [
         [{key: 'fee_base_msat', value: resLookup.fee_base_msat, title: 'Base Fees (mSats)', width: 25, type: DataTypeEnum.NUMBER},
           {key: 'fee_rate_milli_msat', value: resLookup.fee_rate_milli_msat, title: 'Fee Rate (milli mSats)', width: 25, type: DataTypeEnum.NUMBER},
           {key: 'fee_rate_milli_msat', value: resLookup.fee_rate_milli_msat/10000, title: 'Fee Rate (%)', width: 25, type: DataTypeEnum.NUMBER, digitsInfo: '1.0-8'},
           {key: 'time_lock_delta', value: resLookup.time_lock_delta, title: 'Time Lock Delta', width: 25, type: DataTypeEnum.NUMBER}]
-      ];      
-      this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+      ];
+      this.store.dispatch(new RTLActions.OpenAlert({ data: {
         type: AlertTypeEnum.INFORMATION,
         alertTitle: 'Remote Channel Policy',
         message: reorderedChannelPolicy
@@ -129,7 +129,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   onCircularRebalance(selChannel: any) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       channel: selChannel,
       component: ChannelRebalanceComponent
     }}));
@@ -163,7 +163,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
         }
       });
     } else {
-      this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0};      
+      this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0};
       this.store.dispatch(new LNDActions.ChannelLookup({ uiMessage: UI_MESSAGES.GET_CHAN_POLICY, channelID: channelToUpdate.chan_id.toString()}));
       this.lndEffects.setLookup
       .pipe(take(1))
@@ -214,7 +214,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     this.store.dispatch(new RTLActions.OpenAlert({width: '70%', data: {
       channel: channelToClose,
       component: CloseChannelComponent
-    }}));    
+    }}));
   }
 
   applyFilter() {
@@ -222,7 +222,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   onChannelClick(selChannel: Channel, event: any) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       channel: selChannel,
       showCopy: true,
       component: ChannelInformationComponent
@@ -276,13 +276,13 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
         maxDivider = daysDivider;
         minDivider = hoursDivider;
         break;
-  
+
       case max_uptime > yearsDivider:
         this.timeUnit = 'Yrs:Days';
         maxDivider = yearsDivider;
         minDivider = daysDivider;
         break;
-  
+
       default:
         this.timeUnit = 'Mins:Secs';
         maxDivider = minutesDivider;
@@ -305,7 +305,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
         maxQuote: response[1],
         direction: LoopTypeEnum.LOOP_OUT,
         component: LoopModalComponent
-      }}));    
+      }}));
     });
   }
 

@@ -17,7 +17,7 @@ describe('InvoiceInformationComponent', () => {
     TestBed.configureTestingModule({
       declarations: [InvoiceInformationComponent],
       imports: [SharedModule],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },

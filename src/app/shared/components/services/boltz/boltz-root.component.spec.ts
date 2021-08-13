@@ -19,7 +19,7 @@ describe('BoltzRootComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [BoltzRootComponent],
-      imports: [ 
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
@@ -30,7 +30,7 @@ describe('BoltzRootComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: DataService, useClass: mockDataService },
         { provide: BoltzService, useClass: mockBoltzService }

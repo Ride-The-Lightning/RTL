@@ -51,7 +51,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   inputFormGroup: FormGroup;
   quoteFormGroup: FormGroup;
   addressFormGroup: FormGroup;
-  statusFormGroup: FormGroup;  
+  statusFormGroup: FormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<LoopModalComponent>, @Inject(MAT_DIALOG_DATA) public data: LoopAlert, private store: Store<fromRTLReducer.RTLState>, private loopService: LoopService, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe, private logger: LoggerService, private router: Router, private commonService: CommonService) { }
@@ -63,7 +63,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.maxQuote = this.data.maxQuote ? this.data.maxQuote : {};
     this.direction = this.data.direction;
     this.loopDirectionCaption = this.direction === LoopTypeEnum.LOOP_IN ? 'Loop in' : 'Loop out';
-    this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;    
+    this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
     this.inputFormGroup = this.formBuilder.group({
       amount: [this.minQuote.amount, [Validators.required, Validators.min(this.minQuote.amount), Validators.max(this.maxQuote.amount)]],
       sweepConfTarget: [6, [Validators.required, Validators.min(1)]],
@@ -85,19 +85,19 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.inputFormGroup.setErrors({'Invalid': true});
+    this.inputFormGroup.setErrors({Invalid: true});
     if (this.direction === LoopTypeEnum.LOOP_OUT) {
-      this.addressFormGroup.setErrors({'Invalid': true});
+      this.addressFormGroup.setErrors({Invalid: true});
     }
   }
 
   onFormValueChanges() {
     this.inputFormGroup.valueChanges.pipe(takeUntil(this.unSubs[4])).subscribe(changedValues => {
-      this.inputFormGroup.setErrors({'Invalid': true});
+      this.inputFormGroup.setErrors({Invalid: true});
     });
     if (this.direction === LoopTypeEnum.LOOP_OUT) {
       this.addressFormGroup.valueChanges.pipe(takeUntil(this.unSubs[5])).subscribe(changedValues => {
-        this.addressFormGroup.setErrors({'Invalid': true});
+        this.addressFormGroup.setErrors({Invalid: true});
       });
     }
   }
@@ -113,7 +113,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
       this.addressFormGroup.controls.address.disable();
       this.addressFormGroup.controls.address.setValue('');
     }
-    this.addressFormGroup.setErrors({'Invalid': true});
+    this.addressFormGroup.setErrors({Invalid: true});
   }
 
   onValidateAmount() {
@@ -122,8 +122,12 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  onLoop():boolean|void {
-    if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount || !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2 || (this.direction === LoopTypeEnum.LOOP_OUT && (!this.inputFormGroup.controls.routingFeePercent.value || this.inputFormGroup.controls.routingFeePercent.value < 0)) || (this.direction === LoopTypeEnum.LOOP_OUT && this.addressFormGroup.controls.addressType.value === 'external' && (!this.addressFormGroup.controls.address.value || this.addressFormGroup.controls.address.value.trim() === ''))) { return true; }
+  onLoop(): boolean|void {
+    if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount ||
+      !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2 ||
+      (this.direction === LoopTypeEnum.LOOP_OUT && (!this.inputFormGroup.controls.routingFeePercent.value || this.inputFormGroup.controls.routingFeePercent.value < 0)) ||
+      (this.direction === LoopTypeEnum.LOOP_OUT && this.addressFormGroup.controls.addressType.value === 'external' &&
+      (!this.addressFormGroup.controls.address.value || this.addressFormGroup.controls.address.value.trim() === ''))) { return true; }
     this.flgEditable = false;
     this.stepper.selected.stepControl.setErrors(null);
     this.stepper.next();
@@ -155,7 +159,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  onEstimateQuote():boolean|void {
+  onEstimateQuote(): boolean|void {
     if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount || !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2) { return true; }
     let swapPublicationDeadline = this.inputFormGroup.controls.fast.value ? 0 : new Date().getTime() + (30 * 60000);
     if(this.direction === LoopTypeEnum.LOOP_IN) {
@@ -184,13 +188,17 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
         this.quoteFormLabel = 'Confirm Quote';
         this.addressFormLabel = 'Withdrawal Address';
         break;
-    
+
       case 1:
         if (this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.sweepConfTarget.value) {
           if (this.direction === LoopTypeEnum.LOOP_IN) {
             this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.sweepConfTarget.value ? this.inputFormGroup.controls.sweepConfTarget.value : 6);
           } else {
-            this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.sweepConfTarget.value ? this.inputFormGroup.controls.sweepConfTarget.value : 6) + ' | Percentage: ' +  (this.inputFormGroup.controls.routingFeePercent.value ? this.inputFormGroup.controls.routingFeePercent.value : '2') + ' | Fast: ' + (this.inputFormGroup.controls.fast.value ? 'Enabled' : 'Disabled');
+            this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' +
+            (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' +
+            (this.inputFormGroup.controls.sweepConfTarget.value ? this.inputFormGroup.controls.sweepConfTarget.value : 6) + ' | Percentage: ' +
+            (this.inputFormGroup.controls.routingFeePercent.value ? this.inputFormGroup.controls.routingFeePercent.value : '2') + ' | Fast: ' +
+            (this.inputFormGroup.controls.fast.value ? 'Enabled' : 'Disabled');
           }
         } else {
           this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
@@ -204,7 +212,10 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
           if (this.direction === LoopTypeEnum.LOOP_IN) {
             this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.sweepConfTarget.value ? this.inputFormGroup.controls.sweepConfTarget.value : 6);
           } else {
-            this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.sweepConfTarget.value ? this.inputFormGroup.controls.sweepConfTarget.value : 6) + ' | Fast: ' + (this.inputFormGroup.controls.fast.value ? 'Enabled' : 'Disabled');
+            this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' +
+            (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' +
+            (this.inputFormGroup.controls.sweepConfTarget.value ? this.inputFormGroup.controls.sweepConfTarget.value : 6) + ' | Fast: ' +
+            (this.inputFormGroup.controls.fast.value ? 'Enabled' : 'Disabled');
           }
         } else {
           this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
@@ -224,12 +235,12 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
       default:
         this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
         this.quoteFormLabel = 'Confirm Quote';
-        this.addressFormLabel = 'Withdrawal Address';        
+        this.addressFormLabel = 'Withdrawal Address';
         break;
     }
     if ((this.direction === LoopTypeEnum.LOOP_OUT && event.selectedIndex !== 1 && event.selectedIndex < event.previouslySelectedIndex)
     || (this.direction === LoopTypeEnum.LOOP_IN && event.selectedIndex < event.previouslySelectedIndex)) {
-      event.selectedStep.stepControl.setErrors({'Invalid': true});
+      event.selectedStep.stepControl.setErrors({Invalid: true});
     }
   }
 

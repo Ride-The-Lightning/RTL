@@ -30,7 +30,7 @@ describe('CLQueryRoutesComponent', () => {
         }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: DataService, useClass: mockDataService },
         { provide: CLEffects, useClass: mockCLEffects }

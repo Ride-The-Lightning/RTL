@@ -11,7 +11,7 @@ describe('LoopQuoteComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [LoopQuoteComponent],
-      imports: [ 
+      imports: [
         BrowserAnimationsModule,
         SharedModule
       ]

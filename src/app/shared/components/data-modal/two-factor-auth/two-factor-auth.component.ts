@@ -29,7 +29,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
   public faInfoCircle = faInfoCircle;
   public flgValidated = false;
   public isTokenValid = true;
-  public otpauth: string = '';
+  public otpauth = '';
   public appConfig: RTLConfiguration;
   public flgEditable = true;
   public showDisableStepper = false;
@@ -45,7 +45,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
     secret: [{value: '', disabled: true}, Validators.required]
   });
   tokenFormGroup: FormGroup = this.formBuilder.group({
-    token: ['', Validators.required]      
+    token: ['', Validators.required]
   });
   disableFormGroup: FormGroup = this.formBuilder.group({});
   unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
@@ -66,7 +66,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
     return secret2fa;
   }
 
-  onAuthenticate():boolean|void {
+  onAuthenticate(): boolean|void {
     if (!this.passwordFormGroup.controls.password.value) { return true; }
     this.flgValidated = false;
     this.store.dispatch(new RTLActions.IsAuthorized(sha256(this.passwordFormGroup.controls.password.value)));
@@ -87,7 +87,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
     this.snackBar.open('Secret code ' + this.secretFormGroup.controls.secret.value + ' copied.');
   }
 
-  onVerifyToken():boolean|void {
+  onVerifyToken(): boolean|void {
     if (this.appConfig.enable2FA) {
       this.store.dispatch(new RTLActions.TwoFASaveSettings({secret2fa: ''}));
       this.generateSecret();
@@ -111,7 +111,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
       case 0:
         this.passwordFormLabel = 'Authenticate with your RTL password';
         break;
-    
+
       case 1:
         this.passwordFormLabel = 'User authenticated successfully';
         break;
@@ -128,7 +128,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
       if (event.selectedIndex === 0) {
         this.passwordFormGroup.controls.hiddenPassword.setValue('');
       }
-    }    
+    }
   }
 
   ngOnDestroy() {
