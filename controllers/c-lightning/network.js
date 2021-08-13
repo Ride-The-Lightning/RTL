@@ -90,7 +90,7 @@ exports.feeRates = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/network/feeRates/' + req.params.feeRateStyle;
   request(options).then(function (body) {
-    logger.log({level: 'INFO', fileName: 'Network', msg: 'Network Fee Rates Received'});
+    logger.log({level: 'DEBUG', fileName: 'Network', msg: 'Network Fee Rates Received for ' + req.params.feeRateStyle, data: body});
     res.status(200).json(body);
   })
   .catch(errRes => {

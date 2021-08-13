@@ -68,7 +68,7 @@ exports.getUTXOs = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/listFunds';
   request(options).then((body) => {
     if (body.outputs) { body.outputs = common.sortDescByStrKey(body.outputs, 'status'); }
-    logger.log({level: 'INFO', fileName: 'OnChain', msg: 'List Funds Received'});
+    logger.log({level: 'DEBUG', fileName: 'OnChain', msg: 'List Funds Received', data: body});
     res.status(200).json(body);
   }).catch(errRes => {
     let err = JSON.parse(JSON.stringify(errRes));

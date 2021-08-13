@@ -245,41 +245,36 @@ common.getMonthDays = (selMonth, selYear) => {
 
 filterData = (data_key) => {
   let search_string = '';
-  switch (data_key) {
-    case 'GetInfo':
-      search_string = 'INFO: GetInfo => Get Info Response: ';
-      break;
-  
-    case 'Fees':
-      search_string = 'INFO: Fees => Fee Response: ';
-      break;
-
-    case 'Payments':
-      search_string = 'INFO: Fees => Payments Response: ';
-      break;
-
-    case 'Invoices':
-      search_string = 'INFO: Invoice => Invoices List Received: ';
-      break;
-  
-    case 'OnChainBalance':
-      search_string = 'INFO: Onchain => Balance Received: ';
-      break;
-
-    case 'Peers':
-      search_string = 'INFO: Peers => Peers with Alias: ';
-      break;
-        
-    case 'Channels':
-      search_string = 'INFO: Channels => Simplified Channels with Alias: ';
-      break;
-
-    default:
-      search_string = 'INFO: GetInfo => Get Info Response: ';
-      break;
+  if (common.selectedNode.ln_implementation === 'ECL') {
+    switch (data_key) {
+      case 'GetInfo': search_string = 'INFO: GetInfo => Get Info Response: '; break;
+      case 'Fees': search_string = 'INFO: Fees => Fee Response: '; break;
+      case 'Payments': search_string = 'INFO: Fees => Payments Response: '; break;
+      case 'Invoices': search_string = 'INFO: Invoice => Invoices List Received: '; break;
+      case 'OnChainBalance': search_string = 'INFO: Onchain => Balance Received: '; break;
+      case 'Peers': search_string = 'INFO: Peers => Peers with Alias: '; break;
+      case 'Channels': search_string = 'INFO: Channels => Simplified Channels with Alias: '; break;
+      default: search_string = 'Random Line'; break;
+    }
+  } else if (common.selectedNode.ln_implementation === 'CLT') {
+    switch (data_key) {
+      case 'GetInfo': search_string = 'DEBUG: GetInfo => Node Information. '; break;
+      case 'Fees': search_string = 'DEBUG: Fees => Fee Received. '; break;
+      case 'Payments': search_string = 'DEBUG: Payments => Payment List Received: '; break;
+      case 'Invoices': search_string = 'DEBUG: Invoice => Invoices List Received. '; break;
+      case 'ChannelBalance': search_string = 'DEBUG: Channels => Local Remote Balance. '; break;
+      case 'Peers': search_string = 'DEBUG: Peers => Peers with Alias: '; break;
+      case 'Channels': search_string = 'DEBUG: Channels => List Channels: '; break;
+      case 'Balance': search_string = 'DEBUG: Balance => Balance Received. '; break;
+      case 'ForwardingHistory': search_string = 'DEBUG: Channels => Forwarding History Received: '; break;
+      case 'UTXOs': search_string = 'DEBUG: OnChain => List Funds Received. '; break;
+      case 'FeeRateperkb': search_string = 'DEBUG: Network => Network Fee Rates Received for perkb. '; break;
+      case 'FeeRateperkw': search_string = 'DEBUG: Network => Network Fee Rates Received for perkw. '; break;
+      default: search_string = 'Random Line'; break;
+    }
   }
   let foundDataLine = dummy_data_array_from_file.find(dataItem => dataItem.includes(search_string));
-  let dataStr = foundDataLine ? foundDataLine.replace(search_string, '') : {};
+  let dataStr = foundDataLine ? foundDataLine.substring((foundDataLine.indexOf(search_string)) + search_string.length) : '{}';
   return JSON.parse(dataStr);
 }
 
