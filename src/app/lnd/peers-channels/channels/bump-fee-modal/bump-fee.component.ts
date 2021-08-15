@@ -19,7 +19,7 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 })
 export class BumpFeeComponent implements OnInit, OnDestroy {
   private outputIdx: NgModel;
-  @ViewChild('outputIdx') set payReq(outIdx: NgModel) {if(outIdx) { this.outputIdx = outIdx; }}
+  @ViewChild('outputIdx') set payReq(outIdx: NgModel) { if (outIdx) { this.outputIdx = outIdx; } }
   public bumpFeeChannel: PendingOpenChannel;
   public transTypes = [...TRANS_TYPES];
   public selTransType = '2';
@@ -48,8 +48,8 @@ export class BumpFeeComponent implements OnInit, OnDestroy {
       return true;
     }
     if ((!this.outputIndex && this.outputIndex !== 0) || (this.selTransType === '1' && (!this.blocks || this.blocks === 0)) || (this.selTransType === '2' && (!this.fees || this.fees === 0))) { return true; }
-    this.dataService.bumpFee(this.bumpFeeChannel.channel.txid_str, this.outputIndex, this.blocks, this.fees).pipe(takeUntil(this.unSubs[0]))
-    .subscribe({next: res => {
+    this.dataService.bumpFee(this.bumpFeeChannel.channel.txid_str, this.outputIndex, this.blocks, this.fees).pipe(takeUntil(this.unSubs[0])).
+    subscribe({next: res => {
       this.dialogRef.close(false);
     }, error: (err) => {
       this.logger.error(err);

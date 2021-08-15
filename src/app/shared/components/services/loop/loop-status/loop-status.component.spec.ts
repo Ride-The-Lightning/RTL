@@ -11,8 +11,8 @@ describe('LoopStatusComponent', () => {
     TestBed.configureTestingModule({
       declarations: [LoopStatusComponent],
       imports: [SharedModule]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

@@ -40,8 +40,8 @@ describe('CLOnChainSendModalComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: { sweepAll: true } },
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

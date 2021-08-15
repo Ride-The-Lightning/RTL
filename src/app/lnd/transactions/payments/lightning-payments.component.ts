@@ -67,15 +67,15 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
 
   constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private decimalPipe: DecimalPipe, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['creation_date', 'fee', 'actions'];
       this.htlcColumns = ['groupTotal', 'groupFee', 'groupAction'];
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
+    } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['creation_date', 'fee', 'value', 'hops', 'actions'];
       this.htlcColumns = ['groupTotal', 'groupFee', 'groupValue', 'groupHops', 'groupAction'];
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['creation_date', 'fee', 'value', 'hops', 'actions'];
       this.htlcColumns = ['groupTotal', 'groupFee', 'groupValue', 'groupHops', 'groupAction'];
@@ -87,9 +87,9 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   }
 
   ngOnInit() {
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('lnd').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.errorMessage = '';
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.ERROR) {
@@ -119,12 +119,12 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   }
 
   onSendPayment(): boolean|void {
-    if(!this.paymentRequest) { return true; }
+    if (!this.paymentRequest) { return true; }
     if (this.paymentDecoded.timestamp) {
       this.sendPayment();
     } else {
-      this.dataService.decodePayment(this.paymentRequest, false)
-      .pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
+      this.dataService.decodePayment(this.paymentRequest, false).
+      pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
         this.paymentDecoded = decodedPayment;
         if (this.paymentDecoded.timestamp) {
           if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
@@ -147,7 +147,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
     if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
       this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
     }
-    if (!this.paymentDecoded.num_satoshis || this.paymentDecoded.num_satoshis === '' ||  this.paymentDecoded.num_satoshis === '0') {
+    if (!this.paymentDecoded.num_satoshis || this.paymentDecoded.num_satoshis === '' || this.paymentDecoded.num_satoshis === '0') {
         const reorderedPaymentDecoded = [
           [{key: 'payment_hash', value: this.paymentDecoded.payment_hash, title: 'Payment Hash', width: 100}],
           [{key: 'destination', value: this.paymentDecoded.destination, title: 'Destination', width: 100}],
@@ -169,9 +169,9 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
             {placeholder: 'Amount (Sats)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: '', width: 30}
           ]
         }}));
-        this.rtlEffects.closeConfirm
-        .pipe(take(1))
-        .subscribe(confirmRes => {
+        this.rtlEffects.closeConfirm.
+        pipe(take(1)).
+        subscribe(confirmRes => {
           if (confirmRes) {
             this.paymentDecoded.num_satoshis = confirmRes[0].inputValue;
             this.store.dispatch(new LNDActions.SendPayment({uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, paymentAmount: confirmRes[0].inputValue, fromDialog: false}));
@@ -195,9 +195,9 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         yesBtnText: 'Send Payment',
         message: reorderedPaymentDecoded
       }}));
-      this.rtlEffects.closeConfirm
-      .pipe(take(1))
-      .subscribe(confirmRes => {
+      this.rtlEffects.closeConfirm.
+      pipe(take(1)).
+      subscribe(confirmRes => {
         if (confirmRes) {
           this.store.dispatch(new LNDActions.SendPayment({uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, fromDialog: false}));
           this.resetData();
@@ -215,18 +215,18 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   onPaymentRequestEntry(event: any) {
     this.paymentRequest = event;
     this.paymentDecodedHint = '';
-    if(this.paymentRequest && this.paymentRequest.length > 100) {
-      this.dataService.decodePayment(this.paymentRequest, false)
-      .pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
+    if (this.paymentRequest && this.paymentRequest.length > 100) {
+      this.dataService.decodePayment(this.paymentRequest, false).
+      pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
         this.paymentDecoded = decodedPayment;
         if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
           this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
         }
-        if(this.paymentDecoded.num_satoshis) {
-          if(this.selNode.fiatConversion) {
-            this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
-            .pipe(takeUntil(this.unSubs[2]))
-            .subscribe({next: data => {
+        if (this.paymentDecoded.num_satoshis) {
+          if (this.selNode.fiatConversion) {
+            this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
+            pipe(takeUntil(this.unSubs[2])).
+            subscribe({next: data => {
               this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis ? this.paymentDecoded.num_satoshis : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
             }, error: error => {
               this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis ? this.paymentDecoded.num_satoshis : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
@@ -274,14 +274,14 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
 
   getHopDetails(hops: Hop[]) {
     let self = this;
-    return hops.reduce(function(accumulator, currentHop) {
+    return hops.reduce((accumulator, currentHop) => {
       let peerFound = self.peers.find(peer => peer.pub_key === currentHop.pub_key);
       if (peerFound && peerFound.alias) {
         accumulator.push('<pre>Channel: ' + peerFound.alias.padEnd(20) + '&Tab;&Tab;&Tab;Amount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward) + '</pre>');
       } else {
-        self.dataService.getAliasesFromPubkeys(currentHop.pub_key, false)
-        .pipe(takeUntil(self.unSubs[1]))
-        .subscribe((res: any) => {
+        self.dataService.getAliasesFromPubkeys(currentHop.pub_key, false).
+        pipe(takeUntil(self.unSubs[1])).
+        subscribe((res: any) => {
           accumulator.push('<pre>Channel: ' + (res.node && res.node.alias ? res.node.alias.padEnd(20) : (currentHop.pub_key.substring(0, 17) + '...')) + '&Tab;&Tab;&Tab;Amount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward) + '</pre>');
         });
       }
@@ -291,8 +291,8 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
 
   onHTLCClick(selHtlc: PaymentHTLC, selPayment: Payment) {
     if (selPayment.payment_request && selPayment.payment_request.trim() !== '') {
-      this.dataService.decodePayment(selPayment.payment_request, false)
-      .pipe(take(1)).subscribe({next: (decodedPayment: PayRequest) => {
+      this.dataService.decodePayment(selPayment.payment_request, false).
+      pipe(take(1)).subscribe({next: (decodedPayment: PayRequest) => {
         this.showHTLCView(selHtlc, selPayment, decodedPayment);
       }, error: (error) => {
         this.showHTLCView(selHtlc, selPayment, null);
@@ -329,9 +329,9 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   onPaymentClick(selPayment: Payment) {
     if (selPayment.htlcs && selPayment.htlcs[0] && selPayment.htlcs[0].route && selPayment.htlcs[0].route.hops && selPayment.htlcs[0].route.hops.length > 0) {
       let nodePubkeys = selPayment.htlcs[0].route.hops.reduce((pubkeys, hop) => { return pubkeys === '' ? hop.pub_key : pubkeys + ',' + hop.pub_key; }, '');
-      this.dataService.getAliasesFromPubkeys(nodePubkeys, true)
-      .pipe(takeUntil(this.unSubs[3]))
-      .subscribe((nodes: any) => {
+      this.dataService.getAliasesFromPubkeys(nodePubkeys, true).
+      pipe(takeUntil(this.unSubs[3])).
+      subscribe((nodes: any) => {
         this.showPaymentView(selPayment, nodes.reduce((pathAliases, node) => { return pathAliases === '' ? node : pathAliases + '\n' + node; }, ''));
       });
     } else {
@@ -351,8 +351,8 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       [{key: 'path', value: pathAliases, title: 'Path', width: 100, type: DataTypeEnum.STRING}]
     ];
     if (selPayment.payment_request && selPayment.payment_request.trim() !== '') {
-      this.dataService.decodePayment(selPayment.payment_request, false)
-      .pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
+      this.dataService.decodePayment(selPayment.payment_request, false).
+      pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
         if (decodedPayment && decodedPayment.description && decodedPayment.description !== '') {
           reorderedPayment.splice(3, 0, [{key: 'description', value: decodedPayment.description, title: 'Description', width: 100, type: DataTypeEnum.STRING}]);
         }
@@ -395,7 +395,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   }
 
   onDownloadCSV() {
-    if(this.payments.data && this.payments.data.length > 0) {
+    if (this.payments.data && this.payments.data.length > 0) {
       let paymentsDataCopy = JSON.parse(JSON.stringify(this.payments.data));
       let paymentRequests = paymentsDataCopy.reduce((paymentReqs, payment) => {
         if (payment.payment_request && payment.payment_request.trim() !== '') {
@@ -403,9 +403,9 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         }
         return paymentReqs;
       }, '');
-      this.dataService.decodePayments(paymentRequests)
-      .pipe(takeUntil(this.unSubs[4]))
-      .subscribe((decodedPayments: PayRequest[]) => {
+      this.dataService.decodePayments(paymentRequests).
+      pipe(takeUntil(this.unSubs[4])).
+      subscribe((decodedPayments: PayRequest[]) => {
         let increament = 0;
         decodedPayments.forEach((decodedPayment, idx) => {
           while (paymentsDataCopy[idx + increament].payment_hash !== decodedPayment.payment_hash) {

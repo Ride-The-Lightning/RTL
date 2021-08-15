@@ -11,8 +11,8 @@ describe('CLFeeInfoComponent', () => {
     TestBed.configureTestingModule({
       declarations: [CLFeeInfoComponent],
       imports: [SharedModule]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

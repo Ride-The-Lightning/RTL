@@ -37,8 +37,8 @@ describe('CLChannelPendingTableComponent', () => {
         { provide: DataService, useClass: mockDataService },
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

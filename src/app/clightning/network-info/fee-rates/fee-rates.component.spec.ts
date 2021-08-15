@@ -9,8 +9,8 @@ describe('CLFeeRatesComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [CLFeeRatesComponent]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

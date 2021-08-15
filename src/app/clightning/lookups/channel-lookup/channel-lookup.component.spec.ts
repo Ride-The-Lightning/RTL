@@ -21,8 +21,8 @@ describe('CLChannelLookupComponent', () => {
           }
         })
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

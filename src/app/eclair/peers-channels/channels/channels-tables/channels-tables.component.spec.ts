@@ -31,8 +31,8 @@ describe('ECLChannelsTablesComponent', () => {
       providers: [
         { provide: LoggerService, useClass: mockLoggerService }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

@@ -12,8 +12,8 @@ describe('ChannelCapacityInfoComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ChannelCapacityInfoComponent],
       imports: [SharedModule, RouterTestingModule]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

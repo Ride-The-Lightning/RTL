@@ -18,8 +18,8 @@ describe('HorizontalScrollerComponent', () => {
         SharedModule
       ],
       providers: [LoggerService]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

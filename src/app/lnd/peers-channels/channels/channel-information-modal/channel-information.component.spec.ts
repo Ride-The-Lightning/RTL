@@ -22,10 +22,10 @@ describe('ChannelInformationComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {channel:{}} }
+        { provide: MAT_DIALOG_DATA, useValue: {channel: {}} }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

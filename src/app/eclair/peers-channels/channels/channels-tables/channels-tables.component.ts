@@ -33,13 +33,13 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.activeLink = this.links.findIndex(link => link.link === this.router.url.substring(this.router.url.lastIndexOf('/') + 1));
-    this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd))
-    .subscribe((value: ResolveEnd) => {
+    this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd)).
+    subscribe((value: ResolveEnd) => {
       this.activeLink = this.links.findIndex(link => link.link === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
     });
-    this.store.select('ecl')
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe((rtlStore) => {
+    this.store.select('ecl').
+    pipe(takeUntil(this.unSubs[1])).
+    subscribe((rtlStore) => {
       this.numOfOpenChannels = (rtlStore.channelsStatus && rtlStore.channelsStatus.active && rtlStore.channelsStatus.active.channels) ? rtlStore.channelsStatus.active.channels : 0;
       this.numOfPendingChannels = (rtlStore.channelsStatus && rtlStore.channelsStatus.pending && rtlStore.channelsStatus.pending.channels) ? rtlStore.channelsStatus.pending.channels : 0;
       this.numOfInactiveChannels = (rtlStore.channelsStatus && rtlStore.channelsStatus.inactive && rtlStore.channelsStatus.inactive.channels) ? rtlStore.channelsStatus.inactive.channels : 0;

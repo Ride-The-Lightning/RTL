@@ -10,7 +10,7 @@ exports.signMessage = (req, res, next) => {
   options.form = { message: req.body.message };
   request.post(options, (error, response, body) => {
     logger.log({level: 'DEBUG', fileName: 'Messages', msg: 'Message Signed', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Messages', msg: 'Message Sign Error', error: body.error});
       res.status(500).json({
         message: "Sign message failed!",
@@ -43,7 +43,7 @@ exports.verifyMessage = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/utility/checkMessage/' + req.body.message + '/' + req.body.signature;
   request.get(options, (error, response, body) => {
     logger.log({level: 'DEBUG', fileName: 'Messages', msg: 'Message Verified', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Messages', msg: 'Verify Message Error', error: body.error});
       res.status(500).json({
         message: "Verify message failed!",

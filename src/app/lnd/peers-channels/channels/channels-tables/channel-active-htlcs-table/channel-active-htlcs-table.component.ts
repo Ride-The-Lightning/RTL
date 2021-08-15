@@ -43,13 +43,13 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['amount', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
+    } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['amount', 'incoming', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['amount', 'incoming', 'expiration_height', 'actions'];
     } else {
@@ -59,9 +59,9 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
   }
 
   ngOnInit() {
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('lnd').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.errorMessage = '';
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.ERROR) {
@@ -138,7 +138,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
   }
 
   onDownloadCSV() {
-    if(this.channels.data && this.channels.data.length > 0) {
+    if (this.channels.data && this.channels.data.length > 0) {
       this.commonService.downloadFile(this.flattenHTLCs(), 'ActiveHTLCs');
     }
   }

@@ -45,15 +45,16 @@ export class CLCreateInvoiceComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageSize = this.data.pageSize;
-    this.store.select('cl')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('cl').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
     });
-    this.actions.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === CLActions.UPDATE_API_CALL_STATUS_CL || action.type === CLActions.ADD_INVOICE_CL))
-    .subscribe((action: CLActions.UpdateAPICallStatus | CLActions.AddInvoice) => {
+    this.actions.pipe(
+    takeUntil(this.unSubs[1]),
+    filter(action => action.type === CLActions.UPDATE_API_CALL_STATUS_CL || action.type === CLActions.ADD_INVOICE_CL)).
+    subscribe((action: CLActions.UpdateAPICallStatus | CLActions.AddInvoice) => {
       if (action.type === CLActions.ADD_INVOICE_CL) {
         this.dialogRef.close();
       }
@@ -65,7 +66,7 @@ export class CLCreateInvoiceComponent implements OnInit, OnDestroy {
 
   onAddInvoice(form: any) {
     this.invoiceError = '';
-    if(!this.invoiceValue) { this.invoiceValue = 0; }
+    if (!this.invoiceValue) { this.invoiceValue = 0; }
     let expiryInSecs = (this.expiry ? this.expiry : 3600);
     if (this.selTimeUnit !== TimeUnitEnum.SECS) {
       expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
@@ -77,20 +78,20 @@ export class CLCreateInvoiceComponent implements OnInit, OnDestroy {
 
   resetData() {
     this.description = '';
-    this.invoiceValue = undefined;
+    this.invoiceValue = null;
     this.private = false;
-    this.expiry = undefined;
+    this.expiry = null;
     this.invoiceValueHint = '';
     this.selTimeUnit = TimeUnitEnum.SECS;
     this.invoiceError = '';
   }
 
   onInvoiceValueChange() {
-    if(this.selNode.fiatConversion && this.invoiceValue > 99) {
+    if (this.selNode.fiatConversion && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
-      this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
-      .pipe(takeUntil(this.unSubs[2]))
-      .subscribe({next: data => {
+      this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
+      pipe(takeUntil(this.unSubs[2])).
+      subscribe({next: data => {
         this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
       }, error: err => {
         this.invoiceValueHint = 'Conversion Error: ' + err;
@@ -99,7 +100,7 @@ export class CLCreateInvoiceComponent implements OnInit, OnDestroy {
   }
 
   onTimeUnitChange(event: any) {
-    if(this.expiry && this.selTimeUnit !== event.value) {
+    if (this.expiry && this.selTimeUnit !== event.value) {
       this.expiry = this.commonService.convertTime(this.expiry, this.selTimeUnit, event.value);
     }
     this.selTimeUnit = event.value;

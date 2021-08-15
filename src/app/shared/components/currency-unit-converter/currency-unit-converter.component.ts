@@ -25,44 +25,44 @@ export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDest
   constructor(public commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
-    this.store.select('root')
-    .pipe(first())
-    .subscribe((rtlStore) => {
+    this.store.select('root').
+    pipe(first()).
+    subscribe((rtlStore) => {
       this.fiatConversion = rtlStore.selNode.settings.fiatConversion;
       this.currencyUnits = rtlStore.selNode.settings.currencyUnits;
-      if(!this.fiatConversion) {
+      if (!this.fiatConversion) {
         this.currencyUnits.splice(2, 1);
       }
-      if(this.currencyUnits.length > 1 && this.values[0] && this.values[0].dataValue >= 0) {
+      if (this.currencyUnits.length > 1 && this.values[0] && this.values[0].dataValue >= 0) {
         this.getCurrencyValues(this.values);
       }
     });
   }
 
   ngOnChanges() {
-    if(this.currencyUnits.length > 1 && this.values[0] && this.values[0].dataValue >= 0) {
+    if (this.currencyUnits.length > 1 && this.values[0] && this.values[0].dataValue >= 0) {
       this.getCurrencyValues(this.values);
     }
   }
 
   getCurrencyValues(values) {
     values.forEach(value => {
-      if(value.dataValue > 0) {
-        this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.BTC, '', true)
-        .pipe(takeUntil(this.unSubs[1]))
-        .subscribe(data => {
+      if (value.dataValue > 0) {
+        this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.BTC, '', true).
+        pipe(takeUntil(this.unSubs[1])).
+        subscribe(data => {
           value[CurrencyUnitEnum.BTC] = data.BTC;
         });
-        this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.currencyUnits[2], this.fiatConversion)
-        .pipe(takeUntil(this.unSubs[2]))
-        .subscribe({next: data => {
+        this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.currencyUnits[2], this.fiatConversion).
+        pipe(takeUntil(this.unSubs[2])).
+        subscribe({next: data => {
           value[CurrencyUnitEnum.OTHER] = data.OTHER;
         }, error: err => {
           this.conversionErrorMsg = 'Conversion Error: ' + err;
         }});
       } else {
         value[CurrencyUnitEnum.BTC] = value.dataValue;
-        if(this.conversionErrorMsg === '') {
+        if (this.conversionErrorMsg === '') {
           value[CurrencyUnitEnum.OTHER] = value.dataValue;
         }
       }

@@ -47,15 +47,15 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
 
   ngOnInit() {
     this.store.dispatch(new LNDActions.RestoreChannelsList());
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('lnd').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.selNode = rtlStore.nodeSettings;
       this.logger.info(rtlStore);
     });
-    this.lndEffects.setRestoreChannelList
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((resRCList) => {
+    this.lndEffects.setRestoreChannelList.
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((resRCList) => {
       this.allRestoreExists = resRCList.all_restore_exists;
       this.channelsData = resRCList.files;
       if (this.channelsData.length > 0) {

@@ -139,9 +139,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe((rtlStore) => {
+    this.store.select('lnd').
+    pipe(takeUntil(this.unSubs[1])).
+    subscribe((rtlStore) => {
       this.errorMessages = ['', '', '', '', ''];
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) {
@@ -170,12 +170,12 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.balances.lightning = rtlStore.totalLocalBalance;
       this.balances.total = this.balances.lightning + this.balances.onchain;
       this.balances = Object.assign({}, this.balances);
-      this.activeChannels =  rtlStore.numberOfActiveChannels;
+      this.activeChannels = rtlStore.numberOfActiveChannels;
       this.inactiveChannels = rtlStore.numberOfInactiveChannels;
       this.channelsStatus = {
         active: { channels: rtlStore.numberOfActiveChannels, capacity: rtlStore.totalCapacityActive },
         inactive: { channels: rtlStore.numberOfInactiveChannels, capacity: rtlStore.totalCapacityInactive },
-        pending: { channels:  rtlStore.numberOfPendingChannels.open.num_channels, capacity: rtlStore.numberOfPendingChannels.open.limbo_balance },
+        pending: { channels: rtlStore.numberOfPendingChannels.open.num_channels, capacity: rtlStore.numberOfPendingChannels.open.limbo_balance },
         closing: {
           channels: rtlStore.numberOfPendingChannels.closing.num_channels + rtlStore.numberOfPendingChannels.force_closing.num_channels + rtlStore.numberOfPendingChannels.waiting_close.num_channels,
           capacity: rtlStore.numberOfPendingChannels.total_limbo_balance
@@ -198,13 +198,14 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
       this.logger.info(rtlStore);
     });
-    this.actions.pipe(takeUntil(this.unSubs[2]),
-    filter((action) => action.type === LNDActions.FETCH_FEES_LND || action.type === LNDActions.SET_FEES_LND))
-    .subscribe(action => {
-      if(action.type === LNDActions.FETCH_FEES_LND) {
+    this.actions.pipe(
+    takeUntil(this.unSubs[2]),
+    filter((action) => action.type === LNDActions.FETCH_FEES_LND || action.type === LNDActions.SET_FEES_LND)).
+    subscribe(action => {
+      if (action.type === LNDActions.FETCH_FEES_LND) {
         this.flgChildInfoUpdated = false;
       }
-      if(action.type === LNDActions.SET_FEES_LND) {
+      if (action.type === LNDActions.SET_FEES_LND) {
         this.flgChildInfoUpdated = true;
       }
     });
@@ -216,14 +217,14 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   onsortChannelsBy() {
     if (this.sortField === 'Balance Score') {
-      this.sortField =  'Capacity';
-      this.allChannelsCapacity = this.allChannels.sort(function(a, b) {
+      this.sortField = 'Capacity';
+      this.allChannelsCapacity = this.allChannels.sort((a, b) => {
         const x = +a.local_balance + +a.remote_balance;
         const y = +b.local_balance + +b.remote_balance;
         return ((x > y) ? -1 : ((x < y) ? 1 : 0));
       });
     } else {
-      this.sortField =  'Balance Score';
+      this.sortField = 'Balance Score';
       this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'balancedness')));
     }
   }

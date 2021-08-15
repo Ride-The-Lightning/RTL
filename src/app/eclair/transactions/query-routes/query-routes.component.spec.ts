@@ -35,8 +35,8 @@ describe('ECLQueryRoutesComponent', () => {
         { provide: DataService, useClass: mockDataService },
         { provide: ECLEffects, useClass: mockECLEffects }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

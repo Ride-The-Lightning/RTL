@@ -154,7 +154,7 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
       let localBal = 0, remoteBal = 0, activeChannels = 0, inactiveChannels = 0, totalCapacityActive = 0, totalCapacityInactive = 0;
       if (action.payload) {
         action.payload.forEach(channel => {
-          if(!channel.local_balance) { channel.local_balance = 0; }
+          if (!channel.local_balance) { channel.local_balance = 0; }
           if (channel.active === true) {
             totalCapacityActive = totalCapacityActive + +channel.local_balance;
             activeChannels = activeChannels + 1;
@@ -275,7 +275,7 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
                 event.alias_out = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : event.chan_id_out;
                 if (event.alias_in) { return; }
               }
-              if(idx === storedChannels.length-1) {
+              if (idx === storedChannels.length-1) {
                 if (!event.alias_in) { event.alias_in = event.chan_id_in; }
                 if (!event.alias_out) { event.alias_out = event.chan_id_out; }
               }

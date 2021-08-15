@@ -53,13 +53,13 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'toLocal', 'toRemote', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
+    } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['shortChannelId', 'alias', 'toLocal', 'toRemote', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['shortChannelId', 'alias', 'feeBaseMsat', 'feeProportionalMillionths', 'toLocal', 'toRemote', 'actions'];
     } else {
@@ -69,9 +69,9 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngOnInit() {
-    this.store.select('ecl')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('ecl').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.errorMessage = '';
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
@@ -95,7 +95,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   onChannelUpdate(channelToUpdate: any) {
-    if(channelToUpdate !== 'all' && channelToUpdate.state !== 'NORMAL') {
+    if (channelToUpdate !== 'all' && channelToUpdate.state !== 'NORMAL') {
       return;
     }
     const titleMsg = channelToUpdate === 'all' ? 'Update fee policy for selected/all channels' : 'Update fee policy for Channel: ' + channelToUpdate.channelId;
@@ -113,9 +113,9 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
         {placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: channelToUpdate && channelToUpdate.feeProportionalMillionths ? channelToUpdate.feeProportionalMillionths : 100, min: 1, width: 48, hintFunction: this.percentHintFunction}
       ]
     }}));
-    this.rtlEffects.closeConfirm
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe(confirmRes => {
+    this.rtlEffects.closeConfirm.
+    pipe(takeUntil(this.unSubs[1])).
+    subscribe(confirmRes => {
       if (confirmRes) {
         const base_fee = confirmRes[0].inputValue;
         const fee_rate = confirmRes[1].inputValue;
@@ -149,9 +149,9 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       noBtnText: 'Cancel',
       yesBtnText: yesBtnText
     }}));
-    this.rtlEffects.closeConfirm
-    .pipe(takeUntil(this.unSubs[3]))
-    .subscribe(confirmRes => {
+    this.rtlEffects.closeConfirm.
+    pipe(takeUntil(this.unSubs[3])).
+    subscribe(confirmRes => {
       if (confirmRes) {
         this.store.dispatch(new ECLActions.CloseChannel({channelId: channelToClose.channelId, force: forceClose}));
       }
@@ -171,7 +171,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
     }
 
   loadChannelsTable() {
-    this.activeChannels.sort(function(a, b) {
+    this.activeChannels.sort((a, b) => {
       return (a.alias === b.alias) ? 0 : ((b.alias) ? 1 : -1);
     });
     this.channels = new MatTableDataSource<Channel>([...this.activeChannels]);
@@ -183,7 +183,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   onDownloadCSV() {
-    if(this.channels.data && this.channels.data.length > 0) {
+    if (this.channels.data && this.channels.data.length > 0) {
       this.commonService.downloadFile(this.channels.data, 'ActiveChannels');
     }
   }

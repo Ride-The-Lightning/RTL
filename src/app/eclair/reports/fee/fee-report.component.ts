@@ -43,9 +43,9 @@ export class ECLFeeReportComponent implements OnInit, AfterContentInit, OnDestro
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select('ecl')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('ecl').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.events = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
       this.filterForwardingEvents(this.startDate, this.endDate);
       this.logger.info(rtlStore);
@@ -95,7 +95,7 @@ export class ECLFeeReportComponent implements OnInit, AfterContentInit, OnDestro
   }
 
   onChartBarSelected(event) {
-    if(this.reportPeriod === SCROLL_RANGES[1]) {
+    if (this.reportPeriod === SCROLL_RANGES[1]) {
       this.eventFilterValue = event.name + '/' + this.startDate.getFullYear();
     } else {
       this.eventFilterValue = event.name.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
@@ -115,6 +115,7 @@ export class ECLFeeReportComponent implements OnInit, AfterContentInit, OnDestro
         feeReport[monthNumber].value = feeReport[monthNumber].value + (event.amountIn - event.amountOut);
         feeReport[monthNumber].extra.totalEvents = feeReport[monthNumber].extra.totalEvents + 1;
         this.totalFeeSat = (this.totalFeeSat ? this.totalFeeSat : 0) + (event.amountIn - event.amountOut);
+        return this.filteredEventsBySelectedPeriod;
       });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
@@ -125,6 +126,7 @@ export class ECLFeeReportComponent implements OnInit, AfterContentInit, OnDestro
         feeReport[dateNumber].value = feeReport[dateNumber].value + (event.amountIn - event.amountOut);
         feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
         this.totalFeeSat = (this.totalFeeSat ? this.totalFeeSat : 0) + (event.amountIn - event.amountOut);
+        return this.filteredEventsBySelectedPeriod;
       });
     }
     this.logger.info('Fee Report Prepare Finished at ' + new Date(Date.now()).toLocaleString());

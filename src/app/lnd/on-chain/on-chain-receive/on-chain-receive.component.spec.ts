@@ -28,8 +28,8 @@ describe('OnChainReceiveComponent', () => {
       providers: [
         { provide: LNDEffects, useClass: mockLNDEffects }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

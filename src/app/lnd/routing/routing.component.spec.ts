@@ -25,8 +25,8 @@ describe('RoutingComponent', () => {
           }
         })
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

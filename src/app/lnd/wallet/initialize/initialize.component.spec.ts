@@ -26,8 +26,8 @@ describe('InitializeWalletComponent', () => {
       providers: [
         { provide: LNDEffects, useClass: mockLNDEffects }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

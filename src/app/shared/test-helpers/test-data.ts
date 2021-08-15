@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-export const mockResponseData = ({
+export const mockResponseData = {
 	fiatRates: {
 		USD: {
 			'15m': 33438.82,
@@ -690,7 +690,7 @@ export const mockResponseData = ({
 		message: 'Request Failed!',
 		error: 'Request failed.'
 	}
-});
+};
 
 export const mockActionsData = {
 	resetRootStore: {
@@ -1458,7 +1458,7 @@ export const mockRTLStoreState = {
 		},
 		networkInfo: {
 			graph_diameter: 0,
-			avg_out_degree: 4.6249622242369299,
+			avg_out_degree: 4.62496222423692,
 			max_out_degree: 779,
 			num_nodes: 3309,
 			num_channels: 7652,

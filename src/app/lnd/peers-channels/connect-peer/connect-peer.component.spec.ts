@@ -33,11 +33,11 @@ describe('ConnectPeerComponent', () => {
       providers: [
         LoggerService,
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {message:{}} },
+        { provide: MAT_DIALOG_DATA, useValue: {message: {}} },
         { provide: LNDEffects, useClass: mockLNDEffects }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

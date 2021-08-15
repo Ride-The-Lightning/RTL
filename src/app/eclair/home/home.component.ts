@@ -58,7 +58,7 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private commonService: CommonService, private router: Router) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.operatorCards = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 10, rows: 1 },
         { id: 'balance', goTo: 'On-Chain', link: '/ecl/onchain', icon: this.faChartPie, title: 'Balances', cols: 10, rows: 1 },
@@ -72,7 +72,7 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
         { id: 'inboundLiq', goTo: 'Channels', link: '/ecl/connections', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 6, rows: 8 },
         { id: 'outboundLiq', goTo: 'Channels', link: '/ecl/connections', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 6, rows: 8 }
       ];
-    } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
       this.operatorCards = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 5, rows: 1 },
         { id: 'balance', goTo: 'On-Chain', link: '/ecl/onchain', icon: this.faChartPie, title: 'Balances', cols: 5, rows: 1 },
@@ -106,9 +106,9 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('ecl')
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe((rtlStore) => {
+    this.store.select('ecl').
+    pipe(takeUntil(this.unSubs[1])).
+    subscribe((rtlStore) => {
       this.errorMessages = ['', '', '', ''];
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) {
@@ -156,14 +156,14 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
 
   onsortChannelsBy() {
     if (this.sortField === 'Balance Score') {
-      this.sortField =  'Capacity';
-      this.allChannelsCapacity = this.channels.sort(function(a, b) {
+      this.sortField = 'Capacity';
+      this.allChannelsCapacity = this.channels.sort((a, b) => {
         const x = +a.toLocal + +a.toRemote;
         const y = +b.toLocal + +b.toRemote;
         return ((x > y) ? -1 : ((x < y) ? 1 : 0));
       });
     } else {
-      this.sortField =  'Balance Score';
+      this.sortField = 'Balance Score';
       this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels, 'balancedness')));
     }
   }

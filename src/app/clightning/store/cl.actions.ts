@@ -306,7 +306,7 @@ export class SetUTXOs implements Action {
   constructor(public payload: UTXO[]) {}
 }
 
-export type CLActions =   UpdateAPICallStatus | ResetCLStore |
+export type CLActions = UpdateAPICallStatus | ResetCLStore |
 SetChildNodeSettings | FetchInfo | SetInfo | FetchFees | SetFees | FetchFeeRates | SetFeeRates |
 FetchBalance | SetBalance | FetchLocalRemoteBalance | SetLocalRemoteBalance |
 GetNewAddress | SetNewAddress | FetchUTXOs | SetUTXOs |

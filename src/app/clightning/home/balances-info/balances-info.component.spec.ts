@@ -11,8 +11,8 @@ describe('CLBalancesInfoComponent', () => {
     TestBed.configureTestingModule({
       declarations: [CLBalancesInfoComponent],
       imports: [SharedModule]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

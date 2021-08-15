@@ -72,9 +72,10 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
         this.channelFormGroup.controls.minConfValue.setValidators(null);
       }
     });
-    this.actions.pipe(takeUntil(this.unSubs[1]),
-    filter((action) => action.type === CLActions.NEWLY_ADDED_PEER_CL || action.type === CLActions.FETCH_CHANNELS_CL || action.type === CLActions.UPDATE_API_CALL_STATUS_CL))
-    .subscribe((action: (CLActions.NewlyAddedPeer | CLActions.FetchChannels | CLActions.UpdateAPICallStatus)) => {
+    this.actions.pipe(
+    takeUntil(this.unSubs[1]),
+    filter((action) => action.type === CLActions.NEWLY_ADDED_PEER_CL || action.type === CLActions.FETCH_CHANNELS_CL || action.type === CLActions.UPDATE_API_CALL_STATUS_CL)).
+    subscribe((action: (CLActions.NewlyAddedPeer | CLActions.FetchChannels | CLActions.UpdateAPICallStatus)) => {
       if (action.type === CLActions.NEWLY_ADDED_PEER_CL) {
         this.logger.info(action.payload);
         this.flgEditable = false;
@@ -96,7 +97,7 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
   }
 
   onConnectPeer(): boolean|void {
-    if(!this.peerFormGroup.controls.peerAddress.value) { return true; }
+    if (!this.peerFormGroup.controls.peerAddress.value) { return true; }
     this.peerConnectionError = '';
     this.store.dispatch(new CLActions.SaveNewPeer({id: this.peerFormGroup.controls.peerAddress.value}));
 }

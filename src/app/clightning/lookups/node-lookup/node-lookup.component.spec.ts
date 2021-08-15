@@ -13,8 +13,8 @@ describe('CLNodeLookupComponent', () => {
       declarations: [CLNodeLookupComponent],
       imports: [SharedModule],
       providers: [LoggerService]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

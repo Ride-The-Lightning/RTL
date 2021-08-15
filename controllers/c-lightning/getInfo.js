@@ -21,7 +21,7 @@ exports.getInfo = (req, res, next) => {
       logger.log({level: 'DEBUG', fileName: 'GetInfo', msg: 'Node Information', data: body});
       const body_str = (!body) ? '' : JSON.stringify(body);
       const search_idx = (!body) ? -1 : body_str.search('Not Found');
-      if(!body || search_idx > -1 || body.error) {
+      if (!body || search_idx > -1 || body.error) {
         logger.log({level: 'ERROR', fileName: 'GetInfo', msg: 'Get Info Error', error: body.error});
         res.status(500).json({
           message: "Fetching Info failed!",

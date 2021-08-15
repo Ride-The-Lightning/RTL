@@ -31,8 +31,8 @@ describe('TransactionsReportComponent', () => {
         CommonService,
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

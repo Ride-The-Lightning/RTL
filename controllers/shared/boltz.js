@@ -6,7 +6,7 @@ var options = {};
 exports.getInfo = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Getting Boltz Information..'});
   options = common.getBoltzServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Boltz Get Info Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
+  if (options.url === '') { return res.status(500).json({message: "Boltz Get Info Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
   options.url = options.url + '/v1/info';
   request(options).then(function (body) {
     logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Boltz Information Received'});
@@ -32,7 +32,7 @@ exports.getInfo = (req, res, next) => {
 exports.getServiceInfo = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Getting Service Information..'});
   options = common.getBoltzServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Boltz Get Service Info Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
+  if (options.url === '') { return res.status(500).json({message: "Boltz Get Service Info Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
   options.url = options.url + '/v1/serviceinfo';
   request(options).then(function (body) {
     logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Service Information Received'});
@@ -58,7 +58,7 @@ exports.getServiceInfo = (req, res, next) => {
 exports.listSwaps = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Getting List Swaps..'});
   options = common.getBoltzServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Boltz List Swaps Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
+  if (options.url === '') { return res.status(500).json({message: "Boltz List Swaps Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
   options.url = options.url + '/v1/listswaps';
   request(options).then(function (body) {
     logger.log({level: 'DEBUG', fileName: 'Boltz', msg: 'Boltz List Swaps Info', data: body});
@@ -86,7 +86,7 @@ exports.listSwaps = (req, res, next) => {
 exports.getSwapInfo = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Getting Swap..'});
   options = common.getBoltzServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Boltz Swap Info Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
+  if (options.url === '') { return res.status(500).json({message: "Boltz Swap Info Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
   options.url = options.url + '/v1/swap/' + req.params.swapId;
   request(options).then(function (body) {
     logger.log({level: 'DEBUG', fileName: 'Boltz', msg: 'Boltz Swap Info', data: body});
@@ -112,14 +112,14 @@ exports.getSwapInfo = (req, res, next) => {
 exports.createSwap = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Creating Swap..'});
   options = common.getBoltzServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Create Swap Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
+  if (options.url === '') { return res.status(500).json({message: "Create Swap Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
   options.url = options.url + '/v1/createswap';
   options.body = { amount: req.body.amount };
   if (req.body.address !== '') { options.body.address = req.body.address; }
   logger.log({level: 'DEBUG', fileName: 'Boltz', msg: 'Create Swap Body', data: options.body});
   request.post(options).then(createSwapRes => {
     logger.log({level: 'DEBUG', fileName: 'Boltz', msg: 'Create Swap Response', data: createSwapRes});
-    if(!createSwapRes || createSwapRes.error) {
+    if (!createSwapRes || createSwapRes.error) {
       logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Create Swap Error', error: createSwapRes.error});
       res.status(500).json({
         message: 'Create Swap Failed!',
@@ -149,14 +149,14 @@ exports.createSwap = (req, res, next) => {
 exports.createReverseSwap = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Creating Reverse Swap..'});
   options = common.getBoltzServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Create Reverse Swap Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
+  if (options.url === '') { return res.status(500).json({message: "Create Reverse Swap Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
   options.url = options.url + '/v1/createreverseswap';
   options.body = { amount: req.body.amount };
   if (req.body.address !== '') { options.body.address = req.body.address; }
   logger.log({level: 'DEBUG', fileName: 'Boltz', msg: 'Create Reverse Swap Body', data: options.body});
   request.post(options).then(createReverseSwapRes => {
     logger.log({level: 'DEBUG', fileName: 'Boltz', msg: 'Create Reverse Swap Response', data: createReverseSwapRes});
-    if(!createReverseSwapRes || createReverseSwapRes.error) {
+    if (!createReverseSwapRes || createReverseSwapRes.error) {
       logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Create Reverse Swap Error', error: createReverseSwapRes.error});
       res.status(500).json({
         message: 'Create Reverse Swap Failed!',
@@ -186,14 +186,14 @@ exports.createReverseSwap = (req, res, next) => {
 exports.createChannel = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Creating Boltz Channel..'});
   options = common.getBoltzServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Create Channel Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
+  if (options.url === '') { return res.status(500).json({message: "Create Channel Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
   options.url = options.url + '/v1/createchannel';
   options.body = { amount: req.body.amount };
   if (req.body.address !== '') { options.body.address = req.body.address; }
   logger.log({level: 'DEBUG', fileName: 'Boltz', msg: 'Create Channel Body', data: options.body});
   request.post(options).then(createChannelRes => {
     logger.log({level: 'DEBUG', fileName: 'Boltz', msg: 'Create Channel Response', data: createChannelRes});
-    if(!createChannelRes || createChannelRes.error) {
+    if (!createChannelRes || createChannelRes.error) {
       logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Create Channel Error', error: createChannelRes.error});
       res.status(500).json({
         message: 'Create Channel Failed!',
@@ -223,11 +223,11 @@ exports.createChannel = (req, res, next) => {
 exports.deposit = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Boltz Deposit Start..'});
   options = common.getBoltzServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Deposit Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
+  if (options.url === '') { return res.status(500).json({message: "Deposit Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
   options.url = options.url + '/v1/deposit';
   request.post(options).then(depositRes => {
     logger.log({level: 'DEBUG', fileName: 'Boltz', msg: 'Deposit Response', data: depositRes});
-    if(!depositRes || depositRes.error) {
+    if (!depositRes || depositRes.error) {
       logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Deposit Error', error: depositRes.error});
       res.status(500).json({
         message: 'Deposit Failed!',

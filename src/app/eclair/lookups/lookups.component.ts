@@ -44,27 +44,29 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.actions.pipe(takeUntil(this.unSubs[0]),
-      filter((action) => (action.type === ECLActions.SET_LOOKUP_ECL || action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL))).subscribe((resLookup: ECLActions.SetLookup | ECLActions.UpdateAPICallStatus) => {
-        if(resLookup.type === ECLActions.SET_LOOKUP_ECL) {
-          this.flgLoading[0] = true;
-          switch (this.selectedFieldId) {
-            case 0:
-              this.nodeLookupValue = resLookup.payload[0] ? JSON.parse(JSON.stringify(resLookup.payload[0])) : {nodeid: ''};
-              break;
-            case 1:
-              this.channelLookupValue = resLookup.payload ? JSON.parse(JSON.stringify(resLookup.payload)) : [];
-              break;
-            default:
-              break;
-          }
-          this.flgSetLookupValue = true;
-          this.logger.info(this.nodeLookupValue);
-          this.logger.info(this.channelLookupValue);
+    this.actions.pipe(
+    takeUntil(this.unSubs[0]),
+    filter((action) => (action.type === ECLActions.SET_LOOKUP_ECL || action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL))).
+    subscribe((resLookup: ECLActions.SetLookup | ECLActions.UpdateAPICallStatus) => {
+      if (resLookup.type === ECLActions.SET_LOOKUP_ECL) {
+        this.flgLoading[0] = true;
+        switch (this.selectedFieldId) {
+          case 0:
+            this.nodeLookupValue = resLookup.payload[0] ? JSON.parse(JSON.stringify(resLookup.payload[0])) : {nodeid: ''};
+            break;
+          case 1:
+            this.channelLookupValue = resLookup.payload ? JSON.parse(JSON.stringify(resLookup.payload)) : [];
+            break;
+          default:
+            break;
         }
-        if (resLookup.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && resLookup.payload.status === APICallStatusEnum.ERROR && resLookup.payload.action === 'Lookup') {
-          this.flgLoading[0] = 'error';
-        }
+        this.flgSetLookupValue = true;
+        this.logger.info(this.nodeLookupValue);
+        this.logger.info(this.channelLookupValue);
+      }
+      if (resLookup.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && resLookup.payload.status === APICallStatusEnum.ERROR && resLookup.payload.action === 'Lookup') {
+        this.flgLoading[0] = 'error';
+      }
     });
     this.lookupKeyCtrl.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe(value => {
       this.nodeLookupValue = {};

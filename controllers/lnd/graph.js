@@ -20,7 +20,7 @@ exports.getDescribeGraph = (req, res, next) => {
     const body_str = (!body) ? '' : JSON.stringify(body);
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
     logger.log({level: 'DEBUG', fileName: 'Graph', msg: 'Describe Graph Received', data: body_str});
-    if(!body || search_idx > -1 || body.error) {
+    if (!body || search_idx > -1 || body.error) {
       logger.log({level: 'ERROR', fileName: 'Graph', msg: 'Describe Graph Error', error: body.error});
       res.status(500).json({
         message: "Fetching Describe Graph Failed!",
@@ -55,7 +55,7 @@ exports.getGraphInfo = (req, res, next) => {
     const body_str = (!body) ? '' : JSON.stringify(body);
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
     logger.log({level: 'DEBUG', fileName: 'Graph', msg: 'Network Info Received', data: body_str});
-    if(!body || search_idx > -1 || body.error) {
+    if (!body || search_idx > -1 || body.error) {
       logger.log({level: 'ERROR', fileName: 'Graph', msg: 'Network Info Error', error: body.error});
       res.status(500).json({
         message: "Fetching network Info failed!",
@@ -89,7 +89,7 @@ exports.getGraphNode = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/graph/node/' + req.params.pubKey;
   request(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Graph', msg: 'Node Info Received', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Graph', msg: 'Fetch Node Info Error', error: body.error});
       res.status(500).json({
         message: "Fetching node Info failed!",
@@ -121,7 +121,7 @@ exports.getGraphEdge = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/graph/edge/' + req.params.chanid;
   request(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Graph', msg: 'Edge Info Received', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Graph', msg: 'Fetch Edge Info Error', error: body.error});
       res.status(500).json({
         message: "Fetching Edge Info Failed!",
@@ -151,20 +151,20 @@ exports.getQueryRoutes = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Graph', msg: 'Getting Graph Routes..'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/graph/routes/' + req.params.destPubkey + '/' + req.params.amount;
-  if(req.query.outgoing_chan_id) {
+  if (req.query.outgoing_chan_id) {
     options.url = options.url + '?outgoing_chan_id=' + req.query.outgoing_chan_id;
   }
   logger.log({level: 'DEBUG', fileName: 'Graph', msg: 'Query Routes URL', data: options.url});
   request(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Graph', msg: 'Query Routes Received', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Graph', msg: 'Fetch Query Routes Error', error: body.error});
       res.status(500).json({
         message: "Fetching Query Routes Failed!",
         error: (!body) ? 'Error From Server!' : body.error
       });
     }
-    if(body.routes && body.routes.length && body.routes.length > 0 && body.routes[0].hops && body.routes[0].hops.length && body.routes[0].hops.length > 0) {
+    if (body.routes && body.routes.length && body.routes.length > 0 && body.routes[0].hops && body.routes[0].hops.length && body.routes[0].hops.length > 0) {
       return Promise.all(body.routes[0].hops.map(hop => getAliasFromPubkey(hop.pub_key)))
       .then(function(values) {
         body.routes[0].hops.map((hop, i) => { 
@@ -217,7 +217,7 @@ exports.getRemoteFeePolicy = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/graph/edge/' + req.params.chanid;
   request(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Graph', msg: 'Edge Info Received', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Graph', msg: 'Fetch Edge Info Error', error: body.error});
       res.status(500).json({
         message: "Fetching Edge Info Failed!",
@@ -225,13 +225,13 @@ exports.getRemoteFeePolicy = (req, res, next) => {
       });
     }
     remoteNodeFee = {};
-    if(body.node1_pub === req.params.localPubkey){
+    if (body.node1_pub === req.params.localPubkey){
       remoteNodeFee = {
         time_lock_delta: body.node2_policy.time_lock_delta,
         fee_base_msat: body.node2_policy.fee_base_msat,
         fee_rate_milli_msat: body.node2_policy.fee_rate_milli_msat
       };
-    } else if(body.node2_pub === req.params.localPubkey) {
+    } else if (body.node2_pub === req.params.localPubkey) {
       remoteNodeFee = {
         time_lock_delta: body.node1_policy.time_lock_delta,
         fee_base_msat: body.node1_policy.fee_base_msat,

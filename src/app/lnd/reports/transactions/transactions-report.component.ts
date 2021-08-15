@@ -30,7 +30,7 @@ export class TransactionsReportComponent implements OnInit, AfterContentInit, On
   public startDate = new Date(this.today.getFullYear(), this.today.getMonth(), 1, 0, 0, 0);
   public endDate = new Date(this.today.getFullYear(), this.today.getMonth(), this.getMonthDays(this.today.getMonth(), this.today.getFullYear()), 23, 59, 59);
   public transactionsReportData: any = [{date: '', name: '1', series: [{extra: {total: 0.0}, name: 'Paid', value: 0.0}, {extra: {total: 0.0}, name: 'Received', value: 0.0}]}];
-  public transactionsNonZeroReportData: any = [{amount_paid: 0.0, amount_received: 0.0, date: '',  num_invoices: 0, num_payments: 0}];
+  public transactionsNonZeroReportData: any = [{amount_paid: 0.0, amount_received: 0.0, date: '', num_invoices: 0, num_payments: 0}];
   public view: [number, number] = [350, 350];
   public screenPaddingX = 100;
   public gradient = true;
@@ -49,9 +49,9 @@ export class TransactionsReportComponent implements OnInit, AfterContentInit, On
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('lnd').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.errorMessage = '';
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchLightningTransactions.status === APICallStatusEnum.ERROR) {
@@ -59,7 +59,7 @@ export class TransactionsReportComponent implements OnInit, AfterContentInit, On
       }
       this.payments = rtlStore.allLightningTransactions.paymentsAll ? rtlStore.allLightningTransactions.paymentsAll.payments : [];
       this.invoices = rtlStore.allLightningTransactions.invoicesAll ? rtlStore.allLightningTransactions.invoicesAll.invoices : [];
-      if(this.payments.length > 0 || this.invoices.length > 0) {
+      if (this.payments.length > 0 || this.invoices.length > 0) {
         this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
         this.transactionsNonZeroReportData = this.prepareTableData();
       }
@@ -91,7 +91,7 @@ export class TransactionsReportComponent implements OnInit, AfterContentInit, On
   }
 
   onChartBarSelected(event) {
-    if(this.reportPeriod === SCROLL_RANGES[1]) {
+    if (this.reportPeriod === SCROLL_RANGES[1]) {
       this.transactionFilterValue = event.series + '/' + this.startDate.getFullYear();
     } else {
       this.transactionFilterValue = event.series.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
@@ -117,12 +117,14 @@ export class TransactionsReportComponent implements OnInit, AfterContentInit, On
         this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + (+payment.value_msat) + (+payment.fee_msat);
         transactionsReport[monthNumber].series[0].value = transactionsReport[monthNumber].series[0].value + ((+payment.value_msat + +payment.fee_msat) / 1000);
         transactionsReport[monthNumber].series[0].extra.total = transactionsReport[monthNumber].series[0].extra.total + 1;
+        return this.transactionsReportSummary;
       });
       filteredInvoices.map(invoice => {
         let monthNumber = new Date((+invoice.creation_date)*1000).getMonth();
         this.transactionsReportSummary.amountReceivedSelectedPeriod = this.transactionsReportSummary.amountReceivedSelectedPeriod + (+invoice.amt_paid_msat);
         transactionsReport[monthNumber].series[1].value = transactionsReport[monthNumber].series[1].value + (+invoice.amt_paid_msat / 1000);
         transactionsReport[monthNumber].series[1].extra.total = transactionsReport[monthNumber].series[1].extra.total + 1;
+        return this.transactionsReportSummary;
       });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
@@ -133,12 +135,14 @@ export class TransactionsReportComponent implements OnInit, AfterContentInit, On
         this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + (+payment.value_msat) + (+payment.fee_msat);
         transactionsReport[dateNumber].series[0].value = transactionsReport[dateNumber].series[0].value + ((+payment.value_msat + +payment.fee_msat) / 1000);
         transactionsReport[dateNumber].series[0].extra.total = transactionsReport[dateNumber].series[0].extra.total + 1;
+        return this.transactionsReportSummary;
       });
       filteredInvoices.map(invoice => {
         let dateNumber = Math.floor((+invoice.creation_date - startDateInSeconds) / this.secondsInADay);
         this.transactionsReportSummary.amountReceivedSelectedPeriod = this.transactionsReportSummary.amountReceivedSelectedPeriod + (+invoice.amt_paid_msat);
         transactionsReport[dateNumber].series[1].value = transactionsReport[dateNumber].series[1].value + (+invoice.amt_paid_msat / 1000);
         transactionsReport[dateNumber].series[1].extra.total = transactionsReport[dateNumber].series[1].extra.total + 1;
+        return this.transactionsReportSummary;
       });
     }
     return transactionsReport;

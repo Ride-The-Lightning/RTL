@@ -36,8 +36,8 @@ describe('ECLChannelInactiveTableComponent', () => {
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
 
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

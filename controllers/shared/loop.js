@@ -6,7 +6,7 @@ var options = {};
 exports.loopOut = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Loop', msg: 'Looping Out..'});
   options = common.getSwapServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  if (options.url === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
   options.url = options.url + '/v1/loop/out';
   options.body = {
     amt: req.body.amount,
@@ -24,7 +24,7 @@ exports.loopOut = (req, res, next) => {
   logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Body', data: options.body});
   request.post(options).then(loopOutRes => {
     logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out', data: loopOutRes});
-    if(!loopOutRes || loopOutRes.error) {
+    if (!loopOutRes || loopOutRes.error) {
       logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop Out Error', error: loopOutRes.error});
       res.status(500).json({
         message: 'Loop Out Failed!',
@@ -54,7 +54,7 @@ exports.loopOut = (req, res, next) => {
 exports.loopOutTerms = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Loop', msg: 'Getting Loop Out Terms..'});
   options = common.getSwapServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Loop Out Terms Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  if (options.url === '') { return res.status(500).json({message: "Loop Out Terms Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
   options.url = options.url + '/v1/loop/out/terms';
   request(options).then(function (body) {
     logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Terms', data: body});
@@ -80,7 +80,7 @@ exports.loopOutTerms = (req, res, next) => {
 exports.loopOutQuote = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Loop', msg: 'Getting Loop Out Quotes..'});
   options = common.getSwapServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Loop Out Quote Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  if (options.url === '') { return res.status(500).json({message: "Loop Out Quote Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
   options.url = options.url + '/v1/loop/out/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
   logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Quote URL', data: options.url});
   request(options).then(function (quoteRes) {
@@ -109,7 +109,7 @@ exports.loopOutQuote = (req, res, next) => {
 exports.loopOutTermsAndQuotes = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Loop', msg: 'Getting Loop Out Terms & Quotes..'});
   options = common.getSwapServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Loop Out Terms And Quotes Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  if (options.url === '') { return res.status(500).json({message: "Loop Out Terms And Quotes Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
   options.url = options.url + '/v1/loop/out/terms';
   request(options).then(function(terms) {
     logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Terms', data: terms});
@@ -162,7 +162,7 @@ exports.loopOutTermsAndQuotes = (req, res, next) => {
 exports.loopIn = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Loop', msg: 'Looping In..'});
   options = common.getSwapServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Loop In Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  if (options.url === '') { return res.status(500).json({message: "Loop In Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
   options.url = options.url + '/v1/loop/in';
   options.body = {
     amt: req.body.amount,
@@ -173,7 +173,7 @@ exports.loopIn = (req, res, next) => {
   logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Body', data: options.body});
   request.post(options).then(function (body) {
     logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop In', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop In Error', error: body.error});
       res.status(500).json({
         message: 'Loop In Failed!',
@@ -203,7 +203,7 @@ exports.loopIn = (req, res, next) => {
 exports.loopInTerms = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Loop', msg: 'Getting Loop In Terms..'});
   options = common.getSwapServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Loop In Terms Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  if (options.url === '') { return res.status(500).json({message: "Loop In Terms Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
   options.url = options.url + '/v1/loop/in/terms';
   request(options).then(function (body) {
     logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Terms', data: body});
@@ -229,7 +229,7 @@ exports.loopInTerms = (req, res, next) => {
 exports.loopInQuote = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Loop', msg: 'Getting Loop In Quotes..'});
   options = common.getSwapServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Loop In Quote Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  if (options.url === '') { return res.status(500).json({message: "Loop In Quote Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
   options.url = options.url + '/v1/loop/in/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
   logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Quote Options', data: options.url});
   request(options).then(function (body) {
@@ -258,7 +258,7 @@ exports.loopInQuote = (req, res, next) => {
 exports.loopInTermsAndQuotes = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Loop', msg: 'Getting Loop In Terms & Quotes..'});
   options = common.getSwapServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Loop In Terms And Quotes Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  if (options.url === '') { return res.status(500).json({message: "Loop In Terms And Quotes Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
   options.url = options.url + '/v1/loop/in/terms';
   request(options).then(function(terms) {
     logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Terms', data: terms});
@@ -311,7 +311,7 @@ exports.loopInTermsAndQuotes = (req, res, next) => {
 exports.swaps = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Loop', msg: 'Getting List Swaps..'});
   options = common.getSwapServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  if (options.url === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
   options.url = options.url + '/v1/loop/swaps';
   request(options).then(function (body) {
     logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop Swaps', data: body});
@@ -341,7 +341,7 @@ exports.swaps = (req, res, next) => {
 exports.swap = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Loop', msg: 'Getting Swap Information..'});
   options = common.getSwapServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  if (options.url === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
   options.url = options.url + '/v1/loop/swap/' + req.params.id;
   request(options).then(function (body) {
     logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop Swap', data: body});

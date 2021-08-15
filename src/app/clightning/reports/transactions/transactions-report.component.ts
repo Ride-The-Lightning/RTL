@@ -44,9 +44,9 @@ export class CLTransactionsReportComponent implements OnInit, AfterContentInit, 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select('cl')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('cl').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.payments = rtlStore.payments;
       this.invoices = rtlStore.invoices.invoices;
       this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
@@ -79,7 +79,7 @@ export class CLTransactionsReportComponent implements OnInit, AfterContentInit, 
   }
 
   onChartBarSelected(event) {
-    if(this.reportPeriod === SCROLL_RANGES[1]) {
+    if (this.reportPeriod === SCROLL_RANGES[1]) {
       this.transactionFilterValue = event.series + '/' + this.startDate.getFullYear();
     } else {
       this.transactionFilterValue = event.series.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
@@ -104,12 +104,14 @@ export class CLTransactionsReportComponent implements OnInit, AfterContentInit, 
         this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + payment.msatoshi_sent;
         transactionsReport[monthNumber].series[0].value = transactionsReport[monthNumber].series[0].value + (payment.msatoshi_sent / 1000);
         transactionsReport[monthNumber].series[0].extra.total = transactionsReport[monthNumber].series[0].extra.total + 1;
+        return this.transactionsReportSummary;
       });
       filteredInvoices.map(invoice => {
         let monthNumber = new Date((+invoice.paid_at)*1000).getMonth();
         this.transactionsReportSummary.amountReceivedSelectedPeriod = this.transactionsReportSummary.amountReceivedSelectedPeriod + invoice.msatoshi_received;
         transactionsReport[monthNumber].series[1].value = transactionsReport[monthNumber].series[1].value + (invoice.msatoshi_received / 1000);
         transactionsReport[monthNumber].series[1].extra.total = transactionsReport[monthNumber].series[1].extra.total + 1;
+        return this.transactionsReportSummary;
       });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
@@ -120,12 +122,14 @@ export class CLTransactionsReportComponent implements OnInit, AfterContentInit, 
         this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + payment.msatoshi_sent;
         transactionsReport[dateNumber].series[0].value = transactionsReport[dateNumber].series[0].value + (payment.msatoshi_sent / 1000);
         transactionsReport[dateNumber].series[0].extra.total = transactionsReport[dateNumber].series[0].extra.total + 1;
+        return this.transactionsReportSummary;
       });
       filteredInvoices.map(invoice => {
         let dateNumber = Math.floor((+invoice.paid_at - startDateInSeconds) / this.secondsInADay);
         this.transactionsReportSummary.amountReceivedSelectedPeriod = this.transactionsReportSummary.amountReceivedSelectedPeriod + invoice.msatoshi_received;
         transactionsReport[dateNumber].series[1].value = transactionsReport[dateNumber].series[1].value + (invoice.msatoshi_received / 1000);
         transactionsReport[dateNumber].series[1].extra.total = transactionsReport[dateNumber].series[1].extra.total + 1;
+        return this.transactionsReportSummary;
       });
     }
     return transactionsReport;

@@ -30,9 +30,9 @@ export class BoltzService implements OnDestroy {
   listSwaps() {
     this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_BOLTZ_SWAPS));
     this.swapUrl = API_URL + environment.BOLTZ_API + '/listSwaps';
-    this.httpClient.get(this.swapUrl)
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe({next: (swapResponse: ListSwaps) => {
+    this.httpClient.get(this.swapUrl).
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe({next: (swapResponse: ListSwaps) => {
       this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_BOLTZ_SWAPS));
       this.swaps = swapResponse;
       this.swapsChanged.next(this.swaps);
@@ -49,13 +49,14 @@ export class BoltzService implements OnDestroy {
   serviceInfo() {
     this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_SERVICE_INFO));
     this.swapUrl = API_URL + environment.BOLTZ_API + '/serviceInfo';
-    return this.httpClient.get(this.swapUrl)
-    .pipe(takeUntil(this.unSubs[1]),
-    map(res => {
-      this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_SERVICE_INFO));
-      return res;
-    }),
-    catchError(err => this.handleErrorWithAlert(UI_MESSAGES.GET_SERVICE_INFO, this.swapUrl, err)));
+    return this.httpClient.get(this.swapUrl).pipe(
+      takeUntil(this.unSubs[1]),
+      map(res => {
+        this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_SERVICE_INFO));
+        return res;
+      }),
+      catchError(err => this.handleErrorWithAlert(UI_MESSAGES.GET_SERVICE_INFO, this.swapUrl, err))
+    );
   }
 
   swapOut(amount: number, address: string) {
@@ -118,7 +119,7 @@ export class BoltzService implements OnDestroy {
       }));
     } else {
       errMsg = this.commonService.extractErrorMessage(err);
-      const errCode = (err.error && err.error.error && err.error.error.code) ? err.error.error.code : (err.error  && err.error.code) ? err.error.code : err.code ? err.code : err.status;
+      const errCode = (err.error && err.error.error && err.error.error.code) ? err.error.error.code : (err.error && err.error.code) ? err.error.code : err.code ? err.code : err.status;
       this.store.dispatch(new RTLActions.OpenAlert({data: {
           type: AlertTypeEnum.ERROR,
           alertTitle: 'ERROR',

@@ -24,8 +24,8 @@ describe('ECLOnChainReceiveComponent', () => {
       providers: [
         { provide: ECLEffects, useClass: mockECLEffects }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

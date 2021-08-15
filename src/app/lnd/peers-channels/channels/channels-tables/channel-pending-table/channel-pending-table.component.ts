@@ -48,12 +48,12 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.displayedOpenColumns = ['remote_alias', 'actions'];
       this.displayedForceClosingColumns = ['remote_alias', 'actions'];
       this.displayedClosingColumns = ['remote_alias', 'actions'];
       this.displayedWaitClosingColumns = ['remote_alias', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
       this.displayedOpenColumns = ['remote_alias', 'commit_fee', 'actions'];
       this.displayedForceClosingColumns = ['remote_alias', 'limbo_balance', 'actions'];
       this.displayedClosingColumns = ['remote_alias', 'remote_balance', 'actions'];
@@ -67,9 +67,9 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngOnInit() {
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('lnd').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.errorMessage = '';
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.ERROR) {
@@ -211,7 +211,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   loadOpenChannelsTable(channels) {
-    channels.sort(function(a, b) {
+    channels.sort((a, b) => {
       return (a.active === b.active) ? 0 : ((b.active) ? -1 : 1);
     });
     this.pendingOpenChannelsLength = (channels.length) ? channels.length : 0;
@@ -223,7 +223,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   loadForceClosingChannelsTable(channels) {
-    channels.sort(function(a, b) {
+    channels.sort((a, b) => {
       return (a.active === b.active) ? 0 : ((b.active) ? -1 : 1);
     });
     this.pendingForceClosingChannelsLength = (channels.length) ? channels.length : 0;
@@ -235,7 +235,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   loadClosingChannelsTable(channels) {
-    channels.sort(function(a, b) {
+    channels.sort((a, b) => {
       return (a.active === b.active) ? 0 : ((b.active) ? -1 : 1);
     });
     this.pendingClosingChannelsLength = (channels.length) ? channels.length : 0;
@@ -247,7 +247,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   loadWaitClosingChannelsTable(channels) {
-    channels.sort(function(a, b) {
+    channels.sort((a, b) => {
       return (a.active === b.active) ? 0 : ((b.active) ? -1 : 1);
     });
     this.pendingWaitClosingChannelsLength = (channels.length) ? channels.length : 0;

@@ -41,9 +41,9 @@ export class TopMenuComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('root')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('root').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.selNode = rtlStore.selNode;
       this.information = rtlStore.nodeData;
       this.flgLoading = (this.information.identity_pubkey) ? false : true;
@@ -52,7 +52,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
           this.informationChain.chain = this.information.chains[0].toString();
           this.informationChain.network = (this.information.testnet) ? 'Testnet' : 'Mainnet';
         } else if (typeof this.information.chains[0] === 'object' && this.information.chains[0].hasOwnProperty('chain')) {
-          const getInfoChain = <GetInfoChain>this.information.chains[0];
+          const getInfoChain = <GetInfoChain> this.information.chains[0];
           this.informationChain.chain = getInfoChain.chain;
           this.informationChain.network = getInfoChain.network;
         }
@@ -62,14 +62,14 @@ export class TopMenuComponent implements OnInit, OnDestroy {
       }
       this.logger.info(rtlStore);
     });
-    this.sessionService.watchSession()
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe(session => {
+    this.sessionService.watchSession().
+    pipe(takeUntil(this.unSubs[1])).
+    subscribe(session => {
       this.showLogout = session.token ? true : false;
       this.flgLoading = session.token ? true : false;
     });
-    this.actions
-    .pipe(
+    this.actions.
+    pipe(
       takeUntil(this.unSubs[2]),
       filter((action) => action.type === RTLActions.LOGOUT)
     ).subscribe(() => {
@@ -81,9 +81,9 @@ export class TopMenuComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenConfirmation({
       data: { type: AlertTypeEnum.CONFIRM, alertTitle: 'Logout', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
     }}));
-    this.rtlEffects.closeConfirm
-    .pipe(takeUntil(this.unSubs[3]))
-    .subscribe(confirmRes => {
+    this.rtlEffects.closeConfirm.
+    pipe(takeUntil(this.unSubs[3])).
+    subscribe(confirmRes => {
       if (confirmRes) {
         this.showLogout = false;
         this.store.dispatch(new RTLActions.Logout());

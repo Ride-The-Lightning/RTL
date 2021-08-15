@@ -40,7 +40,7 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.nodeCardsMerchant = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 6, rows: 3 },
         { id: 'status', icon: this.faNetworkWired, title: 'Channels', cols: 6, rows: 3 },
@@ -68,9 +68,9 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('cl')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('cl').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.errorMessages = ['', '', '', '', '', '', ''];
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) {
@@ -107,7 +107,7 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
       this.channelsStatus = {
         active: { channels: rtlStore.information.num_active_channels, capacity: 0 },
         inactive: { channels: rtlStore.information.num_inactive_channels, capacity: 0 },
-        pending: { channels:  rtlStore.information.num_pending_channels, capacity: 0 }
+        pending: { channels: rtlStore.information.num_pending_channels, capacity: 0 }
       };
 
       this.feeRatesPerKB = rtlStore.feeRatesPerKB;

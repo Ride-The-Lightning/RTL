@@ -17,7 +17,7 @@ import { ScreenSizeEnum } from '../../../shared/services/consts-enums-functions'
 export class InvoiceInformationComponent implements OnInit {
   private scrollContainer: ElementRef;
   @ViewChild('scrollContainer') set container(containerContent: ElementRef) {
-    if(containerContent) { this.scrollContainer = containerContent; }
+    if (containerContent) { this.scrollContainer = containerContent; }
   }
   public faReceipt = faReceipt;
   public showAdvanced = false;
@@ -34,7 +34,7 @@ export class InvoiceInformationComponent implements OnInit {
     this.invoice = this.data.invoice;
     this.newlyAdded = this.data.newlyAdded;
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.qrWidth = 220;
     }
   }

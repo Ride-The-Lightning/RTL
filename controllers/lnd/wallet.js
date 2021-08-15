@@ -13,7 +13,7 @@ exports.genSeed = (req, res, next) => {
     options.url = common.getSelLNServerUrl() + '/v1/genseed';
   }
   request(options).then((body) => {
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Gen Seed Error', error: body.error});
       res.status(500).json({
         message: "Genseed failed!",
@@ -71,20 +71,20 @@ exports.operateWallet = (req, res, next) => {
     logger.log({level: 'DEBUG', fileName: 'Wallet', msg: 'Wallet Response', data: body});
     const body_str = (!body) ? '' : JSON.stringify(body);
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
-    if(!body) {
+    if (!body) {
       logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Wallet Error', error: {error: (error ? error : err_message)}});
       res.status(500).json({
         message: err_message,
         error: (error) ? error : err_message
       });
-    } else if(search_idx > -1) {
+    } else if (search_idx > -1) {
       logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Wallet Error', error: {error: err_message}});
       res.status(500).json({
         message: err_message,
         error: err_message
       });
-    } else if(body.error) {
-      if((body.code === 1 && body.error === 'context canceled') || (body.code === 14 && body.error === 'transport is closing')) {
+    } else if (body.error) {
+      if ((body.code === 1 && body.error === 'context canceled') || (body.code === 14 && body.error === 'transport is closing')) {
         res.status(201).json('Successful');  
       } else {
         logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Wallet Error', error: body.error});
@@ -107,7 +107,7 @@ exports.operateWallet = (req, res, next) => {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
     logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Wallet Error', error: err});
-    if((err.error.code === 1 && err.error.error === 'context canceled') || (err.error.code === 14 && err.error.error === 'transport is closing')) {
+    if ((err.error.code === 1 && err.error.error === 'context canceled') || (err.error.code === 14 && err.error.error === 'transport is closing')) {
       res.status(201).json('Successful');  
     } else {
       res.status(500).json({

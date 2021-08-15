@@ -54,9 +54,9 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   ngOnInit() {
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('lnd').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.errorMessage = '';
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.ERROR) {
@@ -69,14 +69,13 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
       }
       this.logger.info(rtlStore);
     });
-    this.actions.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === LNDActions.SET_ALL_CHANNELS_LND || action.type === RTLActions.SHOW_FILE)
-    ).subscribe((action: LNDActions.SetAllChannels | RTLActions.ShowFile) => {
-      if(action.type === LNDActions.SET_ALL_CHANNELS_LND) {
-        this.selectedChannel = undefined;
+    this.actions.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === LNDActions.SET_ALL_CHANNELS_LND || action.type === RTLActions.SHOW_FILE)).subscribe((action: LNDActions.SetAllChannels | RTLActions.ShowFile) => {
+      if (action.type === LNDActions.SET_ALL_CHANNELS_LND) {
+        this.selectedChannel = null;
       }
-      if(action.type === RTLActions.SHOW_FILE) {
+      if (action.type === RTLActions.SHOW_FILE) {
         this.commonService.downloadFile(action.payload, 'channel-' + (this.selectedChannel.channel_point ? this.selectedChannel.channel_point : 'all'), '.bak', '.bak');
-        this.selectedChannel = undefined;
+        this.selectedChannel = null;
       }
     });
   }

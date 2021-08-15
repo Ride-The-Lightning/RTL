@@ -12,8 +12,8 @@ describe('CLRoutingComponent', () => {
     TestBed.configureTestingModule({
       declarations: [CLRoutingComponent],
       imports: [SharedModule, RouterTestingModule]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

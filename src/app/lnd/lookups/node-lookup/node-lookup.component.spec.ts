@@ -14,8 +14,8 @@ describe('NodeLookupComponent', () => {
       declarations: [NodeLookupComponent],
       imports: [SharedModule],
       providers: [LoggerService]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

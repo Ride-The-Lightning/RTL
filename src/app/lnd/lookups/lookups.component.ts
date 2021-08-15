@@ -42,20 +42,20 @@ export class LookupsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.actions.pipe(takeUntil(this.unSubs[0]), filter((action) => (action.type === LNDActions.SET_LOOKUP_LND || action.type === LNDActions.UPDATE_API_CALL_STATUS_LND)))
-    .subscribe((resLookup: LNDActions.SetLookup | LNDActions.UpdateAPICallStatus) => {
-      if(resLookup.type === LNDActions.SET_LOOKUP_LND) {
+    this.actions.pipe(takeUntil(this.unSubs[0]), filter((action) => (action.type === LNDActions.SET_LOOKUP_LND || action.type === LNDActions.UPDATE_API_CALL_STATUS_LND))).
+    subscribe((resLookup: LNDActions.SetLookup | LNDActions.UpdateAPICallStatus) => {
+      if (resLookup.type === LNDActions.SET_LOOKUP_LND) {
         this.errorMessage = (this.selectedFieldId === 0 && resLookup.payload.hasOwnProperty('node')) ? '' : (this.selectedFieldId === 1 && resLookup.payload.hasOwnProperty('channel_id')) ? '' : this.errorMessage;
         this.lookupValue = JSON.parse(JSON.stringify(resLookup.payload));
         this.flgSetLookupValue = (this.selectedFieldId === 0 && resLookup.payload.hasOwnProperty('node')) ? true : (this.selectedFieldId === 1 && resLookup.payload.hasOwnProperty('channel_id')) ? true : false;
         this.logger.info(this.lookupValue);
       }
-      if(resLookup.type === LNDActions.UPDATE_API_CALL_STATUS_LND && resLookup.payload.action === 'Lookup') {
+      if (resLookup.type === LNDActions.UPDATE_API_CALL_STATUS_LND && resLookup.payload.action === 'Lookup') {
         this.errorMessage = '';
-        if(resLookup.payload.status === APICallStatusEnum.ERROR) {
+        if (resLookup.payload.status === APICallStatusEnum.ERROR) {
           this.errorMessage = (typeof(resLookup.payload.message) === 'object') ? JSON.stringify(resLookup.payload.message) : resLookup.payload.message;
         }
-        if(resLookup.payload.status === APICallStatusEnum.INITIATED) {
+        if (resLookup.payload.status === APICallStatusEnum.INITIATED) {
           this.errorMessage = UI_MESSAGES.GET_LOOKUP_DETAILS;
         }
       }
@@ -63,7 +63,7 @@ export class LookupsComponent implements OnInit, OnDestroy {
   }
 
   onLookup(): boolean|void {
-    if(!this.lookupKey) { return true; }
+    if (!this.lookupKey) { return true; }
     this.flgSetLookupValue = false;
     this.lookupValue = {};
     switch (this.selectedFieldId) {

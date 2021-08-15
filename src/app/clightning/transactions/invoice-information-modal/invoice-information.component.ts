@@ -31,7 +31,7 @@ export class CLInvoiceInformationComponent implements OnInit {
     this.invoice = this.data.invoice;
     this.newlyAdded = this.data.newlyAdded;
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.qrWidth = 220;
     }
   }

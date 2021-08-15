@@ -49,13 +49,13 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
+    } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'sat_sent', 'sat_recv', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'sat_sent', 'sat_recv', 'ping_time', 'actions'];
     } else {
@@ -65,9 +65,9 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('lnd').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.errorMessage = '';
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchPeers.status === APICallStatusEnum.ERROR) {
@@ -135,9 +135,9 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
       noBtnText: 'Cancel',
       yesBtnText: 'Disconnect'
     }}));
-    this.rtlEffects.closeConfirm
-    .pipe(takeUntil(this.unSubs[3]))
-    .subscribe(confirmRes => {
+    this.rtlEffects.closeConfirm.
+    pipe(takeUntil(this.unSubs[3])).
+    subscribe(confirmRes => {
       if (confirmRes) {
         this.store.dispatch(new LNDActions.DetachPeer({pubkey: peerToDetach.pub_key}));
       }
@@ -157,7 +157,7 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onDownloadCSV() {
-    if(this.peers.data && this.peers.data.length > 0) {
+    if (this.peers.data && this.peers.data.length > 0) {
       this.commonService.downloadFile(this.peers.data, 'Peers');
     }
   }

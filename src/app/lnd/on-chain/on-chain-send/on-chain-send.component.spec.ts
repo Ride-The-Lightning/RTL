@@ -23,8 +23,8 @@ describe('OnChainSendComponent', () => {
           }
         })
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

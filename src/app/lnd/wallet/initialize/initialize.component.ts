@@ -81,15 +81,15 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
 
     this.insecureLND = !window.location.protocol.includes('https:');
 
-    this.lndEffects.initWalletRes
-    .pipe(takeUntil(this.unsubs[2]))
-    .subscribe(initWalletResponse => {
+    this.lndEffects.initWalletRes.
+    pipe(takeUntil(this.unsubs[2])).
+    subscribe(initWalletResponse => {
       this.initWalletResponse = initWalletResponse;
     });
 
-    this.lndEffects.genSeedResponse
-    .pipe(takeUntil(this.unsubs[3]))
-    .subscribe(genSeedRes => {
+    this.lndEffects.genSeedResponse.
+    pipe(takeUntil(this.unsubs[3])).
+    subscribe(genSeedRes => {
       this.genSeedResponse = genSeedRes;
       if (this.passphraseFormGroup.controls.enterPassphrase.value) {
         this.store.dispatch(new LNDActions.InitWallet({
@@ -135,7 +135,7 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
   onGoToHome() {
     setTimeout(() => {
       this.store.dispatch(new RTLActions.UpdateSelectedNodeOptions());
-      this.store.dispatch(new LNDActions.FetchInfo({loadPage:'HOME'}));
+      this.store.dispatch(new LNDActions.FetchInfo({loadPage: 'HOME'}));
     }, 1000 * 1);
   }
 

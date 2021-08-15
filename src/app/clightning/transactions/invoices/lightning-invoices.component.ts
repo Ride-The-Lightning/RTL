@@ -65,13 +65,13 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private rtlEffects: RTLEffects, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['expires_at', 'msatoshi', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
+    } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['expires_at', 'description', 'msatoshi', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['expires_at', 'description', 'msatoshi', 'msatoshi_received', 'actions'];
     } else {
@@ -81,9 +81,9 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngOnInit() {
-    this.store.select('cl')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('cl').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.errorMessage = '';
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchInvoices.status === APICallStatusEnum.ERROR) {
@@ -114,7 +114,7 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
   }
 
   onAddInvoice(form: any) {
-    if(!this.invoiceValue) { this.invoiceValue = 0; }
+    if (!this.invoiceValue) { this.invoiceValue = 0; }
     let expiryInSecs = (this.expiry ? this.expiry : 3600);
     this.flgAnimate = true;
     this.newlyAddedInvoiceMemo = 'ulbl' + Math.random().toString(36).slice(2) + Date.now();
@@ -129,9 +129,9 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
     this.store.dispatch(new RTLActions.OpenConfirmation({
       data: { type: 'CONFIRM', titleMessage: 'Delete Expired Invoices', noBtnText: 'Cancel', yesBtnText: 'Delete Invoices' }
     }));
-    this.rtlEffects.closeConfirm
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe(confirmRes => {
+    this.rtlEffects.closeConfirm.
+    pipe(takeUntil(this.unSubs[1])).
+    subscribe(confirmRes => {
       if (confirmRes) {
         this.store.dispatch(new CLActions.DeleteExpiredInvoice());
       }
@@ -159,9 +159,9 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
 
   resetData() {
     this.description = '';
-    this.invoiceValue = undefined;
+    this.invoiceValue = null;
     this.private = false;
-    this.expiry = undefined;
+    this.expiry = null;
     this.invoiceValueHint = '';
   }
 
@@ -170,11 +170,11 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
   }
 
   onInvoiceValueChange() {
-    if(this.selNode.fiatConversion && this.invoiceValue > 99) {
+    if (this.selNode.fiatConversion && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
-      this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
-      .pipe(takeUntil(this.unSubs[1]))
-      .subscribe({next: data => {
+      this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
+      pipe(takeUntil(this.unSubs[1])).
+      subscribe({next: data => {
         this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
       }, error: err => {
         this.invoiceValueHint = 'Conversion Error: ' + err;
@@ -194,7 +194,7 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
   }
 
   onDownloadCSV() {
-    if(this.invoices.data && this.invoices.data.length > 0) {
+    if (this.invoices.data && this.invoices.data.length > 0) {
       this.commonService.downloadFile(this.invoices.data, 'Invoices');
     }
   }

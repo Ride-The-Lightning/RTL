@@ -95,7 +95,7 @@ exports.getChannels = (req, res, next) => {
   } else {
     request.post(options).then(function (body) {
       logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'All Channels', data: body});
-      if(body && body.length) {
+      if (body && body.length) {
         return simplifyAllChannels(body).then(function(simplifiedChannels) {
           logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Simplified Channels with Alias', data: simplifiedChannels});
           logger.log({level: 'INFO', fileName: 'Channels', msg: 'Channels List Received'});
@@ -157,7 +157,7 @@ exports.openChannel = (req, res, next) => {
   logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Open Channel Params', data: options.form});
   request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Open Channel Response', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Open Channel Error', error: body.error});
       res.status(500).json({
         message: 'Open Channel Failed!',

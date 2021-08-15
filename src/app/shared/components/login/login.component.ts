@@ -41,9 +41,9 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
-    this.store.select('root')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('root').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.loginErrorMessage = '';
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.Login.status === APICallStatusEnum.ERROR) {
@@ -61,15 +61,15 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   onLogin(): boolean|void {
-    if(!this.password) { return true; }
+    if (!this.password) { return true; }
     this.loginErrorMessage = '';
     if (this.appConfig.enable2FA) {
       this.store.dispatch(new RTLActions.OpenAlert({ maxWidth: '35rem', data: {
         component: LoginTokenComponent
       }}));
-      this.rtlEffects.closeAlert
-      .pipe(take(1))
-      .subscribe(alertRes => {
+      this.rtlEffects.closeAlert.
+      pipe(take(1)).
+      subscribe(alertRes => {
         if (alertRes) {
           this.store.dispatch(new RTLActions.Login({password: sha256(this.password), defaultPassword: PASSWORD_BLACKLIST.includes(this.password.toLowerCase()), twoFAToken: alertRes.twoFAToken}));
         }

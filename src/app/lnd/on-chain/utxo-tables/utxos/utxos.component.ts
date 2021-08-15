@@ -49,13 +49,13 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['amount_sat', 'confirmations', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
+    } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['tx_id', 'output', 'amount_sat', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['tx_id', 'output', 'label', 'amount_sat', 'confirmations', 'actions'];
     } else {
@@ -65,9 +65,9 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('lnd').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.errorMessage = '';
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchUTXOs.status === APICallStatusEnum.ERROR) {
@@ -153,9 +153,9 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
       noBtnText: 'Cancel',
       yesBtnText: 'Lease UTXO'
     }}));
-    this.rtlEffects.closeConfirm
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe(confirmRes => {
+    this.rtlEffects.closeConfirm.
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe(confirmRes => {
       if (confirmRes) {
         this.dataService.leaseUTXO(utxo.outpoint.txid_bytes, utxo.outpoint.output_index);
       }
@@ -163,7 +163,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   onDownloadCSV() {
-    if(this.listUTXOs.data && this.listUTXOs.data.length > 0) {
+    if (this.listUTXOs.data && this.listUTXOs.data.length > 0) {
       this.commonService.downloadFile(this.listUTXOs.data, 'UTXOs');
     }
   }

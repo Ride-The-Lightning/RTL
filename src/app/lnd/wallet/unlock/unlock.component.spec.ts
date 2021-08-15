@@ -23,8 +23,8 @@ describe('UnlockWalletComponent', () => {
           }
         })
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

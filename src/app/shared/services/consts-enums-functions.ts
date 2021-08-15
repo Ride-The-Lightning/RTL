@@ -105,8 +105,8 @@ export enum ScreenSizeEnum {
   XS = 'XS', // < 600 => mobile handsets
   SM = 'SM', // 600 - 839 => tab portrait
   MD = 'MD', // 840 - 1239 => tab landscape & small laptops
-  LG = 'LG',  // 1240 - 1800 => small laptops
-  XL = 'XL'  // >1801 => big laptops
+  LG = 'LG', // 1240 - 1800 => small laptops
+  XL = 'XL' // >1801 => big laptops
 }
 
 export const CHANNEL_CLOSURE_TYPE = {

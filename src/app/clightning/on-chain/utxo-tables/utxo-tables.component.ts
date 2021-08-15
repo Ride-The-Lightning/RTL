@@ -25,9 +25,9 @@ export class CLUTXOTablesComponent implements OnInit, OnDestroy {
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
-    this.store.select('cl')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('cl').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       if (rtlStore.utxos && rtlStore.utxos.length > 0) {
         this.utxos = rtlStore.utxos;
         this.numUtxos = this.utxos.length;

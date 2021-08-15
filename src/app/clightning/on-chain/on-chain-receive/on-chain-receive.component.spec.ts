@@ -30,8 +30,8 @@ describe('CLOnChainReceiveComponent', () => {
       providers: [
         { provide: CLEffects, useClass: mockCLEffects }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

@@ -35,8 +35,8 @@ describe('QueryRoutesComponent', () => {
         { provide: DataService, useClass: mockDataService },
         { provide: LNDEffects, useClass: mockLNDEffects }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

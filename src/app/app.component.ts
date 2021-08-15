@@ -42,27 +42,29 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   public flgLoggedIn = false;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions,
-    private userIdle: UserIdleService, private router: Router, private sessionService: SessionService, private breakpointObserver: BreakpointObserver, private renderer: Renderer2) {}
+  constructor(
+    private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions,
+    private userIdle: UserIdleService, private router: Router, private sessionService: SessionService, private breakpointObserver: BreakpointObserver, private renderer: Renderer2
+  ) {}
 
   ngOnInit() {
     this.router.events.subscribe((evt) => {
       if (!(evt instanceof NavigationEnd)) { return; }
       document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0);
     });
-    this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.TabletPortrait, Breakpoints.Small, Breakpoints.Medium, Breakpoints.Large, Breakpoints.XLarge])
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((matches) => {
-      if(matches.breakpoints[Breakpoints.XSmall]) {
+    this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.TabletPortrait, Breakpoints.Small, Breakpoints.Medium, Breakpoints.Large, Breakpoints.XLarge]).
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((matches) => {
+      if (matches.breakpoints[Breakpoints.XSmall]) {
         this.commonService.setScreenSize(ScreenSizeEnum.XS);
         this.smallScreen = true;
-      } else if(matches.breakpoints[Breakpoints.TabletPortrait]) {
+      } else if (matches.breakpoints[Breakpoints.TabletPortrait]) {
         this.commonService.setScreenSize(ScreenSizeEnum.SM);
         this.smallScreen = true;
-      } else if(matches.breakpoints[Breakpoints.Small] || matches.breakpoints[Breakpoints.Medium]) {
+      } else if (matches.breakpoints[Breakpoints.Small] || matches.breakpoints[Breakpoints.Medium]) {
         this.commonService.setScreenSize(ScreenSizeEnum.MD);
         this.smallScreen = false;
-      } else if(matches.breakpoints[Breakpoints.Large]) {
+      } else if (matches.breakpoints[Breakpoints.Large]) {
         this.commonService.setScreenSize(ScreenSizeEnum.LG);
         this.smallScreen = false;
       } else {
@@ -72,9 +74,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     this.store.dispatch(new RTLActions.FetchRTLConfig());
     this.accessKey = this.readAccessKey();
-    this.store.select('root')
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe(rtlStore => {
+    this.store.select('root').
+    pipe(takeUntil(this.unSubs[1])).
+    subscribe(rtlStore => {
       this.selNode = rtlStore.selNode;
       this.settings = this.selNode.settings;
       this.appConfig = rtlStore.appConfig;
@@ -92,13 +94,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.sessionService.getItem('defaultPassword') === 'true') {
       this.flgSideNavOpened = false;
     }
-    this.actions.pipe(takeUntil(this.unSubs[2]),
-    filter((action) => action.type === RTLActions.SET_RTL_CONFIG || action.type === RTLActions.LOGOUT))
-    .subscribe((action: (RTLActions.SetRTLConfig | RTLActions.Logout)) => {
+    this.actions.pipe(
+    takeUntil(this.unSubs[2]),
+    filter((action) => action.type === RTLActions.SET_RTL_CONFIG || action.type === RTLActions.LOGOUT)).
+    subscribe((action: (RTLActions.SetRTLConfig | RTLActions.Logout)) => {
       if (action.type === RTLActions.SET_RTL_CONFIG) {
         if (!this.sessionService.getItem('token')) {
           if (+action.payload.sso.rtlSSO) {
-            if(!this.accessKey || this.accessKey.trim().length < 32) {
+            if (!this.accessKey || this.accessKey.trim().length < 32) {
               this.router.navigate(['./error'], { state: {errorCode: '406', errorMessage: 'Access key too short. It should be at least 32 characters long.'} });
             } else {
               this.store.dispatch(new RTLActions.Login({password: sha256(this.accessKey), defaultPassword: false}));
@@ -114,7 +117,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.userIdle.stopTimer();
       }
     });
-    this.userIdle.onTimerStart().pipe(takeUntil(this.unSubs[3])).subscribe(count => {this.logger.info('Counting Down: ' + (11 - count));});
+    this.userIdle.onTimerStart().pipe(takeUntil(this.unSubs[3])).subscribe(count => { this.logger.info('Counting Down: ' + (11 - count)); });
     this.userIdle.onTimeout().pipe(takeUntil(this.unSubs[4])).subscribe(() => {
       this.logger.info('Time Out!');
       if (this.sessionService.getItem('token')) {
@@ -166,7 +169,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   copiedText(payload: string) {
     this.flgCopied = true;
-    setTimeout(() => {this.flgCopied = false; }, 5000);
+    setTimeout(() => { this.flgCopied = false; }, 5000);
     this.logger.info('Copied Text: ' + payload);
   }
 

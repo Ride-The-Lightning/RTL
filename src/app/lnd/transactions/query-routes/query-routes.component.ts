@@ -36,13 +36,13 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
 
   constructor(private store: Store<fromRTLReducer.RTLState>, private lndEffects: LNDEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['pubkey_alias', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
+    } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'fee_msat', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat', 'actions'];
     } else {
@@ -52,11 +52,11 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.lndEffects.setQueryRoutes
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe(queryRoute => {
+    this.lndEffects.setQueryRoutes.
+    pipe(takeUntil(this.unSubs[1])).
+    subscribe(queryRoute => {
       this.qrHops = new MatTableDataSource([]);
-      if (queryRoute.routes &&  queryRoute.routes[0].hops) {
+      if (queryRoute.routes && queryRoute.routes[0].hops) {
         this.flgLoading[0] = false;
         this.qrHops = new MatTableDataSource<Hop>([...queryRoute.routes[0].hops]);
         this.qrHops.data = queryRoute.routes[0].hops;
@@ -69,7 +69,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
   }
 
   onQueryRoutes(): boolean|void {
-    if(!this.destinationPubkey || !this.amount) { return true; }
+    if (!this.destinationPubkey || !this.amount) { return true; }
     this.qrHops = new MatTableDataSource([]);
     this.flgLoading[0] = true;
     this.store.dispatch(new LNDActions.GetQueryRoutes({destPubkey: this.destinationPubkey, amount: this.amount}));

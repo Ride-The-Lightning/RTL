@@ -22,8 +22,8 @@ describe('DataService', () => {
 
   it('should return expected rates (HttpClient called once)', (done: DoneFn) => {
     httpClientSpy.get.and.returnValue(of(mockResponseData.fiatRates));
-    dataService.getFiatRates()
-    .subscribe({
+    dataService.getFiatRates().
+    subscribe({
       next: rates => {
         expect(rates).toEqual(mockResponseData.fiatRates);
         done();
@@ -37,7 +37,7 @@ describe('DataService', () => {
     httpClientSpy.get.and.returnValue(throwError(() => mockResponseData.error401));
     dataService.getFiatRates().subscribe({
       next: rates => done.fail('expected an error, not rates'),
-      error: error  => {
+      error: error => {
         expect(error.status).toEqual('401');
         expect(error.statusText).toContain('Not Found');
         done();

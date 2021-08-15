@@ -114,6 +114,21 @@ export interface Hop {
   pub_key?:	string;
 }
 
+export interface MPP {
+  amount_msat?: string;
+  amount_sent_msat?: string;
+  bolt11?: string;
+  created_at?: number;
+  destination?: string;
+  id?: number;
+  msatoshi?: number;
+  msatoshi_sent?: number;
+  payment_hash?: string;
+  payment_preimage?: string;
+  status?: string;
+  partid?: number;
+}
+
 export interface Payment {
   amount_msat?: string;
   amount_sent_msat?: string;
@@ -130,21 +145,6 @@ export interface Payment {
   is_expanded?: boolean;
   total_parts?: number;
   mpps?: MPP[];
-}
-
-export interface MPP {
-  amount_msat?: string;
-  amount_sent_msat?: string;
-  bolt11?: string;
-  created_at?: number;
-  destination?: string;
-  id?: number;
-  msatoshi?: number;
-  msatoshi_sent?: number;
-  payment_hash?: string;
-  payment_preimage?: string;
-  status?: string;
-  partid?: number;
 }
 
 export interface PayRequest {
@@ -182,10 +182,6 @@ export interface ForwardingHistoryRes {
   forwarding_events?: ForwardingEvent[];
 }
 
-export interface QueryRoutes {
-  routes: Routes[];
-}
-
 export interface Routes {
   id?: string;
   channel?: string;
@@ -194,6 +190,10 @@ export interface Routes {
   amount_msat?: string;
   delay?: number;
   alias?: string;
+}
+
+export interface QueryRoutes {
+  routes: Routes[];
 }
 
 export interface Channel {
@@ -241,6 +241,14 @@ export interface LookupNode {
   addresses?: Address[];
 }
 
+export interface FeeRatePerObj {
+  urgent?: number;
+  normal?: number;
+  slow?: number;
+  min_acceptable?: number;
+  max_acceptable?: number;
+}
+
 export interface FeeRates {
   perkb?: FeeRatePerObj;
   perkw?: FeeRatePerObj;
@@ -249,14 +257,6 @@ export interface FeeRates {
       mutual_close_satoshis?: number;
       unilateral_close_satoshis?: number;
   };
-}
-
-export interface FeeRatePerObj {
-  urgent?: number;
-  normal?: number;
-  slow?: number;
-  min_acceptable?: number;
-  max_acceptable?: number;
 }
 
 export interface UTXO {

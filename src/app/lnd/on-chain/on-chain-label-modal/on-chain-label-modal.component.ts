@@ -36,11 +36,11 @@ export class OnChainLabelModalComponent implements OnInit, OnDestroy {
   }
 
   onLabelUTXO(): boolean|void {
-    if(!this.label || this.label === '') { return true; }
+    if (!this.label || this.label === '') { return true; }
     this.labelError = '';
-    this.dataService.labelUTXO(this.utxo.outpoint.txid_bytes, this.label, true)
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe({next: res => {
+    this.dataService.labelUTXO(this.utxo.outpoint.txid_bytes, this.label, true).
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe({next: res => {
       this.store.dispatch(new LNDActions.FetchTransactions());
       this.store.dispatch(new LNDActions.FetchUTXOs());
       this.snackBar.open('Successfully labelled the UTXO.');

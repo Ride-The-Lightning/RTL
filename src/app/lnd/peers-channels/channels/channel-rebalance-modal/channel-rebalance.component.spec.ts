@@ -32,10 +32,10 @@ describe('ChannelRebalanceComponent', () => {
       providers: [
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {channel:{}} }
+        { provide: MAT_DIALOG_DATA, useValue: {channel: {}} }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

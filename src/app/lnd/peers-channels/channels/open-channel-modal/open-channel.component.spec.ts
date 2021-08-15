@@ -30,11 +30,11 @@ describe('OpenChannelComponent', () => {
       ],
       providers: [
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {message:{}} },
+        { provide: MAT_DIALOG_DATA, useValue: {message: {}} },
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

@@ -15,10 +15,10 @@ describe('ECLPaymentInformationComponent', () => {
       imports: [SharedModule],
       providers: [
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {payment:{}, sentPaymentInfo:{}} }
+        { provide: MAT_DIALOG_DATA, useValue: {payment: {}, sentPaymentInfo: {}} }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

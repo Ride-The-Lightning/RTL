@@ -40,7 +40,7 @@ export class NetworkInfoComponent implements OnInit, OnDestroy {
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.networkCards = [
         { id: 'general', cols: 3, rows: 1 },
         { id: 'channels', cols: 3, rows: 1 },
@@ -52,7 +52,7 @@ export class NetworkInfoComponent implements OnInit, OnDestroy {
         { id: 'fee', icon: this.faBolt, title: 'Routing Fee', cols: 3, rows: 1 }
       ];
     } else {
-      this.networkCards =  [
+      this.networkCards = [
         { id: 'general', cols: 1, rows: 1 },
         { id: 'channels', cols: 1, rows: 1 },
         { id: 'degrees', cols: 1, rows: 1 }
@@ -66,9 +66,9 @@ export class NetworkInfoComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('lnd').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.errorMessages = ['', '', '', '', ''];
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) {
@@ -94,7 +94,7 @@ export class NetworkInfoComponent implements OnInit, OnDestroy {
       this.channelsStatus = {
         active: { channels: rtlStore.numberOfActiveChannels, capacity: rtlStore.totalCapacityActive },
         inactive: { channels: rtlStore.numberOfInactiveChannels, capacity: rtlStore.totalCapacityInactive },
-        pending: { channels:  rtlStore.numberOfPendingChannels.open.num_channels, capacity: rtlStore.numberOfPendingChannels.open.limbo_balance },
+        pending: { channels: rtlStore.numberOfPendingChannels.open.num_channels, capacity: rtlStore.numberOfPendingChannels.open.limbo_balance },
         closing: {
           channels: rtlStore.numberOfPendingChannels.closing.num_channels + rtlStore.numberOfPendingChannels.force_closing.num_channels + rtlStore.numberOfPendingChannels.waiting_close.num_channels,
           capacity: rtlStore.numberOfPendingChannels.total_limbo_balance

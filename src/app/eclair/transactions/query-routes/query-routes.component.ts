@@ -37,13 +37,13 @@ export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
 
   constructor(private store: Store<fromRTLReducer.RTLState>, private eclEffects: ECLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
+    } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'nodeId', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'nodeId', 'actions'];
     } else {
@@ -54,9 +54,9 @@ export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.qrHops = new MatTableDataSource([]);
-    this.eclEffects.setQueryRoutes
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe(queryRoute => {
+    this.eclEffects.setQueryRoutes.
+    pipe(takeUntil(this.unSubs[1])).
+    subscribe(queryRoute => {
       this.qrHops.data = [];
       if (queryRoute) {
         this.flgLoading[0] = false;
@@ -71,7 +71,7 @@ export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
   }
 
   onQueryRoutes(): boolean|void {
-    if(!this.nodeId || !this.amount) { return true; }
+    if (!this.nodeId || !this.amount) { return true; }
     this.qrHops.data = [];
     this.flgLoading[0] = true;
     this.store.dispatch(new ECLActions.GetQueryRoutes({nodeId: this.nodeId, amount: this.amount*1000}));

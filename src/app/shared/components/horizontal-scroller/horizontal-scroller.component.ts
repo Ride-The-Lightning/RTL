@@ -95,9 +95,9 @@ export class HorizontalScrollerComponent {
   }
 
   @HostListener('click', ['$event']) onChartMouseUp(e) {
-    if(e.srcElement.name === 'monthlyDate') {
+    if (e.srcElement.name === 'monthlyDate') {
       this.monthlyDatepicker.open();
-    } else if(e.srcElement.name === 'yearlyDate') {
+    } else if (e.srcElement.name === 'yearlyDate') {
       this.yearlyDatepicker.open();
     }
   }

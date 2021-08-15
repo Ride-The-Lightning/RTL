@@ -23,8 +23,8 @@ describe('SettingsComponent', () => {
           }
         })
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

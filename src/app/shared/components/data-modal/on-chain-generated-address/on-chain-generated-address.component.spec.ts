@@ -24,8 +24,8 @@ describe('OnChainGeneratedAddressComponent', () => {
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {alertTitle: '', address: 'test', addressType: 'test'}}
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

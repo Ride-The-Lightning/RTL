@@ -34,8 +34,8 @@ describe('CLConnectPeerComponent', () => {
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {alertTitle: '', titleMessage: '', message: {}, newlyAdded: true}}
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

@@ -55,7 +55,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.appConfig = this.data.appConfig;
     this.showDisableStepper = !!this.appConfig.enable2FA;
-    this.secretFormGroup =  this.formBuilder.group({
+    this.secretFormGroup = this.formBuilder.group({
       secret: [{value: !this.appConfig.enable2FA ? this.generateSecret() : '', disabled: true}, Validators.required]
     });
   }
@@ -70,9 +70,9 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
     if (!this.passwordFormGroup.controls.password.value) { return true; }
     this.flgValidated = false;
     this.store.dispatch(new RTLActions.IsAuthorized(sha256(this.passwordFormGroup.controls.password.value)));
-    this.rtlEffects.isAuthorizedRes
-    .pipe(take(1))
-    .subscribe(authRes => {
+    this.rtlEffects.isAuthorizedRes.
+    pipe(take(1)).
+    subscribe(authRes => {
       if (authRes !== 'ERROR') {
         this.passwordFormGroup.controls.hiddenPassword.setValue(this.passwordFormGroup.controls.password.value);
         this.stepper.next();

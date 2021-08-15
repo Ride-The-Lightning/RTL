@@ -35,8 +35,8 @@ describe('SwapsComponent', () => {
         { provide: DataService, useClass: mockDataService },
         { provide: LoopService, useClass: mockLoopService }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

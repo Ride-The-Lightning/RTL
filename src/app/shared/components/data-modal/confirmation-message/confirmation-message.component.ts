@@ -28,8 +28,10 @@ export class ConfirmationMessageComponent implements OnInit {
   public dataTypeEnum = DataTypeEnum;
   public getInputs: Array<InputData> = [{placeholder: '', inputType: 'text', inputValue: '', hintText: '', hintFunction: null}];
 
-  constructor(public dialogRef: MatDialogRef<ConfirmationMessageComponent>, @Inject(MAT_DIALOG_DATA) public data: ConfirmationData, private logger: LoggerService,
-   private store: Store<fromRTLReducer.RTLState>) { }
+  constructor(
+    public dialogRef: MatDialogRef<ConfirmationMessageComponent>, @Inject(MAT_DIALOG_DATA) public data: ConfirmationData, private logger: LoggerService,
+    private store: Store<fromRTLReducer.RTLState>
+  ) { }
 
   ngOnInit() {
     this.informationMessage = this.data.informationMessage;

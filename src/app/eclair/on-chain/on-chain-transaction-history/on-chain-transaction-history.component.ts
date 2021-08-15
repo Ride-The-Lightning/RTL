@@ -44,13 +44,13 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['timestamp', 'amount', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
+    } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['timestamp', 'amount', 'confirmations', 'fees', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['timestamp', 'amount', 'fees', 'confirmations', 'address', 'actions'];
     } else {
@@ -61,9 +61,9 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
 
   ngOnInit() {
     this.store.dispatch(new ECLActions.FetchTransactions());
-    this.store.select('ecl')
-    .pipe(takeUntil(this.unsub[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('ecl').
+    pipe(takeUntil(this.unsub[0])).
+    subscribe((rtlStore) => {
       this.errorMessage = '';
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchTransactions.status === APICallStatusEnum.ERROR) {
@@ -111,7 +111,7 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
   }
 
   onDownloadCSV() {
-    if(this.listTransactions.data && this.listTransactions.data.length > 0) {
+    if (this.listTransactions.data && this.listTransactions.data.length > 0) {
       this.commonService.downloadFile(this.listTransactions.data, 'Transactions');
     }
   }

@@ -10,7 +10,7 @@ exports.deleteExpiredInvoice = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/invoice/delExpiredInvoice' + queryStr;
   request.delete(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices Deleted', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Invoice', msg: 'Invoice Delete Error', error: body.error});
       res.status(500).json({
         message: "Deleting Invoice Failed!",
@@ -43,7 +43,7 @@ exports.listInvoices = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/invoice/listInvoices' + labelQuery;
   request(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Invoice', msg: 'List Invoice Error', error: body.error});
       res.status(500).json({
         message: "Fetching Invoice Info failed!",
@@ -81,7 +81,7 @@ exports.addInvoice = (req, res, next) => {
   options.body = req.body;
   request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Invoice', msg: 'Add Invoice Responce', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Invoice', msg: 'Add Invoice Error', error: body.error});
       res.status(500).json({
         message: "Add Invoice Failed!",

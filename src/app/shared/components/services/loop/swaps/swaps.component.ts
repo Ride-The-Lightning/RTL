@@ -46,13 +46,13 @@ export class SwapsComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private loopService: LoopService) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['state', 'amt', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
+    } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['state', 'amt', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['state', 'initiation_time', 'amt', 'actions'];
     } else {
@@ -77,8 +77,8 @@ export class SwapsComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   onSwapClick(selSwap: LoopSwapStatus, event: any) {
-    this.loopService.getSwap(selSwap.id_bytes.replace(/\//g, '_').replace(/\+/g, '-')).pipe(takeUntil(this.unSubs[2]))
-    .subscribe((fetchedSwap: LoopSwapStatus) => {
+    this.loopService.getSwap(selSwap.id_bytes.replace(/\//g, '_').replace(/\+/g, '-')).pipe(takeUntil(this.unSubs[2])).
+    subscribe((fetchedSwap: LoopSwapStatus) => {
       const reorderedSwap = [
         [{key: 'state', value: LoopStateEnum[fetchedSwap.state], title: 'Status', width: 50, type: DataTypeEnum.STRING},
           {key: 'amt', value: fetchedSwap.amt, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
@@ -109,7 +109,7 @@ export class SwapsComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   onDownloadCSV() {
-    if(this.listSwaps.data && this.listSwaps.data.length > 0) {
+    if (this.listSwaps.data && this.listSwaps.data.length > 0) {
       this.commonService.downloadFile(this.listSwaps.data, (this.selectedSwapType === LoopTypeEnum.LOOP_IN) ? 'Loop in' : 'Loop out');
     }
   }

@@ -35,8 +35,8 @@ describe('AuthSettingsComponent', () => {
         SessionService,
         { provide: LoggerService, useClass: mockLoggerService }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

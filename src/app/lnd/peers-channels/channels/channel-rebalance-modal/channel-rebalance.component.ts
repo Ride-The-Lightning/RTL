@@ -49,7 +49,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.selChannel = this.data.channel;
     FEE_LIMIT_TYPES.forEach((FEE_LIMIT_TYPE, i) => {
-      if(i > 0) {
+      if (i > 0) {
         this.feeLimitTypes.push(FEE_LIMIT_TYPE);
       }
     });
@@ -66,16 +66,17 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
       hiddenFeeLimit: ['', [Validators.required]]
     });
     this.statusFormGroup = this.formBuilder.group({});
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('lnd').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.activeChannels = rtlStore.allChannels.filter(channel => channel.active && channel.remote_balance >= this.inputFormGroup.controls.rebalanceAmount.value && channel.chan_id !== this.selChannel.chan_id);
       this.invoices = rtlStore.invoices;
       this.logger.info(rtlStore);
     });
-    this.actions.pipe(takeUntil(this.unSubs[1]),
-    filter((action) => action.type === LNDActions.SET_QUERY_ROUTES_LND || action.type === LNDActions.SEND_PAYMENT_STATUS_LND || action.type === LNDActions.NEWLY_SAVED_INVOICE_LND))
-    .subscribe((action: (LNDActions.SetQueryRoutes | LNDActions.SendPaymentStatus | LNDActions.NewlySavedInvoice)) => {
+    this.actions.pipe(
+    takeUntil(this.unSubs[1]),
+    filter((action) => action.type === LNDActions.SET_QUERY_ROUTES_LND || action.type === LNDActions.SEND_PAYMENT_STATUS_LND || action.type === LNDActions.NEWLY_SAVED_INVOICE_LND)).
+    subscribe((action: (LNDActions.SetQueryRoutes | LNDActions.SendPaymentStatus | LNDActions.NewlySavedInvoice)) => {
       if (action.type === LNDActions.SET_QUERY_ROUTES_LND) { this.queryRoute = action.payload; }
       if (action.type === LNDActions.SEND_PAYMENT_STATUS_LND) {
         this.logger.info(action.payload);
@@ -92,7 +93,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   }
 
   onEstimateFee(): boolean|void {
-    if(!this.inputFormGroup.controls.selRebalancePeer.value || !this.inputFormGroup.controls.rebalanceAmount.value) { return true; }
+    if (!this.inputFormGroup.controls.selRebalancePeer.value || !this.inputFormGroup.controls.rebalanceAmount.value) { return true; }
     if (this.stepper.selectedIndex === 0) {
       this.inputFormGroup.controls.hiddenAmount.setValue(this.inputFormGroup.controls.rebalanceAmount.value);
       this.stepper.next();

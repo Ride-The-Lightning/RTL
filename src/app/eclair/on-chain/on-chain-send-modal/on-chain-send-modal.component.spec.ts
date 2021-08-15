@@ -38,8 +38,8 @@ describe('ECLOnChainSendModalComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

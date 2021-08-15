@@ -28,9 +28,9 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
-    this.store.select('root')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('root').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.appConfig = rtlStore.appConfig;
       this.previousDefaultNode = this.appConfig.defaultNodeIndex;
       this.selNode = rtlStore.selNode;
@@ -39,7 +39,7 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
   }
 
   onAddNewNode() {
-    console.warn('ADD NEW NODE');
+    this.logger.warn('ADD NEW NODE');
   }
 
   onUpdateSettings(): boolean|void {

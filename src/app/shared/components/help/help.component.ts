@@ -187,9 +187,9 @@ export class HelpComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('root')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe(rtlStore => {
+    this.store.select('root').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe(rtlStore => {
       this.selNode = rtlStore.selNode;
       switch (this.selNode.lnImplementation.toUpperCase()) {
         case 'CLT':
@@ -205,9 +205,9 @@ export class HelpComponent implements OnInit, OnDestroy {
           break;
       }
     });
-    this.sessionService.watchSession()
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe(session => {
+    this.sessionService.watchSession().
+    pipe(takeUntil(this.unSubs[1])).
+    subscribe(session => {
       this.flgLoggedIn = (session.token) ? true : false;
     });
     if (this.sessionService.getItem('token')) { this.flgLoggedIn = true; }

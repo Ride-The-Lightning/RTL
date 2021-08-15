@@ -23,8 +23,8 @@ describe('CLOnChainSendComponent', () => {
           }
         })
  ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

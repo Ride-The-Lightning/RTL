@@ -41,8 +41,8 @@ describe('ECLHomeComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
 
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

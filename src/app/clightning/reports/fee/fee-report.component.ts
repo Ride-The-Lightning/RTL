@@ -47,9 +47,9 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select('cl')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('cl').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.errorMessage = '';
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
@@ -85,7 +85,7 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
     this.filteredEventsBySelectedPeriod = [];
     this.feeReportData = [];
     this.totalFeeMsat = null;
-    if (this.events && this.events.forwarding_events  && this.events.forwarding_events.length > 0) {
+    if (this.events && this.events.forwarding_events && this.events.forwarding_events.length > 0) {
       this.events.forwarding_events.forEach(event => {
         if (event.status === 'settled' && event.received_time >= startDateInSeconds && event.received_time < endDateInSeconds) {
           this.filteredEventsBySelectedPeriod.push(event);
@@ -102,7 +102,7 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
   }
 
   onChartBarSelected(event) {
-    if(this.reportPeriod === SCROLL_RANGES[1]) {
+    if (this.reportPeriod === SCROLL_RANGES[1]) {
       this.eventFilterValue = event.name + '/' + this.startDate.getFullYear();
     } else {
       this.eventFilterValue = event.name.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
@@ -121,6 +121,7 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
         feeReport[monthNumber].value = feeReport[monthNumber].value + (+event.fee / 1000);
         feeReport[monthNumber].extra.totalEvents = feeReport[monthNumber].extra.totalEvents + 1;
         this.totalFeeMsat = (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee;
+        return this.filteredEventsBySelectedPeriod;
       });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
@@ -131,6 +132,7 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
         feeReport[dateNumber].value = feeReport[dateNumber].value + (+event.fee / 1000);
         feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
         this.totalFeeMsat = (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee;
+        return this.filteredEventsBySelectedPeriod;
       });
     }
     return feeReport;

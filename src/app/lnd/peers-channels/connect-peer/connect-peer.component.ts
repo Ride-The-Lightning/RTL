@@ -71,9 +71,10 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
         this.channelFormGroup.controls.transTypeValue.setValidators([Validators.required]);
       }
     });
-    this.actions.pipe(takeUntil(this.unSubs[1]),
-    filter((action) => action.type === LNDActions.NEWLY_ADDED_PEER_LND || action.type === LNDActions.FETCH_PENDING_CHANNELS_LND || action.type === LNDActions.UPDATE_API_CALL_STATUS_LND))
-    .subscribe((action: (LNDActions.NewlyAddedPeer | LNDActions.FetchPendingChannels | LNDActions.UpdateAPICallStatus)) => {
+    this.actions.pipe(
+    takeUntil(this.unSubs[1]),
+    filter((action) => action.type === LNDActions.NEWLY_ADDED_PEER_LND || action.type === LNDActions.FETCH_PENDING_CHANNELS_LND || action.type === LNDActions.UPDATE_API_CALL_STATUS_LND)).
+    subscribe((action: (LNDActions.NewlyAddedPeer | LNDActions.FetchPendingChannels | LNDActions.UpdateAPICallStatus)) => {
       if (action.type === LNDActions.NEWLY_ADDED_PEER_LND) {
         this.logger.info(action.payload);
         this.flgEditable = false;
@@ -95,7 +96,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   }
 
   onConnectPeer(): boolean|void {
-    if(!this.peerFormGroup.controls.peerAddress.value) { return true; }
+    if (!this.peerFormGroup.controls.peerAddress.value) { return true; }
     this.peerConnectionError = '';
     const deviderIndex = this.peerFormGroup.controls.peerAddress.value.search('@');
     let pubkey = '';
@@ -106,9 +107,9 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       this.connectPeerWithParams(pubkey, host);
     } else {
       this.store.dispatch(new LNDActions.FetchGraphNode({pubkey: this.peerFormGroup.controls.peerAddress.value}));
-      this.lndEffects.setGraphNode
-      .pipe(take(1))
-      .subscribe(graphNode => {
+      this.lndEffects.setGraphNode.
+      pipe(take(1)).
+      subscribe(graphNode => {
         host = (graphNode.node.addresses && graphNode.node.addresses.length && graphNode.node.addresses.length > 0 && graphNode.node.addresses[0].addr) ? graphNode.node.addresses[0].addr : '';
         this.connectPeerWithParams(this.peerFormGroup.controls.peerAddress.value, host);
       });

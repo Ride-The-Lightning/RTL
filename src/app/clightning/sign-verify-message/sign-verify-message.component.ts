@@ -20,8 +20,8 @@ export class CLSignVerifyMessageComponent implements OnInit, OnDestroy {
   ngOnInit() {
     let linkFound = this.links.find(link => this.router.url.includes(link.link));
     this.activeLink = linkFound ? linkFound.link : this.links[0].link;
-    this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd))
-    .subscribe((value: ResolveEnd) => {
+    this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd)).
+    subscribe((value: ResolveEnd) => {
       let linkFound = this.links.find(link => value.urlAfterRedirects.includes(link.link));
       this.activeLink = linkFound ? linkFound.link : this.links[0].link;
     });

@@ -21,7 +21,9 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
   constructor(private store: Store<fromRTLReducer.RTLState>, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit() {
-    this.activatedRoute.data.pipe(takeUntil(this.unSubs[0])).subscribe(routeData => this.sweepAll = routeData.sweepAll);
+    this.activatedRoute.data.pipe(takeUntil(this.unSubs[0])).subscribe(routeData => {
+      this.sweepAll = routeData.sweepAll;
+    });
   }
 
   openSendFundsModal() {

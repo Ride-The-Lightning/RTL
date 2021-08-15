@@ -25,9 +25,9 @@ export class OnChainReceiveComponent {
 
   onGenerateAddress() {
     this.store.dispatch(new LNDActions.GetNewAddress(this.selectedAddressType));
-    this.lndEffects.setNewAddress
-    .pipe(take(1))
-    .subscribe(newAddress => {
+    this.lndEffects.setNewAddress.
+    pipe(take(1)).
+    subscribe(newAddress => {
       this.newAddress = newAddress;
       this.store.dispatch(new RTLActions.OpenAlert({
         width: '58%',

@@ -32,10 +32,10 @@ describe('OnChainLabelModalComponent', () => {
         CommonService,
         { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {utxo:{}} }
+        { provide: MAT_DIALOG_DATA, useValue: {utxo: {}} }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

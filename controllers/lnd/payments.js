@@ -11,7 +11,7 @@ exports.getPayments = (req, res, next) => {
     const body_str = (!body) ? '' : JSON.stringify(body);
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
     logger.log({level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body_str});
-    if(!body || search_idx > -1 || body.error) {
+    if (!body || search_idx > -1 || body.error) {
       logger.log({level: 'ERROR', fileName: 'Payments', msg: 'List Payments Error', error: body.error});
       res.status(500).json({
         message: "Payments List Failed!",

@@ -26,9 +26,9 @@ export class UTXOTablesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.store.dispatch(new LNDActions.FetchTransactions());
     this.store.dispatch(new LNDActions.FetchUTXOs());
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('lnd').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       if (rtlStore.utxos && rtlStore.utxos.length > 0) {
         this.numUtxos = rtlStore.utxos.length;
         this.numDustUtxos = rtlStore.utxos.filter(utxo => +utxo.amount_sat < 1000).length;

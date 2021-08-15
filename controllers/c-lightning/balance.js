@@ -9,13 +9,13 @@ exports.getBalance = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/getBalance';
   request(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Balance', msg: 'Balance Received', data: body});
-    if(!body.totalBalance) {
+    if (!body.totalBalance) {
       body.totalBalance = 0;
     }
-    if(!body.confBalance) {
+    if (!body.confBalance) {
       body.confBalance = 0;
     }
-    if(!body.unconfBalance) {
+    if (!body.unconfBalance) {
       body.unconfBalance = 0;
     }
     logger.log({level: 'INFO', fileName: 'Balance', msg: 'Balance Received'});

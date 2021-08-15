@@ -15,7 +15,7 @@ import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, LoopStateEnum } from '../.
 export class AlertMessageComponent implements OnInit, AfterViewChecked, OnDestroy {
   private scrollContainer: ElementRef;
   @ViewChild('scrollContainer') set container(containerContent: ElementRef) {
-    if(containerContent) {
+    if (containerContent) {
       this.scrollContainer = containerContent;
       if (this.scrollContainer && this.scrollContainer.nativeElement) {
         this.unlistenEnd = this.renderer.listen(this.scrollContainer.nativeElement, 'ps-y-reach-end', (event) => {

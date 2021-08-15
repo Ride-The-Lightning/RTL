@@ -9,7 +9,6 @@ import { RTLEffects } from '../../../../store/rtl.effects';
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
 
-
 @Component({
   selector: 'rtl-bitcoin-config',
   templateUrl: './bitcoin-config.component.html',
@@ -26,19 +25,19 @@ export class BitcoinConfigComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.selectedNodeType = (this.router.url.includes('bconfig')) ? 'bitcoind' : 'ln';
-    this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd))
-    .subscribe((value: ResolveEnd) => {
+    this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd)).
+    subscribe((value: ResolveEnd) => {
       this.selectedNodeType = (value.urlAfterRedirects.includes('bconfig')) ? 'bitcoind' : 'ln';
     });
     this.store.dispatch(new RTLActions.FetchConfig(this.selectedNodeType));
-    this.rtlEffects.showLnConfig
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe((config: any) => {
+    this.rtlEffects.showLnConfig.
+    pipe(takeUntil(this.unSubs[1])).
+    subscribe((config: any) => {
       const configFile = config.data;
       this.fileFormat = config.format;
-      if (configFile !== '' &&  configFile && (this.fileFormat === 'INI' || this.fileFormat === 'HOCON')) {
+      if (configFile !== '' && configFile && (this.fileFormat === 'INI' || this.fileFormat === 'HOCON')) {
         this.configData = configFile.split('\n');
-      } else if (configFile !== '' &&  configFile && this.fileFormat === 'JSON') {
+      } else if (configFile !== '' && configFile && this.fileFormat === 'JSON') {
         this.configData = configFile;
       } else {
         this.configData = '';

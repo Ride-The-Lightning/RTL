@@ -15,8 +15,8 @@ describe('LoopQuoteComponent', () => {
         BrowserAnimationsModule,
         SharedModule
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

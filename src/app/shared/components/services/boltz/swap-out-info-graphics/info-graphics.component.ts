@@ -24,11 +24,11 @@ export class SwapOutInfoGraphicsComponent implements OnInit {
   }
 
   onSwipe(event: any) {
-    if(event.direction === 2 && this.stepNumber < 5) {
+    if (event.direction === 2 && this.stepNumber < 5) {
       this.stepNumber++;
       this.animationDirection = 'forward';
       this.stepNumberChange.emit(this.stepNumber);
-    } else if(event.direction === 4 && this.stepNumber > 1) {
+    } else if (event.direction === 4 && this.stepNumber > 1) {
       this.stepNumber--;
       this.animationDirection = 'backward';
       this.stepNumberChange.emit(this.stepNumber);

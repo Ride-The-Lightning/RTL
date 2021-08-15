@@ -45,8 +45,8 @@ export const LndRoutes: Routes = [
     { path: 'onchain', component: OnChainComponent, canActivate: [LNDUnlockedGuard], children: [
       { path: '', pathMatch: 'full', redirectTo: 'receive/utxos' },
       { path: 'receive/:selTab', component: OnChainReceiveComponent, canActivate: [LNDUnlockedGuard] },
-      { path: 'send/:selTab', component: OnChainSendComponent, data : {sweepAll : false}, canActivate: [LNDUnlockedGuard] },
-      { path: 'sweep/:selTab', component: OnChainSendComponent, data : {sweepAll : true}, canActivate: [LNDUnlockedGuard] }
+      { path: 'send/:selTab', component: OnChainSendComponent, data: {sweepAll: false}, canActivate: [LNDUnlockedGuard] },
+      { path: 'sweep/:selTab', component: OnChainSendComponent, data: {sweepAll: true}, canActivate: [LNDUnlockedGuard] }
     ] },
     { path: 'connections', component: ConnectionsComponent, canActivate: [LNDUnlockedGuard], children: [
       { path: '', pathMatch: 'full', redirectTo: 'channels' },
@@ -57,7 +57,7 @@ export const LndRoutes: Routes = [
         { path: 'closed', component: ChannelClosedTableComponent, canActivate: [LNDUnlockedGuard] },
         { path: 'activehtlcs', component: ChannelActiveHTLCsTableComponent, canActivate: [LNDUnlockedGuard] }
       ] },
-      { path: 'peers', component: PeersComponent, data : {sweepAll : false}, canActivate: [LNDUnlockedGuard] }
+      { path: 'peers', component: PeersComponent, data: {sweepAll: false}, canActivate: [LNDUnlockedGuard] }
     ] },
     { path: 'transactions', component: TransactionsComponent, canActivate: [LNDUnlockedGuard], children: [
       { path: '', pathMatch: 'full', redirectTo: 'payments' },

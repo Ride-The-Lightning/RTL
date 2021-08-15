@@ -12,8 +12,8 @@ describe('ReportsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ReportsComponent],
       imports: [SharedModule, RouterTestingModule]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

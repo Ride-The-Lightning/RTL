@@ -12,7 +12,7 @@ exports.signMessage = (req, res, next) => {
   });
   request.post(options, (error, response, body) => {
     logger.log({level: 'DEBUG', fileName: 'Messages', msg: 'Message Signed', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Messages', msg: 'Sign Message Error', error: body.error});
       res.status(500).json({
         message: "Sign message failed!",
@@ -49,7 +49,7 @@ exports.verifyMessage = (req, res, next) => {
   });
   request.post(options, (error, response, body) => {
     logger.log({level: 'DEBUG', fileName: 'Messages', msg: 'Message Verified', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Messages', msg: 'Verify Message Error', error: body.error});
       res.status(500).json({
         message: "Verify message failed!",

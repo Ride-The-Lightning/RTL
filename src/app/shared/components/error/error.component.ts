@@ -17,9 +17,9 @@ export class ErrorComponent implements OnInit {
   constructor(private activatedRoute: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
-    this.activatedRoute.paramMap
-    .pipe(takeUntil(this.unsubs[0]))
-    .subscribe(data => {
+    this.activatedRoute.paramMap.
+    pipe(takeUntil(this.unsubs[0])).
+    subscribe(data => {
       this.error = window.history.state;
     });
   }

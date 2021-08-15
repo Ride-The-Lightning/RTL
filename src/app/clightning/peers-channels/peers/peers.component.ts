@@ -56,13 +56,13 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions: Actions, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
+    } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'id', 'netaddr', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'id', 'netaddr', 'actions'];
     } else {
@@ -72,9 +72,9 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('cl')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('cl').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.errorMessage = '';
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchPeers.status === APICallStatusEnum.ERROR) {
@@ -88,12 +88,12 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.logger.info(rtlStore);
     });
-    this.actions
-    .pipe(
+    this.actions.
+    pipe(
       takeUntil(this.unSubs[1]),
       filter((action) => action.type === CLActions.SET_PEERS_CL)
     ).subscribe((setPeers: CLActions.SetPeers) => {
-      this.peerAddress = undefined;
+      this.peerAddress = null;
       this.flgAnimate = true;
     });
   }
@@ -150,9 +150,9 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       noBtnText: 'Cancel',
       yesBtnText: 'Disconnect'
     }}));
-    this.rtlEffects.closeConfirm
-    .pipe(takeUntil(this.unSubs[3]))
-    .subscribe(confirmRes => {
+    this.rtlEffects.closeConfirm.
+    pipe(takeUntil(this.unSubs[3])).
+    subscribe(confirmRes => {
       if (confirmRes) {
         this.store.dispatch(new CLActions.DetachPeer({id: peerToDetach.id, force: false}));
       }
@@ -184,7 +184,7 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onDownloadCSV() {
-    if(this.peers.data && this.peers.data.length > 0) {
+    if (this.peers.data && this.peers.data.length > 0) {
       this.commonService.downloadFile(this.peers.data, 'Peers');
     }
   }

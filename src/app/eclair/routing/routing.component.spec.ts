@@ -12,8 +12,8 @@ describe('ECLRoutingComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ECLRoutingComponent],
       imports: [SharedModule, RouterTestingModule]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

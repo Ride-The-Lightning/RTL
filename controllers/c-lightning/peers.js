@@ -36,7 +36,7 @@ exports.postPeer = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/peer/connect';
   options.body = req.body;
   request.post(options, (error, response, body) => {
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Peers', msg: 'Connect Peer Error', error: body && body.error ? body.error : body ? body : ''});
       res.status(500).json({
         message: "Adding peer failed!",
@@ -76,7 +76,7 @@ exports.deletePeer = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/peer/disconnect/' + req.params.peerId + '?force=' + req.query.force;
   request.delete(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Detach Peer Response', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Peers', msg: 'Detach Peer Error', error: body.error});
       res.status(500).json({
         message: "Detach peer failed!",

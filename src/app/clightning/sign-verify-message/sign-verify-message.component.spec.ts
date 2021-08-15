@@ -12,8 +12,8 @@ describe('CLSignVerifyMessageComponent', () => {
     TestBed.configureTestingModule({
       declarations: [CLSignVerifyMessageComponent],
       imports: [SharedModule, RouterTestingModule]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

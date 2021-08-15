@@ -38,8 +38,8 @@ describe('CLChannelOpenTableComponent', () => {
         { provide: RTLEffects, useClass: mockRTLEffects },
         { provide: CLEffects, useClass: mockCLEffects }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

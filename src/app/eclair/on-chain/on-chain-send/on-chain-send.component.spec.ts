@@ -23,8 +23,8 @@ describe('ECLOnChainSendComponent', () => {
           }
         })
  ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

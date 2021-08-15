@@ -95,18 +95,19 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
         this.sendFundFormGroup.controls.transactionFees.setValue(null);
       }
     });
-    this.store.select('root')
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe((rootStore) => {
+    this.store.select('root').
+    pipe(takeUntil(this.unSubs[1])).
+    subscribe((rootStore) => {
       this.fiatConversion = rootStore.selNode.settings.fiatConversion;
       this.amountUnits = rootStore.selNode.settings.currencyUnits;
       this.appConfig = rootStore.appConfig;
       this.nodeData = rootStore.nodeData;
       this.logger.info(rootStore);
     });
-    this.actions.pipe(takeUntil(this.unSubs[2]),
-    filter(action => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND))
-    .subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.SetChannelTransactionRes) => {
+    this.actions.pipe(
+    takeUntil(this.unSubs[2]),
+    filter(action => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND)).
+    subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.SetChannelTransactionRes) => {
       if (action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND) {
         this.store.dispatch(new RTLActions.OpenSnackBar(this.sweepAll ? 'All Funds Sent Successfully!' : 'Fund Sent Successfully!'));
         this.dialogRef.close();
@@ -115,16 +116,14 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
         this.sendFundError = action.payload.message;
       }
     });
-
   }
 
   onAuthenticate(): boolean|void {
     if (!this.passwordFormGroup.controls.password.value) { return true; }
     this.flgValidated = false;
     this.store.dispatch(new RTLActions.IsAuthorized(sha256(this.passwordFormGroup.controls.password.value)));
-    this.rtlEffects.isAuthorizedRes
-    .pipe(take(1))
-    .subscribe(authRes => {
+    this.rtlEffects.isAuthorizedRes.pipe(take(1)).
+    subscribe(authRes => {
       if (authRes !== 'ERROR') {
         this.passwordFormGroup.controls.hiddenPassword.setValue(this.passwordFormGroup.controls.password.value);
         this.stepper.next();
@@ -136,7 +135,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   }
 
   onSendFunds(): boolean|void {
-    if(this.invalidValues) { return true; }
+    if (this.invalidValues) { return true; }
     this.sendFundError = '';
     const postTransaction = {
       amount: this.transactionAmount ? this.transactionAmount : 0,
@@ -159,10 +158,10 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
         postTransaction['fees'] = this.transactionFees;
       }
     }
-    if(this.transactionAmount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
-      this.commonService.convertCurrency(this.transactionAmount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion)
-      .pipe(takeUntil(this.unSubs[3]))
-      .subscribe({next: data => {
+    if (this.transactionAmount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
+      this.commonService.convertCurrency(this.transactionAmount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion).
+      pipe(takeUntil(this.unSubs[3])).
+      subscribe({next: data => {
         this.selAmountUnit = CurrencyUnitEnum.SATS;
         postTransaction.amount = +this.decimalPipe.transform(data[this.amountUnits[0]], this.currencyUnitFormats[this.amountUnits[0]]).replace(/,/g, '');
         this.store.dispatch(new LNDActions.SetChannelTransaction(postTransaction));
@@ -234,11 +233,11 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
     let self = this;
     let prevSelectedUnit = (this.sweepAll) ? CurrencyUnitEnum.SATS : (this.selAmountUnit === this.amountUnits[2]) ? CurrencyUnitEnum.OTHER : this.selAmountUnit;
     let currSelectedUnit = event.value === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : event.value;
-    if(this.transactionAmount && this.selAmountUnit !== event.value) {
+    if (this.transactionAmount && this.selAmountUnit !== event.value) {
       let amount = this.transactionAmount ? this.transactionAmount : 0;
-      this.commonService.convertCurrency(amount, prevSelectedUnit, currSelectedUnit, this.amountUnits[2], this.fiatConversion)
-      .pipe(takeUntil(this.unSubs[3]))
-      .subscribe({next: data => {
+      this.commonService.convertCurrency(amount, prevSelectedUnit, currSelectedUnit, this.amountUnits[2], this.fiatConversion).
+      pipe(takeUntil(this.unSubs[3])).
+      subscribe({next: data => {
         this.selAmountUnit = event.value;
         self.transactionAmount = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
       }, error: err => {

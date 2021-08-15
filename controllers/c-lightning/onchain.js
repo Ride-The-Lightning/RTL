@@ -35,7 +35,7 @@ exports.onChainWithdraw = (req, res, next) => {
   logger.log({level: 'DEBUG', fileName: 'OnChain', msg: 'OnChain Withdraw Options', data: options.body});
   request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'OnChain', msg: 'OnChain Withdraw Response', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'OnChain', msg: 'OnChain Withdraw Error', error: body.error});
       res.status(500).json({
         message: 'OnChain Withdraw Failed!',

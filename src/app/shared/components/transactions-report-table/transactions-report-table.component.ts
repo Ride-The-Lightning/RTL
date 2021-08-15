@@ -37,10 +37,10 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
 
   constructor(private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+    if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['date', 'amount_paid', 'amount_received', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['date', 'amount_paid', 'num_payments', 'amount_received', 'num_invoices', 'actions'];
     } else {
@@ -70,7 +70,7 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
 
   onTransactionClick(selTransaction: any) {
     const reorderedTransactions = [
-      [{key: 'date', value: this.dataRange === SCROLL_RANGES[1] ?  this.datePipe.transform(selTransaction.date, 'MMM/yyyy') : this.datePipe.transform(selTransaction.date, 'dd/MMM/yyyy'), title: 'Date', width: 100, type: DataTypeEnum.DATE}],
+      [{key: 'date', value: this.dataRange === SCROLL_RANGES[1] ? this.datePipe.transform(selTransaction.date, 'MMM/yyyy') : this.datePipe.transform(selTransaction.date, 'dd/MMM/yyyy'), title: 'Date', width: 100, type: DataTypeEnum.DATE}],
       [{key: 'amount_paid', value: Math.round(selTransaction.amount_paid), title: 'Amount Paid (Sats)', width: 50, type: DataTypeEnum.NUMBER},
         {key: 'num_payments', value: selTransaction.num_payments, title: '# Payments', width: 50, type: DataTypeEnum.NUMBER}],
       [{key: 'amount_received', value: Math.round(selTransaction.amount_received), title: 'Amount Received (Sats)', width: 50, type: DataTypeEnum.NUMBER},
@@ -95,7 +95,7 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
   }
 
   setTableWidgets() {
-    if(this.transactions && this.transactions.data && this.transactions.data.length > 0) {
+    if (this.transactions && this.transactions.data && this.transactions.data.length > 0) {
       this.transactions.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       this.transactions.sort = this.sort;
       this.transactions.filterPredicate = (rowData: any, fltr: string) => {
@@ -107,7 +107,7 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
   }
 
   onDownloadCSV() {
-    if(this.transactions.data && this.transactions.data.length > 0) {
+    if (this.transactions.data && this.transactions.data.length > 0) {
       this.commonService.downloadFile(this.dataList, 'Transactions-report-' + this.dataRange.toLowerCase());
     }
   }

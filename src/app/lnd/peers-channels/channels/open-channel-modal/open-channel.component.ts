@@ -49,10 +49,11 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.totalBalance = this.data.message.balance;
     this.alertTitle = this.data.alertTitle;
     this.peer = this.data.message.peer ? this.data.message.peer : null;
-    this.peers = this.data.message.peers &&  this.data.message.peers.length ? this.data.message.peers : [];
-    this.actions.pipe(takeUntil(this.unSubs[0]),
-    filter(action => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.FETCH_ALL_CHANNELS_LND))
-    .subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.FetchAllChannels) => {
+    this.peers = this.data.message.peers && this.data.message.peers.length ? this.data.message.peers : [];
+    this.actions.pipe(
+    takeUntil(this.unSubs[0]),
+    filter(action => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.FETCH_ALL_CHANNELS_LND)).
+    subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.FetchAllChannels) => {
       if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewChannel') {
         this.channelConnectionError = action.payload.message;
       }
@@ -66,7 +67,8 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
       y = p2.alias ? p2.alias.toLowerCase() : p1.pub_key.toLowerCase();
       return ((x < y) ? -1 : ((x > y) ? 1 : 0));
     });
-    this.filteredPeers = this.selectedPeer.valueChanges.pipe(takeUntil(this.unSubs[1]), startWith(''),
+    this.filteredPeers = this.selectedPeer.valueChanges.pipe(
+    takeUntil(this.unSubs[1]), startWith(''),
       map(peer => typeof peer === 'string' ? peer : peer.alias ? peer.alias : peer.pub_key),
       map(alias => alias ? this.filterPeers(alias) : this.sortedPeers.slice())
     );
@@ -82,7 +84,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
 
   onSelectedPeerChanged() {
     this.channelConnectionError = '';
-    this.selectedPubkey = (this.selectedPeer.value && this.selectedPeer.value.pub_key) ? this.selectedPeer.value.pub_key : undefined;
+    this.selectedPubkey = (this.selectedPeer.value && this.selectedPeer.value.pub_key) ? this.selectedPeer.value.pub_key : null;
     if (typeof this.selectedPeer.value === 'string') {
       let selPeer = this.peers.filter(peer => peer.alias.length === this.selectedPeer.value.length && peer.alias.toLowerCase().indexOf(this.selectedPeer.value ? this.selectedPeer.value.toLowerCase() : '') === 0);
       if (selPeer.length === 1 && selPeer[0].pub_key) { this.selectedPubkey = selPeer[0].pub_key; }

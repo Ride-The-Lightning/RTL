@@ -6,7 +6,7 @@ var options = {};
 function paymentReducer(accumulator, currentPayment) {
   let currPayHash = currentPayment.payment_hash;
   if (!currentPayment.partid) { currentPayment.partid = 0; }
-  if(!accumulator[currPayHash]) {
+  if (!accumulator[currPayHash]) {
     accumulator[currPayHash] = [currentPayment];
   } else {
     accumulator[currPayHash].push(currentPayment);
@@ -51,7 +51,7 @@ exports.listPayments = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/pay/listPayments';
   request(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body.payments});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Payments', msg: 'Payments List Error', error: body.error});
       res.status(500).json({
         message: "Payments List Failed!",
@@ -87,7 +87,7 @@ exports.decodePayment = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/pay/decodePay/' + req.params.invoice;
   request(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Payments', msg: 'Payment Decode Received', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Payments', msg: 'Payment Decode Error', error: body.error});
       res.status(500).json({
         message: "Payment Request Decode Failed!",
@@ -126,7 +126,7 @@ exports.postPayment = (req, res, next) => {
   options.body = req.body;
   request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Payments', msg: 'Send Payment Response', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Payments', msg: 'Send Payment Error', error: body.error});
       res.status(500).json({
         message: "Send Payment Failed!",

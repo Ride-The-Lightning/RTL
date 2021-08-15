@@ -21,8 +21,8 @@ export class ECLOnChainReceiveComponent {
 
   onGenerateAddress() {
     this.store.dispatch(new ECLActions.GetNewAddress());
-    this.eclEffects.setNewAddress.pipe(take(1))
-    .subscribe(newAddress => {
+    this.eclEffects.setNewAddress.pipe(take(1)).
+    subscribe(newAddress => {
       this.newAddress = newAddress;
       this.store.dispatch(new RTLActions.OpenAlert({
         width: '58%',

@@ -58,7 +58,7 @@ exports.postPeer = (req, res, next) => {
   });
   request.post(options, (error, response, body) => {
     logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Peer Added', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Peers', msg: 'Add Peer Error', error: body.error});
       res.status(500).json({
         message: "Adding peer failed!",
@@ -104,7 +104,7 @@ exports.deletePeer = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/peers/' + req.params.peerPubKey;
   request.delete(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Detach Peer Response', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Peers', msg: 'Detach Peer Error', error: body.error});
       res.status(500).json({
         message: "Detach peer failed!",

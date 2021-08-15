@@ -11,8 +11,8 @@ describe('SwapStatusComponent', () => {
     TestBed.configureTestingModule({
       declarations: [SwapStatusComponent],
       imports: [SharedModule]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

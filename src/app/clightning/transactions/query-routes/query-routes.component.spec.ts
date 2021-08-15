@@ -35,8 +35,8 @@ describe('CLQueryRoutesComponent', () => {
         { provide: DataService, useClass: mockDataService },
         { provide: CLEffects, useClass: mockCLEffects }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

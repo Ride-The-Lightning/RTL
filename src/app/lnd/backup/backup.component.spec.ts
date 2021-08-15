@@ -12,8 +12,8 @@ describe('BackupComponent', () => {
     TestBed.configureTestingModule({
       declarations: [BackupComponent],
       imports: [SharedModule, RouterTestingModule]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

@@ -11,11 +11,6 @@ export interface GetInfo {
   lnImplementation?: string;
 }
 
-export interface Audit {
-  fees: Fees;
-  payments: Payments;
-}
-
 export interface Fees {
   daily_fee?: number;
   daily_txs?: number;
@@ -25,10 +20,13 @@ export interface Fees {
   monthly_txs?: number;
 }
 
-export interface Payments {
-  sent?: PaymentSent[];
-  received?: PaymentReceived[];
-  relayed?: PaymentRelayed[];
+export interface PaymentSentPart {
+  id?: string;
+  amount?: number;
+  feesPaid?: number;
+  toChannelId?: string;
+  toChannelAlias?: string;
+  timestamp?: number;
 }
 
 export interface PaymentSent {
@@ -44,12 +42,9 @@ export interface PaymentSent {
   parts: PaymentSentPart[];
 }
 
-export interface PaymentSentPart {
-  id?: string;
+export interface PaymentReceivedPart {
   amount?: number;
-  feesPaid?: number;
-  toChannelId?: string;
-  toChannelAlias?: string;
+  fromChannelId?: string;
   timestamp?: number;
 }
 
@@ -58,12 +53,6 @@ export interface PaymentReceived {
   paymentHash?: string;
   firstPartTimestamp?: number;
   parts: PaymentReceivedPart[];
-}
-
-export interface PaymentReceivedPart {
-  amount?: number;
-  fromChannelId?: string;
-  timestamp?: number;
 }
 
 export interface PaymentRelayed {
@@ -78,6 +67,17 @@ export interface PaymentRelayed {
   toShortChannelId?: string;
   toChannelAlias?: string;
   timestamp?: number;
+}
+
+export interface Payments {
+  sent?: PaymentSent[];
+  received?: PaymentReceived[];
+  relayed?: PaymentRelayed[];
+}
+
+export interface Audit {
+  fees: Fees;
+  payments: Payments;
 }
 
 export interface PayRequest {
@@ -170,6 +170,10 @@ export interface Transaction {
   txid?: string;
   timestamp?: number;
 }
+export interface Feature {
+  name?: string;
+  support?: string;
+}
 
 export interface Invoice {
   prefix?: string;
@@ -185,11 +189,6 @@ export interface Invoice {
   amount?: number;
   amountSettled?: number;
   features?: { activated: Feature[], unknown: Feature[] };
-}
-
-export interface Feature {
-  name?: string;
-  support?: string;
 }
 
 export interface LookupNode {

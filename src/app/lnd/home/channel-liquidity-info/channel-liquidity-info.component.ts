@@ -33,9 +33,9 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('lnd').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.showLoop = (rtlStore.nodeSettings.swapServerUrl && rtlStore.nodeSettings.swapServerUrl.trim() !== '') ? true : false;
     });
   }
@@ -45,9 +45,9 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
   }
 
   onLoopOut(channel: Channel) {
-    this.loopService.getLoopOutTermsAndQuotes(this.targetConf)
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe(response => {
+    this.loopService.getLoopOutTermsAndQuotes(this.targetConf).
+    pipe(takeUntil(this.unSubs[1])).
+    subscribe(response => {
       this.store.dispatch(new RTLActions.OpenAlert({ minHeight: '56rem', data: {
         channel: channel,
         minQuote: response[0],

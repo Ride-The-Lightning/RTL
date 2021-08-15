@@ -11,8 +11,8 @@ describe('ECLBalancesInfoComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ECLBalancesInfoComponent],
       imports: [SharedModule]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

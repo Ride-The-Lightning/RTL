@@ -4,10 +4,10 @@ var logger = require('../shared/logger');
 var options = {};
 
 arrangeBalances = (body) => {
-  if(!body.confirmed) {
+  if (!body.confirmed) {
     body.confirmed = 0;
   }
-  if(!body.unconfirmed) {
+  if (!body.unconfirmed) {
     body.unconfirmed = 0;
   }
   body.total = +body.confirmed + +body.unconfirmed;

@@ -9,14 +9,14 @@ exports.getFees = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/getFees';
   request(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Fees', msg: 'Fee Received', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Fees', msg: 'Get Fee Error', error: body.error});
       res.status(500).json({
         message: "Fetching fee failed!",
         error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
-      if(!body.feeCollected) {
+      if (!body.feeCollected) {
         body.feeCollected = 0;
       }
       logger.log({level: 'INFO', fileName: 'Fees', msg: 'Fees Received'});

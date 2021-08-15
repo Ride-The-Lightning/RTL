@@ -57,9 +57,10 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
     this.alertTitle = this.data.alertTitle;
     this.peer = this.data.message.peer ? this.data.message.peer : null;
     this.peers = this.data.message.peers && this.data.message.peers.length ? this.data.message.peers : [];
-    this.actions.pipe(takeUntil(this.unSubs[0]),
-    filter(action => action.type === CLActions.UPDATE_API_CALL_STATUS_CL || action.type === CLActions.FETCH_CHANNELS_CL))
-    .subscribe((action: CLActions.UpdateAPICallStatus | CLActions.FetchChannels) => {
+    this.actions.pipe(
+    takeUntil(this.unSubs[0]),
+    filter(action => action.type === CLActions.UPDATE_API_CALL_STATUS_CL || action.type === CLActions.FETCH_CHANNELS_CL)).
+    subscribe((action: CLActions.UpdateAPICallStatus | CLActions.FetchChannels) => {
       if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewChannel') {
         this.channelConnectionError = action.payload.message;
       }
@@ -89,7 +90,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
 
   onSelectedPeerChanged() {
     this.channelConnectionError = '';
-    this.selectedPubkey = (this.selectedPeer.value && this.selectedPeer.value.id) ? this.selectedPeer.value.id : undefined;
+    this.selectedPubkey = (this.selectedPeer.value && this.selectedPeer.value.id) ? this.selectedPeer.value.id : null;
     if (typeof this.selectedPeer.value === 'string') {
       let selPeer = this.peers.filter(peer => peer.alias.length === this.selectedPeer.value.length && peer.alias.toLowerCase().indexOf(this.selectedPeer.value ? this.selectedPeer.value.toLowerCase() : '') === 0);
       if (selPeer.length === 1 && selPeer[0].id) { this.selectedPubkey = selPeer[0].id; }
@@ -141,7 +142,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
   onUTXOSelectionChange(event: any) {
     let utxoNew = {value: 0};
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
-      this.totalSelectedUTXOAmount = this.selUTXOs.reduce((a, b) => {utxoNew.value = a.value + b.value; return utxoNew;}).value;
+      this.totalSelectedUTXOAmount = this.selUTXOs.reduce((a, b) => { utxoNew.value = a.value + b.value; return utxoNew; }).value;
       if (this.flgUseAllBalance) { this.onUTXOAllBalanceChange(); }
     } else {
       this.totalSelectedUTXOAmount = 0;

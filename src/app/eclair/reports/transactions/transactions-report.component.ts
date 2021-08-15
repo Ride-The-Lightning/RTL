@@ -44,12 +44,12 @@ export class ECLTransactionsReportComponent implements OnInit, AfterContentInit,
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select('ecl')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('ecl').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.payments = rtlStore.payments.sent ? rtlStore.payments.sent : [];
       this.invoices = rtlStore.invoices ? rtlStore.invoices : [];
-      if(this.payments.length > 0 || this.invoices.length > 0) {
+      if (this.payments.length > 0 || this.invoices.length > 0) {
         this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
         this.transactionsNonZeroReportData = this.prepareTableData();
       }
@@ -81,7 +81,7 @@ export class ECLTransactionsReportComponent implements OnInit, AfterContentInit,
   }
 
   onChartBarSelected(event) {
-    if(this.reportPeriod === SCROLL_RANGES[1]) {
+    if (this.reportPeriod === SCROLL_RANGES[1]) {
       this.transactionFilterValue = event.series.toString() + '/' + this.startDate.getFullYear();
     } else {
       this.transactionFilterValue = event.series.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
@@ -106,12 +106,14 @@ export class ECLTransactionsReportComponent implements OnInit, AfterContentInit,
         this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + payment.recipientAmount;
         transactionsReport[monthNumber].series[0].value = transactionsReport[monthNumber].series[0].value + payment.recipientAmount;
         transactionsReport[monthNumber].series[0].extra.total = transactionsReport[monthNumber].series[0].extra.total + 1;
+        return this.transactionsReportSummary;
       });
       filteredInvoices.map(invoice => {
         let monthNumber = new Date((invoice.timestamp)*1000).getMonth();
         this.transactionsReportSummary.amountReceivedSelectedPeriod = this.transactionsReportSummary.amountReceivedSelectedPeriod + invoice.amountSettled;
         transactionsReport[monthNumber].series[1].value = transactionsReport[monthNumber].series[1].value + invoice.amountSettled;
         transactionsReport[monthNumber].series[1].extra.total = transactionsReport[monthNumber].series[1].extra.total + 1;
+        return this.transactionsReportSummary;
       });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
@@ -122,12 +124,14 @@ export class ECLTransactionsReportComponent implements OnInit, AfterContentInit,
         this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + payment.recipientAmount;
         transactionsReport[dateNumber].series[0].value = transactionsReport[dateNumber].series[0].value + payment.recipientAmount;
         transactionsReport[dateNumber].series[0].extra.total = transactionsReport[dateNumber].series[0].extra.total + 1;
+        return this.transactionsReportSummary;
       });
       filteredInvoices.map(invoice => {
         let dateNumber = Math.floor((invoice.timestamp - startDateInSeconds) / this.secondsInADay);
         this.transactionsReportSummary.amountReceivedSelectedPeriod = this.transactionsReportSummary.amountReceivedSelectedPeriod + invoice.amountSettled;
         transactionsReport[dateNumber].series[1].value = transactionsReport[dateNumber].series[1].value + invoice.amountSettled;
         transactionsReport[dateNumber].series[1].extra.total = transactionsReport[dateNumber].series[1].extra.total + 1;
+        return this.transactionsReportSummary;
       });
     }
     return transactionsReport;

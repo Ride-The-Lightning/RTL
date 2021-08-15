@@ -15,7 +15,7 @@ export class CLNodeInfoComponent implements OnChanges {
   constructor(private commonService: CommonService) { }
 
   ngOnChanges() {
-    if(this.information && this.information.chains && this.information.chains.length > 0) {
+    if (this.information && this.information.chains && this.information.chains.length > 0) {
       this.chains = [''];
       this.information.chains.forEach(chain => {
         this.chains.push(this.commonService.titleCase(chain.chain) + ' ' + this.commonService.titleCase(chain.network));

@@ -198,7 +198,7 @@ export class ShowFile implements Action {
 
 export type RTLActions = UpdateAPICallStatus | IsAuthorized | IsAuthorizedRes | Login | VerifyTwoFA |
   VoidAction | CloseAllDialogs | OpenSnackBar | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
-  OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation | ShowPubkey | FetchConfig | ShowConfig |
+  OpenAlert | CloseAlert | OpenConfirmation | CloseConfirmation | ShowPubkey | FetchConfig | ShowConfig |
   UpdateSelectedNodeOptions | ResetRootStore |
   SetSelelectedNode | SetNodeData | SaveSSO | UpdateServiceSettings |
   Logout | ResetPassword | ResetPasswordRes | FetchFile | ShowFile;

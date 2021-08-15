@@ -50,13 +50,13 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['state', 'alias', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
+    } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['state', 'alias', 'toLocal', 'toRemote', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['state', 'alias', 'toLocal', 'toRemote', 'actions'];
     } else {
@@ -66,9 +66,9 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
   }
 
   ngOnInit() {
-    this.store.select('ecl')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('ecl').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.errorMessage = '';
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
@@ -102,7 +102,7 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
     }
 
   loadChannelsTable() {
-    this.pendingChannels.sort(function(a, b) {
+    this.pendingChannels.sort((a, b) => {
       return (a.alias === b.alias) ? 0 : ((b.alias) ? 1 : -1);
     });
     this.channels = new MatTableDataSource<Channel>([...this.pendingChannels]);
@@ -114,7 +114,7 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
   }
 
   onDownloadCSV() {
-    if(this.channels.data && this.channels.data.length > 0) {
+    if (this.channels.data && this.channels.data.length > 0) {
       this.commonService.downloadFile(this.channels.data, 'PendingChannels');
     }
   }

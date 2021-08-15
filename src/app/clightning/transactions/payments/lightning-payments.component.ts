@@ -62,15 +62,15 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects, private decimalPipe: DecimalPipe, private titleCasePipe: TitleCasePipe, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['created_at', 'actions'];
       this.mppColumns = ['groupTotal', 'groupAction'];
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
+    } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['created_at', 'msatoshi', 'actions'];
       this.mppColumns = ['groupTotal', 'groupAmtRecv', 'groupAction'];
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['created_at', 'msatoshi_sent', 'msatoshi', 'actions'];
       this.mppColumns = ['groupTotal', 'groupAmtSent', 'groupAmtRecv', 'groupAction'];
@@ -82,9 +82,9 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngOnInit() {
-    this.store.select('cl')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('cl').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.errorMessage = '';
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.ERROR) {
@@ -112,14 +112,14 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   }
 
   onSendPayment(): boolean|void {
-    if(!this.paymentRequest) { return true; }
+    if (!this.paymentRequest) { return true; }
     if (this.paymentDecoded.created_at) {
       this.sendPayment();
     } else {
       this.store.dispatch(new CLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: false}));
-      this.clEffects.setDecodedPaymentCL
-      .pipe(take(1))
-      .subscribe(decodedPayment => {
+      this.clEffects.setDecodedPaymentCL.
+      pipe(take(1)).
+      subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
         if (this.paymentDecoded.created_at) {
           if (!this.paymentDecoded.msatoshi) {
@@ -131,13 +131,12 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
         }
       });
     }
-
   }
 
   sendPayment() {
     this.flgAnimate = true;
     this.newlyAddedPayment = this.paymentDecoded.payment_hash;
-    if (!this.paymentDecoded.msatoshi ||  this.paymentDecoded.msatoshi === 0) {
+    if (!this.paymentDecoded.msatoshi || this.paymentDecoded.msatoshi === 0) {
         const reorderedPaymentDecoded = [
           [{key: 'payment_hash', value: this.paymentDecoded.payment_hash, title: 'Payment Hash', width: 100}],
           [{key: 'payee', value: this.paymentDecoded.payee, title: 'Payee', width: 100}],
@@ -159,12 +158,12 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
             {placeholder: 'Amount (Sats)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: '', width: 30}
           ]
         }}));
-        this.rtlEffects.closeConfirm
-        .pipe(take(1))
-        .subscribe(confirmRes => {
+        this.rtlEffects.closeConfirm.
+        pipe(take(1)).
+        subscribe(confirmRes => {
           if (confirmRes) {
             this.paymentDecoded.msatoshi = confirmRes[0].inputValue;
-            this.store.dispatch(new CLActions.SendPayment({uiMessage:UI_MESSAGES.SEND_PAYMENT, invoice: this.paymentRequest, amount: confirmRes[0].inputValue*1000, fromDialog: false}));
+            this.store.dispatch(new CLActions.SendPayment({uiMessage: UI_MESSAGES.SEND_PAYMENT, invoice: this.paymentRequest, amount: confirmRes[0].inputValue*1000, fromDialog: false}));
             this.resetData();
           }
         });
@@ -185,11 +184,11 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
         yesBtnText: 'Send Payment',
         message: reorderedPaymentDecoded
       }}));
-      this.rtlEffects.closeConfirm
-      .pipe(take(1))
-      .subscribe(confirmRes => {
+      this.rtlEffects.closeConfirm.
+      pipe(take(1)).
+      subscribe(confirmRes => {
         if (confirmRes) {
-          this.store.dispatch(new CLActions.SendPayment({uiMessage:UI_MESSAGES.SEND_PAYMENT, invoice: this.paymentRequest, fromDialog: false}));
+          this.store.dispatch(new CLActions.SendPayment({uiMessage: UI_MESSAGES.SEND_PAYMENT, invoice: this.paymentRequest, fromDialog: false}));
           this.resetData();
         }
       });
@@ -199,15 +198,15 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   onPaymentRequestEntry(event: any) {
     this.paymentRequest = event;
     this.paymentDecodedHint = '';
-    if(this.paymentRequest && this.paymentRequest.length > 100) {
+    if (this.paymentRequest && this.paymentRequest.length > 100) {
       this.store.dispatch(new CLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: false}));
       this.clEffects.setDecodedPaymentCL.subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
-        if(this.paymentDecoded.msatoshi) {
-          if(this.selNode.fiatConversion) {
-            this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
-            .pipe(takeUntil(this.unSubs[1]))
-            .subscribe({next: data => {
+        if (this.paymentDecoded.msatoshi) {
+          if (this.selNode.fiatConversion) {
+            this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
+            pipe(takeUntil(this.unSubs[1])).
+            subscribe({next: data => {
               this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
             }, error: error => {
               this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
@@ -249,8 +248,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
       reorderedPayment.splice(2, 0, [{key: 'memo', value: selPayment.memo, title: 'Memo', width: 100, type: DataTypeEnum.STRING}]);
     }
     if (selPayment.hasOwnProperty('partid')) {
-      reorderedPayment.unshift(
-        [{key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 80, type: DataTypeEnum.STRING},
+      reorderedPayment.unshift([{key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 80, type: DataTypeEnum.STRING},
         {key: 'partid', value: selPayment.partid, title: 'Part ID', width: 20, type: DataTypeEnum.STRING}]);
     } else {
       reorderedPayment.unshift([{key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}]);
@@ -280,7 +278,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   }
 
   onDownloadCSV() {
-    if(this.payments.data && this.payments.data.length > 0) {
+    if (this.payments.data && this.payments.data.length > 0) {
       let paymentsDataCopy = JSON.parse(JSON.stringify(this.payments.data));
       let flattenedPayments = paymentsDataCopy.reduce((acc, curr) => {
         if (curr.mpps) {

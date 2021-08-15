@@ -41,16 +41,17 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initializeNodeData = this.sessionService.getItem('defaultPassword') === 'true';
-    this.store.select('root')
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe((rtlStore) => {
+    this.store.select('root').
+    pipe(takeUntil(this.unSubs[1])).
+    subscribe((rtlStore) => {
       this.appConfig = rtlStore.appConfig;
       this.selNode = rtlStore.selNode;
       this.logger.info(rtlStore);
     });
-    this.actions.pipe(takeUntil(this.unSubs[2]),
-    filter((action) => action.type === RTLActions.RESET_PASSWORD_RES))
-    .subscribe((action: (RTLActions.ResetPasswordRes)) => {
+    this.actions.pipe(
+    takeUntil(this.unSubs[2]),
+    filter((action) => action.type === RTLActions.RESET_PASSWORD_RES)).
+    subscribe((action: (RTLActions.ResetPasswordRes)) => {
       if (PASSWORD_BLACKLIST.includes(this.currPassword.toLowerCase())) { // To redirect after initial password reset is done
         switch (this.selNode.lnImplementation.toUpperCase()) {
           case 'CLT':
@@ -71,13 +72,13 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
   }
 
   onChangePassword(): boolean|void {
-    if(!this.currPassword || !this.newPassword || !this.confirmPassword || this.currPassword === this.newPassword || this.newPassword !== this.confirmPassword || PASSWORD_BLACKLIST.includes(this.newPassword.toLowerCase())) { return true; }
+    if (!this.currPassword || !this.newPassword || !this.confirmPassword || this.currPassword === this.newPassword || this.newPassword !== this.confirmPassword || PASSWORD_BLACKLIST.includes(this.newPassword.toLowerCase())) { return true; }
     this.store.dispatch(new RTLActions.ResetPassword({currPassword: sha256(this.currPassword), newPassword: sha256(this.newPassword)}));
   }
 
   matchOldAndNewPasswords(): boolean {
     let invalid = false;
-    if(this.form.controls.newpassword) {
+    if (this.form.controls.newpassword) {
       if (!this.newPassword) {
         this.form.controls.newpassword.setErrors({invalid: true});
         this.errorMsg = 'New password is required.';
@@ -131,7 +132,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if(this.initializeNodeData) {
+    if (this.initializeNodeData) {
       this.store.dispatch(new RTLActions.SetSelelectedNode({uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: this.selNode, isInitialSetup: true}));
     }
     this.unSubs.forEach(unsub => {

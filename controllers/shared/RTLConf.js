@@ -74,12 +74,12 @@ exports.updateUISettings = (req, res, next) => {
   var RTLConfFile = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';
   var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
   config.nodes.find(node => {
-    if(node.index == common.selectedNode.index) {
+    if (node.index == common.selectedNode.index) {
       node.Settings.userPersona = req.body.updatedSettings.userPersona;
       node.Settings.themeMode = req.body.updatedSettings.themeMode;
       node.Settings.themeColor = req.body.updatedSettings.themeColor;
       node.Settings.fiatConversion = req.body.updatedSettings.fiatConversion;
-      if(req.body.updatedSettings.fiatConversion) {
+      if (req.body.updatedSettings.fiatConversion) {
         node.Settings.currencyUnit = req.body.updatedSettings.currencyUnit ? req.body.updatedSettings.currencyUnit : 'USD';
       } else {
         delete node.Settings.currencyUnit;
@@ -89,7 +89,7 @@ exports.updateUISettings = (req, res, next) => {
       selectedNode.theme_mode = req.body.updatedSettings.themeMode;
       selectedNode.theme_color = req.body.updatedSettings.themeColor;
       selectedNode.fiat_conversion = req.body.updatedSettings.fiatConversion;
-      if(req.body.updatedSettings.fiatConversion) {
+      if (req.body.updatedSettings.fiatConversion) {
         selectedNode.currency_unit = req.body.updatedSettings.currencyUnit ? req.body.updatedSettings.currencyUnit : 'USD';
       } else {
         delete selectedNode.currency_unit;
@@ -227,7 +227,7 @@ exports.getCurrencyRates = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Getting Currency Rates..'});
   options.url = 'https://blockchain.info/ticker';
   request(options).then((body) => {
-    if(!body || body.error) {
+    if (!body || body.error) {
       res.status(500).json({
         message: "Fetching Rates Failed!",
         error: (!body) ? 'Error From External Server!' : body.error
@@ -273,7 +273,7 @@ exports.updateServiceSettings = (req, res, next) => {
   var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
   const selectedNode = common.findNode(common.selectedNode.index);
   config.nodes.find(node => {
-    if(node.index == common.selectedNode.index) {
+    if (node.index == common.selectedNode.index) {
       switch (req.body.service) {
         case 'LOOP':
           if (req.body.settings.enable) {

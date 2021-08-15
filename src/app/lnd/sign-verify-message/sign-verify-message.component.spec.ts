@@ -12,8 +12,8 @@ describe('SignVerifyMessageComponent', () => {
     TestBed.configureTestingModule({
       declarations: [SignVerifyMessageComponent],
       imports: [SharedModule, RouterTestingModule]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

@@ -48,18 +48,20 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
   constructor(public dialogRef: MatDialogRef<ECLOnChainSendModalComponent>, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions) {}
 
   ngOnInit() {
-    this.store.select('root')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rootStore) => {
+    this.store.select('root').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rootStore) => {
       this.fiatConversion = rootStore.selNode.settings.fiatConversion;
       this.amountUnits = rootStore.selNode.settings.currencyUnits;
       this.appConfig = rootStore.appConfig;
       this.nodeData = rootStore.nodeData;
       this.logger.info(rootStore);
     });
-    this.actions.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL || action.type === ECLActions.SEND_ONCHAIN_FUNDS_RES_ECL))
-    .subscribe((action: ECLActions.UpdateAPICallStatus | ECLActions.SendOnchainFundsRes) => {
+    this.actions.pipe(
+takeUntil(this.unSubs[1]),
+    filter(action => action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL || action.type === ECLActions.SEND_ONCHAIN_FUNDS_RES_ECL)
+).
+    subscribe((action: ECLActions.UpdateAPICallStatus | ECLActions.SendOnchainFundsRes) => {
       if (action.type === ECLActions.SEND_ONCHAIN_FUNDS_RES_ECL) {
         this.store.dispatch(new RTLActions.OpenSnackBar('Fund Sent Successfully!'));
         this.dialogRef.close();
@@ -71,12 +73,12 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
   }
 
   onSendFunds(): boolean|void {
-    if(this.invalidValues) { return true; }
+    if (this.invalidValues) { return true; }
     this.sendFundError = '';
-    if(this.transaction.amount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
-      this.commonService.convertCurrency(this.transaction.amount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion)
-      .pipe(takeUntil(this.unSubs[2]))
-      .subscribe({next: data => {
+    if (this.transaction.amount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
+      this.commonService.convertCurrency(this.transaction.amount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion).
+      pipe(takeUntil(this.unSubs[2])).
+      subscribe({next: data => {
         this.transaction.amount = parseInt(data[CurrencyUnitEnum.SATS]);
         this.selAmountUnit = CurrencyUnitEnum.SATS;
         this.store.dispatch(new ECLActions.SendOnchainFunds(this.transaction));
@@ -105,10 +107,10 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
     let self = this;
     let prevSelectedUnit = (this.selAmountUnit === this.amountUnits[2]) ? CurrencyUnitEnum.OTHER : this.selAmountUnit;
     let currSelectedUnit = event.value === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : event.value;
-    if(this.transaction.amount && this.selAmountUnit !== event.value) {
-      this.commonService.convertCurrency(this.transaction.amount, prevSelectedUnit, currSelectedUnit, this.amountUnits[2], this.fiatConversion)
-      .pipe(takeUntil(this.unSubs[3]))
-      .subscribe({next: data => {
+    if (this.transaction.amount && this.selAmountUnit !== event.value) {
+      this.commonService.convertCurrency(this.transaction.amount, prevSelectedUnit, currSelectedUnit, this.amountUnits[2], this.fiatConversion).
+      pipe(takeUntil(this.unSubs[3])).
+      subscribe({next: data => {
         this.selAmountUnit = event.value;
         self.transaction.amount = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
       }, error: err => {

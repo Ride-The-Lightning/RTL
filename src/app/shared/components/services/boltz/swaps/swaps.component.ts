@@ -63,15 +63,15 @@ export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   setTableColumns() {
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ?
       ['status', 'id', 'expectedAmount', 'actions'] : ['status', 'id', 'onchainAmount', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
+    } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ?
       ['status', 'id', 'expectedAmount', 'actions'] : ['status', 'id', 'onchainAmount', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ?
       ['status', 'id', 'expectedAmount', 'timeoutBlockHeight', 'actions'] :
@@ -91,8 +91,8 @@ export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   onSwapClick(selSwap: Swap | ReverseSwap, event: any) {
-    this.boltzService.swapInfo(selSwap.id).pipe(takeUntil(this.unSubs[1]))
-    .subscribe((fetchedSwap: any) => {
+    this.boltzService.swapInfo(selSwap.id).pipe(takeUntil(this.unSubs[1])).
+    subscribe((fetchedSwap: any) => {
       fetchedSwap = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? fetchedSwap.swap : fetchedSwap.reverseSwap;
       const reorderedSwap = [
         [{key: 'status', value: SwapStateEnum[fetchedSwap.status], title: 'Status', width: 50, type: DataTypeEnum.STRING},
@@ -127,7 +127,7 @@ export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   onDownloadCSV() {
-    if(this.listSwaps.data && this.listSwaps.data.length > 0) {
+    if (this.listSwaps.data && this.listSwaps.data.length > 0) {
       this.commonService.downloadFile(this.listSwaps.data, (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? 'Swap in' : 'Swap out');
     }
   }

@@ -105,13 +105,13 @@ connect.updateLogByLevel = () => {
     RTLConfFile = common.rtl_conf_file_path + common.path_separator + 'RTL-Config.json';
     var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
     config.nodes.forEach((node) => {
-      if(node.Settings.hasOwnProperty('enableLogging')) {
+      if (node.Settings.hasOwnProperty('enableLogging')) {
         updateLogFlag = true;
         node.Settings.logLevel = node.Settings.enableLogging? 'INFO' : 'ERROR';
         delete node.Settings.enableLogging;
       }
     })
-    if(updateLogFlag) {
+    if (updateLogFlag) {
       fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     }
   } catch (err) {

@@ -34,18 +34,18 @@ export class CLChannelsTablesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.activeLink = this.links.findIndex(link => link.link === this.router.url.substring(this.router.url.lastIndexOf('/') + 1));
-    this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd))
-    .subscribe((value: ResolveEnd) => {
+    this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd)).
+    subscribe((value: ResolveEnd) => {
       this.activeLink = this.links.findIndex(link => link.link === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
     });
-    this.store.select('cl')
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe((rtlStore) => {
+    this.store.select('cl').
+    pipe(takeUntil(this.unSubs[1])).
+    subscribe((rtlStore) => {
       if (rtlStore.allChannels && rtlStore.allChannels.length) {
         this.openChannels = 0;
         this.pendingChannels = 0;
         rtlStore.allChannels.forEach(channel => {
-          if(channel.state === 'CHANNELD_NORMAL' && channel.connected) {
+          if (channel.state === 'CHANNELD_NORMAL' && channel.connected) {
             this.openChannels++;
           } else {
             this.pendingChannels++;

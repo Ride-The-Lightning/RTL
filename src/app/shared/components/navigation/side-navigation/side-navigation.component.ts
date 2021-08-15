@@ -67,9 +67,9 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     let token = this.sessionService.getItem('token');
     this.showLogout = token ? true : false;
     this.flgLoading = token ? true : false;
-    this.store.select('root')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe(rtlStore => {
+    this.store.select('root').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe(rtlStore => {
       this.appConfig = rtlStore.appConfig;
       this.selNode = rtlStore.selNode;
       this.settings = this.selNode.settings;
@@ -79,7 +79,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
           this.informationChain.chain = this.information.chains[0].toString();
           this.informationChain.network = (this.information.testnet) ? 'Testnet' : 'Mainnet';
         } else if (typeof this.information.chains[0] === 'object' && this.information.chains[0].hasOwnProperty('chain')) {
-          const getInfoChain = <GetInfoChain>this.information.chains[0];
+          const getInfoChain = <GetInfoChain> this.information.chains[0];
           this.informationChain.chain = getInfoChain.chain;
           this.informationChain.network = getInfoChain.network;
         }
@@ -92,20 +92,21 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
       if (window.innerWidth <= 414) {
         this.smallScreen = true;
       }
-      if(this.settings.lnServerUrl) {
+      if (this.settings.lnServerUrl) {
         this.filterSideMenuNodes();
       }
       this.logger.info(rtlStore);
     });
-    this.sessionService.watchSession()
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe(session => {
+    this.sessionService.watchSession().
+    pipe(takeUntil(this.unSubs[1])).
+    subscribe(session => {
       this.showLogout = session.token ? true : false;
       this.flgLoading = session.token ? true : false;
     });
-    this.actions.pipe(takeUntil(this.unSubs[2]),
-    filter((action) => action.type === RTLActions.LOGOUT))
-    .subscribe((action: RTLActions.Logout) => {
+    this.actions.pipe(
+    takeUntil(this.unSubs[2]),
+    filter((action) => action.type === RTLActions.LOGOUT)).
+    subscribe((action: RTLActions.Logout) => {
       this.showLogout = false;
     });
   }
@@ -117,9 +118,9 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
       this.store.dispatch(new RTLActions.OpenConfirmation({
         data: { type: AlertTypeEnum.CONFIRM, alertTitle: 'Logout', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
       }}));
-      this.rtlEffects.closeConfirm
-      .pipe(takeUntil(this.unSubs[3]))
-      .subscribe(confirmRes => {
+      this.rtlEffects.closeConfirm.
+      pipe(takeUntil(this.unSubs[3])).
+      subscribe(confirmRes => {
         if (confirmRes) {
           this.showLogout = false;
           this.store.dispatch(new RTLActions.Logout());
@@ -134,7 +135,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   }
 
   filterSideMenuNodes() {
-    if(this.selNode && this.selNode.lnImplementation) {
+    if (this.selNode && this.selNode.lnImplementation) {
       switch (this.selNode.lnImplementation.toUpperCase()) {
         case 'CLT':
           this.loadCLTMenu();
@@ -157,7 +158,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     let clonedMenu = [];
     clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.LNDChildren));
     this.navMenus.data = clonedMenu.filter(navMenuData => {
-      if(navMenuData.children && navMenuData.children.length) {
+      if (navMenuData.children && navMenuData.children.length) {
         navMenuData.children = navMenuData.children.filter(navMenuChild => {
           return ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona) && navMenuChild.link !== '/services/loop' && navMenuChild.link !== '/services/boltz')
           || (navMenuChild.link === '/services/loop' && this.settings.swapServerUrl && this.settings.swapServerUrl.trim() !== '')
@@ -173,7 +174,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     let clonedMenu = [];
     clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.CLChildren));
     this.navMenus.data = clonedMenu.filter(navMenuData => {
-      if(navMenuData.children && navMenuData.children.length) {
+      if (navMenuData.children && navMenuData.children.length) {
         navMenuData.children = navMenuData.children.filter(navMenuChild => {
           return ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona) && navMenuChild.link !== '/cl/messages')
           || (navMenuChild.link === '/cl/messages' && this.information.api_version && this.commonService.isVersionCompatible(this.information.api_version, '0.2.2'));

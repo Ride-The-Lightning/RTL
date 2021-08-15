@@ -55,13 +55,13 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'msatoshi_to_us', 'msatoshi_to_them', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
+    } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['short_channel_id', 'alias', 'msatoshi_to_us', 'msatoshi_to_them', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['short_channel_id', 'alias', 'msatoshi_to_us', 'msatoshi_to_them', 'actions'];
     } else {
@@ -71,9 +71,9 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   ngOnInit() {
-    this.store.select('cl')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('cl').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.errorMessage = '';
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
@@ -98,12 +98,12 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
 
   onViewRemotePolicy(selChannel: Channel) {
     this.store.dispatch(new CLActions.ChannelLookup({uiMessage: UI_MESSAGES.GET_REMOTE_POLICY, shortChannelID: selChannel.short_channel_id, showError: true}));
-    this.clEffects.setLookupCL
-    .pipe(take(1))
-    .subscribe((resLookup: ChannelEdge[]): boolean|void => {
-      if(resLookup.length === 0) { return false; }
+    this.clEffects.setLookupCL.
+    pipe(take(1)).
+    subscribe((resLookup: ChannelEdge[]): boolean|void => {
+      if (resLookup.length === 0) { return false; }
       let remoteNode: ChannelEdge = {};
-      if(resLookup[0].source !== this.information.id) {
+      if (resLookup[0].source !== this.information.id) {
         remoteNode = resLookup[0];
       } else {
         remoteNode = resLookup[1];
@@ -123,7 +123,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   onChannelUpdate(channelToUpdate: any) {
-    if(channelToUpdate !== 'all' && channelToUpdate.state === 'ONCHAIN') {
+    if (channelToUpdate !== 'all' && channelToUpdate.state === 'ONCHAIN') {
       return;
     }
     if (channelToUpdate === 'all') {
@@ -141,9 +141,9 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
           {placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: 1, min: 1, width: 48, hintFunction: this.percentHintFunction}
         ]
       }}));
-      this.rtlEffects.closeConfirm
-      .pipe(takeUntil(this.unSubs[1]))
-      .subscribe(confirmRes => {
+      this.rtlEffects.closeConfirm.
+      pipe(takeUntil(this.unSubs[1])).
+      subscribe(confirmRes => {
         if (confirmRes) {
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
@@ -153,9 +153,9 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
     } else {
       this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0};
       this.store.dispatch(new CLActions.ChannelLookup({uiMessage: UI_MESSAGES.GET_CHAN_POLICY, shortChannelID: channelToUpdate.short_channel_id, showError: false}));
-      this.clEffects.setLookupCL
-      .pipe(take(1))
-      .subscribe((resLookup: ChannelEdge[]) => {
+      this.clEffects.setLookupCL.
+      pipe(take(1)).
+      subscribe((resLookup: ChannelEdge[]) => {
         if (resLookup.length > 0 && resLookup[0].source === this.information.id) {
           this.myChanPolicy = {fee_base_msat: resLookup[0].base_fee_millisatoshi, fee_rate_milli_msat: resLookup[0].fee_per_millionth};
         } else if (resLookup.length > 1 && resLookup[1].source === this.information.id) {
@@ -180,9 +180,9 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
           ]
         }}));
       });
-      this.rtlEffects.closeConfirm
-      .pipe(takeUntil(this.unSubs[2]))
-      .subscribe(confirmRes => {
+      this.rtlEffects.closeConfirm.
+      pipe(takeUntil(this.unSubs[2])).
+      subscribe(confirmRes => {
         if (confirmRes) {
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
@@ -205,9 +205,9 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
       noBtnText: 'Cancel',
       yesBtnText: 'Close Channel'
     }}));
-    this.rtlEffects.closeConfirm
-    .pipe(takeUntil(this.unSubs[3]))
-    .subscribe(confirmRes => {
+    this.rtlEffects.closeConfirm.
+    pipe(takeUntil(this.unSubs[3])).
+    subscribe(confirmRes => {
       if (confirmRes) {
         this.store.dispatch(new CLActions.CloseChannel({channelId: channelToClose.channel_id, force: false}));
       }
@@ -227,7 +227,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
     }
 
   loadChannelsTable(mychannels) {
-    mychannels.sort(function(a, b) {
+    mychannels.sort((a, b) => {
       return (a.active === b.active) ? 0 : ((b.active) ? 1 : -1);
     });
     this.channels = new MatTableDataSource<Channel>([...mychannels]);
@@ -247,7 +247,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   onDownloadCSV() {
-    if(this.channels.data && this.channels.data.length > 0) {
+    if (this.channels.data && this.channels.data.length > 0) {
       this.commonService.downloadFile(this.channels.data, 'Open-channels');
     }
   }

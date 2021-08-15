@@ -23,8 +23,8 @@ describe('ChannelLookupComponent', () => {
           }
         })
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

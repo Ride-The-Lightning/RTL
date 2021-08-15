@@ -42,7 +42,7 @@ export const initECLState: ECLState = {
   channelsStatus: {},
   channelStats: [],
   onchainBalance: { total: 0, confirmed: 0, unconfirmed: 0 },
-  lightningBalance:  { localBalance: -1, remoteBalance: -1 },
+  lightningBalance: { localBalance: -1, remoteBalance: -1 },
   peers: [],
   payments: {},
   transactions: [],

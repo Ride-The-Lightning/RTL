@@ -35,26 +35,26 @@ export class BoltzRootComponent implements OnInit, OnDestroy {
     let linkFound = this.links.find(link => this.router.url.includes(link.link));
     this.activeTab = linkFound ? linkFound : this.links[0];
     this.selectedSwapType = linkFound && linkFound.link === 'swapin' ? SwapTypeEnum.SWAP_IN : SwapTypeEnum.SWAP_OUT;
-    this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd))
-    .subscribe((value: ResolveEnd) => {
+    this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd)).
+    subscribe((value: ResolveEnd) => {
       let linkFound = this.links.find(link => value.urlAfterRedirects.includes(link.link));
       this.activeTab = linkFound ? linkFound : this.links[0];
       this.selectedSwapType = linkFound && linkFound.link === 'swapin' ? SwapTypeEnum.SWAP_IN : SwapTypeEnum.SWAP_OUT;
     });
-    this.boltzService.swapsChanged
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe({next: (swaps: ListSwaps) => {
+    this.boltzService.swapsChanged.
+    pipe(takeUntil(this.unSubs[1])).
+    subscribe({next: (swaps: ListSwaps) => {
       this.swaps = swaps;
       this.swapsData = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? swaps.swaps : swaps.reverseSwaps;
       this.flgLoading[0] = false;
     }, error: (err) => {
       this.flgLoading[0] = 'error';
-      this.emptyTableMessage = err.message ? err.message : 'No swap ' + ((this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? 'in' : 'out') +  ' available.';
+      this.emptyTableMessage = err.message ? err.message : 'No swap ' + ((this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? 'in' : 'out') + ' available.';
     }});
   }
 
   onSelectedIndexChange(activeTab: any) {
-    if(activeTab.link === 'swapin') {
+    if (activeTab.link === 'swapin') {
       this.selectedSwapType = SwapTypeEnum.SWAP_IN;
       this.swapsData = this.swaps.swaps;
     } else {
@@ -64,9 +64,9 @@ export class BoltzRootComponent implements OnInit, OnDestroy {
   }
 
   onSwap(direction: SwapTypeEnum) {
-    this.boltzService.serviceInfo()
-    .pipe(takeUntil(this.unSubs[2]))
-    .subscribe(response => {
+    this.boltzService.serviceInfo().
+    pipe(takeUntil(this.unSubs[2])).
+    subscribe(response => {
       this.store.dispatch(new RTLActions.OpenAlert({data: {
         serviceInfo: response,
         direction: direction,

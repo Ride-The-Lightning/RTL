@@ -37,8 +37,8 @@ describe('CLOnChainComponent', () => {
         CommonService,
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

@@ -1,6 +1,6 @@
 import { transition, trigger, query, style, animate, group } from '@angular/animations';
 
-export const routeAnimation =  trigger('routeAnimation', [
+export const routeAnimation = trigger('routeAnimation', [
   transition('* => *', [
     query(':enter, :leave', style({ position: 'fixed', width: '100%' }), { optional: true }),
     group([

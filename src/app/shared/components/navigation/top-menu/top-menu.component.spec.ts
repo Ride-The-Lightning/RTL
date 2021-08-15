@@ -34,8 +34,8 @@ describe('TopMenuComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

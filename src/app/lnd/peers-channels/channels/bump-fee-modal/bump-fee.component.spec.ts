@@ -31,11 +31,11 @@ describe('BumpFeeComponent', () => {
       providers: [
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {pendingChannel:{channel:{}}} },
+        { provide: MAT_DIALOG_DATA, useValue: {pendingChannel: {channel: {}}} },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

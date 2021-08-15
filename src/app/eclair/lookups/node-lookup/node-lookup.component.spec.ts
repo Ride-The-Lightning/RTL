@@ -18,8 +18,8 @@ describe('ECLNodeLookupComponent', () => {
         SharedModule
       ],
       providers: [LoggerService]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

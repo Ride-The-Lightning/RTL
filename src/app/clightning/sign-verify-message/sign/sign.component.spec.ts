@@ -23,8 +23,8 @@ describe('CLSignComponent', () => {
         LoggerService,
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

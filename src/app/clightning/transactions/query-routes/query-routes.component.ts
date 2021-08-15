@@ -37,13 +37,13 @@ export class CLQueryRoutesComponent implements OnInit, OnDestroy {
 
   constructor(private store: Store<fromRTLReducer.RTLState>, private clEffects: CLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'msatoshi', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
+    } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'direction', 'msatoshi', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'direction', 'delay', 'msatoshi', 'actions'];
     } else {
@@ -53,9 +53,9 @@ export class CLQueryRoutesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.clEffects.setQueryRoutesCL
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe(queryRoute => {
+    this.clEffects.setQueryRoutesCL.
+    pipe(takeUntil(this.unSubs[1])).
+    subscribe(queryRoute => {
       this.qrHops = new MatTableDataSource([]);
       this.qrHops.data = [];
       if (queryRoute.routes) {
@@ -71,7 +71,7 @@ export class CLQueryRoutesComponent implements OnInit, OnDestroy {
   }
 
   onQueryRoutes(): boolean|void {
-    if(!this.destinationPubkey || !this.amount) { return true; }
+    if (!this.destinationPubkey || !this.amount) { return true; }
     this.flgLoading[0] = true;
     this.store.dispatch(new CLActions.GetQueryRoutes({destPubkey: this.destinationPubkey, amount: this.amount*1000}));
   }

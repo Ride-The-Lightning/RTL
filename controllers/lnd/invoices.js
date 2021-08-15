@@ -9,7 +9,7 @@ exports.getInvoice = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/invoice/' + req.params.rHashStr;
   request(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Invoice', msg: 'Invoice Info Received', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Invoice', msg: 'Invoice Info Error', error: body.error});
       res.status(500).json({
         message: "Fetching Invoice Info Failed!",
@@ -44,7 +44,7 @@ exports.listInvoices = (req, res, next) => {
     const body_str = (!body) ? '' : JSON.stringify(body);
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
     logger.log({level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received', data: body_str});
-    if(!body || search_idx > -1 || body.error) {
+    if (!body || search_idx > -1 || body.error) {
       logger.log({level: 'ERROR', fileName: 'Invoice', msg: 'List Invoices Error', error: body.error});
       res.status(500).json({
         message: "Fetching Invoice Info failed!",
@@ -97,7 +97,7 @@ exports.addInvoice = (req, res, next) => {
   options.form = JSON.stringify(options.form);
   request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Invoice', msg: 'Add Invoice Responce', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Invoice', msg: 'Add Invoice Error', error: body.error});
       res.status(500).json({
         message: "Add Invoice Failed!",

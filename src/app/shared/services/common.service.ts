@@ -50,7 +50,7 @@ export class CommonService {
   }
 
   sortDescByKey(array, key) {
-    return array.sort(function(a, b) {
+    return array.sort((a, b) => {
       const x = +a[key];
       const y = +b[key];
       return ((x > y) ? -1 : ((x < y) ? 1 : 0));
@@ -58,7 +58,7 @@ export class CommonService {
   }
 
   sortAscByKey(array, key) {
-    return array.sort(function(a, b) {
+    return array.sort((a, b) => {
       const x = +a[key];
       const y = +b[key];
       return ((x < y) ? -1 : ((x > y) ? 1 : 0));
@@ -67,7 +67,7 @@ export class CommonService {
 
   camelCase(str) {
     return str.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => {
-        return index == 0 ? word.toLowerCase() : word.toUpperCase();
+      return index === 0 ? word.toLowerCase() : word.toUpperCase();
     }).replace(/\s+/g, '');
   }
 
@@ -77,22 +77,23 @@ export class CommonService {
 
   convertCurrency(value: number, from: string, to: string, otherCurrencyUnit: string, fiatConversion: boolean): Observable<any> {
     let latest_date = new Date().valueOf();
-    if(fiatConversion && otherCurrencyUnit && this.ratesAPIStatus !== APICallStatusEnum.INITIATED && (from === CurrencyUnitEnum.OTHER || to === CurrencyUnitEnum.OTHER)) {
-      if(this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched.valueOf() + 300000))) {
+    if (fiatConversion && otherCurrencyUnit && this.ratesAPIStatus !== APICallStatusEnum.INITIATED && (from === CurrencyUnitEnum.OTHER || to === CurrencyUnitEnum.OTHER)) {
+      if (this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched.valueOf() + 300000))) {
         return of(this.convertWithFiat(value, from, otherCurrencyUnit));
       } else {
         this.ratesAPIStatus = APICallStatusEnum.INITIATED;
         return this.dataService.getFiatRates().pipe(take(1),
-        map((data: any) => {
-          this.ratesAPIStatus = APICallStatusEnum.COMPLETED;
-          this.conversionData.data = (data && typeof data === 'object') ? data : (data && typeof data === 'string') ? JSON.parse(data) : {};
-          this.conversionData.last_fetched = latest_date;
-          return this.convertWithFiat(value, from, otherCurrencyUnit);
-        }),
-        catchError(err => {
-          this.ratesAPIStatus = APICallStatusEnum.ERROR;
-          return throwError(() => this.extractErrorMessage(err, 'Currency Conversion Error.'));
-        }));
+          map((data: any) => {
+            this.ratesAPIStatus = APICallStatusEnum.COMPLETED;
+            this.conversionData.data = (data && typeof data === 'object') ? data : (data && typeof data === 'string') ? JSON.parse(data) : {};
+            this.conversionData.last_fetched = latest_date;
+            return this.convertWithFiat(value, from, otherCurrencyUnit);
+          }),
+          catchError(err => {
+            this.ratesAPIStatus = APICallStatusEnum.ERROR;
+            return throwError(() => this.extractErrorMessage(err, 'Currency Conversion Error.'));
+          })
+        );
       }
     } else {
       return of(this.convertWithoutFiat(value, from));
@@ -222,7 +223,7 @@ export class CommonService {
     }
     let downloadUrl = document.createElement('a');
     let url = URL.createObjectURL(blob);
-    let isSafariBrowser = navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1;
+    let isSafariBrowser = navigator.userAgent.indexOf('Safari') !== -1 && navigator.userAgent.indexOf('Chrome') === -1;
     if (isSafariBrowser) {
       downloadUrl.setAttribute('target', '_blank');
     }
@@ -241,7 +242,7 @@ export class CommonService {
     let csvStrArray = '';
     if (typeof objArray !== 'object') { objArray = JSON.parse(objArray); }
     objArray.forEach((obj, i) => {
-      for(var key in obj) {
+      for (let key in obj) {
         if (keys.findIndex(keyEle => keyEle === key) < 0) {
           keys.push(key);
         }
@@ -256,7 +257,7 @@ export class CommonService {
           if (Array.isArray(obj[key])) {
             arrayField = '';
             obj[key].forEach((arrEl, i) => {
-              if(typeof arrEl === 'object') {
+              if (typeof arrEl === 'object') {
                 arrayField += '(' + JSON.stringify(arrEl).replace(/\,/g, ';') + ')';
               } else {
                 arrayField += '(' + arrEl + ')';
@@ -264,7 +265,7 @@ export class CommonService {
             });
             dataRow += arrayField + ',';
           } else {
-            if(typeof obj[key] === 'object') {
+            if (typeof obj[key] === 'object') {
               dataRow += JSON.stringify(obj[key]).replace(/\,/g, ';') + ',';
             } else {
               dataRow += obj[key] + ',';
@@ -288,8 +289,7 @@ export class CommonService {
   }
 
   extractErrorMessage(err: any, genericErrorMessage: string = 'Unknown Error.') {
-    const msg = this.titleCase(
-      (err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error :
+    const msg = this.titleCase((err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error :
       (err.error && err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error :
       (err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error :
       (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error :

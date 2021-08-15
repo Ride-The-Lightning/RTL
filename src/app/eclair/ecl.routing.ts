@@ -44,7 +44,7 @@ export const EclRoutes: Routes = [
           { path: 'pending', component: ECLChannelPendingTableComponent, canActivate: [ECLUnlockedGuard] },
           { path: 'inactive', component: ECLChannelInactiveTableComponent, canActivate: [ECLUnlockedGuard] }
         ] },
-        { path: 'peers', component: ECLPeersComponent, data : {sweepAll : false}, canActivate: [ECLUnlockedGuard] }
+        { path: 'peers', component: ECLPeersComponent, data: {sweepAll: false}, canActivate: [ECLUnlockedGuard] }
       ] },
       { path: 'transactions', component: ECLTransactionsComponent, canActivate: [ECLUnlockedGuard], children: [
         { path: '', pathMatch: 'full', redirectTo: 'payments' },

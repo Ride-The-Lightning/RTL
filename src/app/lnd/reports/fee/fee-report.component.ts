@@ -67,8 +67,8 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
     this.errorMessage = UI_MESSAGES.GET_FEE_REPORT;
     const startDateInSeconds = Math.round(start.getTime()/1000).toString();
     const endDateInSeconds = Math.round(end.getTime()/1000).toString();
-    this.dataService.getForwardingHistory(startDateInSeconds, endDateInSeconds)
-    .pipe(takeUntil(this.unSubs[1])).subscribe({next: res => {
+    this.dataService.getForwardingHistory(startDateInSeconds, endDateInSeconds).
+    pipe(takeUntil(this.unSubs[1])).subscribe({next: res => {
       this.errorMessage = '';
       if (res.forwarding_events && res.forwarding_events.length) {
         res.forwarding_events = res.forwarding_events.reverse();
@@ -90,7 +90,7 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
   }
 
   onChartBarSelected(event) {
-    if(this.reportPeriod === SCROLL_RANGES[1]) {
+    if (this.reportPeriod === SCROLL_RANGES[1]) {
       this.eventFilterValue = event.name + '/' + this.startDate.getFullYear();
     } else {
       this.eventFilterValue = event.name.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
@@ -109,6 +109,7 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
         feeReport[monthNumber].value = feeReport[monthNumber].value + (+event.fee_msat / 1000);
         feeReport[monthNumber].extra.totalEvents = feeReport[monthNumber].extra.totalEvents + 1;
         this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;
+        return this.events;
       });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
@@ -119,6 +120,7 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
         feeReport[dateNumber].value = feeReport[dateNumber].value + (+event.fee_msat / 1000);
         feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
         this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;
+        return this.events;
       });
     }
     return feeReport;

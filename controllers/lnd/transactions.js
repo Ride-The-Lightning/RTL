@@ -57,7 +57,7 @@ exports.postTransactions = (req, res, next) => {
   options.form = JSON.stringify(options.form);
   request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Transactions', msg: 'Transaction Post Response', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Transactions', msg: 'Post Transaction Error', error: body.error});
       res.status(500).json({
         message: "Transactions post failed!",

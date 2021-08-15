@@ -28,16 +28,16 @@ export class ECLTransactionsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     let linkFound = this.links.find(link => this.router.url.includes(link.link));
     this.activeLink = linkFound ? linkFound.link : this.links[0].link;
-    this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd))
-    .subscribe((value: ResolveEnd) => {
+    this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd)).
+    subscribe((value: ResolveEnd) => {
       let linkFound = this.links.find(link => value.urlAfterRedirects.includes(link.link));
       this.activeLink = linkFound ? linkFound.link : this.links[0].link;
     });
-    this.store.select('ecl')
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe((rtlStore) => {
+    this.store.select('ecl').
+    pipe(takeUntil(this.unSubs[1])).
+    subscribe((rtlStore) => {
       this.currencyUnits = rtlStore.nodeSettings.currencyUnits;
-      if(rtlStore.nodeSettings.userPersona === UserPersonaEnum.OPERATOR) {
+      if (rtlStore.nodeSettings.userPersona === UserPersonaEnum.OPERATOR) {
         this.balances = [{title: 'Local Capacity', dataValue: rtlStore.lightningBalance.localBalance, tooltip: 'Amount you can send'}, {title: 'Remote Capacity', dataValue: rtlStore.lightningBalance.remoteBalance, tooltip: 'Amount you can receive'}];
       } else {
         this.balances = [{title: 'Outbound Capacity', dataValue: rtlStore.lightningBalance.localBalance, tooltip: 'Amount you can send'}, {title: 'Inbound Capacity', dataValue: rtlStore.lightningBalance.remoteBalance, tooltip: 'Amount you can receive'}];

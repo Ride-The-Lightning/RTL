@@ -20,9 +20,9 @@ export class ChannelLookupComponent implements OnInit {
   constructor(private store: Store<fromRTLReducer.RTLState>) { }
 
   ngOnInit() {
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('lnd').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       if (this.lookupResult.node1_pub === rtlStore.information.identity_pubkey) {
         this.node1_match = true;
       }

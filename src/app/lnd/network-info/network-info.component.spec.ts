@@ -32,8 +32,8 @@ describe('NetworkInfoComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
 
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

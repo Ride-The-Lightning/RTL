@@ -35,8 +35,8 @@ describe('BoltzSwapsComponent', () => {
         { provide: DataService, useClass: mockDataService },
         { provide: BoltzService, useClass: mockBoltzService }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

@@ -36,8 +36,8 @@ describe('ChannelRestoreTableComponent', () => {
         { provide: LNDEffects, useClass: mockLNDEffects }
       ]
 
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

@@ -25,8 +25,8 @@ describe('ServicesSettingsComponent', () => {
           }
         })
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

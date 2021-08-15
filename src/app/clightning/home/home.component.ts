@@ -59,7 +59,7 @@ export class CLHomeComponent implements OnInit, OnDestroy {
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private commonService: CommonService, private router: Router) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.operatorCards = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 10, rows: 1 },
         { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 10, rows: 1 },
@@ -73,7 +73,7 @@ export class CLHomeComponent implements OnInit, OnDestroy {
         { id: 'inboundLiq', goTo: 'Channels', link: '/cl/connections', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 6, rows: 8 },
         { id: 'outboundLiq', goTo: 'Channels', link: '/cl/connections', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 6, rows: 8 }
       ];
-    } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
       this.operatorCards = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 5, rows: 1 },
         { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 5, rows: 1 },
@@ -107,9 +107,9 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('cl')
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe((rtlStore) => {
+    this.store.select('cl').
+    pipe(takeUntil(this.unSubs[1])).
+    subscribe((rtlStore) => {
       this.errorMessages = ['', '', '', '', '', ''];
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) {
@@ -149,7 +149,7 @@ export class CLHomeComponent implements OnInit, OnDestroy {
 
       this.channelsStatus = {
         active: { channels: rtlStore.information.num_active_channels, capacity: rtlStore.localRemoteBalance.localBalance },
-        pending: { channels:  rtlStore.information.num_pending_channels, capacity: rtlStore.localRemoteBalance.pendingBalance | 0 },
+        pending: { channels: rtlStore.information.num_pending_channels, capacity: rtlStore.localRemoteBalance.pendingBalance | 0 },
         inactive: { channels: rtlStore.information.num_inactive_channels, capacity: rtlStore.localRemoteBalance.inactiveBalance | 0 }
       };
       this.totalInboundLiquidity = 0;
@@ -170,13 +170,14 @@ export class CLHomeComponent implements OnInit, OnDestroy {
       }
       this.logger.info(rtlStore);
     });
-    this.actions.pipe(takeUntil(this.unSubs[2]),
-    filter((action) => action.type === CLActions.FETCH_FEES_CL || action.type === CLActions.SET_FEES_CL))
-    .subscribe(action => {
-      if(action.type === CLActions.FETCH_FEES_CL) {
+    this.actions.pipe(
+    takeUntil(this.unSubs[2]),
+    filter((action) => action.type === CLActions.FETCH_FEES_CL || action.type === CLActions.SET_FEES_CL)).
+    subscribe(action => {
+      if (action.type === CLActions.FETCH_FEES_CL) {
         this.flgChildInfoUpdated = false;
       }
-      if(action.type === CLActions.SET_FEES_CL) {
+      if (action.type === CLActions.SET_FEES_CL) {
         this.flgChildInfoUpdated = true;
       }
     });
@@ -188,14 +189,14 @@ export class CLHomeComponent implements OnInit, OnDestroy {
 
   onsortChannelsBy() {
     if (this.sortField === 'Balance Score') {
-      this.sortField =  'Capacity';
-      this.allChannelsCapacity = this.allChannels.sort(function(a, b) {
+      this.sortField = 'Capacity';
+      this.allChannelsCapacity = this.allChannels.sort((a, b) => {
         const x = +a.msatoshi_to_us + +a.msatoshi_to_them;
         const y = +b.msatoshi_to_them + +b.msatoshi_to_them;
         return ((x > y) ? -1 : ((x < y) ? 1 : 0));
       });
     } else {
-      this.sortField =  'Balance Score';
+      this.sortField = 'Balance Score';
       this.allChannelsCapacity = this.allChannels.length > 0 ? JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'balancedness'))) : [];
     }
   }

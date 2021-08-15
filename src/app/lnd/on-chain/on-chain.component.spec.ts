@@ -40,8 +40,8 @@ describe('OnChainComponent', () => {
         { provide: RTLEffects, useClass: mockRTLEffects },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

@@ -44,10 +44,10 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['remote_alias', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['close_type', 'remote_alias', 'settled_balance', 'actions'];
     } else {
@@ -57,9 +57,9 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   ngOnInit() {
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unsub[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('lnd').
+    pipe(takeUntil(this.unsub[0])).
+    subscribe((rtlStore) => {
       this.errorMessage = '';
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchClosedChannels.status === APICallStatusEnum.ERROR) {
@@ -113,7 +113,7 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   onDownloadCSV() {
-    if(this.closedChannels.data && this.closedChannels.data.length > 0) {
+    if (this.closedChannels.data && this.closedChannels.data.length > 0) {
       this.commonService.downloadFile(this.closedChannels.data, 'Closed-channels');
     }
   }

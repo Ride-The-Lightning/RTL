@@ -11,8 +11,8 @@ describe('BalancesInfoComponent', () => {
     TestBed.configureTestingModule({
       declarations: [BalancesInfoComponent],
       imports: [SharedModule]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

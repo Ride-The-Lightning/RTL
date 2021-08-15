@@ -51,13 +51,13 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'state', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
+    } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'connected', 'state', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'connected', 'state', 'msatoshi_total', 'actions'];
     } else {
@@ -67,9 +67,9 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
   }
 
   ngOnInit() {
-    this.store.select('cl')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    this.store.select('cl').
+    pipe(takeUntil(this.unSubs[0])).
+    subscribe((rtlStore) => {
       this.errorMessage = '';
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
@@ -115,9 +115,9 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
       noBtnText: 'Cancel',
       yesBtnText: 'Force Close'
     }}));
-    this.rtlEffects.closeConfirm
-    .pipe(takeUntil(this.unSubs[3]))
-    .subscribe(confirmRes => {
+    this.rtlEffects.closeConfirm.
+    pipe(takeUntil(this.unSubs[3])).
+    subscribe(confirmRes => {
       if (confirmRes) {
         this.store.dispatch(new CLActions.CloseChannel({channelId: channelToClose.channel_id, force: true}));
       }
@@ -125,7 +125,7 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
   }
 
   loadChannelsTable(mychannels) {
-    mychannels.sort(function(a, b) {
+    mychannels.sort((a, b) => {
       return (a.active === b.active) ? 0 : ((b.active) ? 1 : -1);
     });
     this.channels = new MatTableDataSource<Channel>([...mychannels]);
@@ -145,7 +145,7 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
   }
 
   onDownloadCSV() {
-    if(this.channels.data && this.channels.data.length > 0) {
+    if (this.channels.data && this.channels.data.length > 0) {
       this.commonService.downloadFile(this.channels.data, 'Pending-inactive-channels');
     }
   }

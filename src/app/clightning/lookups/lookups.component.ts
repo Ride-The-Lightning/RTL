@@ -41,12 +41,12 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.actions
-    .pipe(
+    this.actions.
+    pipe(
       takeUntil(this.unSubs[0]),
       filter((action) => (action.type === CLActions.SET_LOOKUP_CL || action.type === CLActions.UPDATE_API_CALL_STATUS_CL))
     ).subscribe((resLookup: CLActions.SetLookup | CLActions.UpdateAPICallStatus) => {
-      if(resLookup.type === CLActions.SET_LOOKUP_CL) {
+      if (resLookup.type === CLActions.SET_LOOKUP_CL) {
         this.flgLoading[0] = true;
         switch (this.selectedFieldId) {
           case 0:
@@ -69,7 +69,7 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
   }
 
   onLookup(): boolean|void {
-    if(!this.lookupKey) { return true; }
+    if (!this.lookupKey) { return true; }
     this.flgSetLookupValue = false;
     this.nodeLookupValue = {nodeid: ''};
     this.channelLookupValue = [];

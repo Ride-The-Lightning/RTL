@@ -93,15 +93,15 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onSwap(): boolean|void {
-    if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < +this.serviceInfo.limits.minimal || this.inputFormGroup.controls.amount.value > +this.serviceInfo.limits.maximal ||
+    if (!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < +this.serviceInfo.limits.minimal || this.inputFormGroup.controls.amount.value > +this.serviceInfo.limits.maximal ||
       (this.direction === SwapTypeEnum.SWAP_OUT && this.addressFormGroup.controls.addressType.value === 'external' &&
       (!this.addressFormGroup.controls.address.value || this.addressFormGroup.controls.address.value.trim() === ''))) { return true; }
     this.flgEditable = false;
     this.stepper.selected.stepControl.setErrors(null);
     this.stepper.next();
     if (this.direction === SwapTypeEnum.SWAP_IN) {
-      this.boltzService.swapIn(this.inputFormGroup.controls.amount.value).pipe(takeUntil(this.unSubs[3]))
-      .subscribe({
+      this.boltzService.swapIn(this.inputFormGroup.controls.amount.value).pipe(takeUntil(this.unSubs[3])).
+      subscribe({
         next: (swapStatus: CreateSwapResponse) => {
           this.swapStatus = swapStatus;
           this.boltzService.listSwaps();
@@ -115,8 +115,8 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     } else {
       let destAddress = this.addressFormGroup.controls.addressType.value === 'external' ? this.addressFormGroup.controls.address.value : '';
-      this.boltzService.swapOut(this.inputFormGroup.controls.amount.value, destAddress).pipe(takeUntil(this.unSubs[4]))
-      .subscribe({
+      this.boltzService.swapOut(this.inputFormGroup.controls.amount.value, destAddress).pipe(takeUntil(this.unSubs[4])).
+      subscribe({
         next: (swapStatus: CreateReverseSwapResponse) => {
           this.swapStatus = swapStatus;
           this.boltzService.listSwaps();

@@ -27,7 +27,7 @@ exports.getAllChannels = (req, res, next) => {
   let total = 0;
   request(options).then(function (body) {
     logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'All Channels Received', data: body});
-    if(body.channels) {
+    if (body.channels) {
       return Promise.all(
         body.channels.map(channel => {
           local = (channel.local_balance) ? +channel.local_balance : 0;
@@ -89,16 +89,16 @@ exports.getPendingChannels = (req, res, next) => {
       body.total_limbo_balance = 0;
     }
     const promises = [];
-    if(body.pending_open_channels && body.pending_open_channels.length > 0) {
+    if (body.pending_open_channels && body.pending_open_channels.length > 0) {
       body.pending_open_channels.map(channel => { return promises.push(getAliasForChannel(channel.channel))});
     }
-    if(body.pending_closing_channels && body.pending_closing_channels.length > 0) {
+    if (body.pending_closing_channels && body.pending_closing_channels.length > 0) {
       body.pending_closing_channels.map(channel => { return promises.push(getAliasForChannel(channel.channel))});
     }
-    if(body.pending_force_closing_channels && body.pending_force_closing_channels.length > 0) {
+    if (body.pending_force_closing_channels && body.pending_force_closing_channels.length > 0) {
       body.pending_force_closing_channels.map(channel => { return promises.push(getAliasForChannel(channel.channel))});
     }
-    if(body.waiting_close_channels && body.waiting_close_channels.length > 0) {
+    if (body.waiting_close_channels && body.waiting_close_channels.length > 0) {
       body.waiting_close_channels.map(channel => { return promises.push(getAliasForChannel(channel.channel))});
     }
     return Promise.all(promises).then(function(values) {
@@ -209,7 +209,7 @@ exports.postChannel = (req, res, next) => {
   options.form = JSON.stringify(options.form);
   request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Channel Open Response', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Open New Channel  Error', error: body.error});
       res.status(500).json({
         message: 'Open Channel Failed!',
@@ -241,7 +241,7 @@ exports.postTransactions = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/channels/transactions';
   options.form = { payment_request: req.body.paymentReq };
-  if(req.body.paymentAmount) {
+  if (req.body.paymentAmount) {
     options.form.amt = req.body.paymentAmount;
   }
   if (req.body.feeLimit) { options.form.fee_limit = req.body.feeLimit; }
@@ -252,7 +252,7 @@ exports.postTransactions = (req, res, next) => {
   logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Send Payment Options', data: options.form});
   request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Send Payment Response', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Send Payment  Error', error: body.error});
       res.status(500).json({
         message: 'Send Payment Failed!',
@@ -291,12 +291,12 @@ exports.closeChannel = (req, res, next) => {
   options = common.getOptions();
   let channelpoint = req.params.channelPoint.replace(':', '/');
   options.url = common.getSelLNServerUrl() + '/v1/channels/' + channelpoint + '?force=' + req.query.force;
-  if(req.query.target_conf) { options.url = options.url + '&target_conf=' + req.query.target_conf; }
-  if(req.query.sat_per_byte) { options.url = options.url + '&sat_per_byte=' + req.query.sat_per_byte; }
+  if (req.query.target_conf) { options.url = options.url + '&target_conf=' + req.query.target_conf; }
+  if (req.query.sat_per_byte) { options.url = options.url + '&sat_per_byte=' + req.query.sat_per_byte; }
   logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Closing Channel Options URL', data: options.url});
   request.delete(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Close Channel Response', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Close Channel  Error', error: body.error});
       res.status(500).json({
         message: 'Close Channel Failed!',
@@ -327,7 +327,7 @@ exports.postChanPolicy = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Channels', msg: 'Updating Channel Policy..'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/chanpolicy';
-  if(req.body.chanPoint === 'all') {
+  if (req.body.chanPoint === 'all') {
     options.form = JSON.stringify({
       global: true, 
       base_fee_msat: req.body.baseFeeMsat,
@@ -348,7 +348,7 @@ exports.postChanPolicy = (req, res, next) => {
   logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Update Channel Policy Options', data: options.form});
   request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Update Channel Policy', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Update Channel Policy Error', error: body.error});
       res.status(500).json({
         message: 'Update Channel Failed!',

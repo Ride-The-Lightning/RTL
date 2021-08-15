@@ -15,8 +15,8 @@ describe('SwapServiceInfoComponent', () => {
         BrowserAnimationsModule,
         SharedModule
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

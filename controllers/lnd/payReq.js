@@ -20,7 +20,7 @@ exports.decodePayment = (req, res, next) => {
     const body_str = (!body) ? '' : JSON.stringify(body);
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
     logger.log({level: 'DEBUG', fileName: 'PayReq', msg: 'Payment Decode Received', data: body_str});
-    if(!body || search_idx > -1 || body.error) {
+    if (!body || search_idx > -1 || body.error) {
       logger.log({level: 'ERROR', fileName: 'PayReq', msg: 'Payment Decode Error 1', error: body.error});
       res.status(500).json({
         message: "Payment Request Decode Failed!",

@@ -12,8 +12,8 @@ describe('ECLChannelCapacityInfoComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ECLChannelCapacityInfoComponent],
       imports: [SharedModule, RouterTestingModule]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

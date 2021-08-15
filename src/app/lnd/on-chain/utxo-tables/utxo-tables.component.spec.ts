@@ -38,8 +38,8 @@ describe('UTXOTablesComponent', () => {
         { provide: RTLEffects, useClass: mockRTLEffects },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

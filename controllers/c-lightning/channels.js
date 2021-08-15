@@ -43,7 +43,7 @@ exports.openChannel = (req, res, next) => {
   logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Open Channel Options', data: options.body});
   request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Open Channel Response', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Open Channel Error', error: body.error});
       res.status(500).json({
         message: 'Open Channel Failed!',
@@ -78,7 +78,7 @@ exports.setChannelFee = (req, res, next) => {
   logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Update Channel Policy Options', data: options.body});
   request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Update Channel Policy', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Update Channel Policy Error', error: body.error});
       res.status(500).json({
         message: 'Update Channel Policy Failed!',
@@ -114,7 +114,7 @@ exports.closeChannel = (req, res, next) => {
   logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Closing Channel', data: options.url});
   request.delete(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Close Channel Response', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Close Channel Error', error: body.error});
       res.status(500).json({
         message: 'Close Channel Failed!',
@@ -147,10 +147,10 @@ exports.getLocalRemoteBalance = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/channel/localremotebal';
   request(options).then(function (body) {
     logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Local Remote Balance', data: body});
-    if(!body.localBalance) {
+    if (!body.localBalance) {
       body.localBalance = 0;
     }
-    if(!body.remoteBalance) {
+    if (!body.remoteBalance) {
       body.remoteBalance = 0;
     }
     logger.log({level: 'INFO', fileName: 'Channels', msg: 'Local & Remote Balances Received'});
@@ -178,7 +178,7 @@ exports.listForwards = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/channel/listForwards/';
   request.get(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Forwarding History Response', data: body});
-    if(!body || body.error) {
+    if (!body || body.error) {
       logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Forwarding History Error', error: body.error});
       res.status(500).json({
         message: "Forwarding History Failed!",

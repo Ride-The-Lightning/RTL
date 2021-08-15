@@ -31,8 +31,8 @@ describe('ChannelsTablesComponent', () => {
       providers: [
         { provide: LoggerService, useClass: mockLoggerService }
       ]
-    })
-    .compileComponents();
+    }).
+    compileComponents();
   }));
 
   beforeEach(() => {

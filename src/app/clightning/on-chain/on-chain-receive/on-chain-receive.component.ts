@@ -24,9 +24,9 @@ export class CLOnChainReceiveComponent {
 
   onGenerateAddress() {
     this.store.dispatch(new CLActions.GetNewAddress(this.selectedAddressType));
-    this.clEffects.setNewAddressCL
-    .pipe(take(1))
-    .subscribe(newAddress => {
+    this.clEffects.setNewAddressCL.
+    pipe(take(1)).
+    subscribe(newAddress => {
       this.newAddress = newAddress;
       this.store.dispatch(new RTLActions.OpenAlert({
         width: '58%',

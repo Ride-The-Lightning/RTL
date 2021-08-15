@@ -40,21 +40,21 @@ export class LoopComponent implements OnInit, OnDestroy {
     let linkFound = this.links.find(link => this.router.url.includes(link.link));
     this.activeTab = linkFound ? linkFound : this.links[0];
     this.selectedSwapType = linkFound && linkFound.link === 'loopin' ? LoopTypeEnum.LOOP_IN : LoopTypeEnum.LOOP_OUT;
-    this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd))
-    .subscribe((value: ResolveEnd) => {
+    this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd)).
+    subscribe((value: ResolveEnd) => {
       let linkFound = this.links.find(link => value.urlAfterRedirects.includes(link.link));
       this.activeTab = linkFound ? linkFound : this.links[0];
       this.selectedSwapType = linkFound && linkFound.link === 'loopin' ? LoopTypeEnum.LOOP_IN : LoopTypeEnum.LOOP_OUT;
     });
-    this.loopService.swapsChanged
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe({next: (swaps: LoopSwapStatus[]) => {
+    this.loopService.swapsChanged.
+    pipe(takeUntil(this.unSubs[1])).
+    subscribe({next: (swaps: LoopSwapStatus[]) => {
       this.flgLoading[0] = false;
       this.storedSwaps = swaps;
       this.filteredSwaps = this.storedSwaps.filter(swap => swap.type === this.selectedSwapType);
     }, error: (err) => {
       this.flgLoading[0] = 'error';
-      this.emptyTableMessage = err.message ? err.message : 'No loop ' + ((this.selectedSwapType === LoopTypeEnum.LOOP_IN) ? 'in' : 'out') +  ' available.';
+      this.emptyTableMessage = err.message ? err.message : 'No loop ' + ((this.selectedSwapType === LoopTypeEnum.LOOP_IN) ? 'in' : 'out') + ' available.';
     }});
   }
 
@@ -64,10 +64,10 @@ export class LoopComponent implements OnInit, OnDestroy {
   }
 
   onLoop(direction: LoopTypeEnum) {
-    if(direction === LoopTypeEnum.LOOP_IN) {
-      this.loopService.getLoopInTermsAndQuotes(this.targetConf)
-      .pipe(takeUntil(this.unSubs[2]))
-      .subscribe(response => {
+    if (direction === LoopTypeEnum.LOOP_IN) {
+      this.loopService.getLoopInTermsAndQuotes(this.targetConf).
+      pipe(takeUntil(this.unSubs[2])).
+      subscribe(response => {
         this.store.dispatch(new RTLActions.OpenAlert({data: {
           minQuote: response[0],
           maxQuote: response[1],
@@ -76,9 +76,9 @@ export class LoopComponent implements OnInit, OnDestroy {
         }}));
       });
     } else {
-      this.loopService.getLoopOutTermsAndQuotes(this.targetConf)
-      .pipe(takeUntil(this.unSubs[3]))
-      .subscribe(response => {
+      this.loopService.getLoopOutTermsAndQuotes(this.targetConf).
+      pipe(takeUntil(this.unSubs[3])).
+      subscribe(response => {
         this.store.dispatch(new RTLActions.OpenAlert({data: {
           minQuote: response[0],
           maxQuote: response[1],
