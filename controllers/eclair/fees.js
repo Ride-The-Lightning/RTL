@@ -81,18 +81,8 @@ exports.getFees = (req, res, next) => {
       res.status(200).json(arrangeFees(body, Math.round((new Date().getTime()))));
     })
     .catch(errRes => {
-      let err = JSON.parse(JSON.stringify(errRes));
-      if (err.options && err.options.headers && err.options.headers.authorization) {
-        delete err.options.headers.authorization;
-      }
-      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-        delete err.response.request.headers.authorization;
-      }
-      logger.log({level: 'ERROR', fileName: 'Fees', msg: 'Get Fees Error', error: err});
-      return res.status(err.statusCode ? err.statusCode : 500).json({
-        message: "Fetching Fees failed!",
-        error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-      });
+      const err = common.handleError(errRes,  'Fees', 'Get Fees Error');
+      res.status(err.statusCode).json({message: err.message, error: err.error});
     });
   }
 };
@@ -111,18 +101,8 @@ exports.getPayments = (req, res, next) => {
       res.status(200).json(arrangePayments(body));
     })
     .catch(errRes => {
-      let err = JSON.parse(JSON.stringify(errRes));
-      if (err.options && err.options.headers && err.options.headers.authorization) {
-        delete err.options.headers.authorization;
-      }
-      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-        delete err.response.request.headers.authorization;
-      }
-      logger.log({level: 'ERROR', fileName: 'Fees', msg: 'Get Payments Error', error: err});
-      return res.status(err.statusCode ? err.statusCode : 500).json({
-        message: "Fetching Payments failed!",
-        error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-      });
+      const err = common.handleError(errRes,  'Fees', 'Get Payments Error');
+      res.status(err.statusCode).json({message: err.message, error: err.error});
     });
   }
 };

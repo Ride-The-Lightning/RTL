@@ -107,18 +107,8 @@ exports.getChannels = (req, res, next) => {
       }
     })
     .catch(errRes => {
-      let err = JSON.parse(JSON.stringify(errRes));
-      if (err.options && err.options.headers && err.options.headers.authorization) {
-        delete err.options.headers.authorization;
-      }
-      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-        delete err.response.request.headers.authorization;
-      }
-      logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Get Channels Error', error: err});
-      return res.status(err.statusCode ? err.statusCode : 500).json({
-        message: 'Fetching Channels Failed!',
-        error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-      });
+      const err = common.handleError(errRes,  'Channels', 'List Channels Error');
+      res.status(err.statusCode).json({message: err.message, error: err.error});
     });
   }
 };
@@ -134,18 +124,8 @@ exports.getChannelStats = (req, res, next) => {
     res.status(201).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers.authorization) {
-      delete err.options.headers.authorization;
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-      delete err.response.request.headers.authorization;
-    }
-    logger.log({level: 'ERROR', fileName: 'ChannelStats', msg: 'Get Channel Stats Error', error: err});
-    return res.status(err.statusCode ? err.statusCode : 500).json({
-      message: "Channel Stats Failed!",
-      error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-    });
+    const err = common.handleError(errRes,  'Channels', 'Get Channel Stats Error');
+    res.status(err.statusCode).json({message: err.message, error: err.error});
   });  
 }
 
@@ -157,30 +137,12 @@ exports.openChannel = (req, res, next) => {
   logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Open Channel Params', data: options.form});
   request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Open Channel Response', data: body});
-    if (!body || body.error) {
-      logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Open Channel Error', error: body.error});
-      res.status(500).json({
-        message: 'Open Channel Failed!',
-        error: (!body) ? 'Error From Server!' : body.error
-      });
-    } else {
-      logger.log({level: 'INFO', fileName: 'Channels', msg: 'Channel Opened'});
-      res.status(201).json(body);
-    }
+    logger.log({level: 'INFO', fileName: 'Channels', msg: 'Channel Opened'});
+    res.status(201).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers.authorization) {
-      delete err.options.headers.authorization;
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-      delete err.response.request.headers.authorization;
-    }
-    logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Open Channel Error', error: err});
-    return res.status(err.statusCode ? err.statusCode : 500).json({
-      message: "Open Channel Failed!",
-      error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-    });
+    const err = common.handleError(errRes,  'Channels', 'Open Channel Error');
+    res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 }
 
@@ -196,18 +158,8 @@ exports.updateChannelRelayFee = (req, res, next) => {
     res.status(201).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers.authorization) {
-      delete err.options.headers.authorization;
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-      delete err.response.request.headers.authorization;
-    }
-    logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Update Relay Fee Error', error: err});
-    return res.status(err.statusCode ? err.statusCode : 500).json({
-      message: "Update Relay Fee Failed!",
-      error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-    });
+    const err = common.handleError(errRes,  'Channels', 'Update Relay Fee Error');
+    res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 }
 
@@ -228,18 +180,8 @@ exports.closeChannel = (req, res, next) => {
     res.status(204).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers.authorization) {
-      delete err.options.headers.authorization;
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-      delete err.response.request.headers.authorization;
-    }
-    logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Close Channel Error', error: err});
-    return res.status(err.statusCode ? err.statusCode : 500).json({
-      message: "Close Channel Failed!",
-      error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-    });
+    const err = common.handleError(errRes,  'Channels', 'Close Channel Error');
+    res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 }
 

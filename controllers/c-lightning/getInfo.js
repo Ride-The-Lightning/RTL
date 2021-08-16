@@ -11,22 +11,19 @@ exports.getInfo = (req, res, next) => {
   logger.log({level: 'DEBUG', fileName:'GetInfo', msg: 'Selected Node', data: common.selectedNode.ln_node});
   logger.log({level: 'DEBUG', fileName: 'GetInfo', msg: 'Calling Info from C-Lightning server url', data: options.url});
   if (!options.headers || !options.headers.macaroon) {
-    logger.log({level: 'ERROR', fileName: 'GetInfo', msg: 'C-Lightning Get info failed due to bad or missing macaroon!', error: {error: 'Bad macaroon.'}});
-    res.status(502).json({
-      message: "Fetching Info Failed!",
-      error: "Bad Macaroon"
-    });
+    const errMsg = 'C-Lightning get info failed due to bad or missing macaroon!';
+    const errJSON = { statusCode: 502, message: 'Bad Macaroon', error: errMsg }
+    const err = common.handleError(errJSON,  'GetInfo', errMsg);
+    res.status(err.statusCode).json({message: err.message, error: err.error});
   } else {
     request(options).then((body) => {
       logger.log({level: 'DEBUG', fileName: 'GetInfo', msg: 'Node Information', data: body});
       const body_str = (!body) ? '' : JSON.stringify(body);
       const search_idx = (!body) ? -1 : body_str.search('Not Found');
       if (!body || search_idx > -1 || body.error) {
-        logger.log({level: 'ERROR', fileName: 'GetInfo', msg: 'Get Info Error', error: body.error});
-        res.status(500).json({
-          message: "Fetching Info failed!",
-          error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
-        });
+        if (body && !body.error) { body.error = 'Error From Server!'; }
+        const err = common.handleError(body,  'GetInfo', 'Get Info Error');
+        res.status(err.statusCode).json({message: err.message, error: err.error});
       } else {
         body.lnImplementation = 'C-Lightning';
         let chainObj = { chain: '', network: '' };
@@ -55,18 +52,8 @@ exports.getInfo = (req, res, next) => {
       }
     })
     .catch(errRes => {
-      let err = JSON.parse(JSON.stringify(errRes));
-      if (err.options && err.options.headers && err.options.headers.macaroon) {
-        delete err.options.headers.macaroon;
-      }
-      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
-        delete err.response.request.headers.macaroon;
-      }
-      logger.log({level: 'ERROR', fileName: 'GetInfo', msg: 'Get Info Error', error: err});
-      return res.status(500).json({
-        message: "Fetching Info failed!",
-        error: err.error
-      });
+      const err = common.handleError(errRes,  'GetInfo', 'Get Info Error');
+      res.status(err.statusCode).json({message: err.message, error: err.error});
     });
   }
 };

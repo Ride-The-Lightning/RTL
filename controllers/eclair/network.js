@@ -14,17 +14,7 @@ exports.getNodes = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers.authorization) {
-      delete err.options.headers.authorization;
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-      delete err.response.request.headers.authorization;
-    }
-    logger.log({level: 'ERROR', fileName: 'Network', msg: 'Node Lookup Error', error: err});
-    return res.status(err.statusCode ? err.statusCode : 500).json({
-      message: 'Node Lookup Failed!',
-      error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-    });
+    const err = common.handleError(errRes,  'Network', 'Node Lookup Error');
+    res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

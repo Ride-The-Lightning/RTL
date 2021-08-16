@@ -51,33 +51,15 @@ exports.listPayments = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/pay/listPayments';
   request(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body.payments});
-    if (!body || body.error) {
-      logger.log({level: 'ERROR', fileName: 'Payments', msg: 'Payments List Error', error: body.error});
-      res.status(500).json({
-        message: "Payments List Failed!",
-        error: (!body) ? 'Error From Server!' : body.error
-      });
-    } else {
-      if ( body &&  body.payments && body.payments.length > 0) {
-        body.payments = common.sortDescByKey(body.payments, 'created_at');
-      }
-      logger.log({level: 'INFO', fileName: 'Payments', msg: 'List Payments Received'});
-      res.status(200).json(groupBy(body.payments));
+    if ( body &&  body.payments && body.payments.length > 0) {
+      body.payments = common.sortDescByKey(body.payments, 'created_at');
     }
+    logger.log({level: 'INFO', fileName: 'Payments', msg: 'List Payments Received'});
+    res.status(200).json(groupBy(body.payments));
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers.macaroon) {
-      delete err.options.headers.macaroon;
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
-      delete err.response.request.headers.macaroon;
-    }
-    logger.log({level: 'ERROR', fileName: 'Payments', msg: 'Payments List Error', error: err});
-    return res.status(500).json({
-      message: "Payments List Failed!",
-      error: err.error
-    });
+    const err = common.handleError(errRes,  'Payments', 'List Payments Error');
+    res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -87,30 +69,12 @@ exports.decodePayment = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/pay/decodePay/' + req.params.invoice;
   request(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Payments', msg: 'Payment Decode Received', data: body});
-    if (!body || body.error) {
-      logger.log({level: 'ERROR', fileName: 'Payments', msg: 'Payment Decode Error', error: body.error});
-      res.status(500).json({
-        message: "Payment Request Decode Failed!",
-        error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
-      });
-    } else {
-      logger.log({level: 'INFO', fileName: 'Payments', msg: 'Payment Decoded'});
-      res.status(200).json(body);
-    }
+    logger.log({level: 'INFO', fileName: 'Payments', msg: 'Payment Decoded'});
+    res.status(200).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers.macaroon) {
-      delete err.options.headers.macaroon;
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
-      delete err.response.request.headers.macaroon;
-    }
-    logger.log({level: 'ERROR', fileName: 'Payments', msg: 'Payment Decode Error', error: err});
-    return res.status(500).json({
-      message: "Payment Request Decode Failed!",
-      error: err.error
-    });
+    const err = common.handleError(errRes,  'Payments', 'Decode Payment Error');
+    res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -126,29 +90,11 @@ exports.postPayment = (req, res, next) => {
   options.body = req.body;
   request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Payments', msg: 'Send Payment Response', data: body});
-    if (!body || body.error) {
-      logger.log({level: 'ERROR', fileName: 'Payments', msg: 'Send Payment Error', error: body.error});
-      res.status(500).json({
-        message: "Send Payment Failed!",
-        error: (!body) ? 'Error From Server!' : body.error
-      });
-    } else {
-      logger.log({level: 'INFO', fileName: 'Payments', msg: 'Payment Sent'});
-      res.status(201).json(body);
-    }
+    logger.log({level: 'INFO', fileName: 'Payments', msg: 'Payment Sent'});
+    res.status(201).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers.macaroon) {
-      delete err.options.headers.macaroon;
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
-      delete err.response.request.headers.macaroon;
-    }
-    logger.log({level: 'ERROR', fileName: 'Payments', msg: 'Send Payments Error', error: err});
-    return res.status(500).json({
-      message: "Send Payment Failed!",
-      error: err.error
-    });
+    const err = common.handleError(errRes,  'Payments', 'Send Payment Error');
+    res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

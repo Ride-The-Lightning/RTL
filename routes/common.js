@@ -82,7 +82,7 @@ common.updateSelectedNodeOptions = () => {
     if (common.selectedNode && common.selectedNode.ln_implementation) {
       switch (common.selectedNode.ln_implementation.toUpperCase()) {
         case 'CLT':
-          common.selectedNode.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(path.join(common.selectedNode.macaroon_path, 'access.macaroon'))).toString("base64") };
+          // common.selectedNode.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(path.join(common.selectedNode.macaroon_path, 'access.macaroon'))).toString("base64") };
           break;
       
         case 'ECL':
@@ -121,7 +121,7 @@ common.setOptions = () => {
         if (node.ln_implementation) {
           switch (node.ln_implementation.toUpperCase()) {
             case 'CLT':
-              node.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(path.join(node.macaroon_path, 'access.macaroon'))).toString("base64") };
+              // node.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(path.join(node.macaroon_path, 'access.macaroon'))).toString("base64") };
               break;
           
             case 'ECL':
@@ -207,6 +207,52 @@ common.newestOnTop = (array, key, value) => {
   var newlyAddedRecord = array.splice(index, 1);
   array.unshift(newlyAddedRecord[0]);
   return array;
+}
+
+common.handleError = (errRes, fileName, errMsg) => {
+  let err = JSON.parse(JSON.stringify(errRes));
+  switch (common.selectedNode.ln_implementation) {
+    case 'CLT':
+      if (err.options && err.options.headers && err.options.headers.macaroon) {
+        delete err.options.headers.macaroon;
+      }
+      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
+        delete err.response.request.headers.macaroon;
+      }
+      break;
+
+    case 'ECL':
+      if (err.options && err.options.headers && err.options.headers.authorization) {
+        delete err.options.headers.authorization;
+      }
+      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
+        delete err.response.request.headers.authorization;
+      }
+      break;
+    
+    default:
+      if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+        delete err.options.headers['Grpc-Metadata-macaroon'];
+      }
+      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+        delete err.response.request.headers['Grpc-Metadata-macaroon'];
+      }
+      break;
+  }
+  const msgStr = '\r\n[' + new Date().toISOString() + '] ERROR: ' + fileName + ' => ' + errMsg + ': ' + (typeof err === 'object' ? JSON.stringify(err) : (typeof err === 'string') ? err : 'Unknown Error');
+  console.error(msgStr);
+  if (common.selectedNode) { fs.appendFile(common.selectedNode.log_file, msgStr, () => {}) }
+  return {
+    statusCode: err.statusCode ? err.statusCode : 500,
+    message: err.message ? err.message : errMsg, 
+    error: (
+      (err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : 
+      (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error : 
+      (err.error && typeof err.error === 'string') ? err.error : 
+      (err.error && typeof err.error === 'object') ? JSON.stringify(err.error) : 
+      (typeof err === 'string') ? err : 'Unknown Error'
+    )
+  };
 }
 
 common.getRequestIP = (req) => {

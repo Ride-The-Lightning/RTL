@@ -119,7 +119,6 @@ connect.updateLogByLevel = () => {
   }
 }
 
-
 connect.validateNodeConfig = (config) => {
   if ((process.env.RTL_SSO == 0) || (typeof process.env.RTL_SSO === 'undefined' && +config.SSO.rtlSSO === 0)) {
     if (config.multiPassHashed !== '' && config.multiPassHashed) {
@@ -244,25 +243,23 @@ connect.validateNodeConfig = (config) => {
       } catch (err) {
         console.error('Something went wrong while creating the backup directory: \n' + err);
       }
-
-        common.nodes[idx].log_file = common.rtl_conf_file_path + '/logs/RTL-Node-' + node.index + '.log';
-        const log_file = common.nodes[idx].log_file;
-        if (fs.existsSync(log_file)) {
-          fs.writeFile(log_file, '', () => { });
-        } else {
-          try {
-            var dirname = path.dirname(log_file);
-            connect.createDirectory(dirname);
-            var createStream = fs.createWriteStream(log_file);
-            createStream.end();
-          }
-          catch (err) {
-            console.error('Something went wrong while creating log file ' + log_file + ': \n' + err);
-          }
+      common.nodes[idx].log_file = common.rtl_conf_file_path + '/logs/RTL-Node-' + node.index + '.log';
+      const log_file = common.nodes[idx].log_file;
+      if (fs.existsSync(log_file)) {
+        fs.writeFile(log_file, '', () => { });
+      } else {
+        try {
+          var dirname = path.dirname(log_file);
+          connect.createDirectory(dirname);
+          var createStream = fs.createWriteStream(log_file);
+          createStream.end();
         }
+        catch (err) {
+          console.error('Something went wrong while creating log file ' + log_file + ': \n' + err);
+        }
+      }
     });
   }
-
   connect.setSSOParams(config);
   if (errMsg && errMsg.trim() !== '') { throw new Error(errMsg); }
 }
@@ -576,7 +573,6 @@ connect.setServerConfiguration = () => {
       connect.upgradeConfig(confFileFullPath);
     }
     var config = JSON.parse(fs.readFileSync(confFileFullPath, 'utf-8'));
-
     connect.updateLogByLevel();
     connect.validateNodeConfig(config);
     connect.setSelectedNode(config);
