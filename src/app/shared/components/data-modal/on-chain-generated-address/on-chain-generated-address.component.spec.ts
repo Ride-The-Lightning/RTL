@@ -22,10 +22,10 @@ describe('OnChainGeneratedAddressComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {alertTitle: '', address: 'test', addressType: 'test'}}
+        { provide: MAT_DIALOG_DATA, useValue: { alertTitle: '', address: 'test', addressType: 'test' } }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -41,5 +41,4 @@ describe('OnChainGeneratedAddressComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

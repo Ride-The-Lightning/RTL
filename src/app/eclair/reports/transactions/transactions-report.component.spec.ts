@@ -32,7 +32,7 @@ describe('ECLTransactionsReportComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -48,5 +48,4 @@ describe('ECLTransactionsReportComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

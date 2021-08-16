@@ -10,6 +10,7 @@ import { Channel } from '../../../shared/models/eclModels';
   styleUrls: ['./channel-capacity-info.component.scss']
 })
 export class ECLChannelCapacityInfoComponent {
+
   public faBalanceScale = faBalanceScale;
   public faDumbbell = faDumbbell;
   @Input() channelBalances: {localBalance: number, remoteBalance: number, balancedness: number};

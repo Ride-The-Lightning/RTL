@@ -21,7 +21,7 @@ const initNodeAuthentication = { configPath: '', swapMacaroonPath: '', boltzMaca
 
 export const initRootState: RootState = {
   apisCallStatus: { Login: { status: APICallStatusEnum.UN_INITIATED }, IsAuthorized: { status: APICallStatusEnum.UN_INITIATED } },
-  selNode: {settings: initNodeSettings, authentication: initNodeAuthentication, lnImplementation: 'LND'},
+  selNode: { settings: initNodeSettings, authentication: initNodeAuthentication, lnImplementation: 'LND' },
   appConfig: {
     defaultNodeIndex: -1,
     selectedNodeIndex: -1,
@@ -71,7 +71,6 @@ export function RootReducer(state = initRootState, action: RTLActions.RTLActions
     default:
       return state;
   }
-
 }
 
 export interface RTLState {

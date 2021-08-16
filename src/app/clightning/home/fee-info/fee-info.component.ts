@@ -7,8 +7,9 @@ import { Fees } from '../../../shared/models/clModels';
   styleUrls: ['./fee-info.component.scss']
 })
 export class CLFeeInfoComponent {
+
   @Input() fees: Fees;
   @Input() errorMessage: string;
-  totalFees = [{name: 'Total', value: 0}];
+  totalFees = [{ name: 'Total', value: 0 }];
 
 }

@@ -37,7 +37,7 @@ describe('PeersComponent', () => {
       ]
 
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -53,5 +53,4 @@ describe('PeersComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

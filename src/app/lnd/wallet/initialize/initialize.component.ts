@@ -28,10 +28,11 @@ export const cipherSeedLength: ValidatorFn = (control: FormGroup): ValidationErr
   templateUrl: './initialize.component.html',
   styleUrls: ['./initialize.component.scss'],
   providers: [{
-    provide: STEPPER_GLOBAL_OPTIONS, useValue: {displayDefaultIndicatorType: false}
+    provide: STEPPER_GLOBAL_OPTIONS, useValue: { displayDefaultIndicatorType: false }
   }]
 })
 export class InitializeWalletComponent implements OnInit, OnDestroy {
+
   @ViewChild(MatStepper, { static: false }) stepper: MatStepper;
   public insecureLND = false;
   public genSeedResponse = [];
@@ -49,17 +50,17 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
     this.passwordFormGroup = this.formBuilder.group({
       initWalletPassword: ['', [Validators.required, Validators.minLength(8)]],
       initWalletConfirmPassword: ['', [Validators.required, Validators.minLength(8)]]
-    }, {validators: matchedPasswords});
+    }, { validators: matchedPasswords });
     this.cipherFormGroup = this.formBuilder.group({
       existingCipher: [false],
-      cipherSeed: [{value: '', disabled: true}, [cipherSeedLength]]
+      cipherSeed: [{ value: '', disabled: true }, [cipherSeedLength]]
     });
     this.passphraseFormGroup = this.formBuilder.group({
       enterPassphrase: [false],
-      passphrase: [{value: '', disabled: true}]
+      passphrase: [{ value: '', disabled: true }]
     });
 
-    this.cipherFormGroup.controls.existingCipher.valueChanges.pipe(takeUntil(this.unsubs[0])).subscribe(checked => {
+    this.cipherFormGroup.controls.existingCipher.valueChanges.pipe(takeUntil(this.unsubs[0])).subscribe((checked) => {
       if (checked) {
         this.cipherFormGroup.controls.cipherSeed.setValue('');
         this.cipherFormGroup.controls.cipherSeed.enable();
@@ -69,7 +70,7 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.passphraseFormGroup.controls.enterPassphrase.valueChanges.pipe(takeUntil(this.unsubs[1])).subscribe(checked => {
+    this.passphraseFormGroup.controls.enterPassphrase.valueChanges.pipe(takeUntil(this.unsubs[1])).subscribe((checked) => {
       if (checked) {
         this.passphraseFormGroup.controls.passphrase.setValue('');
         this.passphraseFormGroup.controls.passphrase.enable();
@@ -82,33 +83,34 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
     this.insecureLND = !window.location.protocol.includes('https:');
 
     this.lndEffects.initWalletRes.
-    pipe(takeUntil(this.unsubs[2])).
-    subscribe(initWalletResponse => {
-      this.initWalletResponse = initWalletResponse;
-    });
+      pipe(takeUntil(this.unsubs[2])).
+      subscribe((initWalletResponse) => {
+        this.initWalletResponse = initWalletResponse;
+      });
 
     this.lndEffects.genSeedResponse.
-    pipe(takeUntil(this.unsubs[3])).
-    subscribe(genSeedRes => {
-      this.genSeedResponse = genSeedRes;
-      if (this.passphraseFormGroup.controls.enterPassphrase.value) {
-        this.store.dispatch(new LNDActions.InitWallet({
-          pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
-          cipher: this.genSeedResponse,
-          passphrase: window.btoa(this.passphraseFormGroup.controls.passphrase.value)
-        }));
-      } else {
-        this.store.dispatch(new LNDActions.InitWallet({
-          pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
-          cipher: this.genSeedResponse
-        }));
-      }
-    });
-
+      pipe(takeUntil(this.unsubs[3])).
+      subscribe((genSeedRes) => {
+        this.genSeedResponse = genSeedRes;
+        if (this.passphraseFormGroup.controls.enterPassphrase.value) {
+          this.store.dispatch(new LNDActions.InitWallet({
+            pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
+            cipher: this.genSeedResponse,
+            passphrase: window.btoa(this.passphraseFormGroup.controls.passphrase.value)
+          }));
+        } else {
+          this.store.dispatch(new LNDActions.InitWallet({
+            pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
+            cipher: this.genSeedResponse
+          }));
+        }
+      });
   }
 
   onInitWallet(): boolean|void {
-    if (this.passwordFormGroup.invalid || this.cipherFormGroup.invalid || this.passphraseFormGroup.invalid) { return true; }
+    if (this.passwordFormGroup.invalid || this.cipherFormGroup.invalid || this.passphraseFormGroup.invalid) {
+      return true;
+    }
     if (this.cipherFormGroup.controls.existingCipher.value) {
       const cipherArr = this.cipherFormGroup.controls.cipherSeed.value.toString().trim().split(',');
       if (this.passphraseFormGroup.controls.enterPassphrase.value) {
@@ -135,7 +137,7 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
   onGoToHome() {
     setTimeout(() => {
       this.store.dispatch(new RTLActions.UpdateSelectedNodeOptions());
-      this.store.dispatch(new LNDActions.FetchInfo({loadPage: 'HOME'}));
+      this.store.dispatch(new LNDActions.FetchInfo({ loadPage: 'HOME' }));
     }, 1000 * 1);
   }
 
@@ -145,7 +147,7 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unsubs.forEach(unsub => {
+    this.unsubs.forEach((unsub) => {
       unsub.next(null);
       unsub.complete();
     });

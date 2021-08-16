@@ -34,7 +34,7 @@ describe('OnChainTransactionHistoryComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -50,5 +50,4 @@ describe('OnChainTransactionHistoryComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

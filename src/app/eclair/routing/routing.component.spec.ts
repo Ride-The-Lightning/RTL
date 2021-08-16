@@ -13,7 +13,7 @@ describe('ECLRoutingComponent', () => {
       declarations: [ECLRoutingComponent],
       imports: [SharedModule, RouterTestingModule]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -29,5 +29,4 @@ describe('ECLRoutingComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -36,7 +36,7 @@ describe('CLQueryRoutesComponent', () => {
         { provide: CLEffects, useClass: mockCLEffects }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,5 +52,4 @@ describe('CLQueryRoutesComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

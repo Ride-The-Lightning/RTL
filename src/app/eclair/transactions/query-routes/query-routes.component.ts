@@ -21,6 +21,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./query-routes.component.scss']
 })
 export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
+
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
   @ViewChild('queryRoutesForm', { static: true }) form: any;
   public nodeId = '';
@@ -55,26 +56,28 @@ export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.qrHops = new MatTableDataSource([]);
     this.eclEffects.setQueryRoutes.
-    pipe(takeUntil(this.unSubs[1])).
-    subscribe(queryRoute => {
-      this.qrHops.data = [];
-      if (queryRoute) {
-        this.flgLoading[0] = false;
-        this.qrHops = new MatTableDataSource<Route>([...queryRoute]);
-        this.qrHops.data = queryRoute;
-      } else {
-        this.flgLoading[0] = 'error';
-      }
-      this.qrHops.sort = this.sort;
-      this.qrHops.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
-    });
+      pipe(takeUntil(this.unSubs[1])).
+      subscribe((queryRoute) => {
+        this.qrHops.data = [];
+        if (queryRoute) {
+          this.flgLoading[0] = false;
+          this.qrHops = new MatTableDataSource<Route>([...queryRoute]);
+          this.qrHops.data = queryRoute;
+        } else {
+          this.flgLoading[0] = 'error';
+        }
+        this.qrHops.sort = this.sort;
+        this.qrHops.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+      });
   }
 
   onQueryRoutes(): boolean|void {
-    if (!this.nodeId || !this.amount) { return true; }
+    if (!this.nodeId || !this.amount) {
+      return true;
+    }
     this.qrHops.data = [];
     this.flgLoading[0] = true;
-    this.store.dispatch(new ECLActions.GetQueryRoutes({nodeId: this.nodeId, amount: this.amount*1000}));
+    this.store.dispatch(new ECLActions.GetQueryRoutes({ nodeId: this.nodeId, amount: this.amount * 1000 }));
   }
 
   resetData() {
@@ -87,18 +90,18 @@ export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
 
   onHopClick(selHop: Route, event: any) {
     const reorderedHop = [
-      [{key: 'alias', value: selHop.alias, title: 'Alias', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'nodeId', value: selHop.nodeId, title: 'Node ID', width: 100, type: DataTypeEnum.STRING}]
+      [{ key: 'alias', value: selHop.alias, title: 'Alias', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'nodeId', value: selHop.nodeId, title: 'Node ID', width: 100, type: DataTypeEnum.STRING }]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Route Information',
       message: reorderedHop
-    }}));
+    } }));
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

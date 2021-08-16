@@ -25,6 +25,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./send-payment.component.scss']
 })
 export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
+
   @ViewChild('paymentReq', { static: false }) paymentReq: NgModel;
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: SelNodeChild = {};
@@ -45,28 +46,30 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.select('ecl').
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe((rtlStore) => {
-      this.selNode = rtlStore.nodeSettings;
-      this.activeChannels = rtlStore.activeChannels;
-      this.logger.info(rtlStore);
-    });
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.selNode = rtlStore.nodeSettings;
+        this.activeChannels = rtlStore.activeChannels;
+        this.logger.info(rtlStore);
+      });
     this.actions.pipe(
-    takeUntil(this.unSubs[1]),
-    filter(action => action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL || action.type === ECLActions.SEND_PAYMENT_STATUS_ECL)).
-    subscribe((action: ECLActions.UpdateAPICallStatus | ECLActions.SendPaymentStatus) => {
-      if (action.type === ECLActions.SEND_PAYMENT_STATUS_ECL) {
-        this.dialogRef.close();
-      }
-      if (action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SendPayment') {
-        delete this.paymentDecoded.amount;
-        this.paymentError = action.payload.message;
-      }
-    });
+      takeUntil(this.unSubs[1]),
+      filter((action) => action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL || action.type === ECLActions.SEND_PAYMENT_STATUS_ECL)).
+      subscribe((action: ECLActions.UpdateAPICallStatus | ECLActions.SendPaymentStatus) => {
+        if (action.type === ECLActions.SEND_PAYMENT_STATUS_ECL) {
+          this.dialogRef.close();
+        }
+        if (action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SendPayment') {
+          delete this.paymentDecoded.amount;
+          this.paymentError = action.payload.message;
+        }
+      });
   }
 
   onSendPayment(): boolean|void {
-    if (!this.paymentRequest) { return true; }
+    if (!this.paymentRequest) {
+      return true;
+    }
     if (this.paymentDecoded.timestamp) {
       this.sendPayment();
     } else {
@@ -75,39 +78,39 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.paymentDecodedHint = '';
       this.paymentReq.control.setErrors(null);
       this.dataService.decodePayment(this.paymentRequest, true).
-      pipe(take(1)).subscribe({next: (decodedPayment: PayRequest) => {
-        this.paymentDecoded = decodedPayment;
-        if (this.paymentDecoded.timestamp && !this.paymentDecoded.amount) {
-          this.paymentDecoded.amount = 0;
-          this.zeroAmtInvoice = true;
-          this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
-        } else {
-          this.zeroAmtInvoice = false;
-          if (this.selNode.fiatConversion) {
-            this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
-            pipe(takeUntil(this.unSubs[2])).
-            subscribe({next: data => {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
-            }, error: error => {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount/1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
-            }});
+        pipe(take(1)).subscribe({ next: (decodedPayment: PayRequest) => {
+          this.paymentDecoded = decodedPayment;
+          if (this.paymentDecoded.timestamp && !this.paymentDecoded.amount) {
+            this.paymentDecoded.amount = 0;
+            this.zeroAmtInvoice = true;
+            this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
           } else {
-            this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
+            this.zeroAmtInvoice = false;
+            if (this.selNode.fiatConversion) {
+              this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
+                pipe(takeUntil(this.unSubs[2])).
+                subscribe({ next: (data) => {
+                  this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
+                }, error: (error) => {
+                  this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
+                } });
+            } else {
+              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
+            }
           }
-        }
-      }, error: err => {
-        this.logger.error(err);
-        this.paymentDecodedHint = 'ERROR: ' + ((err.message) ? err.message : ((typeof err === 'string') ? err : JSON.stringify(err)));
-        this.paymentReq.control.setErrors({decodeError: true});
-      }});
+        }, error: (err) => {
+          this.logger.error(err);
+          this.paymentDecodedHint = 'ERROR: ' + ((err.message) ? err.message : ((typeof err === 'string') ? err : JSON.stringify(err)));
+          this.paymentReq.control.setErrors({ decodeError: true });
+        } });
     }
   }
 
   sendPayment() {
     if (this.zeroAmtInvoice) {
-      this.store.dispatch(new ECLActions.SendPayment({invoice: this.paymentRequest, amountMsat: this.paymentAmount*1000, fromDialog: true}));
+      this.store.dispatch(new ECLActions.SendPayment({ invoice: this.paymentRequest, amountMsat: this.paymentAmount * 1000, fromDialog: true }));
     } else {
-      this.store.dispatch(new ECLActions.SendPayment({invoice: this.paymentRequest, fromDialog: true}));
+      this.store.dispatch(new ECLActions.SendPayment({ invoice: this.paymentRequest, fromDialog: true }));
     }
   }
 
@@ -120,31 +123,31 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.paymentReq.control.setErrors(null);
       this.zeroAmtInvoice = false;
       this.dataService.decodePayment(this.paymentRequest, true).
-      pipe(take(1)).subscribe({next: (decodedPayment: PayRequest) => {
-        this.paymentDecoded = decodedPayment;
-        if (this.paymentDecoded.timestamp && !this.paymentDecoded.amount) {
-          this.paymentDecoded.amount = 0;
-          this.zeroAmtInvoice = true;
-          this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
-        } else {
-          this.zeroAmtInvoice = false;
-          if (this.selNode.fiatConversion) {
-            this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
-            pipe(takeUntil(this.unSubs[3])).
-            subscribe({next: data => {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
-            }, error: error => {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
-            }});
+        pipe(take(1)).subscribe({ next: (decodedPayment: PayRequest) => {
+          this.paymentDecoded = decodedPayment;
+          if (this.paymentDecoded.timestamp && !this.paymentDecoded.amount) {
+            this.paymentDecoded.amount = 0;
+            this.zeroAmtInvoice = true;
+            this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
           } else {
-            this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
+            this.zeroAmtInvoice = false;
+            if (this.selNode.fiatConversion) {
+              this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
+                pipe(takeUntil(this.unSubs[3])).
+                subscribe({ next: (data) => {
+                  this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
+                }, error: (error) => {
+                  this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
+                } });
+            } else {
+              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
+            }
           }
-        }
-      }, error: err => {
-        this.logger.error(err);
-        this.paymentDecodedHint = 'ERROR: ' + ((err.message) ? err.message : ((typeof err === 'string') ? err : JSON.stringify(err)));
-        this.paymentReq.control.setErrors({decodeError: true});
-      }});
+        }, error: (err) => {
+          this.logger.error(err);
+          this.paymentDecodedHint = 'ERROR: ' + ((err.message) ? err.message : ((typeof err === 'string') ? err : JSON.stringify(err)));
+          this.paymentReq.control.setErrors({ decodeError: true });
+        } });
     }
   }
 
@@ -166,7 +169,7 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

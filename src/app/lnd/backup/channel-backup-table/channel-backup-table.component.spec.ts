@@ -36,7 +36,7 @@ describe('ChannelBackupTableComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,5 +52,4 @@ describe('ChannelBackupTableComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

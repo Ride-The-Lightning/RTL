@@ -13,7 +13,7 @@ describe('ECLReportsComponent', () => {
       declarations: [ECLReportsComponent],
       imports: [SharedModule, RouterTestingModule]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -29,5 +29,4 @@ describe('ECLReportsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

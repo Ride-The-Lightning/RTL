@@ -36,7 +36,7 @@ describe('LoopComponent', () => {
         { provide: LoopService, useClass: mockLoopService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,5 +52,4 @@ describe('LoopComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

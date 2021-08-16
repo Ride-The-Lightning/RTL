@@ -8,6 +8,7 @@ import { ServiceInfo } from '../../../../models/boltzModels';
   styleUrls: ['./swap-service-info.component.scss']
 })
 export class SwapServiceInfoComponent {
+
   @Input() serviceInfo: ServiceInfo = {};
   @Input() direction = SwapTypeEnum.SWAP_OUT;
   public swapTypeEnum = SwapTypeEnum;

@@ -38,10 +38,10 @@ describe('SwapModalComponent', () => {
         { provide: DataService, useClass: mockDataService },
         { provide: BoltzService, useClass: mockBoltzService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {channel: {}, serviceInfo: { fees: {percentage: 2, miner: {normal: 2, reverse: 2}}, limits: {minimal: 10000, maximal: 50000000}}, direction: 'SWAP_IN'}}
+        { provide: MAT_DIALOG_DATA, useValue: { channel: {}, serviceInfo: { fees: { percentage: 2, miner: { normal: 2, reverse: 2 } }, limits: { minimal: 10000, maximal: 50000000 } }, direction: 'SWAP_IN' } }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -57,5 +57,4 @@ describe('SwapModalComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

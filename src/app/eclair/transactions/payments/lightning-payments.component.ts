@@ -35,10 +35,11 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]
 })
 export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Input() calledFrom = 'transactions'; // transactions/home
+
+  @Input() calledFrom = 'transactions'; // Transactions/home
   @ViewChild('sendPaymentForm', { static: false }) form;
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faHistory = faHistory;
   public newlyAddedPayment = '';
   public flgAnimate = true;
@@ -84,55 +85,56 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
 
   ngOnInit() {
     this.store.select('ecl').
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe((rtlStore) => {
-      this.errorMessage = '';
-      this.apisCallStatus = rtlStore.apisCallStatus;
-      if (rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.ERROR) {
-        this.errorMessage = (typeof(this.apisCallStatus.FetchPayments.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPayments.message) : this.apisCallStatus.FetchPayments.message;
-      }
-      this.information = rtlStore.information;
-      this.selNode = rtlStore.nodeSettings;
-      if (rtlStore.payments.sent) {
-        rtlStore.payments.sent.map(sentPayment => {
-          let peerFound = rtlStore.peers.find(peer => peer.nodeId === sentPayment.recipientNodeId);
-          sentPayment.recipientNodeAlias = peerFound ? peerFound.alias : sentPayment.recipientNodeId;
-          if (sentPayment.parts) {
-            sentPayment.parts.map(part => {
-              let channelFound = rtlStore.activeChannels.find(channel => channel.channelId === part.toChannelId);
-              part.toChannelAlias = channelFound ? channelFound.alias : part.toChannelId;
-              return sentPayment.parts;
-            });
-          }
-          return rtlStore.payments.sent;
-        });
-      }
-      this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.sent && rtlStore.payments.sent.length > 0) ? rtlStore.payments.sent : [];
-      // FOR MPP TESTING START
-      // if (this.paymentJSONArr.length > 0) {
-      //   this.paymentJSONArr[3].parts.push({
-      //     id: '34b609a5-f0f1-474e-9e5d-d7783b48702d', amount: 26000, feesPaid: 22, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c87', toChannelAlias: 'ion.radar.tech1', timestamp: 1596389827075
-      //   });
-      //   this.paymentJSONArr[3].parts.push({
-      //     id: '35b609a5-f0f1-474e-9e5d-d7783b48702e', amount: 27000, feesPaid: 20, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c86', toChannelAlias: 'ion.radar.tech2', timestamp: 1596389817075
-      //   });
-      //   this.paymentJSONArr[5].parts.push({
-      //     id: '38b609a5-f0f1-474e-9e5d-d7783b48702h', amount: 31000, feesPaid: 18, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c85', toChannelAlias: 'ion.radar.tech3', timestamp: 1596389887075
-      //   });
-      //   this.paymentJSONArr[5].parts.push({
-      //     id: '36b609a5-f0f1-474e-9e5d-d7783b48702f', amount: 28000, feesPaid: 13, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c84', toChannelAlias: 'ion.radar.tech4', timestamp: 1596389687075
-      //   });
-      //   this.paymentJSONArr[5].parts.push({
-      //     id: '37b609a5-f0f1-474e-9e5d-d7783b48702g', amount: 25000, feesPaid: 19, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c83', toChannelAlias: 'ion.radar.tech5', timestamp: 1596389707075
-      //   });
-      // }
-      // this.paymentJSONArr = this.paymentJSONArr.splice(2, 5);
-      // FOR MPP TESTING END
-      this.loadPaymentsTable(this.paymentJSONArr);
-      setTimeout(() => { this.flgAnimate = false; }, 3000);
-      this.logger.info(rtlStore);
-    });
-
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.errorMessage = '';
+        this.apisCallStatus = rtlStore.apisCallStatus;
+        if (rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apisCallStatus.FetchPayments.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPayments.message) : this.apisCallStatus.FetchPayments.message;
+        }
+        this.information = rtlStore.information;
+        this.selNode = rtlStore.nodeSettings;
+        if (rtlStore.payments.sent) {
+          rtlStore.payments.sent.map((sentPayment) => {
+            const peerFound = rtlStore.peers.find((peer) => peer.nodeId === sentPayment.recipientNodeId);
+            sentPayment.recipientNodeAlias = peerFound ? peerFound.alias : sentPayment.recipientNodeId;
+            if (sentPayment.parts) {
+              sentPayment.parts.map((part) => {
+                const channelFound = rtlStore.activeChannels.find((channel) => channel.channelId === part.toChannelId);
+                part.toChannelAlias = channelFound ? channelFound.alias : part.toChannelId;
+                return sentPayment.parts;
+              });
+            }
+            return rtlStore.payments.sent;
+          });
+        }
+        this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.sent && rtlStore.payments.sent.length > 0) ? rtlStore.payments.sent : [];
+        // FOR MPP TESTING START
+        // If (this.paymentJSONArr.length > 0) {
+        //   This.paymentJSONArr[3].parts.push({
+        //     Id: '34b609a5-f0f1-474e-9e5d-d7783b48702d', amount: 26000, feesPaid: 22, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c87', toChannelAlias: 'ion.radar.tech1', timestamp: 1596389827075
+        //   });
+        //   This.paymentJSONArr[3].parts.push({
+        //     Id: '35b609a5-f0f1-474e-9e5d-d7783b48702e', amount: 27000, feesPaid: 20, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c86', toChannelAlias: 'ion.radar.tech2', timestamp: 1596389817075
+        //   });
+        //   This.paymentJSONArr[5].parts.push({
+        //     Id: '38b609a5-f0f1-474e-9e5d-d7783b48702h', amount: 31000, feesPaid: 18, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c85', toChannelAlias: 'ion.radar.tech3', timestamp: 1596389887075
+        //   });
+        //   This.paymentJSONArr[5].parts.push({
+        //     Id: '36b609a5-f0f1-474e-9e5d-d7783b48702f', amount: 28000, feesPaid: 13, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c84', toChannelAlias: 'ion.radar.tech4', timestamp: 1596389687075
+        //   });
+        //   This.paymentJSONArr[5].parts.push({
+        //     Id: '37b609a5-f0f1-474e-9e5d-d7783b48702g', amount: 25000, feesPaid: 19, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c83', toChannelAlias: 'ion.radar.tech5', timestamp: 1596389707075
+        //   });
+        // }
+        // This.paymentJSONArr = this.paymentJSONArr.splice(2, 5);
+        // FOR MPP TESTING END
+        this.loadPaymentsTable(this.paymentJSONArr);
+        setTimeout(() => {
+          this.flgAnimate = false;
+        }, 3000);
+        this.logger.info(rtlStore);
+      });
   }
 
   ngAfterViewInit() {
@@ -171,23 +173,25 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
     this.payments.paginator = this.paginator;
   }
 
-  onSendPayment(): boolean|void {
-    if (!this.paymentRequest) { return true; }
+  onSendPayment(): boolean | void {
+    if (!this.paymentRequest) {
+      return true;
+    }
     if (this.paymentDecoded.timestamp) {
       this.sendPayment();
     } else {
       this.dataService.decodePayment(this.paymentRequest, false).
-      pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
-        this.paymentDecoded = decodedPayment;
-        if (this.paymentDecoded.timestamp) {
-          if (!this.paymentDecoded.amount) {
-            this.paymentDecoded.amount = 0;
+        pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
+          this.paymentDecoded = decodedPayment;
+          if (this.paymentDecoded.timestamp) {
+            if (!this.paymentDecoded.amount) {
+              this.paymentDecoded.amount = 0;
+            }
+            this.sendPayment();
+          } else {
+            this.resetData();
           }
-          this.sendPayment();
-        } else {
-          this.resetData();
-        }
-      });
+        });
     }
   }
 
@@ -195,16 +199,17 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
     this.flgAnimate = true;
     this.newlyAddedPayment = this.paymentDecoded.paymentHash;
     if (!this.paymentDecoded.amount || this.paymentDecoded.amount === 0) {
-        const reorderedPaymentDecoded = [
-          [{key: 'paymentHash', value: this.paymentDecoded.paymentHash, title: 'Payment Hash', width: 100}],
-          [{key: 'nodeId', value: this.paymentDecoded.nodeId, title: 'Payee', width: 100}],
-          [{key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100}],
-          [{key: 'timestamp', value: this.paymentDecoded.timestamp, title: 'Creation Date', width: 40, type: DataTypeEnum.DATE_TIME},
-            {key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 30, type: DataTypeEnum.NUMBER},
-            {key: 'minFinalCltvExpiry', value: this.paymentDecoded.minFinalCltvExpiry, title: 'CLTV Expiry', width: 30}]
-        ];
-        const titleMsg = 'It is a zero amount invoice. Enter the amount (Sats) to pay.';
-        this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
+      const reorderedPaymentDecoded = [
+        [{ key: 'paymentHash', value: this.paymentDecoded.paymentHash, title: 'Payment Hash', width: 100 }],
+        [{ key: 'nodeId', value: this.paymentDecoded.nodeId, title: 'Payee', width: 100 }],
+        [{ key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100 }],
+        [{ key: 'timestamp', value: this.paymentDecoded.timestamp, title: 'Creation Date', width: 40, type: DataTypeEnum.DATE_TIME },
+          { key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 30, type: DataTypeEnum.NUMBER },
+          { key: 'minFinalCltvExpiry', value: this.paymentDecoded.minFinalCltvExpiry, title: 'CLTV Expiry', width: 30 }]
+      ];
+      const titleMsg = 'It is a zero amount invoice. Enter the amount (Sats) to pay.';
+      this.store.dispatch(new RTLActions.OpenConfirmation({
+        data: {
           type: AlertTypeEnum.CONFIRM,
           alertTitle: 'Enter Amount and Confirm Send Payment',
           message: reorderedPaymentDecoded,
@@ -213,43 +218,46 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           flgShowInput: true,
           titleMessage: titleMsg,
           getInputs: [
-            {placeholder: 'Amount (Sats)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: '', width: 30}
+            { placeholder: 'Amount (Sats)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: '', width: 30 }
           ]
-        }}));
-        this.rtlEffects.closeConfirm.
+        }
+      }));
+      this.rtlEffects.closeConfirm.
         pipe(take(1)).
-        subscribe(confirmRes => {
+        subscribe((confirmRes) => {
           if (confirmRes) {
             this.paymentDecoded.amount = confirmRes[0].inputValue;
-            this.store.dispatch(new ECLActions.SendPayment({invoice: this.paymentRequest, amountMsat: confirmRes[0].inputValue*1000, fromDialog: false}));
+            this.store.dispatch(new ECLActions.SendPayment({ invoice: this.paymentRequest, amountMsat: confirmRes[0].inputValue * 1000, fromDialog: false }));
             this.resetData();
           }
         });
     } else {
       const reorderedPaymentDecoded = [
-        [{key: 'paymentHash', value: this.paymentDecoded.paymentHash, title: 'Payment Hash', width: 100}],
-        [{key: 'nodeId', value: this.paymentDecoded.nodeId, title: 'Payee', width: 100}],
-        [{key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100}],
-        [{key: 'timestamp', value: this.paymentDecoded.timestamp, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME},
-          {key: 'amount', value: this.paymentDecoded.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
-        [{key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.NUMBER},
-          {key: 'minFinalCltvExpiry', value: this.paymentDecoded.minFinalCltvExpiry, title: 'CLTV Expiry', width: 50}]
+        [{ key: 'paymentHash', value: this.paymentDecoded.paymentHash, title: 'Payment Hash', width: 100 }],
+        [{ key: 'nodeId', value: this.paymentDecoded.nodeId, title: 'Payee', width: 100 }],
+        [{ key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100 }],
+        [{ key: 'timestamp', value: this.paymentDecoded.timestamp, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME },
+          { key: 'amount', value: this.paymentDecoded.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
+        [{ key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.NUMBER },
+          { key: 'minFinalCltvExpiry', value: this.paymentDecoded.minFinalCltvExpiry, title: 'CLTV Expiry', width: 50 }]
       ];
-      this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-        type: AlertTypeEnum.CONFIRM,
-        alertTitle: 'Confirm Send Payment',
-        noBtnText: 'Cancel',
-        yesBtnText: 'Send Payment',
-        message: reorderedPaymentDecoded
-      }}));
-      this.rtlEffects.closeConfirm.
-      pipe(take(1)).
-      subscribe(confirmRes => {
-        if (confirmRes) {
-          this.store.dispatch(new ECLActions.SendPayment({invoice: this.paymentRequest, fromDialog: false}));
-          this.resetData();
+      this.store.dispatch(new RTLActions.OpenConfirmation({
+        data: {
+          type: AlertTypeEnum.CONFIRM,
+          alertTitle: 'Confirm Send Payment',
+          noBtnText: 'Cancel',
+          yesBtnText: 'Send Payment',
+          message: reorderedPaymentDecoded
         }
-      });
+      }));
+      this.rtlEffects.closeConfirm.
+        pipe(take(1)).
+        subscribe((confirmRes) => {
+          if (confirmRes) {
+            this.store.dispatch(new ECLActions.SendPayment({ invoice: this.paymentRequest, fromDialog: false }));
+            this.resetData();
+          }
+        });
     }
   }
 
@@ -258,31 +266,35 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
     this.paymentDecodedHint = '';
     if (this.paymentRequest && this.paymentRequest.length > 100) {
       this.dataService.decodePayment(this.paymentRequest, false).
-      pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
-        this.paymentDecoded = decodedPayment;
-        if (this.paymentDecoded.amount) {
-          if (this.selNode.fiatConversion) {
-            this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
-            pipe(takeUntil(this.unSubs[1])).
-            subscribe({next: data => {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
-            }, error: error => {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
-            }});
+        pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
+          this.paymentDecoded = decodedPayment;
+          if (this.paymentDecoded.amount) {
+            if (this.selNode.fiatConversion) {
+              this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
+                pipe(takeUntil(this.unSubs[1])).
+                subscribe({
+                  next: (data) => {
+                    this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
+                  }, error: (error) => {
+                    this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
+                  }
+                });
+            } else {
+              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
+            }
           } else {
-            this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
+            this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
           }
-        } else {
-          this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
-        }
-      });
+        });
     }
   }
 
   openSendPaymentModal() {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      component: ECLLightningSendPaymentsComponent
-    }}));
+    this.store.dispatch(new RTLActions.OpenAlert({
+      data: {
+        component: ECLLightningSendPaymentsComponent
+      }
+    }));
   }
 
   resetData() {
@@ -298,34 +310,40 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   onPaymentClick(selPayment: PaymentSent) {
     if (selPayment.paymentHash && selPayment.paymentHash.trim() !== '') {
       this.dataService.decodePayments(selPayment.paymentHash).
-      pipe(take(1)).
-      subscribe({next: sentPaymentInfo => {
-        this.showPaymentView(selPayment, (sentPaymentInfo.length && sentPaymentInfo.length > 0) ? sentPaymentInfo[0] : []);
-      }, error: (error) => {
-        this.showPaymentView(selPayment, []);
-      }});
+        pipe(take(1)).
+        subscribe({
+          next: (sentPaymentInfo) => {
+            this.showPaymentView(selPayment, (sentPaymentInfo.length && sentPaymentInfo.length > 0) ? sentPaymentInfo[0] : []);
+          }, error: (error) => {
+            this.showPaymentView(selPayment, []);
+          }
+        });
     } else {
       this.showPaymentView(selPayment, []);
     }
   }
 
   showPaymentView(selPayment: PaymentSent, sentPaymentInfo?: any[]) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      sentPaymentInfo: sentPaymentInfo,
-      payment: selPayment,
-      component: ECLPaymentInformationComponent
-    }}));
+    this.store.dispatch(new RTLActions.OpenAlert({
+      data: {
+        sentPaymentInfo: sentPaymentInfo,
+        payment: selPayment,
+        component: ECLPaymentInformationComponent
+      }
+    }));
   }
 
   onPartClick(selPart: PaymentSentPart, selPayment: PaymentSent) {
     if (selPayment.paymentHash && selPayment.paymentHash.trim() !== '') {
       this.dataService.decodePayments(selPayment.paymentHash).
-      pipe(take(1)).
-      subscribe({next: sentPaymentInfo => {
-        this.showPartView(selPart, selPayment, sentPaymentInfo);
-      }, error: (error) => {
-        this.showPartView(selPart, selPayment, []);
-      }});
+        pipe(take(1)).
+        subscribe({
+          next: (sentPaymentInfo) => {
+            this.showPartView(selPart, selPayment, sentPaymentInfo);
+          }, error: (error) => {
+            this.showPartView(selPart, selPayment, []);
+          }
+        });
     } else {
       this.showPartView(selPart, selPayment, []);
     }
@@ -333,22 +351,24 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
 
   showPartView(selPart: PaymentSentPart, selPayment: PaymentSent, sentPaymentInfo?: any[]) {
     const reorderedPart = [
-      [{key: 'paymentHash', value: selPayment.paymentHash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'paymentPreimage', value: selPayment.paymentPreimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'toChannelId', value: selPart.toChannelId, title: 'Channel', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'id', value: selPart.id, title: 'Part ID', width: 50, type: DataTypeEnum.STRING},
-        {key: 'timestamp', value: selPart.timestamp, title: 'Time', width: 50, type: DataTypeEnum.DATE_TIME}],
-      [{key: 'amount', value: selPart.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER},
-        {key: 'feesPaid', value: selPart.feesPaid, title: 'Fee (Sats)', width: 50, type: DataTypeEnum.NUMBER}]
+      [{ key: 'paymentHash', value: selPayment.paymentHash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'paymentPreimage', value: selPayment.paymentPreimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'toChannelId', value: selPart.toChannelId, title: 'Channel', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'id', value: selPart.id, title: 'Part ID', width: 50, type: DataTypeEnum.STRING },
+        { key: 'timestamp', value: selPart.timestamp, title: 'Time', width: 50, type: DataTypeEnum.DATE_TIME }],
+      [{ key: 'amount', value: selPart.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER },
+        { key: 'feesPaid', value: selPart.feesPaid, title: 'Fee (Sats)', width: 50, type: DataTypeEnum.NUMBER }]
     ];
     if (sentPaymentInfo.length > 0 && sentPaymentInfo[0].paymentRequest && sentPaymentInfo[0].paymentRequest.description && sentPaymentInfo[0].paymentRequest.description !== '') {
-      reorderedPart.splice(3, 0, [{key: 'description', value: sentPaymentInfo[0].paymentRequest.description, title: 'Description', width: 100, type: DataTypeEnum.STRING}]);
+      reorderedPart.splice(3, 0, [{ key: 'description', value: sentPaymentInfo[0].paymentRequest.description, title: 'Description', width: 100, type: DataTypeEnum.STRING }]);
     }
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Payment Part Information',
-      message: reorderedPart
-    }}));
+    this.store.dispatch(new RTLActions.OpenAlert({
+      data: {
+        type: AlertTypeEnum.INFORMATION,
+        alertTitle: 'Payment Part Information',
+        message: reorderedPart
+      }
+    }));
   }
 
   applyFilter(selFilter: any) {
@@ -357,30 +377,29 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
 
   onDownloadCSV() {
     if (this.payments.data && this.payments.data.length > 0) {
-      let paymentsDataCopy: PaymentSent[] = JSON.parse(JSON.stringify(this.payments.data));
-      let paymentRequests = paymentsDataCopy.reduce((paymentReqs, payment) => {
+      const paymentsDataCopy: PaymentSent[] = JSON.parse(JSON.stringify(this.payments.data));
+      const paymentRequests = paymentsDataCopy.reduce((paymentReqs, payment) => {
         if (payment.paymentHash && payment.paymentHash.trim() !== '') {
           paymentReqs = (paymentReqs === '') ? payment.paymentHash : paymentReqs + ',' + payment.paymentHash;
         }
         return paymentReqs;
       }, '');
       this.dataService.decodePayments(paymentRequests).
-      pipe(takeUntil(this.unSubs[2])).
-      subscribe((decodedPayments: any[][]) => {
-        decodedPayments.forEach((decodedPayment, idx) => {
-          if (decodedPayment.length > 0 && decodedPayment[0].paymentRequest && decodedPayment[0].paymentRequest.description && decodedPayment[0].paymentRequest.description !== '') {
-            paymentsDataCopy[idx].description = decodedPayment[0].paymentRequest.description;
-          }
+        pipe(takeUntil(this.unSubs[2])).
+        subscribe((decodedPayments: any[][]) => {
+          decodedPayments.forEach((decodedPayment, idx) => {
+            if (decodedPayment.length > 0 && decodedPayment[0].paymentRequest && decodedPayment[0].paymentRequest.description && decodedPayment[0].paymentRequest.description !== '') {
+              paymentsDataCopy[idx].description = decodedPayment[0].paymentRequest.description;
+            }
+          });
+          const flattenedPayments = paymentsDataCopy.reduce((acc, curr) => acc.concat(curr), []);
+          this.commonService.downloadFile(flattenedPayments, 'Payments');
         });
-        let flattenedPayments = paymentsDataCopy.reduce((acc, curr) => acc.concat(curr), []);
-        this.commonService.downloadFile(flattenedPayments, 'Payments');
-      });
     }
-
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

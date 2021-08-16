@@ -25,7 +25,7 @@ describe('ECLOnChainReceiveComponent', () => {
         { provide: ECLEffects, useClass: mockECLEffects }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -41,5 +41,4 @@ describe('ECLOnChainReceiveComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

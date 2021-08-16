@@ -27,8 +27,9 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   ]
 })
 export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, OnDestroy {
+
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
   public isCompatibleVersion = false;
   public totalBalance = 0;
   public displayedColumns: any[] = [];
@@ -68,25 +69,25 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
 
   ngOnInit() {
     this.store.select('cl').
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe((rtlStore) => {
-      this.errorMessage = '';
-      this.apisCallStatus = rtlStore.apisCallStatus;
-      if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
-        this.errorMessage = (typeof(this.apisCallStatus.FetchChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchChannels.message) : this.apisCallStatus.FetchChannels.message;
-      }
-      this.information = rtlStore.information;
-      if (this.information.api_version) {
-        this.isCompatibleVersion = this.commonService.isVersionCompatible(this.information.api_version, '0.4.2');
-      }
-      this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
-      this.totalBalance = rtlStore.balance.totalBalance;
-      this.channelsData = this.commonService.sortByKey(rtlStore.allChannels.filter(channel => !(channel.state === 'CHANNELD_NORMAL' && channel.connected)), 'state', 'string');
-      if (this.channelsData && this.channelsData.length > 0) {
-        this.loadChannelsTable(this.channelsData);
-      }
-      this.logger.info(rtlStore);
-    });
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.errorMessage = '';
+        this.apisCallStatus = rtlStore.apisCallStatus;
+        if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apisCallStatus.FetchChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchChannels.message) : this.apisCallStatus.FetchChannels.message;
+        }
+        this.information = rtlStore.information;
+        if (this.information.api_version) {
+          this.isCompatibleVersion = this.commonService.isVersionCompatible(this.information.api_version, '0.4.2');
+        }
+        this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
+        this.totalBalance = rtlStore.balance.totalBalance;
+        this.channelsData = this.commonService.sortByKey(rtlStore.allChannels.filter((channel) => !(channel.state === 'CHANNELD_NORMAL' && channel.connected)), 'state', 'string');
+        if (this.channelsData && this.channelsData.length > 0) {
+          this.loadChannelsTable(this.channelsData);
+        }
+        this.logger.info(rtlStore);
+      });
   }
 
   ngAfterViewInit() {
@@ -104,7 +105,7 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
       channel: selChannel,
       showCopy: true,
       component: CLChannelInformationComponent
-    }}));
+    } }));
   }
 
   onChannelClose(channelToClose: Channel) {
@@ -114,20 +115,18 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
       titleMessage: 'Force closing channel: ' + channelToClose.channel_id,
       noBtnText: 'Cancel',
       yesBtnText: 'Force Close'
-    }}));
+    } }));
     this.rtlEffects.closeConfirm.
-    pipe(takeUntil(this.unSubs[3])).
-    subscribe(confirmRes => {
-      if (confirmRes) {
-        this.store.dispatch(new CLActions.CloseChannel({channelId: channelToClose.channel_id, force: true}));
-      }
-    });
+      pipe(takeUntil(this.unSubs[3])).
+      subscribe((confirmRes) => {
+        if (confirmRes) {
+          this.store.dispatch(new CLActions.CloseChannel({ channelId: channelToClose.channel_id, force: true }));
+        }
+      });
   }
 
   loadChannelsTable(mychannels) {
-    mychannels.sort((a, b) => {
-      return (a.active === b.active) ? 0 : ((b.active) ? 1 : -1);
-    });
+    mychannels.sort((a, b) => ((a.active === b.active) ? 0 : ((b.active) ? 1 : -1)));
     this.channels = new MatTableDataSource<Channel>([...mychannels]);
     this.channels.filterPredicate = (channel: Channel, fltr: string) => {
       const newChannel = ((channel.connected) ? 'connected' : 'disconnected') + (channel.channel_id ? channel.channel_id.toLowerCase() : '') +
@@ -139,7 +138,7 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
       return newChannel.includes(fltr);
     };
     this.channels.sort = this.sort;
-    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
   }
@@ -151,7 +150,7 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

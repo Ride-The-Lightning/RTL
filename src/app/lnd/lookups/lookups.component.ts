@@ -19,6 +19,7 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
   styleUrls: ['./lookups.component.scss']
 })
 export class LookupsComponent implements OnInit, OnDestroy {
+
   public lookupKey = '';
   public lookupValue = {};
   public flgSetLookupValue = false;
@@ -26,8 +27,8 @@ export class LookupsComponent implements OnInit, OnDestroy {
   public messageObj = [];
   public selectedFieldId = 0;
   public lookupFields = [
-    { id: 0, name: 'Node', placeholder: 'Pubkey'},
-    { id: 1, name: 'Channel', placeholder: 'Channel ID'}
+    { id: 0, name: 'Node', placeholder: 'Pubkey' },
+    { id: 1, name: 'Channel', placeholder: 'Channel ID' }
   ];
   public faSearch = faSearch;
   public screenSize = '';
@@ -43,27 +44,29 @@ export class LookupsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.actions.pipe(takeUntil(this.unSubs[0]), filter((action) => (action.type === LNDActions.SET_LOOKUP_LND || action.type === LNDActions.UPDATE_API_CALL_STATUS_LND))).
-    subscribe((resLookup: LNDActions.SetLookup | LNDActions.UpdateAPICallStatus) => {
-      if (resLookup.type === LNDActions.SET_LOOKUP_LND) {
-        this.errorMessage = (this.selectedFieldId === 0 && resLookup.payload.hasOwnProperty('node')) ? '' : (this.selectedFieldId === 1 && resLookup.payload.hasOwnProperty('channel_id')) ? '' : this.errorMessage;
-        this.lookupValue = JSON.parse(JSON.stringify(resLookup.payload));
-        this.flgSetLookupValue = (this.selectedFieldId === 0 && resLookup.payload.hasOwnProperty('node')) ? true : (this.selectedFieldId === 1 && resLookup.payload.hasOwnProperty('channel_id')) ? true : false;
-        this.logger.info(this.lookupValue);
-      }
-      if (resLookup.type === LNDActions.UPDATE_API_CALL_STATUS_LND && resLookup.payload.action === 'Lookup') {
-        this.errorMessage = '';
-        if (resLookup.payload.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof(resLookup.payload.message) === 'object') ? JSON.stringify(resLookup.payload.message) : resLookup.payload.message;
+      subscribe((resLookup: LNDActions.SetLookup | LNDActions.UpdateAPICallStatus) => {
+        if (resLookup.type === LNDActions.SET_LOOKUP_LND) {
+          this.errorMessage = (this.selectedFieldId === 0 && resLookup.payload.hasOwnProperty('node')) ? '' : (this.selectedFieldId === 1 && resLookup.payload.hasOwnProperty('channel_id')) ? '' : this.errorMessage;
+          this.lookupValue = JSON.parse(JSON.stringify(resLookup.payload));
+          this.flgSetLookupValue = (this.selectedFieldId === 0 && resLookup.payload.hasOwnProperty('node')) ? true : !!((this.selectedFieldId === 1 && resLookup.payload.hasOwnProperty('channel_id')));
+          this.logger.info(this.lookupValue);
         }
-        if (resLookup.payload.status === APICallStatusEnum.INITIATED) {
-          this.errorMessage = UI_MESSAGES.GET_LOOKUP_DETAILS;
+        if (resLookup.type === LNDActions.UPDATE_API_CALL_STATUS_LND && resLookup.payload.action === 'Lookup') {
+          this.errorMessage = '';
+          if (resLookup.payload.status === APICallStatusEnum.ERROR) {
+            this.errorMessage = (typeof (resLookup.payload.message) === 'object') ? JSON.stringify(resLookup.payload.message) : resLookup.payload.message;
+          }
+          if (resLookup.payload.status === APICallStatusEnum.INITIATED) {
+            this.errorMessage = UI_MESSAGES.GET_LOOKUP_DETAILS;
+          }
         }
-      }
-    });
+      });
   }
 
-  onLookup(): boolean|void {
-    if (!this.lookupKey) { return true; }
+  onLookup(): boolean | void {
+    if (!this.lookupKey) {
+      return true;
+    }
     this.flgSetLookupValue = false;
     this.lookupValue = {};
     switch (this.selectedFieldId) {
@@ -71,7 +74,7 @@ export class LookupsComponent implements OnInit, OnDestroy {
         this.store.dispatch(new LNDActions.PeerLookup(this.lookupKey.trim()));
         break;
       case 1:
-        this.store.dispatch(new LNDActions.ChannelLookup({ uiMessage: UI_MESSAGES.SEARCHING_CHANNEL, channelID: this.lookupKey.trim()}));
+        this.store.dispatch(new LNDActions.ChannelLookup({ uiMessage: UI_MESSAGES.SEARCHING_CHANNEL, channelID: this.lookupKey.trim() }));
         break;
       default:
         break;
@@ -97,7 +100,7 @@ export class LookupsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

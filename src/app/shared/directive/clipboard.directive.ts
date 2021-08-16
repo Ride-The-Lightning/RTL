@@ -4,6 +4,7 @@ import { Directive, Input, Output, EventEmitter, HostListener } from '@angular/c
   selector: '[rtlClipboard]'
 })
 export class ClipboardDirective {
+
   @Input() payload: string;
 
   @Output()
@@ -25,4 +26,5 @@ export class ClipboardDirective {
     document.execCommand('copy');
     document.removeEventListener('copy', listener, false);
   }
+
 }

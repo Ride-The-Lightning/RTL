@@ -21,6 +21,7 @@ import { CommonService } from '../../../shared/services/common.service';
   styleUrls: ['./on-chain-label-modal.component.scss']
 })
 export class OnChainLabelModalComponent implements OnInit, OnDestroy {
+
   @ViewChild('form', { static: true }) form: any;
   public faExclamationTriangle = faExclamationTriangle;
   public utxo: UTXO = null;
@@ -36,18 +37,20 @@ export class OnChainLabelModalComponent implements OnInit, OnDestroy {
   }
 
   onLabelUTXO(): boolean|void {
-    if (!this.label || this.label === '') { return true; }
+    if (!this.label || this.label === '') {
+      return true;
+    }
     this.labelError = '';
     this.dataService.labelUTXO(this.utxo.outpoint.txid_bytes, this.label, true).
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe({next: res => {
-      this.store.dispatch(new LNDActions.FetchTransactions());
-      this.store.dispatch(new LNDActions.FetchUTXOs());
-      this.snackBar.open('Successfully labelled the UTXO.');
-      this.dialogRef.close();
-    }, error: (err) => {
-      this.labelError = err;
-    }});
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe({ next: (res) => {
+        this.store.dispatch(new LNDActions.FetchTransactions());
+        this.store.dispatch(new LNDActions.FetchUTXOs());
+        this.snackBar.open('Successfully labelled the UTXO.');
+        this.dialogRef.close();
+      }, error: (err) => {
+        this.labelError = err;
+      } });
   }
 
   resetData() {
@@ -56,7 +59,7 @@ export class OnChainLabelModalComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

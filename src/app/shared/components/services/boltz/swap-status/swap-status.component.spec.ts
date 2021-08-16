@@ -12,7 +12,7 @@ describe('SwapStatusComponent', () => {
       declarations: [SwapStatusComponent],
       imports: [SharedModule]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -28,5 +28,4 @@ describe('SwapStatusComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

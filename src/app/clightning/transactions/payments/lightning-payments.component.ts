@@ -34,10 +34,11 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]
 })
 export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Input() calledFrom = 'transactions'; // transactions/home
+
+  @Input() calledFrom = 'transactions'; // Transactions/home
   @ViewChild('sendPaymentForm', { static: false }) form;
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
   public faHistory = faHistory;
   public newlyAddedPayment = '';
   public flgAnimate = true;
@@ -83,22 +84,24 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
 
   ngOnInit() {
     this.store.select('cl').
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe((rtlStore) => {
-      this.errorMessage = '';
-      this.apisCallStatus = rtlStore.apisCallStatus;
-      if (rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.ERROR) {
-        this.errorMessage = (typeof(this.apisCallStatus.FetchPayments.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPayments.message) : this.apisCallStatus.FetchPayments.message;
-      }
-      this.information = rtlStore.information;
-      this.selNode = rtlStore.nodeSettings;
-      this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
-      if (this.paymentJSONArr.length > 0) {
-        this.loadPaymentsTable(this.paymentJSONArr);
-      }
-      setTimeout(() => { this.flgAnimate = false; }, 3000);
-      this.logger.info(rtlStore);
-    });
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.errorMessage = '';
+        this.apisCallStatus = rtlStore.apisCallStatus;
+        if (rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apisCallStatus.FetchPayments.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPayments.message) : this.apisCallStatus.FetchPayments.message;
+        }
+        this.information = rtlStore.information;
+        this.selNode = rtlStore.nodeSettings;
+        this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
+        if (this.paymentJSONArr.length > 0) {
+          this.loadPaymentsTable(this.paymentJSONArr);
+        }
+        setTimeout(() => {
+          this.flgAnimate = false;
+        }, 3000);
+        this.logger.info(rtlStore);
+      });
   }
 
   ngAfterViewInit() {
@@ -112,24 +115,26 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   }
 
   onSendPayment(): boolean|void {
-    if (!this.paymentRequest) { return true; }
+    if (!this.paymentRequest) {
+      return true;
+    }
     if (this.paymentDecoded.created_at) {
       this.sendPayment();
     } else {
-      this.store.dispatch(new CLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: false}));
+      this.store.dispatch(new CLActions.DecodePayment({ routeParam: this.paymentRequest, fromDialog: false }));
       this.clEffects.setDecodedPaymentCL.
-      pipe(take(1)).
-      subscribe(decodedPayment => {
-        this.paymentDecoded = decodedPayment;
-        if (this.paymentDecoded.created_at) {
-          if (!this.paymentDecoded.msatoshi) {
-            this.paymentDecoded.msatoshi = 0;
+        pipe(take(1)).
+        subscribe((decodedPayment) => {
+          this.paymentDecoded = decodedPayment;
+          if (this.paymentDecoded.created_at) {
+            if (!this.paymentDecoded.msatoshi) {
+              this.paymentDecoded.msatoshi = 0;
+            }
+            this.sendPayment();
+          } else {
+            this.resetData();
           }
-          this.sendPayment();
-        } else {
-          this.resetData();
-        }
-      });
+        });
     }
   }
 
@@ -137,45 +142,45 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
     this.flgAnimate = true;
     this.newlyAddedPayment = this.paymentDecoded.payment_hash;
     if (!this.paymentDecoded.msatoshi || this.paymentDecoded.msatoshi === 0) {
-        const reorderedPaymentDecoded = [
-          [{key: 'payment_hash', value: this.paymentDecoded.payment_hash, title: 'Payment Hash', width: 100}],
-          [{key: 'payee', value: this.paymentDecoded.payee, title: 'Payee', width: 100}],
-          [{key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100}],
-          [{key: 'created_at', value: this.paymentDecoded.created_at, title: 'Creation Date', width: 40, type: DataTypeEnum.DATE_TIME},
-            {key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 30, type: DataTypeEnum.NUMBER},
-            {key: 'min_finaltv_expiry', value: this.paymentDecoded.min_final_cltv_expiry, title: 'CLTV Expiry', width: 30}]
-        ];
-        const titleMsg = 'It is a zero amount invoice. Enter the amount (Sats) to pay.';
-        this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-          type: AlertTypeEnum.CONFIRM,
-          alertTitle: 'Enter Amount and Confirm Send Payment',
-          message: reorderedPaymentDecoded,
-          noBtnText: 'Cancel',
-          yesBtnText: 'Send Payment',
-          flgShowInput: true,
-          titleMessage: titleMsg,
-          getInputs: [
-            {placeholder: 'Amount (Sats)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: '', width: 30}
-          ]
-        }}));
-        this.rtlEffects.closeConfirm.
+      const reorderedPaymentDecoded = [
+        [{ key: 'payment_hash', value: this.paymentDecoded.payment_hash, title: 'Payment Hash', width: 100 }],
+        [{ key: 'payee', value: this.paymentDecoded.payee, title: 'Payee', width: 100 }],
+        [{ key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100 }],
+        [{ key: 'created_at', value: this.paymentDecoded.created_at, title: 'Creation Date', width: 40, type: DataTypeEnum.DATE_TIME },
+          { key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 30, type: DataTypeEnum.NUMBER },
+          { key: 'min_finaltv_expiry', value: this.paymentDecoded.min_final_cltv_expiry, title: 'CLTV Expiry', width: 30 }]
+      ];
+      const titleMsg = 'It is a zero amount invoice. Enter the amount (Sats) to pay.';
+      this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
+        type: AlertTypeEnum.CONFIRM,
+        alertTitle: 'Enter Amount and Confirm Send Payment',
+        message: reorderedPaymentDecoded,
+        noBtnText: 'Cancel',
+        yesBtnText: 'Send Payment',
+        flgShowInput: true,
+        titleMessage: titleMsg,
+        getInputs: [
+          { placeholder: 'Amount (Sats)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: '', width: 30 }
+        ]
+      } }));
+      this.rtlEffects.closeConfirm.
         pipe(take(1)).
-        subscribe(confirmRes => {
+        subscribe((confirmRes) => {
           if (confirmRes) {
             this.paymentDecoded.msatoshi = confirmRes[0].inputValue;
-            this.store.dispatch(new CLActions.SendPayment({uiMessage: UI_MESSAGES.SEND_PAYMENT, invoice: this.paymentRequest, amount: confirmRes[0].inputValue*1000, fromDialog: false}));
+            this.store.dispatch(new CLActions.SendPayment({ uiMessage: UI_MESSAGES.SEND_PAYMENT, invoice: this.paymentRequest, amount: confirmRes[0].inputValue * 1000, fromDialog: false }));
             this.resetData();
           }
         });
     } else {
       const reorderedPaymentDecoded = [
-        [{key: 'payment_hash', value: this.paymentDecoded.payment_hash, title: 'Payment Hash', width: 100}],
-        [{key: 'payee', value: this.paymentDecoded.payee, title: 'Payee', width: 100}],
-        [{key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100}],
-        [{key: 'created_at', value: this.paymentDecoded.created_at, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME},
-          {key: 'num_satoshis', value: this.paymentDecoded.msatoshi/1000, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
-        [{key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.NUMBER},
-          {key: 'min_finaltv_expiry', value: this.paymentDecoded.min_final_cltv_expiry, title: 'CLTV Expiry', width: 50}]
+        [{ key: 'payment_hash', value: this.paymentDecoded.payment_hash, title: 'Payment Hash', width: 100 }],
+        [{ key: 'payee', value: this.paymentDecoded.payee, title: 'Payee', width: 100 }],
+        [{ key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100 }],
+        [{ key: 'created_at', value: this.paymentDecoded.created_at, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME },
+          { key: 'num_satoshis', value: this.paymentDecoded.msatoshi / 1000, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
+        [{ key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.NUMBER },
+          { key: 'min_finaltv_expiry', value: this.paymentDecoded.min_final_cltv_expiry, title: 'CLTV Expiry', width: 50 }]
       ];
       this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
         type: AlertTypeEnum.CONFIRM,
@@ -183,15 +188,15 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
         noBtnText: 'Cancel',
         yesBtnText: 'Send Payment',
         message: reorderedPaymentDecoded
-      }}));
+      } }));
       this.rtlEffects.closeConfirm.
-      pipe(take(1)).
-      subscribe(confirmRes => {
-        if (confirmRes) {
-          this.store.dispatch(new CLActions.SendPayment({uiMessage: UI_MESSAGES.SEND_PAYMENT, invoice: this.paymentRequest, fromDialog: false}));
-          this.resetData();
-        }
-      });
+        pipe(take(1)).
+        subscribe((confirmRes) => {
+          if (confirmRes) {
+            this.store.dispatch(new CLActions.SendPayment({ uiMessage: UI_MESSAGES.SEND_PAYMENT, invoice: this.paymentRequest, fromDialog: false }));
+            this.resetData();
+          }
+        });
     }
   }
 
@@ -199,20 +204,20 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
     this.paymentRequest = event;
     this.paymentDecodedHint = '';
     if (this.paymentRequest && this.paymentRequest.length > 100) {
-      this.store.dispatch(new CLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: false}));
-      this.clEffects.setDecodedPaymentCL.subscribe(decodedPayment => {
+      this.store.dispatch(new CLActions.DecodePayment({ routeParam: this.paymentRequest, fromDialog: false }));
+      this.clEffects.setDecodedPaymentCL.subscribe((decodedPayment) => {
         this.paymentDecoded = decodedPayment;
         if (this.paymentDecoded.msatoshi) {
           if (this.selNode.fiatConversion) {
-            this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
-            pipe(takeUntil(this.unSubs[1])).
-            subscribe({next: data => {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
-            }, error: error => {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
-            }});
+            this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
+              pipe(takeUntil(this.unSubs[1])).
+              subscribe({ next: (data) => {
+                this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
+              }, error: (error) => {
+                this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
+              } });
           } else {
-            this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
+            this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
           }
         } else {
           this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
@@ -224,7 +229,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   openSendPaymentModal() {
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       component: CLLightningSendPaymentsComponent
-    }}));
+    } }));
   }
 
   resetData() {
@@ -235,29 +240,29 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
 
   onPaymentClick(selPayment) {
     const reorderedPayment = [
-      [{key: 'bolt11', value: selPayment.bolt11, title: 'Bolt 11', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'payment_preimage', value: selPayment.payment_preimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'id', value: selPayment.id, title: 'ID', width: 20, type: DataTypeEnum.STRING},
-      {key: 'destination', value: selPayment.destination, title: 'Destination', width: 80, type: DataTypeEnum.STRING}],
-      [{key: 'created_at', value: selPayment.created_at, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME},
-        {key: 'status', value: this.titleCasePipe.transform(selPayment.status), title: 'Status', width: 50, type: DataTypeEnum.STRING}],
-      [{key: 'msatoshi', value: selPayment.msatoshi, title: 'Amount (mSats)', width: 50, type: DataTypeEnum.NUMBER},
-        {key: 'msatoshi_sent', value: selPayment.msatoshi_sent, title: 'Amount Sent (mSats)', width: 50, type: DataTypeEnum.NUMBER}]
+      [{ key: 'bolt11', value: selPayment.bolt11, title: 'Bolt 11', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'payment_preimage', value: selPayment.payment_preimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'id', value: selPayment.id, title: 'ID', width: 20, type: DataTypeEnum.STRING },
+        { key: 'destination', value: selPayment.destination, title: 'Destination', width: 80, type: DataTypeEnum.STRING }],
+      [{ key: 'created_at', value: selPayment.created_at, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME },
+        { key: 'status', value: this.titleCasePipe.transform(selPayment.status), title: 'Status', width: 50, type: DataTypeEnum.STRING }],
+      [{ key: 'msatoshi', value: selPayment.msatoshi, title: 'Amount (mSats)', width: 50, type: DataTypeEnum.NUMBER },
+        { key: 'msatoshi_sent', value: selPayment.msatoshi_sent, title: 'Amount Sent (mSats)', width: 50, type: DataTypeEnum.NUMBER }]
     ];
     if (selPayment.memo && selPayment.memo !== '') {
-      reorderedPayment.splice(2, 0, [{key: 'memo', value: selPayment.memo, title: 'Memo', width: 100, type: DataTypeEnum.STRING}]);
+      reorderedPayment.splice(2, 0, [{ key: 'memo', value: selPayment.memo, title: 'Memo', width: 100, type: DataTypeEnum.STRING }]);
     }
     if (selPayment.hasOwnProperty('partid')) {
-      reorderedPayment.unshift([{key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 80, type: DataTypeEnum.STRING},
-        {key: 'partid', value: selPayment.partid, title: 'Part ID', width: 20, type: DataTypeEnum.STRING}]);
+      reorderedPayment.unshift([{ key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 80, type: DataTypeEnum.STRING },
+        { key: 'partid', value: selPayment.partid, title: 'Part ID', width: 20, type: DataTypeEnum.STRING }]);
     } else {
-      reorderedPayment.unshift([{key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}]);
+      reorderedPayment.unshift([{ key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }]);
     }
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Payment Information',
       message: reorderedPayment
-    }}));
+    } }));
   }
 
   applyFilter(selFilter: any) {
@@ -268,10 +273,10 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
     this.payments = (payments) ? new MatTableDataSource<Payment>([...payments]) : new MatTableDataSource([]);
     this.payments.data = this.paymentJSONArr;
     this.payments.sort = this.sort;
-    this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.payments.filterPredicate = (payment: Payment, fltr: string) => JSON.stringify(payment).toLowerCase().includes(fltr);
     this.payments.filterPredicate = (rowData: Payment, fltr: string) => {
-      const newRowData = ((rowData.created_at) ? this.datePipe.transform(new Date(rowData.created_at*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      const newRowData = ((rowData.created_at) ? this.datePipe.transform(new Date(rowData.created_at * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
       return newRowData.includes(fltr);
     };
     this.payments.paginator = this.paginator;
@@ -279,8 +284,8 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
 
   onDownloadCSV() {
     if (this.payments.data && this.payments.data.length > 0) {
-      let paymentsDataCopy = JSON.parse(JSON.stringify(this.payments.data));
-      let flattenedPayments = paymentsDataCopy.reduce((acc, curr) => {
+      const paymentsDataCopy = JSON.parse(JSON.stringify(this.payments.data));
+      const flattenedPayments = paymentsDataCopy.reduce((acc, curr) => {
         if (curr.mpps) {
           return acc.concat(curr.mpps);
         } else {
@@ -295,7 +300,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

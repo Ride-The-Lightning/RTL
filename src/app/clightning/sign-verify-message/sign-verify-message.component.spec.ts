@@ -13,7 +13,7 @@ describe('CLSignVerifyMessageComponent', () => {
       declarations: [CLSignVerifyMessageComponent],
       imports: [SharedModule, RouterTestingModule]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -29,5 +29,4 @@ describe('CLSignVerifyMessageComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

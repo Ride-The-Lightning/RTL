@@ -22,6 +22,7 @@ import * as RTLActions from '../../../../store/rtl.actions';
   styleUrls: ['./auth-settings.component.scss']
 })
 export class AuthSettingsComponent implements OnInit, OnDestroy {
+
   @ViewChild('authForm', { static: true }) form: any;
   public faInfoCircle = faInfoCircle;
   public faUserLock = faUserLock;
@@ -37,59 +38,61 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
   public selNode: ConfigSettingsNode;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private actions: Actions, private router: Router, private sessionService: SessionService) {}
+  constructor(private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private actions: Actions, private router: Router, private sessionService: SessionService) { }
 
   ngOnInit() {
     this.initializeNodeData = this.sessionService.getItem('defaultPassword') === 'true';
     this.store.select('root').
-    pipe(takeUntil(this.unSubs[1])).
-    subscribe((rtlStore) => {
-      this.appConfig = rtlStore.appConfig;
-      this.selNode = rtlStore.selNode;
-      this.logger.info(rtlStore);
-    });
+      pipe(takeUntil(this.unSubs[1])).
+      subscribe((rtlStore) => {
+        this.appConfig = rtlStore.appConfig;
+        this.selNode = rtlStore.selNode;
+        this.logger.info(rtlStore);
+      });
     this.actions.pipe(
-    takeUntil(this.unSubs[2]),
-    filter((action) => action.type === RTLActions.RESET_PASSWORD_RES)).
-    subscribe((action: (RTLActions.ResetPasswordRes)) => {
-      if (PASSWORD_BLACKLIST.includes(this.currPassword.toLowerCase())) { // To redirect after initial password reset is done
-        switch (this.selNode.lnImplementation.toUpperCase()) {
-          case 'CLT':
-            this.router.navigate(['/cl/home']);
-            break;
+      takeUntil(this.unSubs[2]),
+      filter((action) => action.type === RTLActions.RESET_PASSWORD_RES)).
+      subscribe((action: (RTLActions.ResetPasswordRes)) => {
+        if (PASSWORD_BLACKLIST.includes(this.currPassword.toLowerCase())) { // To redirect after initial password reset is done
+          switch (this.selNode.lnImplementation.toUpperCase()) {
+            case 'CLT':
+              this.router.navigate(['/cl/home']);
+              break;
 
-          case 'ECL':
-            this.router.navigate(['/ecl/home']);
-            break;
+            case 'ECL':
+              this.router.navigate(['/ecl/home']);
+              break;
 
-          default:
-            this.router.navigate(['/lnd/home']);
-            break;
+            default:
+              this.router.navigate(['/lnd/home']);
+              break;
+          }
         }
-      }
-      this.form.resetForm();
-    });
+        this.form.resetForm();
+      });
   }
 
-  onChangePassword(): boolean|void {
-    if (!this.currPassword || !this.newPassword || !this.confirmPassword || this.currPassword === this.newPassword || this.newPassword !== this.confirmPassword || PASSWORD_BLACKLIST.includes(this.newPassword.toLowerCase())) { return true; }
-    this.store.dispatch(new RTLActions.ResetPassword({currPassword: sha256(this.currPassword), newPassword: sha256(this.newPassword)}));
+  onChangePassword(): boolean | void {
+    if (!this.currPassword || !this.newPassword || !this.confirmPassword || this.currPassword === this.newPassword || this.newPassword !== this.confirmPassword || PASSWORD_BLACKLIST.includes(this.newPassword.toLowerCase())) {
+      return true;
+    }
+    this.store.dispatch(new RTLActions.ResetPassword({ currPassword: sha256(this.currPassword), newPassword: sha256(this.newPassword) }));
   }
 
   matchOldAndNewPasswords(): boolean {
     let invalid = false;
     if (this.form.controls.newpassword) {
       if (!this.newPassword) {
-        this.form.controls.newpassword.setErrors({invalid: true});
+        this.form.controls.newpassword.setErrors({ invalid: true });
         this.errorMsg = 'New password is required.';
         invalid = true;
       } else if (this.currPassword !== '' && this.newPassword !== '' && this.currPassword === this.newPassword) {
-        this.form.controls.newpassword.setErrors({invalid: true});
+        this.form.controls.newpassword.setErrors({ invalid: true });
         this.errorMsg = 'Old and New password cannot be same.';
         invalid = true;
       } else if (PASSWORD_BLACKLIST.includes(this.newPassword.toLowerCase())) {
-        this.form.controls.newpassword.setErrors({invalid: true});
-        this.errorMsg = PASSWORD_BLACKLIST.reduce((totalList, currentPass, i) => (i < (PASSWORD_BLACKLIST.length - 1)) ? (totalList + currentPass + '" / "') : (totalList + currentPass + '".'), 'Password cannot be "');
+        this.form.controls.newpassword.setErrors({ invalid: true });
+        this.errorMsg = PASSWORD_BLACKLIST.reduce((totalList, currentPass, i) => ((i < (PASSWORD_BLACKLIST.length - 1)) ? (totalList + currentPass + '" / "') : (totalList + currentPass + '".')), 'Password cannot be "');
         invalid = true;
       } else {
         this.form.controls.newpassword.setErrors(null);
@@ -104,11 +107,11 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
     let invalid = false;
     if (this.form.controls.confirmpassword) {
       if (!this.confirmPassword) {
-        this.form.controls.confirmpassword.setErrors({invalid: true});
+        this.form.controls.confirmpassword.setErrors({ invalid: true });
         this.errorConfirmMsg = 'Confirm password is required.';
         invalid = true;
       } else if (this.newPassword !== '' && this.confirmPassword !== '' && this.newPassword !== this.confirmPassword) {
-        this.form.controls.confirmpassword.setErrors({invalid: true});
+        this.form.controls.confirmpassword.setErrors({ invalid: true });
         this.errorConfirmMsg = 'New and confirm passwords do not match.';
         invalid = true;
       } else {
@@ -121,10 +124,12 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
   }
 
   on2FAuth() {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      appConfig: this.appConfig,
-      component: TwoFactorAuthComponent
-    }}));
+    this.store.dispatch(new RTLActions.OpenAlert({
+      data: {
+        appConfig: this.appConfig,
+        component: TwoFactorAuthComponent
+      }
+    }));
   }
 
   onResetPassword() {
@@ -133,9 +138,9 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.initializeNodeData) {
-      this.store.dispatch(new RTLActions.SetSelelectedNode({uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: this.selNode, isInitialSetup: true}));
+      this.store.dispatch(new RTLActions.SetSelelectedNode({ uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: this.selNode, isInitialSetup: true }));
     }
-    this.unSubs.forEach(unsub => {
+    this.unSubs.forEach((unsub) => {
       unsub.next();
       unsub.complete();
     });

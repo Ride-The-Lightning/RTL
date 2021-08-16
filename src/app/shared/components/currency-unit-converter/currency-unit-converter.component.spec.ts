@@ -32,7 +32,7 @@ describe('CurrencyUnitConverterComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -48,5 +48,4 @@ describe('CurrencyUnitConverterComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -34,7 +34,7 @@ describe('RoutingPeersComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -50,5 +50,4 @@ describe('RoutingPeersComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

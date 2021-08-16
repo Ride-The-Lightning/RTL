@@ -16,7 +16,7 @@ describe('LoopQuoteComponent', () => {
         SharedModule
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -32,5 +32,4 @@ describe('LoopQuoteComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -14,6 +14,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./currency-unit-converter.component.scss']
 })
 export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDestroy {
+
   @Input() values = [];
   public currencyUnitEnum = CurrencyUnitEnum;
   public currencyUnitFormats = CURRENCY_UNIT_FORMATS;
@@ -22,21 +23,21 @@ export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDest
   public conversionErrorMsg = '';
   private unSubs = [new Subject(), new Subject(), new Subject()];
 
-  constructor(public commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(public commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) { }
 
   ngOnInit() {
     this.store.select('root').
-    pipe(first()).
-    subscribe((rtlStore) => {
-      this.fiatConversion = rtlStore.selNode.settings.fiatConversion;
-      this.currencyUnits = rtlStore.selNode.settings.currencyUnits;
-      if (!this.fiatConversion) {
-        this.currencyUnits.splice(2, 1);
-      }
-      if (this.currencyUnits.length > 1 && this.values[0] && this.values[0].dataValue >= 0) {
-        this.getCurrencyValues(this.values);
-      }
-    });
+      pipe(first()).
+      subscribe((rtlStore) => {
+        this.fiatConversion = rtlStore.selNode.settings.fiatConversion;
+        this.currencyUnits = rtlStore.selNode.settings.currencyUnits;
+        if (!this.fiatConversion) {
+          this.currencyUnits.splice(2, 1);
+        }
+        if (this.currencyUnits.length > 1 && this.values[0] && this.values[0].dataValue >= 0) {
+          this.getCurrencyValues(this.values);
+        }
+      });
   }
 
   ngOnChanges() {
@@ -46,20 +47,22 @@ export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDest
   }
 
   getCurrencyValues(values) {
-    values.forEach(value => {
+    values.forEach((value) => {
       if (value.dataValue > 0) {
         this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.BTC, '', true).
-        pipe(takeUntil(this.unSubs[1])).
-        subscribe(data => {
-          value[CurrencyUnitEnum.BTC] = data.BTC;
-        });
+          pipe(takeUntil(this.unSubs[1])).
+          subscribe((data) => {
+            value[CurrencyUnitEnum.BTC] = data.BTC;
+          });
         this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.currencyUnits[2], this.fiatConversion).
-        pipe(takeUntil(this.unSubs[2])).
-        subscribe({next: data => {
-          value[CurrencyUnitEnum.OTHER] = data.OTHER;
-        }, error: err => {
-          this.conversionErrorMsg = 'Conversion Error: ' + err;
-        }});
+          pipe(takeUntil(this.unSubs[2])).
+          subscribe({
+            next: (data) => {
+              value[CurrencyUnitEnum.OTHER] = data.OTHER;
+            }, error: (err) => {
+              this.conversionErrorMsg = 'Conversion Error: ' + err;
+            }
+          });
       } else {
         value[CurrencyUnitEnum.BTC] = value.dataValue;
         if (this.conversionErrorMsg === '') {
@@ -70,9 +73,10 @@ export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDest
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

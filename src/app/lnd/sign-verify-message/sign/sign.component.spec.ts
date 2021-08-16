@@ -32,7 +32,7 @@ describe('SignComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -48,5 +48,4 @@ describe('SignComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

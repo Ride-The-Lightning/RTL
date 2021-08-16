@@ -14,13 +14,14 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
   styleUrls: ['./routing.component.scss']
 })
 export class RoutingComponent implements OnInit, OnDestroy {
+
   public faMapSigns = faMapSigns;
   public today = new Date(Date.now());
   public lastMonthDay = new Date(this.today.getFullYear(), this.today.getMonth() - 1, this.today.getDate() + 1, 0, 0, 0);
   public yesterday = new Date(this.today.getFullYear(), this.today.getMonth(), this.today.getDate() - 1, 0, 0, 0);
   public endDate = this.today;
   public startDate = this.lastMonthDay;
-  public links = [{link: 'forwardinghistory', name: 'Forwarding History'}, {link: 'peers', name: 'Routing Peers'}];
+  public links = [{ link: 'forwardinghistory', name: 'Forwarding History' }, { link: 'peers', name: 'Routing Peers' }];
   public activeLink = this.links[0].link;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -28,13 +29,13 @@ export class RoutingComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.onEventsFetch();
-    let linkFound = this.links.find(link => this.router.url.includes(link.link));
+    const linkFound = this.links.find((link) => this.router.url.includes(link.link));
     this.activeLink = linkFound ? linkFound.link : this.links[0].link;
-    this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd)).
-    subscribe((value: ResolveEnd) => {
-      let linkFound = this.links.find(link => value.urlAfterRedirects.includes(link.link));
-      this.activeLink = linkFound ? linkFound.link : this.links[0].link;
-    });
+    this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
+      subscribe((value: ResolveEnd) => {
+        const linkFound = this.links.find((link) => value.urlAfterRedirects.includes(link.link));
+        this.activeLink = linkFound ? linkFound.link : this.links[0].link;
+      });
   }
 
   onEventsFetch() {
@@ -59,7 +60,7 @@ export class RoutingComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.resetData();
     this.store.dispatch(new LNDActions.SetForwardingHistory({}));
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

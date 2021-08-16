@@ -33,8 +33,9 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]
 })
 export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
+
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
   public faUsers = faUsers;
   public newlyAddedPeer = '';
   public flgAnimate = true;
@@ -73,29 +74,29 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.store.select('cl').
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe((rtlStore) => {
-      this.errorMessage = '';
-      this.apisCallStatus = rtlStore.apisCallStatus;
-      if (rtlStore.apisCallStatus.FetchPeers.status === APICallStatusEnum.ERROR) {
-        this.errorMessage = (typeof(this.apisCallStatus.FetchPeers.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPeers.message) : this.apisCallStatus.FetchPeers.message;
-      }
-      this.information = rtlStore.information;
-      this.availableBalance = rtlStore.balance.totalBalance || 0;
-      this.peersData = rtlStore.peers ? rtlStore.peers : [];
-      if (this.peersData.length > 0) {
-        this.loadPeersTable(this.peersData);
-      }
-      this.logger.info(rtlStore);
-    });
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.errorMessage = '';
+        this.apisCallStatus = rtlStore.apisCallStatus;
+        if (rtlStore.apisCallStatus.FetchPeers.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apisCallStatus.FetchPeers.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPeers.message) : this.apisCallStatus.FetchPeers.message;
+        }
+        this.information = rtlStore.information;
+        this.availableBalance = rtlStore.balance.totalBalance || 0;
+        this.peersData = rtlStore.peers ? rtlStore.peers : [];
+        if (this.peersData.length > 0) {
+          this.loadPeersTable(this.peersData);
+        }
+        this.logger.info(rtlStore);
+      });
     this.actions.
-    pipe(
-      takeUntil(this.unSubs[1]),
-      filter((action) => action.type === CLActions.SET_PEERS_CL)
-    ).subscribe((setPeers: CLActions.SetPeers) => {
-      this.peerAddress = null;
-      this.flgAnimate = true;
-    });
+      pipe(
+        takeUntil(this.unSubs[1]),
+        filter((action) => action.type === CLActions.SET_PEERS_CL)
+      ).subscribe((setPeers: CLActions.SetPeers) => {
+        this.peerAddress = null;
+        this.flgAnimate = true;
+      });
   }
 
   ngAfterViewInit() {
@@ -106,10 +107,10 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onPeerClick(selPeer: Peer, event: any) {
     const reorderedPeer = [
-      [{key: 'id', value: selPeer.id, title: 'Public Key', width: 100}],
-      [{key: 'netaddr', value: selPeer.netaddr, title: 'Address', width: 100}],
-      [{key: 'alias', value: selPeer.alias, title: 'Alias', width: 50},
-        {key: 'connected', value: selPeer.connected ? 'True' : 'False', title: 'Connected', width: 50}]
+      [{ key: 'id', value: selPeer.id, title: 'Public Key', width: 100 }],
+      [{ key: 'netaddr', value: selPeer.netaddr, title: 'Address', width: 100 }],
+      [{ key: 'alias', value: selPeer.alias, title: 'Alias', width: 50 },
+        { key: 'connected', value: selPeer.connected ? 'True' : 'False', title: 'Connected', width: 50 }]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
@@ -117,14 +118,14 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       showQRName: 'Public Key',
       showQRField: selPeer.id,
       message: reorderedPeer
-    }}));
+    } }));
   }
 
   onConnectPeer(selPeer: Peer) {
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       message: { peer: (selPeer.id ? selPeer : null), information: this.information, balance: this.availableBalance },
       component: CLConnectPeerComponent
-    }}));
+    } }));
   }
 
   onOpenChannel(peerToAddChannel: Peer) {
@@ -138,7 +139,7 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       message: peerToAddChannelMessage,
       newlyAdded: false,
       component: CLOpenChannelComponent
-    }}));
+    } }));
   }
 
   onPeerDetach(peerToDetach: Peer) {
@@ -149,14 +150,14 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       titleMessage: msg,
       noBtnText: 'Cancel',
       yesBtnText: 'Disconnect'
-    }}));
+    } }));
     this.rtlEffects.closeConfirm.
-    pipe(takeUntil(this.unSubs[3])).
-    subscribe(confirmRes => {
-      if (confirmRes) {
-        this.store.dispatch(new CLActions.DetachPeer({id: peerToDetach.id, force: false}));
-      }
-    });
+      pipe(takeUntil(this.unSubs[3])).
+      subscribe((confirmRes) => {
+        if (confirmRes) {
+          this.store.dispatch(new CLActions.DetachPeer({ id: peerToDetach.id, force: false }));
+        }
+      });
   }
 
   applyFilter(selFilter: any) {
@@ -169,7 +170,7 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       switch (sortHeaderId) {
         case 'netaddr':
           if (data.netaddr && data.netaddr[0]) {
-            let firstSplit = data.netaddr[0].toString().split('.');
+            const firstSplit = data.netaddr[0].toString().split('.');
             return (firstSplit[0]) ? +firstSplit[0] : data.netaddr[0];
           } else {
             return '';
@@ -190,9 +191,10 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

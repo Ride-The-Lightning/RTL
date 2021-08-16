@@ -27,6 +27,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   animations: [opacityAnimation]
 })
 export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
+
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faInfoCircle = faInfoCircle;
   public quote: LoopQuote;
@@ -73,31 +74,31 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.quoteFormGroup = this.formBuilder.group({});
     this.addressFormGroup = this.formBuilder.group({
       addressType: ['local', [Validators.required]],
-      address: [{value: '', disabled: true}]
+      address: [{ value: '', disabled: true }]
     });
     this.statusFormGroup = this.formBuilder.group({});
     this.onFormValueChanges();
     this.store.select('lnd').
-    pipe(takeUntil(this.unSubs[6])).
-    subscribe((rtlStore) => {
-      this.localBalanceToCompare = (this.channel) ? +this.channel.local_balance : +rtlStore.totalLocalBalance;
-    });
+      pipe(takeUntil(this.unSubs[6])).
+      subscribe((rtlStore) => {
+        this.localBalanceToCompare = (this.channel) ? +this.channel.local_balance : +rtlStore.totalLocalBalance;
+      });
   }
 
   ngAfterViewInit() {
-    this.inputFormGroup.setErrors({Invalid: true});
+    this.inputFormGroup.setErrors({ Invalid: true });
     if (this.direction === LoopTypeEnum.LOOP_OUT) {
-      this.addressFormGroup.setErrors({Invalid: true});
+      this.addressFormGroup.setErrors({ Invalid: true });
     }
   }
 
   onFormValueChanges() {
-    this.inputFormGroup.valueChanges.pipe(takeUntil(this.unSubs[4])).subscribe(changedValues => {
-      this.inputFormGroup.setErrors({Invalid: true});
+    this.inputFormGroup.valueChanges.pipe(takeUntil(this.unSubs[4])).subscribe((changedValues) => {
+      this.inputFormGroup.setErrors({ Invalid: true });
     });
     if (this.direction === LoopTypeEnum.LOOP_OUT) {
-      this.addressFormGroup.valueChanges.pipe(takeUntil(this.unSubs[5])).subscribe(changedValues => {
-        this.addressFormGroup.setErrors({Invalid: true});
+      this.addressFormGroup.valueChanges.pipe(takeUntil(this.unSubs[5])).subscribe((changedValues) => {
+        this.addressFormGroup.setErrors({ Invalid: true });
       });
     }
   }
@@ -113,7 +114,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
       this.addressFormGroup.controls.address.disable();
       this.addressFormGroup.controls.address.setValue('');
     }
-    this.addressFormGroup.setErrors({Invalid: true});
+    this.addressFormGroup.setErrors({ Invalid: true });
   }
 
   onValidateAmount() {
@@ -122,60 +123,68 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  onLoop(): boolean|void {
-    if (!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount ||
+  onLoop(): boolean | void {
+    if (!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > (this.maxQuote.amount) ||
       !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2 ||
       (this.direction === LoopTypeEnum.LOOP_OUT && (!this.inputFormGroup.controls.routingFeePercent.value || this.inputFormGroup.controls.routingFeePercent.value < 0)) ||
       (this.direction === LoopTypeEnum.LOOP_OUT && this.addressFormGroup.controls.addressType.value === 'external' &&
-      (!this.addressFormGroup.controls.address.value || this.addressFormGroup.controls.address.value.trim() === ''))) { return true; }
+        (!this.addressFormGroup.controls.address.value || this.addressFormGroup.controls.address.value.trim() === ''))) {
+      return true;
+    }
     this.flgEditable = false;
     this.stepper.selected.stepControl.setErrors(null);
     this.stepper.next();
     if (this.direction === LoopTypeEnum.LOOP_IN) {
       this.loopService.loopIn(this.inputFormGroup.controls.amount.value, +this.quote.swap_fee_sat, +this.quote.htlc_publish_fee_sat, '', true).pipe(takeUntil(this.unSubs[0])).
-      subscribe({next: (loopStatus: any) => {
-        this.loopStatus = loopStatus;
-        this.loopService.listSwaps();
-        this.flgEditable = true;
-      }, error: (err) => {
-        this.loopStatus = { error: err };
-        this.flgEditable = true;
-        this.logger.error(err);
-      }});
+        subscribe({
+          next: (loopStatus: any) => {
+            this.loopStatus = loopStatus;
+            this.loopService.listSwaps();
+            this.flgEditable = true;
+          }, error: (err) => {
+            this.loopStatus = { error: err };
+            this.flgEditable = true;
+            this.logger.error(err);
+          }
+        });
     } else {
-      let swapRoutingFee = Math.ceil(this.inputFormGroup.controls.amount.value * (this.inputFormGroup.controls.routingFeePercent.value / 100));
-      let destAddress = this.addressFormGroup.controls.addressType.value === 'external' ? this.addressFormGroup.controls.address.value : '';
-      let swapPublicationDeadline = this.inputFormGroup.controls.fast.value ? 0 : new Date().getTime() + (30 * 60000);
+      const swapRoutingFee = Math.ceil(this.inputFormGroup.controls.amount.value * (this.inputFormGroup.controls.routingFeePercent.value / 100));
+      const destAddress = this.addressFormGroup.controls.addressType.value === 'external' ? this.addressFormGroup.controls.address.value : '';
+      const swapPublicationDeadline = this.inputFormGroup.controls.fast.value ? 0 : new Date().getTime() + (30 * 60000);
       this.loopService.loopOut(this.inputFormGroup.controls.amount.value, (this.channel && this.channel.chan_id ? this.channel.chan_id : ''), this.inputFormGroup.controls.sweepConfTarget.value, swapRoutingFee, +this.quote.htlc_sweep_fee_sat, this.prepayRoutingFee, +this.quote.prepay_amt_sat, +this.quote.swap_fee_sat, swapPublicationDeadline, destAddress).pipe(takeUntil(this.unSubs[1])).
-      subscribe({next: (loopStatus: any) => {
-        this.loopStatus = loopStatus;
-        this.loopService.listSwaps();
-        this.flgEditable = true;
-      }, error: (err) => {
-        this.loopStatus = { error: err };
-        this.flgEditable = true;
-        this.logger.error(err);
-      }});
+        subscribe({
+          next: (loopStatus: any) => {
+            this.loopStatus = loopStatus;
+            this.loopService.listSwaps();
+            this.flgEditable = true;
+          }, error: (err) => {
+            this.loopStatus = { error: err };
+            this.flgEditable = true;
+            this.logger.error(err);
+          }
+        });
     }
   }
 
-  onEstimateQuote(): boolean|void {
-    if (!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount || !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2) { return true; }
-    let swapPublicationDeadline = this.inputFormGroup.controls.fast.value ? 0 : new Date().getTime() + (30 * 60000);
+  onEstimateQuote(): boolean | void {
+    if (!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > (this.maxQuote.amount) || !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2) {
+      return true;
+    }
+    const swapPublicationDeadline = this.inputFormGroup.controls.fast.value ? 0 : new Date().getTime() + (30 * 60000);
     if (this.direction === LoopTypeEnum.LOOP_IN) {
       this.loopService.getLoopInQuote(this.inputFormGroup.controls.amount.value, this.inputFormGroup.controls.sweepConfTarget.value, swapPublicationDeadline).
-      pipe(takeUntil(this.unSubs[2])).
-      subscribe(response => {
-        this.quote = response;
-        this.quote.off_chain_swap_routing_fee_percentage = this.inputFormGroup.controls.routingFeePercent.value ? this.inputFormGroup.controls.routingFeePercent.value : 2;
-      });
+        pipe(takeUntil(this.unSubs[2])).
+        subscribe((response) => {
+          this.quote = response;
+          this.quote.off_chain_swap_routing_fee_percentage = this.inputFormGroup.controls.routingFeePercent.value ? this.inputFormGroup.controls.routingFeePercent.value : 2;
+        });
     } else {
       this.loopService.getLoopOutQuote(this.inputFormGroup.controls.amount.value, this.inputFormGroup.controls.sweepConfTarget.value, swapPublicationDeadline).
-      pipe(takeUntil(this.unSubs[3])).
-      subscribe(response => {
-        this.quote = response;
-        this.quote.off_chain_swap_routing_fee_percentage = this.inputFormGroup.controls.routingFeePercent.value ? this.inputFormGroup.controls.routingFeePercent.value : 2;
-      });
+        pipe(takeUntil(this.unSubs[3])).
+        subscribe((response) => {
+          this.quote = response;
+          this.quote.off_chain_swap_routing_fee_percentage = this.inputFormGroup.controls.routingFeePercent.value ? this.inputFormGroup.controls.routingFeePercent.value : 2;
+        });
     }
     this.stepper.selected.stepControl.setErrors(null);
     this.stepper.next();
@@ -195,10 +204,10 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
             this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.sweepConfTarget.value ? this.inputFormGroup.controls.sweepConfTarget.value : 6);
           } else {
             this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' +
-            (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' +
-            (this.inputFormGroup.controls.sweepConfTarget.value ? this.inputFormGroup.controls.sweepConfTarget.value : 6) + ' | Percentage: ' +
-            (this.inputFormGroup.controls.routingFeePercent.value ? this.inputFormGroup.controls.routingFeePercent.value : '2') + ' | Fast: ' +
-            (this.inputFormGroup.controls.fast.value ? 'Enabled' : 'Disabled');
+              (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' +
+              (this.inputFormGroup.controls.sweepConfTarget.value ? this.inputFormGroup.controls.sweepConfTarget.value : 6) + ' | Percentage: ' +
+              (this.inputFormGroup.controls.routingFeePercent.value ? this.inputFormGroup.controls.routingFeePercent.value : '2') + ' | Fast: ' +
+              (this.inputFormGroup.controls.fast.value ? 'Enabled' : 'Disabled');
           }
         } else {
           this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
@@ -213,9 +222,9 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
             this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.sweepConfTarget.value ? this.inputFormGroup.controls.sweepConfTarget.value : 6);
           } else {
             this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' +
-            (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' +
-            (this.inputFormGroup.controls.sweepConfTarget.value ? this.inputFormGroup.controls.sweepConfTarget.value : 6) + ' | Fast: ' +
-            (this.inputFormGroup.controls.fast.value ? 'Enabled' : 'Disabled');
+              (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' +
+              (this.inputFormGroup.controls.sweepConfTarget.value ? this.inputFormGroup.controls.sweepConfTarget.value : 6) + ' | Fast: ' +
+              (this.inputFormGroup.controls.fast.value ? 'Enabled' : 'Disabled');
           }
         } else {
           this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
@@ -238,9 +247,9 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
         this.addressFormLabel = 'Withdrawal Address';
         break;
     }
-    if ((this.direction === LoopTypeEnum.LOOP_OUT && event.selectedIndex !== 1 && event.selectedIndex < event.previouslySelectedIndex)
-    || (this.direction === LoopTypeEnum.LOOP_IN && event.selectedIndex < event.previouslySelectedIndex)) {
-      event.selectedStep.stepControl.setErrors({Invalid: true});
+    if ((this.direction === LoopTypeEnum.LOOP_OUT && event.selectedIndex !== 1 && event.selectedIndex < event.previouslySelectedIndex) ||
+      (this.direction === LoopTypeEnum.LOOP_IN && event.selectedIndex < event.previouslySelectedIndex)) {
+      event.selectedStep.stepControl.setErrors({ Invalid: true });
     }
   }
 
@@ -277,12 +286,12 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.inputFormGroup.reset({ amount: this.minQuote.amount, sweepConfTarget: 6, routingFeePercent: 2, fast: false });
     this.quoteFormGroup.reset();
     this.statusFormGroup.reset();
-    this.addressFormGroup.reset({addressType: 'local', address: ''});
+    this.addressFormGroup.reset({ addressType: 'local', address: '' });
     this.addressFormGroup.controls.address.disable();
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

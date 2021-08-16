@@ -34,7 +34,7 @@ describe('CLUTXOTablesComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -50,5 +50,4 @@ describe('CLUTXOTablesComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -42,7 +42,7 @@ describe('HomeComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -58,5 +58,4 @@ describe('HomeComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

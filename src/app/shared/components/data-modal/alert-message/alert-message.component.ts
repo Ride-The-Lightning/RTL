@@ -13,6 +13,7 @@ import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, LoopStateEnum } from '../.
   styleUrls: ['./alert-message.component.scss']
 })
 export class AlertMessageComponent implements OnInit, AfterViewChecked, OnDestroy {
+
   private scrollContainer: ElementRef;
   @ViewChild('scrollContainer') set container(containerContent: ElementRef) {
     if (containerContent) {
@@ -84,7 +85,12 @@ export class AlertMessageComponent implements OnInit, AfterViewChecked, OnDestro
   }
 
   ngOnDestroy() {
-    if (this.unlistenStart) { this.unlistenStart(); }
-    if (this.unlistenEnd) { this.unlistenEnd(); }
+    if (this.unlistenStart) {
+      this.unlistenStart();
+    }
+    if (this.unlistenEnd) {
+      this.unlistenEnd();
+    }
   }
+
 }

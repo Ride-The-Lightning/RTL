@@ -26,12 +26,13 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   ]
 })
 export class SwapsComponent implements AfterViewInit, OnChanges, OnDestroy {
+
   @Input() selectedSwapType: LoopTypeEnum = LoopTypeEnum.LOOP_OUT;
   @Input() swapsData: LoopSwapStatus[] = [];
   @Input() flgLoading: Array<Boolean | 'error'> = [true];
   @Input() emptyTableMessage = 'No swaps available.';
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public LoopStateEnum = LoopStateEnum;
   public faHistory = faHistory;
   public swapCaption = 'Loop Out';
@@ -78,31 +79,33 @@ export class SwapsComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   onSwapClick(selSwap: LoopSwapStatus, event: any) {
     this.loopService.getSwap(selSwap.id_bytes.replace(/\//g, '_').replace(/\+/g, '-')).pipe(takeUntil(this.unSubs[2])).
-    subscribe((fetchedSwap: LoopSwapStatus) => {
-      const reorderedSwap = [
-        [{key: 'state', value: LoopStateEnum[fetchedSwap.state], title: 'Status', width: 50, type: DataTypeEnum.STRING},
-          {key: 'amt', value: fetchedSwap.amt, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
-        [{key: 'initiation_time', value: fetchedSwap.initiation_time/1000000000, title: 'Initiation Time', width: 50, type: DataTypeEnum.DATE_TIME},
-          {key: 'last_update_time', value: fetchedSwap.last_update_time/1000000000, title: 'Last Update Time', width: 50, type: DataTypeEnum.DATE_TIME}],
-        [{key: 'cost_server', value: fetchedSwap.cost_server, title: 'Server Cost (Sats)', width: 33, type: DataTypeEnum.NUMBER},
-          {key: 'cost_offchain', value: fetchedSwap.cost_offchain, title: 'Offchain Cost (Sats)', width: 33, type: DataTypeEnum.NUMBER},
-          {key: 'cost_onchain', value: fetchedSwap.cost_onchain, title: 'Onchain Cost (Sats)', width: 34, type: DataTypeEnum.NUMBER}],
-        [{key: 'id_bytes', value: fetchedSwap.id_bytes, title: 'ID', width: 100, type: DataTypeEnum.STRING}],
-        [{key: 'htlc_address', value: fetchedSwap.htlc_address, title: 'HTLC Address', width: 100, type: DataTypeEnum.STRING}]
-      ];
-      this.store.dispatch(new RTLActions.OpenAlert({ data: {
-        type: AlertTypeEnum.INFORMATION,
-        alertTitle: this.swapCaption + ' Status',
-        message: reorderedSwap,
-        openedBy: 'SWAP'
-      }}));
-    });
+      subscribe((fetchedSwap: LoopSwapStatus) => {
+        const reorderedSwap = [
+          [{ key: 'state', value: LoopStateEnum[fetchedSwap.state], title: 'Status', width: 50, type: DataTypeEnum.STRING },
+            { key: 'amt', value: fetchedSwap.amt, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
+          [{ key: 'initiation_time', value: fetchedSwap.initiation_time / 1000000000, title: 'Initiation Time', width: 50, type: DataTypeEnum.DATE_TIME },
+            { key: 'last_update_time', value: fetchedSwap.last_update_time / 1000000000, title: 'Last Update Time', width: 50, type: DataTypeEnum.DATE_TIME }],
+          [{ key: 'cost_server', value: fetchedSwap.cost_server, title: 'Server Cost (Sats)', width: 33, type: DataTypeEnum.NUMBER },
+            { key: 'cost_offchain', value: fetchedSwap.cost_offchain, title: 'Offchain Cost (Sats)', width: 33, type: DataTypeEnum.NUMBER },
+            { key: 'cost_onchain', value: fetchedSwap.cost_onchain, title: 'Onchain Cost (Sats)', width: 34, type: DataTypeEnum.NUMBER }],
+          [{ key: 'id_bytes', value: fetchedSwap.id_bytes, title: 'ID', width: 100, type: DataTypeEnum.STRING }],
+          [{ key: 'htlc_address', value: fetchedSwap.htlc_address, title: 'HTLC Address', width: 100, type: DataTypeEnum.STRING }]
+        ];
+        this.store.dispatch(new RTLActions.OpenAlert({
+          data: {
+            type: AlertTypeEnum.INFORMATION,
+            alertTitle: this.swapCaption + ' Status',
+            message: reorderedSwap,
+            openedBy: 'SWAP'
+          }
+        }));
+      });
   }
 
   loadSwapsTable(swaps) {
     this.listSwaps = new MatTableDataSource<LoopSwapStatus>([...swaps]);
     this.listSwaps.sort = this.sort;
-    this.listSwaps.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.listSwaps.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.listSwaps.filterPredicate = (swap: LoopSwapStatus, fltr: string) => JSON.stringify(swap).toLowerCase().includes(fltr);
     this.listSwaps.paginator = this.paginator;
     this.logger.info(this.listSwaps);
@@ -115,7 +118,7 @@ export class SwapsComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

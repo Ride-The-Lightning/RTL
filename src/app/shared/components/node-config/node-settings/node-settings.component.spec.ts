@@ -34,7 +34,7 @@ describe('NodeSettingsComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -50,5 +50,4 @@ describe('NodeSettingsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

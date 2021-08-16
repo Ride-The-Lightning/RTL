@@ -13,7 +13,7 @@ describe('ECLChannelCapacityInfoComponent', () => {
       declarations: [ECLChannelCapacityInfoComponent],
       imports: [SharedModule, RouterTestingModule]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -29,5 +29,4 @@ describe('ECLChannelCapacityInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

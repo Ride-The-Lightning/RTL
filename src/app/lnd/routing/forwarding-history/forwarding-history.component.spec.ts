@@ -34,7 +34,7 @@ describe('ForwardingHistoryComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -50,5 +50,4 @@ describe('ForwardingHistoryComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

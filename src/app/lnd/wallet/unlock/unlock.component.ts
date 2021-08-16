@@ -10,6 +10,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./unlock.component.scss']
 })
 export class UnlockWalletComponent implements OnInit {
+
   walletPassword = '';
 
   constructor(private store: Store<fromRTLReducer.RTLState>) {}
@@ -19,8 +20,10 @@ export class UnlockWalletComponent implements OnInit {
   }
 
   onUnlockWallet(): boolean|void {
-    if (!this.walletPassword) { return true; }
-    this.store.dispatch(new LNDActions.UnlockWallet({pwd: window.btoa(this.walletPassword)}));
+    if (!this.walletPassword) {
+      return true;
+    }
+    this.store.dispatch(new LNDActions.UnlockWallet({ pwd: window.btoa(this.walletPassword) }));
   }
 
   resetData() {

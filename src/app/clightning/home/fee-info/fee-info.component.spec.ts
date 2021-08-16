@@ -12,7 +12,7 @@ describe('CLFeeInfoComponent', () => {
       declarations: [CLFeeInfoComponent],
       imports: [SharedModule]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -28,5 +28,4 @@ describe('CLFeeInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

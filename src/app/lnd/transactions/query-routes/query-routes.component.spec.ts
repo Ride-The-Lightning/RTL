@@ -36,7 +36,7 @@ describe('QueryRoutesComponent', () => {
         { provide: LNDEffects, useClass: mockLNDEffects }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,5 +52,4 @@ describe('QueryRoutesComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

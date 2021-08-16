@@ -29,7 +29,7 @@ describe('OnChainReceiveComponent', () => {
         { provide: LNDEffects, useClass: mockLNDEffects }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -45,5 +45,4 @@ describe('OnChainReceiveComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

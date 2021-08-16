@@ -14,6 +14,7 @@ import { ScreenSizeEnum } from '../../../services/consts-enums-functions';
   styleUrls: ['./on-chain-generated-address.component.scss']
 })
 export class OnChainGeneratedAddressComponent implements OnInit {
+
   public faReceipt = faReceipt;
   public address = '';
   public addressType = '';
@@ -37,4 +38,5 @@ export class OnChainGeneratedAddressComponent implements OnInit {
     this.snackBar.open('Generated address copied.');
     this.logger.info('Copied Text: ' + payload);
   }
+
 }

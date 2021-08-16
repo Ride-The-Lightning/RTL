@@ -29,10 +29,10 @@ describe('ECLOpenChannelComponent', () => {
       ],
       providers: [
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {message: {}} }
+        { provide: MAT_DIALOG_DATA, useValue: { message: {} } }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -48,5 +48,4 @@ describe('ECLOpenChannelComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

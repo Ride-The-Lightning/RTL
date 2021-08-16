@@ -10,7 +10,7 @@ describe('FeeInfoComponent', () => {
     TestBed.configureTestingModule({
       declarations: [FeeInfoComponent]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -26,5 +26,4 @@ describe('FeeInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

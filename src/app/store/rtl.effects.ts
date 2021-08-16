@@ -31,6 +31,7 @@ import * as fromRTLReducer from './rtl.reducers';
 
 @Injectable()
 export class RTLEffects implements OnDestroy {
+
   dialogRef: any;
   screenSize = '';
   alertWidth = '55%';
@@ -92,7 +93,7 @@ export class RTLEffects implements OnDestroy {
             if (this.dialogRef && (this.dialogRef.componentInstance && this.dialogRef.componentInstance.data && this.dialogRef.componentInstance.data.titleMessage && this.dialogRef.componentInstance.data.titleMessage === action.payload)) {
               this.dialogRef.close();
             } else {
-              this.dialog.openDialogs.forEach(localDialog => {
+              this.dialog.openDialogs.forEach((localDialog) => {
                 if (localDialog.componentInstance && localDialog.componentInstance.data && localDialog.componentInstance.data.titleMessage && localDialog.componentInstance.data.titleMessage === action.payload) {
                   localDialog.close();
                 }
@@ -124,7 +125,9 @@ export class RTLEffects implements OnDestroy {
     () => this.actions.pipe(
       ofType(RTLActions.CLOSE_ALERT),
       map((action: RTLActions.CloseAlert) => {
-        if (this.dialogRef) { this.dialogRef.close(); }
+        if (this.dialogRef) {
+          this.dialogRef.close();
+        }
         return action.payload;
       })),
     { dispatch: false }
@@ -145,7 +148,9 @@ export class RTLEffects implements OnDestroy {
       ofType(RTLActions.CLOSE_CONFIRMATION),
       take(1),
       map((action: RTLActions.CloseConfirmation) => {
-        if (this.dialogRef) { this.dialogRef.close(); }
+        if (this.dialogRef) {
+          this.dialogRef.close();
+        }
         this.logger.info(action.payload);
         return action.payload;
       })),
@@ -195,9 +200,11 @@ export class RTLEffects implements OnDestroy {
         this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_RTL_CONFIG));
         this.store.dispatch(new RTLActions.UpdateAPICallStatus({ action: 'FetchRTLConfig', status: APICallStatusEnum.COMPLETED }));
         let searchNode: ConfigSettingsNode;
-        rtlConfig.nodes.forEach(node => {
+        rtlConfig.nodes.forEach((node) => {
           node.settings.currencyUnits = [...CURRENCY_UNITS, node.settings.currencyUnit];
-          if (+node.index === rtlConfig.selectedNodeIndex) { searchNode = node; }
+          if (+node.index === rtlConfig.selectedNodeIndex) {
+            searchNode = node;
+          }
         });
         if (searchNode) {
           this.store.dispatch(new RTLActions.SetSelelectedNode({ uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: searchNode, isInitialSetup: true }));
@@ -225,8 +232,8 @@ export class RTLEffects implements OnDestroy {
         this.store.dispatch(new RTLActions.UpdateAPICallStatus({ action: 'UpdateSettings', status: APICallStatusEnum.INITIATED }));
         let updateSettingReq = new Observable();
         if (action.payload.settings && action.payload.defaultNodeIndex) {
-          let settingsRes = this.httpClient.post<Settings>(environment.CONF_API, { updatedSettings: action.payload.settings });
-          let defaultNodeRes = this.httpClient.post(environment.CONF_API + '/updateDefaultNode', { defaultNodeIndex: action.payload.defaultNodeIndex });
+          const settingsRes = this.httpClient.post<Settings>(environment.CONF_API, { updatedSettings: action.payload.settings });
+          const defaultNodeRes = this.httpClient.post(environment.CONF_API + '/updateDefaultNode', { defaultNodeIndex: action.payload.defaultNodeIndex });
           updateSettingReq = forkJoin([settingsRes, defaultNodeRes]);
         } else if (action.payload.settings && !action.payload.defaultNodeIndex) {
           updateSettingReq = this.httpClient.post(environment.CONF_API, { updatedSettings: action.payload.settings });
@@ -242,10 +249,10 @@ export class RTLEffects implements OnDestroy {
             payload: (!updateStatus.length) ? updateStatus.message + '.' : updateStatus[0].message + '.'
           };
         }),
-          catchError((err) => {
-            this.handleErrorWithAlert('UpdateSettings', action.payload.uiMessage, 'Update Settings Failed!', environment.CONF_API, (!err.length) ? err : err[0]);
-            return of({ type: RTLActions.VOID });
-          }));
+        catchError((err) => {
+          this.handleErrorWithAlert('UpdateSettings', action.payload.uiMessage, 'Update Settings Failed!', environment.CONF_API, (!err.length) ? err : err[0]);
+          return of({ type: RTLActions.VOID });
+        }));
       }))
   );
 
@@ -308,19 +315,17 @@ export class RTLEffects implements OnDestroy {
               payload: configFile
             };
           }),
-            catchError((err: any) => {
-              this.handleErrorWithAlert('fetchConfig', UI_MESSAGES.OPEN_CONFIG_FILE, 'Fetch Config Failed!', environment.CONF_API + '/config/' + action.payload, err);
-              return of({ type: RTLActions.VOID });
-            }));
+          catchError((err: any) => {
+            this.handleErrorWithAlert('fetchConfig', UI_MESSAGES.OPEN_CONFIG_FILE, 'Fetch Config Failed!', environment.CONF_API + '/config/' + action.payload, err);
+            return of({ type: RTLActions.VOID });
+          }));
       }))
   );
 
   showLnConfig = createEffect(
     () => this.actions.pipe(
       ofType(RTLActions.SHOW_CONFIG),
-      map((action: RTLActions.ShowConfig) => {
-        return action.payload;
-      })),
+      map((action: RTLActions.ShowConfig) => action.payload)),
     { dispatch: false }
   );
 
@@ -342,22 +347,20 @@ export class RTLEffects implements OnDestroy {
             payload: postRes
           };
         }),
-          catchError((err) => {
-            this.handleErrorWithAlert('IsAuthorized', UI_MESSAGES.NO_SPINNER, 'Authorization Failed', environment.AUTHENTICATE_API, err);
-            return of({
-              type: RTLActions.IS_AUTHORIZED_RES,
-              payload: 'ERROR'
-            });
-          }));
+        catchError((err) => {
+          this.handleErrorWithAlert('IsAuthorized', UI_MESSAGES.NO_SPINNER, 'Authorization Failed', environment.AUTHENTICATE_API, err);
+          return of({
+            type: RTLActions.IS_AUTHORIZED_RES,
+            payload: 'ERROR'
+          });
+        }));
       }))
   );
 
   isAuthorizedRes = createEffect(
     () => this.actions.pipe(
       ofType(RTLActions.IS_AUTHORIZED_RES),
-      map((action: RTLActions.IsAuthorizedRes) => {
-        return action.payload;
-      })),
+      map((action: RTLActions.IsAuthorizedRes) => action.payload)),
     { dispatch: false }
   );
 
@@ -500,7 +503,7 @@ export class RTLEffects implements OnDestroy {
       mergeMap((action: RTLActions.FetchFile) => {
         this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.DOWNLOAD_BACKUP_FILE));
         this.store.dispatch(new RTLActions.UpdateAPICallStatus({ action: 'fetchFile', status: APICallStatusEnum.INITIATED }));
-        let query = '?channel=' + action.payload.channelPoint + (action.payload.path ? '&path=' + action.payload.path : '');
+        const query = '?channel=' + action.payload.channelPoint + (action.payload.path ? '&path=' + action.payload.path : '');
         return this.httpClient.get(environment.CONF_API + '/file' + query).pipe(
           map((fetchedFile: any) => {
             this.store.dispatch(new RTLActions.UpdateAPICallStatus({ action: 'fetchFile', status: APICallStatusEnum.COMPLETED }));
@@ -521,9 +524,7 @@ export class RTLEffects implements OnDestroy {
   showFile = createEffect(
     () => this.actions.pipe(
       ofType(RTLActions.SHOW_FILE),
-      map((action: RTLActions.ShowFile) => {
-        return action.payload;
-      })),
+      map((action: RTLActions.ShowFile) => action.payload)),
     { dispatch: false }
   );
 
@@ -621,7 +622,7 @@ export class RTLEffects implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

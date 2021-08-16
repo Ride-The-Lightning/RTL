@@ -21,7 +21,7 @@ describe('CLChannelLiquidityInfoComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -33,5 +33,4 @@ describe('CLChannelLiquidityInfoComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
 });

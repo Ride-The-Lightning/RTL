@@ -23,6 +23,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   styleUrls: ['./channel-rebalance.component.scss']
 })
 export class ChannelRebalanceComponent implements OnInit, OnDestroy {
+
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faInfoCircle = faInfoCircle;
   public invoices: ListInvoices = {};
@@ -53,7 +54,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
         this.feeLimitTypes.push(FEE_LIMIT_TYPE);
       }
     });
-    // hiddenAmount & hiddenFeeLimit are temporary hacks to overcome material steppers stepChanged event shortcoming.
+    // HiddenAmount & hiddenFeeLimit are temporary hacks to overcome material steppers stepChanged event shortcoming.
     // User should be able to go to next step only by clicking the action button on the step.
     this.inputFormGroup = this.formBuilder.group({
       hiddenAmount: ['', [Validators.required]],
@@ -67,33 +68,37 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     });
     this.statusFormGroup = this.formBuilder.group({});
     this.store.select('lnd').
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe((rtlStore) => {
-      this.activeChannels = rtlStore.allChannels.filter(channel => channel.active && channel.remote_balance >= this.inputFormGroup.controls.rebalanceAmount.value && channel.chan_id !== this.selChannel.chan_id);
-      this.invoices = rtlStore.invoices;
-      this.logger.info(rtlStore);
-    });
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.activeChannels = rtlStore.allChannels.filter((channel) => channel.active && channel.remote_balance >= this.inputFormGroup.controls.rebalanceAmount.value && channel.chan_id !== this.selChannel.chan_id);
+        this.invoices = rtlStore.invoices;
+        this.logger.info(rtlStore);
+      });
     this.actions.pipe(
-    takeUntil(this.unSubs[1]),
-    filter((action) => action.type === LNDActions.SET_QUERY_ROUTES_LND || action.type === LNDActions.SEND_PAYMENT_STATUS_LND || action.type === LNDActions.NEWLY_SAVED_INVOICE_LND)).
-    subscribe((action: (LNDActions.SetQueryRoutes | LNDActions.SendPaymentStatus | LNDActions.NewlySavedInvoice)) => {
-      if (action.type === LNDActions.SET_QUERY_ROUTES_LND) { this.queryRoute = action.payload; }
-      if (action.type === LNDActions.SEND_PAYMENT_STATUS_LND) {
-        this.logger.info(action.payload);
-        this.flgPaymentSent = true;
-        this.paymentStatus = action.payload;
-        this.flgEditable = true;
-      }
-      if (action.type === LNDActions.NEWLY_SAVED_INVOICE_LND) {
-        this.logger.info(action.payload);
-        this.flgInvoiceGenerated = true;
-        this.sendPayment(action.payload.paymentRequest);
-      }
-    });
+      takeUntil(this.unSubs[1]),
+      filter((action) => action.type === LNDActions.SET_QUERY_ROUTES_LND || action.type === LNDActions.SEND_PAYMENT_STATUS_LND || action.type === LNDActions.NEWLY_SAVED_INVOICE_LND)).
+      subscribe((action: (LNDActions.SetQueryRoutes | LNDActions.SendPaymentStatus | LNDActions.NewlySavedInvoice)) => {
+        if (action.type === LNDActions.SET_QUERY_ROUTES_LND) {
+          this.queryRoute = action.payload;
+        }
+        if (action.type === LNDActions.SEND_PAYMENT_STATUS_LND) {
+          this.logger.info(action.payload);
+          this.flgPaymentSent = true;
+          this.paymentStatus = action.payload;
+          this.flgEditable = true;
+        }
+        if (action.type === LNDActions.NEWLY_SAVED_INVOICE_LND) {
+          this.logger.info(action.payload);
+          this.flgInvoiceGenerated = true;
+          this.sendPayment(action.payload.paymentRequest);
+        }
+      });
   }
 
   onEstimateFee(): boolean|void {
-    if (!this.inputFormGroup.controls.selRebalancePeer.value || !this.inputFormGroup.controls.rebalanceAmount.value) { return true; }
+    if (!this.inputFormGroup.controls.selRebalancePeer.value || !this.inputFormGroup.controls.rebalanceAmount.value) {
+      return true;
+    }
     if (this.stepper.selectedIndex === 0) {
       this.inputFormGroup.controls.hiddenAmount.setValue(this.inputFormGroup.controls.rebalanceAmount.value);
       this.stepper.next();
@@ -101,7 +106,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     this.queryRoute = null;
     this.feeFormGroup.reset();
     this.feeFormGroup.controls.selFeeLimitType.setValue(this.feeLimitTypes[0]);
-    this.store.dispatch(new LNDActions.GetQueryRoutes({destPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, amount: this.inputFormGroup.controls.rebalanceAmount.value, outgoingChanId: this.selChannel.chan_id}));
+    this.store.dispatch(new LNDActions.GetQueryRoutes({ destPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, amount: this.inputFormGroup.controls.rebalanceAmount.value, outgoingChanId: this.selChannel.chan_id }));
   }
 
   stepSelectionChanged(event: any) {
@@ -151,11 +156,13 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
 
   onUseEstimate() {
     this.feeFormGroup.controls.selFeeLimitType.setValue(this.feeLimitTypes[0]);
-    this.feeFormGroup.controls.feeLimit.setValue((this.queryRoute.routes && this.queryRoute.routes.length > 0 && this.queryRoute.routes[0].total_fees_msat) ? Math.ceil(+this.queryRoute.routes[0].total_fees_msat/1000) : 0);
+    this.feeFormGroup.controls.feeLimit.setValue((this.queryRoute.routes && this.queryRoute.routes.length > 0 && this.queryRoute.routes[0].total_fees_msat) ? Math.ceil(+this.queryRoute.routes[0].total_fees_msat / 1000) : 0);
   }
 
   onRebalance(): boolean|void {
-    if (!this.inputFormGroup.controls.rebalanceAmount.value || this.inputFormGroup.controls.rebalanceAmount.value <= 0 || this.inputFormGroup.controls.rebalanceAmount.value > +this.selChannel.local_balance || !this.feeFormGroup.controls.feeLimit.value || this.feeFormGroup.controls.feeLimit.value < 0 || !this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey) { return true; }
+    if (!this.inputFormGroup.controls.rebalanceAmount.value || this.inputFormGroup.controls.rebalanceAmount.value <= 0 || this.inputFormGroup.controls.rebalanceAmount.value > +this.selChannel.local_balance || !this.feeFormGroup.controls.feeLimit.value || this.feeFormGroup.controls.feeLimit.value < 0 || !this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey) {
+      return true;
+    }
     this.feeFormGroup.controls.hiddenFeeLimit.setValue(this.feeFormGroup.controls.feeLimit.value);
     this.stepper.next();
     this.flgEditable = false;
@@ -164,7 +171,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     this.flgReusingInvoice = false;
     this.flgInvoiceGenerated = false;
     this.flgPaymentSent = false;
-    let unsettledInvoice = this.findUnsettledInvoice();
+    const unsettledInvoice = this.findUnsettledInvoice();
     if (unsettledInvoice) {
       this.flgReusingInvoice = true;
       this.sendPayment(unsettledInvoice.payment_request);
@@ -176,17 +183,17 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   }
 
   findUnsettledInvoice() {
-    return this.invoices.invoices.find(invoice => (+invoice.settle_date === 0 || !invoice.settle_date) && invoice.memo === 'Local-Rebalance-' + this.inputFormGroup.controls.rebalanceAmount.value + '-Sats' && invoice.state !== 'CANCELED');
+    return this.invoices.invoices.find((invoice) => (+invoice.settle_date === 0 || !invoice.settle_date) && invoice.memo === 'Local-Rebalance-' + this.inputFormGroup.controls.rebalanceAmount.value + '-Sats' && invoice.state !== 'CANCELED');
   }
 
   sendPayment(payReq: string) {
     this.flgInvoiceGenerated = true;
     this.paymentRequest = payReq;
-    this.store.dispatch(new LNDActions.SendPayment({uiMessage: UI_MESSAGES.NO_SPINNER, paymentReq: payReq, outgoingChannel: this.selChannel, feeLimitType: this.feeFormGroup.controls.selFeeLimitType.value, feeLimit: this.feeFormGroup.controls.feeLimit.value, allowSelfPayment: true, lastHopPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, fromDialog: true}));
+    this.store.dispatch(new LNDActions.SendPayment({ uiMessage: UI_MESSAGES.NO_SPINNER, paymentReq: payReq, outgoingChannel: this.selChannel, feeLimitType: this.feeFormGroup.controls.selFeeLimitType.value, feeLimit: this.feeFormGroup.controls.feeLimit.value, allowSelfPayment: true, lastHopPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, fromDialog: true }));
   }
 
   filterActiveChannels() {
-    this.filteredActiveChannels = this.activeChannels.filter(channel => channel.remote_balance >= this.inputFormGroup.controls.rebalanceAmount.value && channel.chan_id !== this.selChannel.chan_id);
+    this.filteredActiveChannels = this.activeChannels.filter((channel) => channel.remote_balance >= this.inputFormGroup.controls.rebalanceAmount.value && channel.chan_id !== this.selChannel.chan_id);
   }
 
   onClose() {
@@ -194,9 +201,9 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   }
 
   onRestart() {
-    this.flgInvoiceGenerated=false;
-    this.flgPaymentSent=false;
-    this.flgEditable=true;
+    this.flgInvoiceGenerated = false;
+    this.flgPaymentSent = false;
+    this.flgEditable = true;
     this.stepper.reset();
     this.inputFormGroup.reset();
     this.feeFormGroup.reset();
@@ -204,9 +211,10 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

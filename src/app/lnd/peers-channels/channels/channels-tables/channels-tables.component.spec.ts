@@ -32,7 +32,7 @@ describe('ChannelsTablesComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -48,5 +48,4 @@ describe('ChannelsTablesComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

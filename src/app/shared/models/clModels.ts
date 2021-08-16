@@ -94,7 +94,7 @@ export interface ListInvoices {
 }
 
 export interface OnChain {
-  address?:	string;
+  address?: string;
   satoshis?: string;
   feeRate?: string;
   minconf?: number;
@@ -104,14 +104,14 @@ export interface OnChain {
 export interface Hop {
   hop_sequence?: number;
   pubkey_alias?: string;
-  chan_id?:	string;
-  chan_capacity?:	string;
-  amt_to_forward?:	string;
-  fee?:	string;
-  expiry?:	number;
-  amt_to_forward_msat?:	string;
+  chan_id?: string;
+  chan_capacity?: string;
+  amt_to_forward?: string;
+  fee?: string;
+  expiry?: number;
+  amt_to_forward_msat?: string;
   fee_msat?: string;
-  pub_key?:	string;
+  pub_key?: string;
 }
 
 export interface MPP {
@@ -253,9 +253,9 @@ export interface FeeRates {
   perkb?: FeeRatePerObj;
   perkw?: FeeRatePerObj;
   onchain_fee_estimates?: {
-      opening_channel_satoshis?: number;
-      mutual_close_satoshis?: number;
-      unilateral_close_satoshis?: number;
+    opening_channel_satoshis?: number;
+    mutual_close_satoshis?: number;
+    unilateral_close_satoshis?: number;
   };
 }
 

@@ -23,6 +23,7 @@ import * as RTLActions from '../../../../store/rtl.actions';
   styleUrls: ['./two-factor-auth.component.scss']
 })
 export class TwoFactorAuthComponent implements OnInit, OnDestroy {
+
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
   public faCopy = faCopy;
@@ -42,7 +43,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
     password: ['', [Validators.required]]
   });
   secretFormGroup: FormGroup = this.formBuilder.group({
-    secret: [{value: '', disabled: true}, Validators.required]
+    secret: [{ value: '', disabled: true }, Validators.required]
   });
   tokenFormGroup: FormGroup = this.formBuilder.group({
     token: ['', Validators.required]
@@ -56,31 +57,33 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
     this.appConfig = this.data.appConfig;
     this.showDisableStepper = !!this.appConfig.enable2FA;
     this.secretFormGroup = this.formBuilder.group({
-      secret: [{value: !this.appConfig.enable2FA ? this.generateSecret() : '', disabled: true}, Validators.required]
+      secret: [{ value: !this.appConfig.enable2FA ? this.generateSecret() : '', disabled: true }, Validators.required]
     });
   }
 
   generateSecret() {
-    let secret2fa = authenticator.generateSecret();
+    const secret2fa = authenticator.generateSecret();
     this.otpauth = authenticator.keyuri('', 'Ride The Lightning (RTL)', secret2fa);
     return secret2fa;
   }
 
   onAuthenticate(): boolean|void {
-    if (!this.passwordFormGroup.controls.password.value) { return true; }
+    if (!this.passwordFormGroup.controls.password.value) {
+      return true;
+    }
     this.flgValidated = false;
     this.store.dispatch(new RTLActions.IsAuthorized(sha256(this.passwordFormGroup.controls.password.value)));
     this.rtlEffects.isAuthorizedRes.
-    pipe(take(1)).
-    subscribe(authRes => {
-      if (authRes !== 'ERROR') {
-        this.passwordFormGroup.controls.hiddenPassword.setValue(this.passwordFormGroup.controls.password.value);
-        this.stepper.next();
-      } else {
-        this.dialogRef.close();
-        this.snackBar.open('Unauthorized User. Logging out from RTL.');
-      }
-    });
+      pipe(take(1)).
+      subscribe((authRes) => {
+        if (authRes !== 'ERROR') {
+          this.passwordFormGroup.controls.hiddenPassword.setValue(this.passwordFormGroup.controls.password.value);
+          this.stepper.next();
+        } else {
+          this.dialogRef.close();
+          this.snackBar.open('Unauthorized User. Logging out from RTL.');
+        }
+      });
   }
 
   onCopySecret(payload: string) {
@@ -89,17 +92,19 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
 
   onVerifyToken(): boolean|void {
     if (this.appConfig.enable2FA) {
-      this.store.dispatch(new RTLActions.TwoFASaveSettings({secret2fa: ''}));
+      this.store.dispatch(new RTLActions.TwoFASaveSettings({ secret2fa: '' }));
       this.generateSecret();
       this.isTokenValid = true;
     } else {
-      if (!this.tokenFormGroup.controls.token.value) { return true; }
+      if (!this.tokenFormGroup.controls.token.value) {
+        return true;
+      }
       this.isTokenValid = authenticator.check(this.tokenFormGroup.controls.token.value, this.secretFormGroup.controls.secret.value);
       if (!this.isTokenValid) {
         this.tokenFormGroup.controls.token.setErrors({ notValid: true });
         return true;
       }
-      this.store.dispatch(new RTLActions.TwoFASaveSettings({secret2fa: this.secretFormGroup.controls.secret.value}));
+      this.store.dispatch(new RTLActions.TwoFASaveSettings({ secret2fa: this.secretFormGroup.controls.secret.value }));
       this.tokenFormGroup.controls.token.setValue('');
     }
     this.flgValidated = true;
@@ -132,7 +137,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(unsub => {
+    this.unSubs.forEach((unsub) => {
       unsub.next();
       unsub.complete();
     });

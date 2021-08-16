@@ -13,7 +13,7 @@ describe('CLRoutingComponent', () => {
       declarations: [CLRoutingComponent],
       imports: [SharedModule, RouterTestingModule]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -29,5 +29,4 @@ describe('CLRoutingComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -38,7 +38,7 @@ describe('CLPeersComponent', () => {
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -54,5 +54,4 @@ describe('CLPeersComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

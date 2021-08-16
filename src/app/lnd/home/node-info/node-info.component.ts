@@ -8,6 +8,7 @@ import { CommonService } from '../../../shared/services/common.service';
   styleUrls: ['./node-info.component.scss']
 })
 export class NodeInfoComponent implements OnChanges {
+
   @Input() information: GetInfo;
   @Input() showColorFieldSeparately: boolean;
   public chains: Array<string> = [''];
@@ -17,7 +18,7 @@ export class NodeInfoComponent implements OnChanges {
   ngOnChanges() {
     if (this.information && this.information.chains && this.information.chains.length > 0) {
       this.chains = [''];
-      this.information.chains.forEach(chain => {
+      this.information.chains.forEach((chain) => {
         this.chains.push(this.commonService.titleCase(chain.chain) + ' ' + this.commonService.titleCase(chain.network));
       });
     }

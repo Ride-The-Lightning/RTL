@@ -10,25 +10,26 @@ import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./routing.component.scss']
 })
 export class CLRoutingComponent implements OnInit, OnDestroy {
+
   public faMapSigns = faMapSigns;
-  public links = [{link: 'forwardinghistory', name: 'Forwarding History'}, {link: 'failedtransactions', name: 'Failed Transactions'}];
+  public links = [{ link: 'forwardinghistory', name: 'Forwarding History' }, { link: 'failedtransactions', name: 'Failed Transactions' }];
   public activeLink = this.links[0].link;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private router: Router) {}
 
   ngOnInit() {
-    let linkFound = this.links.find(link => this.router.url.includes(link.link));
+    const linkFound = this.links.find((link) => this.router.url.includes(link.link));
     this.activeLink = linkFound ? linkFound.link : this.links[0].link;
-    this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd)).
-    subscribe((value: ResolveEnd) => {
-      let linkFound = this.links.find(link => value.urlAfterRedirects.includes(link.link));
-      this.activeLink = linkFound ? linkFound.link : this.links[0].link;
-    });
+    this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
+      subscribe((value: ResolveEnd) => {
+        const linkFound = this.links.find((link) => value.urlAfterRedirects.includes(link.link));
+        this.activeLink = linkFound ? linkFound.link : this.links[0].link;
+      });
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

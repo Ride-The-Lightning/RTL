@@ -16,12 +16,13 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
 
 @Injectable()
 export class BoltzService implements OnDestroy {
+
   private swapUrl = '';
   private swaps: ListSwaps = {};
   public swapsChanged = new BehaviorSubject<ListSwaps>({});
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private httpClient: HttpClient, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) {}
+  constructor(private httpClient: HttpClient, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) { }
 
   getSwapsList() {
     return this.swaps;
@@ -31,19 +32,19 @@ export class BoltzService implements OnDestroy {
     this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_BOLTZ_SWAPS));
     this.swapUrl = API_URL + environment.BOLTZ_API + '/listSwaps';
     this.httpClient.get(this.swapUrl).
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe({next: (swapResponse: ListSwaps) => {
-      this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_BOLTZ_SWAPS));
-      this.swaps = swapResponse;
-      this.swapsChanged.next(this.swaps);
-    }, error: (err) => {
-      return this.handleErrorWithAlert(UI_MESSAGES.GET_BOLTZ_SWAPS, this.swapUrl, err);
-    }});
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe({
+        next: (swapResponse: ListSwaps) => {
+          this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_BOLTZ_SWAPS));
+          this.swaps = swapResponse;
+          this.swapsChanged.next(this.swaps);
+        }, error: (err) => this.handleErrorWithAlert(UI_MESSAGES.GET_BOLTZ_SWAPS, this.swapUrl, err)
+      });
   }
 
   swapInfo(id: string) {
     this.swapUrl = API_URL + environment.BOLTZ_API + '/swapInfo/' + id;
-    return this.httpClient.get(this.swapUrl).pipe(catchError(err => this.handleErrorWithAlert(UI_MESSAGES.NO_SPINNER, this.swapUrl, err)));
+    return this.httpClient.get(this.swapUrl).pipe(catchError((err) => this.handleErrorWithAlert(UI_MESSAGES.NO_SPINNER, this.swapUrl, err)));
   }
 
   serviceInfo() {
@@ -51,24 +52,24 @@ export class BoltzService implements OnDestroy {
     this.swapUrl = API_URL + environment.BOLTZ_API + '/serviceInfo';
     return this.httpClient.get(this.swapUrl).pipe(
       takeUntil(this.unSubs[1]),
-      map(res => {
+      map((res) => {
         this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_SERVICE_INFO));
         return res;
       }),
-      catchError(err => this.handleErrorWithAlert(UI_MESSAGES.GET_SERVICE_INFO, this.swapUrl, err))
+      catchError((err) => this.handleErrorWithAlert(UI_MESSAGES.GET_SERVICE_INFO, this.swapUrl, err))
     );
   }
 
   swapOut(amount: number, address: string) {
-    let requestBody = { amount: amount, address: address };
+    const requestBody = { amount: amount, address: address };
     this.swapUrl = API_URL + environment.BOLTZ_API + '/createreverseswap';
-    return this.httpClient.post(this.swapUrl, requestBody).pipe(catchError(err => this.handleErrorWithoutAlert('Swap Out for Address: ' + address, UI_MESSAGES.NO_SPINNER, err)));
+    return this.httpClient.post(this.swapUrl, requestBody).pipe(catchError((err) => this.handleErrorWithoutAlert('Swap Out for Address: ' + address, UI_MESSAGES.NO_SPINNER, err)));
   }
 
   swapIn(amount: number) {
-    let requestBody = { amount: amount };
+    const requestBody = { amount: amount };
     this.swapUrl = API_URL + environment.BOLTZ_API + '/createswap';
-    return this.httpClient.post(this.swapUrl, requestBody).pipe(catchError(err => this.handleErrorWithoutAlert('Swap In for Amount: ' + amount, UI_MESSAGES.NO_SPINNER, err)));
+    return this.httpClient.post(this.swapUrl, requestBody).pipe(catchError((err) => this.handleErrorWithoutAlert('Swap In for Amount: ' + amount, UI_MESSAGES.NO_SPINNER, err)));
   }
 
   handleErrorWithoutAlert(actionName: string, uiMessage: string, err: { status: number, error: any }) {
@@ -120,7 +121,8 @@ export class BoltzService implements OnDestroy {
     } else {
       errMsg = this.commonService.extractErrorMessage(err);
       const errCode = (err.error && err.error.error && err.error.error.code) ? err.error.error.code : (err.error && err.error.code) ? err.error.code : err.code ? err.code : err.status;
-      this.store.dispatch(new RTLActions.OpenAlert({data: {
+      this.store.dispatch(new RTLActions.OpenAlert({
+        data: {
           type: AlertTypeEnum.ERROR,
           alertTitle: 'ERROR',
           message: { code: errCode, message: errMsg, URL: errURL },
@@ -132,9 +134,10 @@ export class BoltzService implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

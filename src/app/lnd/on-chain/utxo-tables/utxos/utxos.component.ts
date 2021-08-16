@@ -29,8 +29,9 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   ]
 })
 export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
+
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
   @Input() isDustUTXO = false;
   public utxos: UTXO[];
   public addressType = WALLET_ADDRESS_TYPE;
@@ -66,19 +67,19 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit() {
     this.store.select('lnd').
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe((rtlStore) => {
-      this.errorMessage = '';
-      this.apisCallStatus = rtlStore.apisCallStatus;
-      if (rtlStore.apisCallStatus.FetchUTXOs.status === APICallStatusEnum.ERROR) {
-        this.errorMessage = (typeof(this.apisCallStatus.FetchUTXOs.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchUTXOs.message) : this.apisCallStatus.FetchUTXOs.message;
-      }
-      if (rtlStore.utxos && rtlStore.utxos.length > 0) {
-        this.utxos = (this.isDustUTXO) ? rtlStore.utxos.filter(utxo => +utxo.amount_sat < 1000) : rtlStore.utxos;
-        this.loadUTXOsTable(this.utxos);
-      }
-      this.logger.info(rtlStore);
-    });
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.errorMessage = '';
+        this.apisCallStatus = rtlStore.apisCallStatus;
+        if (rtlStore.apisCallStatus.FetchUTXOs.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apisCallStatus.FetchUTXOs.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchUTXOs.message) : this.apisCallStatus.FetchUTXOs.message;
+        }
+        if (rtlStore.utxos && rtlStore.utxos.length > 0) {
+          this.utxos = (this.isDustUTXO) ? rtlStore.utxos.filter((utxo) => +utxo.amount_sat < 1000) : rtlStore.utxos;
+          this.loadUTXOsTable(this.utxos);
+        }
+        this.logger.info(rtlStore);
+      });
   }
 
   ngOnChanges() {
@@ -93,28 +94,28 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
 
   onUTXOClick(selUTXO: UTXO) {
     const reorderedUTXOs = [
-      [{key: 'txid', value: selUTXO.outpoint.txid_str, title: 'Transaction ID', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'label', value: selUTXO.label, title: 'Label', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'output_index', value: selUTXO.outpoint.output_index, title: 'Output Index', width: 34, type: DataTypeEnum.NUMBER},
-        {key: 'amount_sat', value: selUTXO.amount_sat, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.NUMBER},
-        {key: 'confirmations', value: selUTXO.confirmations, title: 'Confirmations', width: 33, type: DataTypeEnum.NUMBER}],
-      [{key: 'address_type', value: this.addressType[selUTXO.address_type].name, title: 'Address Type', width: 34},
-        {key: 'address', value: selUTXO.address, title: 'Address', width: 66}],
-      [{key: 'pk_script', value: selUTXO.pk_script, title: 'PK Script', width: 100, type: DataTypeEnum.STRING}]
+      [{ key: 'txid', value: selUTXO.outpoint.txid_str, title: 'Transaction ID', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'label', value: selUTXO.label, title: 'Label', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'output_index', value: selUTXO.outpoint.output_index, title: 'Output Index', width: 34, type: DataTypeEnum.NUMBER },
+        { key: 'amount_sat', value: selUTXO.amount_sat, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.NUMBER },
+        { key: 'confirmations', value: selUTXO.confirmations, title: 'Confirmations', width: 33, type: DataTypeEnum.NUMBER }],
+      [{ key: 'address_type', value: this.addressType[selUTXO.address_type].name, title: 'Address Type', width: 34 },
+        { key: 'address', value: selUTXO.address, title: 'Address', width: 66 }],
+      [{ key: 'pk_script', value: selUTXO.pk_script, title: 'PK Script', width: 100, type: DataTypeEnum.STRING }]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'UTXO Information',
       message: reorderedUTXOs
-    }}));
+    } }));
   }
 
   loadUTXOsTable(UTXOs: UTXO[]) {
     this.listUTXOs = new MatTableDataSource<UTXO>([...UTXOs]);
     this.listUTXOs.filterPredicate = (utxo: UTXO, fltr: string) => {
-      const newUTXO = ((utxo.label ? utxo.label.toLowerCase() : '') + (utxo.outpoint.txid_str ? utxo.outpoint.txid_str.toLowerCase() : '') + (utxo.outpoint.output_index ? utxo.outpoint.output_index : '')
-      + (utxo.outpoint.txid_bytes ? utxo.outpoint.txid_bytes.toLowerCase() : '') + (utxo.address ? utxo.address.toLowerCase() : '') + (utxo.address_type ? utxo.address_type.toLowerCase() : '')
-      + (utxo.amount_sat ? utxo.amount_sat : '') + (utxo.confirmations ? utxo.confirmations : '') + (utxo.pk_script ? utxo.pk_script.toLowerCase() : ''));
+      const newUTXO = ((utxo.label ? utxo.label.toLowerCase() : '') + (utxo.outpoint.txid_str ? utxo.outpoint.txid_str.toLowerCase() : '') + (utxo.outpoint.output_index ? utxo.outpoint.output_index : '') +
+      (utxo.outpoint.txid_bytes ? utxo.outpoint.txid_bytes.toLowerCase() : '') + (utxo.address ? utxo.address.toLowerCase() : '') + (utxo.address_type ? utxo.address_type.toLowerCase() : '') +
+      (utxo.amount_sat ? utxo.amount_sat : '') + (utxo.confirmations ? utxo.confirmations : '') + (utxo.pk_script ? utxo.pk_script.toLowerCase() : ''));
       return newUTXO.includes(fltr);
     };
     this.listUTXOs.sortingDataAccessor = (data: any, sortHeaderId: string) => {
@@ -134,16 +135,16 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       utxo: utxo,
       component: OnChainLabelModalComponent
-    }}));
+    } }));
   }
 
   onLeaseUTXO(utxo: UTXO) {
     const utxoDetails = [
-      [{key: 'txid_str', value: utxo.outpoint.txid_str, title: 'Transaction ID', width: 100}],
-      [{key: 'amount_sat', value: this.decimalPipe.transform(utxo.amount_sat), title: 'Amount (Sats)', width: 100}]
+      [{ key: 'txid_str', value: utxo.outpoint.txid_str, title: 'Transaction ID', width: 100 }],
+      [{ key: 'amount_sat', value: this.decimalPipe.transform(utxo.amount_sat), title: 'Amount (Sats)', width: 100 }]
     ];
     if (utxo.label) {
-      utxoDetails.splice(1, 0, [{key: 'label', value: utxo.label, title: 'Label', width: 100}]);
+      utxoDetails.splice(1, 0, [{ key: 'label', value: utxo.label, title: 'Label', width: 100 }]);
     }
     this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
       type: AlertTypeEnum.CONFIRM,
@@ -152,14 +153,14 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
       message: utxoDetails,
       noBtnText: 'Cancel',
       yesBtnText: 'Lease UTXO'
-    }}));
+    } }));
     this.rtlEffects.closeConfirm.
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe(confirmRes => {
-      if (confirmRes) {
-        this.dataService.leaseUTXO(utxo.outpoint.txid_bytes, utxo.outpoint.output_index);
-      }
-    });
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((confirmRes) => {
+        if (confirmRes) {
+          this.dataService.leaseUTXO(utxo.outpoint.txid_bytes, utxo.outpoint.output_index);
+        }
+      });
   }
 
   onDownloadCSV() {
@@ -169,9 +170,10 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

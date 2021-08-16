@@ -34,7 +34,7 @@ describe('CLFeeReportComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -50,5 +50,4 @@ describe('CLFeeReportComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

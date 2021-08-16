@@ -16,13 +16,14 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
 
 @Injectable()
 export class LoopService implements OnDestroy {
+
   private CHILD_API_URL = API_URL + '/lnd';
   private loopUrl = '';
   private swaps: LoopSwapStatus[] = [];
   public swapsChanged = new BehaviorSubject<LoopSwapStatus[]>([]);
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private httpClient: HttpClient, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) {}
+  constructor(private httpClient: HttpClient, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) { }
 
   getSwapsList() {
     return this.swaps;
@@ -31,25 +32,28 @@ export class LoopService implements OnDestroy {
   listSwaps() {
     this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_LOOP_SWAPS));
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/swaps';
-    this.httpClient.get(this.loopUrl).pipe(takeUntil(this.unSubs[0])).subscribe({next: (swapResponse: LoopSwapStatus[]) => {
-      this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_LOOP_SWAPS));
-      this.swaps = swapResponse;
-      this.swapsChanged.next(this.swaps);
-    }, error: err => {
-      return this.handleErrorWithAlert(UI_MESSAGES.GET_LOOP_SWAPS, this.loopUrl, err);
-    }});
+    this.httpClient.get(this.loopUrl).pipe(takeUntil(this.unSubs[0])).
+      subscribe({
+        next: (swapResponse: LoopSwapStatus[]) => {
+          this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_LOOP_SWAPS));
+          this.swaps = swapResponse;
+          this.swapsChanged.next(this.swaps);
+        }, error: (err) => this.handleErrorWithAlert(UI_MESSAGES.GET_LOOP_SWAPS, this.loopUrl, err)
+      });
   }
 
   loopOut(amount: number, chanId: string, targetConf: number, swapRoutingFee: number, minerFee: number, prepayRoutingFee: number, prepayAmt: number, swapFee: number, swapPublicationDeadline: number, destAddress: string) {
-    let requestBody = { amount: amount, targetConf: targetConf, swapRoutingFee: swapRoutingFee, minerFee: minerFee, prepayRoutingFee: prepayRoutingFee, prepayAmt: prepayAmt, swapFee: swapFee, swapPublicationDeadline: swapPublicationDeadline, destAddress: destAddress };
-    if (chanId !== '') { requestBody['chanId'] = chanId; }
+    const requestBody = { amount: amount, targetConf: targetConf, swapRoutingFee: swapRoutingFee, minerFee: minerFee, prepayRoutingFee: prepayRoutingFee, prepayAmt: prepayAmt, swapFee: swapFee, swapPublicationDeadline: swapPublicationDeadline, destAddress: destAddress };
+    if (chanId !== '') {
+      requestBody['chanId'] = chanId;
+    }
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/out';
-    return this.httpClient.post(this.loopUrl, requestBody).pipe(catchError(err => this.handleErrorWithoutAlert('Loop Out for Channel: ' + chanId, UI_MESSAGES.NO_SPINNER, err)));
+    return this.httpClient.post(this.loopUrl, requestBody).pipe(catchError((err) => this.handleErrorWithoutAlert('Loop Out for Channel: ' + chanId, UI_MESSAGES.NO_SPINNER, err)));
   }
 
   getLoopOutTerms() {
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/out/terms';
-    return this.httpClient.get(this.loopUrl).pipe(catchError(err => this.handleErrorWithoutAlert('Loop Out Terms', UI_MESSAGES.NO_SPINNER, err)));
+    return this.httpClient.get(this.loopUrl).pipe(catchError((err) => this.handleErrorWithoutAlert('Loop Out Terms', UI_MESSAGES.NO_SPINNER, err)));
   }
 
   getLoopOutQuote(amount: number, targetConf: number, swapPublicationDeadline: number) {
@@ -60,11 +64,11 @@ export class LoopService implements OnDestroy {
     this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_QUOTE));
     return this.httpClient.get(this.loopUrl, { params: params }).pipe(
       takeUntil(this.unSubs[1]),
-      map(res => {
+      map((res) => {
         this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_QUOTE));
         return res;
       }),
-      catchError(err => this.handleErrorWithoutAlert('Loop Out Quote', UI_MESSAGES.GET_QUOTE, err))
+      catchError((err) => this.handleErrorWithoutAlert('Loop Out Quote', UI_MESSAGES.GET_QUOTE, err))
     );
   }
 
@@ -76,25 +80,23 @@ export class LoopService implements OnDestroy {
     this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_TERMS_QUOTES));
     return this.httpClient.get(this.loopUrl, { params: params }).pipe(
       takeUntil(this.unSubs[2]),
-      map(res => {
+      map((res) => {
         this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_TERMS_QUOTES));
         return res;
       }),
-      catchError(err => {
-        return this.handleErrorWithAlert(UI_MESSAGES.GET_TERMS_QUOTES, this.loopUrl, err);
-      })
+      catchError((err) => this.handleErrorWithAlert(UI_MESSAGES.GET_TERMS_QUOTES, this.loopUrl, err))
     );
   }
 
   loopIn(amount: number, swapFee: number, minerFee: number, lastHop: string, externalHtlc: boolean) {
     const requestBody = { amount: amount, swapFee: swapFee, minerFee: minerFee, lastHop: lastHop, externalHtlc: externalHtlc };
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/in';
-    return this.httpClient.post(this.loopUrl, requestBody).pipe(catchError(err => this.handleErrorWithoutAlert('Loop In', UI_MESSAGES.NO_SPINNER, err)));
+    return this.httpClient.post(this.loopUrl, requestBody).pipe(catchError((err) => this.handleErrorWithoutAlert('Loop In', UI_MESSAGES.NO_SPINNER, err)));
   }
 
   getLoopInTerms() {
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/in/terms';
-    return this.httpClient.get(this.loopUrl).pipe(catchError(err => this.handleErrorWithoutAlert('Loop In Terms', UI_MESSAGES.NO_SPINNER, err)));
+    return this.httpClient.get(this.loopUrl).pipe(catchError((err) => this.handleErrorWithoutAlert('Loop In Terms', UI_MESSAGES.NO_SPINNER, err)));
   }
 
   getLoopInQuote(amount: number, targetConf: string, swapPublicationDeadline: number) {
@@ -105,11 +107,11 @@ export class LoopService implements OnDestroy {
     this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_QUOTE));
     return this.httpClient.get(this.loopUrl, { params: params }).pipe(
       takeUntil(this.unSubs[3]),
-      map(res => {
+      map((res) => {
         this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_QUOTE));
         return res;
       }),
-      catchError(err => this.handleErrorWithoutAlert('Loop In Qoute', UI_MESSAGES.GET_QUOTE, err))
+      catchError((err) => this.handleErrorWithoutAlert('Loop In Qoute', UI_MESSAGES.GET_QUOTE, err))
     );
   }
 
@@ -121,18 +123,16 @@ export class LoopService implements OnDestroy {
     this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_TERMS_QUOTES));
     return this.httpClient.get(this.loopUrl, { params: params }).pipe(
       takeUntil(this.unSubs[4]),
-      map(res => {
+      map((res) => {
         this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_TERMS_QUOTES));
         return res;
-      }), catchError(err => {
-        return this.handleErrorWithAlert(UI_MESSAGES.GET_TERMS_QUOTES, this.loopUrl, err);
-      })
+      }), catchError((err) => this.handleErrorWithAlert(UI_MESSAGES.GET_TERMS_QUOTES, this.loopUrl, err))
     );
   }
 
   getSwap(id: string) {
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/swap/' + id;
-    return this.httpClient.get(this.loopUrl).pipe(catchError(err => this.handleErrorWithoutAlert('Loop Get Swap for ID: ' + id, UI_MESSAGES.NO_SPINNER, err)));
+    return this.httpClient.get(this.loopUrl).pipe(catchError((err) => this.handleErrorWithoutAlert('Loop Get Swap for ID: ' + id, UI_MESSAGES.NO_SPINNER, err)));
   }
 
   handleErrorWithoutAlert(actionName: string, uiMessage: string, err: { status: number, error: any }) {
@@ -180,7 +180,8 @@ export class LoopService implements OnDestroy {
     } else {
       errMsg = this.commonService.extractErrorMessage(err);
       const errCode = (err.error && err.error.error && err.error.error.code) ? err.error.error.code : (err.error && err.error.code) ? err.error.code : err.code ? err.code : err.status;
-      this.store.dispatch(new RTLActions.OpenAlert({data: {
+      this.store.dispatch(new RTLActions.OpenAlert({
+        data: {
           type: AlertTypeEnum.ERROR,
           alertTitle: 'ERROR',
           message: { code: errCode, message: errMsg, URL: errURL },
@@ -192,9 +193,10 @@ export class LoopService implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

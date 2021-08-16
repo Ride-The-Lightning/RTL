@@ -22,10 +22,10 @@ describe('ShowPubkeyComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {information: {identity_pubkey: 'test'}} }
+        { provide: MAT_DIALOG_DATA, useValue: { information: { identity_pubkey: 'test' } } }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -41,5 +41,4 @@ describe('ShowPubkeyComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

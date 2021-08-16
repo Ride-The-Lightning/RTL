@@ -16,7 +16,7 @@ describe('SwapServiceInfoComponent', () => {
         SharedModule
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -32,5 +32,4 @@ describe('SwapServiceInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

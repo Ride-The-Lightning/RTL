@@ -16,6 +16,7 @@ import { Invoice } from '../../../shared/models/clModels';
   styleUrls: ['./invoice-information.component.scss']
 })
 export class CLInvoiceInformationComponent implements OnInit {
+
   public faReceipt = faReceipt;
   public faExclamationTriangle = faExclamationTriangle;
   public showAdvanced = false;
@@ -48,4 +49,5 @@ export class CLInvoiceInformationComponent implements OnInit {
     this.snackBar.open('Invoice copied.');
     this.logger.info('Copied Text: ' + payload);
   }
+
 }

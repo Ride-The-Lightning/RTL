@@ -24,7 +24,7 @@ describe('ChannelLookupComponent', () => {
         })
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -41,5 +41,4 @@ describe('ChannelLookupComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

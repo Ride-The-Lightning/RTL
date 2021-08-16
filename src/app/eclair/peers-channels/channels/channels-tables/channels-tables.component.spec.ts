@@ -32,7 +32,7 @@ describe('ECLChannelsTablesComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -48,5 +48,4 @@ describe('ECLChannelsTablesComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

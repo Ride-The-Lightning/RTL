@@ -41,7 +41,7 @@ describe('CLOnChainSendModalComponent', () => {
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -57,5 +57,4 @@ describe('CLOnChainSendModalComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

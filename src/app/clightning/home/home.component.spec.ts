@@ -41,7 +41,7 @@ describe('CLHomeComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -57,5 +57,4 @@ describe('CLHomeComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

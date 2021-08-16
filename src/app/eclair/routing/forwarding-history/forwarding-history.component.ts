@@ -25,8 +25,9 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]
 })
 export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
   @Input() eventsData = [];
   @Input() filterValue = '';
   public displayedColumns: any[] = [];
@@ -60,21 +61,21 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
 
   ngOnInit() {
     this.store.select('ecl').
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe((rtlStore: any) => {
-      if (this.eventsData.length <= 0) {
-        this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof(this.apisCallStatus.FetchPayments.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPayments.message) : this.apisCallStatus.FetchPayments.message;
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore: any) => {
+        if (this.eventsData.length <= 0) {
+          this.errorMessage = '';
+          this.apisCallStatus = rtlStore.apisCallStatus;
+          if (rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.ERROR) {
+            this.errorMessage = (typeof (this.apisCallStatus.FetchPayments.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPayments.message) : this.apisCallStatus.FetchPayments.message;
+          }
+          this.eventsData = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
+          if (this.eventsData.length > 0 && this.sort && this.paginator) {
+            this.loadForwardingEventsTable(this.eventsData);
+          }
+          this.logger.info(this.eventsData);
         }
-        this.eventsData = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
-        if (this.eventsData.length > 0 && this.sort && this.paginator) {
-          this.loadForwardingEventsTable(this.eventsData);
-        }
-        this.logger.info(this.eventsData);
-      }
-    });
+      });
   }
 
   ngAfterViewInit() {
@@ -97,23 +98,23 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
 
   onForwardingEventClick(selFEvent: PaymentRelayed, event: any) {
     const reorderedFHEvent = [
-      [{key: 'paymentHash', value: selFEvent.paymentHash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'timestamp', value: Math.round(selFEvent.timestamp/1000), title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME},
-        {key: 'fee', value: (selFEvent.amountIn - selFEvent.amountOut), title: 'Fee Earned (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'amountIn', value: selFEvent.amountIn, title: 'Amount In (Sats)', width: 50, type: DataTypeEnum.NUMBER},
-        {key: 'amountOut', value: selFEvent.amountOut, title: 'Amount Out (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'fromChannelAlias', value: selFEvent.fromChannelAlias, title: 'From Channel Alias', width: 50, type: DataTypeEnum.STRING},
-        {key: 'fromShortChannelId', value: selFEvent.fromShortChannelId, title: 'From Short Channel ID', width: 50, type: DataTypeEnum.STRING}],
-      [{key: 'fromChannelId', value: selFEvent.fromChannelId, title: 'From Channel Id', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'toChannelAlias', value: selFEvent.toChannelAlias, title: 'To Channel Alias', width: 50, type: DataTypeEnum.STRING},
-        {key: 'toShortChannelId', value: selFEvent.toShortChannelId, title: 'To Short Channel ID', width: 50, type: DataTypeEnum.STRING}],
-      [{key: 'toChannelId', value: selFEvent.toChannelId, title: 'To Channel Id', width: 100, type: DataTypeEnum.STRING}]
+      [{ key: 'paymentHash', value: selFEvent.paymentHash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'timestamp', value: Math.round(selFEvent.timestamp / 1000), title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME },
+        { key: 'fee', value: (selFEvent.amountIn - selFEvent.amountOut), title: 'Fee Earned (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
+      [{ key: 'amountIn', value: selFEvent.amountIn, title: 'Amount In (Sats)', width: 50, type: DataTypeEnum.NUMBER },
+        { key: 'amountOut', value: selFEvent.amountOut, title: 'Amount Out (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
+      [{ key: 'fromChannelAlias', value: selFEvent.fromChannelAlias, title: 'From Channel Alias', width: 50, type: DataTypeEnum.STRING },
+        { key: 'fromShortChannelId', value: selFEvent.fromShortChannelId, title: 'From Short Channel ID', width: 50, type: DataTypeEnum.STRING }],
+      [{ key: 'fromChannelId', value: selFEvent.fromChannelId, title: 'From Channel Id', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'toChannelAlias', value: selFEvent.toChannelAlias, title: 'To Channel Alias', width: 50, type: DataTypeEnum.STRING },
+        { key: 'toShortChannelId', value: selFEvent.toShortChannelId, title: 'To Short Channel ID', width: 50, type: DataTypeEnum.STRING }],
+      [{ key: 'toChannelId', value: selFEvent.toChannelId, title: 'To Channel Id', width: 100, type: DataTypeEnum.STRING }]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Event Information',
       message: reorderedFHEvent
-    }}));
+    } }));
   }
 
   loadForwardingEventsTable(forwardingEvents: PaymentRelayed[]) {
@@ -149,9 +150,10 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

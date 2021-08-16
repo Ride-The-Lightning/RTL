@@ -39,7 +39,7 @@ describe('UTXOTablesComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -55,5 +55,4 @@ describe('UTXOTablesComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -22,7 +22,7 @@ describe('CLChannelLookupComponent', () => {
         })
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -38,5 +38,4 @@ describe('CLChannelLookupComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

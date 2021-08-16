@@ -24,7 +24,7 @@ describe('OnChainSendComponent', () => {
         })
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -40,5 +40,4 @@ describe('OnChainSendComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

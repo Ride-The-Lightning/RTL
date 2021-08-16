@@ -35,7 +35,7 @@ describe('TopMenuComponent', () => {
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -51,5 +51,4 @@ describe('TopMenuComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -13,7 +13,7 @@ describe('ReportsComponent', () => {
       declarations: [ReportsComponent],
       imports: [SharedModule, RouterTestingModule]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -29,5 +29,4 @@ describe('ReportsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

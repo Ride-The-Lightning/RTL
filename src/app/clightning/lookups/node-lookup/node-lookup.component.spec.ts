@@ -14,7 +14,7 @@ describe('CLNodeLookupComponent', () => {
       imports: [SharedModule],
       providers: [LoggerService]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -30,5 +30,4 @@ describe('CLNodeLookupComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

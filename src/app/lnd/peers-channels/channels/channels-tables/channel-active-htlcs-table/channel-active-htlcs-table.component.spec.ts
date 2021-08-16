@@ -34,7 +34,7 @@ describe('ChannelActiveHTLCsTableComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -50,5 +50,4 @@ describe('ChannelActiveHTLCsTableComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -54,225 +54,317 @@ export const PEER_LOOKUP_ECL = 'PEER_LOOKUP_ECL';
 export const SET_LOOKUP_ECL = 'SET_LOOKUP_ECL';
 
 export class UpdateAPICallStatus implements Action {
+
   readonly type = UPDATE_API_CALL_STATUS_ECL;
   constructor(public payload: ApiCallStatusPayload) { }
+
 }
 
 export class ResetECLStore implements Action {
+
   readonly type = RESET_ECL_STORE;
   constructor(public payload: SelNodeChild) {}
+
 }
 
 export class SetChildNodeSettings implements Action {
+
   readonly type = SET_CHILD_NODE_SETTINGS_ECL;
   constructor(public payload: SelNodeChild) {}
+
 }
 
 export class FetchInfo implements Action {
+
   readonly type = FETCH_INFO_ECL;
   constructor(public payload: {loadPage: string}) {}
+
 }
 
 export class SetInfo implements Action {
+
   readonly type = SET_INFO_ECL;
   constructor(public payload: GetInfo) {}
+
 }
 
 export class FetchFees implements Action {
+
   readonly type = FETCH_FEES_ECL;
+
 }
 
 export class SetFees implements Action {
+
   readonly type = SET_FEES_ECL;
   constructor(public payload: Fees) {}
+
 }
 
 export class FetchChannels implements Action {
+
   readonly type = FETCH_CHANNELS_ECL;
   constructor(public payload: {fetchPayments: boolean}) {}
+
 }
 
 export class SetActiveChannels implements Action {
+
   readonly type = SET_ACTIVE_CHANNELS_ECL;
   constructor(public payload: Channel[]) {}
+
 }
 
 export class SetPendingChannels implements Action {
+
   readonly type = SET_PENDING_CHANNELS_ECL;
   constructor(public payload: Channel[]) {}
+
 }
 
 export class SetInactiveChannels implements Action {
+
   readonly type = SET_INACTIVE_CHANNELS_ECL;
   constructor(public payload: Channel[]) {}
+
 }
 
 export class FetchChannelStats implements Action {
+
   readonly type = FETCH_CHANNEL_STATS_ECL;
+
 }
 
 export class SetChannelStats implements Action {
+
   readonly type = SET_CHANNEL_STATS_ECL;
   constructor(public payload: ChannelStats[]) {}
+
 }
 
 export class FetchOnchainBalance implements Action {
+
   readonly type = FETCH_ONCHAIN_BALANCE_ECL;
+
 }
 
 export class SetOnchainBalance implements Action {
+
   readonly type = SET_ONCHAIN_BALANCE_ECL;
   constructor(public payload: OnChainBalance) {}
+
 }
 
 export class SetLightningBalance implements Action {
+
   readonly type = SET_LIGHTNING_BALANCE_ECL;
   constructor(public payload: LightningBalance) {}
+
 }
 
 export class SetChannelsStatus implements Action {
+
   readonly type = SET_CHANNELS_STATUS_ECL;
   constructor(public payload: ChannelsStatus) {}
+
 }
 
 export class FetchPeers implements Action {
+
   readonly type = FETCH_PEERS_ECL;
+
 }
 
 export class SetPeers implements Action {
+
   readonly type = SET_PEERS_ECL;
   constructor(public payload: Peer[]) {}
+
 }
 
 export class SaveNewPeer implements Action {
+
   readonly type = SAVE_NEW_PEER_ECL;
   constructor(public payload: {id: string}) {}
+
 }
 
 export class NewlyAddedPeer implements Action {
+
   readonly type = NEWLY_ADDED_PEER_ECL;
   constructor(public payload: { peer: Peer }) {}
+
 }
 
 export class AddPeer implements Action {
+
   readonly type = ADD_PEER_ECL;
   constructor(public payload: Peer) {}
+
 }
 
 export class DisconnectPeer implements Action {
+
   readonly type = DETACH_PEER_ECL;
   constructor(public payload: {nodeId: string}) {}
+
 }
 
 export class RemovePeer implements Action {
+
   readonly type = REMOVE_PEER_ECL;
   constructor(public payload: {nodeId: string}) {}
+
 }
 
 export class GetNewAddress implements Action {
+
   readonly type = GET_NEW_ADDRESS_ECL;
+
 }
 
 export class SetNewAddress implements Action {
+
   readonly type = SET_NEW_ADDRESS_ECL;
-  constructor(public payload: string) {} // payload = newAddress
+  constructor(public payload: string) {} // Payload = newAddress
+
 }
 
 export class SaveNewChannel implements Action {
+
   readonly type = SAVE_NEW_CHANNEL_ECL;
   constructor(public payload: {nodeId: string, amount: number, private: boolean, feeRate?: number}) {}
+
 }
 
 export class UpdateChannels implements Action {
+
   readonly type = UPDATE_CHANNELS_ECL;
   constructor(public payload: {baseFeeMsat: number, feeRate: number, channelId?: string, channelIds?: string}) {}
+
 }
 
 export class CloseChannel implements Action {
+
   readonly type = CLOSE_CHANNEL_ECL;
   constructor(public payload: {channelId: string, force: boolean}) {}
+
 }
 
 export class RemoveChannel implements Action {
+
   readonly type = REMOVE_CHANNEL_ECL;
   constructor(public payload: {channelId: string}) {}
+
 }
 
 export class FetchPayments implements Action {
+
   readonly type = FETCH_PAYMENTS_ECL;
+
 }
 
 export class SetPayments implements Action {
+
   readonly type = SET_PAYMENTS_ECL;
   constructor(public payload: Payments) {}
+
 }
 
 export class GetQueryRoutes implements Action {
+
   readonly type = GET_QUERY_ROUTES_ECL;
   constructor(public payload: {nodeId: string, amount: number}) {}
+
 }
 
 export class SetQueryRoutes implements Action {
+
   readonly type = SET_QUERY_ROUTES_ECL;
   constructor(public payload: Route[]) {}
+
 }
 
 export class SendPayment implements Action {
+
   readonly type = SEND_PAYMENT_ECL;
   constructor(public payload: { fromDialog: boolean, invoice: string, amountMsat?: number }) {}
+
 }
 
 export class SendPaymentStatus implements Action {
+
   readonly type = SEND_PAYMENT_STATUS_ECL;
   constructor(public payload: any) {}
+
 }
 
 export class FetchTransactions implements Action {
+
   readonly type = FETCH_TRANSACTIONS_ECL;
+
 }
 
 export class SetTransactions implements Action {
+
   readonly type = SET_TRANSACTIONS_ECL;
   constructor(public payload: Transaction[]) {}
+
 }
 
 export class SendOnchainFunds implements Action {
+
   readonly type = SEND_ONCHAIN_FUNDS_ECL;
   constructor(public payload: SendPaymentOnChain) {}
+
 }
 
 export class SendOnchainFundsRes implements Action {
+
   readonly type = SEND_ONCHAIN_FUNDS_RES_ECL;
   constructor(public payload: any) {}
+
 }
 
 export class FetchInvoices implements Action {
+
   readonly type = FETCH_INVOICES_ECL;
+
 }
 
 export class SetInvoices implements Action {
+
   readonly type = SET_INVOICES_ECL;
   constructor(public payload: Invoice[]) {}
+
 }
 
 export class CreateInvoice implements Action {
+
   readonly type = CREATE_INVOICE_ECL;
   constructor(public payload: {description: string, expireIn: number, amountMsat?: number}) {}
+
 }
 
 export class AddInvoice implements Action {
+
   readonly type = ADD_INVOICE_ECL;
   constructor(public payload: Invoice) {}
+
 }
 
 export class PeerLookup implements Action {
+
   readonly type = PEER_LOOKUP_ECL;
-  constructor(public payload: string) {} // payload = id
+  constructor(public payload: string) {} // Payload = id
+
 }
 
 export class SetLookup implements Action {
+
   readonly type = SET_LOOKUP_ECL;
-  constructor(public payload: any) {} // payload = lookup Response (Peer)
+  constructor(public payload: any) {} // Payload = lookup Response (Peer)
+
 }
 
 export type ECLActions = ResetECLStore | UpdateAPICallStatus | SetChildNodeSettings |

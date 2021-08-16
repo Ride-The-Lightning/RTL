@@ -26,8 +26,9 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   ]
 })
 export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, OnDestroy {
+
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
   public transactions: Transaction[];
   faHistory = faHistory;
   public displayedColumns: any[] = [];
@@ -61,19 +62,19 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
 
   ngOnInit() {
     this.store.select('lnd').
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe((rtlStore) => {
-      this.errorMessage = '';
-      this.apisCallStatus = rtlStore.apisCallStatus;
-      if (rtlStore.apisCallStatus.FetchTransactions.status === APICallStatusEnum.ERROR) {
-        this.errorMessage = (typeof(this.apisCallStatus.FetchTransactions.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchTransactions.message) : this.apisCallStatus.FetchTransactions.message;
-      }
-      if (rtlStore.transactions && rtlStore.transactions.length > 0) {
-        this.transactions = rtlStore.transactions;
-        this.loadTransactionsTable(this.transactions);
-      }
-      this.logger.info(rtlStore);
-    });
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.errorMessage = '';
+        this.apisCallStatus = rtlStore.apisCallStatus;
+        if (rtlStore.apisCallStatus.FetchTransactions.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apisCallStatus.FetchTransactions.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchTransactions.message) : this.apisCallStatus.FetchTransactions.message;
+        }
+        if (rtlStore.transactions && rtlStore.transactions.length > 0) {
+          this.transactions = rtlStore.transactions;
+          this.loadTransactionsTable(this.transactions);
+        }
+        this.logger.info(rtlStore);
+      });
   }
 
   ngOnChanges() {
@@ -88,30 +89,30 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
 
   onTransactionClick(selTransaction: Transaction) {
     const reorderedTransactions = [
-      [{key: 'block_hash', value: selTransaction.block_hash, title: 'Block Hash', width: 100}],
-      [{key: 'tx_hash', value: selTransaction.tx_hash, title: 'Transaction Hash', width: 100}],
-      [{key: 'label', value: selTransaction.label, title: 'Label', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'time_stamp', value: selTransaction.time_stamp, title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME},
-        {key: 'block_height', value: selTransaction.block_height, title: 'Block Height', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'num_confirmations', value: selTransaction.num_confirmations, title: 'Number of Confirmations', width: 34, type: DataTypeEnum.NUMBER},
-        {key: 'total_fees', value: selTransaction.total_fees, title: 'Total Fees (Sats)', width: 33, type: DataTypeEnum.NUMBER},
-        {key: 'amount', value: selTransaction.amount, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.NUMBER}],
-      [{key: 'dest_addresses', value: selTransaction.dest_addresses, title: 'Destination Addresses', width: 100, type: DataTypeEnum.ARRAY}]
+      [{ key: 'block_hash', value: selTransaction.block_hash, title: 'Block Hash', width: 100 }],
+      [{ key: 'tx_hash', value: selTransaction.tx_hash, title: 'Transaction Hash', width: 100 }],
+      [{ key: 'label', value: selTransaction.label, title: 'Label', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'time_stamp', value: selTransaction.time_stamp, title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME },
+        { key: 'block_height', value: selTransaction.block_height, title: 'Block Height', width: 50, type: DataTypeEnum.NUMBER }],
+      [{ key: 'num_confirmations', value: selTransaction.num_confirmations, title: 'Number of Confirmations', width: 34, type: DataTypeEnum.NUMBER },
+        { key: 'total_fees', value: selTransaction.total_fees, title: 'Total Fees (Sats)', width: 33, type: DataTypeEnum.NUMBER },
+        { key: 'amount', value: selTransaction.amount, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.NUMBER }],
+      [{ key: 'dest_addresses', value: selTransaction.dest_addresses, title: 'Destination Addresses', width: 100, type: DataTypeEnum.ARRAY }]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Transaction Information',
       message: reorderedTransactions,
       scrollable: selTransaction.dest_addresses && selTransaction.dest_addresses.length > 5
-    }}));
+    } }));
   }
 
   loadTransactionsTable(transactions) {
     this.listTransactions = new MatTableDataSource<Transaction>([...transactions]);
     this.listTransactions.sort = this.sort;
-    this.listTransactions.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.listTransactions.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.listTransactions.filterPredicate = (rowData: Transaction, fltr: string) => {
-      const newRowData = ((rowData.time_stamp) ? this.datePipe.transform(new Date(rowData.time_stamp*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      const newRowData = ((rowData.time_stamp) ? this.datePipe.transform(new Date(rowData.time_stamp * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
       return newRowData.includes(fltr);
     };
     this.listTransactions.paginator = this.paginator;
@@ -125,9 +126,10 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

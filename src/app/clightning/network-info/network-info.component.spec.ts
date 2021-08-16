@@ -32,7 +32,7 @@ describe('CLNetworkInfoComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -48,5 +48,4 @@ describe('CLNetworkInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

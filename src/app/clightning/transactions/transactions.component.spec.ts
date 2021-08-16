@@ -37,7 +37,7 @@ describe('CLTransactionsComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -53,5 +53,4 @@ describe('CLTransactionsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

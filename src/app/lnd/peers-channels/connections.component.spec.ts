@@ -36,7 +36,7 @@ describe('ConnectionsComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,5 +52,4 @@ describe('ConnectionsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

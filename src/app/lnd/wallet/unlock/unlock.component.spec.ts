@@ -24,7 +24,7 @@ describe('UnlockWalletComponent', () => {
         })
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -40,5 +40,4 @@ describe('UnlockWalletComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

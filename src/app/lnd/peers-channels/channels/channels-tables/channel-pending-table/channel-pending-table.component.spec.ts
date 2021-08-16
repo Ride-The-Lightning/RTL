@@ -34,7 +34,7 @@ describe('ChannelPendingTableComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -50,5 +50,4 @@ describe('ChannelPendingTableComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

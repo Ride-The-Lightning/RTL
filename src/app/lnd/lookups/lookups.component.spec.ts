@@ -37,7 +37,7 @@ describe('LookupsComponent', () => {
       ]
 
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -53,5 +53,4 @@ describe('LookupsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

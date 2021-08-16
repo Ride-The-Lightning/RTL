@@ -24,7 +24,7 @@ describe('NodeConfigComponent', () => {
         })
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -40,5 +40,4 @@ describe('NodeConfigComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

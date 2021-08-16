@@ -36,7 +36,7 @@ describe('CLConnectionsComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,5 +52,4 @@ describe('CLConnectionsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

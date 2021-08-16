@@ -8,14 +8,15 @@ import { CurrencyUnitEnum, TimeUnitEnum, ScreenSizeEnum, APICallStatusEnum } fro
 
 @Injectable()
 export class CommonService {
+
   currencyUnits = [];
   CurrencyUnitEnum = CurrencyUnitEnum;
   conversionData = { data: null, last_fetched: null };
   private ratesAPIStatus = APICallStatusEnum.UN_INITIATED;
   private screenSize = ScreenSizeEnum.MD;
-  private containerSize = {width: 1200, height: 800};
+  private containerSize = { width: 1200, height: 800 };
 
-  constructor(public dataService: DataService, private logger: LoggerService) {}
+  constructor(public dataService: DataService, private logger: LoggerService) { }
 
   getScreenSize() {
     return this.screenSize;
@@ -30,21 +31,21 @@ export class CommonService {
   }
 
   setContainerSize(width: number, height) {
-    this.containerSize = {width: width, height: height};
+    this.containerSize = { width: width, height: height };
   }
 
   sortByKey(array: any[], key: string, keyDataType: string, direction = 'asc') {
     if (keyDataType === 'number') {
       if (direction === 'desc') {
-        return array.sort((a, b) => +a[key] > +b[key] ? -1 : 1);
+        return array.sort((a, b) => (+a[key] > +b[key] ? -1 : 1));
       } else {
-        return array.sort((a, b) => +a[key] > +b[key] ? 1 : -1);
+        return array.sort((a, b) => (+a[key] > +b[key] ? 1 : -1));
       }
     } else {
       if (direction === 'desc') {
-        return array.sort((a, b) => a[key] > b[key] ? -1 : 1);
+        return array.sort((a, b) => (a[key] > b[key] ? -1 : 1));
       } else {
-        return array.sort((a, b) => a[key] > b[key] ? 1 : -1);
+        return array.sort((a, b) => (a[key] > b[key] ? 1 : -1));
       }
     }
   }
@@ -66,9 +67,7 @@ export class CommonService {
   }
 
   camelCase(str) {
-    return str.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => {
-      return index === 0 ? word.toLowerCase() : word.toUpperCase();
-    }).replace(/\s+/g, '');
+    return str.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => (index === 0 ? word.toLowerCase() : word.toUpperCase())).replace(/\s+/g, '');
   }
 
   titleCase(str) {
@@ -76,7 +75,7 @@ export class CommonService {
   }
 
   convertCurrency(value: number, from: string, to: string, otherCurrencyUnit: string, fiatConversion: boolean): Observable<any> {
-    let latest_date = new Date().valueOf();
+    const latest_date = new Date().valueOf();
     if (fiatConversion && otherCurrencyUnit && this.ratesAPIStatus !== APICallStatusEnum.INITIATED && (from === CurrencyUnitEnum.OTHER || to === CurrencyUnitEnum.OTHER)) {
       if (this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched.valueOf() + 300000))) {
         return of(this.convertWithFiat(value, from, otherCurrencyUnit));
@@ -89,7 +88,7 @@ export class CommonService {
             this.conversionData.last_fetched = latest_date;
             return this.convertWithFiat(value, from, otherCurrencyUnit);
           }),
-          catchError(err => {
+          catchError((err) => {
             this.ratesAPIStatus = APICallStatusEnum.ERROR;
             return throwError(() => this.extractErrorMessage(err, 'Currency Conversion Error.'));
           })
@@ -101,7 +100,7 @@ export class CommonService {
   }
 
   convertWithoutFiat(value: number, from: string) {
-    let returnValue = {};
+    const returnValue = {};
     returnValue[CurrencyUnitEnum.SATS] = 0;
     returnValue[CurrencyUnitEnum.BTC] = 0;
     switch (from) {
@@ -120,7 +119,7 @@ export class CommonService {
   }
 
   convertWithFiat(value: number, from: string, otherCurrencyUnit: string) {
-    let returnValue = {unit: otherCurrencyUnit, symbol: this.conversionData.data[otherCurrencyUnit].symbol};
+    const returnValue = { unit: otherCurrencyUnit, symbol: this.conversionData.data[otherCurrencyUnit].symbol };
     returnValue[CurrencyUnitEnum.SATS] = 0;
     returnValue[CurrencyUnitEnum.BTC] = 0;
     returnValue[CurrencyUnitEnum.OTHER] = 0;
@@ -221,9 +220,9 @@ export class CommonService {
     } else {
       blob = new Blob([data.toString()], { type: 'text/plain;charset=utf-8' });
     }
-    let downloadUrl = document.createElement('a');
-    let url = URL.createObjectURL(blob);
-    let isSafariBrowser = navigator.userAgent.indexOf('Safari') !== -1 && navigator.userAgent.indexOf('Chrome') === -1;
+    const downloadUrl = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    const isSafariBrowser = navigator.userAgent.indexOf('Safari') !== -1 && navigator.userAgent.indexOf('Chrome') === -1;
     if (isSafariBrowser) {
       downloadUrl.setAttribute('target', '_blank');
     }
@@ -236,23 +235,25 @@ export class CommonService {
   }
 
   convertToCSV(objArray: any[]) {
-    let keys = [];
+    const keys = [];
     let dataRow = '';
     let arrayField = '';
     let csvStrArray = '';
-    if (typeof objArray !== 'object') { objArray = JSON.parse(objArray); }
+    if (typeof objArray !== 'object') {
+      objArray = JSON.parse(objArray);
+    }
     objArray.forEach((obj, i) => {
-      for (let key in obj) {
-        if (keys.findIndex(keyEle => keyEle === key) < 0) {
+      for (const key in obj) {
+        if (keys.findIndex((keyEle) => keyEle === key) < 0) {
           keys.push(key);
         }
       }
     });
-    let header = keys.join(',');
+    const header = keys.join(',');
     csvStrArray = header + '\r\n';
-    objArray.forEach(obj => {
+    objArray.forEach((obj) => {
       dataRow = '';
-      keys.forEach(key => {
+      keys.forEach((key) => {
         if (obj.hasOwnProperty(key)) {
           if (Array.isArray(obj[key])) {
             arrayField = '';
@@ -281,24 +282,26 @@ export class CommonService {
   }
 
   isVersionCompatible(currentVersion, checkVersion) {
-    let versionsArr = currentVersion ? currentVersion.trim().replace('v', '').split('-')[0].split('.') : [];
-    let checkVersionsArr = checkVersion.split('.');
-    return (+versionsArr[0] > +checkVersionsArr[0])
-    || (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] > +checkVersionsArr[1])
-    || (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] === +checkVersionsArr[1] && +versionsArr[2] >= +checkVersionsArr[2]);
+    const versionsArr = currentVersion ? currentVersion.trim().replace('v', '').
+      split('-')[0].
+      split('.') : [];
+    const checkVersionsArr = checkVersion.split('.');
+    return (+versionsArr[0] > +checkVersionsArr[0]) ||
+      (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] > +checkVersionsArr[1]) ||
+      (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] === +checkVersionsArr[1] && +versionsArr[2] >= +checkVersionsArr[2]);
   }
 
   extractErrorMessage(err: any, genericErrorMessage: string = 'Unknown Error.') {
     const msg = this.titleCase((err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error :
       (err.error && err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error :
-      (err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error :
-      (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error :
-      (err.error && typeof err.error === 'string') ? err.error :
-      (err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message :
-      (err.error && err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message :
-      (err.error && err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message :
-      (err.error && err.error.message && typeof err.error.message === 'string') ? err.error.message :
-      (err.message && typeof err.message === 'string') ? err.message : genericErrorMessage);
+        (err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error :
+          (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error :
+            (err.error && typeof err.error === 'string') ? err.error :
+              (err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message :
+                (err.error && err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message :
+                  (err.error && err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message :
+                    (err.error && err.error.message && typeof err.error.message === 'string') ? err.error.message :
+                      (err.message && typeof err.message === 'string') ? err.message : genericErrorMessage);
     this.logger.info('Error Message: ' + msg);
     return msg;
   }
@@ -306,19 +309,20 @@ export class CommonService {
   extractErrorCode(err: any, genericErrorCode: number = 500) {
     const code = (err.error && err.error.error && err.error.error.message && err.error.error.message.code) ? err.error.error.message.code :
       (err.error && err.error.error && err.error.error.code) ? err.error.error.code :
-      (err.error && err.error.code) ? err.error.code :
-      err.code ? err.code :
-      err.status ? err.status : genericErrorCode;
+        (err.error && err.error.code) ? err.error.code :
+          err.code ? err.code :
+            err.status ? err.status : genericErrorCode;
     this.logger.info('Error Code: ' + code);
     return code;
   }
 
   extractErrorNumber(err: any, genericErrorNumber: number = 500) {
     const errNum = (err.error && err.error.error && err.error.error.errno) ? err.error.error.errno :
-    (err.error && err.error.errno) ? err.error.errno :
-    err.errno ? err.errno :
-    err.status ? err.status : genericErrorNumber;
+      (err.error && err.error.errno) ? err.error.errno :
+        err.errno ? err.errno :
+          err.status ? err.status : genericErrorNumber;
     this.logger.info('Error Number: ' + errNum);
     return errNum;
   }
+
 }

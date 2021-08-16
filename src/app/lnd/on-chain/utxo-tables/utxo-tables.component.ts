@@ -14,6 +14,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./utxo-tables.component.scss']
 })
 export class UTXOTablesComponent implements OnInit, OnDestroy {
+
   @Input() selectedTableIndex = 0;
   @Output() readonly selectedTableIndexChange = new EventEmitter<number>();
   public numTransactions = 0;
@@ -27,17 +28,17 @@ export class UTXOTablesComponent implements OnInit, OnDestroy {
     this.store.dispatch(new LNDActions.FetchTransactions());
     this.store.dispatch(new LNDActions.FetchUTXOs());
     this.store.select('lnd').
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe((rtlStore) => {
-      if (rtlStore.utxos && rtlStore.utxos.length > 0) {
-        this.numUtxos = rtlStore.utxos.length;
-        this.numDustUtxos = rtlStore.utxos.filter(utxo => +utxo.amount_sat < 1000).length;
-      }
-      if (rtlStore.transactions && rtlStore.transactions.length > 0) {
-        this.numTransactions = rtlStore.transactions.length;
-      }
-      this.logger.info(rtlStore);
-    });
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        if (rtlStore.utxos && rtlStore.utxos.length > 0) {
+          this.numUtxos = rtlStore.utxos.length;
+          this.numDustUtxos = rtlStore.utxos.filter((utxo) => +utxo.amount_sat < 1000).length;
+        }
+        if (rtlStore.transactions && rtlStore.transactions.length > 0) {
+          this.numTransactions = rtlStore.transactions.length;
+        }
+        this.logger.info(rtlStore);
+      });
   }
 
   onSelectedIndexChanged(event) {
@@ -45,9 +46,10 @@ export class UTXOTablesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

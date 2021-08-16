@@ -126,9 +126,7 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
       };
     case ECLActions.REMOVE_PEER_ECL:
       const modifiedPeers = [...state.peers];
-      const removePeerIdx = state.peers.findIndex(peer => {
-        return peer.nodeId === action.payload.nodeId;
-      });
+      const removePeerIdx = state.peers.findIndex((peer) => peer.nodeId === action.payload.nodeId);
       if (removePeerIdx > -1) {
         modifiedPeers.splice(removePeerIdx, 1);
       }
@@ -138,9 +136,7 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
       };
     case ECLActions.REMOVE_CHANNEL_ECL:
       const modifiedChannels = [...state.activeChannels];
-      const removeChannelIdx = state.activeChannels.findIndex(channel => {
-        return channel.channelId === action.payload.channelId;
-      });
+      const removeChannelIdx = state.activeChannels.findIndex((channel) => channel.channelId === action.payload.channelId);
       if (removeChannelIdx > -1) {
         modifiedChannels.splice(removeChannelIdx, 1);
       }
@@ -151,20 +147,24 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
     case ECLActions.SET_PAYMENTS_ECL:
       if (action.payload && action.payload.relayed) {
         const storedChannels = [...state.activeChannels, ...state.pendingChannels, ...state.inactiveChannels];
-        action.payload.relayed.forEach(event => {
+        action.payload.relayed.forEach((event) => {
           if (storedChannels && storedChannels.length > 0) {
             for (let idx = 0; idx < storedChannels.length; idx++) {
               if (storedChannels[idx].channelId.toString() === event.fromChannelId) {
                 event.fromChannelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : event.fromChannelId;
                 event.fromShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
-                if (event.toChannelAlias) { return; }
+                if (event.toChannelAlias) {
+                  return;
+                }
               }
               if (storedChannels[idx].channelId.toString() === event.toChannelId) {
                 event.toChannelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : event.toChannelId;
                 event.toShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
-                if (event.fromChannelAlias) { return; }
+                if (event.fromChannelAlias) {
+                  return;
+                }
               }
-              if (idx === storedChannels.length-1) {
+              if (idx === storedChannels.length - 1) {
                 if (!event.fromChannelAlias) {
                   event.fromChannelAlias = event.fromChannelId.substring(0, 17) + '...';
                   event.fromShortChannelId = '';
@@ -207,5 +207,4 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
     default:
       return state;
   }
-
 }

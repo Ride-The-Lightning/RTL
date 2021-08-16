@@ -41,7 +41,7 @@ describe('OnChainComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -57,5 +57,4 @@ describe('OnChainComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

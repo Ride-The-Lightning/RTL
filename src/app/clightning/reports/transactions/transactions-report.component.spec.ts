@@ -32,11 +32,11 @@ describe('CLTransactionsReportComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
-    let service = TestBed.inject(CommonService);
+    const service = TestBed.inject(CommonService);
     fixture = TestBed.createComponent(CLTransactionsReportComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -49,5 +49,4 @@ describe('CLTransactionsReportComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

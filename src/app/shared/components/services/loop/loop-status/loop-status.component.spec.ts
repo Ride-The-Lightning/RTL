@@ -12,7 +12,7 @@ describe('LoopStatusComponent', () => {
       declarations: [LoopStatusComponent],
       imports: [SharedModule]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -28,5 +28,4 @@ describe('LoopStatusComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

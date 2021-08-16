@@ -36,7 +36,7 @@ describe('AuthSettingsComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,5 +52,4 @@ describe('AuthSettingsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

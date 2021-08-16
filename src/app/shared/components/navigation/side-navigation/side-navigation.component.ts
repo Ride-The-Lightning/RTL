@@ -27,6 +27,7 @@ import { CommonService } from '../../../services/common.service';
   styleUrls: ['./side-navigation.component.scss']
 })
 export class SideNavigationComponent implements OnInit, OnDestroy {
+
   @ViewChild(MatTree, { static: false }) tree: any;
   @Output() readonly ChildNavClicked = new EventEmitter<any>();
   faEject = faEject;
@@ -38,17 +39,17 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   public information: GetInfoRoot = {};
   public informationChain: GetInfoChain = {};
   public flgLoading = true;
-  public logoutNode = [{id: 200, parentId: 0, name: 'Logout', iconType: 'FA', icon: faEject}];
-  public showDataNodes = [{id: 1000, parentId: 0, name: 'Public Key', iconType: 'FA', icon: faEye}];
+  public logoutNode = [{ id: 200, parentId: 0, name: 'Logout', iconType: 'FA', icon: faEject }];
+  public showDataNodes = [{ id: 1000, parentId: 0, name: 'Public Key', iconType: 'FA', icon: faEye }];
   public showLogout = false;
   public numPendingChannels = 0;
   public smallScreen = false;
   public childRootRoute = '';
   public userPersonaEnum = UserPersonaEnum;
   private unSubs = [new Subject(), new Subject(), new Subject(), new Subject()];
-  treeControlNested = new NestedTreeControl<MenuChildNode>(node => node.children);
-  treeControlLogout = new NestedTreeControl<MenuChildNode>(node => node.children);
-  treeControlShowData = new NestedTreeControl<MenuChildNode>(node => node.children);
+  treeControlNested = new NestedTreeControl<MenuChildNode>((node) => node.children);
+  treeControlLogout = new NestedTreeControl<MenuChildNode>((node) => node.children);
+  treeControlShowData = new NestedTreeControl<MenuChildNode>((node) => node.children);
   navMenus = new MatTreeNestedDataSource<MenuChildNode>();
   navMenusLogout = new MatTreeNestedDataSource<MenuChildNode>();
   navMenusShowData = new MatTreeNestedDataSource<MenuChildNode>();
@@ -64,51 +65,51 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    let token = this.sessionService.getItem('token');
-    this.showLogout = token ? true : false;
-    this.flgLoading = token ? true : false;
+    const token = this.sessionService.getItem('token');
+    this.showLogout = !!token;
+    this.flgLoading = !!token;
     this.store.select('root').
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe(rtlStore => {
-      this.appConfig = rtlStore.appConfig;
-      this.selNode = rtlStore.selNode;
-      this.settings = this.selNode.settings;
-      this.information = rtlStore.nodeData;
-      if (this.information.identity_pubkey) {
-        if (this.information.chains && typeof this.information.chains[0] === 'string') {
-          this.informationChain.chain = this.information.chains[0].toString();
-          this.informationChain.network = (this.information.testnet) ? 'Testnet' : 'Mainnet';
-        } else if (typeof this.information.chains[0] === 'object' && this.information.chains[0].hasOwnProperty('chain')) {
-          const getInfoChain = <GetInfoChain> this.information.chains[0];
-          this.informationChain.chain = getInfoChain.chain;
-          this.informationChain.network = getInfoChain.network;
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.appConfig = rtlStore.appConfig;
+        this.selNode = rtlStore.selNode;
+        this.settings = this.selNode.settings;
+        this.information = rtlStore.nodeData;
+        if (this.information.identity_pubkey) {
+          if (this.information.chains && typeof this.information.chains[0] === 'string') {
+            this.informationChain.chain = this.information.chains[0].toString();
+            this.informationChain.network = (this.information.testnet) ? 'Testnet' : 'Mainnet';
+          } else if (typeof this.information.chains[0] === 'object' && this.information.chains[0].hasOwnProperty('chain')) {
+            const getInfoChain = <GetInfoChain>this.information.chains[0];
+            this.informationChain.chain = getInfoChain.chain;
+            this.informationChain.network = getInfoChain.network;
+          }
+        } else {
+          this.informationChain.chain = '';
+          this.informationChain.network = '';
         }
-      } else {
-        this.informationChain.chain = '';
-        this.informationChain.network = '';
-      }
 
-      this.flgLoading = (this.information.identity_pubkey) ? false : true;
-      if (window.innerWidth <= 414) {
-        this.smallScreen = true;
-      }
-      if (this.settings.lnServerUrl) {
-        this.filterSideMenuNodes();
-      }
-      this.logger.info(rtlStore);
-    });
+        this.flgLoading = !(this.information.identity_pubkey);
+        if (window.innerWidth <= 414) {
+          this.smallScreen = true;
+        }
+        if (this.settings.lnServerUrl) {
+          this.filterSideMenuNodes();
+        }
+        this.logger.info(rtlStore);
+      });
     this.sessionService.watchSession().
-    pipe(takeUntil(this.unSubs[1])).
-    subscribe(session => {
-      this.showLogout = session.token ? true : false;
-      this.flgLoading = session.token ? true : false;
-    });
+      pipe(takeUntil(this.unSubs[1])).
+      subscribe((session) => {
+        this.showLogout = !!session.token;
+        this.flgLoading = !!session.token;
+      });
     this.actions.pipe(
-    takeUntil(this.unSubs[2]),
-    filter((action) => action.type === RTLActions.LOGOUT)).
-    subscribe((action: RTLActions.Logout) => {
-      this.showLogout = false;
-    });
+      takeUntil(this.unSubs[2]),
+      filter((action) => action.type === RTLActions.LOGOUT)).
+      subscribe((action: RTLActions.Logout) => {
+        this.showLogout = false;
+      });
   }
 
   hasChild = (_: number, node: MenuChildNode) => !!node.children && node.children.length > 0;
@@ -116,16 +117,18 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   onClick(node: MenuChildNode) {
     if (node.name === 'Logout') {
       this.store.dispatch(new RTLActions.OpenConfirmation({
-        data: { type: AlertTypeEnum.CONFIRM, alertTitle: 'Logout', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
-      }}));
-      this.rtlEffects.closeConfirm.
-      pipe(takeUntil(this.unSubs[3])).
-      subscribe(confirmRes => {
-        if (confirmRes) {
-          this.showLogout = false;
-          this.store.dispatch(new RTLActions.Logout());
+        data: {
+          type: AlertTypeEnum.CONFIRM, alertTitle: 'Logout', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
         }
-      });
+      }));
+      this.rtlEffects.closeConfirm.
+        pipe(takeUntil(this.unSubs[3])).
+        subscribe((confirmRes) => {
+          if (confirmRes) {
+            this.showLogout = false;
+            this.store.dispatch(new RTLActions.Logout());
+          }
+        });
     }
     this.ChildNavClicked.emit(node);
   }
@@ -157,13 +160,11 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   loadLNDMenu() {
     let clonedMenu = [];
     clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.LNDChildren));
-    this.navMenus.data = clonedMenu.filter(navMenuData => {
+    this.navMenus.data = clonedMenu.filter((navMenuData) => {
       if (navMenuData.children && navMenuData.children.length) {
-        navMenuData.children = navMenuData.children.filter(navMenuChild => {
-          return ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona) && navMenuChild.link !== '/services/loop' && navMenuChild.link !== '/services/boltz')
-          || (navMenuChild.link === '/services/loop' && this.settings.swapServerUrl && this.settings.swapServerUrl.trim() !== '')
-          || (navMenuChild.link === '/services/boltz' && this.settings.boltzServerUrl && this.settings.boltzServerUrl.trim() !== '');
-        });
+        navMenuData.children = navMenuData.children.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona) && navMenuChild.link !== '/services/loop' && navMenuChild.link !== '/services/boltz') ||
+            (navMenuChild.link === '/services/loop' && this.settings.swapServerUrl && this.settings.swapServerUrl.trim() !== '') ||
+            (navMenuChild.link === '/services/boltz' && this.settings.boltzServerUrl && this.settings.boltzServerUrl.trim() !== ''));
         return navMenuData.children.length > 0;
       }
       return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings.userPersona;
@@ -173,12 +174,10 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   loadCLTMenu() {
     let clonedMenu = [];
     clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.CLChildren));
-    this.navMenus.data = clonedMenu.filter(navMenuData => {
+    this.navMenus.data = clonedMenu.filter((navMenuData) => {
       if (navMenuData.children && navMenuData.children.length) {
-        navMenuData.children = navMenuData.children.filter(navMenuChild => {
-          return ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona) && navMenuChild.link !== '/cl/messages')
-          || (navMenuChild.link === '/cl/messages' && this.information.api_version && this.commonService.isVersionCompatible(this.information.api_version, '0.2.2'));
-        });
+        navMenuData.children = navMenuData.children.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona) && navMenuChild.link !== '/cl/messages') ||
+            (navMenuChild.link === '/cl/messages' && this.information.api_version && this.commonService.isVersionCompatible(this.information.api_version, '0.2.2')));
       }
       return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings.userPersona;
     });
@@ -200,7 +199,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

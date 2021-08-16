@@ -25,8 +25,9 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]
 })
 export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnDestroy {
+
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
   public failedEvents: any;
   public errorMessage = '';
   public displayedColumns: any[] = [];
@@ -56,19 +57,19 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
 
   ngOnInit() {
     this.store.select('cl').
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe((rtlStore) => {
-      this.errorMessage = '';
-      this.apisCallStatus = rtlStore.apisCallStatus;
-      if (this.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
-        this.errorMessage = (typeof(this.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(this.apisCallStatus.GetForwardingHistory.message) : this.apisCallStatus.GetForwardingHistory.message;
-      }
-      this.failedEvents = (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length > 0) ? this.filterFailedEvents(rtlStore.forwardingHistory.forwarding_events) : [];
-      if (this.failedEvents.length > 0 && this.sort && this.paginator) {
-        this.loadForwardingEventsTable(this.failedEvents);
-      }
-      this.logger.info(rtlStore);
-    });
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.errorMessage = '';
+        this.apisCallStatus = rtlStore.apisCallStatus;
+        if (this.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(this.apisCallStatus.GetForwardingHistory.message) : this.apisCallStatus.GetForwardingHistory.message;
+        }
+        this.failedEvents = (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length > 0) ? this.filterFailedEvents(rtlStore.forwardingHistory.forwarding_events) : [];
+        if (this.failedEvents.length > 0 && this.sort && this.paginator) {
+          this.loadForwardingEventsTable(this.failedEvents);
+        }
+        this.logger.info(rtlStore);
+      });
   }
 
   ngAfterViewInit() {
@@ -78,35 +79,35 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
   }
 
   filterFailedEvents(events) {
-    return events.filter(event => event.status !== 'settled');
+    return events.filter((event) => event.status !== 'settled');
   }
 
   onForwardingEventClick(selFEvent: ForwardingEvent, event: any) {
     const reorderedFHEvent = [
-      [{key: 'payment_hash', value: selFEvent.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'status', value: (selFEvent.status=== 'settled' ? 'Settled' : 'Unsettled'), title: 'Status', width: 50, type: DataTypeEnum.STRING},
-        {key: 'received_time', value: selFEvent.received_time, title: 'Received Time', width: 50, type: DataTypeEnum.DATE_TIME}],
-      [{key: 'in_channel', value: selFEvent.in_channel_alias ? selFEvent.in_channel_alias : selFEvent.in_channel, title: 'Inbound Channel', width: 50, type: DataTypeEnum.STRING},
-        {key: 'in_msatoshi', value: selFEvent.in_msatoshi, title: 'In (mSats)', width: 50, type: DataTypeEnum.NUMBER}]
+      [{ key: 'payment_hash', value: selFEvent.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'status', value: (selFEvent.status === 'settled' ? 'Settled' : 'Unsettled'), title: 'Status', width: 50, type: DataTypeEnum.STRING },
+        { key: 'received_time', value: selFEvent.received_time, title: 'Received Time', width: 50, type: DataTypeEnum.DATE_TIME }],
+      [{ key: 'in_channel', value: selFEvent.in_channel_alias ? selFEvent.in_channel_alias : selFEvent.in_channel, title: 'Inbound Channel', width: 50, type: DataTypeEnum.STRING },
+        { key: 'in_msatoshi', value: selFEvent.in_msatoshi, title: 'In (mSats)', width: 50, type: DataTypeEnum.NUMBER }]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Event Information',
       message: reorderedFHEvent
-    }}));
+    } }));
   }
 
   loadForwardingEventsTable(forwardingEvents: ForwardingEvent[]) {
     this.forwardingHistoryEvents = new MatTableDataSource<ForwardingEvent>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
-    this.forwardingHistoryEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.forwardingHistoryEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.forwardingHistoryEvents.filterPredicate = (event: ForwardingEvent, fltr: string) => {
       const newEvent = (event.status ? event.status.toLowerCase() : '') +
-      (event.received_time ? this.datePipe.transform(new Date(event.received_time*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') +
-      (event.resolved_time ? this.datePipe.transform(new Date(event.resolved_time*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') +
+      (event.received_time ? this.datePipe.transform(new Date(event.received_time * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') +
+      (event.resolved_time ? this.datePipe.transform(new Date(event.resolved_time * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') +
       (event.in_channel ? event.in_channel.toLowerCase() : '') + (event.out_channel ? event.out_channel.toLowerCase() : '') +
-      (event.in_msatoshi ? (event.in_msatoshi/1000) : '') + (event.out_msatoshi ? (event.out_msatoshi/1000) : '') + (event.fee ? event.fee : '');
+      (event.in_msatoshi ? (event.in_msatoshi / 1000) : '') + (event.out_msatoshi ? (event.out_msatoshi / 1000) : '') + (event.fee ? event.fee : '');
       return newEvent.includes(fltr);
     };
     this.logger.info(this.forwardingHistoryEvents);
@@ -123,9 +124,10 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

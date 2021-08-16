@@ -20,7 +20,7 @@ describe('NodeInfoComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -36,5 +36,4 @@ describe('NodeInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

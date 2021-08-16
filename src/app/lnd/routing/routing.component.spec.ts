@@ -26,7 +26,7 @@ describe('RoutingComponent', () => {
         })
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -42,5 +42,4 @@ describe('RoutingComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -15,7 +15,7 @@ describe('NodeLookupComponent', () => {
       imports: [SharedModule],
       providers: [LoggerService]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -31,5 +31,4 @@ describe('NodeLookupComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

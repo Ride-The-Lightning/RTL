@@ -13,7 +13,7 @@ describe('BackupComponent', () => {
       declarations: [BackupComponent],
       imports: [SharedModule, RouterTestingModule]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -29,5 +29,4 @@ describe('BackupComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

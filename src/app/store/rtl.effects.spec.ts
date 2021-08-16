@@ -74,24 +74,24 @@ describe('RTL Root Effects', () => {
   });
 
   it('should dispatch set selected node', (done) => {
-    let storeDispatchSpy = spyOn(mockStore, 'dispatch').and.callThrough();
+    const storeDispatchSpy = spyOn(mockStore, 'dispatch').and.callThrough();
     actions = new ReplaySubject(1);
     const setSelectedNodeAction = {
       type: RTLActions.SET_SELECTED_NODE,
       payload: { uiMessage: UI_MESSAGES.UPDATE_SELECTED_NODE, lnNode: mockActionsData.setSelectedNode, isInitialSetup: false }
     };
     actions.next(setSelectedNodeAction);
-    const sub = effects.setSelectedNode.subscribe(setSelectedNodeResponse => {
-      expect(setSelectedNodeResponse).toEqual({type: RTLActions.VOID});
+    const sub = effects.setSelectedNode.subscribe((setSelectedNodeResponse) => {
+      expect(setSelectedNodeResponse).toEqual({ type: RTLActions.VOID });
       expect(storeDispatchSpy.calls.all()[0].args[0]).toEqual(new RTLActions.OpenSpinner(UI_MESSAGES.UPDATE_SELECTED_NODE));
-      expect(storeDispatchSpy.calls.all()[1].args[0]).toEqual(new RTLActions.UpdateAPICallStatus({action: 'UpdateSelNode', status: APICallStatusEnum.INITIATED}));
-      expect(storeDispatchSpy.calls.all()[2].args[0]).toEqual(new RTLActions.UpdateAPICallStatus({action: 'UpdateSelNode', status: APICallStatusEnum.COMPLETED}));
+      expect(storeDispatchSpy.calls.all()[1].args[0]).toEqual(new RTLActions.UpdateAPICallStatus({ action: 'UpdateSelNode', status: APICallStatusEnum.INITIATED }));
+      expect(storeDispatchSpy.calls.all()[2].args[0]).toEqual(new RTLActions.UpdateAPICallStatus({ action: 'UpdateSelNode', status: APICallStatusEnum.COMPLETED }));
       expect(storeDispatchSpy.calls.all()[3].args[0]).toEqual(new RTLActions.CloseSpinner(UI_MESSAGES.UPDATE_SELECTED_NODE));
       expect(storeDispatchSpy.calls.all()[4].args[0]).toEqual(new RTLActions.ResetRootStore(mockActionsData.resetRootStore));
       expect(storeDispatchSpy.calls.all()[5].args[0]).toEqual(new LNDActions.ResetLNDStore(mockActionsData.resetChildrenStores));
       expect(storeDispatchSpy.calls.all()[6].args[0]).toEqual(new CLActions.ResetCLStore(mockActionsData.resetChildrenStores));
       expect(storeDispatchSpy.calls.all()[7].args[0]).toEqual(new ECLActions.ResetECLStore(mockActionsData.resetChildrenStores));
-      expect(storeDispatchSpy.calls.all()[8].args[0]).toEqual(new LNDActions.FetchInfo({loadPage: 'HOME'}));
+      expect(storeDispatchSpy.calls.all()[8].args[0]).toEqual(new LNDActions.FetchInfo({ loadPage: 'HOME' }));
       expect(storeDispatchSpy).toHaveBeenCalledTimes(9);
       done();
       setTimeout(() => sub.unsubscribe());
@@ -102,12 +102,11 @@ describe('RTL Root Effects', () => {
     req.flush(expectedResponse);
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual({ selNodeIndex: setSelectedNodeAction.payload.lnNode.index });
-
   });
 
   it('should throw error on dispatch set selected node', (done) => {
-    let storeDispatchSpy = spyOn(mockStore, 'dispatch').and.callThrough();
-    let httpClientSpy = spyOn(httpClient, 'post').and.returnValue(throwError(() => mockResponseData.error));
+    const storeDispatchSpy = spyOn(mockStore, 'dispatch').and.callThrough();
+    const httpClientSpy = spyOn(httpClient, 'post').and.returnValue(throwError(() => mockResponseData.error));
     actions = new ReplaySubject(1);
     const setSelectedNodeAction = {
       type: RTLActions.SET_SELECTED_NODE,
@@ -115,12 +114,12 @@ describe('RTL Root Effects', () => {
     };
     actions.next(setSelectedNodeAction);
     const sub = effects.setSelectedNode.subscribe((setSelectedNodeResponse: any) => {
-      expect(setSelectedNodeResponse).toEqual({type: RTLActions.VOID});
+      expect(setSelectedNodeResponse).toEqual({ type: RTLActions.VOID });
       expect(storeDispatchSpy.calls.all()[0].args[0]).toEqual(new RTLActions.OpenSpinner(UI_MESSAGES.UPDATE_SELECTED_NODE));
-      expect(storeDispatchSpy.calls.all()[1].args[0]).toEqual(new RTLActions.UpdateAPICallStatus({action: 'UpdateSelNode', status: APICallStatusEnum.INITIATED}));
+      expect(storeDispatchSpy.calls.all()[1].args[0]).toEqual(new RTLActions.UpdateAPICallStatus({ action: 'UpdateSelNode', status: APICallStatusEnum.INITIATED }));
       expect(storeDispatchSpy.calls.all()[2].args[0]).toEqual(new RTLActions.CloseSpinner(UI_MESSAGES.UPDATE_SELECTED_NODE));
-      expect(storeDispatchSpy.calls.all()[3].args[0]).toEqual(new RTLActions.OpenAlert({data: { type: 'ERROR', alertTitle: 'Update Selected Node Failed!', message: { code: '500', message: 'Request failed.', URL: environment.CONF_API + '/updateSelNode' }, component: ErrorMessageComponent}}));
-      expect(storeDispatchSpy.calls.all()[4].args[0]).toEqual(new RTLActions.UpdateAPICallStatus({action: 'UpdateSelNode', status: APICallStatusEnum.ERROR, statusCode: '500', message: 'Request failed.', URL: environment.CONF_API + '/updateSelNode'}));
+      expect(storeDispatchSpy.calls.all()[3].args[0]).toEqual(new RTLActions.OpenAlert({ data: { type: 'ERROR', alertTitle: 'Update Selected Node Failed!', message: { code: '500', message: 'Request failed.', URL: environment.CONF_API + '/updateSelNode' }, component: ErrorMessageComponent } }));
+      expect(storeDispatchSpy.calls.all()[4].args[0]).toEqual(new RTLActions.UpdateAPICallStatus({ action: 'UpdateSelNode', status: APICallStatusEnum.ERROR, statusCode: '500', message: 'Request failed.', URL: environment.CONF_API + '/updateSelNode' }));
       expect(storeDispatchSpy).toHaveBeenCalledTimes(5);
       done();
       setTimeout(() => sub.unsubscribe());
@@ -135,7 +134,7 @@ describe('RTL Root Effects', () => {
       payload: 'Testing the snackbar open effect...'
     };
     actions.next(openSnackBarAction);
-    const sub = effects.openSnackBar.subscribe(openSnackBarResponse => {
+    const sub = effects.openSnackBar.subscribe((openSnackBarResponse) => {
       expect(openSnackBarResponse).toBeUndefined();
       expect(snackBarOpenSpy).toHaveBeenCalledWith(openSnackBarAction.payload);
       expect(snackBarOpenSpy).toHaveBeenCalledTimes(1);
@@ -147,5 +146,4 @@ describe('RTL Root Effects', () => {
   afterEach(() => {
     httpTestingController.verify();
   });
-
 });

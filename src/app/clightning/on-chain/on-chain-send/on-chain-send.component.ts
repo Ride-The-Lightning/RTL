@@ -15,13 +15,14 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./on-chain-send.component.scss']
 })
 export class CLOnChainSendComponent implements OnInit, OnDestroy {
+
   public sweepAll = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private store: Store<fromRTLReducer.RTLState>, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit() {
-    this.activatedRoute.data.pipe(takeUntil(this.unSubs[0])).subscribe(routeData => {
+    this.activatedRoute.data.pipe(takeUntil(this.unSubs[0])).subscribe((routeData) => {
       this.sweepAll = routeData.sweepAll;
     });
   }
@@ -30,11 +31,11 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       sweepAll: this.sweepAll,
       component: CLOnChainSendModalComponent
-    }}));
+    } }));
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

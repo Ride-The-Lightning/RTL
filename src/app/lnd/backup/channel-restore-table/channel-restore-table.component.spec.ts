@@ -37,7 +37,7 @@ describe('ChannelRestoreTableComponent', () => {
       ]
 
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -53,5 +53,4 @@ describe('ChannelRestoreTableComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

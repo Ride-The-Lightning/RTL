@@ -36,7 +36,7 @@ describe('ECLQueryRoutesComponent', () => {
         { provide: ECLEffects, useClass: mockECLEffects }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,5 +52,4 @@ describe('ECLQueryRoutesComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

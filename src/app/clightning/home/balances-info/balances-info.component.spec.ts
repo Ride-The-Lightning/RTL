@@ -12,7 +12,7 @@ describe('CLBalancesInfoComponent', () => {
       declarations: [CLBalancesInfoComponent],
       imports: [SharedModule]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -28,5 +28,4 @@ describe('CLBalancesInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -23,6 +23,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./create-invoice.component.scss']
 })
 export class CLCreateInvoiceComponent implements OnInit, OnDestroy {
+
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: SelNodeChild = {};
   public description = '';
@@ -46,33 +47,35 @@ export class CLCreateInvoiceComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageSize = this.data.pageSize;
     this.store.select('cl').
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe((rtlStore) => {
-      this.selNode = rtlStore.nodeSettings;
-      this.information = rtlStore.information;
-    });
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.selNode = rtlStore.nodeSettings;
+        this.information = rtlStore.information;
+      });
     this.actions.pipe(
-    takeUntil(this.unSubs[1]),
-    filter(action => action.type === CLActions.UPDATE_API_CALL_STATUS_CL || action.type === CLActions.ADD_INVOICE_CL)).
-    subscribe((action: CLActions.UpdateAPICallStatus | CLActions.AddInvoice) => {
-      if (action.type === CLActions.ADD_INVOICE_CL) {
-        this.dialogRef.close();
-      }
-      if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewInvoice') {
-        this.invoiceError = action.payload.message;
-      }
-    });
+      takeUntil(this.unSubs[1]),
+      filter((action) => action.type === CLActions.UPDATE_API_CALL_STATUS_CL || action.type === CLActions.ADD_INVOICE_CL)).
+      subscribe((action: CLActions.UpdateAPICallStatus | CLActions.AddInvoice) => {
+        if (action.type === CLActions.ADD_INVOICE_CL) {
+          this.dialogRef.close();
+        }
+        if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewInvoice') {
+          this.invoiceError = action.payload.message;
+        }
+      });
   }
 
   onAddInvoice(form: any) {
     this.invoiceError = '';
-    if (!this.invoiceValue) { this.invoiceValue = 0; }
+    if (!this.invoiceValue) {
+      this.invoiceValue = 0;
+    }
     let expiryInSecs = (this.expiry ? this.expiry : 3600);
     if (this.selTimeUnit !== TimeUnitEnum.SECS) {
       expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
     }
     this.store.dispatch(new CLActions.SaveNewInvoice({
-      label: ('ulbl' + Math.random().toString(36).slice(2) + Date.now()), amount: this.invoiceValue*1000, description: this.description, expiry: expiryInSecs, private: this.private
+      label: ('ulbl' + Math.random().toString(36).slice(2) + Date.now()), amount: this.invoiceValue * 1000, description: this.description, expiry: expiryInSecs, private: this.private
     }));
   }
 
@@ -90,12 +93,12 @@ export class CLCreateInvoiceComponent implements OnInit, OnDestroy {
     if (this.selNode.fiatConversion && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
       this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
-      pipe(takeUntil(this.unSubs[2])).
-      subscribe({next: data => {
-        this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
-      }, error: err => {
-        this.invoiceValueHint = 'Conversion Error: ' + err;
-      }});
+        pipe(takeUntil(this.unSubs[2])).
+        subscribe({ next: (data) => {
+          this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
+        }, error: (err) => {
+          this.invoiceValueHint = 'Conversion Error: ' + err;
+        } });
     }
   }
 
@@ -107,7 +110,7 @@ export class CLCreateInvoiceComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

@@ -23,7 +23,7 @@ describe('CLNodeInfoComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -40,5 +40,4 @@ describe('CLNodeInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

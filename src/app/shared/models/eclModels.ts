@@ -151,7 +151,7 @@ export interface Peer {
 }
 
 export interface SendPaymentOnChain {
-  address?:	string;
+  address?: string;
   amount?: number;
   blocks?: number;
 }

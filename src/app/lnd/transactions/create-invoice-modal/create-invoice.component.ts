@@ -22,6 +22,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./create-invoice.component.scss']
 })
 export class CreateInvoiceComponent implements OnInit, OnDestroy {
+
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: SelNodeChild = {};
   public memo = '';
@@ -45,23 +46,23 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageSize = this.data.pageSize;
     this.store.select('lnd').
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe((rtlStore) => {
-      this.selNode = rtlStore.nodeSettings;
-      this.information = rtlStore.information;
-    });
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.selNode = rtlStore.nodeSettings;
+        this.information = rtlStore.information;
+      });
     this.actions.pipe(
-takeUntil(this.unSubs[1]),
-    filter(action => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.FETCH_INVOICES_LND)
-). //NEWLY_SAVED_INVOICE
-    subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.FetchInvoices) => { // NewlySavedInvoice
-      if (action.type === LNDActions.FETCH_INVOICES_LND) { // NEWLY_SAVED_INVOICE && openModal: false at line 73
-        this.dialogRef.close();
-      }
-      if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewInvoice') {
-        this.invoiceError = action.payload.message;
-      }
-    });
+      takeUntil(this.unSubs[1]),
+      filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.FETCH_INVOICES_LND)
+    ). // NEWLY_SAVED_INVOICE
+      subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.FetchInvoices) => { // NewlySavedInvoice
+        if (action.type === LNDActions.FETCH_INVOICES_LND) { // NEWLY_SAVED_INVOICE && openModal: false at line 73
+          this.dialogRef.close();
+        }
+        if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewInvoice') {
+          this.invoiceError = action.payload.message;
+        }
+      });
   }
 
   onAddInvoice(form: any) {
@@ -89,12 +90,12 @@ takeUntil(this.unSubs[1]),
     if (this.selNode.fiatConversion && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
       this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
-      pipe(takeUntil(this.unSubs[2])).
-      subscribe({next: data => {
-        this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
-      }, error: err => {
-        this.invoiceValueHint = 'Conversion Error: ' + err;
-      }});
+        pipe(takeUntil(this.unSubs[2])).
+        subscribe({ next: (data) => {
+          this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
+        }, error: (err) => {
+          this.invoiceValueHint = 'Conversion Error: ' + err;
+        } });
     }
   }
 
@@ -106,7 +107,7 @@ takeUntil(this.unSubs[1]),
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

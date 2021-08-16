@@ -24,7 +24,7 @@ describe('SwapOutInfoGraphicsComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -40,5 +40,4 @@ describe('SwapOutInfoGraphicsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -10,7 +10,7 @@ describe('ChannelStatusInfoComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ChannelStatusInfoComponent]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -26,5 +26,4 @@ describe('ChannelStatusInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -39,7 +39,7 @@ describe('ECLPeersComponent', () => {
       ]
 
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -55,5 +55,4 @@ describe('ECLPeersComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

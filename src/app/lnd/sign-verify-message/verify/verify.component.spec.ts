@@ -32,7 +32,7 @@ describe('VerifyComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -48,5 +48,4 @@ describe('VerifyComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

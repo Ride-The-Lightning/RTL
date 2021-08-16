@@ -29,8 +29,9 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]
 })
 export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
+
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
   public availableBalance = 0;
   public faUsers = faUsers;
   public displayedColumns: any[] = [];
@@ -66,21 +67,21 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.store.select('lnd').
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe((rtlStore) => {
-      this.errorMessage = '';
-      this.apisCallStatus = rtlStore.apisCallStatus;
-      if (rtlStore.apisCallStatus.FetchPeers.status === APICallStatusEnum.ERROR) {
-        this.errorMessage = (typeof(this.apisCallStatus.FetchPeers.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPeers.message) : this.apisCallStatus.FetchPeers.message;
-      }
-      this.information = rtlStore.information;
-      this.availableBalance = rtlStore.blockchainBalance.total_balance || 0;
-      this.peersData = rtlStore.peers;
-      if (this.peersData.length > 0) {
-        this.loadPeersTable(this.peersData);
-      }
-      this.logger.info(rtlStore);
-    });
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.errorMessage = '';
+        this.apisCallStatus = rtlStore.apisCallStatus;
+        if (rtlStore.apisCallStatus.FetchPeers.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apisCallStatus.FetchPeers.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPeers.message) : this.apisCallStatus.FetchPeers.message;
+        }
+        this.information = rtlStore.information;
+        this.availableBalance = rtlStore.blockchainBalance.total_balance || 0;
+        this.peersData = rtlStore.peers;
+        if (this.peersData.length > 0) {
+          this.loadPeersTable(this.peersData);
+        }
+        this.logger.info(rtlStore);
+      });
   }
 
   ngAfterViewInit() {
@@ -91,11 +92,11 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onPeerClick(selPeer: Peer, event: any) {
     const reorderedPeer = [
-      [{key: 'pub_key', value: selPeer.pub_key, title: 'Public Key', width: 100}],
-      [{key: 'address', value: selPeer.address, title: 'Address', width: 100}],
-      [{key: 'alias', value: selPeer.alias, title: 'Alias', width: 40}, {key: 'inbound', value: selPeer.inbound ? 'True' : 'False', title: 'Inbound', width: 30}, {key: 'ping_time', value: selPeer.ping_time, title: 'Ping Time', width: 30, type: DataTypeEnum.NUMBER}],
-      [{key: 'sat_sent', value: selPeer.sat_sent, title: 'Satoshis Sent', width: 50, type: DataTypeEnum.NUMBER}, {key: 'sat_recv', value: selPeer.sat_recv, title: 'Satoshis Received', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'bytes_sent', value: selPeer.bytes_sent, title: 'Bytes Sent', width: 50, type: DataTypeEnum.NUMBER}, {key: 'bytes_recv', value: selPeer.bytes_recv, title: 'Bytes Received', width: 50, type: DataTypeEnum.NUMBER}]
+      [{ key: 'pub_key', value: selPeer.pub_key, title: 'Public Key', width: 100 }],
+      [{ key: 'address', value: selPeer.address, title: 'Address', width: 100 }],
+      [{ key: 'alias', value: selPeer.alias, title: 'Alias', width: 40 }, { key: 'inbound', value: selPeer.inbound ? 'True' : 'False', title: 'Inbound', width: 30 }, { key: 'ping_time', value: selPeer.ping_time, title: 'Ping Time', width: 30, type: DataTypeEnum.NUMBER }],
+      [{ key: 'sat_sent', value: selPeer.sat_sent, title: 'Satoshis Sent', width: 50, type: DataTypeEnum.NUMBER }, { key: 'sat_recv', value: selPeer.sat_recv, title: 'Satoshis Received', width: 50, type: DataTypeEnum.NUMBER }],
+      [{ key: 'bytes_sent', value: selPeer.bytes_sent, title: 'Bytes Sent', width: 50, type: DataTypeEnum.NUMBER }, { key: 'bytes_recv', value: selPeer.bytes_recv, title: 'Bytes Received', width: 50, type: DataTypeEnum.NUMBER }]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
@@ -103,14 +104,14 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
       showQRName: 'Public Key',
       showQRField: selPeer.pub_key,
       message: reorderedPeer
-    }}));
+    } }));
   }
 
   onConnectPeer() {
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       message: { peer: null, information: this.information, balance: this.availableBalance },
       component: ConnectPeerComponent
-    }}));
+    } }));
   }
 
   onOpenChannel(peerToAddChannel: Peer) {
@@ -123,7 +124,7 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
       alertTitle: 'Open Channel',
       message: peerToAddChannelMessage,
       component: OpenChannelComponent
-    }}));
+    } }));
   }
 
   onPeerDetach(peerToDetach: Peer) {
@@ -134,14 +135,14 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
       titleMessage: msg,
       noBtnText: 'Cancel',
       yesBtnText: 'Disconnect'
-    }}));
+    } }));
     this.rtlEffects.closeConfirm.
-    pipe(takeUntil(this.unSubs[3])).
-    subscribe(confirmRes => {
-      if (confirmRes) {
-        this.store.dispatch(new LNDActions.DetachPeer({pubkey: peerToDetach.pub_key}));
-      }
-    });
+      pipe(takeUntil(this.unSubs[3])).
+      subscribe((confirmRes) => {
+        if (confirmRes) {
+          this.store.dispatch(new LNDActions.DetachPeer({ pubkey: peerToDetach.pub_key }));
+        }
+      });
   }
 
   applyFilter(selFilter: any) {
@@ -151,7 +152,7 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
   loadPeersTable(peers: Peer[]) {
     this.peers = peers ? new MatTableDataSource<Peer>([...peers]) : new MatTableDataSource([]);
     this.peers.sort = this.sort;
-    this.peers.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.peers.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.peers.filterPredicate = (peer: Peer, fltr: string) => JSON.stringify(peer).toLowerCase().includes(fltr);
     this.peers.paginator = this.paginator;
   }
@@ -163,9 +164,10 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

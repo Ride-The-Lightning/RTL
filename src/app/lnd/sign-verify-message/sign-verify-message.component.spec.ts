@@ -13,7 +13,7 @@ describe('SignVerifyMessageComponent', () => {
       declarations: [SignVerifyMessageComponent],
       imports: [SharedModule, RouterTestingModule]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -29,5 +29,4 @@ describe('SignVerifyMessageComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -124,9 +124,7 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
       };
     case CLActions.REMOVE_PEER_CL:
       const modifiedPeers = [...state.peers];
-      const removePeerIdx = state.peers.findIndex(peer => {
-        return peer.id === action.payload.id;
-      });
+      const removePeerIdx = state.peers.findIndex((peer) => peer.id === action.payload.id);
       if (removePeerIdx > -1) {
         modifiedPeers.splice(removePeerIdx, 1);
       }
@@ -141,9 +139,7 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
       };
     case CLActions.REMOVE_CHANNEL_CL:
       const modifiedChannels = [...state.allChannels];
-      const removeChannelIdx = state.allChannels.findIndex(channel => {
-        return channel.channel_id === action.payload.channelId;
-      });
+      const removeChannelIdx = state.allChannels.findIndex((channel) => channel.channel_id === action.payload.channelId);
       if (removeChannelIdx > -1) {
         modifiedChannels.splice(removeChannelIdx, 1);
       }
@@ -160,21 +156,25 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
       const modifiedFeeWithTxCount = state.fees;
       if (action.payload.forwarding_events && action.payload.forwarding_events.length > 0) {
         const storedChannels = [...state.allChannels];
-        action.payload.forwarding_events.forEach(event => {
+        action.payload.forwarding_events.forEach((event) => {
           if (storedChannels && storedChannels.length > 0) {
             for (let idx = 0; idx < storedChannels.length; idx++) {
               if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id === event.in_channel) {
                 event.in_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : event.in_channel;
-                if (event.out_channel_alias) { return; }
+                if (event.out_channel_alias) {
+                  return;
+                }
               }
               if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id.toString() === event.out_channel) {
                 event.out_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : event.out_channel;
-                if (event.in_channel_alias) { return; }
+                if (event.in_channel_alias) {
+                  return;
+                }
               }
             }
           }
         });
-        modifiedFeeWithTxCount.totalTxCount = action.payload.forwarding_events.filter(event => event.status === 'settled').length;
+        modifiedFeeWithTxCount.totalTxCount = action.payload.forwarding_events.filter((event) => event.status === 'settled').length;
       } else {
         action.payload = {};
       }
@@ -203,5 +203,4 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
     default:
       return state;
   }
-
 }

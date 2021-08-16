@@ -32,10 +32,10 @@ describe('CLConnectPeerComponent', () => {
       providers: [
         LoggerService,
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {alertTitle: '', titleMessage: '', message: {}, newlyAdded: true}}
+        { provide: MAT_DIALOG_DATA, useValue: { alertTitle: '', titleMessage: '', message: {}, newlyAdded: true } }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -51,5 +51,4 @@ describe('CLConnectPeerComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

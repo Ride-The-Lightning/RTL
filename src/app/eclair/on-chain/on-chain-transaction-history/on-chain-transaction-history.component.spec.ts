@@ -34,7 +34,7 @@ describe('ECLOnChainTransactionHistoryComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -50,5 +50,4 @@ describe('ECLOnChainTransactionHistoryComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

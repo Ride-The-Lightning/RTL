@@ -30,7 +30,7 @@ describe('LoginTokenComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: {} }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -46,5 +46,4 @@ describe('LoginTokenComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -20,6 +20,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   styleUrls: ['./close-channel.component.scss']
 })
 export class CloseChannelComponent implements OnInit, OnDestroy {
+
   public channelToClose: Channel;
   public transTypes = TRANS_TYPES;
   public selTransType = '0';
@@ -36,26 +37,32 @@ export class CloseChannelComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.channelToClose = this.data.channel;
     this.actions.pipe(
-    takeUntil(this.unSubs[0]),
-    filter(action => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.SET_ALL_CHANNELS_LND)).
-    subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.SetAllChannels) => {
-      if (action.type === LNDActions.SET_ALL_CHANNELS_LND) {
-        let filteredChannel = action.payload.find(channel => channel.chan_id === this.data.channel.chan_id);
-        if (filteredChannel.pending_htlcs && filteredChannel.pending_htlcs.length && filteredChannel.pending_htlcs.length > 0) {
-          this.flgPendingHtlcs = true;
+      takeUntil(this.unSubs[0]),
+      filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.SET_ALL_CHANNELS_LND)).
+      subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.SetAllChannels) => {
+        if (action.type === LNDActions.SET_ALL_CHANNELS_LND) {
+          const filteredChannel = action.payload.find((channel) => channel.chan_id === this.data.channel.chan_id);
+          if (filteredChannel.pending_htlcs && filteredChannel.pending_htlcs.length && filteredChannel.pending_htlcs.length > 0) {
+            this.flgPendingHtlcs = true;
+          }
         }
-      }
-      if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'FetchAllChannels') {
-        this.logger.error('Fetching latest channel information failed!\n' + action.payload.message);
-      }
-    });
+        if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'FetchAllChannels') {
+          this.logger.error('Fetching latest channel information failed!\n' + action.payload.message);
+        }
+      });
   }
 
   onCloseChannel(): boolean|void {
-    if ((this.selTransType === '1' && (!this.blocks || this.blocks === 0)) || (this.selTransType === '2' && (!this.fees || this.fees === 0))) { return true; }
-    let closeChannelParams: any = { channelPoint: this.channelToClose.channel_point, forcibly: !this.channelToClose.active };
-    if (this.blocks) { closeChannelParams.targetConf = this.blocks; }
-    if (this.fees) { closeChannelParams.satPerByte = this.fees; }
+    if ((this.selTransType === '1' && (!this.blocks || this.blocks === 0)) || (this.selTransType === '2' && (!this.fees || this.fees === 0))) {
+      return true;
+    }
+    const closeChannelParams: any = { channelPoint: this.channelToClose.channel_point, forcibly: !this.channelToClose.active };
+    if (this.blocks) {
+      closeChannelParams.targetConf = this.blocks;
+    }
+    if (this.fees) {
+      closeChannelParams.satPerByte = this.fees;
+    }
     this.store.dispatch(new LNDActions.CloseChannel(closeChannelParams));
     this.dialogRef.close(false);
   }
@@ -71,9 +78,10 @@ export class CloseChannelComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

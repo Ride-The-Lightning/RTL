@@ -10,6 +10,7 @@ import { Channel } from '../../../shared/models/clModels';
   styleUrls: ['./channel-capacity-info.component.scss']
 })
 export class CLChannelCapacityInfoComponent {
+
   public faBalanceScale = faBalanceScale;
   public faDumbbell = faDumbbell;
   @Input() channelBalances: {localBalance: number, remoteBalance: number, balancedness: number};

@@ -12,6 +12,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
   styleUrls: ['./node-lookup.component.scss']
 })
 export class CLNodeLookupComponent implements OnInit {
+
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
   @Input() lookupResult: LookupNode;
   public addresses: any;
@@ -23,7 +24,7 @@ export class CLNodeLookupComponent implements OnInit {
     this.addresses = this.lookupResult && this.lookupResult.addresses ? new MatTableDataSource<any>([...this.lookupResult.addresses]) : new MatTableDataSource([]);
     this.addresses.data = this.lookupResult && this.lookupResult.addresses ? this.lookupResult.addresses : [];
     this.addresses.sort = this.sort;
-    this.addresses.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.addresses.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
   }
 
   onCopyNodeURI(payload: string) {

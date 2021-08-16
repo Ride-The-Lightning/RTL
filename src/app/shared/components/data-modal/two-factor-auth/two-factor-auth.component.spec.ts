@@ -28,11 +28,11 @@ describe('TwoFactorAuthComponent', () => {
       ],
       providers: [
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {appConfig: {}} },
+        { provide: MAT_DIALOG_DATA, useValue: { appConfig: {} } },
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -48,5 +48,4 @@ describe('TwoFactorAuthComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

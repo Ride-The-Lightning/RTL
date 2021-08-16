@@ -27,7 +27,7 @@ describe('InitializeWalletComponent', () => {
         { provide: LNDEffects, useClass: mockLNDEffects }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -43,5 +43,4 @@ describe('InitializeWalletComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

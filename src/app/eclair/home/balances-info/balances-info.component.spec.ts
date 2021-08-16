@@ -12,7 +12,7 @@ describe('ECLBalancesInfoComponent', () => {
       declarations: [ECLBalancesInfoComponent],
       imports: [SharedModule]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -28,5 +28,4 @@ describe('ECLBalancesInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

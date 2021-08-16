@@ -15,6 +15,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./on-chain-receive.component.scss']
 })
 export class ECLOnChainReceiveComponent {
+
   public newAddress = '';
 
   constructor(private store: Store<fromRTLReducer.RTLState>, private eclEffects: ECLEffects) {}
@@ -22,17 +23,17 @@ export class ECLOnChainReceiveComponent {
   onGenerateAddress() {
     this.store.dispatch(new ECLActions.GetNewAddress());
     this.eclEffects.setNewAddress.pipe(take(1)).
-    subscribe(newAddress => {
-      this.newAddress = newAddress;
-      this.store.dispatch(new RTLActions.OpenAlert({
-        width: '58%',
-        data: {
-          address: this.newAddress,
-          addressType: '',
-          component: OnChainGeneratedAddressComponent
-        }
-      }));
-    });
+      subscribe((newAddress) => {
+        this.newAddress = newAddress;
+        this.store.dispatch(new RTLActions.OpenAlert({
+          width: '58%',
+          data: {
+            address: this.newAddress,
+            addressType: '',
+            component: OnChainGeneratedAddressComponent
+          }
+        }));
+      });
   }
 
 }

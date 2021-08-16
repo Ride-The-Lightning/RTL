@@ -38,7 +38,7 @@ describe('CLChannelPendingTableComponent', () => {
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -54,5 +54,4 @@ describe('CLChannelPendingTableComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

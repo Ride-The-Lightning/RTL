@@ -38,7 +38,7 @@ describe('CLOnChainComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -54,5 +54,4 @@ describe('CLOnChainComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

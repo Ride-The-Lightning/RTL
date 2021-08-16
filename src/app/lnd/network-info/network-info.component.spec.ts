@@ -33,7 +33,7 @@ describe('NetworkInfoComponent', () => {
       ]
 
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -49,5 +49,4 @@ describe('NetworkInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

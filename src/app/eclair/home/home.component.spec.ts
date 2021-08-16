@@ -42,7 +42,7 @@ describe('ECLHomeComponent', () => {
       ]
 
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -58,5 +58,4 @@ describe('ECLHomeComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

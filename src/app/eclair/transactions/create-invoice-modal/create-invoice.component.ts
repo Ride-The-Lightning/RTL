@@ -22,6 +22,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./create-invoice.component.scss']
 })
 export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
+
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: SelNodeChild = {};
   public description = '';
@@ -45,34 +46,36 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageSize = this.data.pageSize;
     this.store.select('ecl').
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe((rtlStore) => {
-      this.selNode = rtlStore.nodeSettings;
-      this.information = rtlStore.information;
-    });
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.selNode = rtlStore.nodeSettings;
+        this.information = rtlStore.information;
+      });
     this.actions.pipe(
-    takeUntil(this.unSubs[1]),
-    filter(action => action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL || action.type === ECLActions.ADD_INVOICE_ECL)).
-    subscribe((action: ECLActions.UpdateAPICallStatus | ECLActions.AddInvoice) => {
-      if (action.type === ECLActions.ADD_INVOICE_ECL) {
-        this.dialogRef.close();
-      }
-      if (action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'CreateInvoice') {
-        this.invoiceError = action.payload.message;
-      }
-    });
+      takeUntil(this.unSubs[1]),
+      filter((action) => action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL || action.type === ECLActions.ADD_INVOICE_ECL)).
+      subscribe((action: ECLActions.UpdateAPICallStatus | ECLActions.AddInvoice) => {
+        if (action.type === ECLActions.ADD_INVOICE_ECL) {
+          this.dialogRef.close();
+        }
+        if (action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'CreateInvoice') {
+          this.invoiceError = action.payload.message;
+        }
+      });
   }
 
   onAddInvoice(form: any): boolean|void {
     this.invoiceError = '';
-    if (!this.description) { return true; }
+    if (!this.description) {
+      return true;
+    }
     let expiryInSecs = (this.expiry ? this.expiry : 3600);
     if (this.selTimeUnit !== TimeUnitEnum.SECS) {
       expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
     }
     let invoicePayload = null;
     if (this.invoiceValue) {
-      invoicePayload = { description: this.description, expireIn: expiryInSecs, amountMsat: this.invoiceValue*1000 };
+      invoicePayload = { description: this.description, expireIn: expiryInSecs, amountMsat: this.invoiceValue * 1000 };
     } else {
       invoicePayload = { description: this.description, expireIn: expiryInSecs };
     }
@@ -93,12 +96,12 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
     if (this.selNode.fiatConversion && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
       this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
-      pipe(takeUntil(this.unSubs[2])).
-      subscribe({next: data => {
-        this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
-      }, error: err => {
-        this.invoiceValueHint = 'Conversion Error: ' + err;
-      }});
+        pipe(takeUntil(this.unSubs[2])).
+        subscribe({ next: (data) => {
+          this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
+        }, error: (err) => {
+          this.invoiceValueHint = 'Conversion Error: ' + err;
+        } });
     }
   }
 
@@ -110,7 +113,7 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

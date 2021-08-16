@@ -27,8 +27,9 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   ]
 })
 export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, OnDestroy {
+
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
   public pendingChannels: Channel[];
   public totalBalance = 0;
   public displayedColumns: any[] = [];
@@ -67,20 +68,20 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
 
   ngOnInit() {
     this.store.select('ecl').
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe((rtlStore) => {
-      this.errorMessage = '';
-      this.apisCallStatus = rtlStore.apisCallStatus;
-      if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
-        this.errorMessage = (typeof(this.apisCallStatus.FetchChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchChannels.message) : this.apisCallStatus.FetchChannels.message;
-      }
-      this.information = rtlStore.information;
-      this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
-      this.totalBalance = rtlStore.onchainBalance.total;
-      this.pendingChannels = rtlStore.pendingChannels;
-      this.loadChannelsTable();
-      this.logger.info(rtlStore);
-    });
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.errorMessage = '';
+        this.apisCallStatus = rtlStore.apisCallStatus;
+        if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apisCallStatus.FetchChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchChannels.message) : this.apisCallStatus.FetchChannels.message;
+        }
+        this.information = rtlStore.information;
+        this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
+        this.totalBalance = rtlStore.onchainBalance.total;
+        this.pendingChannels = rtlStore.pendingChannels;
+        this.loadChannelsTable();
+        this.logger.info(rtlStore);
+      });
   }
 
   ngAfterViewInit() {
@@ -94,20 +95,18 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
   }
 
   onChannelClick(selChannel: Channel, event: any) {
-      this.store.dispatch(new RTLActions.OpenAlert({ data: {
-        channel: selChannel,
-        channelsType: 'pending',
-        component: ECLChannelInformationComponent
-      }}));
-    }
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
+      channel: selChannel,
+      channelsType: 'pending',
+      component: ECLChannelInformationComponent
+    } }));
+  }
 
   loadChannelsTable() {
-    this.pendingChannels.sort((a, b) => {
-      return (a.alias === b.alias) ? 0 : ((b.alias) ? 1 : -1);
-    });
+    this.pendingChannels.sort((a, b) => ((a.alias === b.alias) ? 0 : ((b.alias) ? 1 : -1)));
     this.channels = new MatTableDataSource<Channel>([...this.pendingChannels]);
     this.channels.sort = this.sort;
-    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.channels.filterPredicate = (channel: Channel, fltr: string) => JSON.stringify(channel).toLowerCase().includes(fltr);
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
@@ -120,7 +119,7 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

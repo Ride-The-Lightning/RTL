@@ -34,7 +34,7 @@ describe('ECLRoutingPeersComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -50,5 +50,4 @@ describe('ECLRoutingPeersComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -13,7 +13,7 @@ describe('ChannelCapacityInfoComponent', () => {
       declarations: [ChannelCapacityInfoComponent],
       imports: [SharedModule, RouterTestingModule]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -29,5 +29,4 @@ describe('ChannelCapacityInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -36,7 +36,7 @@ describe('SwapsComponent', () => {
         { provide: LoopService, useClass: mockLoopService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,5 +52,4 @@ describe('SwapsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

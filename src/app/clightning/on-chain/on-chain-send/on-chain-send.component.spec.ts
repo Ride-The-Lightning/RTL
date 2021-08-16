@@ -22,9 +22,9 @@ describe('CLOnChainSendComponent', () => {
             strictActionImmutability: false
           }
         })
- ]
+      ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -40,5 +40,4 @@ describe('CLOnChainSendComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

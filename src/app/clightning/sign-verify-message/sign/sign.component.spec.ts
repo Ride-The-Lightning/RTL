@@ -24,7 +24,7 @@ describe('CLSignComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -40,5 +40,4 @@ describe('CLSignComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

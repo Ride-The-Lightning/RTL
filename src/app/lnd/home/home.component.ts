@@ -33,6 +33,7 @@ export interface Tile {
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit, OnDestroy {
+
   public faSmile = faSmile;
   public faFrown = faFrown;
   public faAngleDoubleDown = faAngleDoubleDown;
@@ -45,7 +46,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public userPersonaEnum = UserPersonaEnum;
   public activeChannels = 0;
   public inactiveChannels = 0;
-  public channelBalances = {localBalance: 0, remoteBalance: 0, balancedness: 0};
+  public channelBalances = { localBalance: 0, remoteBalance: 0, balancedness: 0 };
   public selNode: SelNodeChild = {};
   public fees: Fees;
   public information: GetInfo = {};
@@ -140,75 +141,75 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.select('lnd').
-    pipe(takeUntil(this.unSubs[1])).
-    subscribe((rtlStore) => {
-      this.errorMessages = ['', '', '', '', ''];
-      this.apisCallStatus = rtlStore.apisCallStatus;
-      if (rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) {
-        this.errorMessages[0] = (typeof(this.apisCallStatus.FetchInfo.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchInfo.message) : this.apisCallStatus.FetchInfo.message;
-      }
-      if (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) {
-        this.errorMessages[1] = (typeof(this.apisCallStatus.FetchFees.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchFees.message) : this.apisCallStatus.FetchFees.message;
-      }
-      if (rtlStore.apisCallStatus.FetchBalanceBlockchain.status === APICallStatusEnum.ERROR) {
-        this.errorMessages[2] = (typeof(this.apisCallStatus.FetchBalanceBlockchain.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchBalanceBlockchain.message) : this.apisCallStatus.FetchBalanceBlockchain.message;
-      }
-      if (rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.ERROR) {
-        this.errorMessages[3] = (typeof(this.apisCallStatus.FetchAllChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchAllChannels.message) : this.apisCallStatus.FetchAllChannels.message;
-      }
-      if (rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.ERROR) {
-        this.errorMessages[4] = (typeof(this.apisCallStatus.FetchPendingChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPendingChannels.message) : this.apisCallStatus.FetchPendingChannels.message;
-      }
-      this.selNode = rtlStore.nodeSettings;
-      this.information = rtlStore.information;
-      this.fees = rtlStore.fees;
-      this.balances.onchain = (+rtlStore.blockchainBalance.total_balance >= 0) ? +rtlStore.blockchainBalance.total_balance : 0;
-      let local = (rtlStore.totalLocalBalance) ? +rtlStore.totalLocalBalance : 0;
-      let remote = (rtlStore.totalRemoteBalance) ? +rtlStore.totalRemoteBalance : 0;
-      let total = local + remote;
-      this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: +(1 - Math.abs((local-remote)/total)).toFixed(3) };
-      this.balances.lightning = rtlStore.totalLocalBalance;
-      this.balances.total = this.balances.lightning + this.balances.onchain;
-      this.balances = Object.assign({}, this.balances);
-      this.activeChannels = rtlStore.numberOfActiveChannels;
-      this.inactiveChannels = rtlStore.numberOfInactiveChannels;
-      this.channelsStatus = {
-        active: { channels: rtlStore.numberOfActiveChannels, capacity: rtlStore.totalCapacityActive },
-        inactive: { channels: rtlStore.numberOfInactiveChannels, capacity: rtlStore.totalCapacityInactive },
-        pending: { channels: rtlStore.numberOfPendingChannels.open.num_channels, capacity: rtlStore.numberOfPendingChannels.open.limbo_balance },
-        closing: {
-          channels: rtlStore.numberOfPendingChannels.closing.num_channels + rtlStore.numberOfPendingChannels.force_closing.num_channels + rtlStore.numberOfPendingChannels.waiting_close.num_channels,
-          capacity: rtlStore.numberOfPendingChannels.total_limbo_balance
+      pipe(takeUntil(this.unSubs[1])).
+      subscribe((rtlStore) => {
+        this.errorMessages = ['', '', '', '', ''];
+        this.apisCallStatus = rtlStore.apisCallStatus;
+        if (rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[0] = (typeof (this.apisCallStatus.FetchInfo.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchInfo.message) : this.apisCallStatus.FetchInfo.message;
         }
-      };
-      this.totalInboundLiquidity = 0;
-      this.totalOutboundLiquidity = 0;
-      this.allChannels = rtlStore.allChannels.filter(channel => channel.active === true);
-      this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'balancedness')));
-      this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter(channel => channel.remote_balance > 0), 'remote_balance')));
-      this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter(channel => channel.local_balance > 0), 'local_balance')));
-      this.allChannels.forEach(channel => {
-        this.totalInboundLiquidity = this.totalInboundLiquidity + +channel.remote_balance;
-        this.totalOutboundLiquidity = this.totalOutboundLiquidity + +channel.local_balance;
+        if (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[1] = (typeof (this.apisCallStatus.FetchFees.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchFees.message) : this.apisCallStatus.FetchFees.message;
+        }
+        if (rtlStore.apisCallStatus.FetchBalanceBlockchain.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[2] = (typeof (this.apisCallStatus.FetchBalanceBlockchain.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchBalanceBlockchain.message) : this.apisCallStatus.FetchBalanceBlockchain.message;
+        }
+        if (rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[3] = (typeof (this.apisCallStatus.FetchAllChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchAllChannels.message) : this.apisCallStatus.FetchAllChannels.message;
+        }
+        if (rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[4] = (typeof (this.apisCallStatus.FetchPendingChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPendingChannels.message) : this.apisCallStatus.FetchPendingChannels.message;
+        }
+        this.selNode = rtlStore.nodeSettings;
+        this.information = rtlStore.information;
+        this.fees = rtlStore.fees;
+        this.balances.onchain = (+rtlStore.blockchainBalance.total_balance >= 0) ? +rtlStore.blockchainBalance.total_balance : 0;
+        const local = (rtlStore.totalLocalBalance) ? +rtlStore.totalLocalBalance : 0;
+        const remote = (rtlStore.totalRemoteBalance) ? +rtlStore.totalRemoteBalance : 0;
+        const total = local + remote;
+        this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: +(1 - Math.abs((local - remote) / total)).toFixed(3) };
+        this.balances.lightning = rtlStore.totalLocalBalance;
+        this.balances.total = this.balances.lightning + this.balances.onchain;
+        this.balances = Object.assign({}, this.balances);
+        this.activeChannels = rtlStore.numberOfActiveChannels;
+        this.inactiveChannels = rtlStore.numberOfInactiveChannels;
+        this.channelsStatus = {
+          active: { channels: rtlStore.numberOfActiveChannels, capacity: rtlStore.totalCapacityActive },
+          inactive: { channels: rtlStore.numberOfInactiveChannels, capacity: rtlStore.totalCapacityInactive },
+          pending: { channels: rtlStore.numberOfPendingChannels.open.num_channels, capacity: rtlStore.numberOfPendingChannels.open.limbo_balance },
+          closing: {
+            channels: rtlStore.numberOfPendingChannels.closing.num_channels + rtlStore.numberOfPendingChannels.force_closing.num_channels + rtlStore.numberOfPendingChannels.waiting_close.num_channels,
+            capacity: rtlStore.numberOfPendingChannels.total_limbo_balance
+          }
+        };
+        this.totalInboundLiquidity = 0;
+        this.totalOutboundLiquidity = 0;
+        this.allChannels = rtlStore.allChannels.filter((channel) => channel.active === true);
+        this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'balancedness')));
+        this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter((channel) => channel.remote_balance > 0), 'remote_balance')));
+        this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter((channel) => channel.local_balance > 0), 'local_balance')));
+        this.allChannels.forEach((channel) => {
+          this.totalInboundLiquidity = this.totalInboundLiquidity + +channel.remote_balance;
+          this.totalOutboundLiquidity = this.totalOutboundLiquidity + +channel.local_balance;
+        });
+        if (this.balances.lightning >= 0 && this.balances.onchain >= 0 && this.fees.month_fee_sum >= 0) {
+          this.flgChildInfoUpdated = true;
+        } else {
+          this.flgChildInfoUpdated = false;
+        }
+        this.logger.info(rtlStore);
       });
-      if (this.balances.lightning >= 0 && this.balances.onchain >= 0 && this.fees.month_fee_sum >= 0) {
-        this.flgChildInfoUpdated = true;
-      } else {
-        this.flgChildInfoUpdated = false;
-      }
-      this.logger.info(rtlStore);
-    });
     this.actions.pipe(
-    takeUntil(this.unSubs[2]),
-    filter((action) => action.type === LNDActions.FETCH_FEES_LND || action.type === LNDActions.SET_FEES_LND)).
-    subscribe(action => {
-      if (action.type === LNDActions.FETCH_FEES_LND) {
-        this.flgChildInfoUpdated = false;
-      }
-      if (action.type === LNDActions.SET_FEES_LND) {
-        this.flgChildInfoUpdated = true;
-      }
-    });
+      takeUntil(this.unSubs[2]),
+      filter((action) => action.type === LNDActions.FETCH_FEES_LND || action.type === LNDActions.SET_FEES_LND)).
+      subscribe((action) => {
+        if (action.type === LNDActions.FETCH_FEES_LND) {
+          this.flgChildInfoUpdated = false;
+        }
+        if (action.type === LNDActions.SET_FEES_LND) {
+          this.flgChildInfoUpdated = true;
+        }
+      });
   }
 
   onNavigateTo(link: string) {
@@ -230,7 +231,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

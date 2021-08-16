@@ -35,7 +35,7 @@ describe('CLChannelsTablesComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -51,5 +51,4 @@ describe('CLChannelsTablesComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

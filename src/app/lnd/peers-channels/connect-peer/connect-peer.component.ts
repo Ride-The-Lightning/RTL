@@ -23,7 +23,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./connect-peer.component.scss']
 })
 export class ConnectPeerComponent implements OnInit, OnDestroy {
-  @ViewChild('peersForm', {static: false}) form: any;
+
+  @ViewChild('peersForm', { static: false }) form: any;
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
   public peerAddress = '';
@@ -54,12 +55,12 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       fundingAmount: ['', [Validators.required, Validators.min(1), Validators.max(this.totalBalance)]],
       isPrivate: [false],
       selTransType: [TRANS_TYPES[0].id],
-      transTypeValue: [{value: '', disabled: true}],
+      transTypeValue: [{ value: '', disabled: true }],
       spendUnconfirmed: [false],
       hiddenAmount: ['', [Validators.required]]
     });
     this.statusFormGroup = this.formBuilder.group({});
-    this.channelFormGroup.controls.selTransType.valueChanges.pipe(takeUntil(this.unSubs[0])).subscribe(transType => {
+    this.channelFormGroup.controls.selTransType.valueChanges.pipe(takeUntil(this.unSubs[0])).subscribe((transType) => {
       if (transType === TRANS_TYPES[0].id) {
         this.channelFormGroup.controls.transTypeValue.setValue('');
         this.channelFormGroup.controls.transTypeValue.disable();
@@ -72,31 +73,33 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       }
     });
     this.actions.pipe(
-    takeUntil(this.unSubs[1]),
-    filter((action) => action.type === LNDActions.NEWLY_ADDED_PEER_LND || action.type === LNDActions.FETCH_PENDING_CHANNELS_LND || action.type === LNDActions.UPDATE_API_CALL_STATUS_LND)).
-    subscribe((action: (LNDActions.NewlyAddedPeer | LNDActions.FetchPendingChannels | LNDActions.UpdateAPICallStatus)) => {
-      if (action.type === LNDActions.NEWLY_ADDED_PEER_LND) {
-        this.logger.info(action.payload);
-        this.flgEditable = false;
-        this.newlyAddedPeer = action.payload.peer;
-        this.peerFormGroup.controls.hiddenAddress.setValue(this.peerFormGroup.controls.peerAddress.value);
-        this.stepper.next();
-      }
-      if (action.type === LNDActions.FETCH_PENDING_CHANNELS_LND) {
-        this.dialogRef.close();
-      }
-      if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR) {
-        if (action.payload.action === 'SaveNewPeer' || action.payload.action === 'FetchGraphNode') {
-          this.peerConnectionError = action.payload.message;
-        } else if (action.payload.action === 'SaveNewChannel') {
-          this.channelConnectionError = action.payload.message;
+      takeUntil(this.unSubs[1]),
+      filter((action) => action.type === LNDActions.NEWLY_ADDED_PEER_LND || action.type === LNDActions.FETCH_PENDING_CHANNELS_LND || action.type === LNDActions.UPDATE_API_CALL_STATUS_LND)).
+      subscribe((action: (LNDActions.NewlyAddedPeer | LNDActions.FetchPendingChannels | LNDActions.UpdateAPICallStatus)) => {
+        if (action.type === LNDActions.NEWLY_ADDED_PEER_LND) {
+          this.logger.info(action.payload);
+          this.flgEditable = false;
+          this.newlyAddedPeer = action.payload.peer;
+          this.peerFormGroup.controls.hiddenAddress.setValue(this.peerFormGroup.controls.peerAddress.value);
+          this.stepper.next();
         }
-      }
-    });
+        if (action.type === LNDActions.FETCH_PENDING_CHANNELS_LND) {
+          this.dialogRef.close();
+        }
+        if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR) {
+          if (action.payload.action === 'SaveNewPeer' || action.payload.action === 'FetchGraphNode') {
+            this.peerConnectionError = action.payload.message;
+          } else if (action.payload.action === 'SaveNewChannel') {
+            this.channelConnectionError = action.payload.message;
+          }
+        }
+      });
   }
 
   onConnectPeer(): boolean|void {
-    if (!this.peerFormGroup.controls.peerAddress.value) { return true; }
+    if (!this.peerFormGroup.controls.peerAddress.value) {
+      return true;
+    }
     this.peerConnectionError = '';
     const deviderIndex = this.peerFormGroup.controls.peerAddress.value.search('@');
     let pubkey = '';
@@ -106,22 +109,24 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       host = this.peerFormGroup.controls.peerAddress.value.substring(deviderIndex + 1);
       this.connectPeerWithParams(pubkey, host);
     } else {
-      this.store.dispatch(new LNDActions.FetchGraphNode({pubkey: this.peerFormGroup.controls.peerAddress.value}));
+      this.store.dispatch(new LNDActions.FetchGraphNode({ pubkey: this.peerFormGroup.controls.peerAddress.value }));
       this.lndEffects.setGraphNode.
-      pipe(take(1)).
-      subscribe(graphNode => {
-        host = (graphNode.node.addresses && graphNode.node.addresses.length && graphNode.node.addresses.length > 0 && graphNode.node.addresses[0].addr) ? graphNode.node.addresses[0].addr : '';
-        this.connectPeerWithParams(this.peerFormGroup.controls.peerAddress.value, host);
-      });
+        pipe(take(1)).
+        subscribe((graphNode) => {
+          host = (graphNode.node.addresses && graphNode.node.addresses.length && graphNode.node.addresses.length > 0 && graphNode.node.addresses[0].addr) ? graphNode.node.addresses[0].addr : '';
+          this.connectPeerWithParams(this.peerFormGroup.controls.peerAddress.value, host);
+        });
     }
   }
 
   connectPeerWithParams(pubkey: string, host: string) {
-    this.store.dispatch(new LNDActions.SaveNewPeer({pubkey: pubkey, host: host, perm: false}));
+    this.store.dispatch(new LNDActions.SaveNewPeer({ pubkey: pubkey, host: host, perm: false }));
   }
 
   onOpenChannel(): boolean|void {
-    if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) || (this.channelFormGroup.controls.selTransType.value === '1' && !this.channelFormGroup.controls.transTypeValue.value) || (this.channelFormGroup.controls.selTransType.value === '2' && !this.channelFormGroup.controls.transTypeValue.value)) { return true; }
+    if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) || (this.channelFormGroup.controls.selTransType.value === '1' && !this.channelFormGroup.controls.transTypeValue.value) || (this.channelFormGroup.controls.selTransType.value === '2' && !this.channelFormGroup.controls.transTypeValue.value)) {
+      return true;
+    }
     this.channelConnectionError = '';
     this.store.dispatch(new LNDActions.SaveNewChannel({
       selectedPeerPubkey: this.newlyAddedPeer.pub_key, fundingAmount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value,
@@ -177,7 +182,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

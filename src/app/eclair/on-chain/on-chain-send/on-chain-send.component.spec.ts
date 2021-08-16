@@ -22,9 +22,9 @@ describe('ECLOnChainSendComponent', () => {
             strictActionImmutability: false
           }
         })
- ]
+      ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -40,5 +40,4 @@ describe('ECLOnChainSendComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -39,7 +39,7 @@ describe('ChannelOpenTableComponent', () => {
         { provide: LNDEffects, useClass: mockLNDEffects }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -55,5 +55,4 @@ describe('ChannelOpenTableComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

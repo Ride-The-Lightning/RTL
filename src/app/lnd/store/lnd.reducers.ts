@@ -66,7 +66,7 @@ export const initLNDState: LNDState = {
   pendingChannels: {},
   numberOfActiveChannels: 0,
   numberOfInactiveChannels: 0,
-  numberOfPendingChannels: { open: {num_channels: 0, limbo_balance: 0}, closing: {num_channels: 0, limbo_balance: 0}, force_closing: {num_channels: 0, limbo_balance: 0}, waiting_close: {num_channels: 0, limbo_balance: 0}, total_channels: 0, total_limbo_balance: 0},
+  numberOfPendingChannels: { open: { num_channels: 0, limbo_balance: 0 }, closing: { num_channels: 0, limbo_balance: 0 }, force_closing: { num_channels: 0, limbo_balance: 0 }, waiting_close: { num_channels: 0, limbo_balance: 0 }, total_channels: 0, total_limbo_balance: 0 },
   totalCapacityActive: 0,
   totalCapacityInactive: 0,
   totalLocalBalance: -1,
@@ -74,8 +74,8 @@ export const initLNDState: LNDState = {
   totalInvoices: -1,
   transactions: [],
   utxos: [],
-  payments: {payments: []},
-  invoices: {invoices: []},
+  payments: { payments: [] },
+  invoices: { invoices: [] },
   allLightningTransactions: { paymentsAll: null, invoicesAll: null },
   forwardingHistory: {}
 };
@@ -117,9 +117,7 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
       };
     case LNDActions.REMOVE_PEER_LND:
       const modifiedPeers = [...state.peers];
-      const removePeerIdx = state.peers.findIndex(peer => {
-        return peer.pub_key === action.payload.pubkey;
-      });
+      const removePeerIdx = state.peers.findIndex((peer) => peer.pub_key === action.payload.pubkey);
       if (removePeerIdx > -1) {
         modifiedPeers.splice(removePeerIdx, 1);
       }
@@ -151,10 +149,17 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
         numberOfPendingChannels: action.payload.pendingChannels
       };
     case LNDActions.SET_ALL_CHANNELS_LND:
-      let localBal = 0, remoteBal = 0, activeChannels = 0, inactiveChannels = 0, totalCapacityActive = 0, totalCapacityInactive = 0;
+      let localBal = 0;
+      let remoteBal = 0;
+      let activeChannels = 0;
+      let inactiveChannels = 0;
+      let totalCapacityActive = 0;
+      let totalCapacityInactive = 0;
       if (action.payload) {
-        action.payload.forEach(channel => {
-          if (!channel.local_balance) { channel.local_balance = 0; }
+        action.payload.forEach((channel) => {
+          if (!channel.local_balance) {
+            channel.local_balance = 0;
+          }
           if (channel.active === true) {
             totalCapacityActive = totalCapacityActive + +channel.local_balance;
             activeChannels = activeChannels + 1;
@@ -186,9 +191,7 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
       };
     case LNDActions.REMOVE_CHANNEL_LND:
       const modifiedChannels = [...state.allChannels];
-      const removeChannelIdx = state.allChannels.findIndex(channel => {
-        return channel.channel_point === action.payload.channelPoint;
-      });
+      const removeChannelIdx = state.allChannels.findIndex((channel) => channel.channel_point === action.payload.channelPoint);
       if (removeChannelIdx > -1) {
         modifiedChannels.splice(removeChannelIdx, 1);
       }
@@ -223,9 +226,9 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
     case LNDActions.SET_TRANSACTIONS_LND:
       flgTransactionsSet = true;
       if (action.payload.length && flgUTXOsSet) {
-        let modifiedUTXOs = [...state.utxos];
-        modifiedUTXOs.forEach(utxo => {
-          let foundTransaction = action.payload.find(transaction => transaction.tx_hash === utxo.outpoint.txid_str);
+        const modifiedUTXOs = [...state.utxos];
+        modifiedUTXOs.forEach((utxo) => {
+          const foundTransaction = action.payload.find((transaction) => transaction.tx_hash === utxo.outpoint.txid_str);
           utxo.label = foundTransaction && foundTransaction.label ? foundTransaction.label : '';
         });
         return {
@@ -241,9 +244,9 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
     case LNDActions.SET_UTXOS_LND:
       flgUTXOsSet = true;
       if (action.payload.length && flgTransactionsSet) {
-        let transactions = [...state.transactions];
-        action.payload.forEach(utxo => {
-          let foundTransaction = transactions.find(transaction => transaction.tx_hash === utxo.outpoint.txid_str);
+        const transactions = [...state.transactions];
+        action.payload.forEach((utxo) => {
+          const foundTransaction = transactions.find((transaction) => transaction.tx_hash === utxo.outpoint.txid_str);
           utxo.label = foundTransaction && foundTransaction.label ? foundTransaction.label : '';
         });
       }
@@ -264,20 +267,28 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
     case LNDActions.SET_FORWARDING_HISTORY_LND:
       if (action.payload.forwarding_events) {
         const storedChannels = [...state.allChannels, ...state.closedChannels];
-        action.payload.forwarding_events.forEach(event => {
+        action.payload.forwarding_events.forEach((event) => {
           if (storedChannels && storedChannels.length > 0) {
             for (let idx = 0; idx < storedChannels.length; idx++) {
               if (storedChannels[idx].chan_id.toString() === event.chan_id_in) {
                 event.alias_in = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : event.chan_id_in;
-                if (event.alias_out) { return; }
+                if (event.alias_out) {
+                  return;
+                }
               }
               if (storedChannels[idx].chan_id.toString() === event.chan_id_out) {
                 event.alias_out = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : event.chan_id_out;
-                if (event.alias_in) { return; }
+                if (event.alias_in) {
+                  return;
+                }
               }
-              if (idx === storedChannels.length-1) {
-                if (!event.alias_in) { event.alias_in = event.chan_id_in; }
-                if (!event.alias_out) { event.alias_out = event.chan_id_out; }
+              if (idx === storedChannels.length - 1) {
+                if (!event.alias_in) {
+                  event.alias_in = event.chan_id_in;
+                }
+                if (!event.alias_out) {
+                  event.alias_out = event.chan_id_out;
+                }
               }
             }
           } else {
@@ -295,5 +306,4 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
     default:
       return state;
   }
-
 }

@@ -11,6 +11,7 @@ import { CommonService } from '../../../../services/common.service';
   animations: [sliderAnimation]
 })
 export class SwapInInfoGraphicsComponent implements OnInit {
+
   @Input() animationDirection = 'forward';
   @Input() stepNumber = 1;
   @Output() readonly stepNumberChange = new EventEmitter();
@@ -34,4 +35,5 @@ export class SwapInInfoGraphicsComponent implements OnInit {
       this.stepNumberChange.emit(this.stepNumber);
     }
   }
+
 }

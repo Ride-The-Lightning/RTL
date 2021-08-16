@@ -14,13 +14,13 @@ export const opacityAnimation = [
 
 export const fadeIn = [
   trigger('fadeIn', [
-    transition('void => *', []), // when the item is created
-    transition('* => void', []), // when the item is removed
-    transition('* => *', [ // when the item is changed
-        animate(800, keyframes([ // animate for 800 ms
-            style({ opacity: 0, transform: 'translateY(100%)' }),
-            style({ opacity: 1, transform: 'translateY(0%)' })
-        ]))
+    transition('void => *', []), // When the item is created
+    transition('* => void', []), // When the item is removed
+    transition('* => *', [ // When the item is changed
+      animate(800, keyframes([ // Animate for 800 ms
+        style({ opacity: 0, transform: 'translateY(100%)' }),
+        style({ opacity: 1, transform: 'translateY(0%)' })
+      ]))
     ])
   ])
 ];

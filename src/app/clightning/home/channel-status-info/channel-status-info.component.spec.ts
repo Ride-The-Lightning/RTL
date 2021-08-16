@@ -12,7 +12,7 @@ describe('CLChannelStatusInfoComponent', () => {
       declarations: [CLChannelStatusInfoComponent],
       imports: [SharedModule]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -28,5 +28,4 @@ describe('CLChannelStatusInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

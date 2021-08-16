@@ -39,7 +39,7 @@ describe('CLChannelOpenTableComponent', () => {
         { provide: CLEffects, useClass: mockCLEffects }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -55,5 +55,4 @@ describe('CLChannelOpenTableComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -27,7 +27,7 @@ describe('ECLChannelPendingTableComponent', () => {
             strictActionImmutability: false
           }
         })
- ],
+      ],
       providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
@@ -35,7 +35,7 @@ describe('ECLChannelPendingTableComponent', () => {
       ]
 
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -51,5 +51,4 @@ describe('ECLChannelPendingTableComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

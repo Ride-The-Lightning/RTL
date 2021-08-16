@@ -19,7 +19,7 @@ describe('HorizontalScrollerComponent', () => {
       ],
       providers: [LoggerService]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -35,5 +35,4 @@ describe('HorizontalScrollerComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

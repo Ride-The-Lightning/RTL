@@ -19,7 +19,7 @@ describe('ECLNodeLookupComponent', () => {
       ],
       providers: [LoggerService]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -35,5 +35,4 @@ describe('ECLNodeLookupComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

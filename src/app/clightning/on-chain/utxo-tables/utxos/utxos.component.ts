@@ -24,8 +24,9 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   ]
 })
 export class CLOnChainUtxosComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
   @Input() numDustUTXOs = 0;
   @Input() isDustUTXO = false;
   @Input() utxos: UTXO[];
@@ -60,15 +61,15 @@ export class CLOnChainUtxosComponent implements OnInit, OnChanges, AfterViewInit
 
   ngOnInit() {
     this.store.select('cl').
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe((rtlStore) => {
-      this.errorMessage = '';
-      this.apisCallStatus = rtlStore.apisCallStatus;
-      if (rtlStore.apisCallStatus.FetchUTXOs.status === APICallStatusEnum.ERROR) {
-        this.errorMessage = (typeof(this.apisCallStatus.FetchUTXOs.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchUTXOs.message) : this.apisCallStatus.FetchUTXOs.message;
-      }
-      this.logger.info(rtlStore);
-    });
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.errorMessage = '';
+        this.apisCallStatus = rtlStore.apisCallStatus;
+        if (rtlStore.apisCallStatus.FetchUTXOs.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apisCallStatus.FetchUTXOs.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchUTXOs.message) : this.apisCallStatus.FetchUTXOs.message;
+        }
+        this.logger.info(rtlStore);
+      });
   }
 
   ngAfterViewInit() {
@@ -89,23 +90,23 @@ export class CLOnChainUtxosComponent implements OnInit, OnChanges, AfterViewInit
 
   onUTXOClick(selUtxo: UTXO, event: any) {
     const reorderedUTXO = [
-      [{key: 'txid', value: selUtxo.txid, title: 'Transaction ID', width: 100}],
-      [{key: 'output', value: selUtxo.output, title: 'Output', width: 50, type: DataTypeEnum.NUMBER},
-        {key: 'value', value: selUtxo.value, title: 'Value (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'status', value: this.commonService.titleCase(selUtxo.status), title: 'Status', width: 50, type: DataTypeEnum.STRING},
-        {key: 'blockheight', value: selUtxo.blockheight, title: 'Blockheight', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'address', value: selUtxo.address, title: 'Address', width: 100}]
+      [{ key: 'txid', value: selUtxo.txid, title: 'Transaction ID', width: 100 }],
+      [{ key: 'output', value: selUtxo.output, title: 'Output', width: 50, type: DataTypeEnum.NUMBER },
+        { key: 'value', value: selUtxo.value, title: 'Value (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
+      [{ key: 'status', value: this.commonService.titleCase(selUtxo.status), title: 'Status', width: 50, type: DataTypeEnum.STRING },
+        { key: 'blockheight', value: selUtxo.blockheight, title: 'Blockheight', width: 50, type: DataTypeEnum.NUMBER }],
+      [{ key: 'address', value: selUtxo.address, title: 'Address', width: 100 }]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'UTXO Information',
       message: reorderedUTXO
-    }}));
+    } }));
   }
 
   loadUTXOsTable(utxos: any[]) {
     this.listUTXOs = new MatTableDataSource<UTXO>([...utxos]);
-    this.listUTXOs.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.listUTXOs.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.listUTXOs.sort = this.sort;
     this.listUTXOs.filterPredicate = (utxo: UTXO, fltr: string) => JSON.stringify(utxo).toLowerCase().includes(fltr);
     this.listUTXOs.paginator = this.paginator;
@@ -119,9 +120,10 @@ export class CLOnChainUtxosComponent implements OnInit, OnChanges, AfterViewInit
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

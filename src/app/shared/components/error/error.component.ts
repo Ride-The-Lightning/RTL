@@ -10,7 +10,8 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './error.component.html'
 })
 export class ErrorComponent implements OnInit {
-  error = {errorCode: '', errorMessage: ''};
+
+  error = { errorCode: '', errorMessage: '' };
   public faTimes = faTimes;
   private unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
@@ -18,10 +19,10 @@ export class ErrorComponent implements OnInit {
 
   ngOnInit() {
     this.activatedRoute.paramMap.
-    pipe(takeUntil(this.unsubs[0])).
-    subscribe(data => {
-      this.error = window.history.state;
-    });
+      pipe(takeUntil(this.unsubs[0])).
+      subscribe((data) => {
+        this.error = window.history.state;
+      });
   }
 
   goToHelp(): void {

@@ -224,8 +224,8 @@ export interface Fees {
 }
 
 export interface GetInfoChain {
-    chain?: string;
-    network?: string;
+  chain?: string;
+  network?: string;
 }
 
 export interface GetInfo {
@@ -411,7 +411,7 @@ export interface PayRequest {
 }
 
 export interface Peer {
-  pub_key?:	string;
+  pub_key?: string;
   alias?: string;
   address?: string;
   bytes_sent?: number;
@@ -439,7 +439,7 @@ export interface SendPayment {
 }
 
 export interface ChannelsTransaction {
-  address?:	string;
+  address?: string;
   amount?: number;
   sendAll?: boolean;
   blocks?: number;
@@ -463,7 +463,7 @@ export interface UTXO {
   address?: string;
   amount_sat?: string;
   pk_script?: string;
-  outpoint?: {txid_bytes?: string, txid_str?: string, output_index?: number};
+  outpoint?: { txid_bytes?: string, txid_str?: string, output_index?: number };
   confirmations?: string;
   label?: string;
 }

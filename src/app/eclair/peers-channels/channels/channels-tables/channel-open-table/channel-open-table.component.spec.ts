@@ -37,7 +37,7 @@ describe('ECLChannelOpenTableComponent', () => {
       ]
 
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -53,5 +53,4 @@ describe('ECLChannelOpenTableComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

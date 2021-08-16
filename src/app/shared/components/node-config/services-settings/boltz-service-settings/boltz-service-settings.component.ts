@@ -20,6 +20,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   styleUrls: ['./boltz-service-settings.component.scss']
 })
 export class BoltzServiceSettingsComponent implements OnInit, OnDestroy {
+
   @ViewChild('form', { static: true }) form: any;
   public faInfoCircle = faInfoCircle;
   public appConfig: RTLConfiguration;
@@ -30,20 +31,20 @@ export class BoltzServiceSettingsComponent implements OnInit, OnDestroy {
   public macaroonPath = '';
   unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) { }
 
   ngOnInit() {
     this.store.select('root').
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe((rtlStore) => {
-      this.appConfig = rtlStore.appConfig;
-      this.selNode = rtlStore.selNode;
-      this.enableBoltz = rtlStore.selNode.settings.boltzServerUrl && rtlStore.selNode.settings.boltzServerUrl.trim() !== '';
-      this.serverUrl = this.selNode.settings.boltzServerUrl;
-      this.macaroonPath = this.selNode.authentication.boltzMacaroonPath;
-      this.previousSelNode = JSON.parse(JSON.stringify(this.selNode));
-      this.logger.info(rtlStore);
-    });
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.appConfig = rtlStore.appConfig;
+        this.selNode = rtlStore.selNode;
+        this.enableBoltz = rtlStore.selNode.settings.boltzServerUrl && rtlStore.selNode.settings.boltzServerUrl.trim() !== '';
+        this.serverUrl = this.selNode.settings.boltzServerUrl;
+        this.macaroonPath = this.selNode.authentication.boltzMacaroonPath;
+        this.previousSelNode = JSON.parse(JSON.stringify(this.selNode));
+        this.logger.info(rtlStore);
+      });
   }
 
   onEnableServiceChanged(event) {
@@ -54,9 +55,9 @@ export class BoltzServiceSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  onUpdateService(): boolean|void {
+  onUpdateService(): boolean | void {
     if (this.serverUrl && this.serverUrl.trim() !== '' && !this.form.controls.srvrUrl.value.includes('https://')) {
-      this.form.controls.srvrUrl.setErrors({invalid: true});
+      this.form.controls.srvrUrl.setErrors({ invalid: true });
     }
     if (this.enableBoltz &&
       (!this.serverUrl ||
@@ -64,11 +65,13 @@ export class BoltzServiceSettingsComponent implements OnInit, OnDestroy {
         !this.serverUrl.includes('https://') ||
         !this.macaroonPath ||
         this.macaroonPath.trim() === '')
-    ) { return true; }
+    ) {
+      return true;
+    }
     this.logger.info(this.selNode);
     this.selNode.settings.boltzServerUrl = this.serverUrl;
     this.selNode.authentication.boltzMacaroonPath = this.macaroonPath;
-    this.store.dispatch(new RTLActions.UpdateServiceSettings({uiMessage: UI_MESSAGES.UPDATE_BOLTZ_SETTINGS, service: ServicesEnum.BOLTZ, settings: { enable: this.enableBoltz, serverUrl: this.serverUrl, macaroonPath: this.macaroonPath }}));
+    this.store.dispatch(new RTLActions.UpdateServiceSettings({ uiMessage: UI_MESSAGES.UPDATE_BOLTZ_SETTINGS, service: ServicesEnum.BOLTZ, settings: { enable: this.enableBoltz, serverUrl: this.serverUrl, macaroonPath: this.macaroonPath } }));
     this.store.dispatch(new LNDActions.SetChildNodeSettings({
       userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl
     }));
@@ -88,7 +91,7 @@ export class BoltzServiceSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(unsub => {
+    this.unSubs.forEach((unsub) => {
       unsub.next();
       unsub.complete();
     });

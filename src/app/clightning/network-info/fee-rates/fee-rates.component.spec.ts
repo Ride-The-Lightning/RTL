@@ -10,7 +10,7 @@ describe('CLFeeRatesComponent', () => {
     TestBed.configureTestingModule({
       declarations: [CLFeeRatesComponent]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -26,5 +26,4 @@ describe('CLFeeRatesComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

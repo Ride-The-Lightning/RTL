@@ -7,16 +7,19 @@ import { LoopQuote } from '../../../../models/loopModels';
   styleUrls: ['./loop-quote.component.scss']
 })
 export class LoopQuoteComponent implements OnInit {
+
   @Input() quote: LoopQuote = {};
   @Input() termCaption = '';
   @Input() showPanel = true;
   @Input() panelExpanded = false;
   public flgShowPanel = false;
 
-  constructor() {}
+  constructor() { }
 
   ngOnInit() {
-    setTimeout(() => { this.flgShowPanel = true; }, 1200);
+    setTimeout(() => {
+      this.flgShowPanel = true;
+    }, 1200);
   }
 
 }

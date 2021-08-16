@@ -33,7 +33,7 @@ describe('CLOnChainUtxosComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -49,5 +49,4 @@ describe('CLOnChainUtxosComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

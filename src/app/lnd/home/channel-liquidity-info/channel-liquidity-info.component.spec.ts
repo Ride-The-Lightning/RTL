@@ -35,7 +35,7 @@ describe('ChannelLiquidityInfoComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -51,5 +51,4 @@ describe('ChannelLiquidityInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

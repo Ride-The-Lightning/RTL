@@ -10,6 +10,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
   styleUrls: ['./node-lookup.component.scss']
 })
 export class NodeLookupComponent {
+
   @Input() lookupResult: GraphNode;
   public displayedColumns = ['network', 'addr', 'actions'];
 
@@ -19,4 +20,5 @@ export class NodeLookupComponent {
     this.snackBar.open('Node URI copied.');
     this.logger.info('Copied Text: ' + payload);
   }
+
 }

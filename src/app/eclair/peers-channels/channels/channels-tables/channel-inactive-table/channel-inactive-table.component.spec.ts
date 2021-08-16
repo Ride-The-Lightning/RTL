@@ -37,7 +37,7 @@ describe('ECLChannelInactiveTableComponent', () => {
       ]
 
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -53,5 +53,4 @@ describe('ECLChannelInactiveTableComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

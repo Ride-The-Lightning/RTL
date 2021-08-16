@@ -24,7 +24,7 @@ describe('LoopInInfoGraphicsComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -40,5 +40,4 @@ describe('LoopInInfoGraphicsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

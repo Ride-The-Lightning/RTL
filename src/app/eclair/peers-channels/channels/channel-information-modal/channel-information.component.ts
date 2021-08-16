@@ -15,6 +15,7 @@ import { ScreenSizeEnum } from '../../../../shared/services/consts-enums-functio
   styleUrls: ['./channel-information.component.scss']
 })
 export class ECLChannelInformationComponent implements OnInit {
+
   public faReceipt = faReceipt;
   public showAdvanced = false;
   public channel: Channel;
@@ -42,4 +43,5 @@ export class ECLChannelInformationComponent implements OnInit {
     this.snackBar.open((this.channelsType === 'open') ? ('Short channel ID ' + payload + ' copied.') : 'Channel ID copied.');
     this.logger.info('Copied Text: ' + payload);
   }
+
 }

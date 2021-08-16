@@ -23,6 +23,7 @@ import * as ECLActions from '../store/ecl.actions';
   styleUrls: ['./home.component.scss']
 })
 export class ECLHomeComponent implements OnInit, OnDestroy {
+
   public faSmile = faSmile;
   public faFrown = faFrown;
   public faAngleDoubleDown = faAngleDoubleDown;
@@ -32,7 +33,7 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
   public faServer = faServer;
   public faNetworkWired = faNetworkWired;
   public userPersonaEnum = UserPersonaEnum;
-  public channelBalances = {localBalance: 0, remoteBalance: 0, balancedness: 0};
+  public channelBalances = { localBalance: 0, remoteBalance: 0, balancedness: 0 };
   public selNode: SelNodeChild = {};
   public fees: Fees;
   public information: GetInfo = {};
@@ -107,47 +108,47 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.select('ecl').
-    pipe(takeUntil(this.unSubs[1])).
-    subscribe((rtlStore) => {
-      this.errorMessages = ['', '', '', ''];
-      this.apisCallStatus = rtlStore.apisCallStatus;
-      if (rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) {
-        this.errorMessages[0] = (typeof(this.apisCallStatus.FetchInfo.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchInfo.message) : this.apisCallStatus.FetchInfo.message;
-      }
-      if (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) {
-        this.errorMessages[1] = (typeof(this.apisCallStatus.FetchFees.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchFees.message) : this.apisCallStatus.FetchFees.message;
-      }
-      if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
-        this.errorMessages[2] = (typeof(this.apisCallStatus.FetchChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchChannels.message) : this.apisCallStatus.FetchChannels.message;
-      }
-      if (rtlStore.apisCallStatus.FetchOnchainBalance.status === APICallStatusEnum.ERROR) {
-        this.errorMessages[3] = (typeof(this.apisCallStatus.FetchOnchainBalance.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchOnchainBalance.message) : this.apisCallStatus.FetchOnchainBalance.message;
-      }
-      this.selNode = rtlStore.nodeSettings;
-      this.information = rtlStore.information;
-      this.fees = rtlStore.fees;
-      this.channels = rtlStore.activeChannels;
-      this.onchainBalance = rtlStore.onchainBalance;
-      this.balances.onchain = this.onchainBalance.total;
-      this.balances.lightning = rtlStore.lightningBalance.localBalance;
-      this.balances.total = this.balances.lightning + this.balances.onchain;
-      this.balances = Object.assign({}, this.balances);
-      let local = (rtlStore.lightningBalance.localBalance) ? +rtlStore.lightningBalance.localBalance : 0;
-      let remote = (rtlStore.lightningBalance.remoteBalance) ? +rtlStore.lightningBalance.remoteBalance : 0;
-      let total = local + remote;
-      this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: +(1 - Math.abs((local-remote)/total)).toFixed(3) };
-      this.channelsStatus = rtlStore.channelsStatus;
-      this.totalInboundLiquidity = 0;
-      this.totalOutboundLiquidity = 0;
-      this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels, 'balancedness')));
-      this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels.filter(channel => channel.toRemote > 0), 'toRemote')));
-      this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels.filter(channel => channel.toLocal > 0), 'toLocal')));
-      this.channels.forEach(channel => {
-        this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil(channel.toRemote);
-        this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor(channel.toLocal);
+      pipe(takeUntil(this.unSubs[1])).
+      subscribe((rtlStore) => {
+        this.errorMessages = ['', '', '', ''];
+        this.apisCallStatus = rtlStore.apisCallStatus;
+        if (rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[0] = (typeof (this.apisCallStatus.FetchInfo.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchInfo.message) : this.apisCallStatus.FetchInfo.message;
+        }
+        if (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[1] = (typeof (this.apisCallStatus.FetchFees.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchFees.message) : this.apisCallStatus.FetchFees.message;
+        }
+        if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[2] = (typeof (this.apisCallStatus.FetchChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchChannels.message) : this.apisCallStatus.FetchChannels.message;
+        }
+        if (rtlStore.apisCallStatus.FetchOnchainBalance.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[3] = (typeof (this.apisCallStatus.FetchOnchainBalance.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchOnchainBalance.message) : this.apisCallStatus.FetchOnchainBalance.message;
+        }
+        this.selNode = rtlStore.nodeSettings;
+        this.information = rtlStore.information;
+        this.fees = rtlStore.fees;
+        this.channels = rtlStore.activeChannels;
+        this.onchainBalance = rtlStore.onchainBalance;
+        this.balances.onchain = this.onchainBalance.total;
+        this.balances.lightning = rtlStore.lightningBalance.localBalance;
+        this.balances.total = this.balances.lightning + this.balances.onchain;
+        this.balances = Object.assign({}, this.balances);
+        const local = (rtlStore.lightningBalance.localBalance) ? +rtlStore.lightningBalance.localBalance : 0;
+        const remote = (rtlStore.lightningBalance.remoteBalance) ? +rtlStore.lightningBalance.remoteBalance : 0;
+        const total = local + remote;
+        this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: +(1 - Math.abs((local - remote) / total)).toFixed(3) };
+        this.channelsStatus = rtlStore.channelsStatus;
+        this.totalInboundLiquidity = 0;
+        this.totalOutboundLiquidity = 0;
+        this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels, 'balancedness')));
+        this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels.filter((channel) => channel.toRemote > 0), 'toRemote')));
+        this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels.filter((channel) => channel.toLocal > 0), 'toLocal')));
+        this.channels.forEach((channel) => {
+          this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil(channel.toRemote);
+          this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor(channel.toLocal);
+        });
+        this.logger.info(rtlStore);
       });
-      this.logger.info(rtlStore);
-    });
   }
 
   onNavigateTo(link: string) {
@@ -169,7 +170,7 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

@@ -12,6 +12,7 @@ import * as RTLActions from '../../../../store/rtl.actions';
   styleUrls: ['./login-2fa-token.component.scss']
 })
 export class LoginTokenComponent {
+
   public faUserClock = faUserClock;
   public token = '';
 
@@ -21,10 +22,12 @@ export class LoginTokenComponent {
     this.dialogRef.close(null);
   }
 
-  onVerifyToken(): boolean|void {
-    if (!this.token) { return true; }
+  onVerifyToken(): boolean | void {
+    if (!this.token) {
+      return true;
+    }
     this.dialogRef.close();
-    this.store.dispatch(new RTLActions.CloseAlert({twoFAToken: this.token}));
+    this.store.dispatch(new RTLActions.CloseAlert({ twoFAToken: this.token }));
   }
 
 }

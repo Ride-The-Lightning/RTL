@@ -31,7 +31,7 @@ describe('CLOnChainReceiveComponent', () => {
         { provide: CLEffects, useClass: mockCLEffects }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -47,5 +47,4 @@ describe('CLOnChainReceiveComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -36,7 +36,7 @@ describe('OnChainUTXOsComponent', () => {
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,5 +52,4 @@ describe('OnChainUTXOsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

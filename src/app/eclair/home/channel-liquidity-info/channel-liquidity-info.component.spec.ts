@@ -21,7 +21,7 @@ describe('ECLChannelLiquidityInfoComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -37,5 +37,4 @@ describe('ECLChannelLiquidityInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

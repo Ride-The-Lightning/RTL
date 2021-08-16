@@ -7,6 +7,7 @@ import { ChannelsStatus } from '../../../shared/models/clModels';
   styleUrls: ['./channel-status-info.component.scss']
 })
 export class CLChannelStatusInfoComponent {
+
   @Input() channelsStatus: ChannelsStatus = {};
   @Input() errorMessage: string;
 

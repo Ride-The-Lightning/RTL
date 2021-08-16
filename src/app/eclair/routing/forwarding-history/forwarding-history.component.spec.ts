@@ -34,7 +34,7 @@ describe('ECLForwardingHistoryComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -50,5 +50,4 @@ describe('ECLForwardingHistoryComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

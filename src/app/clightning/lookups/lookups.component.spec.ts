@@ -37,7 +37,7 @@ describe('CLLookupsComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -53,5 +53,4 @@ describe('CLLookupsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -36,7 +36,7 @@ describe('BoltzSwapsComponent', () => {
         { provide: BoltzService, useClass: mockBoltzService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,5 +52,4 @@ describe('BoltzSwapsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

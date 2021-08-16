@@ -12,6 +12,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./channel-lookup.component.scss']
 })
 export class ChannelLookupComponent implements OnInit {
+
   @Input() lookupResult: ChannelEdge;
   public node1_match = false;
   public node2_match = false;
@@ -21,15 +22,15 @@ export class ChannelLookupComponent implements OnInit {
 
   ngOnInit() {
     this.store.select('lnd').
-    pipe(takeUntil(this.unSubs[0])).
-    subscribe((rtlStore) => {
-      if (this.lookupResult.node1_pub === rtlStore.information.identity_pubkey) {
-        this.node1_match = true;
-      }
-      if (this.lookupResult.node2_pub === rtlStore.information.identity_pubkey) {
-        this.node2_match = true;
-      }
-    });
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        if (this.lookupResult.node1_pub === rtlStore.information.identity_pubkey) {
+          this.node1_match = true;
+        }
+        if (this.lookupResult.node2_pub === rtlStore.information.identity_pubkey) {
+          this.node2_match = true;
+        }
+      });
   }
 
 }

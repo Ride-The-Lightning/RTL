@@ -26,7 +26,7 @@ describe('ServicesSettingsComponent', () => {
         })
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -42,5 +42,4 @@ describe('ServicesSettingsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

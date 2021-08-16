@@ -38,10 +38,10 @@ describe('LoopModalComponent', () => {
         { provide: DataService, useClass: mockDataService },
         { provide: LoopService, useClass: mockLoopService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {channel: {}, minQuote: {}, maxQuote: {}, direction: ''} }
+        { provide: MAT_DIALOG_DATA, useValue: { channel: {}, minQuote: {}, maxQuote: {}, direction: '' } }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -57,5 +57,4 @@ describe('LoopModalComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

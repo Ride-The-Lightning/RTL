@@ -24,7 +24,7 @@ describe('CLVerifyComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
     }).
-    compileComponents();
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -40,5 +40,4 @@ describe('CLVerifyComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

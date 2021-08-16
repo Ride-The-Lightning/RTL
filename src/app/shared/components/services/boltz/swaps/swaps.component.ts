@@ -25,12 +25,13 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   ]
 })
 export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy {
+
   @Input() selectedSwapType: SwapTypeEnum = SwapTypeEnum.SWAP_OUT;
   @Input() swapsData: Swap[] | ReverseSwap[] = [];
   @Input() flgLoading: Array<Boolean | 'error'> = [true];
   @Input() emptyTableMessage = 'No swaps available.';
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public swapStateEnum = SwapStateEnum;
   public faHistory = faHistory;
   public swapCaption = 'Swap Out';
@@ -66,21 +67,21 @@ export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy 
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ?
-      ['status', 'id', 'expectedAmount', 'actions'] : ['status', 'id', 'onchainAmount', 'actions'];
+        ['status', 'id', 'expectedAmount', 'actions'] : ['status', 'id', 'onchainAmount', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ?
-      ['status', 'id', 'expectedAmount', 'actions'] : ['status', 'id', 'onchainAmount', 'actions'];
+        ['status', 'id', 'expectedAmount', 'actions'] : ['status', 'id', 'onchainAmount', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ?
-      ['status', 'id', 'expectedAmount', 'timeoutBlockHeight', 'actions'] :
-      ['status', 'id', 'onchainAmount', 'timeoutBlockHeight', 'actions'];
+        ['status', 'id', 'expectedAmount', 'timeoutBlockHeight', 'actions'] :
+        ['status', 'id', 'onchainAmount', 'timeoutBlockHeight', 'actions'];
     } else {
       this.flgSticky = true;
       this.displayedColumns = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ?
-      ['status', 'id', 'lockupAddress', 'expectedAmount', 'timeoutBlockHeight', 'actions'] :
-      ['status', 'id', 'claimAddress', 'onchainAmount', 'timeoutBlockHeight', 'actions'];
+        ['status', 'id', 'lockupAddress', 'expectedAmount', 'timeoutBlockHeight', 'actions'] :
+        ['status', 'id', 'claimAddress', 'onchainAmount', 'timeoutBlockHeight', 'actions'];
     }
   }
 
@@ -92,36 +93,40 @@ export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy 
 
   onSwapClick(selSwap: Swap | ReverseSwap, event: any) {
     this.boltzService.swapInfo(selSwap.id).pipe(takeUntil(this.unSubs[1])).
-    subscribe((fetchedSwap: any) => {
-      fetchedSwap = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? fetchedSwap.swap : fetchedSwap.reverseSwap;
-      const reorderedSwap = [
-        [{key: 'status', value: SwapStateEnum[fetchedSwap.status], title: 'Status', width: 50, type: DataTypeEnum.STRING},
-          {key: 'id', value: fetchedSwap.id, title: 'ID', width: 50, type: DataTypeEnum.STRING}],
-        [{key: 'amount', value: fetchedSwap.onchainAmount ? fetchedSwap.onchainAmount : fetchedSwap.expectedAmount ? fetchedSwap.expectedAmount : 0, title: fetchedSwap.onchainAmount ? 'Onchain Amount (Sats)' : fetchedSwap.expectedAmount ? 'Expected Amount (Sats)' : 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER},
-          {key: 'timeoutBlockHeight', value: fetchedSwap.timeoutBlockHeight, title: 'Timeout Block Height', width: 50, type: DataTypeEnum.NUMBER}],
-        [{key: 'address', value: fetchedSwap.claimAddress ? fetchedSwap.claimAddress : fetchedSwap.lockupAddress ? fetchedSwap.lockupAddress : '', title: fetchedSwap.claimAddress ? 'Claim Address' : fetchedSwap.lockupAddress ? 'Lockup Address' : 'Address', width: 100, type: DataTypeEnum.STRING}],
-        [{key: 'invoice', value: fetchedSwap.invoice, title: 'Invoice', width: 100, type: DataTypeEnum.STRING}],
-        [{key: 'privateKey', value: fetchedSwap.privateKey, title: 'Private Key', width: 100, type: DataTypeEnum.STRING}],
-        [{key: 'preimage', value: fetchedSwap.preimage, title: 'Preimage', width: 100, type: DataTypeEnum.STRING}],
-        [{key: 'redeemScript', value: fetchedSwap.redeemScript, title: 'Redeem Script', width: 100, type: DataTypeEnum.STRING}],
-        [{key: 'lockupTransactionId', value: fetchedSwap.lockupTransactionId, title: 'Lockup Transaction ID', width: 50, type: DataTypeEnum.STRING},
-          {key: 'transactionId', value: fetchedSwap.claimTransactionId ? fetchedSwap.claimTransactionId : fetchedSwap.refundTransactionId ? fetchedSwap.refundTransactionId : '', title: fetchedSwap.claimTransactionId ? 'Claim Transaction ID' : fetchedSwap.refundTransactionId ? 'Refund Transaction ID' : 'Transaction ID', width: 50, type: DataTypeEnum.STRING}]
-      ];
-      this.store.dispatch(new RTLActions.OpenAlert({ data: {
-        type: AlertTypeEnum.INFORMATION,
-        alertTitle: this.swapCaption + ' Status',
-        message: reorderedSwap,
-        openedBy: 'SWAP'
-      }}));
-    });
+      subscribe((fetchedSwap: any) => {
+        fetchedSwap = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? fetchedSwap.swap : fetchedSwap.reverseSwap;
+        const reorderedSwap = [
+          [{ key: 'status', value: SwapStateEnum[fetchedSwap.status], title: 'Status', width: 50, type: DataTypeEnum.STRING },
+            { key: 'id', value: fetchedSwap.id, title: 'ID', width: 50, type: DataTypeEnum.STRING }],
+          [{ key: 'amount', value: fetchedSwap.onchainAmount ? fetchedSwap.onchainAmount : fetchedSwap.expectedAmount ? fetchedSwap.expectedAmount : 0, title: fetchedSwap.onchainAmount ? 'Onchain Amount (Sats)' : fetchedSwap.expectedAmount ? 'Expected Amount (Sats)' : 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER },
+            { key: 'timeoutBlockHeight', value: fetchedSwap.timeoutBlockHeight, title: 'Timeout Block Height', width: 50, type: DataTypeEnum.NUMBER }],
+          [{ key: 'address', value: fetchedSwap.claimAddress ? fetchedSwap.claimAddress : fetchedSwap.lockupAddress ? fetchedSwap.lockupAddress : '', title: fetchedSwap.claimAddress ? 'Claim Address' : fetchedSwap.lockupAddress ? 'Lockup Address' : 'Address', width: 100, type: DataTypeEnum.STRING }],
+          [{ key: 'invoice', value: fetchedSwap.invoice, title: 'Invoice', width: 100, type: DataTypeEnum.STRING }],
+          [{ key: 'privateKey', value: fetchedSwap.privateKey, title: 'Private Key', width: 100, type: DataTypeEnum.STRING }],
+          [{ key: 'preimage', value: fetchedSwap.preimage, title: 'Preimage', width: 100, type: DataTypeEnum.STRING }],
+          [{ key: 'redeemScript', value: fetchedSwap.redeemScript, title: 'Redeem Script', width: 100, type: DataTypeEnum.STRING }],
+          [{ key: 'lockupTransactionId', value: fetchedSwap.lockupTransactionId, title: 'Lockup Transaction ID', width: 50, type: DataTypeEnum.STRING },
+            { key: 'transactionId', value: fetchedSwap.claimTransactionId ? fetchedSwap.claimTransactionId : fetchedSwap.refundTransactionId ? fetchedSwap.refundTransactionId : '', title: fetchedSwap.claimTransactionId ? 'Claim Transaction ID' : fetchedSwap.refundTransactionId ? 'Refund Transaction ID' : 'Transaction ID', width: 50, type: DataTypeEnum.STRING }]
+        ];
+        this.store.dispatch(new RTLActions.OpenAlert({
+          data: {
+            type: AlertTypeEnum.INFORMATION,
+            alertTitle: this.swapCaption + ' Status',
+            message: reorderedSwap,
+            openedBy: 'SWAP'
+          }
+        }));
+      });
   }
 
   loadSwapsTable(swaps) {
     this.listSwaps = swaps ? new MatTableDataSource<Swap>([...swaps]) : new MatTableDataSource<Swap>([]);
     this.listSwaps.sort = this.sort;
-    this.listSwaps.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.listSwaps.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.listSwaps.filterPredicate = (swap: Swap, fltr: string) => JSON.stringify(swap).toLowerCase().includes(fltr);
-    if (this.paginator) { this.paginator.firstPage(); }
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
     this.listSwaps.paginator = this.paginator;
     this.logger.info(this.listSwaps);
   }
@@ -133,7 +138,7 @@ export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
