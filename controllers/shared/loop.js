@@ -6,7 +6,11 @@ var options = {};
 exports.loopOut = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Loop', msg: 'Looping Out..'});
   options = common.getSwapServerOptions();
-  if (options.url === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  if (options.url === '') { 
+    const errMsg = 'Loop Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Loop Out Error', error: errMsg },  'Loop', errMsg);
+    res.status(err.statusCode).json({message: err.message, error: err.error});
+  }
   options.url = options.url + '/v1/loop/out';
   options.body = {
     amt: req.body.amount,
@@ -24,37 +28,23 @@ exports.loopOut = (req, res, next) => {
   logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Body', data: options.body});
   request.post(options).then(loopOutRes => {
     logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out', data: loopOutRes});
-    if (!loopOutRes || loopOutRes.error) {
-      logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop Out Error', error: loopOutRes.error});
-      res.status(500).json({
-        message: 'Loop Out Failed!',
-        error: (!loopOutRes) ? 'Error From Server!' : loopOutRes.error.message
-      });
-    } else {
-      logger.log({level: 'INFO', fileName: 'Loop', msg: 'Loop Out Finished'});
-      res.status(201).json(loopOutRes);
-    }
+    logger.log({level: 'INFO', fileName: 'Loop', msg: 'Loop Out Finished'});
+    res.status(201).json(loopOutRes);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop Out Error', error: err});
-    return res.status(500).json({
-      message: "Loop Out Failed!",
-      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
-    });
+    const err = common.handleError(errRes,  'Loop', 'Loop Out Error');
+    res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
 exports.loopOutTerms = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Loop', msg: 'Getting Loop Out Terms..'});
   options = common.getSwapServerOptions();
-  if (options.url === '') { return res.status(500).json({message: "Loop Out Terms Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  if (options.url === '') { 
+    const errMsg = 'Loop Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Loop Out Terms Error', error: errMsg },  'Loop', errMsg);
+    res.status(err.statusCode).json({message: err.message, error: err.error});
+  }
   options.url = options.url + '/v1/loop/out/terms';
   request(options).then(function (body) {
     logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Terms', data: body});
@@ -62,25 +52,19 @@ exports.loopOutTerms = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop Out Terms Error', error: err});
-    return res.status(500).json({
-      message: "Loop Out Terms Failed!",
-      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
-    });
+    const err = common.handleError(errRes,  'Loop', 'Loop Out Terms Error');
+    res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
 exports.loopOutQuote = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Loop', msg: 'Getting Loop Out Quotes..'});
   options = common.getSwapServerOptions();
-  if (options.url === '') { return res.status(500).json({message: "Loop Out Quote Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  if (options.url === '') {
+    const errMsg = 'Loop Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Loop Out Quotes Error', error: errMsg },  'Loop', errMsg);
+    res.status(err.statusCode).json({message: err.message, error: err.error});
+  }
   options.url = options.url + '/v1/loop/out/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
   logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Quote URL', data: options.url});
   request(options).then(function (quoteRes) {
@@ -91,25 +75,19 @@ exports.loopOutQuote = (req, res, next) => {
     res.status(200).json(quoteRes);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop Out Quote Error', error: err});
-    return res.status(500).json({
-      message: "Loop Out Quote Failed!",
-      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
-    });
+    const err = common.handleError(errRes,  'Loop', 'Loop Out Quotes Error');
+    res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
 exports.loopOutTermsAndQuotes = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Loop', msg: 'Getting Loop Out Terms & Quotes..'});
   options = common.getSwapServerOptions();
-  if (options.url === '') { return res.status(500).json({message: "Loop Out Terms And Quotes Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  if (options.url === '') {
+    const errMsg = 'Loop Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Loop Out Terms & Quotes Error', error: errMsg },  'Loop', errMsg);
+    res.status(err.statusCode).json({message: err.message, error: err.error});
+  }
   options.url = options.url + '/v1/loop/out/terms';
   request(options).then(function(terms) {
     logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Terms', data: terms});
@@ -129,40 +107,24 @@ exports.loopOutTermsAndQuotes = (req, res, next) => {
       res.status(200).json(values);
     })
     .catch(errRes => {
-      let err = JSON.parse(JSON.stringify(errRes));
-      if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-        delete err.options.headers['Grpc-Metadata-macaroon'];
-      }
-      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-        delete err.response.request.headers['Grpc-Metadata-macaroon'];
-      }
-      logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop Out Quotes Error', error: err});
-      return res.status(500).json({
-        message: "Loop Out Quotes Failed!",
-        error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
-      });
+      const err = common.handleError(errRes,  'Loop', 'Loop Out Terms & Quotes Error');
+      res.status(err.statusCode).json({message: err.message, error: err.error});
     });
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop Out Terms Error', error: err});
-    return res.status(500).json({
-      message: "Loop Out Terms Failed!",
-      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
-    });
+    const err = common.handleError(errRes,  'Loop', 'Loop Out Terms & Quotes Error');
+    res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
 exports.loopIn = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Loop', msg: 'Looping In..'});
   options = common.getSwapServerOptions();
-  if (options.url === '') { return res.status(500).json({message: "Loop In Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  if (options.url === '') {
+    const errMsg = 'Loop Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Loop In Error', error: errMsg },  'Loop', errMsg);
+    res.status(err.statusCode).json({message: err.message, error: err.error});
+  }
   options.url = options.url + '/v1/loop/in';
   options.body = {
     amt: req.body.amount,
@@ -173,37 +135,23 @@ exports.loopIn = (req, res, next) => {
   logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Body', data: options.body});
   request.post(options).then(function (body) {
     logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop In', data: body});
-    if (!body || body.error) {
-      logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop In Error', error: body.error});
-      res.status(500).json({
-        message: 'Loop In Failed!',
-        error: (body.error && body.error.message) ? body.error.message : 'Error From Server!'
-      });
-    } else {
-      logger.log({level: 'INFO', fileName: 'Loop', msg: 'Loop In Finished'});
-      res.status(201).json(body);
-    }
+    logger.log({level: 'INFO', fileName: 'Loop', msg: 'Loop In Finished'});
+    res.status(201).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop In Error', error: err});
-    return res.status(500).json({
-      message: "Loop In Failed!",
-      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
-    });
+    const err = common.handleError(errRes,  'Loop', 'Loop In Error');
+    res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
 exports.loopInTerms = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Loop', msg: 'Getting Loop In Terms..'});
   options = common.getSwapServerOptions();
-  if (options.url === '') { return res.status(500).json({message: "Loop In Terms Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  if (options.url === '') {
+    const errMsg = 'Loop Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Loop In Terms Error', error: errMsg },  'Loop', errMsg);
+    res.status(err.statusCode).json({message: err.message, error: err.error});
+  }
   options.url = options.url + '/v1/loop/in/terms';
   request(options).then(function (body) {
     logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Terms', data: body});
@@ -211,25 +159,19 @@ exports.loopInTerms = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop In Terms Error', error: err});
-    return res.status(500).json({
-      message: "Loop In Terms Failed!",
-      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
-    });
+    const err = common.handleError(errRes,  'Loop', 'Loop In Terms Error');
+    res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
 exports.loopInQuote = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Loop', msg: 'Getting Loop In Quotes..'});
   options = common.getSwapServerOptions();
-  if (options.url === '') { return res.status(500).json({message: "Loop In Quote Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  if (options.url === '') {
+    const errMsg = 'Loop Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Loop In Quotes Error', error: errMsg },  'Loop', errMsg);
+    res.status(err.statusCode).json({message: err.message, error: err.error});
+  }
   options.url = options.url + '/v1/loop/in/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
   logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Quote Options', data: options.url});
   request(options).then(function (body) {
@@ -240,25 +182,19 @@ exports.loopInQuote = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop In Quote Error', error: err});
-    return res.status(500).json({
-      message: "Loop In Quote Failed!",
-      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
-    });
+    const err = common.handleError(errRes,  'Loop', 'Loop In Quote Error');
+    res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
 exports.loopInTermsAndQuotes = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Loop', msg: 'Getting Loop In Terms & Quotes..'});
   options = common.getSwapServerOptions();
-  if (options.url === '') { return res.status(500).json({message: "Loop In Terms And Quotes Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  if (options.url === '') {
+    const errMsg = 'Loop Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Loop In Terms & Quotes Error', error: errMsg },  'Loop', errMsg);
+    res.status(err.statusCode).json({message: err.message, error: err.error});
+  }
   options.url = options.url + '/v1/loop/in/terms';
   request(options).then(function(terms) {
     logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Terms', data: terms});
@@ -278,40 +214,24 @@ exports.loopInTermsAndQuotes = (req, res, next) => {
       res.status(200).json(values);
     })
     .catch(errRes => {
-      let err = JSON.parse(JSON.stringify(errRes));
-      if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-        delete err.options.headers['Grpc-Metadata-macaroon'];
-      }
-      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-        delete err.response.request.headers['Grpc-Metadata-macaroon'];
-      }
-      logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop In Quotes Error', error: err});
-      return res.status(500).json({
-        message: "Loop In Quotes Failed!",
-        error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
-      });
+      const err = common.handleError(errRes,  'Loop', 'Loop In Terms & Quotes Error');
+      res.status(err.statusCode).json({message: err.message, error: err.error});
     });
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop In Terms Error', error: err});
-    return res.status(500).json({
-      message: "Loop In Terms Failed!",
-      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
-    });
+    const err = common.handleError(errRes,  'Loop', 'Loop In Terms & Quotes Error');
+    res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
 exports.swaps = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Loop', msg: 'Getting List Swaps..'});
   options = common.getSwapServerOptions();
-  if (options.url === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  if (options.url === '') {
+    const errMsg = 'Loop Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'List Swaps Error', error: errMsg },  'Loop', errMsg);
+    res.status(err.statusCode).json({message: err.message, error: err.error});
+  }
   options.url = options.url + '/v1/loop/swaps';
   request(options).then(function (body) {
     logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop Swaps', data: body});
@@ -323,25 +243,19 @@ exports.swaps = (req, res, next) => {
     res.status(200).json(body.swaps);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Loop', msg: 'List Swaps Error', error: err});
-    return res.status(500).json({
-      message: "Loop Swaps Failed!",
-      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
-    });
+    const err = common.handleError(errRes,  'Loop', 'List Swaps Error');
+    res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
 exports.swap = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Loop', msg: 'Getting Swap Information..'});
   options = common.getSwapServerOptions();
-  if (options.url === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  if (options.url === '') {
+    const errMsg = 'Loop Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Get Swap Error', error: errMsg },  'Loop', errMsg);
+    res.status(err.statusCode).json({message: err.message, error: err.error});
+  }
   options.url = options.url + '/v1/loop/swap/' + req.params.id;
   request(options).then(function (body) {
     logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop Swap', data: body});
@@ -349,17 +263,7 @@ exports.swap = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Swap Info Error', error: err});
-    return res.status(500).json({
-      message: "Loop Swap Failed!",
-      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
-    });
+    const err = common.handleError(errRes,  'Loop', 'Get Swap Error');
+    res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

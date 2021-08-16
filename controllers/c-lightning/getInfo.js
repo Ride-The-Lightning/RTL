@@ -12,8 +12,7 @@ exports.getInfo = (req, res, next) => {
   logger.log({level: 'DEBUG', fileName: 'GetInfo', msg: 'Calling Info from C-Lightning server url', data: options.url});
   if (!options.headers || !options.headers.macaroon) {
     const errMsg = 'C-Lightning get info failed due to bad or missing macaroon!';
-    const errJSON = { statusCode: 502, message: 'Bad Macaroon', error: errMsg }
-    const err = common.handleError(errJSON,  'GetInfo', errMsg);
+    const err = common.handleError({ statusCode: 502, message: 'Bad Macaroon', error: errMsg },  'GetInfo', errMsg);
     res.status(err.statusCode).json({message: err.message, error: err.error});
   } else {
     request(options).then((body) => {

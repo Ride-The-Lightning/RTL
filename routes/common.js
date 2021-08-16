@@ -82,7 +82,7 @@ common.updateSelectedNodeOptions = () => {
     if (common.selectedNode && common.selectedNode.ln_implementation) {
       switch (common.selectedNode.ln_implementation.toUpperCase()) {
         case 'CLT':
-          // common.selectedNode.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(path.join(common.selectedNode.macaroon_path, 'access.macaroon'))).toString("base64") };
+          common.selectedNode.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(path.join(common.selectedNode.macaroon_path, 'access.macaroon'))).toString("base64") };
           break;
       
         case 'ECL':
@@ -121,7 +121,7 @@ common.setOptions = () => {
         if (node.ln_implementation) {
           switch (node.ln_implementation.toUpperCase()) {
             case 'CLT':
-              // node.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(path.join(node.macaroon_path, 'access.macaroon'))).toString("base64") };
+              node.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(path.join(node.macaroon_path, 'access.macaroon'))).toString("base64") };
               break;
           
             case 'ECL':
@@ -212,6 +212,15 @@ common.newestOnTop = (array, key, value) => {
 common.handleError = (errRes, fileName, errMsg) => {
   let err = JSON.parse(JSON.stringify(errRes));
   switch (common.selectedNode.ln_implementation) {
+    case 'LND':
+      if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+        delete err.options.headers['Grpc-Metadata-macaroon'];
+      }
+      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+        delete err.response.request.headers['Grpc-Metadata-macaroon'];
+      }
+      break;
+
     case 'CLT':
       if (err.options && err.options.headers && err.options.headers.macaroon) {
         delete err.options.headers.macaroon;
@@ -229,14 +238,9 @@ common.handleError = (errRes, fileName, errMsg) => {
         delete err.response.request.headers.authorization;
       }
       break;
-    
+
     default:
-      if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-        delete err.options.headers['Grpc-Metadata-macaroon'];
-      }
-      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-        delete err.response.request.headers['Grpc-Metadata-macaroon'];
-      }
+      if (err.options && err.options.headers) { delete err.options.headers; }
       break;
   }
   const msgStr = '\r\n[' + new Date().toISOString() + '] ERROR: ' + fileName + ' => ' + errMsg + ': ' + (typeof err === 'object' ? JSON.stringify(err) : (typeof err === 'string') ? err : 'Unknown Error');

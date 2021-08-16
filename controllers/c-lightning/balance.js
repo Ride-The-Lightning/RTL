@@ -16,7 +16,7 @@ exports.getBalance = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch(errRes => {
-    const err = common.handleError(errRes,  'Balance', 'Balance Fetch Error');
+    const err = common.handleError(errRes,  'Balance', 'Get Balance Error');
     res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

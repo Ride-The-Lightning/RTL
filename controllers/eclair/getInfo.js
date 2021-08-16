@@ -19,8 +19,7 @@ exports.getInfo = (req, res, next) => {
   } else {
     if (!options.headers || !options.headers.authorization) {
       const errMsg = 'Eclair Get info failed due to missing or wrong password!';
-      const errJSON = { statusCode: 502, message: 'Missing or Wrong Password', error: errMsg }
-      const err = common.handleError(errJSON,  'GetInfo', errMsg);
+      const err = common.handleError({ statusCode: 502, message: 'Missing or Wrong Password', error: errMsg },  'GetInfo', errMsg);
       res.status(err.statusCode).json({message: err.message, error: err.error});
     } else {
       request.post(options).then((body) => {

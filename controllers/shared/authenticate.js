@@ -25,7 +25,7 @@ getFailedInfo = (reqIP, currentTime) => {
   return failed;
 }
 
-handleError = (failed, currentTime, errMsg) => {
+handleMultipleFailedAttemptsError = (failed, currentTime, errMsg) => {
   if (failed.count >= ALLOWED_LOGIN_ATTEMPTS && (currentTime <= (failed.lastTried + LOCKING_PERIOD))) {
     return {
       message: "Multiple Failed Login Attempts!",
@@ -58,11 +58,9 @@ exports.authenticateUser = (req, res, next) => {
       logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated.'});
       res.status(200).json({ token: token });
     } else {
-      logger.log({level: 'ERROR', fileName: 'Authenticate', msg: 'SSO Authentication Failed! Access key too short or does not match.', error: {error: 'Access key too short or does not match.'}});
-      res.status(406).json({
-        message: "SSO Authentication Failed!",
-        error: "SSO failed. Access key too short or does not match."
-      });
+      const errMsg = 'SSO Authentication Failed! Access key too short or does not match.';
+      const err = common.handleError({ statusCode: 406, message: 'SSO Authentication Error', error: errMsg },  'Authenticate', errMsg);
+      res.status(err.statusCode).json({message: err.message, error: err.error});
     }
   } else {
     const currentTime = new Date().getTime();
@@ -75,7 +73,7 @@ exports.authenticateUser = (req, res, next) => {
           logger.log({level: 'ERROR', fileName: 'Authenticate', msg: 'Invalid Token! Failed IP ' + reqIP, error: {error: 'Invalid token.'}});
           failed.count = failed.count + 1;
           failed.lastTried = currentTime;
-          return res.status(401).json(handleError(failed, currentTime, 'Invalid 2FA Token!'));
+          return res.status(401).json(handleMultipleFailedAttemptsError(failed, currentTime, 'Invalid 2FA Token!'));
         }
       }
       delete failedLoginAttempts[reqIP];
@@ -86,7 +84,7 @@ exports.authenticateUser = (req, res, next) => {
       logger.log({level: 'ERROR', fileName: 'Authenticate', msg: 'Invalid Password! Failed IP ' + reqIP, error: {error: 'Invalid password.'}});
       failed.count = common.rtl_pass !== password ? (failed.count + 1) : failed.count;
       failed.lastTried = common.rtl_pass !== password ? currentTime : failed.lastTried;
-      return res.status(401).json(handleError(failed, currentTime, 'Invalid Password!'));
+      return res.status(401).json(handleMultipleFailedAttemptsError(failed, currentTime, 'Invalid Password!'));
     }
   }
 };
@@ -94,11 +92,9 @@ exports.authenticateUser = (req, res, next) => {
 exports.resetPassword = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'Resetting Password..'});
   if (+common.rtl_sso) {
-    logger.log({level: 'ERROR', fileName: 'Authenticate', msg: 'Password Reset Failed!', error: {error: 'Password reset failed.'}});
-    res.status(401).json({
-      message: "Password Reset Failed!",
-      error: "Password cannot be reset for SSO authentication!"
-    });
+    const errMsg = 'Password cannot be reset for SSO authentication';
+    const err = common.handleError({ statusCode: 401, message: 'Password Reset Error', error: errMsg },  'Authenticate', errMsg);
+    res.status(err.statusCode).json({message: err.message, error: err.error});
   } else {
     const currPassword = req.body.currPassword;
     if (common.rtl_pass === currPassword) {
@@ -107,11 +103,9 @@ exports.resetPassword = (req, res, next) => {
       logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'Password Reset Successful'});
       res.status(200).json({ token: token });
     } else {
-      logger.log({level: 'ERROR', fileName: 'Authenticate', msg: 'Password Reset Failed!', error: {error: 'Password reset failed.'}});
-      res.status(401).json({
-        message: "Password Reset Failed!",
-        error: "Old password is not correct!"
-      });
+      const errMsg = 'Incorrect Old Password';
+      const err = common.handleError({ statusCode: 401, message: 'Password Reset Error', error: errMsg },  'Authenticate', errMsg);
+      res.status(err.statusCode).json({message: err.message, error: err.error});
     }
   }
 };

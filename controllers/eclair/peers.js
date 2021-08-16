@@ -62,16 +62,12 @@ exports.connectPeer = (req, res, next) => {
   }
   request.post(options, (error, response, body) => {
     logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Add Peer Response', data: body});
-    if (body === 'already connected') {
-      return res.status(500).json({
-        message: "Connect Peer Failed!",
-        error: "Already connected"
-      });
+    if (typeof body === 'string' && body.included('already connected')) {
+      const err = common.handleError({ statusCode: 500, message: 'Connect Peer Error', error: body },  'Peers', body);
+      res.status(err.statusCode).json({message: err.message, error: err.error});
     } else if (typeof body === 'string' && body.includes('connection failed')) {
-      return res.status(500).json({
-        message: "Connect Peer Failed!",
-        error: body.charAt(0).toUpperCase() + body.slice(1)
-      });
+      const err = common.handleError({ statusCode: 500, message: 'Connect Peer Error', error: body },  'Peers', body);
+      res.status(err.statusCode).json({message: err.message, error: err.error});
     }
     options.url = common.getSelLNServerUrl() + '/peers';
     options.form = {};
