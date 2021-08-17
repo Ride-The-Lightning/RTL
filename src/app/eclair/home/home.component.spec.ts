@@ -23,8 +23,8 @@ describe('ECLHomeComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLHomeComponent, ECLNodeInfoComponent, ECLBalancesInfoComponent, ECLChannelCapacityInfoComponent, ECLFeeInfoComponent, ECLChannelStatusInfoComponent ],
-      imports: [ 
+      declarations: [ECLHomeComponent, ECLNodeInfoComponent, ECLBalancesInfoComponent, ECLChannelCapacityInfoComponent, ECLFeeInfoComponent, ECLChannelStatusInfoComponent],
+      imports: [
         SharedModule,
         RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {
@@ -41,8 +41,8 @@ describe('ECLHomeComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
 
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -58,5 +58,4 @@ describe('ECLHomeComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -19,7 +19,7 @@ describe('CLChannelPendingTableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLChannelPendingTableComponent ],
+      declarations: [CLChannelPendingTableComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -37,8 +37,8 @@ describe('CLChannelPendingTableComponent', () => {
         { provide: DataService, useClass: mockDataService },
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -54,5 +54,4 @@ describe('CLChannelPendingTableComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-  
 });

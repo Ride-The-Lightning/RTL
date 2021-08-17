@@ -19,7 +19,7 @@ describe('CLChannelOpenTableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLChannelOpenTableComponent ],
+      declarations: [CLChannelOpenTableComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -36,10 +36,10 @@ describe('CLChannelOpenTableComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: RTLEffects, useClass: mockRTLEffects },
-        { provide: CLEffects, useClass: mockCLEffects }        
+        { provide: CLEffects, useClass: mockCLEffects }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -55,5 +55,4 @@ describe('CLChannelOpenTableComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

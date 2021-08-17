@@ -29,12 +29,13 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./peers.component.scss'],
   animations: [newlyAddedRowAnimation],
   providers: [
-    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') },
+    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') }
   ]
 })
 export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
+
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
   public faUsers = faUsers;
   public newlyAddedPeer = '';
   public flgAnimate = true;
@@ -51,18 +52,18 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListCL = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions: Actions, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
+    } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'id', 'netaddr', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'id', 'netaddr', 'actions'];
     } else {
@@ -72,30 +73,30 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('cl')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
-      this.errorMessage = '';
-      this.apisCallStatus = rtlStore.apisCallStatus;
-      if (rtlStore.apisCallStatus.FetchPeers.status === APICallStatusEnum.ERROR) {
-        this.errorMessage = (typeof(this.apisCallStatus.FetchPeers.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPeers.message) : this.apisCallStatus.FetchPeers.message;
-      }
-      this.information = rtlStore.information;
-      this.availableBalance = rtlStore.balance.totalBalance || 0;
-      this.peersData = rtlStore.peers ? rtlStore.peers : [];
-      if (this.peersData.length > 0) {
-        this.loadPeersTable(this.peersData);
-      }
-      this.logger.info(rtlStore);
-    });
-    this.actions
-    .pipe(
-      takeUntil(this.unSubs[1]),
-      filter((action) => action.type === CLActions.SET_PEERS_CL)
-    ).subscribe((setPeers: CLActions.SetPeers) => {
-      this.peerAddress = undefined;
-      this.flgAnimate = true;
-    });
+    this.store.select('cl').
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.errorMessage = '';
+        this.apisCallStatus = rtlStore.apisCallStatus;
+        if (rtlStore.apisCallStatus.FetchPeers.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apisCallStatus.FetchPeers.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPeers.message) : this.apisCallStatus.FetchPeers.message;
+        }
+        this.information = rtlStore.information;
+        this.availableBalance = rtlStore.balance.totalBalance || 0;
+        this.peersData = rtlStore.peers ? rtlStore.peers : [];
+        if (this.peersData.length > 0) {
+          this.loadPeersTable(this.peersData);
+        }
+        this.logger.info(rtlStore);
+      });
+    this.actions.
+      pipe(
+        takeUntil(this.unSubs[1]),
+        filter((action) => action.type === CLActions.SET_PEERS_CL)
+      ).subscribe((setPeers: CLActions.SetPeers) => {
+        this.peerAddress = null;
+        this.flgAnimate = true;
+      });
   }
 
   ngAfterViewInit() {
@@ -106,10 +107,10 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onPeerClick(selPeer: Peer, event: any) {
     const reorderedPeer = [
-      [{key: 'id', value: selPeer.id, title: 'Public Key', width: 100}],
-      [{key: 'netaddr', value: selPeer.netaddr, title: 'Address', width: 100}],
-      [{key: 'alias', value: selPeer.alias, title: 'Alias', width: 50},
-        {key: 'connected', value: selPeer.connected ? 'True' : 'False', title: 'Connected', width: 50}]
+      [{ key: 'id', value: selPeer.id, title: 'Public Key', width: 100 }],
+      [{ key: 'netaddr', value: selPeer.netaddr, title: 'Address', width: 100 }],
+      [{ key: 'alias', value: selPeer.alias, title: 'Alias', width: 50 },
+        { key: 'connected', value: selPeer.connected ? 'True' : 'False', title: 'Connected', width: 50 }]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
@@ -117,28 +118,28 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       showQRName: 'Public Key',
       showQRField: selPeer.id,
       message: reorderedPeer
-    }}));
+    } }));
   }
 
   onConnectPeer(selPeer: Peer) {
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       message: { peer: (selPeer.id ? selPeer : null), information: this.information, balance: this.availableBalance },
       component: CLConnectPeerComponent
-    }}));
+    } }));
   }
 
   onOpenChannel(peerToAddChannel: Peer) {
     const peerToAddChannelMessage = {
-      peer: peerToAddChannel, 
+      peer: peerToAddChannel,
       information: this.information,
       balance: this.availableBalance
     };
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       alertTitle: 'Open Channel',
       message: peerToAddChannelMessage,
       newlyAdded: false,
       component: CLOpenChannelComponent
-    }}));
+    } }));
   }
 
   onPeerDetach(peerToDetach: Peer) {
@@ -149,14 +150,14 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       titleMessage: msg,
       noBtnText: 'Cancel',
       yesBtnText: 'Disconnect'
-    }}));
-    this.rtlEffects.closeConfirm
-    .pipe(takeUntil(this.unSubs[3]))
-    .subscribe(confirmRes => {
-      if (confirmRes) {
-        this.store.dispatch(new CLActions.DetachPeer({id: peerToDetach.id, force: false}));
-      }
-    });
+    } }));
+    this.rtlEffects.closeConfirm.
+      pipe(takeUntil(this.unSubs[3])).
+      subscribe((confirmRes) => {
+        if (confirmRes) {
+          this.store.dispatch(new CLActions.DetachPeer({ id: peerToDetach.id, force: false }));
+        }
+      });
   }
 
   applyFilter(selFilter: any) {
@@ -167,32 +168,33 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.peers = new MatTableDataSource<Peer>([...peersArr]);
     this.peers.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
-        case 'netaddr': 
+        case 'netaddr':
           if (data.netaddr && data.netaddr[0]) {
-            let firstSplit = data.netaddr[0].toString().split('.');
+            const firstSplit = data.netaddr[0].toString().split('.');
             return (firstSplit[0]) ? +firstSplit[0] : data.netaddr[0];
           } else {
-            return ''; 
+            return '';
           }
 
         default: return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
-    }
+    };
     this.peers.sort = this.sort;
     this.peers.filterPredicate = (peer: Peer, fltr: string) => JSON.stringify(peer).toLowerCase().includes(fltr);
     this.peers.paginator = this.paginator;
   }
 
   onDownloadCSV() {
-    if(this.peers.data && this.peers.data.length > 0) {
+    if (this.peers.data && this.peers.data.length > 0) {
       this.commonService.downloadFile(this.peers.data, 'Peers');
     }
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

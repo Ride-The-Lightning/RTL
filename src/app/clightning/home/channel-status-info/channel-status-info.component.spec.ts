@@ -9,10 +9,10 @@ describe('CLChannelStatusInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLChannelStatusInfoComponent ],
-      imports: [ SharedModule ]
-    })
-    .compileComponents();
+      declarations: [CLChannelStatusInfoComponent],
+      imports: [SharedModule]
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -28,5 +28,4 @@ describe('CLChannelStatusInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -20,7 +20,7 @@ describe('ChannelOpenTableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelOpenTableComponent ],
+      declarations: [ChannelOpenTableComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -31,15 +31,15 @@ describe('ChannelOpenTableComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService }, LoopService,
         { provide: DataService, useClass: mockDataService },
         { provide: RTLEffects, useClass: mockRTLEffects },
         { provide: LNDEffects, useClass: mockLNDEffects }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -55,5 +55,4 @@ describe('ChannelOpenTableComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

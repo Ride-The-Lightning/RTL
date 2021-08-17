@@ -4,12 +4,8 @@ var logger = require('../shared/logger');
 var options = {};
 
 arrangeBalances = (body) => {
-  if(!body.confirmed) {
-    body.confirmed = 0;
-  }
-  if(!body.unconfirmed) {
-    body.unconfirmed = 0;
-  }
+  if (!body.confirmed) { body.confirmed = 0; }
+  if (!body.unconfirmed) { body.unconfirmed = 0; }
   body.total = +body.confirmed + +body.unconfirmed;
   body.btc_total = +body.btc_confirmed + +body.btc_unconfirmed;
   return body;
@@ -26,18 +22,8 @@ exports.getNewAddress = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers.authorization) {
-      delete err.options.headers.authorization;
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-      delete err.response.request.headers.authorization;
-    }
-    logger.log({level: 'ERROR', fileName: 'Onchain', msg: 'Get New Address Error', error: err});
-    return res.status(err.statusCode ? err.statusCode : 500).json({
-      message: "Getting New Address failed!",
-      error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-    });
+    const err = common.handleError(errRes,  'OnChain', 'Get New Address Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -55,18 +41,8 @@ exports.getBalance = (req, res, next) => {
       res.status(200).json(arrangeBalances(body));
     })
     .catch(errRes => {
-      let err = JSON.parse(JSON.stringify(errRes));
-      if (err.options && err.options.headers && err.options.headers.authorization) {
-        delete err.options.headers.authorization;
-      }
-      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-        delete err.response.request.headers.authorization;
-      }
-      logger.log({level: 'ERROR', fileName: 'Onchain', msg: 'Fetch Balance Error', error: err});
-      return res.status(err.statusCode ? err.statusCode : 500).json({
-        message: "Fetching balance failed!",
-        error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-      });
+      const err = common.handleError(errRes,  'OnChain', 'Get Balance Error');
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     });
   }
 };
@@ -89,18 +65,8 @@ exports.getTransactions = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers.authorization) {
-      delete err.options.headers.authorization;
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-      delete err.response.request.headers.authorization;
-    }
-    logger.log({level: 'ERROR', fileName: 'Onchain', msg: 'Get Transactions Error', error: err});
-    return res.status(err.statusCode ? err.statusCode : 500).json({
-      message: "Getting transactions failed!",
-      error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-    });
+    const err = common.handleError(errRes,  'OnChain', 'Get Transactions Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -120,17 +86,7 @@ exports.sendFunds = (req, res, next) => {
     res.status(201).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers.authorization) {
-      delete err.options.headers.authorization;
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-      delete err.response.request.headers.authorization;
-    }
-    logger.log({level: 'ERROR', fileName: 'Onchain', msg: 'Send Funds Error', error: err});
-    return res.status(err.statusCode ? err.statusCode : 500).json({
-      message: "Send funds failed!",
-      error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-    });
+    const err = common.handleError(errRes,  'OnChain', 'Send Funds Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

@@ -17,7 +17,7 @@ describe('ChannelActiveHTLCsTableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelActiveHTLCsTableComponent ],
+      declarations: [ChannelActiveHTLCsTableComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -33,8 +33,8 @@ describe('ChannelActiveHTLCsTableComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -50,5 +50,4 @@ describe('ChannelActiveHTLCsTableComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

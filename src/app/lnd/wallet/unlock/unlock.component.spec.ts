@@ -12,7 +12,7 @@ describe('UnlockWalletComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ UnlockWalletComponent ],
+      declarations: [UnlockWalletComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -23,8 +23,8 @@ describe('UnlockWalletComponent', () => {
           }
         })
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -40,5 +40,4 @@ describe('UnlockWalletComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

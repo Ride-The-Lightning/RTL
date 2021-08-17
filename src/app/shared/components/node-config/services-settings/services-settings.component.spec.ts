@@ -14,8 +14,8 @@ describe('ServicesSettingsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ServicesSettingsComponent, LoopServiceSettingsComponent, BoltzServiceSettingsComponent ],
-      imports: [ 
+      declarations: [ServicesSettingsComponent, LoopServiceSettingsComponent, BoltzServiceSettingsComponent],
+      imports: [
         SharedModule,
         RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {
@@ -25,8 +25,8 @@ describe('ServicesSettingsComponent', () => {
           }
         })
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -42,5 +42,4 @@ describe('ServicesSettingsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

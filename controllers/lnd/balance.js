@@ -25,17 +25,7 @@ exports.getBalance = (req, res, next) => {
     }
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Balance', msg: 'Fetch Balance Error', error: err});
-    return res.status(500).json({
-      message: "Fetching balance failed!",
-      error: err.error
-    });
+    const err = common.handleError(errRes,  'Balance', 'Get Balance Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

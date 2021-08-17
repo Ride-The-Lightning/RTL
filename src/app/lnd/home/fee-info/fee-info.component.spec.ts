@@ -8,9 +8,9 @@ describe('FeeInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ FeeInfoComponent ]
-    })
-    .compileComponents();
+      declarations: [FeeInfoComponent]
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -26,5 +26,4 @@ describe('FeeInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

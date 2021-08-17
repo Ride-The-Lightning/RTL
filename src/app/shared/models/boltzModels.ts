@@ -1,6 +1,6 @@
 export interface ServiceInfo {
-  fees?: {percentage?: number; miner: {normal?: number; reverse?: number;}};
-  limits?: {minimal?: number; maximal?: number;};
+  fees?: {percentage?: number, miner: {normal?: number, reverse?: number}};
+  limits?: {minimal?: number, maximal?: number};
 }
 
 export interface Swap {
@@ -65,7 +65,7 @@ export interface CreateSwapResponse {
 export interface CreateReverseSwapRequest {
   amount?: number;
   address?: string;
-  acceptZeroConf?: boolean
+  acceptZeroConf?: boolean;
 }
 
 export interface CreateReverseSwapResponse {

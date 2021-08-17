@@ -21,10 +21,11 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./query-routes.component.scss']
 })
 export class CLQueryRoutesComponent implements OnInit, OnDestroy {
+
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild('queryRoutesForm', { static: true }) form: any;  
+  @ViewChild('queryRoutesForm', { static: true }) form: any;
   public destinationPubkey = '';
-  public amount:number = null;
+  public amount: number = null;
   public qrHops: any;
   public flgSticky = false;
   public displayedColumns: any[] = [];
@@ -37,13 +38,13 @@ export class CLQueryRoutesComponent implements OnInit, OnDestroy {
 
   constructor(private store: Store<fromRTLReducer.RTLState>, private clEffects: CLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'msatoshi', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
+    } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'direction', 'msatoshi', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'direction', 'delay', 'msatoshi', 'actions'];
     } else {
@@ -53,27 +54,29 @@ export class CLQueryRoutesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.clEffects.setQueryRoutesCL
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe(queryRoute => {
-      this.qrHops = new MatTableDataSource([]);
-      this.qrHops.data = [];
-      if (queryRoute.routes) {
-        this.flgLoading[0] = false;
-        this.qrHops = new MatTableDataSource<Routes>([...queryRoute.routes]);
-        this.qrHops.data = queryRoute.routes;
-      } else {
-        this.flgLoading[0] = 'error';
-      }
-      this.qrHops.sort = this.sort;
-      this.qrHops.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
-    });
+    this.clEffects.setQueryRoutesCL.
+      pipe(takeUntil(this.unSubs[1])).
+      subscribe((queryRoute) => {
+        this.qrHops = new MatTableDataSource([]);
+        this.qrHops.data = [];
+        if (queryRoute.routes) {
+          this.flgLoading[0] = false;
+          this.qrHops = new MatTableDataSource<Routes>([...queryRoute.routes]);
+          this.qrHops.data = queryRoute.routes;
+        } else {
+          this.flgLoading[0] = 'error';
+        }
+        this.qrHops.sort = this.sort;
+        this.qrHops.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+      });
   }
 
-  onQueryRoutes():boolean|void {
-    if(!this.destinationPubkey || !this.amount) { return true; }
+  onQueryRoutes(): boolean|void {
+    if (!this.destinationPubkey || !this.amount) {
+      return true;
+    }
     this.flgLoading[0] = true;
-    this.store.dispatch(new CLActions.GetQueryRoutes({destPubkey: this.destinationPubkey, amount: this.amount*1000}));
+    this.store.dispatch(new CLActions.GetQueryRoutes({ destPubkey: this.destinationPubkey, amount: this.amount * 1000 }));
   }
 
   resetData() {
@@ -86,23 +89,23 @@ export class CLQueryRoutesComponent implements OnInit, OnDestroy {
 
   onHopClick(selHop: Routes, event: any) {
     const reorderedHop = [
-      [{key: 'id', value: selHop.id, title: 'ID', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'channel', value: selHop.channel, title: 'Channel', width: 50, type: DataTypeEnum.STRING},
-        {key: 'alias', value: selHop.alias, title: 'Peer Alias', width: 50, type: DataTypeEnum.STRING}],
-      [{key: 'msatoshi', value: selHop.msatoshi, title: 'mSatoshi', width: 50, type: DataTypeEnum.NUMBER},
-        {key: 'amount_msat', value: selHop.amount_msat, title: 'Amount mSat', width: 50, type: DataTypeEnum.STRING}],
-      [{key: 'direction', value: selHop.direction, title: 'Direction', width: 50, type: DataTypeEnum.STRING},
-        {key: 'delay', value: selHop.delay, title: 'Delay', width: 50, type: DataTypeEnum.NUMBER}]
+      [{ key: 'id', value: selHop.id, title: 'ID', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'channel', value: selHop.channel, title: 'Channel', width: 50, type: DataTypeEnum.STRING },
+        { key: 'alias', value: selHop.alias, title: 'Peer Alias', width: 50, type: DataTypeEnum.STRING }],
+      [{ key: 'msatoshi', value: selHop.msatoshi, title: 'mSatoshi', width: 50, type: DataTypeEnum.NUMBER },
+        { key: 'amount_msat', value: selHop.amount_msat, title: 'Amount mSat', width: 50, type: DataTypeEnum.STRING }],
+      [{ key: 'direction', value: selHop.direction, title: 'Direction', width: 50, type: DataTypeEnum.STRING },
+        { key: 'delay', value: selHop.delay, title: 'Delay', width: 50, type: DataTypeEnum.NUMBER }]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Route Information',
       message: reorderedHop
-    }}));
+    } }));
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

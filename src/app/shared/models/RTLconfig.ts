@@ -1,13 +1,16 @@
 import { GetInfoChain } from './lndModels';
 
 export class SSO {
+
   constructor(
     public rtlSSO: number,
     public logoutRedirectLink: string
   ) { }
+
 }
 
 export class Settings {
+
   constructor(
     public userPersona: string,
     public themeMode: string,
@@ -22,17 +25,21 @@ export class Settings {
     public channelBackupPath?: string,
     public currencyUnit?: string
   ) { }
+
 }
 
 export class Authentication {
+
   constructor(
     public swapMacaroonPath: string,
     public boltzMacaroonPath: string,
     public configPath?: string
   ) { }
+
 }
 
 export class ConfigSettingsNode {
+
   constructor(
     public settings: Settings,
     public authentication: Authentication,
@@ -40,9 +47,11 @@ export class ConfigSettingsNode {
     public lnNode?: string,
     public lnImplementation?: string
   ) { }
+
 }
 
 export class RTLConfiguration {
+
   constructor(
     public defaultNodeIndex: number,
     public selectedNodeIndex: number,
@@ -50,6 +59,7 @@ export class RTLConfiguration {
     public enable2FA: boolean,
     public nodes: ConfigSettingsNode[]
   ) { }
+
 }
 
 export interface GetInfoRoot {
@@ -57,7 +67,7 @@ export interface GetInfoRoot {
   alias?: string;
   testnet?: boolean;
   chains?: GetInfoChain[] | string[];
-  uris?: string[];  
+  uris?: string[];
   version?: string;
   api_version?: string;
 }
@@ -65,7 +75,7 @@ export interface GetInfoRoot {
 export interface SelNodeChild {
   userPersona?: string;
   channelBackupPath?: string;
-  selCurrencyUnit?: string;  
+  selCurrencyUnit?: string;
   currencyUnits?: string[];
   fiatConversion?: boolean;
   lnImplementation?: string;
@@ -74,5 +84,7 @@ export interface SelNodeChild {
 }
 
 export class HelpTopic {
+
   constructor(public help: {question: string, answer: string, link?: string, linkCaption?: string, lnImplementation?: string}) { }
+
 }

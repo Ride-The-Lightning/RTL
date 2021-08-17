@@ -14,7 +14,7 @@ describe('AppSettingsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ AppSettingsComponent ],
+      declarations: [AppSettingsComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -28,8 +28,8 @@ describe('AppSettingsComponent', () => {
       providers: [
         { provide: LoggerService, useClass: mockLoggerService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -45,5 +45,4 @@ describe('AppSettingsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

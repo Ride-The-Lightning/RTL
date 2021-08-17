@@ -22,6 +22,7 @@ import { ApiCallsListRoot } from '../../models/apiCallsPayload';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit, OnDestroy {
+
   public faUnlockAlt = faUnlockAlt;
   public selNode: ConfigSettingsNode;
   public appConfig: RTLConfiguration;
@@ -34,48 +35,52 @@ export class LoginComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   public loginErrorMessage = '';
   public apisCallStatus: ApiCallsListRoot = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
-    this.store.select('root')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
-      this.loginErrorMessage = '';
-      this.apisCallStatus = rtlStore.apisCallStatus;
-      if (rtlStore.apisCallStatus.Login.status === APICallStatusEnum.ERROR) {
-        this.loginErrorMessage = this.loginErrorMessage + ((typeof(this.apisCallStatus.Login.message) === 'object') ? JSON.stringify(this.apisCallStatus.Login.message) : this.apisCallStatus.Login.message);
-        this.logger.error(this.apisCallStatus.Login.message);
-      }
-      if (rtlStore.apisCallStatus.IsAuthorized.status === APICallStatusEnum.ERROR) {
-        this.loginErrorMessage = this.loginErrorMessage + ((typeof(this.apisCallStatus.IsAuthorized.message) === 'object') ? JSON.stringify(this.apisCallStatus.IsAuthorized.message) : this.apisCallStatus.IsAuthorized.message);
-        this.logger.error(this.apisCallStatus.IsAuthorized.message);
-      }
-      this.selNode = rtlStore.selNode;
-      this.appConfig = rtlStore.appConfig;
-      this.logger.info(rtlStore);
-    });
+    this.store.select('root').
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.loginErrorMessage = '';
+        this.apisCallStatus = rtlStore.apisCallStatus;
+        if (rtlStore.apisCallStatus.Login.status === APICallStatusEnum.ERROR) {
+          this.loginErrorMessage = this.loginErrorMessage + ((typeof (this.apisCallStatus.Login.message) === 'object') ? JSON.stringify(this.apisCallStatus.Login.message) : this.apisCallStatus.Login.message);
+          this.logger.error(this.apisCallStatus.Login.message);
+        }
+        if (rtlStore.apisCallStatus.IsAuthorized.status === APICallStatusEnum.ERROR) {
+          this.loginErrorMessage = this.loginErrorMessage + ((typeof (this.apisCallStatus.IsAuthorized.message) === 'object') ? JSON.stringify(this.apisCallStatus.IsAuthorized.message) : this.apisCallStatus.IsAuthorized.message);
+          this.logger.error(this.apisCallStatus.IsAuthorized.message);
+        }
+        this.selNode = rtlStore.selNode;
+        this.appConfig = rtlStore.appConfig;
+        this.logger.info(rtlStore);
+      });
   }
 
-  onLogin():boolean|void {
-    if(!this.password) { return true; }
+  onLogin(): boolean | void {
+    if (!this.password) {
+      return true;
+    }
     this.loginErrorMessage = '';
     if (this.appConfig.enable2FA) {
-      this.store.dispatch(new RTLActions.OpenAlert({ maxWidth: '35rem', data: {
-        component: LoginTokenComponent
-      }}));
-      this.rtlEffects.closeAlert
-      .pipe(take(1))
-      .subscribe(alertRes => {
-        if (alertRes) {
-          this.store.dispatch(new RTLActions.Login({password: sha256(this.password), defaultPassword: PASSWORD_BLACKLIST.includes(this.password.toLowerCase()), twoFAToken: alertRes.twoFAToken}));
+      this.store.dispatch(new RTLActions.OpenAlert({
+        maxWidth: '35rem', data: {
+          component: LoginTokenComponent
         }
-      });
+      }));
+      this.rtlEffects.closeAlert.
+        pipe(take(1)).
+        subscribe((alertRes) => {
+          if (alertRes) {
+            this.store.dispatch(new RTLActions.Login({ password: sha256(this.password), defaultPassword: PASSWORD_BLACKLIST.includes(this.password.toLowerCase()), twoFAToken: alertRes.twoFAToken }));
+          }
+        });
     } else {
-      this.store.dispatch(new RTLActions.Login({password: sha256(this.password), defaultPassword: PASSWORD_BLACKLIST.includes(this.password.toLowerCase())}));
+      this.store.dispatch(new RTLActions.Login({ password: sha256(this.password), defaultPassword: PASSWORD_BLACKLIST.includes(this.password.toLowerCase()) }));
     }
   }
 
@@ -86,7 +91,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

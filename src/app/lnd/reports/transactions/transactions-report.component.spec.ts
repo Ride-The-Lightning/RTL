@@ -16,7 +16,7 @@ describe('TransactionsReportComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ TransactionsReportComponent ],
+      declarations: [TransactionsReportComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -27,12 +27,12 @@ describe('TransactionsReportComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -48,5 +48,4 @@ describe('TransactionsReportComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

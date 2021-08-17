@@ -10,10 +10,10 @@ describe('ECLRoutingComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLRoutingComponent ],
-      imports: [ SharedModule, RouterTestingModule ]
-    })
-    .compileComponents();
+      declarations: [ECLRoutingComponent],
+      imports: [SharedModule, RouterTestingModule]
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -29,5 +29,4 @@ describe('ECLRoutingComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

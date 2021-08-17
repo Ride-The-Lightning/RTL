@@ -24,8 +24,8 @@ describe('HomeComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ HomeComponent, BalancesInfoComponent, ChannelCapacityInfoComponent, ChannelLiquidityInfoComponent, ChannelStatusInfoComponent, FeeInfoComponent, NodeInfoComponent ],
-      imports: [ 
+      declarations: [HomeComponent, BalancesInfoComponent, ChannelCapacityInfoComponent, ChannelLiquidityInfoComponent, ChannelStatusInfoComponent, FeeInfoComponent, NodeInfoComponent],
+      imports: [
         SharedModule,
         RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {
@@ -41,8 +41,8 @@ describe('HomeComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -58,5 +58,4 @@ describe('HomeComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

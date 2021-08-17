@@ -20,8 +20,8 @@ describe('LoopModalComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoopModalComponent ],
-      imports: [ 
+      declarations: [LoopModalComponent],
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
@@ -32,16 +32,16 @@ describe('LoopModalComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         CommonService,
-        { provide: LoggerService, useClass: mockLoggerService }, 
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: LoopService, useClass: mockLoopService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {channel: {}, minQuote: {}, maxQuote: {}, direction: ''} }
+        { provide: MAT_DIALOG_DATA, useValue: { channel: {}, minQuote: {}, maxQuote: {}, direction: '' } }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -57,5 +57,4 @@ describe('LoopModalComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

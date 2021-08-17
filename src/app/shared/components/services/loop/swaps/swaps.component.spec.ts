@@ -18,7 +18,7 @@ describe('SwapsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SwapsComponent ],
+      declarations: [SwapsComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -29,14 +29,14 @@ describe('SwapsComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: LoopService, useClass: mockLoopService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,5 +52,4 @@ describe('SwapsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

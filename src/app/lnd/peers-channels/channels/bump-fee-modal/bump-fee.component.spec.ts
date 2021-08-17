@@ -17,7 +17,7 @@ describe('BumpFeeComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ BumpFeeComponent ],
+      declarations: [BumpFeeComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -28,14 +28,14 @@ describe('BumpFeeComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {pendingChannel:{channel:{}}} },
+        { provide: MAT_DIALOG_DATA, useValue: { pendingChannel: { channel: {} } } },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -51,5 +51,4 @@ describe('BumpFeeComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -9,10 +9,10 @@ describe('LoopStatusComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoopStatusComponent ],
-      imports: [ SharedModule ]
-    })
-    .compileComponents();
+      declarations: [LoopStatusComponent],
+      imports: [SharedModule]
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -28,5 +28,4 @@ describe('LoopStatusComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

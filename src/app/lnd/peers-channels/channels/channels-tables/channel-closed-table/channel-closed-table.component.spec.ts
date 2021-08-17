@@ -17,7 +17,7 @@ describe('ChannelClosedTableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelClosedTableComponent ],
+      declarations: [ChannelClosedTableComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -33,8 +33,8 @@ describe('ChannelClosedTableComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -50,5 +50,4 @@ describe('ChannelClosedTableComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -18,7 +18,7 @@ describe('TopMenuComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ TopMenuComponent ],
+      declarations: [TopMenuComponent],
       imports: [
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
@@ -29,13 +29,13 @@ describe('TopMenuComponent', () => {
         }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
-      providers: [ 
+      providers: [
         SessionService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -51,5 +51,4 @@ describe('TopMenuComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

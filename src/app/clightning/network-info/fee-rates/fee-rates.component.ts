@@ -8,6 +8,7 @@ import { FeeRates, FeeRatePerObj, feeRateStyle } from '../../../shared/models/cl
   styleUrls: ['./fee-rates.component.scss']
 })
 export class CLFeeRatesComponent implements AfterContentChecked {
+
   @Input() feeRateStyle: string;
   @Input() feeRates: FeeRates;
   @Input() errorMessage: string;

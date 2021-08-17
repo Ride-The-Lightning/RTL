@@ -14,7 +14,7 @@ describe('LoginTokenComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoginTokenComponent ],
+      declarations: [LoginTokenComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -25,12 +25,12 @@ describe('LoginTokenComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {} }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -46,5 +46,4 @@ describe('LoginTokenComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

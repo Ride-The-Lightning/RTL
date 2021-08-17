@@ -16,8 +16,8 @@ describe('SignComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SignComponent ],
-      imports: [ 
+      declarations: [SignComponent],
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
@@ -31,8 +31,8 @@ describe('SignComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -48,5 +48,4 @@ describe('SignComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

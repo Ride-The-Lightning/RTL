@@ -16,11 +16,11 @@ describe('ChannelsTablesComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelsTablesComponent ],
-      imports: [ 
+      declarations: [ChannelsTablesComponent],
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
-        RouterTestingModule, 
+        RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
@@ -28,11 +28,11 @@ describe('ChannelsTablesComponent', () => {
           }
         })
       ],
-      providers: [ 
-        { provide: LoggerService, useClass: mockLoggerService },  
+      providers: [
+        { provide: LoggerService, useClass: mockLoggerService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -48,5 +48,4 @@ describe('ChannelsTablesComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

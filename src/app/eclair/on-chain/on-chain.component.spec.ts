@@ -19,8 +19,8 @@ describe('ECLOnChainComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLOnChainComponent, CurrencyUnitConverterComponent, ECLOnChainTransactionHistoryComponent ],
-      imports: [ 
+      declarations: [ECLOnChainComponent, CurrencyUnitConverterComponent, ECLOnChainTransactionHistoryComponent],
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
@@ -36,8 +36,8 @@ describe('ECLOnChainComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -53,5 +53,4 @@ describe('ECLOnChainComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

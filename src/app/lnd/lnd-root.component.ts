@@ -9,6 +9,7 @@ import { routeAnimation } from '../shared/animation/route-animation';
   animations: [routeAnimation]
 })
 export class LNDRootComponent {
+
   loading = false;
 
   constructor(private router: Router) {
@@ -28,6 +29,7 @@ export class LNDRootComponent {
           break;
         }
       }
-    });    
+    });
   }
+
 }

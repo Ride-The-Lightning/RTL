@@ -10,13 +10,13 @@ describe('SwapServiceInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SwapServiceInfoComponent ],
+      declarations: [SwapServiceInfoComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -32,5 +32,4 @@ describe('SwapServiceInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

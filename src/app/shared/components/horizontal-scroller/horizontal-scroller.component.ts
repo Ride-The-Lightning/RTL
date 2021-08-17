@@ -11,6 +11,7 @@ import { LoggerService } from '../../services/logger.service';
   animations: [sliderAnimation]
 })
 export class HorizontalScrollerComponent {
+
   @ViewChild('monthlyDatepicker') monthlyDatepicker;
   @ViewChild('yearlyDatepicker') yearlyDatepicker;
   public scrollRanges = SCROLL_RANGES;
@@ -22,9 +23,9 @@ export class HorizontalScrollerComponent {
   public disableNext = true;
   public animationDirection = '';
   public selectedValue = this.last;
-  @Output() stepChanged = new EventEmitter<{selDate:Date, selScrollRange:string}>();
-  
-  constructor(private logger: LoggerService) {}
+  @Output() readonly stepChanged = new EventEmitter<{ selDate: Date, selScrollRange: string }>();
+
+  constructor(private logger: LoggerService) { }
 
   onRangeChanged(event: any) {
     this.selScrollRange = event.value;
@@ -50,10 +51,10 @@ export class HorizontalScrollerComponent {
         this.animationDirection = 'backward';
         if (this.selectedValue !== this.first) {
           this.selectedValue = this.first;
-          this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
+          this.stepChanged.emit({ selDate: this.selectedValue, selScrollRange: this.selScrollRange });
         }
         break;
-    
+
       case 'PREVIOUS':
         if (this.selScrollRange === SCROLL_RANGES[1]) {
           this.selectedValue = new Date(this.selectedValue.getFullYear() - 1, 0, 1, 0, 0, 0);
@@ -61,28 +62,28 @@ export class HorizontalScrollerComponent {
           this.selectedValue = new Date(this.selectedValue.getFullYear(), this.selectedValue.getMonth() - 1, 1, 0, 0, 0);
         }
         this.animationDirection = 'backward';
-        this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
+        this.stepChanged.emit({ selDate: this.selectedValue, selScrollRange: this.selScrollRange });
         break;
 
       case 'NEXT':
         if (this.selScrollRange === SCROLL_RANGES[1]) {
           this.selectedValue = new Date(this.selectedValue.getFullYear() + 1, 0, 1, 0, 0, 0);
         } else {
-          this.selectedValue = new Date(this.selectedValue.getFullYear(), this.selectedValue.getMonth() + 1 , 1, 0, 0, 0);
+          this.selectedValue = new Date(this.selectedValue.getFullYear(), this.selectedValue.getMonth() + 1, 1, 0, 0, 0);
         }
         this.animationDirection = 'forward';
-        this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
+        this.stepChanged.emit({ selDate: this.selectedValue, selScrollRange: this.selScrollRange });
         break;
 
       case 'LAST':
         this.animationDirection = 'forward';
         this.selectedValue = this.last;
-        this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
+        this.stepChanged.emit({ selDate: this.selectedValue, selScrollRange: this.selScrollRange });
         break;
 
       default:
         this.animationDirection = '';
-        this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
+        this.stepChanged.emit({ selDate: this.selectedValue, selScrollRange: this.selScrollRange });
         break;
     }
     this.disablePrev = (this.selScrollRange === SCROLL_RANGES[1]) ? this.selectedValue.getFullYear() <= this.first.getFullYear() : (this.selectedValue.getFullYear() <= this.first.getFullYear() && this.selectedValue.getMonth() <= this.first.getMonth());
@@ -95,9 +96,9 @@ export class HorizontalScrollerComponent {
   }
 
   @HostListener('click', ['$event']) onChartMouseUp(e) {
-    if(e.srcElement.name === 'monthlyDate') {
+    if (e.srcElement.name === 'monthlyDate') {
       this.monthlyDatepicker.open();
-    } else if(e.srcElement.name === 'yearlyDate') {
+    } else if (e.srcElement.name === 'yearlyDate') {
       this.yearlyDatepicker.open();
     }
   }

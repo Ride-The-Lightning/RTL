@@ -22,37 +22,37 @@ import { AuthGuard } from './shared/services/auth.guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
-  { path: 'lnd', loadChildren: () => import('./lnd/lnd.module').then(childModule => childModule.LNDModule), canActivate: [AuthGuard] },
-  { path: 'cl', loadChildren: () => import('./clightning/cl.module').then(childModule => childModule.CLModule), canActivate: [AuthGuard] },
-  { path: 'ecl', loadChildren: () => import('./eclair/ecl.module').then(childModule => childModule.ECLModule), canActivate: [AuthGuard] },
+  { path: 'lnd', loadChildren: () => import('./lnd/lnd.module').then((childModule) => childModule.LNDModule), canActivate: [AuthGuard] },
+  { path: 'cl', loadChildren: () => import('./clightning/cl.module').then((childModule) => childModule.CLModule), canActivate: [AuthGuard] },
+  { path: 'ecl', loadChildren: () => import('./eclair/ecl.module').then((childModule) => childModule.ECLModule), canActivate: [AuthGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard], children: [
     { path: '', pathMatch: 'full', redirectTo: 'app' },
     { path: 'app', component: AppSettingsComponent, canActivate: [AuthGuard] },
     { path: 'auth', component: AuthSettingsComponent, canActivate: [AuthGuard] },
     { path: 'bconfig', component: BitcoinConfigComponent, canActivate: [AuthGuard] }
-  ]},
+  ] },
   { path: 'config', component: NodeConfigComponent, canActivate: [AuthGuard], children: [
     { path: '', pathMatch: 'full', redirectTo: 'node' },
     { path: 'node', component: NodeSettingsComponent, canActivate: [AuthGuard] },
     { path: 'services', component: ServicesSettingsComponent, canActivate: [AuthGuard], children: [
       { path: '', pathMatch: 'full', redirectTo: 'loop' },
       { path: 'loop', component: LoopServiceSettingsComponent, canActivate: [AuthGuard] },
-      { path: 'boltz', component: BoltzServiceSettingsComponent, canActivate: [AuthGuard] },
-    ]},
+      { path: 'boltz', component: BoltzServiceSettingsComponent, canActivate: [AuthGuard] }
+    ] },
     { path: 'lnconfig', component: LNPConfigComponent, canActivate: [AuthGuard] }
-  ]},
+  ] },
   { path: 'services', component: ServicesComponent, canActivate: [AuthGuard], children: [
     { path: '', pathMatch: 'full', redirectTo: 'loop' },
     { path: 'loop', pathMatch: 'full', redirectTo: 'loop/loopout' },
     { path: 'loop/:selTab', component: LoopComponent },
     { path: 'boltz', pathMatch: 'full', redirectTo: 'boltz/swapout' },
-    { path: 'boltz/:selTab', component: BoltzRootComponent },
-  ]},
+    { path: 'boltz/:selTab', component: BoltzRootComponent }
+  ] },
   { path: 'help', component: HelpComponent },
   { path: 'login', component: LoginComponent },
   { path: 'error', component: ErrorComponent },
-  { path: '**', component: NotFoundComponent } 
+  { path: '**', component: NotFoundComponent }
 ];
 
-// export const routing: ModuleWithProviders<RouterModule> = RouterModule.forRoot(routes, { enableTracing: true });
+// Export const routing: ModuleWithProviders<RouterModule> = RouterModule.forRoot(routes, { enableTracing: true });
 export const routing: ModuleWithProviders<RouterModule> = RouterModule.forRoot(routes);

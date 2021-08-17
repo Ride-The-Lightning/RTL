@@ -7,14 +7,13 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatVerticalStepper } from '@angular/material/stepper';
+import { MatStepper } from '@angular/material/stepper';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { OnChainSendFunds } from '../../../shared/models/alertData';
-import { SelNodeChild, GetInfoRoot } from '../../../shared/models/RTLconfig';
+import { SelNodeChild, GetInfoRoot, RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { GetInfo, Balance, AddressType } from '../../../shared/models/lndModels';
 import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
-import { RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import * as sha256 from 'sha256';
@@ -30,9 +29,10 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./on-chain-send-modal.component.scss']
 })
 export class OnChainSendModalComponent implements OnInit, OnDestroy {
-  @ViewChild('form', { static: true }) form: any;  
-  @ViewChild('formSweepAll', { static: false }) formSweepAll: any;  
-  @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
+
+  @ViewChild('form', { static: true }) form: any;
+  @ViewChild('formSweepAll', { static: false }) formSweepAll: any;
+  @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
   public sweepAll = false;
   public selNode: SelNodeChild = {};
@@ -47,7 +47,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   public transactionAmount = null;
   public transactionFees = null;
   public transactionBlocks = null;
-  public transTypes = [{id: '1', name: 'Target Confirmation Blocks'}, {id: '2', name: 'Fee'}];
+  public transTypes = [{ id: '1', name: 'Target Confirmation Blocks' }, { id: '2', name: 'Fee' }];
   public selTransType = '1';
   public fiatConversion = false;
   public amountUnits = CURRENCY_UNITS;
@@ -63,11 +63,11 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   public confirmFormLabel = 'Confirm sweep';
   public amountError = 'Amount is Required.';
   passwordFormGroup: FormGroup;
-  sendFundFormGroup: FormGroup;  
-  confirmFormGroup: FormGroup;  
+  sendFundFormGroup: FormGroup;
+  confirmFormGroup: FormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<OnChainSendModalComponent>, @Inject(MAT_DIALOG_DATA) public data: OnChainSendFunds, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private decimalPipe: DecimalPipe, private snackBar: MatSnackBar, private actions: Actions, private formBuilder: FormBuilder) {}
+  constructor(public dialogRef: MatDialogRef<OnChainSendModalComponent>, @Inject(MAT_DIALOG_DATA) public data: OnChainSendFunds, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private decimalPipe: DecimalPipe, private snackBar: MatSnackBar, private actions: Actions, private formBuilder: FormBuilder) { }
 
   ngOnInit() {
     this.sweepAll = this.data.sweepAll;
@@ -81,8 +81,8 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
       transactionFees: [null],
       selTransType: ['1', Validators.required]
     });
-    this.confirmFormGroup = this.formBuilder.group({}); 
-    this.sendFundFormGroup.controls.selTransType.valueChanges.pipe(takeUntil(this.unSubs[0])).subscribe(transType => {
+    this.confirmFormGroup = this.formBuilder.group({});
+    this.sendFundFormGroup.controls.selTransType.valueChanges.pipe(takeUntil(this.unSubs[0])).subscribe((transType) => {
       if (transType === '1') {
         this.sendFundFormGroup.controls.transactionBlocks.setValidators([Validators.required]);
         this.sendFundFormGroup.controls.transactionBlocks.setValue(null);
@@ -95,48 +95,51 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
         this.sendFundFormGroup.controls.transactionFees.setValue(null);
       }
     });
-    this.store.select('root')
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe((rootStore) => {
-      this.fiatConversion = rootStore.selNode.settings.fiatConversion;
-      this.amountUnits = rootStore.selNode.settings.currencyUnits;
-      this.appConfig = rootStore.appConfig;
-      this.nodeData = rootStore.nodeData;
-      this.logger.info(rootStore);
-    });
-    this.actions.pipe(takeUntil(this.unSubs[2]),
-    filter(action => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND))
-    .subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.SetChannelTransactionRes) => {
-      if (action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND) {
-        this.store.dispatch(new RTLActions.OpenSnackBar(this.sweepAll ? 'All Funds Sent Successfully!' : 'Fund Sent Successfully!'));
-        this.dialogRef.close();
-      }    
-      if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SetChannelTransaction') {
-        this.sendFundError = action.payload.message;
-      }
-    });
-
+    this.store.select('root').
+      pipe(takeUntil(this.unSubs[1])).
+      subscribe((rootStore) => {
+        this.fiatConversion = rootStore.selNode.settings.fiatConversion;
+        this.amountUnits = rootStore.selNode.settings.currencyUnits;
+        this.appConfig = rootStore.appConfig;
+        this.nodeData = rootStore.nodeData;
+        this.logger.info(rootStore);
+      });
+    this.actions.pipe(
+      takeUntil(this.unSubs[2]),
+      filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND)).
+      subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.SetChannelTransactionRes) => {
+        if (action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND) {
+          this.store.dispatch(new RTLActions.OpenSnackBar(this.sweepAll ? 'All Funds Sent Successfully!' : 'Fund Sent Successfully!'));
+          this.dialogRef.close();
+        }
+        if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SetChannelTransaction') {
+          this.sendFundError = action.payload.message;
+        }
+      });
   }
 
-  onAuthenticate():boolean|void {
-    if (!this.passwordFormGroup.controls.password.value) { return true; }
+  onAuthenticate(): boolean | void {
+    if (!this.passwordFormGroup.controls.password.value) {
+      return true;
+    }
     this.flgValidated = false;
     this.store.dispatch(new RTLActions.IsAuthorized(sha256(this.passwordFormGroup.controls.password.value)));
-    this.rtlEffects.isAuthorizedRes
-    .pipe(take(1))
-    .subscribe(authRes => {
-      if (authRes !== 'ERROR') {
-        this.passwordFormGroup.controls.hiddenPassword.setValue(this.passwordFormGroup.controls.password.value);
-        this.stepper.next();
-      } else {
-        this.dialogRef.close();
-        this.snackBar.open('Unauthorized User. Logging out from RTL.');
-      }
-    });
+    this.rtlEffects.isAuthorizedRes.pipe(take(1)).
+      subscribe((authRes) => {
+        if (authRes !== 'ERROR') {
+          this.passwordFormGroup.controls.hiddenPassword.setValue(this.passwordFormGroup.controls.password.value);
+          this.stepper.next();
+        } else {
+          this.dialogRef.close();
+          this.snackBar.open('Unauthorized User. Logging out from RTL.');
+        }
+      });
   }
 
-  onSendFunds():boolean|void {
-    if(this.invalidValues) { return true; }
+  onSendFunds(): boolean | void {
+    if (this.invalidValues) {
+      return true;
+    }
     this.sendFundError = '';
     const postTransaction = {
       amount: this.transactionAmount ? this.transactionAmount : 0,
@@ -159,18 +162,20 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
         postTransaction['fees'] = this.transactionFees;
       }
     }
-    if(this.transactionAmount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
-      this.commonService.convertCurrency(this.transactionAmount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion)
-      .pipe(takeUntil(this.unSubs[3]))
-      .subscribe(data => {
-        this.selAmountUnit = CurrencyUnitEnum.SATS;
-        postTransaction.amount = +this.decimalPipe.transform(data[this.amountUnits[0]], this.currencyUnitFormats[this.amountUnits[0]]).replace(/,/g, '');
-        this.store.dispatch(new LNDActions.SetChannelTransaction(postTransaction));
-      }, err => {
-        this.transactionAmount = null;
-        this.selAmountUnit = CurrencyUnitEnum.SATS;
-        this.amountError = 'Conversion Error: ' + (err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : 'Currency Conversion Error');
-      });
+    if (this.transactionAmount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
+      this.commonService.convertCurrency(this.transactionAmount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion).
+        pipe(takeUntil(this.unSubs[3])).
+        subscribe({
+          next: (data) => {
+            this.selAmountUnit = CurrencyUnitEnum.SATS;
+            postTransaction.amount = +this.decimalPipe.transform(data[this.amountUnits[0]], this.currencyUnitFormats[this.amountUnits[0]]).replace(/,/g, '');
+            this.store.dispatch(new LNDActions.SetChannelTransaction(postTransaction));
+          }, error: (err) => {
+            this.transactionAmount = null;
+            this.selAmountUnit = CurrencyUnitEnum.SATS;
+            this.amountError = 'Conversion Error: ' + err;
+          }
+        });
     } else {
       this.store.dispatch(new LNDActions.SetChannelTransaction(postTransaction));
     }
@@ -178,16 +183,17 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
 
   get invalidValues(): boolean {
     if (this.sweepAll) {
-      return (!this.sendFundFormGroup.controls.transactionAddress.value || this.sendFundFormGroup.controls.transactionAddress.value === '') || (this.sendFundFormGroup.controls.selTransType.value === '1' && (!this.sendFundFormGroup.controls.transactionBlocks.value || this.sendFundFormGroup.controls.transactionBlocks.value <= 0)) || (this.sendFundFormGroup.controls.selTransType.value === '2' && (!this.sendFundFormGroup.controls.transactionFees.value || this.sendFundFormGroup.controls.transactionFees.value <= 0));
+      return (!this.sendFundFormGroup.controls.transactionAddress.value || this.sendFundFormGroup.controls.transactionAddress.value === '') ||
+        (this.sendFundFormGroup.controls.selTransType.value === '1' && (!this.sendFundFormGroup.controls.transactionBlocks.value || this.sendFundFormGroup.controls.transactionBlocks.value <= 0)) || (this.sendFundFormGroup.controls.selTransType.value === '2' && (!this.sendFundFormGroup.controls.transactionFees.value || this.sendFundFormGroup.controls.transactionFees.value <= 0));
     } else {
-      return (!this.transactionAddress || this.transactionAddress === '') || (!this.transactionAmount || this.transactionAmount <= 0)
-      || (this.selTransType === '1' && (!this.transactionBlocks || this.transactionBlocks <= 0)) || (this.selTransType === '2' && (!this.transactionFees || this.transactionFees <= 0));
+      return (!this.transactionAddress || this.transactionAddress === '') || (!this.transactionAmount || this.transactionAmount <= 0) ||
+        (this.selTransType === '1' && (!this.transactionBlocks || this.transactionBlocks <= 0)) || (this.selTransType === '2' && (!this.transactionFees || this.transactionFees <= 0));
     }
   }
 
   resetData() {
-    this.sendFundError = '';    
-    this.selTransType = '1';      
+    this.sendFundError = '';
+    this.selTransType = '1';
     this.transactionAddress = '';
     this.transactionBlocks = null;
     this.transactionFees = null;
@@ -201,53 +207,58 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
     switch (event.selectedIndex) {
       case 0:
         this.passwordFormLabel = 'Authenticate with your RTL password';
-        this.sendFundFormLabel = 'Sweep funds'
+        this.sendFundFormLabel = 'Sweep funds';
         break;
-    
+
       case 1:
         this.passwordFormLabel = 'User authenticated successfully';
-        this.sendFundFormLabel = 'Sweep funds'
+        this.sendFundFormLabel = 'Sweep funds';
         break;
 
       case 2:
         this.passwordFormLabel = 'User authenticated successfully';
-        this.sendFundFormLabel = 'Sweep funds | Address: ' + this.sendFundFormGroup.controls.transactionAddress.value + ' | ' + this.transTypes[this.sendFundFormGroup.controls.selTransType.value-1].name + (this.sendFundFormGroup.controls.selTransType.value === '2' ? ' (Sats/vByte)' : '') + ': ' + (this.sendFundFormGroup.controls.selTransType.value === '1' ? this.sendFundFormGroup.controls.transactionBlocks.value : this.sendFundFormGroup.controls.transactionFees.value);
+        this.sendFundFormLabel = 'Sweep funds | Address: ' + this.sendFundFormGroup.controls.transactionAddress.value + ' | ' +
+          this.transTypes[this.sendFundFormGroup.controls.selTransType.value - 1].name +
+          (this.sendFundFormGroup.controls.selTransType.value === '2' ? ' (Sats/vByte)' : '') + ': ' +
+          (this.sendFundFormGroup.controls.selTransType.value === '1' ? this.sendFundFormGroup.controls.transactionBlocks.value : this.sendFundFormGroup.controls.transactionFees.value);
         break;
 
       default:
         this.passwordFormLabel = 'Authenticate with your RTL password';
-        this.sendFundFormLabel = 'Sweep funds'
+        this.sendFundFormLabel = 'Sweep funds';
         break;
     }
     if (event.selectedIndex < event.previouslySelectedIndex) {
       if (event.selectedIndex === 0) {
         this.passwordFormGroup.controls.hiddenPassword.setValue('');
       }
-    }    
+    }
   }
 
   onAmountUnitChange(event: any) {
-    let self = this;
-    let prevSelectedUnit = (this.sweepAll) ? CurrencyUnitEnum.SATS : (this.selAmountUnit === this.amountUnits[2]) ? CurrencyUnitEnum.OTHER : this.selAmountUnit;
+    const self = this;
+    const prevSelectedUnit = (this.sweepAll) ? CurrencyUnitEnum.SATS : (this.selAmountUnit === this.amountUnits[2]) ? CurrencyUnitEnum.OTHER : this.selAmountUnit;
     let currSelectedUnit = event.value === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : event.value;
-    if(this.transactionAmount && this.selAmountUnit !== event.value) {
-      let amount = this.transactionAmount ? this.transactionAmount : 0;
-      this.commonService.convertCurrency(amount, prevSelectedUnit, currSelectedUnit, this.amountUnits[2], this.fiatConversion)
-      .pipe(takeUntil(this.unSubs[3]))
-      .subscribe(data => {
-        this.selAmountUnit = event.value;
-        self.transactionAmount = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
-      }, err => {
-        self.transactionAmount = null;
-        this.amountError = 'Conversion Error: ' + (err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : 'Currency Conversion Error');
-        this.selAmountUnit = prevSelectedUnit;
-        currSelectedUnit = prevSelectedUnit;
-      });
+    if (this.transactionAmount && this.selAmountUnit !== event.value) {
+      const amount = this.transactionAmount ? this.transactionAmount : 0;
+      this.commonService.convertCurrency(amount, prevSelectedUnit, currSelectedUnit, this.amountUnits[2], this.fiatConversion).
+        pipe(takeUntil(this.unSubs[3])).
+        subscribe({
+          next: (data) => {
+            this.selAmountUnit = event.value;
+            self.transactionAmount = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
+          }, error: (err) => {
+            self.transactionAmount = null;
+            this.amountError = 'Conversion Error: ' + err;
+            this.selAmountUnit = prevSelectedUnit;
+            currSelectedUnit = prevSelectedUnit;
+          }
+        });
     }
-  }  
+  }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

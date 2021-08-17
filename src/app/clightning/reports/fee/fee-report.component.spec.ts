@@ -17,7 +17,7 @@ describe('CLFeeReportComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLFeeReportComponent ],
+      declarations: [CLFeeReportComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -33,8 +33,8 @@ describe('CLFeeReportComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -50,5 +50,4 @@ describe('CLFeeReportComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

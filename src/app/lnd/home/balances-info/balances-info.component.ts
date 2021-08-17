@@ -6,9 +6,10 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./balances-info.component.scss']
 })
 export class BalancesInfoComponent {
+
   @Input() balances = { onchain: 0, lightning: 0, total: 0 };
   @Input() errorMessage: string;
-  
+
   constructor() {}
 
 }

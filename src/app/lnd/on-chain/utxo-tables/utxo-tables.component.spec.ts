@@ -20,7 +20,7 @@ describe('UTXOTablesComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ UTXOTablesComponent, OnChainTransactionHistoryComponent, OnChainUTXOsComponent ],
+      declarations: [UTXOTablesComponent, OnChainTransactionHistoryComponent, OnChainUTXOsComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -38,8 +38,8 @@ describe('UTXOTablesComponent', () => {
         { provide: RTLEffects, useClass: mockRTLEffects },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -55,5 +55,4 @@ describe('UTXOTablesComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -20,13 +20,14 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./routing-peers.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') }
-  ]  
+  ]
 })
 export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
+
   @ViewChild(MatSort, { static: false }) sortIn: MatSort;
-  @ViewChild('tableOut', {read: MatSort, static: false}) sortOut: MatSort;
-  @ViewChild('paginatorIn', {static: false}) paginatorIn: MatPaginator|undefined;
-  @ViewChild('paginatorOut', {static: false}) paginatorOut: MatPaginator|undefined;
+  @ViewChild('tableOut', { read: MatSort, static: false }) sortOut: MatSort;
+  @ViewChild('paginatorIn', { static: false }) paginatorIn: MatPaginator|undefined;
+  @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator|undefined;
   public routingPeersData = [];
   public displayedColumns: any[] = [];
   public RoutingPeersIncoming: any;
@@ -38,18 +39,18 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListECL = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'totalFee'];
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
+    } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'events', 'totalFee'];
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
+    } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'events', 'totalAmount', 'totalFee'];
     } else {
@@ -59,20 +60,20 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   ngOnInit() {
-    this.store.select('ecl')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
-      this.errorMessage = '';
-      this.apisCallStatus = rtlStore.apisCallStatus;
-      if (rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.ERROR) {
-        this.errorMessage = (typeof(this.apisCallStatus.FetchPayments.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPayments.message) : this.apisCallStatus.FetchPayments.message;
-      }
-      this.routingPeersData = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
-      if (this.routingPeersData.length > 0 && this.sortIn && this.paginatorIn && this.sortOut && this.paginatorOut) {
-        this.loadRoutingPeersTable(this.routingPeersData);
-      }
-      this.logger.info(rtlStore);
-    });
+    this.store.select('ecl').
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.errorMessage = '';
+        this.apisCallStatus = rtlStore.apisCallStatus;
+        if (rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apisCallStatus.FetchPayments.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPayments.message) : this.apisCallStatus.FetchPayments.message;
+        }
+        this.routingPeersData = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
+        if (this.routingPeersData.length > 0 && this.sortIn && this.paginatorIn && this.sortOut && this.paginatorOut) {
+          this.loadRoutingPeersTable(this.routingPeersData);
+        }
+        this.logger.info(rtlStore);
+      });
   }
 
   ngAfterViewInit() {
@@ -95,7 +96,7 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
       this.RoutingPeersOutgoing.paginator = this.paginatorOut;
       this.logger.info(this.RoutingPeersOutgoing);
     } else {
-       // To reset table after other Forwarding history calls
+      // To reset table after other Forwarding history calls
       this.RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>([]);
       this.RoutingPeersOutgoing = new MatTableDataSource<RoutingPeers>([]);
     }
@@ -104,18 +105,18 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   groupRoutingPeers(forwardingEvents: PaymentRelayed[]) {
     const incomingResults: RoutingPeers[] = [];
     const outgoingResults: RoutingPeers[] = [];
-    forwardingEvents.forEach(event => {
-      const incoming = incomingResults.find(result => result.channelId === event.fromChannelId);
-      const outgoing = outgoingResults.find(result => result.channelId === event.toChannelId);
+    forwardingEvents.forEach((event) => {
+      const incoming = incomingResults.find((result) => result.channelId === event.fromChannelId);
+      const outgoing = outgoingResults.find((result) => result.channelId === event.toChannelId);
       if (!incoming) {
-        incomingResults.push({channelId: event.fromChannelId, alias: event.fromChannelAlias, events: 1, totalAmount: +event.amountIn, totalFee: (event.amountIn - event.amountOut)});
+        incomingResults.push({ channelId: event.fromChannelId, alias: event.fromChannelAlias, events: 1, totalAmount: +event.amountIn, totalFee: (event.amountIn - event.amountOut) });
       } else {
         incoming.events++;
         incoming.totalAmount = +incoming.totalAmount + +event.amountIn;
         incoming.totalFee = +incoming.totalFee + (event.amountIn - event.amountOut);
       }
       if (!outgoing) {
-        outgoingResults.push({channelId: event.toChannelId, alias: event.toChannelAlias, events: 1, totalAmount: +event.amountOut, totalFee: (event.amountIn - event.amountOut)});
+        outgoingResults.push({ channelId: event.toChannelId, alias: event.toChannelAlias, events: 1, totalAmount: +event.amountOut, totalFee: (event.amountIn - event.amountOut) });
       } else {
         outgoing.events++;
         outgoing.totalAmount = +outgoing.totalAmount + +event.amountOut;
@@ -134,9 +135,10 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

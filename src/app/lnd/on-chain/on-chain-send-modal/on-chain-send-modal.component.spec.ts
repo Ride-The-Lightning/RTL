@@ -20,7 +20,7 @@ describe('OnChainSendModalComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ OnChainSendModalComponent ],
+      declarations: [OnChainSendModalComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -37,11 +37,11 @@ describe('OnChainSendModalComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {sweepAll:true} },
+        { provide: MAT_DIALOG_DATA, useValue: { sweepAll: true } },
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -57,5 +57,4 @@ describe('OnChainSendModalComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

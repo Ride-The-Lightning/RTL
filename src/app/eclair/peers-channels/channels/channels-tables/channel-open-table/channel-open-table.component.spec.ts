@@ -18,7 +18,7 @@ describe('ECLChannelOpenTableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLChannelOpenTableComponent ],
+      declarations: [ECLChannelOpenTableComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -36,8 +36,8 @@ describe('ECLChannelOpenTableComponent', () => {
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
 
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -53,5 +53,4 @@ describe('ECLChannelOpenTableComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

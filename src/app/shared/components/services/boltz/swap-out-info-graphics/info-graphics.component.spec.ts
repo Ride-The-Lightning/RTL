@@ -14,17 +14,17 @@ describe('SwapOutInfoGraphicsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SwapOutInfoGraphicsComponent ],
-      imports: [ 
+      declarations: [SwapOutInfoGraphicsComponent],
+      imports: [
         BrowserAnimationsModule,
         SharedModule
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -40,5 +40,4 @@ describe('SwapOutInfoGraphicsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

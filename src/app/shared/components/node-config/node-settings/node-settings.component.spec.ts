@@ -17,7 +17,7 @@ describe('NodeSettingsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ NodeSettingsComponent ],
+      declarations: [NodeSettingsComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -33,8 +33,8 @@ describe('NodeSettingsComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -50,5 +50,4 @@ describe('NodeSettingsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

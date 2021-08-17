@@ -17,7 +17,7 @@ describe('ECLChannelPendingTableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLChannelPendingTableComponent ],
+      declarations: [ECLChannelPendingTableComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -26,16 +26,16 @@ describe('ECLChannelPendingTableComponent', () => {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
+        })
+      ],
       providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
 
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -51,5 +51,4 @@ describe('ECLChannelPendingTableComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

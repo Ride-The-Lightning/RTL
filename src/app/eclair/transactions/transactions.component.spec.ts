@@ -19,8 +19,8 @@ describe('ECLTransactionsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLTransactionsComponent, CurrencyUnitConverterComponent ],
-      imports: [ 
+      declarations: [ECLTransactionsComponent, CurrencyUnitConverterComponent],
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
@@ -31,13 +31,13 @@ describe('ECLTransactionsComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -53,5 +53,4 @@ describe('ECLTransactionsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

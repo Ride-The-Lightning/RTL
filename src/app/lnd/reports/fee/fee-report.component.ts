@@ -18,6 +18,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   animations: [fadeIn]
 })
 export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
+
   public reportPeriod = SCROLL_RANGES[0];
   public secondsInADay = 24 * 60 * 60;
   public events: SwitchRes = {};
@@ -49,39 +50,38 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
     const CONTAINER_SIZE = this.commonService.getContainerSize();
     switch (this.screenSize) {
       case ScreenSizeEnum.MD:
-        this.screenPaddingX = CONTAINER_SIZE.width/10;
+        this.screenPaddingX = CONTAINER_SIZE.width / 10;
         break;
 
       case ScreenSizeEnum.LG:
-        this.screenPaddingX = CONTAINER_SIZE.width/16;
+        this.screenPaddingX = CONTAINER_SIZE.width / 16;
         break;
 
       default:
-        this.screenPaddingX = CONTAINER_SIZE.width/20;
+        this.screenPaddingX = CONTAINER_SIZE.width / 20;
         break;
     }
-    this.view = [CONTAINER_SIZE.width - this.screenPaddingX, CONTAINER_SIZE.height/2.2];
+    this.view = [CONTAINER_SIZE.width - this.screenPaddingX, CONTAINER_SIZE.height / 2.2];
   }
 
   fetchEvents(start: Date, end: Date) {
     this.errorMessage = UI_MESSAGES.GET_FEE_REPORT;
-    const startDateInSeconds = Math.round(start.getTime()/1000).toString();
-    const endDateInSeconds = Math.round(end.getTime()/1000).toString();
-    this.dataService.getForwardingHistory(startDateInSeconds, endDateInSeconds)
-    .pipe(takeUntil(this.unSubs[1])).subscribe(res => {
-      this.errorMessage = '';
-      if (res.forwarding_events && res.forwarding_events.length) {
-        res.forwarding_events = res.forwarding_events.reverse();
-        this.events = res;
-        this.feeReportData = this.prepareFeeReport(start);
-      } else {
-        this.events = {};
-        this.feeReportData = [];
-      }
-    }, (err) => {
-      this.errorMessage = err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : err;
-      this.errorMessage = (typeof this.errorMessage === 'string') ? this.commonService.titleCase(this.errorMessage) : JSON.stringify(this.errorMessage);
-    });
+    const startDateInSeconds = Math.round(start.getTime() / 1000).toString();
+    const endDateInSeconds = Math.round(end.getTime() / 1000).toString();
+    this.dataService.getForwardingHistory(startDateInSeconds, endDateInSeconds).
+      pipe(takeUntil(this.unSubs[1])).subscribe({ next: (res) => {
+        this.errorMessage = '';
+        if (res.forwarding_events && res.forwarding_events.length) {
+          res.forwarding_events = res.forwarding_events.reverse();
+          this.events = res;
+          this.feeReportData = this.prepareFeeReport(start);
+        } else {
+          this.events = {};
+          this.feeReportData = [];
+        }
+      }, error: (err) => {
+        this.errorMessage = err;
+      } });
   }
 
   @HostListener('mouseup', ['$event']) onChartMouseUp(e) {
@@ -89,9 +89,9 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
       this.eventFilterValue = '';
     }
   }
-  
+
   onChartBarSelected(event) {
-    if(this.reportPeriod === SCROLL_RANGES[1]) {
+    if (this.reportPeriod === SCROLL_RANGES[1]) {
       this.eventFilterValue = event.name + '/' + this.startDate.getFullYear();
     } else {
       this.eventFilterValue = event.name.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
@@ -99,27 +99,29 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
   }
 
   prepareFeeReport(start: Date) {
-    const startDateInSeconds = Math.round(start.getTime()/1000);
-    let feeReport = [];
+    const startDateInSeconds = Math.round(start.getTime() / 1000);
+    const feeReport = [];
     if (this.reportPeriod === SCROLL_RANGES[1]) {
       for (let i = 0; i < 12; i++) {
-        feeReport.push({name: MONTHS[i].name, value: 0.000000001, extra: {totalEvents: 0}});
+        feeReport.push({ name: MONTHS[i].name, value: 0.000000001, extra: { totalEvents: 0 } });
       }
-      this.events.forwarding_events.map(event => {
-        let monthNumber = new Date((+event.timestamp)*1000).getMonth();
+      this.events.forwarding_events.map((event) => {
+        const monthNumber = new Date((+event.timestamp) * 1000).getMonth();
         feeReport[monthNumber].value = feeReport[monthNumber].value + (+event.fee_msat / 1000);
         feeReport[monthNumber].extra.totalEvents = feeReport[monthNumber].extra.totalEvents + 1;
         this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;
+        return this.events;
       });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
-        feeReport.push({name: i + 1, value: 0.000000001, extra: {totalEvents: 0}});
+        feeReport.push({ name: i + 1, value: 0.000000001, extra: { totalEvents: 0 } });
       }
-      this.events.forwarding_events.map(event => {
-        let dateNumber = Math.floor((+event.timestamp - startDateInSeconds) / this.secondsInADay);
+      this.events.forwarding_events.map((event) => {
+        const dateNumber = Math.floor((+event.timestamp - startDateInSeconds) / this.secondsInADay);
         feeReport[dateNumber].value = feeReport[dateNumber].value + (+event.fee_msat / 1000);
         feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
         this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;
+        return this.events;
       });
     }
     return feeReport;
@@ -141,13 +143,14 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
   }
 
   getMonthDays(selMonth: number, selYear: number) {
-    return (selMonth === 1 && selYear%4 === 0) ? (MONTHS[selMonth].days+1) : MONTHS[selMonth].days;
+    return (selMonth === 1 && selYear % 4 === 0) ? (MONTHS[selMonth].days + 1) : MONTHS[selMonth].days;
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

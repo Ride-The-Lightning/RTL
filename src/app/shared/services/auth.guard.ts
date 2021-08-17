@@ -7,6 +7,7 @@ import { map } from 'rxjs/operators';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
+
   constructor(private router: Router, private sessionService: SessionService) {}
 
   canActivate(route: ActivatedRouteSnapshot): boolean | Observable<boolean> | Promise<boolean> {
@@ -19,31 +20,38 @@ export class AuthGuard implements CanActivate {
       return true;
     }
   }
+
 }
 
 @Injectable()
 export class LNDUnlockedGuard implements CanActivate {
+
   constructor(private sessionService: SessionService) {}
 
   canActivate(): boolean | Observable<boolean> | Promise<boolean> {
-    return !!this.sessionService.watchSession().pipe(map(session => session.lndUnlocked));
+    return !!this.sessionService.watchSession().pipe(map((session) => session.lndUnlocked));
   }
+
 }
 
 @Injectable()
 export class CLUnlockedGuard implements CanActivate {
+
   constructor(private sessionService: SessionService) {}
 
   canActivate(): boolean | Observable<boolean> | Promise<boolean> {
-    return !!this.sessionService.watchSession().pipe(map(session => session.clUnlocked));
+    return !!this.sessionService.watchSession().pipe(map((session) => session.clUnlocked));
   }
+
 }
 
 @Injectable()
 export class ECLUnlockedGuard implements CanActivate {
+
   constructor(private sessionService: SessionService) {}
 
   canActivate(): boolean | Observable<boolean> | Promise<boolean> {
-    return !!this.sessionService.watchSession().pipe(map(session => session.eclUnlocked));
+    return !!this.sessionService.watchSession().pipe(map((session) => session.eclUnlocked));
   }
+
 }

@@ -18,8 +18,8 @@ describe('ChannelLiquidityInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelLiquidityInfoComponent ],
-      imports: [ 
+      declarations: [ChannelLiquidityInfoComponent],
+      imports: [
         SharedModule,
         RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {
@@ -34,8 +34,8 @@ describe('ChannelLiquidityInfoComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService }, LoopService,
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -51,5 +51,4 @@ describe('ChannelLiquidityInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

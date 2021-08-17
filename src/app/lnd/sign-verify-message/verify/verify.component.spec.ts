@@ -16,8 +16,8 @@ describe('VerifyComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ VerifyComponent ],
-      imports: [ 
+      declarations: [VerifyComponent],
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
@@ -31,8 +31,8 @@ describe('VerifyComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -48,5 +48,4 @@ describe('VerifyComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

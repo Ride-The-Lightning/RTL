@@ -18,17 +18,18 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
   styleUrls: ['./lookups.component.scss']
 })
 export class CLLookupsComponent implements OnInit, OnDestroy {
+
   @ViewChild('form', { static: true }) form: any;
   public lookupKey = '';
-  public nodeLookupValue = {nodeid: ''};
+  public nodeLookupValue = { nodeid: '' };
   public channelLookupValue = [];
   public flgSetLookupValue = false;
   public temp: any;
   public messageObj = [];
   public selectedFieldId = 0;
   public lookupFields = [
-    { id: 0, name: 'Node', placeholder: 'Pubkey'},
-    { id: 1, name: 'Channel', placeholder: 'Short Channel ID'}
+    { id: 0, name: 'Node', placeholder: 'Pubkey' },
+    { id: 1, name: 'Channel', placeholder: 'Short Channel ID' }
   ];
   public flgLoading: Array<Boolean | 'error'> = [true];
   public faSearch = faSearch;
@@ -41,44 +42,46 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.actions
-    .pipe(
-      takeUntil(this.unSubs[0]),
-      filter((action) => (action.type === CLActions.SET_LOOKUP_CL || action.type === CLActions.UPDATE_API_CALL_STATUS_CL))
-    ).subscribe((resLookup: CLActions.SetLookup | CLActions.UpdateAPICallStatus) => {
-      if(resLookup.type === CLActions.SET_LOOKUP_CL) {
-        this.flgLoading[0] = true;
-        switch (this.selectedFieldId) {
-          case 0:
-            this.nodeLookupValue = resLookup.payload[0] ? JSON.parse(JSON.stringify(resLookup.payload[0])) : {nodeid: ''};
-            break;
-          case 1:
-            this.channelLookupValue = resLookup.payload ? JSON.parse(JSON.stringify(resLookup.payload)) : [];
-            break;
-          default:
-            break;
+    this.actions.
+      pipe(
+        takeUntil(this.unSubs[0]),
+        filter((action) => (action.type === CLActions.SET_LOOKUP_CL || action.type === CLActions.UPDATE_API_CALL_STATUS_CL))
+      ).subscribe((resLookup: CLActions.SetLookup | CLActions.UpdateAPICallStatus) => {
+        if (resLookup.type === CLActions.SET_LOOKUP_CL) {
+          this.flgLoading[0] = true;
+          switch (this.selectedFieldId) {
+            case 0:
+              this.nodeLookupValue = resLookup.payload[0] ? JSON.parse(JSON.stringify(resLookup.payload[0])) : { nodeid: '' };
+              break;
+            case 1:
+              this.channelLookupValue = resLookup.payload ? JSON.parse(JSON.stringify(resLookup.payload)) : [];
+              break;
+            default:
+              break;
+          }
+          this.flgSetLookupValue = true;
+          this.logger.info(this.nodeLookupValue);
+          this.logger.info(this.channelLookupValue);
         }
-        this.flgSetLookupValue = true;
-        this.logger.info(this.nodeLookupValue);
-        this.logger.info(this.channelLookupValue);
-      }
-      if (resLookup.type === CLActions.UPDATE_API_CALL_STATUS_CL && resLookup.payload.status === APICallStatusEnum.ERROR && resLookup.payload.action === 'Lookup') {
-        this.flgLoading[0] = 'error';
-      }
-    });
+        if (resLookup.type === CLActions.UPDATE_API_CALL_STATUS_CL && resLookup.payload.status === APICallStatusEnum.ERROR && resLookup.payload.action === 'Lookup') {
+          this.flgLoading[0] = 'error';
+        }
+      });
   }
 
-  onLookup():boolean|void {
-    if(!this.lookupKey) { return true; }
+  onLookup(): boolean|void {
+    if (!this.lookupKey) {
+      return true;
+    }
     this.flgSetLookupValue = false;
-    this.nodeLookupValue = {nodeid: ''};
+    this.nodeLookupValue = { nodeid: '' };
     this.channelLookupValue = [];
     switch (this.selectedFieldId) {
       case 0:
         this.store.dispatch(new CLActions.PeerLookup(this.lookupKey.trim()));
         break;
       case 1:
-        this.store.dispatch(new CLActions.ChannelLookup({uiMessage: UI_MESSAGES.SEARCHING_CHANNEL, shortChannelID: this.lookupKey.trim(), showError: false}));
+        this.store.dispatch(new CLActions.ChannelLookup({ uiMessage: UI_MESSAGES.SEARCHING_CHANNEL, shortChannelID: this.lookupKey.trim(), showError: false }));
         break;
       default:
         break;
@@ -93,19 +96,19 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
   resetData() {
     this.flgSetLookupValue = false;
     this.selectedFieldId = 0;
-    this.nodeLookupValue = {nodeid: ''};
+    this.nodeLookupValue = { nodeid: '' };
     this.channelLookupValue = [];
     this.form.resetForm();
   }
 
   clearLookupValue() {
-    this.nodeLookupValue = {nodeid: ''};
+    this.nodeLookupValue = { nodeid: '' };
     this.channelLookupValue = [];
     this.flgSetLookupValue = false;
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

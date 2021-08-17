@@ -21,6 +21,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   styleUrls: ['./open-channel.component.scss']
 })
 export class CLOpenChannelComponent implements OnInit, OnDestroy {
+
   @ViewChild('form', { static: true }) form: any;
   public selectedPeer = new FormControl();
   public faExclamationTriangle = faExclamationTriangle;
@@ -32,7 +33,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
   public filteredPeers: Observable<Peer[]>;
   public utxos: UTXO[] = [];
   public selUTXOs = [];
-  public flgUseAllBalance = false;  
+  public flgUseAllBalance = false;
   public totalSelectedUTXOAmount = 0;
   public channelConnectionError = '';
   public advancedTitle = 'Advanced Options';
@@ -47,7 +48,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
   public minConfValue = null;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private decimalPipe: DecimalPipe) {}
+  constructor(public dialogRef: MatDialogRef<CLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private decimalPipe: DecimalPipe) { }
 
   ngOnInit() {
     this.isCompatibleVersion = this.data.message.isCompatibleVersion;
@@ -57,30 +58,32 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
     this.alertTitle = this.data.alertTitle;
     this.peer = this.data.message.peer ? this.data.message.peer : null;
     this.peers = this.data.message.peers && this.data.message.peers.length ? this.data.message.peers : [];
-    this.actions.pipe(takeUntil(this.unSubs[0]),
-    filter(action => action.type === CLActions.UPDATE_API_CALL_STATUS_CL || action.type === CLActions.FETCH_CHANNELS_CL))
-    .subscribe((action: CLActions.UpdateAPICallStatus | CLActions.FetchChannels) => {
-      if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewChannel') {
-        this.channelConnectionError = action.payload.message;
-      }
-      if (action.type === CLActions.FETCH_CHANNELS_CL) {
-        this.dialogRef.close();
-      }
-    });
-    let x = '', y = '';
+    this.actions.pipe(
+      takeUntil(this.unSubs[0]),
+      filter((action) => action.type === CLActions.UPDATE_API_CALL_STATUS_CL || action.type === CLActions.FETCH_CHANNELS_CL)).
+      subscribe((action: CLActions.UpdateAPICallStatus | CLActions.FetchChannels) => {
+        if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewChannel') {
+          this.channelConnectionError = action.payload.message;
+        }
+        if (action.type === CLActions.FETCH_CHANNELS_CL) {
+          this.dialogRef.close();
+        }
+      });
+    let x = '',
+      y = '';
     this.sortedPeers = this.peers.sort((p1, p2) => {
       x = p1.alias ? p1.alias.toLowerCase() : p1.id ? p1.id.toLowerCase() : '';
       y = p2.alias ? p2.alias.toLowerCase() : p1.id.toLowerCase();
       return ((x < y) ? -1 : ((x > y) ? 1 : 0));
     });
     this.filteredPeers = this.selectedPeer.valueChanges.pipe(takeUntil(this.unSubs[1]), startWith(''),
-      map(peer => typeof peer === 'string' ? peer : peer.alias ? peer.alias : peer.id),
-      map(alias => alias ? this.filterPeers(alias) : this.sortedPeers.slice())
+      map((peer) => (typeof peer === 'string' ? peer : peer.alias ? peer.alias : peer.id)),
+      map((alias) => (alias ? this.filterPeers(alias) : this.sortedPeers.slice()))
     );
   }
 
   private filterPeers(newlySelectedPeer: string): Peer[] {
-    return this.sortedPeers.filter(peer => peer.alias.toLowerCase().indexOf(newlySelectedPeer ? newlySelectedPeer.toLowerCase() : '') === 0);
+    return this.sortedPeers.filter((peer) => peer.alias.toLowerCase().indexOf(newlySelectedPeer ? newlySelectedPeer.toLowerCase() : '') === 0);
   }
 
   displayFn(peer: Peer): string {
@@ -89,16 +92,18 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
 
   onSelectedPeerChanged() {
     this.channelConnectionError = '';
-    this.selectedPubkey = (this.selectedPeer.value && this.selectedPeer.value.id) ? this.selectedPeer.value.id : undefined;
+    this.selectedPubkey = (this.selectedPeer.value && this.selectedPeer.value.id) ? this.selectedPeer.value.id : null;
     if (typeof this.selectedPeer.value === 'string') {
-      let selPeer = this.peers.filter(peer => peer.alias.length === this.selectedPeer.value.length && peer.alias.toLowerCase().indexOf(this.selectedPeer.value ? this.selectedPeer.value.toLowerCase() : '') === 0);
-      if (selPeer.length === 1 && selPeer[0].id) { this.selectedPubkey = selPeer[0].id; }
+      const selPeer = this.peers.filter((peer) => peer.alias.length === this.selectedPeer.value.length && peer.alias.toLowerCase().indexOf(this.selectedPeer.value ? this.selectedPeer.value.toLowerCase() : '') === 0);
+      if (selPeer.length === 1 && selPeer[0].id) {
+        this.selectedPubkey = selPeer[0].id;
+      }
     }
     if (this.selectedPeer.value && !this.selectedPubkey) {
-      this.selectedPeer.setErrors({notfound: true});
+      this.selectedPeer.setErrors({ notfound: true });
     } else {
       this.selectedPeer.setErrors(null);
-    }  
+    }
   }
 
   onClose() {
@@ -114,7 +119,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
     this.isPrivate = false;
     this.channelConnectionError = '';
     this.advancedTitle = 'Advanced Options';
-    this.form.resetForm(); 
+    this.form.resetForm();
   }
 
   onAdvancedPanelToggle(isClosed: boolean) {
@@ -127,7 +132,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
           this.advancedTitle = this.advancedTitle + ' | Min Confirmation Blocks: ' + this.minConfValue;
         }
         if (this.selFeeRate) {
-          this.advancedTitle = this.advancedTitle + ' | Fee Rate: ' + this.feeRateTypes.find(feeRateType => feeRateType.feeRateId === this.selFeeRate).feeRateType;
+          this.advancedTitle = this.advancedTitle + ' | Fee Rate: ' + this.feeRateTypes.find((feeRateType) => feeRateType.feeRateId === this.selFeeRate).feeRateType;
         }
         if (this.selUTXOs.length && this.selUTXOs.length > 0) {
           this.advancedTitle = this.advancedTitle + ' | Total Selected: ' + this.selUTXOs.length + ' | Selected UTXOs: ' + this.decimalPipe.transform(this.totalSelectedUTXOAmount) + ' Sats';
@@ -139,10 +144,15 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
   }
 
   onUTXOSelectionChange(event: any) {
-    let utxoNew = {value: 0}; 
+    const utxoNew = { value: 0 };
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
-      this.totalSelectedUTXOAmount = this.selUTXOs.reduce((a, b) => {utxoNew.value = a.value + b.value; return utxoNew;}).value;
-      if (this.flgUseAllBalance) { this.onUTXOAllBalanceChange(); }
+      this.totalSelectedUTXOAmount = this.selUTXOs.reduce((a, b) => {
+        utxoNew.value = a.value + b.value;
+        return utxoNew;
+      }).value;
+      if (this.flgUseAllBalance) {
+        this.onUTXOAllBalanceChange();
+      }
     } else {
       this.totalSelectedUTXOAmount = 0;
       this.fundingAmount = null;
@@ -158,20 +168,23 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
     }
   }
 
-  onOpenChannel():boolean|void {
-    if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || (this.flgMinConf && !this.minConfValue))) { return true; }
-    let newChannel = { peerId: ((!this.peer || !this.peer.id) ? this.selectedPubkey : this.peer.id), satoshis: (this.flgUseAllBalance) ? 'all' : this.fundingAmount.toString(), announce: !this.isPrivate, feeRate: this.selFeeRate, minconf: this.flgMinConf ? this.minConfValue : null };
+  onOpenChannel(): boolean | void {
+    if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || (this.flgMinConf && !this.minConfValue))) {
+      return true;
+    }
+    const newChannel = { peerId: ((!this.peer || !this.peer.id) ? this.selectedPubkey : this.peer.id), satoshis: (this.flgUseAllBalance) ? 'all' : this.fundingAmount.toString(), announce: !this.isPrivate, feeRate: this.selFeeRate, minconf: this.flgMinConf ? this.minConfValue : null };
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
       newChannel['utxos'] = [];
-      this.selUTXOs.forEach(utxo => newChannel['utxos'].push(utxo.txid + ':' + utxo.output));
+      this.selUTXOs.forEach((utxo) => newChannel['utxos'].push(utxo.txid + ':' + utxo.output));
     }
     this.store.dispatch(new CLActions.SaveNewChannel(newChannel));
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

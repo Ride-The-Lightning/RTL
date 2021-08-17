@@ -18,7 +18,7 @@ describe('BoltzSwapsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ BoltzSwapsComponent ],
+      declarations: [BoltzSwapsComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -29,14 +29,14 @@ describe('BoltzSwapsComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: BoltzService, useClass: mockBoltzService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,5 +52,4 @@ describe('BoltzSwapsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -18,8 +18,8 @@ describe('CLConnectionsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLConnectionsComponent, CurrencyUnitConverterComponent ],
-      imports: [ 
+      declarations: [CLConnectionsComponent, CurrencyUnitConverterComponent],
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
@@ -35,8 +35,8 @@ describe('CLConnectionsComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,5 +52,4 @@ describe('CLConnectionsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

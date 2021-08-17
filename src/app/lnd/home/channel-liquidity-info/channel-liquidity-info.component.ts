@@ -19,6 +19,7 @@ import * as RTLActions from '../../../store/rtl.actions';
   styleUrls: ['./channel-liquidity-info.component.scss']
 })
 export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
+
   @Input() direction: string;
   @Input() totalLiquidity: number;
   @Input() allChannels: Channel[];
@@ -29,15 +30,15 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private router: Router, private loopService: LoopService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private router: Router, private loopService: LoopService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
-      this.showLoop = (rtlStore.nodeSettings.swapServerUrl && rtlStore.nodeSettings.swapServerUrl.trim() !== '') ? true : false;
-    });
+    this.store.select('lnd').
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.showLoop = !!((rtlStore.nodeSettings.swapServerUrl && rtlStore.nodeSettings.swapServerUrl.trim() !== ''));
+      });
   }
 
   goToChannels() {
@@ -45,21 +46,23 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
   }
 
   onLoopOut(channel: Channel) {
-    this.loopService.getLoopOutTermsAndQuotes(this.targetConf)
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe(response => {
-      this.store.dispatch(new RTLActions.OpenAlert({ minHeight: '56rem', data: {
-        channel: channel,
-        minQuote: response[0],
-        maxQuote: response[1],
-        direction: LoopTypeEnum.LOOP_OUT,
-        component: LoopModalComponent
-      }}));
-    });
+    this.loopService.getLoopOutTermsAndQuotes(this.targetConf).
+      pipe(takeUntil(this.unSubs[1])).
+      subscribe((response) => {
+        this.store.dispatch(new RTLActions.OpenAlert({
+          minHeight: '56rem', data: {
+            channel: channel,
+            minQuote: response[0],
+            maxQuote: response[1],
+            direction: LoopTypeEnum.LOOP_OUT,
+            component: LoopModalComponent
+          }
+        }));
+      });
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

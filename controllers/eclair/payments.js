@@ -26,18 +26,8 @@ exports.decodePayment = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers.authorization) {
-      delete err.options.headers.authorization;
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-      delete err.response.request.headers.authorization;
-    }
-    logger.log({level: 'ERROR', fileName: 'Payments', msg: 'Payment Decode Error', error: err});
-    return res.status(err.statusCode ? err.statusCode : 500).json({
-      message: "Payment Decode Failed!",
-      error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-    });
+    const err = common.handleError(errRes,  'Payments', 'Decode Payment Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -53,18 +43,8 @@ exports.postPayment = (req, res, next) => {
     res.status(201).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers.authorization) {
-      delete err.options.headers.authorization;
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-      delete err.response.request.headers.authorization;
-    }
-    logger.log({level: 'ERROR', fileName: 'Payments', msg: 'Send Payment Error', error: err});
-    return res.status(err.statusCode ? err.statusCode : 500).json({
-      message: "Send Payment Failed!",
-      error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-    });
+    const err = common.handleError(errRes,  'Payments', 'Send Payment Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -97,18 +77,8 @@ exports.queryPaymentRoute = (req, res, next) => {
     }
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers.authorization) {
-      delete err.options.headers.authorization;
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-      delete err.response.request.headers.authorization;
-    }
-    logger.log({level: 'ERROR', fileName: 'Payments', msg: 'Query Payment Route Error', error: err});
-    return res.status(err.statusCode ? err.statusCode : 500).json({
-      message: "Query Payment Route Failed!",
-      error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-    });
+    const err = common.handleError(errRes,  'Payments', 'Query Route Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -124,18 +94,8 @@ exports.getSentPaymentsInformation = (req, res, next) => {
       res.status(200).json(values);
     })
     .catch(errRes => {
-      let err = JSON.parse(JSON.stringify(errRes));
-      if (err.options && err.options.headers && err.options.headers.authorization) {
-        delete err.options.headers.authorization;
-      }
-      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-        delete err.response.request.headers.authorization;
-      }
-      logger.log({level: 'ERROR', fileName: 'Payments', msg: 'Payment Sent Information Error', error: err});
-      return res.status(err.statusCode ? err.statusCode : 500).json({
-        message: "Payment Sent Information Failed!",
-        error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-      });
+      const err = common.handleError(errRes,  'Payments', 'Sent Payment Error');
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     });
   } else {
     logger.log({level: 'INFO', fileName: 'Payments', msg: 'Empty Sent Payment Information Received'});

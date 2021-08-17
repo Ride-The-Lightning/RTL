@@ -209,6 +209,57 @@ common.newestOnTop = (array, key, value) => {
   return array;
 }
 
+common.handleError = (errRes, fileName, errMsg) => {
+  let err = JSON.parse(JSON.stringify(errRes));
+  switch (common.selectedNode.ln_implementation) {
+    case 'LND':
+      if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+        delete err.options.headers['Grpc-Metadata-macaroon'];
+      }
+      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+        delete err.response.request.headers['Grpc-Metadata-macaroon'];
+      }
+      break;
+
+    case 'CLT':
+      if (err.options && err.options.headers && err.options.headers.macaroon) {
+        delete err.options.headers.macaroon;
+      }
+      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
+        delete err.response.request.headers.macaroon;
+      }
+      break;
+
+    case 'ECL':
+      if (err.options && err.options.headers && err.options.headers.authorization) {
+        delete err.options.headers.authorization;
+      }
+      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
+        delete err.response.request.headers.authorization;
+      }
+      break;
+
+    default:
+      if (err.options && err.options.headers) { delete err.options.headers; }
+      break;
+  }
+  const msgStr = '\r\n[' + new Date().toISOString() + '] ERROR: ' + fileName + ' => ' + errMsg + ': ' + (typeof err === 'object' ? JSON.stringify(err) : (typeof err === 'string') ? err : 'Unknown Error');
+  console.error(msgStr);
+  if (common.selectedNode) { fs.appendFile(common.selectedNode.log_file, msgStr, () => {}) }
+  const newErrorObj = {
+    statusCode: err.statusCode ? err.statusCode : err.status ? err.status : (err.error && err.error.code && err.error.code === 'ECONNREFUSED') ? 503 : 500,
+    message: err.message ? err.message : errMsg, 
+    error: (
+      (err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : 
+      (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error : 
+      (err.error && typeof err.error === 'string') ? err.error : 
+      (err.error && typeof err.error === 'object') ? JSON.stringify(err.error) : 
+      (typeof err === 'string') ? err : 'Unknown Error'
+    )
+  };
+  return newErrorObj;
+}
+
 common.getRequestIP = (req) => {
   return (typeof req.headers['x-forwarded-for'] === 'string' && req.headers['x-forwarded-for'].split(',').shift())
     || req.ip

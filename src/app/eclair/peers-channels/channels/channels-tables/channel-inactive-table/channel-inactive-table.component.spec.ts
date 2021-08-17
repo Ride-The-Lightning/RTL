@@ -18,7 +18,7 @@ describe('ECLChannelInactiveTableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLChannelInactiveTableComponent ],
+      declarations: [ECLChannelInactiveTableComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -36,8 +36,8 @@ describe('ECLChannelInactiveTableComponent', () => {
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
 
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -53,5 +53,4 @@ describe('ECLChannelInactiveTableComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -17,17 +17,17 @@ export interface RootState {
 }
 
 const initNodeSettings = { userPersona: 'OPERATOR', themeMode: 'DAY', themeColor: 'PURPLE', channelBackupPath: '', selCurrencyUnit: 'USD', fiatConversion: false, currencyUnits: ['Sats', 'BTC', 'USD'], bitcoindConfigPath: '' };
-const initNodeAuthentication = { configPath: '', swapMacaroonPath: '', boltzMacaroonPath: '',  };
+const initNodeAuthentication = { configPath: '', swapMacaroonPath: '', boltzMacaroonPath: '' };
 
 export const initRootState: RootState = {
   apisCallStatus: { Login: { status: APICallStatusEnum.UN_INITIATED }, IsAuthorized: { status: APICallStatusEnum.UN_INITIATED } },
-  selNode: {settings: initNodeSettings, authentication: initNodeAuthentication, lnImplementation: 'LND'},
+  selNode: { settings: initNodeSettings, authentication: initNodeAuthentication, lnImplementation: 'LND' },
   appConfig: {
     defaultNodeIndex: -1,
     selectedNodeIndex: -1,
     sso: { rtlSSO: 0, logoutRedirectLink: '' },
     enable2FA: false,
-    nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication}]
+    nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication }]
   },
   nodeData: {}
 };
@@ -41,7 +41,7 @@ export function RootReducer(state = initRootState, action: RTLActions.RTLActions
         statusCode: action.payload.statusCode,
         message: action.payload.message,
         URL: action.payload.URL,
-        filePath: action.payload.filePath      
+        filePath: action.payload.filePath
       };
       return {
         ...state,
@@ -71,7 +71,6 @@ export function RootReducer(state = initRootState, action: RTLActions.RTLActions
     default:
       return state;
   }
-
 }
 
 export interface RTLState {

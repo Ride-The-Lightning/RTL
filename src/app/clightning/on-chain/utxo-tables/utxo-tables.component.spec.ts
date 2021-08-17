@@ -17,7 +17,7 @@ describe('CLUTXOTablesComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLUTXOTablesComponent, CLOnChainUtxosComponent ],
+      declarations: [CLUTXOTablesComponent, CLOnChainUtxosComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -28,13 +28,13 @@ describe('CLUTXOTablesComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -50,5 +50,4 @@ describe('CLUTXOTablesComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

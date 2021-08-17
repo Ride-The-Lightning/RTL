@@ -10,13 +10,13 @@ describe('LoopQuoteComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoopQuoteComponent ],
-      imports: [ 
+      declarations: [LoopQuoteComponent],
+      imports: [
         BrowserAnimationsModule,
         SharedModule
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -32,5 +32,4 @@ describe('LoopQuoteComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -14,17 +14,17 @@ describe('CLVerifyComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLVerifyComponent ],
-      imports: [ 
+      declarations: [CLVerifyComponent],
+      imports: [
         BrowserAnimationsModule,
         SharedModule
       ],
-      providers: [ 
+      providers: [
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -40,5 +40,4 @@ describe('CLVerifyComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

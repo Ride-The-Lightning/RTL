@@ -5,7 +5,7 @@
       <mat-error *ngIf="!message">Message is required.</mat-error>
     </mat-form-field>
     <div fxLayout="row" class="my-1">
-      <button class="mr-1" mat-stroked-button color="primary" tabindex="2" type="reset" (click)="resetData()" type="reset">Clear Field</button>
+      <button class="mr-1" mat-stroked-button color="primary" tabindex="2" (click)="resetData()" type="reset">Clear Field</button>
       <button mat-flat-button color="primary" (click)="onSign()" tabindex="3" type="submit">Sign</button>
     </div>
     <mat-divider [inset]="true" class="my-2"></mat-divider>

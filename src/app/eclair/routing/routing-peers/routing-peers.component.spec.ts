@@ -17,7 +17,7 @@ describe('ECLRoutingPeersComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLRoutingPeersComponent ],
+      declarations: [ECLRoutingPeersComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -33,8 +33,8 @@ describe('ECLRoutingPeersComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -50,5 +50,4 @@ describe('ECLRoutingPeersComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

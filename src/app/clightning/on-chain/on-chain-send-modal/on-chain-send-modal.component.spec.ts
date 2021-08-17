@@ -20,8 +20,8 @@ describe('CLOnChainSendModalComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLOnChainSendModalComponent ],
-      imports: [ 
+      declarations: [CLOnChainSendModalComponent],
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
@@ -32,7 +32,7 @@ describe('CLOnChainSendModalComponent', () => {
         }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
@@ -40,8 +40,8 @@ describe('CLOnChainSendModalComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: { sweepAll: true } },
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -57,5 +57,4 @@ describe('CLOnChainSendModalComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

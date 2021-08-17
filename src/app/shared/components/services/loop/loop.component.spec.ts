@@ -18,7 +18,7 @@ describe('LoopComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoopComponent ],
+      declarations: [LoopComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -30,13 +30,13 @@ describe('LoopComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: DataService, useClass: mockDataService },
         { provide: LoopService, useClass: mockLoopService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,5 +52,4 @@ describe('LoopComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

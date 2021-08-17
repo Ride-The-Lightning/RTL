@@ -16,7 +16,7 @@ describe('CLOnChainUtxosComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLOnChainUtxosComponent ],
+      declarations: [CLOnChainUtxosComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -32,8 +32,8 @@ describe('CLOnChainUtxosComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -49,5 +49,4 @@ describe('CLOnChainUtxosComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

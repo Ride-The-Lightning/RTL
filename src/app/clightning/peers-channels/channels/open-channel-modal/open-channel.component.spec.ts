@@ -15,7 +15,7 @@ describe('CLOpenChannelComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLOpenChannelComponent ],
+      declarations: [CLOpenChannelComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -27,12 +27,12 @@ describe('CLOpenChannelComponent', () => {
         }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
-      providers: [ 
+      providers: [
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {message:{}} }
+        { provide: MAT_DIALOG_DATA, useValue: { message: {} } }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {

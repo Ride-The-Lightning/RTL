@@ -12,8 +12,8 @@ describe('CLOnChainSendComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLOnChainSendComponent ],
-      imports: [ 
+      declarations: [CLOnChainSendComponent],
+      imports: [
         SharedModule,
         RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {
@@ -21,10 +21,10 @@ describe('CLOnChainSendComponent', () => {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ]
-    })
-    .compileComponents();
+        })
+      ]
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -40,5 +40,4 @@ describe('CLOnChainSendComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

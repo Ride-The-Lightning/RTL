@@ -19,8 +19,8 @@ describe('CLTransactionsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLTransactionsComponent, CLQueryRoutesComponent ],
-      imports: [ 
+      declarations: [CLTransactionsComponent, CLQueryRoutesComponent],
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
@@ -36,8 +36,8 @@ describe('CLTransactionsComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -53,5 +53,4 @@ describe('CLTransactionsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

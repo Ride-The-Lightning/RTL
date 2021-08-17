@@ -13,7 +13,7 @@ describe('InitializeWalletComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ InitializeWalletComponent ],
+      declarations: [InitializeWalletComponent],
       imports: [
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
@@ -23,11 +23,11 @@ describe('InitializeWalletComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         { provide: LNDEffects, useClass: mockLNDEffects }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -43,5 +43,4 @@ describe('InitializeWalletComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

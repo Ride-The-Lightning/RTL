@@ -11,11 +11,11 @@ describe('NodeLookupComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ NodeLookupComponent ],
-      imports: [ SharedModule ],
-      providers: [ LoggerService ]
-    })
-    .compileComponents();
+      declarations: [NodeLookupComponent],
+      imports: [SharedModule],
+      providers: [LoggerService]
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -31,5 +31,4 @@ describe('NodeLookupComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

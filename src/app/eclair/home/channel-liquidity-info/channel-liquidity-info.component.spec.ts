@@ -14,14 +14,14 @@ describe('ECLChannelLiquidityInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLChannelLiquidityInfoComponent ],
-      imports: [ SharedModule, RouterTestingModule ],
-      providers: [ 
+      declarations: [ECLChannelLiquidityInfoComponent],
+      imports: [SharedModule, RouterTestingModule],
+      providers: [
         CommonService,
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -37,5 +37,4 @@ describe('ECLChannelLiquidityInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

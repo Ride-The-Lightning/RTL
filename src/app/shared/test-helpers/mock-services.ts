@@ -7,88 +7,113 @@ import { mockResponseData } from './test-data';
 import * as CLActions from '../../clightning/store/cl.actions';
 
 export class mockMatDialogRef {
-  close = (dialogResult: any) => {};
+
+  close = (dialogResult: any) => { };
+
 }
 
 export class mockLoggerService {
-  info(){};
-  warn(){};
-  error(){};
-  invokeConsoleMethod(type: string, args?: any): void {};
+
+  info() { };
+  warn() { };
+  error() { };
+  invokeConsoleMethod(type: string, args?: any): void { };
+
 }
 
 export class mockHttpClient {
+
   post(url: string) {
     return of(new HttpResponse(mockResponseData.setSelectedNodeSuccess));
   }
+
 }
 
 export class mockDataService {
+
   private lnImplementation = 'LND';
   private childAPIUrl = API_URL;
 
-  getChildAPIUrl(){
+  getChildAPIUrl() {
     return of(this.childAPIUrl);
   };
-  getLnImplementation(){
+
+  getLnImplementation() {
     return of(this.lnImplementation);
   };
+
   setChildAPIUrl(lnImplementation: string) {
-    this.lnImplementation = lnImplementation;    
+    this.lnImplementation = lnImplementation;
     switch (lnImplementation) {
       case 'CLT':
         this.childAPIUrl = API_URL + '/cl';
         break;
 
       case 'ECL':
-          this.childAPIUrl = API_URL + '/ecl';
-          break;
-      
+        this.childAPIUrl = API_URL + '/ecl';
+        break;
+
       default:
         this.childAPIUrl = API_URL + '/lnd';
         break;
     }
   };
+
   getFiatRates() {
     return of(mockResponseData.fiatRates);
   }
+
   decodePayment(payment: string, fromDialog: boolean) {
-    if (payment === 'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3') {
+    if (payment ===
+      'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3'
+    ) {
       return of(mockResponseData.decodePayment);
-    } else if (payment === 'lntb1ps8neg8pp5u897fhxxzg068jzt59tgqe458jt7srjtd6k93x4t9ts3hqdkd2nsdpj23jhxarfdenjq3tdwp68jgzfdemx76trv5sxvmmjypxyu3pqxvxqyd9uqcqp2sp5feg8wftf3fasmp2fe86kehyqfat2xcrjvunare7rrn28yjdrw8yqrzjq2m42d94jc8fxjzq675cmhr7fpjg0vr6238xutxp9p78yeaucwjfjxgpcuqqqxsqqyqqqqlgqqqqqqgq9q9qy9qsqwf6a4w9uqthm3aslwt03ucqt03e8j2atxrmt022d5kaw65cmqc3pnghz5xmsh2tlz9syhaulrxtwmvh3gdx9j33gec6yrycwh2g05qgqdnftgk') {
+    } else if (payment ===
+      'lntb1ps8neg8pp5u897fhxxzg068jzt59tgqe458jt7srjtd6k93x4t9ts3hqdkd2nsdpj23jhxarfdenjq3tdwp68jgzfdemx76trv5sxvmmjypxyu3pqxvxqyd9uqcqp2sp5feg8wftf3fasmp2fe86kehyqfat2xcrjvunare7rrn28yjdrw8yqrzjq2m42d94jc8fxjzq675cmhr7fpjg0vr6238xutxp9p78yeaucwjfjxgpcuqqqxsqqyqqqqlgqqqqqqgq9q9qy9qsqwf6a4w9uqthm3aslwt03ucqt03e8j2atxrmt022d5kaw65cmqc3pnghz5xmsh2tlz9syhaulrxtwmvh3gdx9j33gec6yrycwh2g05qgqdnftgk'
+    ) {
       mockResponseData.decodeEmptyPayment.num_satoshis = '0';
       return of(mockResponseData.decodeEmptyPayment);
     } else {
       return throwError(() => mockResponseData.error);
     }
   };
+
   decodePayments(payments: string) {
     return of(mockResponseData.decodePayments);
   };
+
   getAliasesFromPubkeys(pubkey: string, multiple: boolean) {
     return of(mockResponseData.getAliasesFromPubkeys);
   };
+
   signMessage(msg: string) {
     return of(mockResponseData.signMessage);
   };
+
   verifyMessage(msg: string, sign: string) {
     return of(mockResponseData.verifyMessage);
   };
+
   bumpFee(txid: string, outputIndex: number, targetConf: number, satPerByte: number) {
     return of(mockResponseData.bumpFee);
   };
+
   labelUTXO(txid: string, label: string, overwrite: boolean = true) {
     return of(mockResponseData.labelUTXO);
   };
+
   leaseUTXO(txid: string, output_index: number) {
-    return of(mockResponseData.leaseUTXO); //10 mins
+    return of(mockResponseData.leaseUTXO); // 10 mins
   };
+
   getForwardingHistory(start: string, end: string) {
     return of(mockResponseData.getForwardingHistory);
   };
+
 };
 
 export class mockSessionService {
+
   private sessionObj = {
     token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiTk9ERV9VU0VSIiwiY29uZmlnUGF0aCI6IkM6L1VzZXJzL3NoYWhhL0FwcERhdGEvTG9jYWwvTG5kL2xuZC5jb25mIiwibWFjYXJvb25QYXRoIjoiQzovVXNlcnMvc2hhaGEvQXBwRGF0YS9Mb2NhbC9MbmQvZGF0YS9jaGFpbi9iaXRjb2luL3Rlc3RuZXQiLCJpYXQiOjE2MjU4NzcwMzZ9.ybM926PINgy3RINjG1CPqQOOFOcofgKbBLLeyfgW4zg',
     defaultPassword: false,
@@ -118,38 +143,44 @@ export class mockSessionService {
   clearAll() {
     return of(this.sessionObj);
   }
+
 }
 
 export class mockLoopService {
+
   public swapsChanged = new BehaviorSubject<any[]>([]);
-  getSwapsList() {};
-  listSwaps() {};
-  loopOut(amount: number, chanId: string, targetConf: number, swapRoutingFee: number, minerFee: number, prepayRoutingFee: number, prepayAmt: number, swapFee: number, swapPublicationDeadline: number, destAddress: string) {};
-  getLoopOutTerms() {};
-  getLoopOutQuote(amount: number, targetConf: number, swapPublicationDeadline: number) {};
-  getLoopOutTermsAndQuotes(targetConf: number) {};
-  loopIn(amount: number, swapFee: number, minerFee: number, lastHop: string, externalHtlc: boolean) {};
-  getLoopInTerms() {};
-  getLoopInQuote(amount: number, targetConf: string, swapPublicationDeadline: number) {};
-  getLoopInTermsAndQuotes(targetConf: number) {};
-  getSwap(id: string) {};
-  handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {};
-  handleErrorWithAlert(errURL: string, err: any) {};
+  getSwapsList() { };
+  listSwaps() { };
+  loopOut(amount: number, chanId: string, targetConf: number, swapRoutingFee: number, minerFee: number, prepayRoutingFee: number, prepayAmt: number, swapFee: number, swapPublicationDeadline: number, destAddress: string) { };
+  getLoopOutTerms() { };
+  getLoopOutQuote(amount: number, targetConf: number, swapPublicationDeadline: number) { };
+  getLoopOutTermsAndQuotes(targetConf: number) { };
+  loopIn(amount: number, swapFee: number, minerFee: number, lastHop: string, externalHtlc: boolean) { };
+  getLoopInTerms() { };
+  getLoopInQuote(amount: number, targetConf: string, swapPublicationDeadline: number) { };
+  getLoopInTermsAndQuotes(targetConf: number) { };
+  getSwap(id: string) { };
+  handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) { };
+  handleErrorWithAlert(errURL: string, err: any) { };
+
 }
 
 export class mockBoltzService {
+
   public swapsChanged = new BehaviorSubject<any[]>([]);
-  getSwapsList() {};
-  listSwaps() {};
-  swapInfo(id: string) {};
-  serviceInfo() {};
-  swapOut(amount: number, address: string) {};
-  swapIn(amount: number) {};
-  handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {};
-  handleErrorWithAlert(errURL: string, err: any) {};
+  getSwapsList() { };
+  listSwaps() { };
+  swapInfo(id: string) { };
+  serviceInfo() { };
+  swapOut(amount: number, address: string) { };
+  swapIn(amount: number) { };
+  handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) { };
+  handleErrorWithAlert(errURL: string, err: any) { };
+
 }
 
 export class mockRTLEffects {
+
   closeAllDialogs = of(() => ({}));
   openSnackBar = of(() => ({}));
   openSpinner = of(() => ({}));
@@ -179,10 +210,12 @@ export class mockRTLEffects {
   SetToken = of(() => ({}));
   setLoggedInDetails = of(() => ({}));
   handleErrorWithoutAlert = of(() => ({}));
-  handleErrorWithAlert = of(() => ({}));   
+  handleErrorWithAlert = of(() => ({}));
+
 };
 
 export class mockLNDEffects {
+
   infoFetch = of(() => ({}));
   fetchFees = of(() => ({}));
   fetchFeeRates = of(() => ({}));
@@ -202,7 +235,7 @@ export class mockLNDEffects {
   setDecodedPayment = of(() => ({}));
   sendPayment = of(() => ({}));
   queryRoutesFetch = of(() => ({}));
-  setQueryRoutes = of(() => ({ type: 'SET_QUERY_ROUTES', payload: {routes: []}}));
+  setQueryRoutes = of(() => ({ type: 'SET_QUERY_ROUTES', payload: { routes: [] } }));
   peerLookup = of(() => ({}));
   channelLookup = of(() => ({}));
   invoiceLookup = of(() => ({}));
@@ -216,10 +249,12 @@ export class mockLNDEffects {
   initWalletRes = of(() => ({}));
   initWallet = of(() => ({}));
   genSeedResponse = of(() => ({}));
-  setRestoreChannelList = of({files: [], all_restore_exists: true});
+  setRestoreChannelList = of({ files: [], all_restore_exists: true });
+
 }
 
 export class mockCLEffects {
+
   infoFetchCL = of(() => ({}));
   fetchFeesCL = of(() => ({}));
   fetchFeeRatesCL = of(() => ({}));
@@ -249,10 +284,12 @@ export class mockCLEffects {
   invoicesFetchCL = of(() => ({}));
   SetChannelTransactionCL = of(() => ({}));
   utxosFetchCL = of(() => ({}));
-  setQueryRoutesCL = of(() => ({type: CLActions.SET_QUERY_ROUTES_CL, payload: {routes: []}}))
+  setQueryRoutesCL = of(() => ({ type: CLActions.SET_QUERY_ROUTES_CL, payload: { routes: [] } }))
+
 }
 
 export class mockECLEffects {
+
   infoFetch = of(() => ({}));
   fetchFees = of(() => ({}));
   fetchFeeRates = of(() => ({}));
@@ -283,4 +320,5 @@ export class mockECLEffects {
   invoicesFetch = of(() => ({}));
   SetChannelTransaction = of(() => ({}));
   utxosFetch = of(() => ({}));
+
 }

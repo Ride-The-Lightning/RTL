@@ -18,7 +18,7 @@ describe('CLQueryRoutesComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLQueryRoutesComponent ],
+      declarations: [CLQueryRoutesComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -30,13 +30,13 @@ describe('CLQueryRoutesComponent', () => {
         }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: DataService, useClass: mockDataService },
         { provide: CLEffects, useClass: mockCLEffects }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,5 +52,4 @@ describe('CLQueryRoutesComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

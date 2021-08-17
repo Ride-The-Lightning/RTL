@@ -105,20 +105,19 @@ connect.updateLogByLevel = () => {
     RTLConfFile = common.rtl_conf_file_path + common.path_separator + 'RTL-Config.json';
     var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
     config.nodes.forEach((node) => {
-      if(node.Settings.hasOwnProperty('enableLogging')) {
+      if (node.Settings.hasOwnProperty('enableLogging')) {
         updateLogFlag = true;
         node.Settings.logLevel = node.Settings.enableLogging? 'INFO' : 'ERROR';
         delete node.Settings.enableLogging;
       }
     })
-    if(updateLogFlag) {
+    if (updateLogFlag) {
       fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     }
   } catch (err) {
     errMsg = errMsg + '\nLog level update failed!';
   }
 }
-
 
 connect.validateNodeConfig = (config) => {
   if ((process.env.RTL_SSO == 0) || (typeof process.env.RTL_SSO === 'undefined' && +config.SSO.rtlSSO === 0)) {
@@ -244,25 +243,23 @@ connect.validateNodeConfig = (config) => {
       } catch (err) {
         console.error('Something went wrong while creating the backup directory: \n' + err);
       }
-
-        common.nodes[idx].log_file = common.rtl_conf_file_path + '/logs/RTL-Node-' + node.index + '.log';
-        const log_file = common.nodes[idx].log_file;
-        if (fs.existsSync(log_file)) {
-          fs.writeFile(log_file, '', () => { });
-        } else {
-          try {
-            var dirname = path.dirname(log_file);
-            connect.createDirectory(dirname);
-            var createStream = fs.createWriteStream(log_file);
-            createStream.end();
-          }
-          catch (err) {
-            console.error('Something went wrong while creating log file ' + log_file + ': \n' + err);
-          }
+      common.nodes[idx].log_file = common.rtl_conf_file_path + '/logs/RTL-Node-' + node.index + '.log';
+      const log_file = common.nodes[idx].log_file;
+      if (fs.existsSync(log_file)) {
+        fs.writeFile(log_file, '', () => { });
+      } else {
+        try {
+          var dirname = path.dirname(log_file);
+          connect.createDirectory(dirname);
+          var createStream = fs.createWriteStream(log_file);
+          createStream.end();
         }
+        catch (err) {
+          console.error('Something went wrong while creating log file ' + log_file + ': \n' + err);
+        }
+      }
     });
   }
-
   connect.setSSOParams(config);
   if (errMsg && errMsg.trim() !== '') { throw new Error(errMsg); }
 }
@@ -353,20 +350,18 @@ connect.refreshCookie = (cookieFile) => {
 }
 
 connect.logEnvVariables = () => {
-  if (common.nodes && common.nodes.length > 0) {
-    common.nodes.forEach((node, idx) => {
-      logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'PORT: ' + common.port, node });
-      logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'HOST: ' + common.host, node });
-      logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + common.selectedNode.index });
-      logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'SSO: ' + common.rtl_sso, node });
-      logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + common.logout_redirect_link + '\r\n', node });
-      logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'INDEX: ' + node.index, node });
-      logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN NODE: ' + node.ln_node, node });
-      logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + node.ln_implementation, node });
-      logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + node.fiat_conversion, node });
-      logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + node.currency_unit, node });
-      logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + node.ln_server_url, node });
-    });
+  if (common.selectedNode && common.selectedNode.index) {
+    logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'PORT: ' + common.port});
+    logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'HOST: ' + common.host });
+    logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'SSO: ' + common.rtl_sso });
+    logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + common.selectedNode.index });
+    logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'INDEX: ' + common.selectedNode.index });
+    logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN NODE: ' + common.selectedNode.ln_node });
+    logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + common.selectedNode.ln_implementation });
+    logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + common.selectedNode.fiat_conversion });
+    logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + common.selectedNode.currency_unit });
+    logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + common.selectedNode.ln_server_url });
+    logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + common.logout_redirect_link + '\r\n' });
   }
 }
 
@@ -576,7 +571,6 @@ connect.setServerConfiguration = () => {
       connect.upgradeConfig(confFileFullPath);
     }
     var config = JSON.parse(fs.readFileSync(confFileFullPath, 'utf-8'));
-
     connect.updateLogByLevel();
     connect.validateNodeConfig(config);
     connect.setSelectedNode(config);

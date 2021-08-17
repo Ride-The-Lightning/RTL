@@ -7,6 +7,7 @@ import { ChannelsStatus } from '../../../shared/models/eclModels';
   styleUrls: ['./channel-status-info.component.scss']
 })
 export class ECLChannelStatusInfoComponent {
+
   @Input() channelsStatus: ChannelsStatus = {};
   @Input() errorMessage: string;
 

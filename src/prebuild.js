@@ -4,7 +4,7 @@ const os = require('os');
 
 const appVersion = require('../package.json').version;
 const versionFilePath = path.join(__dirname + '/environments/version.ts');
-const versionStr = 'export const VERSION = \'' + appVersion + '\';';
+const versionStr = 'export const VERSION = \'' + appVersion + '\';' + os.EOL;
 
 fs.writeFileSync(versionFilePath, versionStr, 'utf-8');
 console.log('\n\n=============================================');

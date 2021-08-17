@@ -18,8 +18,8 @@ describe('ConnectionsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ConnectionsComponent ],
-      imports: [ 
+      declarations: [ConnectionsComponent],
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
@@ -35,8 +35,8 @@ describe('ConnectionsComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,5 +52,4 @@ describe('ConnectionsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

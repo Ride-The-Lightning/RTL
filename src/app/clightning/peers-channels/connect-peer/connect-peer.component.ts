@@ -5,7 +5,7 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatVerticalStepper } from '@angular/material/stepper';
+import { MatStepper } from '@angular/material/stepper';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -22,8 +22,9 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./connect-peer.component.scss']
 })
 export class CLConnectPeerComponent implements OnInit, OnDestroy {
-  @ViewChild('peersForm', {static: false}) form: any;
-  @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
+
+  @ViewChild('peersForm', { static: false }) form: any;
+  @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
   public peerAddress = '';
   public totalBalance = 0;
@@ -37,16 +38,16 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
   public peerFormLabel = 'Peer Details';
   public channelFormLabel = 'Open Channel (Optional)';
   peerFormGroup: FormGroup;
-  channelFormGroup: FormGroup;  
-  statusFormGroup: FormGroup;  
+  channelFormGroup: FormGroup;
+  statusFormGroup: FormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<CLConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private formBuilder: FormBuilder, private actions: Actions, private logger: LoggerService) {}
 
   ngOnInit() {
     this.totalBalance = this.data.message.balance;
-    this.peerAddress = (this.data.message.peer && this.data.message.peer.id && this.data.message.peer.netaddr) ? (this.data.message.peer.id + '@' + this.data.message.peer.netaddr) : 
-    (this.data.message.peer && this.data.message.peer.id && !this.data.message.peer.netaddr) ? this.data.message.peer.id : '';
+    this.peerAddress = (this.data.message.peer && this.data.message.peer.id && this.data.message.peer.netaddr) ? (this.data.message.peer.id + '@' + this.data.message.peer.netaddr) :
+      (this.data.message.peer && this.data.message.peer.id && !this.data.message.peer.netaddr) ? this.data.message.peer.id : '';
     this.peerFormGroup = this.formBuilder.group({
       hiddenAddress: ['', [Validators.required]],
       peerAddress: [this.peerAddress, [Validators.required]]
@@ -58,9 +59,9 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
       flgMinConf: [false],
       minConfValue: [null],
       hiddenAmount: ['', [Validators.required]]
-    });    
-    this.statusFormGroup = this.formBuilder.group({}); 
-    this.channelFormGroup.controls.flgMinConf.valueChanges.pipe(takeUntil(this.unSubs[0])).subscribe(flg => {
+    });
+    this.statusFormGroup = this.formBuilder.group({});
+    this.channelFormGroup.controls.flgMinConf.valueChanges.pipe(takeUntil(this.unSubs[0])).subscribe((flg) => {
       if (flg) {
         this.channelFormGroup.controls.selFeeRate.setValue(null);
         this.channelFormGroup.controls.selFeeRate.disable();
@@ -72,37 +73,42 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
         this.channelFormGroup.controls.minConfValue.setValidators(null);
       }
     });
-    this.actions.pipe(takeUntil(this.unSubs[1]),
-    filter((action) => action.type === CLActions.NEWLY_ADDED_PEER_CL || action.type === CLActions.FETCH_CHANNELS_CL || action.type === CLActions.UPDATE_API_CALL_STATUS_CL))
-    .subscribe((action: (CLActions.NewlyAddedPeer | CLActions.FetchChannels | CLActions.UpdateAPICallStatus)) => {
-      if (action.type === CLActions.NEWLY_ADDED_PEER_CL) { 
-        this.logger.info(action.payload);
-        this.flgEditable = false;
-        this.newlyAddedPeer = action.payload.peer;
-        this.peerFormGroup.controls.hiddenAddress.setValue(this.peerFormGroup.controls.peerAddress.value);
-        this.stepper.next();
-      }
-      if (action.type === CLActions.FETCH_CHANNELS_CL) { 
-        this.dialogRef.close();
-      }
-      if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR) { 
-        if (action.payload.action === 'SaveNewPeer') {
-          this.peerConnectionError = action.payload.message;
-        } else if (action.payload.action === 'SaveNewChannel') {
-          this.channelConnectionError = action.payload.message;
+    this.actions.pipe(
+      takeUntil(this.unSubs[1]),
+      filter((action) => action.type === CLActions.NEWLY_ADDED_PEER_CL || action.type === CLActions.FETCH_CHANNELS_CL || action.type === CLActions.UPDATE_API_CALL_STATUS_CL)).
+      subscribe((action: (CLActions.NewlyAddedPeer | CLActions.FetchChannels | CLActions.UpdateAPICallStatus)) => {
+        if (action.type === CLActions.NEWLY_ADDED_PEER_CL) {
+          this.logger.info(action.payload);
+          this.flgEditable = false;
+          this.newlyAddedPeer = action.payload.peer;
+          this.peerFormGroup.controls.hiddenAddress.setValue(this.peerFormGroup.controls.peerAddress.value);
+          this.stepper.next();
         }
-      }
-    });
+        if (action.type === CLActions.FETCH_CHANNELS_CL) {
+          this.dialogRef.close();
+        }
+        if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR) {
+          if (action.payload.action === 'SaveNewPeer') {
+            this.peerConnectionError = action.payload.message;
+          } else if (action.payload.action === 'SaveNewChannel') {
+            this.channelConnectionError = action.payload.message;
+          }
+        }
+      });
   }
 
-  onConnectPeer():boolean|void {
-    if(!this.peerFormGroup.controls.peerAddress.value) { return true; }
+  onConnectPeer(): boolean|void {
+    if (!this.peerFormGroup.controls.peerAddress.value) {
+      return true;
+    }
     this.peerConnectionError = '';
-    this.store.dispatch(new CLActions.SaveNewPeer({id: this.peerFormGroup.controls.peerAddress.value}));
-}
+    this.store.dispatch(new CLActions.SaveNewPeer({ id: this.peerFormGroup.controls.peerAddress.value }));
+  }
 
-  onOpenChannel():boolean|void {
-    if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) || (this.channelFormGroup.controls.flgMinConf.value && !this.channelFormGroup.controls.minConfValue.value)) { return true; }
+  onOpenChannel(): boolean|void {
+    if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) || (this.channelFormGroup.controls.flgMinConf.value && !this.channelFormGroup.controls.minConfValue.value)) {
+      return true;
+    }
     this.channelConnectionError = '';
     this.store.dispatch(new CLActions.SaveNewChannel({
       peerId: this.newlyAddedPeer.id, satoshis: this.channelFormGroup.controls.fundingAmount.value, announce: !this.channelFormGroup.controls.isPrivate.value, feeRate: this.channelFormGroup.controls.selFeeRate.value, minconf: this.channelFormGroup.controls.flgMinConf.value ? this.channelFormGroup.controls.minConfValue.value : null
@@ -119,7 +125,7 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
         this.peerFormLabel = 'Peer Details';
         this.channelFormLabel = 'Open Channel (Optional)';
         break;
-    
+
       case 1:
         if (this.peerFormGroup.controls.peerAddress.value) {
           this.peerFormLabel = 'Peer Added: ' + (this.newlyAddedPeer.alias ? this.newlyAddedPeer.alias : this.newlyAddedPeer.id);
@@ -153,11 +159,11 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
       } else if (event.selectedIndex === 1) {
         this.channelFormGroup.controls.hiddenAmount.setValue('');
       }
-    }    
+    }
   }
-  
+
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

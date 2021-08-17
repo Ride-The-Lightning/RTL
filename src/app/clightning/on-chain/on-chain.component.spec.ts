@@ -1,5 +1,5 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from "@angular/router/testing";
+import { RouterTestingModule } from '@angular/router/testing';
 import { StoreModule } from '@ngrx/store';
 import { SharedModule } from '../../shared/shared.module';
 
@@ -21,8 +21,8 @@ describe('CLOnChainComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLOnChainComponent, CurrencyUnitConverterComponent, CLUTXOTablesComponent, CLOnChainUtxosComponent, CLOnChainSendComponent, CLOnChainReceiveComponent ],
-      imports: [ 
+      declarations: [CLOnChainComponent, CurrencyUnitConverterComponent, CLUTXOTablesComponent, CLOnChainUtxosComponent, CLOnChainSendComponent, CLOnChainReceiveComponent],
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
@@ -37,8 +37,8 @@ describe('CLOnChainComponent', () => {
         CommonService,
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -54,5 +54,4 @@ describe('CLOnChainComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -19,7 +19,7 @@ describe('ECLPeersComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLPeersComponent ],
+      declarations: [ECLPeersComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -29,7 +29,7 @@ describe('ECLPeersComponent', () => {
             strictActionImmutability: false
           }
         }),
-        EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])        
+        EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
         CommonService,
@@ -38,8 +38,8 @@ describe('ECLPeersComponent', () => {
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
 
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -55,5 +55,4 @@ describe('ECLPeersComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

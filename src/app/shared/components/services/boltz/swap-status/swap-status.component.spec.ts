@@ -9,10 +9,10 @@ describe('SwapStatusComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SwapStatusComponent ],
-      imports: [ SharedModule ]
-    })
-    .compileComponents();
+      declarations: [SwapStatusComponent],
+      imports: [SharedModule]
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -28,5 +28,4 @@ describe('SwapStatusComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

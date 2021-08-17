@@ -12,10 +12,10 @@ describe('SettingsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SettingsComponent ],
+      declarations: [SettingsComponent],
       imports: [
         SharedModule,
-        RouterTestingModule, 
+        RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
@@ -23,8 +23,8 @@ describe('SettingsComponent', () => {
           }
         })
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -40,5 +40,4 @@ describe('SettingsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -18,8 +18,8 @@ describe('ECLQueryRoutesComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLQueryRoutesComponent ],
-      imports: [ 
+      declarations: [ECLQueryRoutesComponent],
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
@@ -31,12 +31,12 @@ describe('ECLQueryRoutesComponent', () => {
       ],
       providers: [
         CommonService,
-        { provide: LoggerService, useClass: mockLoggerService }, 
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: ECLEffects, useClass: mockECLEffects }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,5 +52,4 @@ describe('ECLQueryRoutesComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -17,7 +17,7 @@ describe('ECLForwardingHistoryComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLForwardingHistoryComponent ],
+      declarations: [ECLForwardingHistoryComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -33,8 +33,8 @@ describe('ECLForwardingHistoryComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -50,5 +50,4 @@ describe('ECLForwardingHistoryComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

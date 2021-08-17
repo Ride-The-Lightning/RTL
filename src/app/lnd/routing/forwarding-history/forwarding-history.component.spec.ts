@@ -17,7 +17,7 @@ describe('ForwardingHistoryComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ForwardingHistoryComponent ],
+      declarations: [ForwardingHistoryComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -28,13 +28,13 @@ describe('ForwardingHistoryComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -50,5 +50,4 @@ describe('ForwardingHistoryComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

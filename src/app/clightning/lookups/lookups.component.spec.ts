@@ -19,7 +19,7 @@ describe('CLLookupsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLLookupsComponent, CLNodeLookupComponent, CLChannelLookupComponent ],
+      declarations: [CLLookupsComponent, CLNodeLookupComponent, CLChannelLookupComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -36,8 +36,8 @@ describe('CLLookupsComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -53,5 +53,4 @@ describe('CLLookupsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

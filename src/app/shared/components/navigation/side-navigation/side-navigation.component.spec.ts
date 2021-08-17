@@ -19,7 +19,7 @@ describe('SideNavigationComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SideNavigationComponent ],
+      declarations: [SideNavigationComponent],
       imports: [
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
@@ -30,14 +30,14 @@ describe('SideNavigationComponent', () => {
         }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
-      providers: [ 
+      providers: [
         CommonService,
-        { provide: LoggerService, useClass: mockLoggerService }, SessionService, 
+        { provide: LoggerService, useClass: mockLoggerService }, SessionService,
         { provide: DataService, useClass: mockDataService },
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -53,5 +53,4 @@ describe('SideNavigationComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

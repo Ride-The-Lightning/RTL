@@ -13,30 +13,12 @@ exports.genSeed = (req, res, next) => {
     options.url = common.getSelLNServerUrl() + '/v1/genseed';
   }
   request(options).then((body) => {
-    if(!body || body.error) {
-      logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Gen Seed Error', error: body.error});
-      res.status(500).json({
-        message: "Genseed failed!",
-        error: (!body) ? 'Error From Server!' : body.error
-      });
-    } else {
-      logger.log({level: 'INFO', fileName: 'Wallet', msg: 'Seed Generated'});
-      res.status(200).json(body);
-    }
+    logger.log({level: 'INFO', fileName: 'Wallet', msg: 'Seed Generated'});
+    res.status(200).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Gen Seed Error', error: err});
-    return res.status(500).json({
-      message: "Genseed failed!",
-      error: err.error
-    });
+    const err = common.handleError(errRes,  'Wallet', 'Gen Seed Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 }
 
@@ -71,27 +53,21 @@ exports.operateWallet = (req, res, next) => {
     logger.log({level: 'DEBUG', fileName: 'Wallet', msg: 'Wallet Response', data: body});
     const body_str = (!body) ? '' : JSON.stringify(body);
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
-    if(!body) {
-      logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Wallet Error', error: {error: (error ? error : err_message)}});
-      res.status(500).json({
-        message: err_message,
-        error: (error) ? error : err_message
-      });
-    } else if(search_idx > -1) {
-      logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Wallet Error', error: {error: err_message}});
-      res.status(500).json({
-        message: err_message,
-        error: err_message
-      });
-    } else if(body.error) {
-      if((body.code === 1 && body.error === 'context canceled') || (body.code === 14 && body.error === 'transport is closing')) {
+    if (!body) {
+      const errMsg = error ? error : err_message;
+      const err = common.handleError({ statusCode: 500, message: 'Wallet Error', error: errMsg },  'Wallet', errMsg);
+      return res.status(err.statusCode).json({message: err.error, error: err.error});
+    } else if (search_idx > -1) {
+      const errMsg = err_message;
+      const err = common.handleError({ statusCode: 500, message: 'Wallet Error', error: errMsg },  'Wallet', errMsg);
+      return res.status(err.statusCode).json({message: err.error, error: err.error});
+    } else if (body.error) {
+      if ((body.code === 1 && body.error === 'context canceled') || (body.code === 14 && body.error === 'transport is closing')) {
         res.status(201).json('Successful');  
       } else {
-        logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Wallet Error', error: body.error});
-        res.status(500).json({
-          message: err_message,
-          error: body.error
-        });
+        const errMsg = (body.error && typeof body.error === 'object') ? JSON.stringify(body.error) : (body.error && typeof body.error === 'string') ? body.error : err_message;
+        const err = common.handleError({ statusCode: 500, message: 'Wallet Error', error: errMsg },  'Wallet', errMsg);
+        return res.status(err.statusCode).json({message: err.error, error: err.error});
       }
     } else {
       logger.log({level: 'INFO', fileName: 'Wallet', msg: 'Wallet Unlocked/Initialized'});
@@ -99,21 +75,11 @@ exports.operateWallet = (req, res, next) => {
     }
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Wallet Error', error: err});
-    if((err.error.code === 1 && err.error.error === 'context canceled') || (err.error.code === 14 && err.error.error === 'transport is closing')) {
+    if ((err.error.code === 1 && err.error.error === 'context canceled') || (err.error.code === 14 && err.error.error === 'transport is closing')) {
       res.status(201).json('Successful');  
     } else {
-      res.status(500).json({
-        message: err_message,
-        error: err.error.message ? err.error.message : err.message ? err.message : err_message
-      });
+      const err = common.handleError(errRes, 'Wallet', err_message);
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     }
   });
 };
@@ -133,18 +99,8 @@ exports.getUTXOs = (req, res, next) => {
     res.status(200).json(body.utxos ? body.utxos : []);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'UTXOs Error', error: err});
-    return res.status(500).json({
-      message: "UTXO list failed!",
-      error: err.error
-    });
+    const err = common.handleError(errRes,  'Wallet', 'List UTXOs Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 }
 
@@ -169,18 +125,8 @@ exports.bumpFee = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Bump Fee Error', error: err});
-    return res.status(500).json({
-      message: "Bump fee failed!",
-      error: err.error
-    });
+    const err = common.handleError(errRes,  'Wallet', 'Bump Fee Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 }
 
@@ -200,18 +146,8 @@ exports.labelTransaction = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Label Transaction Error', error: err});
-    return res.status(500).json({
-      message: "Transaction label failed!",
-      error: err.error
-    });
+    const err = common.handleError(errRes,  'Wallet', 'Label Transaction Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 }
 
@@ -233,18 +169,8 @@ exports.leaseUTXO = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Lease UTXO Error', error: err});
-    return res.status(500).json({
-      message: "Lease UTXO failed!",
-      error: err.error
-    });
+    const err = common.handleError(errRes,  'Wallet', 'Lease UTXO Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 }
 
@@ -265,17 +191,7 @@ exports.releaseUTXO = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Release UTXO Error', error: err});
-    return res.status(500).json({
-      message: "Release UTXO failed!",
-      error: err.error
-    });
+    const err = common.handleError(errRes,  'Wallet', 'Release UTXO Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 }

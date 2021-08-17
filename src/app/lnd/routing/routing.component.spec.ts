@@ -13,8 +13,8 @@ describe('RoutingComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ RoutingComponent ],
-      imports: [ 
+      declarations: [RoutingComponent],
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
@@ -25,8 +25,8 @@ describe('RoutingComponent', () => {
           }
         })
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -42,5 +42,4 @@ describe('RoutingComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

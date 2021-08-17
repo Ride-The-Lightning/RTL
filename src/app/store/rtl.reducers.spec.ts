@@ -25,5 +25,4 @@ describe('RTL reducer', () => {
       expect(newState.selNode.lnImplementation).toEqual('LND');
     });
   });
-
 });

@@ -8,9 +8,9 @@ describe('ChannelStatusInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelStatusInfoComponent ]
-    })
-    .compileComponents();
+      declarations: [ChannelStatusInfoComponent]
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -26,5 +26,4 @@ describe('ChannelStatusInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

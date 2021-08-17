@@ -1,6 +1,6 @@
 export interface ChannelStatus {
   channels?: number;
-  capacity?:number;
+  capacity?: number;
 }
 
 export interface ChannelsStatus {
@@ -65,16 +65,23 @@ export interface Channel {
   uptime?: string;
   uptime_str?: string;
   lifetime?: string;
-  static_remote_key?: boolean; 
+  static_remote_key?: boolean;
   balancedness?: number; // Between -1 to +1
 }
 
-export interface PendingChannels {
-  total_limbo_balance?: number;
-  pending_closing_channels?: Array<PendingClosingChannel>;
-  pending_force_closing_channels?: Array<PendingForceClosingChannel>;
-  pending_open_channels?: Array<PendingOpenChannel>;
-  waiting_close_channels?: Array<WaitingCloseChannel>;
+export interface PendingChannel {
+  remote_alias?: string;
+  remote_node_pub?: string;
+  channel_point?: string;
+  txid_str?: string;
+  output_index?: number;
+  capacity?: string;
+  local_balance?: string;
+  remote_balance?: string;
+  local_chan_reserve_sat?: string;
+  remote_chan_reserve_sat?: string;
+  initiator?: string;
+  commitment_type?: string;
 }
 
 export interface PendingClosingChannel {
@@ -107,19 +114,12 @@ export interface WaitingCloseChannel {
   commitments?: any;
 }
 
-export interface PendingChannel {
-  remote_alias?: string;
-  remote_node_pub?: string;
-  channel_point?: string;
-  txid_str?: string;
-  output_index?: number;
-  capacity?: string;
-  local_balance?: string;
-  remote_balance?: string;
-  local_chan_reserve_sat?: string;
-  remote_chan_reserve_sat?: string;
-  initiator?: string;
-  commitment_type?: string;
+export interface PendingChannels {
+  total_limbo_balance?: number;
+  pending_closing_channels?: Array<PendingClosingChannel>;
+  pending_force_closing_channels?: Array<PendingForceClosingChannel>;
+  pending_open_channels?: Array<PendingOpenChannel>;
+  waiting_close_channels?: Array<WaitingCloseChannel>;
 }
 
 export interface ClosedChannel {
@@ -136,22 +136,25 @@ export interface ClosedChannel {
   settled_balance?: string;
 }
 
-export interface NetworkGraph {
-  nodes: LightningNode[];
-  edges: ChannelEdge[];
+export interface NodeAddress {
+  network?: string;
+  addr?: string;
 }
 
 export interface LightningNode {
   last_update?: number;
   pub_key?: string;
   alias?: string;
-  addresses?:	NodeAddress[];
+  addresses?: NodeAddress[];
   color?: string;
 }
 
-export interface NodeAddress {
-  network?: string;
-  addr?: string;
+export interface RoutingPolicy {
+  time_lock_delta?: number;
+  min_htlc?: string;
+  fee_base_msat?: string;
+  fee_rate_milli_msat?: string;
+  disabled?: boolean;
 }
 
 export interface ChannelEdge {
@@ -165,12 +168,9 @@ export interface ChannelEdge {
   node2_policy?: RoutingPolicy;
 }
 
-export interface RoutingPolicy {
-  time_lock_delta?: number;
-  min_htlc?: string;
-  fee_base_msat?: string;
-  fee_rate_milli_msat?: string;
-  disabled?: boolean;
+export interface NetworkGraph {
+  nodes: LightningNode[];
+  edges: ChannelEdge[];
 }
 
 export interface SigmaNode {
@@ -192,6 +192,26 @@ export interface FeeLimit {
   fixed?: number;
 }
 
+export interface ForwardingEvent {
+  timestamp?: number;
+  chan_id_out?: string;
+  alias_out?: string;
+  amt_out?: string;
+  amt_out_msat?: string;
+  amt_in?: string;
+  amt_in_msat?: string;
+  chan_id_in?: string;
+  alias_in?: string;
+  fee?: string;
+  fee_msat?: string;
+}
+
+export interface SwitchRes {
+  last_offset_index?: number;
+  total_fee_msat?: number;
+  forwarding_events?: ForwardingEvent[];
+}
+
 export interface Fees {
   channel_fees?: ChannelFeeReport[];
   day_fee_sum?: number;
@@ -204,8 +224,8 @@ export interface Fees {
 }
 
 export interface GetInfoChain {
-    chain?: string;
-    network?: string;
+  chain?: string;
+  network?: string;
 }
 
 export interface GetInfo {
@@ -240,9 +260,34 @@ export interface HopHint {
   fee_base_msat?: number;
 }
 
+export interface Hop {
+  hop_sequence?: number;
+  pubkey_alias?: string;
+  chan_id?: string;
+  chan_capacity?: string;
+  amt_to_forward?: string;
+  fee?: string;
+  expiry?: number;
+  amt_to_forward_msat?: string;
+  fee_msat?: string;
+  pub_key?: string;
+  tlv_payload?: boolean;
+  mpp_record?: { payment_addr?: string, total_amt_msat?: number };
+  custom_records?: any;
+}
+
+export interface Route {
+  total_time_lock?: number;
+  total_fees?: string;
+  total_amt?: string;
+  hops?: Hop[];
+  total_fees_msat?: string;
+  total_amt_msat?: string;
+}
+
 export interface PaymentHTLC {
   status?: string;
-  route?: Route; 
+  route?: Route;
   attempt_time_ns?: string;
   resolve_time_ns?: string;
   failure?: any;
@@ -260,6 +305,10 @@ export interface InvoiceHTLC {
   state?: string;
   custom_records?: any;
   mpp_total_amt_msat?: string;
+}
+
+export interface RouteHint {
+  hop_hints?: HopHint[];
 }
 
 export interface Invoice {
@@ -286,7 +335,7 @@ export interface Invoice {
   state?: string;
   htlcs?: InvoiceHTLC[];
   features?: any;
-  is_keysend?: boolean;  
+  is_keysend?: boolean;
 }
 
 export interface ListInvoices {
@@ -320,12 +369,6 @@ export interface NodeAddress {
   address?: string;
 }
 
-export interface ListPayments {
-  payments?: Payment[];
-  first_index_offset?: string;
-  last_index_offset?: string;
-}
-
 export interface Payment {
   creation_date?: number;
   payment_hash?: string;
@@ -333,7 +376,7 @@ export interface Payment {
   status?: string;
   fee?: number;
   fee_sat?: number;
-	fee_msat?: number;
+  fee_msat?: number;
   value_msat?: number;
   value_sat?: number;
   value?: number;
@@ -343,6 +386,12 @@ export interface Payment {
   failure_reason?: string;
   htlcs: PaymentHTLC[];
   is_expanded?: boolean;
+}
+
+export interface ListPayments {
+  payments?: Payment[];
+  first_index_offset?: string;
+  last_index_offset?: string;
 }
 
 export interface PayRequest {
@@ -362,7 +411,7 @@ export interface PayRequest {
 }
 
 export interface Peer {
-  pub_key?:	string;
+  pub_key?: string;
   alias?: string;
   address?: string;
   bytes_sent?: number;
@@ -378,35 +427,6 @@ export interface QueryRoutes {
   routes?: Route[];
 }
 
-export interface Hop {
-  hop_sequence?: number;
-  pubkey_alias?: string;
-  chan_id?:	string;
-  chan_capacity?:	string;
-  amt_to_forward?:	string;
-  fee?:	string;
-  expiry?:	number;
-  amt_to_forward_msat?:	string;
-  fee_msat?: string;
-  pub_key?:	string;
-  tlv_payload?: boolean;
-  mpp_record?: { payment_addr?: string; total_amt_msat?: number; }
-  custom_records?: any;
-}
-
-export interface Route {
-  total_time_lock?:	number;
-  total_fees?: string;
-  total_amt?: string;
-  hops?: Hop[];
-  total_fees_msat?: string;
-  total_amt_msat?: string;
-}
-
-export interface RouteHint {
-  hop_hints?: HopHint[];
-}
-
 export interface SendPayment {
   dest_string?: string;
   dest?: string;
@@ -419,7 +439,7 @@ export interface SendPayment {
 }
 
 export interface ChannelsTransaction {
-  address?:	string;
+  address?: string;
   amount?: number;
   sendAll?: boolean;
   blocks?: number;
@@ -443,7 +463,7 @@ export interface UTXO {
   address?: string;
   amount_sat?: string;
   pk_script?: string;
-  outpoint?: {txid_bytes?: string; txid_str?: string; output_index?: number;};
+  outpoint?: { txid_bytes?: string, txid_str?: string, output_index?: number };
   confirmations?: string;
   label?: string;
 }
@@ -455,20 +475,6 @@ export interface SwitchReq {
   start_time?: string;
 }
 
-export interface ForwardingEvent {
-  timestamp?: number;
-  chan_id_out?: string;
-  alias_out?: string;
-  amt_out?: string;
-  amt_out_msat?: string; 
-  amt_in?: string;
-  amt_in_msat?: string;  
-  chan_id_in?: string;
-  alias_in?: string;
-  fee?: string;
-  fee_msat?: string;
-}
-
 export interface RoutingPeers {
   chan_id?: string;
   alias?: string;
@@ -476,10 +482,9 @@ export interface RoutingPeers {
   total_amount?: number;
 }
 
-export interface SwitchRes {
-  last_offset_index?: number;
-  total_fee_msat?: number;
-  forwarding_events?: ForwardingEvent[];
+export interface PendingChannelsData {
+  num_channels: number;
+  limbo_balance: number;
 }
 
 export interface PendingChannelsGroup {
@@ -489,9 +494,4 @@ export interface PendingChannelsGroup {
   waiting_close?: PendingChannelsData;
   total_channels?: number;
   total_limbo_balance?: number;
-}
-
-export interface PendingChannelsData {
-  num_channels: number;
-  limbo_balance: number;
 }

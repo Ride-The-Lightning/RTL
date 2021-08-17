@@ -12,8 +12,8 @@ describe('OnChainSendComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ OnChainSendComponent ],
-      imports: [ 
+      declarations: [OnChainSendComponent],
+      imports: [
         SharedModule,
         RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {
@@ -23,8 +23,8 @@ describe('OnChainSendComponent', () => {
           }
         })
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -40,5 +40,4 @@ describe('OnChainSendComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

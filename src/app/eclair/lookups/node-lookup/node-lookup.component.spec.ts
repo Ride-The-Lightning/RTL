@@ -12,14 +12,14 @@ describe('ECLNodeLookupComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLNodeLookupComponent ],
+      declarations: [ECLNodeLookupComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule
       ],
-      providers: [ LoggerService ]
-    })
-    .compileComponents();
+      providers: [LoggerService]
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -35,5 +35,4 @@ describe('ECLNodeLookupComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

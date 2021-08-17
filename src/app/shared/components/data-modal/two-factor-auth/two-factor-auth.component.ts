@@ -5,7 +5,7 @@ import { take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatVerticalStepper } from '@angular/material/stepper';
+import { MatStepper } from '@angular/material/stepper';
 import { faInfoCircle, faCopy, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { authenticator } from 'otplib';
 import * as sha256 from 'sha256';
@@ -23,13 +23,14 @@ import * as RTLActions from '../../../../store/rtl.actions';
   styleUrls: ['./two-factor-auth.component.scss']
 })
 export class TwoFactorAuthComponent implements OnInit, OnDestroy {
-  @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
+
+  @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
   public faCopy = faCopy;
   public faInfoCircle = faInfoCircle;
   public flgValidated = false;
   public isTokenValid = true;
-  public otpauth: string = '';
+  public otpauth = '';
   public appConfig: RTLConfiguration;
   public flgEditable = true;
   public showDisableStepper = false;
@@ -42,10 +43,10 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
     password: ['', [Validators.required]]
   });
   secretFormGroup: FormGroup = this.formBuilder.group({
-    secret: [{value: '', disabled: true}, Validators.required]
+    secret: [{ value: '', disabled: true }, Validators.required]
   });
   tokenFormGroup: FormGroup = this.formBuilder.group({
-    token: ['', Validators.required]      
+    token: ['', Validators.required]
   });
   disableFormGroup: FormGroup = this.formBuilder.group({});
   unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
@@ -55,51 +56,55 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.appConfig = this.data.appConfig;
     this.showDisableStepper = !!this.appConfig.enable2FA;
-    this.secretFormGroup =  this.formBuilder.group({
-      secret: [{value: !this.appConfig.enable2FA ? this.generateSecret() : '', disabled: true}, Validators.required]
+    this.secretFormGroup = this.formBuilder.group({
+      secret: [{ value: !this.appConfig.enable2FA ? this.generateSecret() : '', disabled: true }, Validators.required]
     });
   }
 
   generateSecret() {
-    let secret2fa = authenticator.generateSecret();
+    const secret2fa = authenticator.generateSecret();
     this.otpauth = authenticator.keyuri('', 'Ride The Lightning (RTL)', secret2fa);
     return secret2fa;
   }
 
-  onAuthenticate():boolean|void {
-    if (!this.passwordFormGroup.controls.password.value) { return true; }
+  onAuthenticate(): boolean|void {
+    if (!this.passwordFormGroup.controls.password.value) {
+      return true;
+    }
     this.flgValidated = false;
     this.store.dispatch(new RTLActions.IsAuthorized(sha256(this.passwordFormGroup.controls.password.value)));
-    this.rtlEffects.isAuthorizedRes
-    .pipe(take(1))
-    .subscribe(authRes => {
-      if (authRes !== 'ERROR') {
-        this.passwordFormGroup.controls.hiddenPassword.setValue(this.passwordFormGroup.controls.password.value);
-        this.stepper.next();
-      } else {
-        this.dialogRef.close();
-        this.snackBar.open('Unauthorized User. Logging out from RTL.');
-      }
-    });
+    this.rtlEffects.isAuthorizedRes.
+      pipe(take(1)).
+      subscribe((authRes) => {
+        if (authRes !== 'ERROR') {
+          this.passwordFormGroup.controls.hiddenPassword.setValue(this.passwordFormGroup.controls.password.value);
+          this.stepper.next();
+        } else {
+          this.dialogRef.close();
+          this.snackBar.open('Unauthorized User. Logging out from RTL.');
+        }
+      });
   }
 
   onCopySecret(payload: string) {
     this.snackBar.open('Secret code ' + this.secretFormGroup.controls.secret.value + ' copied.');
   }
 
-  onVerifyToken():boolean|void {
+  onVerifyToken(): boolean|void {
     if (this.appConfig.enable2FA) {
-      this.store.dispatch(new RTLActions.TwoFASaveSettings({secret2fa: ''}));
+      this.store.dispatch(new RTLActions.TwoFASaveSettings({ secret2fa: '' }));
       this.generateSecret();
       this.isTokenValid = true;
     } else {
-      if (!this.tokenFormGroup.controls.token.value) { return true; }
+      if (!this.tokenFormGroup.controls.token.value) {
+        return true;
+      }
       this.isTokenValid = authenticator.check(this.tokenFormGroup.controls.token.value, this.secretFormGroup.controls.secret.value);
       if (!this.isTokenValid) {
         this.tokenFormGroup.controls.token.setErrors({ notValid: true });
         return true;
       }
-      this.store.dispatch(new RTLActions.TwoFASaveSettings({secret2fa: this.secretFormGroup.controls.secret.value}));
+      this.store.dispatch(new RTLActions.TwoFASaveSettings({ secret2fa: this.secretFormGroup.controls.secret.value }));
       this.tokenFormGroup.controls.token.setValue('');
     }
     this.flgValidated = true;
@@ -111,7 +116,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
       case 0:
         this.passwordFormLabel = 'Authenticate with your RTL password';
         break;
-    
+
       case 1:
         this.passwordFormLabel = 'User authenticated successfully';
         break;
@@ -128,11 +133,11 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
       if (event.selectedIndex === 0) {
         this.passwordFormGroup.controls.hiddenPassword.setValue('');
       }
-    }    
+    }
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(unsub => {
+    this.unSubs.forEach((unsub) => {
       unsub.next();
       unsub.complete();
     });

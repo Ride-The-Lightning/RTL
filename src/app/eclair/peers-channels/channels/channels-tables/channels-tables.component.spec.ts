@@ -16,8 +16,8 @@ describe('ECLChannelsTablesComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLChannelsTablesComponent ],
-      imports: [ 
+      declarations: [ECLChannelsTablesComponent],
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
@@ -31,8 +31,8 @@ describe('ECLChannelsTablesComponent', () => {
       providers: [
         { provide: LoggerService, useClass: mockLoggerService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -48,5 +48,4 @@ describe('ECLChannelsTablesComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

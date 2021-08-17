@@ -1,61 +1,708 @@
-export const mockResponseData = ({
-  fiatRates: { USD: { '15m': 33438.82, last: 33438.82, buy: 33438.82, sell: 33438.82, symbol: 'USD'}, EUR: { '15m': 28193.8, last: 28193.8, buy: 28193.8, sell: 28193.8, symbol: 'EUR'}, GBP: { '15m': 23987.68, last: 23987.68, buy: 23987.68, sell: 23987.68, symbol: 'GBP'}, AUD: { '15m': 44548.88, last: 44548.88, buy: 44548.88, sell: 44548.88, symbol: 'AUD'}, BRL: { '15m': 170094.31, last: 170094.31, buy: 170094.31, sell: 170094.31, symbol: 'BRL'}, CAD: { '15m': 41287.51, last: 41287.51, buy: 41287.51, sell: 41287.51, symbol: 'CAD'}, TRY: { '15m': 291352.46, last: 291352.46, buy: 291352.46, sell: 291352.46, symbol: 'TRY'}, CLP: { '15m': 24845458.07, last: 24845458.07, buy: 24845458.07, sell: 24845458.07, symbol: 'CLP'}, ISK: { '15m': 4508648.05, last: 4508648.05, buy: 4508648.05, sell: 4508648.05, symbol: 'ISK'}, JPY: { '15m': 3715369.25, last: 3715369.25, buy: 3715369.25, sell: 3715369.25, symbol: 'JPY'}, KRW: { '15m': 39148401.79, last: 39148401.79, buy: 39148401.79, sell: 39148401.79, symbol: 'KRW'}, CHF: { '15m': 30889.26, last: 30889.26, buy: 30889.26, sell: 30889.26, symbol: 'CHF'}, CNY: { '15m': 216826.46, last: 216826.46, buy: 216826.46, sell: 216826.46, symbol: 'CNY'}, CZK: { '15m': 724605.76, last: 724605.76, buy: 724605.76, sell: 724605.76, symbol: 'CZK'}, DKK: { '15m': 245951.1, last: 245951.1, buy: 245951.1, sell: 245951.1, symbol: 'DKK'}, HKD: { '15m': 260276.41, last: 260276.41, buy: 260276.41, sell: 260276.41, symbol: 'HKD'}, HUF: { '15m': 11866363.6, last: 11866363.6, buy: 11866363.6, sell: 11866363.6, symbol: 'HUF'}, HRK: { '15m': 584240.71, last: 584240.71, buy: 584240.71, sell: 584240.71, symbol: 'HRK'}, INR: { '15m': 2687019.47, last: 2687019.47, buy: 2687019.47, sell: 2687019.47, symbol: 'INR'}, NZD: { '15m': 47535.46, last: 47535.46, buy: 47535.46, sell: 47535.46, symbol: 'NZD'}, PLN: { '15m': 127106.86, last: 127106.86, buy: 127106.86, sell: 127106.86, symbol: 'PLN'}, RON: { '15m': 128655.22, last: 128655.22, buy: 128655.22, sell: 128655.22, symbol: 'RON'}, RUB: { '15m': 2450480.5, last: 2450480.5, buy: 2450480.5, sell: 2450480.5, symbol: 'RUB'}, SEK: { '15m': 285404.7, last: 285404.7, buy: 285404.7, sell: 285404.7, symbol: 'SEK'}, SGD: { '15m': 45233.21, last: 45233.21, buy: 45233.21, sell: 45233.21, symbol: 'SGD'}, THB: { '15m': 1074389.36, last: 1074389.36, buy: 1074389.36, sell: 1074389.36, symbol: 'THB'}, TWD: { '15m': 1092607.79, last: 1092607.79, buy: 1092607.79, sell: 1092607.79, symbol: 'TWD'}},
-  decodePayment: { destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', payment_hash: 'a53968453af7ab6fc58d229a91bdf23d7c121963067f06cf02e1a7b581852c07', num_satoshis: '400', timestamp: '1623624612', expiry: '3600', description: 'Testing ngrx Effects 4', description_hash: '', fallback_addr: '', cltv_expiry: '10', route_hints: [{ hop_hints: [{ node_id: '028ec70462207b57e3d4d9332d9e0aee676c92d89b7c9fb0850fc2a24814d4d83c', chan_id: '2166413939696009216', fee_base_msat: 1000, fee_proportional_millionths: 1, cltv_expiry_delta: 40}]}], payment_addr: 'NIXNBEqCTmqw89joe0m71Z9MrkkBcF1t1ri+9BZehKw=', num_msat: '400000', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true}, 15: { name: 'payment-addr', is_required: false, is_known: true}, 17: { name: 'multi-path-payments', is_required: false, is_known: true}}},
-  decodeEmptyPayment: { destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', payment_hash: 'e1cbe4dcc6121fa3c84ba1568066b43c97e80e4b6eac589aab2ae11b81b66aa7', num_satoshis: '0', timestamp: '1618601223', expiry: '432000', description: 'Testing Empty Invoice for LND 3', description_hash: '', fallback_addr: '', cltv_expiry: '10', route_hints: [{ hop_hints: [{ node_id: '02b75534b5960e934840d7a98ddc7e486487b07a544e6e2cc1287c7267bcc3a499', chan_id: '1801940128740540417', fee_base_msat: 1000, fee_proportional_millionths: 1, cltv_expiry_delta: 40}]}], payment_addr: 'TlB3JWmKew2FScn1bNyAT1ajYHJnJ9HnwxzUckmjccg=', num_msat: '0', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true}, 15: { name: 'payment-addr', is_required: false, is_known: true}, 17: { name: 'multi-path-payments', is_required: false, is_known: true}}},
-  decodePayments: [{ destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', payment_hash: 'a53968453af7ab6fc58d229a91bdf23d7c121963067f06cf02e1a7b581852c07', num_satoshis: '400', timestamp: '1623624612', expiry: '3600', description: 'Testing ngrx Effects 4', description_hash: '', fallback_addr: '', cltv_expiry: '10', route_hints: [{ hop_hints: [{ node_id: '028ec70462207b57e3d4d9332d9e0aee676c92d89b7c9fb0850fc2a24814d4d83c', chan_id: '2166413939696009216', fee_base_msat: 1000, fee_proportional_millionths: 1, cltv_expiry_delta: 40}]}], payment_addr: 'NIXNBEqCTmqw89joe0m71Z9MrkkBcF1t1ri+9BZehKw=', num_msat: '400000', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true}, 15: { name: 'payment-addr', is_required: false, is_known: true}, 17: { name: 'multi-path-payments', is_required: false, is_known: true}}},{ destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', payment_hash: 'd58d9c37beb517ff50d674b5f6a9ced55f71994f22e9a53d687190130e9685f3', num_satoshis: '300', timestamp: '1623624487', expiry: '3600', description: 'Testing ngrx Effects 3', description_hash: '', fallback_addr: '', cltv_expiry: '10', route_hints: [{ hop_hints: [{ node_id: '02b75534b5960e934840d7a98ddc7e486487b07a544e6e2cc1287c7267bcc3a499', chan_id: '1801940128740540417', fee_base_msat: 1000, fee_proportional_millionths: 1, cltv_expiry_delta: 40}]}], payment_addr: 'wNPCjWmyhzJwjZUOMcNn5L4Bn2VQBlDWLEsL+wmp7jQ=', num_msat: '300000', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true}, 15: { name: 'payment-addr', is_required: false, is_known: true}, 17: { name: 'multi-path-payments', is_required: false, is_known: true}}},{ destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', payment_hash: '74a5d61001c7aac3a90dee448b73925b6a8e4d7dd27f3d22d3585c1c9c9c289b', num_satoshis: '200', timestamp: '1623624099', expiry: '3600', description: 'Testing ngrx Effects', description_hash: '', fallback_addr: '', cltv_expiry: '10', route_hints: [{ hop_hints: [{ node_id: '028ec70462207b57e3d4d9332d9e0aee676c92d89b7c9fb0850fc2a24814d4d83c', chan_id: '2166413939696009216', fee_base_msat: 1000, fee_proportional_millionths: 1, cltv_expiry_delta: 40}]}], payment_addr: '7R3g78VT3IXhOGlDemJeTiANZmYkIR0N2x+guCiR4/M=', num_msat: '200000', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true}, 15: { name: 'payment-addr', is_required: false, is_known: true}, 17: { name: 'multi-path-payments', is_required: false, is_known: true}}},{ destination: '024ef6d6cb79add6f6f7c144519822a17248c244c8370db35a48a25c9a1db8ffd3', payment_hash: 'f81ea5b08648edd1829054e13574a033c477fc01a889b1edfc20702f12edd0ba', num_satoshis: '248731', timestamp: '1623348968', expiry: '31536000', description: 'swap - script:  0020572351296a6bc5acce8426633676898a460ebab14372739f23d9f199486f6ec5', description_hash: '', fallback_addr: '', cltv_expiry: '100', route_hints: [{ hop_hints: [{ node_id: '0223acffd7f363b4591ce860eda870fea352e981212d8a25e96a0ebea37faae288', chan_id: '2125910130351734784', fee_base_msat: 0, fee_proportional_millionths: 0, cltv_expiry_delta: 40}]},{ hop_hints: [{ node_id: '0223acffd7f363b4591ce860eda870fea352e981212d8a25e96a0ebea37faae288', chan_id: '2125937618142953472', fee_base_msat: 0, fee_proportional_millionths: 0, cltv_expiry_delta: 40}]}], payment_addr: '9RM0886+SiObULWWnDZ8zPH+EPv6qcWMcIWBP5qCg80=', num_msat: '248731000', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true}, 14: { name: 'payment-addr', is_required: true, is_known: true}, 17: { name: 'multi-path-payments', is_required: false, is_known: true}}},{ destination: '024ef6d6cb79add6f6f7c144519822a17248c244c8370db35a48a25c9a1db8ffd3', payment_hash: '626261dbe0bca553aa39bf1619c5add0c21b7ee317e0dcae7c3df46eea08f57c', num_satoshis: '1337', timestamp: '1623348968', expiry: '31536000', description: 'prepay', description_hash: '', fallback_addr: '', cltv_expiry: '100', route_hints: [{ hop_hints: [{ node_id: '0223acffd7f363b4591ce860eda870fea352e981212d8a25e96a0ebea37faae288', chan_id: '2125910130351734784', fee_base_msat: 0, fee_proportional_millionths: 0, cltv_expiry_delta: 40}]},{ hop_hints: [{ node_id: '0223acffd7f363b4591ce860eda870fea352e981212d8a25e96a0ebea37faae288', chan_id: '2125937618142953472', fee_base_msat: 0, fee_proportional_millionths: 0, cltv_expiry_delta: 40}]}], payment_addr: 'JqE8EIyys/eqny0nDabyjKgn8u0/5WL6TGrgCJyEGxQ=', num_msat: '1337000', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true}, 14: { name: 'payment-addr', is_required: true, is_known: true}, 17: { name: 'multi-path-payments', is_required: false, is_known: true}}},{ destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', payment_hash: '77b101814c364b3e3e4f3024429c641bab1d76dc090491f591301fc3d0c6a81c', num_satoshis: '100', timestamp: '1618601264', expiry: '432000', description: 'Testing Empty Invoice for LND 4', description_hash: '', fallback_addr: '', cltv_expiry: '10', route_hints: [{ hop_hints: [{ node_id: '020e73f5a0928d3bd480d1155f3c09dfbc13613aab99dd3edbe65e510d839c6e84', chan_id: '1952447877419368448', fee_base_msat: 2000, fee_proportional_millionths: 100, cltv_expiry_delta: 144}]}], payment_addr: 'WwtWe/HE5Qt/RybXfGOOxJhsNdE5XY0s8e+WoOX0jfY=', num_msat: '100000', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true}, 15: { name: 'payment-addr', is_required: false, is_known: true}, 17: { name: 'multi-path-payments', is_required: false, is_known: true}}},{ destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', payment_hash: 'e1cbe4dcc6121fa3c84ba1568066b43c97e80e4b6eac589aab2ae11b81b66aa7', num_satoshis: '0', timestamp: '1618601223', expiry: '432000', description: 'Testing Empty Invoice for LND 3', description_hash: '', fallback_addr: '', cltv_expiry: '10', route_hints: [{ hop_hints: [{ node_id: '02b75534b5960e934840d7a98ddc7e486487b07a544e6e2cc1287c7267bcc3a499', chan_id: '1801940128740540417', fee_base_msat: 1000, fee_proportional_millionths: 1, cltv_expiry_delta: 40}]}], payment_addr: 'TlB3JWmKew2FScn1bNyAT1ajYHJnJ9HnwxzUckmjccg=', num_msat: '0', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true}, 15: { name: 'payment-addr', is_required: false, is_known: true}, 17: { name: 'multi-path-payments', is_required: false, is_known: true}}},{ destination: '024ef6d6cb79add6f6f7c144519822a17248c244c8370db35a48a25c9a1db8ffd3', payment_hash: '0181e7484080056483d6c00a5cb70e5f54e48543473fbec74206ddb2b7c74217', num_satoshis: '1337', timestamp: '1610149448', expiry: '31536000', description: 'prepay', description_hash: '', fallback_addr: '', cltv_expiry: '100', route_hints: [], payment_addr: '2qx8NRsnv8CwwZ3Kj+kTQAMHw8DG1EidRl+gzBFHyds=', num_msat: '1337000', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true}, 15: { name: 'payment-addr', is_required: false, is_known: true}, 17: { name: 'multi-path-payments', is_required: false, is_known: true}}}],
-  getAliasesFromPubkeys: ['MyCLNode'],
-  signMessage: { signature: 'ryon74c9addyr5sgagrkupxaguw7ypn3kfia5m5jbaxjfehi4b8r65ytufwpcrtswo1kqsynicpmkrtoowshqdgyjckzx51e9hu8xmiz'},
-  verifyMessage: { valid: true, pubkey: '02fad37ef58f76c1a5f802d198a07da5a8e55620b9ffbcbdc316fc8c9e9eac02cb'},
+/* eslint-disable max-len */
+export const mockResponseData = {
+  fiatRates: {
+    USD: {
+      '15m': 33438.82,
+      last: 33438.82,
+      buy: 33438.82,
+      sell: 33438.82,
+      symbol: 'USD'
+    },
+    EUR: {
+      '15m': 28193.8,
+      last: 28193.8,
+      buy: 28193.8,
+      sell: 28193.8,
+      symbol: 'EUR'
+    },
+    GBP: {
+      '15m': 23987.68,
+      last: 23987.68,
+      buy: 23987.68,
+      sell: 23987.68,
+      symbol: 'GBP'
+    },
+    AUD: {
+      '15m': 44548.88,
+      last: 44548.88,
+      buy: 44548.88,
+      sell: 44548.88,
+      symbol: 'AUD'
+    },
+    BRL: {
+      '15m': 170094.31,
+      last: 170094.31,
+      buy: 170094.31,
+      sell: 170094.31,
+      symbol: 'BRL'
+    },
+    CAD: {
+      '15m': 41287.51,
+      last: 41287.51,
+      buy: 41287.51,
+      sell: 41287.51,
+      symbol: 'CAD'
+    },
+    TRY: {
+      '15m': 291352.46,
+      last: 291352.46,
+      buy: 291352.46,
+      sell: 291352.46,
+      symbol: 'TRY'
+    },
+    CLP: {
+      '15m': 24845458.07,
+      last: 24845458.07,
+      buy: 24845458.07,
+      sell: 24845458.07,
+      symbol: 'CLP'
+    },
+    ISK: {
+      '15m': 4508648.05,
+      last: 4508648.05,
+      buy: 4508648.05,
+      sell: 4508648.05,
+      symbol: 'ISK'
+    },
+    JPY: {
+      '15m': 3715369.25,
+      last: 3715369.25,
+      buy: 3715369.25,
+      sell: 3715369.25,
+      symbol: 'JPY'
+    },
+    KRW: {
+      '15m': 39148401.79,
+      last: 39148401.79,
+      buy: 39148401.79,
+      sell: 39148401.79,
+      symbol: 'KRW'
+    },
+    CHF: {
+      '15m': 30889.26,
+      last: 30889.26,
+      buy: 30889.26,
+      sell: 30889.26,
+      symbol: 'CHF'
+    },
+    CNY: {
+      '15m': 216826.46,
+      last: 216826.46,
+      buy: 216826.46,
+      sell: 216826.46,
+      symbol: 'CNY'
+    },
+    CZK: {
+      '15m': 724605.76,
+      last: 724605.76,
+      buy: 724605.76,
+      sell: 724605.76,
+      symbol: 'CZK'
+    },
+    DKK: {
+      '15m': 245951.1,
+      last: 245951.1,
+      buy: 245951.1,
+      sell: 245951.1,
+      symbol: 'DKK'
+    },
+    HKD: {
+      '15m': 260276.41,
+      last: 260276.41,
+      buy: 260276.41,
+      sell: 260276.41,
+      symbol: 'HKD'
+    },
+    HUF: {
+      '15m': 11866363.6,
+      last: 11866363.6,
+      buy: 11866363.6,
+      sell: 11866363.6,
+      symbol: 'HUF'
+    },
+    HRK: {
+      '15m': 584240.71,
+      last: 584240.71,
+      buy: 584240.71,
+      sell: 584240.71,
+      symbol: 'HRK'
+    },
+    INR: {
+      '15m': 2687019.47,
+      last: 2687019.47,
+      buy: 2687019.47,
+      sell: 2687019.47,
+      symbol: 'INR'
+    },
+    NZD: {
+      '15m': 47535.46,
+      last: 47535.46,
+      buy: 47535.46,
+      sell: 47535.46,
+      symbol: 'NZD'
+    },
+    PLN: {
+      '15m': 127106.86,
+      last: 127106.86,
+      buy: 127106.86,
+      sell: 127106.86,
+      symbol: 'PLN'
+    },
+    RON: {
+      '15m': 128655.22,
+      last: 128655.22,
+      buy: 128655.22,
+      sell: 128655.22,
+      symbol: 'RON'
+    },
+    RUB: {
+      '15m': 2450480.5,
+      last: 2450480.5,
+      buy: 2450480.5,
+      sell: 2450480.5,
+      symbol: 'RUB'
+    },
+    SEK: {
+      '15m': 285404.7,
+      last: 285404.7,
+      buy: 285404.7,
+      sell: 285404.7,
+      symbol: 'SEK'
+    },
+    SGD: {
+      '15m': 45233.21,
+      last: 45233.21,
+      buy: 45233.21,
+      sell: 45233.21,
+      symbol: 'SGD'
+    },
+    THB: {
+      '15m': 1074389.36,
+      last: 1074389.36,
+      buy: 1074389.36,
+      sell: 1074389.36,
+      symbol: 'THB'
+    },
+    TWD: {
+      '15m': 1092607.79,
+      last: 1092607.79,
+      buy: 1092607.79,
+      sell: 1092607.79,
+      symbol: 'TWD'
+    }
+  },
+  decodePayment: {
+    destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2',
+    payment_hash: 'a53968453af7ab6fc58d229a91bdf23d7c121963067f06cf02e1a7b581852c07',
+    num_satoshis: '400',
+    timestamp: '1623624612',
+    expiry: '3600',
+    description: 'Testing ngrx Effects 4',
+    description_hash: '',
+    fallback_addr: '',
+    cltv_expiry: '10',
+    route_hints: [
+      {
+        hop_hints: [
+          {
+            node_id: '028ec70462207b57e3d4d9332d9e0aee676c92d89b7c9fb0850fc2a24814d4d83c',
+            chan_id: '2166413939696009216',
+            fee_base_msat: 1000,
+            fee_proportional_millionths: 1,
+            cltv_expiry_delta: 40
+          }
+        ]
+      }
+    ],
+    payment_addr: 'NIXNBEqCTmqw89joe0m71Z9MrkkBcF1t1ri+9BZehKw=',
+    num_msat: '400000',
+    features: {
+      9: {
+        name: 'tlv-onion',
+        is_required: false,
+        is_known: true
+      },
+      15: {
+        name: 'payment-addr',
+        is_required: false,
+        is_known: true
+      },
+      17: {
+        name: 'multi-path-payments',
+        is_required: false,
+        is_known: true
+      }
+    }
+  },
+  decodeEmptyPayment: {
+    destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2',
+    payment_hash: 'e1cbe4dcc6121fa3c84ba1568066b43c97e80e4b6eac589aab2ae11b81b66aa7',
+    num_satoshis: '0',
+    timestamp: '1618601223',
+    expiry: '432000',
+    description: 'Testing Empty Invoice for LND 3',
+    description_hash: '',
+    fallback_addr: '',
+    cltv_expiry: '10',
+    route_hints: [
+      {
+        hop_hints: [
+          {
+            node_id: '02b75534b5960e934840d7a98ddc7e486487b07a544e6e2cc1287c7267bcc3a499',
+            chan_id: '1801940128740540417',
+            fee_base_msat: 1000,
+            fee_proportional_millionths: 1,
+            cltv_expiry_delta: 40
+          }
+        ]
+      }
+    ],
+    payment_addr: 'TlB3JWmKew2FScn1bNyAT1ajYHJnJ9HnwxzUckmjccg=',
+    num_msat: '0',
+    features: {
+      9: {
+        name: 'tlv-onion',
+        is_required: false,
+        is_known: true
+      },
+      15: {
+        name: 'payment-addr',
+        is_required: false,
+        is_known: true
+      },
+      17: {
+        name: 'multi-path-payments',
+        is_required: false,
+        is_known: true
+      }
+    }
+  },
+  decodePayments: [
+    {
+      destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2',
+      payment_hash: 'a53968453af7ab6fc58d229a91bdf23d7c121963067f06cf02e1a7b581852c07',
+      num_satoshis: '400',
+      timestamp: '1623624612',
+      expiry: '3600',
+      description: 'Testing ngrx Effects 4',
+      description_hash: '',
+      fallback_addr: '',
+      cltv_expiry: '10',
+      route_hints: [
+        {
+          hop_hints: [
+            {
+              node_id: '028ec70462207b57e3d4d9332d9e0aee676c92d89b7c9fb0850fc2a24814d4d83c',
+              chan_id: '2166413939696009216',
+              fee_base_msat: 1000,
+              fee_proportional_millionths: 1,
+              cltv_expiry_delta: 40
+            }
+          ]
+        }
+      ],
+      payment_addr: 'NIXNBEqCTmqw89joe0m71Z9MrkkBcF1t1ri+9BZehKw=',
+      num_msat: '400000',
+      features: {
+        9: {
+          name: 'tlv-onion',
+          is_required: false,
+          is_known: true
+        },
+        15: {
+          name: 'payment-addr',
+          is_required: false,
+          is_known: true
+        },
+        17: {
+          name: 'multi-path-payments',
+          is_required: false,
+          is_known: true
+        }
+      }
+    },
+    {
+      destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2',
+      payment_hash: 'd58d9c37beb517ff50d674b5f6a9ced55f71994f22e9a53d687190130e9685f3',
+      num_satoshis: '300',
+      timestamp: '1623624487',
+      expiry: '3600',
+      description: 'Testing ngrx Effects 3',
+      description_hash: '',
+      fallback_addr: '',
+      cltv_expiry: '10',
+      route_hints: [
+        {
+          hop_hints: [
+            {
+              node_id: '02b75534b5960e934840d7a98ddc7e486487b07a544e6e2cc1287c7267bcc3a499',
+              chan_id: '1801940128740540417',
+              fee_base_msat: 1000,
+              fee_proportional_millionths: 1,
+              cltv_expiry_delta: 40
+            }
+          ]
+        }
+      ],
+      payment_addr: 'wNPCjWmyhzJwjZUOMcNn5L4Bn2VQBlDWLEsL+wmp7jQ=',
+      num_msat: '300000',
+      features: {
+        9: {
+          name: 'tlv-onion',
+          is_required: false,
+          is_known: true
+        },
+        15: {
+          name: 'payment-addr',
+          is_required: false,
+          is_known: true
+        },
+        17: {
+          name: 'multi-path-payments',
+          is_required: false,
+          is_known: true
+        }
+      }
+    },
+    {
+      destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2',
+      payment_hash: '74a5d61001c7aac3a90dee448b73925b6a8e4d7dd27f3d22d3585c1c9c9c289b',
+      num_satoshis: '200',
+      timestamp: '1623624099',
+      expiry: '3600',
+      description: 'Testing ngrx Effects',
+      description_hash: '',
+      fallback_addr: '',
+      cltv_expiry: '10',
+      route_hints: [
+        {
+          hop_hints: [
+            {
+              node_id: '028ec70462207b57e3d4d9332d9e0aee676c92d89b7c9fb0850fc2a24814d4d83c',
+              chan_id: '2166413939696009216',
+              fee_base_msat: 1000,
+              fee_proportional_millionths: 1,
+              cltv_expiry_delta: 40
+            }
+          ]
+        }
+      ],
+      payment_addr: '7R3g78VT3IXhOGlDemJeTiANZmYkIR0N2x+guCiR4/M=',
+      num_msat: '200000',
+      features: {
+        9: {
+          name: 'tlv-onion',
+          is_required: false,
+          is_known: true
+        },
+        15: {
+          name: 'payment-addr',
+          is_required: false,
+          is_known: true
+        },
+        17: {
+          name: 'multi-path-payments',
+          is_required: false,
+          is_known: true
+        }
+      }
+    },
+    {
+      destination: '024ef6d6cb79add6f6f7c144519822a17248c244c8370db35a48a25c9a1db8ffd3',
+      payment_hash: 'f81ea5b08648edd1829054e13574a033c477fc01a889b1edfc20702f12edd0ba',
+      num_satoshis: '248731',
+      timestamp: '1623348968',
+      expiry: '31536000',
+      description: 'swap - script:  0020572351296a6bc5acce8426633676898a460ebab14372739f23d9f199486f6ec5',
+      description_hash: '',
+      fallback_addr: '',
+      cltv_expiry: '100',
+      route_hints: [
+        {
+          hop_hints: [
+            {
+              node_id: '0223acffd7f363b4591ce860eda870fea352e981212d8a25e96a0ebea37faae288',
+              chan_id: '2125910130351734784',
+              fee_base_msat: 0,
+              fee_proportional_millionths: 0,
+              cltv_expiry_delta: 40
+            }
+          ]
+        },
+        {
+          hop_hints: [
+            {
+              node_id: '0223acffd7f363b4591ce860eda870fea352e981212d8a25e96a0ebea37faae288',
+              chan_id: '2125937618142953472',
+              fee_base_msat: 0,
+              fee_proportional_millionths: 0,
+              cltv_expiry_delta: 40
+            }
+          ]
+        }
+      ],
+      payment_addr: '9RM0886+SiObULWWnDZ8zPH+EPv6qcWMcIWBP5qCg80=',
+      num_msat: '248731000',
+      features: {
+        9: {
+          name: 'tlv-onion',
+          is_required: false,
+          is_known: true
+        },
+        14: {
+          name: 'payment-addr',
+          is_required: true,
+          is_known: true
+        },
+        17: {
+          name: 'multi-path-payments',
+          is_required: false,
+          is_known: true
+        }
+      }
+    },
+    {
+      destination: '024ef6d6cb79add6f6f7c144519822a17248c244c8370db35a48a25c9a1db8ffd3',
+      payment_hash: '626261dbe0bca553aa39bf1619c5add0c21b7ee317e0dcae7c3df46eea08f57c',
+      num_satoshis: '1337',
+      timestamp: '1623348968',
+      expiry: '31536000',
+      description: 'prepay',
+      description_hash: '',
+      fallback_addr: '',
+      cltv_expiry: '100',
+      route_hints: [
+        {
+          hop_hints: [
+            {
+              node_id: '0223acffd7f363b4591ce860eda870fea352e981212d8a25e96a0ebea37faae288',
+              chan_id: '2125910130351734784',
+              fee_base_msat: 0,
+              fee_proportional_millionths: 0,
+              cltv_expiry_delta: 40
+            }
+          ]
+        },
+        {
+          hop_hints: [
+            {
+              node_id: '0223acffd7f363b4591ce860eda870fea352e981212d8a25e96a0ebea37faae288',
+              chan_id: '2125937618142953472',
+              fee_base_msat: 0,
+              fee_proportional_millionths: 0,
+              cltv_expiry_delta: 40
+            }
+          ]
+        }
+      ],
+      payment_addr: 'JqE8EIyys/eqny0nDabyjKgn8u0/5WL6TGrgCJyEGxQ=',
+      num_msat: '1337000',
+      features: {
+        9: {
+          name: 'tlv-onion',
+          is_required: false,
+          is_known: true
+        },
+        14: {
+          name: 'payment-addr',
+          is_required: true,
+          is_known: true
+        },
+        17: {
+          name: 'multi-path-payments',
+          is_required: false,
+          is_known: true
+        }
+      }
+    },
+    {
+      destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2',
+      payment_hash: '77b101814c364b3e3e4f3024429c641bab1d76dc090491f591301fc3d0c6a81c',
+      num_satoshis: '100',
+      timestamp: '1618601264',
+      expiry: '432000',
+      description: 'Testing Empty Invoice for LND 4',
+      description_hash: '',
+      fallback_addr: '',
+      cltv_expiry: '10',
+      route_hints: [
+        {
+          hop_hints: [
+            {
+              node_id: '020e73f5a0928d3bd480d1155f3c09dfbc13613aab99dd3edbe65e510d839c6e84',
+              chan_id: '1952447877419368448',
+              fee_base_msat: 2000,
+              fee_proportional_millionths: 100,
+              cltv_expiry_delta: 144
+            }
+          ]
+        }
+      ],
+      payment_addr: 'WwtWe/HE5Qt/RybXfGOOxJhsNdE5XY0s8e+WoOX0jfY=',
+      num_msat: '100000',
+      features: {
+        9: {
+          name: 'tlv-onion',
+          is_required: false,
+          is_known: true
+        },
+        15: {
+          name: 'payment-addr',
+          is_required: false,
+          is_known: true
+        },
+        17: {
+          name: 'multi-path-payments',
+          is_required: false,
+          is_known: true
+        }
+      }
+    },
+    {
+      destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2',
+      payment_hash: 'e1cbe4dcc6121fa3c84ba1568066b43c97e80e4b6eac589aab2ae11b81b66aa7',
+      num_satoshis: '0',
+      timestamp: '1618601223',
+      expiry: '432000',
+      description: 'Testing Empty Invoice for LND 3',
+      description_hash: '',
+      fallback_addr: '',
+      cltv_expiry: '10',
+      route_hints: [
+        {
+          hop_hints: [
+            {
+              node_id: '02b75534b5960e934840d7a98ddc7e486487b07a544e6e2cc1287c7267bcc3a499',
+              chan_id: '1801940128740540417',
+              fee_base_msat: 1000,
+              fee_proportional_millionths: 1,
+              cltv_expiry_delta: 40
+            }
+          ]
+        }
+      ],
+      payment_addr: 'TlB3JWmKew2FScn1bNyAT1ajYHJnJ9HnwxzUckmjccg=',
+      num_msat: '0',
+      features: {
+        9: {
+          name: 'tlv-onion',
+          is_required: false,
+          is_known: true
+        },
+        15: {
+          name: 'payment-addr',
+          is_required: false,
+          is_known: true
+        },
+        17: {
+          name: 'multi-path-payments',
+          is_required: false,
+          is_known: true
+        }
+      }
+    },
+    {
+      destination: '024ef6d6cb79add6f6f7c144519822a17248c244c8370db35a48a25c9a1db8ffd3',
+      payment_hash: '0181e7484080056483d6c00a5cb70e5f54e48543473fbec74206ddb2b7c74217',
+      num_satoshis: '1337',
+      timestamp: '1610149448',
+      expiry: '31536000',
+      description: 'prepay',
+      description_hash: '',
+      fallback_addr: '',
+      cltv_expiry: '100',
+      route_hints: [],
+      payment_addr: '2qx8NRsnv8CwwZ3Kj+kTQAMHw8DG1EidRl+gzBFHyds=',
+      num_msat: '1337000',
+      features: {
+        9: {
+          name: 'tlv-onion',
+          is_required: false,
+          is_known: true
+        },
+        15: {
+          name: 'payment-addr',
+          is_required: false,
+          is_known: true
+        },
+        17: {
+          name: 'multi-path-payments',
+          is_required: false,
+          is_known: true
+        }
+      }
+    }
+  ],
+  getAliasesFromPubkeys: [
+    'MyCLNode'
+  ],
+  signMessage: {
+    signature: 'ryon74c9addyr5sgagrkupxaguw7ypn3kfia5m5jbaxjfehi4b8r65ytufwpcrtswo1kqsynicpmkrtoowshqdgyjckzx51e9hu8xmiz'
+  },
+  verifyMessage: {
+    valid: true,
+    pubkey: '02fad37ef58f76c1a5f802d198a07da5a8e55620b9ffbcbdc316fc8c9e9eac02cb'
+  },
   bumpFee: {},
   labelUTXO: {},
-  leaseUTXO: { expiration: '1625354830'},
-  getForwardingHistory: { forwarding_events: [{ timestamp: '1601990335', chan_id_in: '2021231125829058561', chan_id_out: '1958667814700974080', amt_in: '103', amt_out: '102', fee: '1', fee_msat: '1000', amt_in_msat: '103593', amt_out_msat: '102593'},{ timestamp: '1601990281', chan_id_in: '1830637382236438528', chan_id_out: '2021231125829058561', amt_in: '20001', amt_out: '20000', fee: '1', fee_msat: '1020', amt_in_msat: '20001020', amt_out_msat: '20000000'}], last_offset_index: 2},
-  setSelectedNodeSuccess: { status: 200, body: {status: 'Selected Node Updated To: LN Node Name!'}},
-  error401: { status:  '401', statusText: 'Not Found'},
-  error: { status:  '500', message: 'Request Failed!', error: 'Request failed.'}
-});
+  leaseUTXO: {
+    expiration: '1625354830'
+  },
+  getForwardingHistory: {
+    forwarding_events: [
+      {
+        timestamp: '1601990335',
+        chan_id_in: '2021231125829058561',
+        chan_id_out: '1958667814700974080',
+        amt_in: '103',
+        amt_out: '102',
+        fee: '1',
+        fee_msat: '1000',
+        amt_in_msat: '103593',
+        amt_out_msat: '102593'
+      },
+      {
+        timestamp: '1601990281',
+        chan_id_in: '1830637382236438528',
+        chan_id_out: '2021231125829058561',
+        amt_in: '20001',
+        amt_out: '20000',
+        fee: '1',
+        fee_msat: '1020',
+        amt_in_msat: '20001020',
+        amt_out_msat: '20000000'
+      }
+    ],
+    last_offset_index: 2
+  },
+  setSelectedNodeSuccess: {
+    status: 200,
+    body: {
+      status: 'Selected Node Updated To: LN Node Name!'
+    }
+  },
+  error401: {
+    status: '401',
+    statusText: 'Not Found'
+  },
+  error: {
+    status: '500',
+    message: 'Request Failed!',
+    error: 'Request failed.'
+  }
+};
 
 export const mockActionsData = {
   resetRootStore: {
-    settings: { 
-      userPersona: 'MERCHANT',
-      themeMode: 'NIGHT',
-      themeColor: 'TEAL',
-      currencyUnits: [ 'BTC', 'SATS', 'USD' ],
-      fiatConversion: true,
-      bitcoindConfigPath: '',
-      enableLogging: true,
-      lnServerUrl: '',
-      swapServerUrl: '',
-      boltzServerUrl: '',
-      channelBackupPath: '',
-      currencyUnit: ''
-    },
-    authentication: {
-      swapMacaroonPath: '',
-      boltzMacaroonPath: '', 
-      configPath: '' 
-    },
-    index: '1',
-    lnNode: 'LN Node Name',
-    lnImplementation: 'LND'
-  },
-  resetChildrenStores: {
-    userPersona: 'MERCHANT',
-    channelBackupPath: '',
-    selCurrencyUnit: '',
-    currencyUnits: [ 'Sats', 'BTC' ],
-    fiatConversion: true,
-    lnImplementation: 'LND',
-    swapServerUrl: '',
-    boltzServerUrl: ''    
-  },
-  setSelectedNode: { 
     settings: {
       userPersona: 'MERCHANT',
       themeMode: 'NIGHT',
       themeColor: 'TEAL',
-      currencyUnits: ['BTC', 'SATS', 'USD'],
+      currencyUnits: [
+        'BTC',
+        'SATS',
+        'USD'
+      ],
       fiatConversion: true,
       bitcoindConfigPath: '',
       enableLogging: true,
@@ -74,8 +721,82 @@ export const mockActionsData = {
     lnNode: 'LN Node Name',
     lnImplementation: 'LND'
   },
-  errorSendPaymentStatus: {action: 'SendPayment', code: '500', message: 'invoice expired. Valid until 2021-06-13 19:50:12 -0400 EDT'},
-  successfulSendPaymentStatus: {payment_error: '', payment_preimage: 'A8A8boZ/0FPDDTjzX1elYpMeAacYLl8aov4E3Ft/BGg=', payment_route: { total_time_lock: 2007733, total_fees: '0', total_amt: '100', hops: [{ chan_id: '1830637382236438528', chan_capacity: '1000000', amt_to_forward: '100', fee: '0', expiry: 2007733, amt_to_forward_msat: '100000', fee_msat: '0', pub_key: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', tlv_payload: true, mpp_record: { payment_addr: 'QFJt3hhqsRmNDppvjKGmVPg3yB+H+ZdKFV6ISAbOj6s=', total_amt_msat: '100000' }, custom_records: {} }], total_fees_msat: '0', total_amt_msat: '100000' }, payment_hash: 'qsC2AhYkbveGd2R+8f4fv2bb0lBkUMmvVmwondr/cqY='}
+  resetChildrenStores: {
+    userPersona: 'MERCHANT',
+    channelBackupPath: '',
+    selCurrencyUnit: '',
+    currencyUnits: [
+      'Sats',
+      'BTC'
+    ],
+    fiatConversion: true,
+    lnImplementation: 'LND',
+    swapServerUrl: '',
+    boltzServerUrl: ''
+  },
+  setSelectedNode: {
+    settings: {
+      userPersona: 'MERCHANT',
+      themeMode: 'NIGHT',
+      themeColor: 'TEAL',
+      currencyUnits: [
+        'BTC',
+        'SATS',
+        'USD'
+      ],
+      fiatConversion: true,
+      bitcoindConfigPath: '',
+      enableLogging: true,
+      lnServerUrl: '',
+      swapServerUrl: '',
+      boltzServerUrl: '',
+      channelBackupPath: '',
+      currencyUnit: ''
+    },
+    authentication: {
+      swapMacaroonPath: '',
+      boltzMacaroonPath: '',
+      configPath: ''
+    },
+    index: '1',
+    lnNode: 'LN Node Name',
+    lnImplementation: 'LND'
+  },
+  errorSendPaymentStatus: {
+    action: 'SendPayment',
+    code: '500',
+    message: 'invoice expired. Valid until 2021-06-13 19:50:12 -0400 EDT'
+  },
+  successfulSendPaymentStatus: {
+    payment_error: '',
+    payment_preimage: 'A8A8boZ/0FPDDTjzX1elYpMeAacYLl8aov4E3Ft/BGg=',
+    payment_route: {
+      total_time_lock: 2007733,
+      total_fees: '0',
+      total_amt: '100',
+      hops: [
+        {
+          chan_id: '1830637382236438528',
+          chan_capacity: '1000000',
+          amt_to_forward: '100',
+          fee: '0',
+          expiry: 2007733,
+          amt_to_forward_msat: '100000',
+          fee_msat: '0',
+          pub_key: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2',
+          tlv_payload: true,
+          mpp_record: {
+            payment_addr: 'QFJt3hhqsRmNDppvjKGmVPg3yB+H+ZdKFV6ISAbOj6s=',
+            total_amt_msat: '100000'
+          },
+          custom_records: {}
+        }
+      ],
+      total_fees_msat: '0',
+      total_amt_msat: '100000'
+    },
+    payment_hash: 'qsC2AhYkbveGd2R+8f4fv2bb0lBkUMmvVmwondr/cqY='
+  }
 };
 
 export const mockRTLStoreState = {
@@ -94,7 +815,7 @@ export const mockRTLStoreState = {
         lnServerUrl: 'https://localhost:8080',
         swapServerUrl: 'https://localhost:8081',
         boltzServerUrl: 'https://localhost:9003',
-        channelBackupPath: '..\\RTL\\backup\\node-1',
+        channelBackupPath: '..\\\\RTL\\\\backup\\\\node-1',
         currencyUnit: 'USD',
         currencyUnits: [
           'Sats',
@@ -131,7 +852,7 @@ export const mockRTLStoreState = {
             lnServerUrl: 'https://localhost:8080',
             swapServerUrl: 'https://localhost:8081',
             boltzServerUrl: 'https://localhost:9003',
-            channelBackupPath: '..\\RTL\\backup\\node-1',
+            channelBackupPath: '..\\\\RTL\\\\backup\\\\node-1',
             currencyUnit: 'USD',
             currencyUnits: [
               'Sats',
@@ -159,7 +880,7 @@ export const mockRTLStoreState = {
             lnServerUrl: 'https://localhost:3001',
             swapServerUrl: '',
             boltzServerUrl: '',
-            channelBackupPath: '..\\RTL\\backup\\node-2',
+            channelBackupPath: '..\\\\RTL\\\\backup\\\\node-2',
             currencyUnit: 'USD',
             currencyUnits: [
               'Sats',
@@ -187,7 +908,7 @@ export const mockRTLStoreState = {
             lnServerUrl: 'http://localhost:9090',
             swapServerUrl: '',
             boltzServerUrl: '',
-            channelBackupPath: '..\\RTL\\backup\\node-3',
+            channelBackupPath: '..\\\\RTL\\\\backup\\\\node-3',
             currencyUnit: 'USD',
             currencyUnits: [
               'Sats',
@@ -222,7 +943,7 @@ export const mockRTLStoreState = {
   lnd: {
     nodeSettings: {
       userPersona: 'OPERATOR',
-      channelBackupPath: '..\\RTL\\backup\\node-1',
+      channelBackupPath: '..\\\\RTL\\\\backup\\\\node-1',
       selCurrencyUnit: 'USD',
       currencyUnits: [
         'Sats',
@@ -260,37 +981,37 @@ export const mockRTLStoreState = {
         '02fad37ef58f76c1a5f802d198a07da5a8e55620b9ffbcbdc316fc8c9e9eac02cb@69.122.24.206:9999'
       ],
       features: {
-        '0': {
+        0: {
           name: 'data-loss-protect',
           is_required: true,
           is_known: true
         },
-        '5': {
+        5: {
           name: 'upfront-shutdown-script',
           is_required: false,
           is_known: true
         },
-        '7': {
+        7: {
           name: 'gossip-queries',
           is_required: false,
           is_known: true
         },
-        '9': {
+        9: {
           name: 'tlv-onion',
           is_required: false,
           is_known: true
         },
-        '12': {
+        12: {
           name: 'static-remote-key',
           is_required: true,
           is_known: true
         },
-        '14': {
+        14: {
           name: 'payment-addr',
           is_required: true,
           is_known: true
         },
-        '17': {
+        17: {
           name: 'multi-path-payments',
           is_required: false,
           is_known: true
@@ -310,47 +1031,47 @@ export const mockRTLStoreState = {
         ping_time: '49356',
         sync_type: 'ACTIVE_SYNC',
         features: {
-          '1': {
+          1: {
             name: 'data-loss-protect',
             is_required: false,
             is_known: true
           },
-          '5': {
+          5: {
             name: 'upfront-shutdown-script',
             is_required: false,
             is_known: true
           },
-          '7': {
+          7: {
             name: 'gossip-queries',
             is_required: false,
             is_known: true
           },
-          '9': {
+          9: {
             name: 'tlv-onion',
             is_required: false,
             is_known: true
           },
-          '11': {
+          11: {
             name: 'unknown',
             is_required: false,
             is_known: false
           },
-          '13': {
+          13: {
             name: 'static-remote-key',
             is_required: false,
             is_known: true
           },
-          '15': {
+          15: {
             name: 'payment-addr',
             is_required: false,
             is_known: true
           },
-          '17': {
+          17: {
             name: 'multi-path-payments',
             is_required: false,
             is_known: true
           },
-          '27': {
+          27: {
             name: 'unknown',
             is_required: false,
             is_known: false
@@ -372,42 +1093,42 @@ export const mockRTLStoreState = {
         ping_time: '224318',
         sync_type: 'ACTIVE_SYNC',
         features: {
-          '0': {
+          0: {
             name: 'data-loss-protect',
             is_required: true,
             is_known: true
           },
-          '5': {
+          5: {
             name: 'upfront-shutdown-script',
             is_required: false,
             is_known: true
           },
-          '7': {
+          7: {
             name: 'gossip-queries',
             is_required: false,
             is_known: true
           },
-          '9': {
+          9: {
             name: 'tlv-onion',
             is_required: false,
             is_known: true
           },
-          '13': {
+          13: {
             name: 'static-remote-key',
             is_required: false,
             is_known: true
           },
-          '15': {
+          15: {
             name: 'payment-addr',
             is_required: false,
             is_known: true
           },
-          '17': {
+          17: {
             name: 'multi-path-payments',
             is_required: false,
             is_known: true
           },
-          '19': {
+          19: {
             name: 'wumbo-channels',
             is_required: false,
             is_known: true
@@ -429,42 +1150,42 @@ export const mockRTLStoreState = {
         ping_time: '84011',
         sync_type: 'PASSIVE_SYNC',
         features: {
-          '1': {
+          1: {
             name: 'data-loss-protect',
             is_required: false,
             is_known: true
           },
-          '5': {
+          5: {
             name: 'upfront-shutdown-script',
             is_required: false,
             is_known: true
           },
-          '7': {
+          7: {
             name: 'gossip-queries',
             is_required: false,
             is_known: true
           },
-          '9': {
+          9: {
             name: 'tlv-onion',
             is_required: false,
             is_known: true
           },
-          '11': {
+          11: {
             name: 'unknown',
             is_required: false,
             is_known: false
           },
-          '13': {
+          13: {
             name: 'static-remote-key',
             is_required: false,
             is_known: true
           },
-          '15': {
+          15: {
             name: 'payment-addr',
             is_required: false,
             is_known: true
           },
-          '17': {
+          17: {
             name: 'multi-path-payments',
             is_required: false,
             is_known: true
@@ -507,37 +1228,37 @@ export const mockRTLStoreState = {
         ping_time: '84414',
         sync_type: 'PASSIVE_SYNC',
         features: {
-          '0': {
+          0: {
             name: 'data-loss-protect',
             is_required: true,
             is_known: true
           },
-          '5': {
+          5: {
             name: 'upfront-shutdown-script',
             is_required: false,
             is_known: true
           },
-          '7': {
+          7: {
             name: 'gossip-queries',
             is_required: false,
             is_known: true
           },
-          '9': {
+          9: {
             name: 'tlv-onion',
             is_required: false,
             is_known: true
           },
-          '12': {
+          12: {
             name: 'static-remote-key',
             is_required: true,
             is_known: true
           },
-          '14': {
+          14: {
             name: 'payment-addr',
             is_required: true,
             is_known: true
           },
-          '17': {
+          17: {
             name: 'multi-path-payments',
             is_required: false,
             is_known: true
@@ -559,42 +1280,42 @@ export const mockRTLStoreState = {
         ping_time: '37785',
         sync_type: 'ACTIVE_SYNC',
         features: {
-          '0': {
+          0: {
             name: 'data-loss-protect',
             is_required: true,
             is_known: true
           },
-          '5': {
+          5: {
             name: 'upfront-shutdown-script',
             is_required: false,
             is_known: true
           },
-          '7': {
+          7: {
             name: 'gossip-queries',
             is_required: false,
             is_known: true
           },
-          '9': {
+          9: {
             name: 'tlv-onion',
             is_required: false,
             is_known: true
           },
-          '13': {
+          13: {
             name: 'static-remote-key',
             is_required: false,
             is_known: true
           },
-          '15': {
+          15: {
             name: 'payment-addr',
             is_required: false,
             is_known: true
           },
-          '17': {
+          17: {
             name: 'multi-path-payments',
             is_required: false,
             is_known: true
           },
-          '19': {
+          19: {
             name: 'wumbo-channels',
             is_required: false,
             is_known: true
@@ -733,11 +1454,11 @@ export const mockRTLStoreState = {
       month_fee_sum: '0.00',
       daily_tx_count: 0,
       weekly_tx_count: 0,
-      monthly_tx_count: 0,
+      monthly_tx_count: 0
     },
     networkInfo: {
       graph_diameter: 0,
-      avg_out_degree: 4.6249622242369295,
+      avg_out_degree: 4.62496222423692,
       max_out_degree: 779,
       num_nodes: 3309,
       num_channels: 7652,
@@ -746,7 +1467,7 @@ export const mockRTLStoreState = {
       min_channel_size: '4000',
       max_channel_size: '200000000',
       median_channel_size_sat: '1799895',
-      num_zombie_chans: '4435',
+      num_zombie_chans: '4435'
     },
     channelBalance: {
       balance: '962258',
@@ -774,12 +1495,12 @@ export const mockRTLStoreState = {
       pending_open_remote_balance: {
         sat: '0',
         msat: '0'
-      },
+      }
     },
     blockchainBalance: {
       total_balance: '1621135',
       confirmed_balance: '1621135',
-      unconfirmed_balance: '0',
+      unconfirmed_balance: '0'
     },
     allChannels: [
       {
@@ -799,7 +1520,7 @@ export const mockRTLStoreState = {
         num_updates: '188',
         pending_htlcs: [],
         csv_delay: 144,
-        'private': false,
+        private: false,
         initiator: true,
         chan_status_flags: 'ChanStatusDefault',
         local_chan_reserve_sat: '573',
@@ -847,7 +1568,7 @@ export const mockRTLStoreState = {
         num_updates: '68',
         pending_htlcs: [],
         csv_delay: 144,
-        'private': false,
+        private: false,
         initiator: true,
         chan_status_flags: 'ChanStatusDefault',
         local_chan_reserve_sat: '1000',
@@ -895,7 +1616,7 @@ export const mockRTLStoreState = {
         num_updates: '46',
         pending_htlcs: [],
         csv_delay: 144,
-        'private': false,
+        private: false,
         initiator: true,
         chan_status_flags: 'ChanStatusDefault',
         local_chan_reserve_sat: '1000',
@@ -943,7 +1664,7 @@ export const mockRTLStoreState = {
         num_updates: '27',
         pending_htlcs: [],
         csv_delay: 144,
-        'private': false,
+        private: false,
         initiator: true,
         chan_status_flags: 'ChanStatusDefault',
         local_chan_reserve_sat: '1000',
@@ -991,7 +1712,7 @@ export const mockRTLStoreState = {
         num_updates: '3702',
         pending_htlcs: [],
         csv_delay: 6,
-        'private': false,
+        private: false,
         initiator: false,
         chan_status_flags: 'ChanStatusDefault',
         local_chan_reserve_sat: '10000',
@@ -1039,7 +1760,7 @@ export const mockRTLStoreState = {
         num_updates: '7',
         pending_htlcs: [],
         csv_delay: 144,
-        'private': false,
+        private: false,
         initiator: true,
         chan_status_flags: 'ChanStatusDefault',
         local_chan_reserve_sat: '1000',
@@ -1087,7 +1808,7 @@ export const mockRTLStoreState = {
         num_updates: '7',
         pending_htlcs: [],
         csv_delay: 144,
-        'private': false,
+        private: false,
         initiator: true,
         chan_status_flags: 'ChanStatusDefault',
         local_chan_reserve_sat: '1000',
@@ -1135,7 +1856,7 @@ export const mockRTLStoreState = {
         num_updates: '0',
         pending_htlcs: [],
         csv_delay: 144,
-        'private': false,
+        private: false,
         initiator: true,
         chan_status_flags: 'ChanStatusDefault',
         local_chan_reserve_sat: '1000',
@@ -1183,7 +1904,7 @@ export const mockRTLStoreState = {
         num_updates: '2',
         pending_htlcs: [],
         csv_delay: 144,
-        'private': false,
+        private: false,
         initiator: true,
         chan_status_flags: 'ChanStatusDefault',
         local_chan_reserve_sat: '573',
@@ -1231,7 +1952,7 @@ export const mockRTLStoreState = {
         num_updates: '6',
         pending_htlcs: [],
         csv_delay: 144,
-        'private': false,
+        private: false,
         initiator: true,
         chan_status_flags: 'ChanStatusDefault',
         local_chan_reserve_sat: '1000',
@@ -1279,7 +2000,7 @@ export const mockRTLStoreState = {
         num_updates: '5',
         pending_htlcs: [],
         csv_delay: 144,
-        'private': false,
+        private: false,
         initiator: true,
         chan_status_flags: 'ChanStatusDefault',
         local_chan_reserve_sat: '573',
@@ -1327,7 +2048,7 @@ export const mockRTLStoreState = {
         num_updates: '34',
         pending_htlcs: [],
         csv_delay: 144,
-        'private': false,
+        private: false,
         initiator: true,
         chan_status_flags: 'ChanStatusDefault',
         local_chan_reserve_sat: '1000',
@@ -1375,7 +2096,7 @@ export const mockRTLStoreState = {
         num_updates: '0',
         pending_htlcs: [],
         csv_delay: 6,
-        'private': false,
+        private: false,
         initiator: false,
         chan_status_flags: 'ChanStatusDefault',
         local_chan_reserve_sat: '1000',
@@ -1423,7 +2144,7 @@ export const mockRTLStoreState = {
         num_updates: '17',
         pending_htlcs: [],
         csv_delay: 144,
-        'private': false,
+        private: false,
         initiator: true,
         chan_status_flags: 'ChanStatusDefault',
         local_chan_reserve_sat: '573',
@@ -1471,7 +2192,7 @@ export const mockRTLStoreState = {
         num_updates: '12',
         pending_htlcs: [],
         csv_delay: 144,
-        'private': false,
+        private: false,
         initiator: true,
         chan_status_flags: 'ChanStatusDefault',
         local_chan_reserve_sat: '573',
@@ -1519,7 +2240,7 @@ export const mockRTLStoreState = {
         num_updates: '15',
         pending_htlcs: [],
         csv_delay: 144,
-        'private': false,
+        private: false,
         initiator: true,
         chan_status_flags: 'ChanStatusDefault',
         local_chan_reserve_sat: '573',
@@ -1567,7 +2288,7 @@ export const mockRTLStoreState = {
         num_updates: '10',
         pending_htlcs: [],
         csv_delay: 144,
-        'private': false,
+        private: false,
         initiator: true,
         chan_status_flags: 'ChanStatusDefault',
         local_chan_reserve_sat: '573',
@@ -2575,7 +3296,7 @@ export const mockRTLStoreState = {
       pending_open_channels: [],
       pending_closing_channels: [],
       pending_force_closing_channels: [],
-      waiting_close_channels: [],
+      waiting_close_channels: []
     },
     numberOfActiveChannels: 8,
     numberOfInactiveChannels: 9,
@@ -4294,7 +5015,7 @@ export const mockRTLStoreState = {
           fallback_addr: '',
           cltv_expiry: '40',
           route_hints: [],
-          'private': false,
+          private: false,
           add_index: '817',
           settle_index: '97',
           amt_paid: '700000',
@@ -4316,24 +5037,24 @@ export const mockRTLStoreState = {
             }
           ],
           features: {
-            '9': {
+            9: {
               name: 'tlv-onion',
               is_required: false,
               is_known: true
             },
-            '14': {
+            14: {
               name: 'payment-addr',
               is_required: true,
               is_known: true
             },
-            '17': {
+            17: {
               name: 'multi-path-payments',
               is_required: false,
               is_known: true
             }
           },
           is_keysend: false,
-          payment_addr: 'HG8V20p3Zg9A9s3c/j1rDQmTg3Cwexpjv6Wo2NhrMi8=',
+          payment_addr: 'HG8V20p3Zg9A9s3c/j1rDQmTg3Cwexpjv6Wo2NhrMi8='
         },
         {
           memo: 'Testing Eclair Payments 6',
@@ -4350,7 +5071,7 @@ export const mockRTLStoreState = {
           fallback_addr: '',
           cltv_expiry: '40',
           route_hints: [],
-          'private': false,
+          private: false,
           add_index: '816',
           settle_index: '98',
           amt_paid: '600000',
@@ -4372,24 +5093,24 @@ export const mockRTLStoreState = {
             }
           ],
           features: {
-            '9': {
+            9: {
               name: 'tlv-onion',
               is_required: false,
               is_known: true
             },
-            '14': {
+            14: {
               name: 'payment-addr',
               is_required: true,
               is_known: true
             },
-            '17': {
+            17: {
               name: 'multi-path-payments',
               is_required: false,
               is_known: true
             }
           },
           is_keysend: false,
-          payment_addr: 'oUmc0csf6YuPaaAD4564TJS5VVwGPT+G8EhqyVjjdds=',
+          payment_addr: 'oUmc0csf6YuPaaAD4564TJS5VVwGPT+G8EhqyVjjdds='
         },
         {
           memo: 'Testing ngrx effects 5',
@@ -4406,7 +5127,7 @@ export const mockRTLStoreState = {
           fallback_addr: '',
           cltv_expiry: '40',
           route_hints: [],
-          'private': false,
+          private: false,
           add_index: '815',
           settle_index: '96',
           amt_paid: '500000',
@@ -4428,24 +5149,24 @@ export const mockRTLStoreState = {
             }
           ],
           features: {
-            '9': {
+            9: {
               name: 'tlv-onion',
               is_required: false,
               is_known: true
             },
-            '14': {
+            14: {
               name: 'payment-addr',
               is_required: true,
               is_known: true
             },
-            '17': {
+            17: {
               name: 'multi-path-payments',
               is_required: false,
               is_known: true
             }
           },
           is_keysend: false,
-          payment_addr: 'fymlMg/PhRf3JaUHlBrH9hxnkKjCwCD5u4YFzT88epw=',
+          payment_addr: 'fymlMg/PhRf3JaUHlBrH9hxnkKjCwCD5u4YFzT88epw='
         },
         {
           memo: 'Routing Hint Invoice Test 2',
@@ -4462,7 +5183,7 @@ export const mockRTLStoreState = {
           fallback_addr: '',
           cltv_expiry: '40',
           route_hints: [],
-          'private': false,
+          private: false,
           add_index: '814',
           settle_index: '0',
           amt_paid: '0',
@@ -4471,24 +5192,24 @@ export const mockRTLStoreState = {
           state: 'CANCELED',
           htlcs: [],
           features: {
-            '9': {
+            9: {
               name: 'tlv-onion',
               is_required: false,
               is_known: true
             },
-            '15': {
+            15: {
               name: 'payment-addr',
               is_required: false,
               is_known: true
             },
-            '17': {
+            17: {
               name: 'multi-path-payments',
               is_required: false,
               is_known: true
             }
           },
           is_keysend: false,
-          payment_addr: 'vM05nYc/d/eTo9+aSL15SgWrLbqVLNBKGijeyLBDL3M=',
+          payment_addr: 'vM05nYc/d/eTo9+aSL15SgWrLbqVLNBKGijeyLBDL3M='
         },
         {
           memo: 'my test invoice',
@@ -4505,7 +5226,7 @@ export const mockRTLStoreState = {
           fallback_addr: '',
           cltv_expiry: '40',
           route_hints: [],
-          'private': false,
+          private: false,
           add_index: '813',
           settle_index: '0',
           amt_paid: '0',
@@ -4514,24 +5235,24 @@ export const mockRTLStoreState = {
           state: 'CANCELED',
           htlcs: [],
           features: {
-            '9': {
+            9: {
               name: 'tlv-onion',
               is_required: false,
               is_known: true
             },
-            '15': {
+            15: {
               name: 'payment-addr',
               is_required: false,
               is_known: true
             },
-            '17': {
+            17: {
               name: 'multi-path-payments',
               is_required: false,
               is_known: true
             }
           },
           is_keysend: false,
-          payment_addr: 'UKGL4sT4xnhBQJoKemi5C80gPIxn54OxVfmwSxPp8Pg=',
+          payment_addr: 'UKGL4sT4xnhBQJoKemi5C80gPIxn54OxVfmwSxPp8Pg='
         },
         {
           memo: 'Submarine Swap from BTC',
@@ -4548,7 +5269,7 @@ export const mockRTLStoreState = {
           fallback_addr: '',
           cltv_expiry: '40',
           route_hints: [],
-          'private': false,
+          private: false,
           add_index: '812',
           settle_index: '0',
           amt_paid: '0',
@@ -4557,24 +5278,24 @@ export const mockRTLStoreState = {
           state: 'CANCELED',
           htlcs: [],
           features: {
-            '9': {
+            9: {
               name: 'tlv-onion',
               is_required: false,
               is_known: true
             },
-            '15': {
+            15: {
               name: 'payment-addr',
               is_required: false,
               is_known: true
             },
-            '17': {
+            17: {
               name: 'multi-path-payments',
               is_required: false,
               is_known: true
             }
           },
           is_keysend: false,
-          payment_addr: 'T4QwWtP0EWdR7b7USvakIeFHdLrCOaoMujcSN1iH8tM=',
+          payment_addr: 'T4QwWtP0EWdR7b7USvakIeFHdLrCOaoMujcSN1iH8tM='
         },
         {
           memo: 'Submarine Swap from BTC',
@@ -4591,7 +5312,7 @@ export const mockRTLStoreState = {
           fallback_addr: '',
           cltv_expiry: '40',
           route_hints: [],
-          'private': false,
+          private: false,
           add_index: '811',
           settle_index: '0',
           amt_paid: '0',
@@ -4600,24 +5321,24 @@ export const mockRTLStoreState = {
           state: 'CANCELED',
           htlcs: [],
           features: {
-            '9': {
+            9: {
               name: 'tlv-onion',
               is_required: false,
               is_known: true
             },
-            '15': {
+            15: {
               name: 'payment-addr',
               is_required: false,
               is_known: true
             },
-            '17': {
+            17: {
               name: 'multi-path-payments',
               is_required: false,
               is_known: true
             }
           },
           is_keysend: false,
-          payment_addr: 'yc/O4nDL2TPM37kYxuxGM68RMusJWfZ6jMtu2g6Ke/U=',
+          payment_addr: 'yc/O4nDL2TPM37kYxuxGM68RMusJWfZ6jMtu2g6Ke/U='
         },
         {
           memo: 'Submarine Swap from BTC',
@@ -4634,7 +5355,7 @@ export const mockRTLStoreState = {
           fallback_addr: '',
           cltv_expiry: '40',
           route_hints: [],
-          'private': false,
+          private: false,
           add_index: '810',
           settle_index: '0',
           amt_paid: '0',
@@ -4643,24 +5364,24 @@ export const mockRTLStoreState = {
           state: 'CANCELED',
           htlcs: [],
           features: {
-            '9': {
+            9: {
               name: 'tlv-onion',
               is_required: false,
               is_known: true
             },
-            '15': {
+            15: {
               name: 'payment-addr',
               is_required: false,
               is_known: true
             },
-            '17': {
+            17: {
               name: 'multi-path-payments',
               is_required: false,
               is_known: true
             }
           },
           is_keysend: false,
-          payment_addr: '4EbHkBgA5Foea8YKZUm+V+kIovtZWLrtKwaRyveQyDA=',
+          payment_addr: '4EbHkBgA5Foea8YKZUm+V+kIovtZWLrtKwaRyveQyDA='
         },
         {
           memo: 'Submarine Swap from BTC',
@@ -4677,7 +5398,7 @@ export const mockRTLStoreState = {
           fallback_addr: '',
           cltv_expiry: '40',
           route_hints: [],
-          'private': false,
+          private: false,
           add_index: '809',
           settle_index: '0',
           amt_paid: '0',
@@ -4686,24 +5407,24 @@ export const mockRTLStoreState = {
           state: 'CANCELED',
           htlcs: [],
           features: {
-            '9': {
+            9: {
               name: 'tlv-onion',
               is_required: false,
               is_known: true
             },
-            '15': {
+            15: {
               name: 'payment-addr',
               is_required: false,
               is_known: true
             },
-            '17': {
+            17: {
               name: 'multi-path-payments',
               is_required: false,
               is_known: true
             }
           },
           is_keysend: false,
-          payment_addr: '6p3ATptJOreEh6GLAmTIQGqsBKKHBBXaZQkvPXurBwk=',
+          payment_addr: '6p3ATptJOreEh6GLAmTIQGqsBKKHBBXaZQkvPXurBwk='
         },
         {
           memo: 'Submarine Swap from BTC',
@@ -4720,7 +5441,7 @@ export const mockRTLStoreState = {
           fallback_addr: '',
           cltv_expiry: '40',
           route_hints: [],
-          'private': false,
+          private: false,
           add_index: '808',
           settle_index: '0',
           amt_paid: '0',
@@ -4729,24 +5450,24 @@ export const mockRTLStoreState = {
           state: 'CANCELED',
           htlcs: [],
           features: {
-            '9': {
+            9: {
               name: 'tlv-onion',
               is_required: false,
               is_known: true
             },
-            '15': {
+            15: {
               name: 'payment-addr',
               is_required: false,
               is_known: true
             },
-            '17': {
+            17: {
               name: 'multi-path-payments',
               is_required: false,
               is_known: true
             }
           },
           is_keysend: false,
-          payment_addr: 'npKBJizo7eezLnEAuZRN5wS09Awe0MP0tK4Siquj/Uc=',
+          payment_addr: 'npKBJizo7eezLnEAuZRN5wS09Awe0MP0tK4Siquj/Uc='
         }
       ],
       last_index_offset: '817',
@@ -15899,7 +16620,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '1',
             settle_index: '0',
             amt_paid: '0',
@@ -15926,7 +16647,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '2',
             settle_index: '0',
             amt_paid: '0',
@@ -15953,7 +16674,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '3',
             settle_index: '0',
             amt_paid: '0',
@@ -15980,7 +16701,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '4',
             settle_index: '0',
             amt_paid: '0',
@@ -16007,7 +16728,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '5',
             settle_index: '0',
             amt_paid: '0',
@@ -16034,7 +16755,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '6',
             settle_index: '0',
             amt_paid: '0',
@@ -16061,7 +16782,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '7',
             settle_index: '0',
             amt_paid: '0',
@@ -16088,7 +16809,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '8',
             settle_index: '0',
             amt_paid: '0',
@@ -16115,7 +16836,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '9',
             settle_index: '0',
             amt_paid: '0',
@@ -16142,7 +16863,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '10',
             settle_index: '0',
             amt_paid: '0',
@@ -16169,7 +16890,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '11',
             settle_index: '0',
             amt_paid: '0',
@@ -16196,7 +16917,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '12',
             settle_index: '0',
             amt_paid: '0',
@@ -16223,7 +16944,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '13',
             settle_index: '0',
             amt_paid: '0',
@@ -16250,7 +16971,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '14',
             settle_index: '0',
             amt_paid: '0',
@@ -16277,7 +16998,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '15',
             settle_index: '0',
             amt_paid: '0',
@@ -16304,7 +17025,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '16',
             settle_index: '0',
             amt_paid: '0',
@@ -16331,7 +17052,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '17',
             settle_index: '0',
             amt_paid: '0',
@@ -16358,7 +17079,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '18',
             settle_index: '0',
             amt_paid: '0',
@@ -16385,7 +17106,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '19',
             settle_index: '0',
             amt_paid: '0',
@@ -16412,7 +17133,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '20',
             settle_index: '0',
             amt_paid: '0',
@@ -16439,7 +17160,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '21',
             settle_index: '0',
             amt_paid: '0',
@@ -16466,7 +17187,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '22',
             settle_index: '0',
             amt_paid: '0',
@@ -16493,7 +17214,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '23',
             settle_index: '0',
             amt_paid: '0',
@@ -16520,7 +17241,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '24',
             settle_index: '0',
             amt_paid: '0',
@@ -16547,7 +17268,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '25',
             settle_index: '0',
             amt_paid: '0',
@@ -16574,7 +17295,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '26',
             settle_index: '0',
             amt_paid: '0',
@@ -16601,7 +17322,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '27',
             settle_index: '0',
             amt_paid: '0',
@@ -16628,7 +17349,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '28',
             settle_index: '0',
             amt_paid: '0',
@@ -16655,7 +17376,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '29',
             settle_index: '0',
             amt_paid: '0',
@@ -16682,7 +17403,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '30',
             settle_index: '0',
             amt_paid: '0',
@@ -16709,7 +17430,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '31',
             settle_index: '0',
             amt_paid: '0',
@@ -16736,7 +17457,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '32',
             settle_index: '0',
             amt_paid: '0',
@@ -16763,7 +17484,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '33',
             settle_index: '0',
             amt_paid: '0',
@@ -16790,7 +17511,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '34',
             settle_index: '0',
             amt_paid: '0',
@@ -16817,7 +17538,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '35',
             settle_index: '0',
             amt_paid: '0',
@@ -16844,7 +17565,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '36',
             settle_index: '0',
             amt_paid: '0',
@@ -16871,7 +17592,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '37',
             settle_index: '0',
             amt_paid: '0',
@@ -16898,7 +17619,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '38',
             settle_index: '0',
             amt_paid: '0',
@@ -16925,7 +17646,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '39',
             settle_index: '0',
             amt_paid: '0',
@@ -16952,7 +17673,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '40',
             settle_index: '0',
             amt_paid: '0',
@@ -16979,7 +17700,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '41',
             settle_index: '0',
             amt_paid: '0',
@@ -17006,7 +17727,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '42',
             settle_index: '0',
             amt_paid: '0',
@@ -17033,7 +17754,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '43',
             settle_index: '0',
             amt_paid: '0',
@@ -17060,7 +17781,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '44',
             settle_index: '0',
             amt_paid: '0',
@@ -17087,7 +17808,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '45',
             settle_index: '0',
             amt_paid: '0',
@@ -17114,7 +17835,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '46',
             settle_index: '0',
             amt_paid: '0',
@@ -17141,7 +17862,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '47',
             settle_index: '0',
             amt_paid: '0',
@@ -17168,7 +17889,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '48',
             settle_index: '0',
             amt_paid: '0',
@@ -17195,7 +17916,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '49',
             settle_index: '0',
             amt_paid: '0',
@@ -17222,7 +17943,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '50',
             settle_index: '0',
             amt_paid: '0',
@@ -17249,7 +17970,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '51',
             settle_index: '0',
             amt_paid: '0',
@@ -17276,7 +17997,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '52',
             settle_index: '0',
             amt_paid: '0',
@@ -17303,7 +18024,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '53',
             settle_index: '0',
             amt_paid: '0',
@@ -17330,7 +18051,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '54',
             settle_index: '0',
             amt_paid: '0',
@@ -17357,7 +18078,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '55',
             settle_index: '0',
             amt_paid: '0',
@@ -17384,7 +18105,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '56',
             settle_index: '0',
             amt_paid: '0',
@@ -17411,7 +18132,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '57',
             settle_index: '0',
             amt_paid: '0',
@@ -17438,7 +18159,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '58',
             settle_index: '0',
             amt_paid: '0',
@@ -17465,7 +18186,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '59',
             settle_index: '0',
             amt_paid: '0',
@@ -17492,7 +18213,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '60',
             settle_index: '0',
             amt_paid: '0',
@@ -17519,7 +18240,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '61',
             settle_index: '0',
             amt_paid: '0',
@@ -17546,7 +18267,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '62',
             settle_index: '0',
             amt_paid: '0',
@@ -17573,7 +18294,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '63',
             settle_index: '0',
             amt_paid: '0',
@@ -17600,7 +18321,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '64',
             settle_index: '0',
             amt_paid: '0',
@@ -17627,7 +18348,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '65',
             settle_index: '0',
             amt_paid: '0',
@@ -17654,7 +18375,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '66',
             settle_index: '0',
             amt_paid: '0',
@@ -17681,7 +18402,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '67',
             settle_index: '0',
             amt_paid: '0',
@@ -17708,7 +18429,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '68',
             settle_index: '0',
             amt_paid: '0',
@@ -17735,7 +18456,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '69',
             settle_index: '0',
             amt_paid: '0',
@@ -17762,7 +18483,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '70',
             settle_index: '0',
             amt_paid: '0',
@@ -17789,7 +18510,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '71',
             settle_index: '0',
             amt_paid: '0',
@@ -17816,7 +18537,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '72',
             settle_index: '0',
             amt_paid: '0',
@@ -17843,7 +18564,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '73',
             settle_index: '0',
             amt_paid: '0',
@@ -17870,7 +18591,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '74',
             settle_index: '0',
             amt_paid: '0',
@@ -17897,7 +18618,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '75',
             settle_index: '0',
             amt_paid: '0',
@@ -17924,7 +18645,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '76',
             settle_index: '0',
             amt_paid: '0',
@@ -17951,7 +18672,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '77',
             settle_index: '0',
             amt_paid: '0',
@@ -17978,7 +18699,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '78',
             settle_index: '0',
             amt_paid: '0',
@@ -18005,7 +18726,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '79',
             settle_index: '0',
             amt_paid: '0',
@@ -18032,7 +18753,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '80',
             settle_index: '0',
             amt_paid: '0',
@@ -18059,7 +18780,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '81',
             settle_index: '0',
             amt_paid: '0',
@@ -18086,7 +18807,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '82',
             settle_index: '0',
             amt_paid: '0',
@@ -18113,7 +18834,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '83',
             settle_index: '0',
             amt_paid: '0',
@@ -18140,7 +18861,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '84',
             settle_index: '0',
             amt_paid: '0',
@@ -18167,7 +18888,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '85',
             settle_index: '0',
             amt_paid: '0',
@@ -18194,7 +18915,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '86',
             settle_index: '0',
             amt_paid: '0',
@@ -18221,7 +18942,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '87',
             settle_index: '0',
             amt_paid: '0',
@@ -18248,7 +18969,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '88',
             settle_index: '0',
             amt_paid: '0',
@@ -18275,7 +18996,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '89',
             settle_index: '0',
             amt_paid: '0',
@@ -18302,7 +19023,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '90',
             settle_index: '0',
             amt_paid: '0',
@@ -18329,7 +19050,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '91',
             settle_index: '0',
             amt_paid: '0',
@@ -18356,7 +19077,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '92',
             settle_index: '0',
             amt_paid: '0',
@@ -18383,7 +19104,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '93',
             settle_index: '0',
             amt_paid: '0',
@@ -18410,7 +19131,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '94',
             settle_index: '0',
             amt_paid: '0',
@@ -18437,7 +19158,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '95',
             settle_index: '0',
             amt_paid: '0',
@@ -18464,7 +19185,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '96',
             settle_index: '0',
             amt_paid: '0',
@@ -18491,7 +19212,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '97',
             settle_index: '0',
             amt_paid: '0',
@@ -18518,7 +19239,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '98',
             settle_index: '0',
             amt_paid: '0',
@@ -18545,7 +19266,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '99',
             settle_index: '0',
             amt_paid: '0',
@@ -18572,7 +19293,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '100',
             settle_index: '0',
             amt_paid: '0',
@@ -18599,7 +19320,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '101',
             settle_index: '0',
             amt_paid: '0',
@@ -18626,7 +19347,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '102',
             settle_index: '0',
             amt_paid: '0',
@@ -18653,7 +19374,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '103',
             settle_index: '0',
             amt_paid: '0',
@@ -18680,7 +19401,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '104',
             settle_index: '0',
             amt_paid: '0',
@@ -18707,7 +19428,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '105',
             settle_index: '0',
             amt_paid: '0',
@@ -18734,7 +19455,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '106',
             settle_index: '0',
             amt_paid: '0',
@@ -18761,7 +19482,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '107',
             settle_index: '0',
             amt_paid: '0',
@@ -18788,7 +19509,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '108',
             settle_index: '0',
             amt_paid: '0',
@@ -18815,7 +19536,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '109',
             settle_index: '0',
             amt_paid: '0',
@@ -18842,7 +19563,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '110',
             settle_index: '0',
             amt_paid: '0',
@@ -18869,7 +19590,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '111',
             settle_index: '0',
             amt_paid: '0',
@@ -18896,7 +19617,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '112',
             settle_index: '0',
             amt_paid: '0',
@@ -18923,7 +19644,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '113',
             settle_index: '0',
             amt_paid: '0',
@@ -18950,7 +19671,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '114',
             settle_index: '0',
             amt_paid: '0',
@@ -18977,7 +19698,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '115',
             settle_index: '0',
             amt_paid: '0',
@@ -19004,7 +19725,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '116',
             settle_index: '0',
             amt_paid: '0',
@@ -19031,7 +19752,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '117',
             settle_index: '0',
             amt_paid: '0',
@@ -19058,7 +19779,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '118',
             settle_index: '0',
             amt_paid: '0',
@@ -19085,7 +19806,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '119',
             settle_index: '0',
             amt_paid: '0',
@@ -19112,7 +19833,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '120',
             settle_index: '0',
             amt_paid: '0',
@@ -19139,7 +19860,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '121',
             settle_index: '0',
             amt_paid: '0',
@@ -19166,7 +19887,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '122',
             settle_index: '0',
             amt_paid: '0',
@@ -19193,7 +19914,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '123',
             settle_index: '0',
             amt_paid: '0',
@@ -19220,7 +19941,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '124',
             settle_index: '0',
             amt_paid: '0',
@@ -19247,7 +19968,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '125',
             settle_index: '0',
             amt_paid: '0',
@@ -19274,7 +19995,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '126',
             settle_index: '0',
             amt_paid: '0',
@@ -19301,7 +20022,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '127',
             settle_index: '0',
             amt_paid: '0',
@@ -19328,7 +20049,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '128',
             settle_index: '0',
             amt_paid: '0',
@@ -19355,7 +20076,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '129',
             settle_index: '0',
             amt_paid: '0',
@@ -19382,7 +20103,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '130',
             settle_index: '0',
             amt_paid: '0',
@@ -19409,7 +20130,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '131',
             settle_index: '0',
             amt_paid: '0',
@@ -19436,7 +20157,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '132',
             settle_index: '0',
             amt_paid: '0',
@@ -19463,7 +20184,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '133',
             settle_index: '0',
             amt_paid: '0',
@@ -19490,7 +20211,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '134',
             settle_index: '0',
             amt_paid: '0',
@@ -19517,7 +20238,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '135',
             settle_index: '0',
             amt_paid: '0',
@@ -19544,7 +20265,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '136',
             settle_index: '0',
             amt_paid: '0',
@@ -19571,7 +20292,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '137',
             settle_index: '0',
             amt_paid: '0',
@@ -19598,7 +20319,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '138',
             settle_index: '0',
             amt_paid: '0',
@@ -19625,7 +20346,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '139',
             settle_index: '0',
             amt_paid: '0',
@@ -19652,7 +20373,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '140',
             settle_index: '0',
             amt_paid: '0',
@@ -19679,7 +20400,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '141',
             settle_index: '0',
             amt_paid: '0',
@@ -19706,7 +20427,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '142',
             settle_index: '0',
             amt_paid: '0',
@@ -19733,7 +20454,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '143',
             settle_index: '0',
             amt_paid: '0',
@@ -19760,7 +20481,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '144',
             settle_index: '0',
             amt_paid: '0',
@@ -19787,7 +20508,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '145',
             settle_index: '0',
             amt_paid: '0',
@@ -19814,7 +20535,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '146',
             settle_index: '0',
             amt_paid: '0',
@@ -19841,7 +20562,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '147',
             settle_index: '0',
             amt_paid: '0',
@@ -19868,7 +20589,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '148',
             settle_index: '0',
             amt_paid: '0',
@@ -19895,7 +20616,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '149',
             settle_index: '0',
             amt_paid: '0',
@@ -19922,7 +20643,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '150',
             settle_index: '0',
             amt_paid: '0',
@@ -19949,7 +20670,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '151',
             settle_index: '0',
             amt_paid: '0',
@@ -19976,7 +20697,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '152',
             settle_index: '0',
             amt_paid: '0',
@@ -20003,7 +20724,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '153',
             settle_index: '0',
             amt_paid: '0',
@@ -20030,7 +20751,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '154',
             settle_index: '0',
             amt_paid: '0',
@@ -20057,7 +20778,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '155',
             settle_index: '0',
             amt_paid: '0',
@@ -20084,7 +20805,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '156',
             settle_index: '0',
             amt_paid: '0',
@@ -20111,7 +20832,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '157',
             settle_index: '0',
             amt_paid: '0',
@@ -20138,7 +20859,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '158',
             settle_index: '0',
             amt_paid: '0',
@@ -20165,7 +20886,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '159',
             settle_index: '0',
             amt_paid: '0',
@@ -20192,7 +20913,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '160',
             settle_index: '0',
             amt_paid: '0',
@@ -20219,7 +20940,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '161',
             settle_index: '0',
             amt_paid: '0',
@@ -20246,7 +20967,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '162',
             settle_index: '0',
             amt_paid: '0',
@@ -20273,7 +20994,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '163',
             settle_index: '0',
             amt_paid: '0',
@@ -20300,7 +21021,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '164',
             settle_index: '0',
             amt_paid: '0',
@@ -20327,7 +21048,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '165',
             settle_index: '0',
             amt_paid: '0',
@@ -20354,7 +21075,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '166',
             settle_index: '0',
             amt_paid: '0',
@@ -20381,7 +21102,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '167',
             settle_index: '0',
             amt_paid: '0',
@@ -20408,7 +21129,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '168',
             settle_index: '0',
             amt_paid: '0',
@@ -20435,7 +21156,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '169',
             settle_index: '0',
             amt_paid: '0',
@@ -20462,7 +21183,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '170',
             settle_index: '0',
             amt_paid: '0',
@@ -20489,7 +21210,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '171',
             settle_index: '0',
             amt_paid: '0',
@@ -20516,7 +21237,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '172',
             settle_index: '0',
             amt_paid: '0',
@@ -20543,7 +21264,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '173',
             settle_index: '0',
             amt_paid: '0',
@@ -20570,7 +21291,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '174',
             settle_index: '0',
             amt_paid: '0',
@@ -20597,7 +21318,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '175',
             settle_index: '0',
             amt_paid: '0',
@@ -20624,7 +21345,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '176',
             settle_index: '0',
             amt_paid: '0',
@@ -20651,7 +21372,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '177',
             settle_index: '0',
             amt_paid: '0',
@@ -20678,7 +21399,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '178',
             settle_index: '0',
             amt_paid: '0',
@@ -20705,7 +21426,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '179',
             settle_index: '0',
             amt_paid: '0',
@@ -20732,7 +21453,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '180',
             settle_index: '0',
             amt_paid: '0',
@@ -20759,7 +21480,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '181',
             settle_index: '0',
             amt_paid: '0',
@@ -20786,7 +21507,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '182',
             settle_index: '0',
             amt_paid: '0',
@@ -20813,7 +21534,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '183',
             settle_index: '0',
             amt_paid: '0',
@@ -20840,7 +21561,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '184',
             settle_index: '0',
             amt_paid: '0',
@@ -20867,7 +21588,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '185',
             settle_index: '0',
             amt_paid: '0',
@@ -20894,7 +21615,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '186',
             settle_index: '0',
             amt_paid: '0',
@@ -20921,7 +21642,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '187',
             settle_index: '0',
             amt_paid: '0',
@@ -20948,7 +21669,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '188',
             settle_index: '0',
             amt_paid: '0',
@@ -20975,7 +21696,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '189',
             settle_index: '0',
             amt_paid: '0',
@@ -21002,7 +21723,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '190',
             settle_index: '0',
             amt_paid: '0',
@@ -21029,7 +21750,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '191',
             settle_index: '0',
             amt_paid: '0',
@@ -21056,7 +21777,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '192',
             settle_index: '0',
             amt_paid: '0',
@@ -21083,7 +21804,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '193',
             settle_index: '0',
             amt_paid: '0',
@@ -21110,7 +21831,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '194',
             settle_index: '0',
             amt_paid: '0',
@@ -21137,7 +21858,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '195',
             settle_index: '0',
             amt_paid: '0',
@@ -21164,7 +21885,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '196',
             settle_index: '0',
             amt_paid: '0',
@@ -21191,7 +21912,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '197',
             settle_index: '0',
             amt_paid: '0',
@@ -21218,7 +21939,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '198',
             settle_index: '0',
             amt_paid: '0',
@@ -21245,7 +21966,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '199',
             settle_index: '0',
             amt_paid: '0',
@@ -21272,7 +21993,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '200',
             settle_index: '0',
             amt_paid: '0',
@@ -21299,7 +22020,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '201',
             settle_index: '0',
             amt_paid: '0',
@@ -21326,7 +22047,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '202',
             settle_index: '0',
             amt_paid: '0',
@@ -21353,7 +22074,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '203',
             settle_index: '0',
             amt_paid: '0',
@@ -21380,7 +22101,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '204',
             settle_index: '0',
             amt_paid: '0',
@@ -21407,7 +22128,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '205',
             settle_index: '0',
             amt_paid: '0',
@@ -21434,7 +22155,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '206',
             settle_index: '0',
             amt_paid: '0',
@@ -21461,7 +22182,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '207',
             settle_index: '0',
             amt_paid: '0',
@@ -21488,7 +22209,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '208',
             settle_index: '0',
             amt_paid: '0',
@@ -21515,7 +22236,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '209',
             settle_index: '0',
             amt_paid: '0',
@@ -21542,7 +22263,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '210',
             settle_index: '0',
             amt_paid: '0',
@@ -21569,7 +22290,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '211',
             settle_index: '0',
             amt_paid: '0',
@@ -21596,7 +22317,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '212',
             settle_index: '0',
             amt_paid: '0',
@@ -21623,7 +22344,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '213',
             settle_index: '0',
             amt_paid: '0',
@@ -21650,7 +22371,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '214',
             settle_index: '0',
             amt_paid: '0',
@@ -21677,7 +22398,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '215',
             settle_index: '0',
             amt_paid: '0',
@@ -21704,7 +22425,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '216',
             settle_index: '0',
             amt_paid: '0',
@@ -21731,7 +22452,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '217',
             settle_index: '0',
             amt_paid: '0',
@@ -21758,7 +22479,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '218',
             settle_index: '0',
             amt_paid: '0',
@@ -21785,7 +22506,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '219',
             settle_index: '0',
             amt_paid: '0',
@@ -21812,7 +22533,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '220',
             settle_index: '0',
             amt_paid: '0',
@@ -21839,7 +22560,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '221',
             settle_index: '0',
             amt_paid: '0',
@@ -21866,7 +22587,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '222',
             settle_index: '0',
             amt_paid: '0',
@@ -21893,7 +22614,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '223',
             settle_index: '0',
             amt_paid: '0',
@@ -21920,7 +22641,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '224',
             settle_index: '0',
             amt_paid: '0',
@@ -21947,7 +22668,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '225',
             settle_index: '0',
             amt_paid: '0',
@@ -21974,7 +22695,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '226',
             settle_index: '0',
             amt_paid: '0',
@@ -22001,7 +22722,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '227',
             settle_index: '0',
             amt_paid: '0',
@@ -22028,7 +22749,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '228',
             settle_index: '0',
             amt_paid: '0',
@@ -22055,7 +22776,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '229',
             settle_index: '0',
             amt_paid: '0',
@@ -22082,7 +22803,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '230',
             settle_index: '0',
             amt_paid: '0',
@@ -22109,7 +22830,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '231',
             settle_index: '0',
             amt_paid: '0',
@@ -22136,7 +22857,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '232',
             settle_index: '0',
             amt_paid: '0',
@@ -22163,7 +22884,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '233',
             settle_index: '0',
             amt_paid: '0',
@@ -22190,7 +22911,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '234',
             settle_index: '0',
             amt_paid: '0',
@@ -22217,7 +22938,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '235',
             settle_index: '0',
             amt_paid: '0',
@@ -22244,7 +22965,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '236',
             settle_index: '0',
             amt_paid: '0',
@@ -22271,7 +22992,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '237',
             settle_index: '0',
             amt_paid: '0',
@@ -22298,7 +23019,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '238',
             settle_index: '0',
             amt_paid: '0',
@@ -22325,7 +23046,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '239',
             settle_index: '0',
             amt_paid: '0',
@@ -22352,7 +23073,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '240',
             settle_index: '0',
             amt_paid: '0',
@@ -22379,7 +23100,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '241',
             settle_index: '0',
             amt_paid: '0',
@@ -22406,7 +23127,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '242',
             settle_index: '0',
             amt_paid: '0',
@@ -22433,7 +23154,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '243',
             settle_index: '0',
             amt_paid: '0',
@@ -22460,7 +23181,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '244',
             settle_index: '0',
             amt_paid: '0',
@@ -22487,7 +23208,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '245',
             settle_index: '0',
             amt_paid: '0',
@@ -22514,7 +23235,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '246',
             settle_index: '0',
             amt_paid: '0',
@@ -22541,7 +23262,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '247',
             settle_index: '0',
             amt_paid: '0',
@@ -22568,7 +23289,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '248',
             settle_index: '0',
             amt_paid: '0',
@@ -22595,7 +23316,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '249',
             settle_index: '0',
             amt_paid: '0',
@@ -22622,7 +23343,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '250',
             settle_index: '0',
             amt_paid: '0',
@@ -22649,7 +23370,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '251',
             settle_index: '0',
             amt_paid: '0',
@@ -22676,7 +23397,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '252',
             settle_index: '0',
             amt_paid: '0',
@@ -22703,7 +23424,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '253',
             settle_index: '0',
             amt_paid: '0',
@@ -22730,7 +23451,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '254',
             settle_index: '0',
             amt_paid: '0',
@@ -22757,7 +23478,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '255',
             settle_index: '0',
             amt_paid: '0',
@@ -22784,7 +23505,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '256',
             settle_index: '0',
             amt_paid: '0',
@@ -22811,7 +23532,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '257',
             settle_index: '0',
             amt_paid: '0',
@@ -22838,7 +23559,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '258',
             settle_index: '0',
             amt_paid: '0',
@@ -22865,7 +23586,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '259',
             settle_index: '0',
             amt_paid: '0',
@@ -22892,7 +23613,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '260',
             settle_index: '0',
             amt_paid: '0',
@@ -22919,7 +23640,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '261',
             settle_index: '0',
             amt_paid: '0',
@@ -22946,7 +23667,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '262',
             settle_index: '0',
             amt_paid: '0',
@@ -22973,7 +23694,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '263',
             settle_index: '0',
             amt_paid: '0',
@@ -23000,7 +23721,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '264',
             settle_index: '0',
             amt_paid: '0',
@@ -23027,7 +23748,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '265',
             settle_index: '0',
             amt_paid: '0',
@@ -23054,7 +23775,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '266',
             settle_index: '0',
             amt_paid: '0',
@@ -23081,7 +23802,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '267',
             settle_index: '0',
             amt_paid: '0',
@@ -23108,7 +23829,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '268',
             settle_index: '0',
             amt_paid: '0',
@@ -23135,7 +23856,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '269',
             settle_index: '0',
             amt_paid: '0',
@@ -23162,7 +23883,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '270',
             settle_index: '0',
             amt_paid: '0',
@@ -23189,7 +23910,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '271',
             settle_index: '0',
             amt_paid: '0',
@@ -23216,7 +23937,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '272',
             settle_index: '0',
             amt_paid: '0',
@@ -23243,7 +23964,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '273',
             settle_index: '0',
             amt_paid: '0',
@@ -23270,7 +23991,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '274',
             settle_index: '0',
             amt_paid: '0',
@@ -23297,7 +24018,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '275',
             settle_index: '0',
             amt_paid: '0',
@@ -23324,7 +24045,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '276',
             settle_index: '0',
             amt_paid: '0',
@@ -23351,7 +24072,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '277',
             settle_index: '0',
             amt_paid: '0',
@@ -23378,7 +24099,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '278',
             settle_index: '0',
             amt_paid: '0',
@@ -23405,7 +24126,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '279',
             settle_index: '0',
             amt_paid: '0',
@@ -23432,7 +24153,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '280',
             settle_index: '0',
             amt_paid: '0',
@@ -23459,7 +24180,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '281',
             settle_index: '0',
             amt_paid: '0',
@@ -23486,7 +24207,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '282',
             settle_index: '0',
             amt_paid: '0',
@@ -23513,7 +24234,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '283',
             settle_index: '0',
             amt_paid: '0',
@@ -23540,7 +24261,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '284',
             settle_index: '0',
             amt_paid: '0',
@@ -23567,7 +24288,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '285',
             settle_index: '0',
             amt_paid: '0',
@@ -23594,7 +24315,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '286',
             settle_index: '0',
             amt_paid: '0',
@@ -23621,7 +24342,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '287',
             settle_index: '0',
             amt_paid: '0',
@@ -23648,7 +24369,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '288',
             settle_index: '0',
             amt_paid: '0',
@@ -23675,7 +24396,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '289',
             settle_index: '0',
             amt_paid: '0',
@@ -23702,7 +24423,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '290',
             settle_index: '0',
             amt_paid: '0',
@@ -23729,7 +24450,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '291',
             settle_index: '0',
             amt_paid: '0',
@@ -23756,7 +24477,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '292',
             settle_index: '0',
             amt_paid: '0',
@@ -23783,7 +24504,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '293',
             settle_index: '0',
             amt_paid: '0',
@@ -23810,7 +24531,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '294',
             settle_index: '0',
             amt_paid: '0',
@@ -23837,7 +24558,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '295',
             settle_index: '0',
             amt_paid: '0',
@@ -23864,7 +24585,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '296',
             settle_index: '0',
             amt_paid: '0',
@@ -23891,7 +24612,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '297',
             settle_index: '0',
             amt_paid: '0',
@@ -23918,7 +24639,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '298',
             settle_index: '0',
             amt_paid: '0',
@@ -23927,17 +24648,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -23961,7 +24682,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '299',
             settle_index: '0',
             amt_paid: '0',
@@ -23970,17 +24691,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24004,7 +24725,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '300',
             settle_index: '0',
             amt_paid: '0',
@@ -24013,17 +24734,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24047,7 +24768,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '301',
             settle_index: '0',
             amt_paid: '0',
@@ -24056,17 +24777,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24090,7 +24811,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '302',
             settle_index: '0',
             amt_paid: '0',
@@ -24099,17 +24820,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24133,7 +24854,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '303',
             settle_index: '0',
             amt_paid: '0',
@@ -24142,17 +24863,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24176,7 +24897,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '304',
             settle_index: '0',
             amt_paid: '0',
@@ -24185,17 +24906,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24219,7 +24940,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '305',
             settle_index: '0',
             amt_paid: '0',
@@ -24228,17 +24949,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24262,7 +24983,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '306',
             settle_index: '0',
             amt_paid: '0',
@@ -24271,17 +24992,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24305,7 +25026,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '307',
             settle_index: '0',
             amt_paid: '0',
@@ -24314,17 +25035,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24348,7 +25069,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '308',
             settle_index: '0',
             amt_paid: '0',
@@ -24357,17 +25078,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24391,7 +25112,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '309',
             settle_index: '0',
             amt_paid: '0',
@@ -24400,17 +25121,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24434,7 +25155,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '310',
             settle_index: '0',
             amt_paid: '0',
@@ -24443,17 +25164,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24477,7 +25198,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '311',
             settle_index: '0',
             amt_paid: '0',
@@ -24486,17 +25207,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24520,7 +25241,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '312',
             settle_index: '0',
             amt_paid: '0',
@@ -24529,17 +25250,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24563,7 +25284,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '313',
             settle_index: '0',
             amt_paid: '0',
@@ -24572,17 +25293,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24606,7 +25327,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '314',
             settle_index: '0',
             amt_paid: '0',
@@ -24615,17 +25336,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24649,7 +25370,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '315',
             settle_index: '0',
             amt_paid: '0',
@@ -24658,17 +25379,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24692,7 +25413,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '316',
             settle_index: '0',
             amt_paid: '0',
@@ -24701,17 +25422,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24735,7 +25456,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '317',
             settle_index: '0',
             amt_paid: '0',
@@ -24744,17 +25465,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24778,7 +25499,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '318',
             settle_index: '0',
             amt_paid: '0',
@@ -24787,17 +25508,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24821,7 +25542,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '319',
             settle_index: '0',
             amt_paid: '0',
@@ -24830,17 +25551,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24864,7 +25585,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '320',
             settle_index: '0',
             amt_paid: '0',
@@ -24873,17 +25594,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24907,7 +25628,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '321',
             settle_index: '0',
             amt_paid: '0',
@@ -24916,17 +25637,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24950,7 +25671,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '322',
             settle_index: '0',
             amt_paid: '0',
@@ -24959,17 +25680,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -24993,7 +25714,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '323',
             settle_index: '0',
             amt_paid: '0',
@@ -25002,17 +25723,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25036,7 +25757,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '324',
             settle_index: '0',
             amt_paid: '0',
@@ -25045,17 +25766,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25079,7 +25800,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '325',
             settle_index: '0',
             amt_paid: '0',
@@ -25088,17 +25809,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25122,7 +25843,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '326',
             settle_index: '0',
             amt_paid: '0',
@@ -25131,17 +25852,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25165,7 +25886,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '327',
             settle_index: '0',
             amt_paid: '0',
@@ -25174,17 +25895,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25208,7 +25929,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '328',
             settle_index: '0',
             amt_paid: '0',
@@ -25217,17 +25938,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25251,7 +25972,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '329',
             settle_index: '0',
             amt_paid: '0',
@@ -25260,17 +25981,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25294,7 +26015,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '330',
             settle_index: '0',
             amt_paid: '0',
@@ -25303,17 +26024,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25337,7 +26058,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '331',
             settle_index: '0',
             amt_paid: '0',
@@ -25346,17 +26067,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25380,7 +26101,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '332',
             settle_index: '0',
             amt_paid: '0',
@@ -25389,17 +26110,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25423,7 +26144,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '333',
             settle_index: '0',
             amt_paid: '0',
@@ -25432,17 +26153,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25466,7 +26187,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '334',
             settle_index: '0',
             amt_paid: '0',
@@ -25475,17 +26196,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25509,7 +26230,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '335',
             settle_index: '0',
             amt_paid: '0',
@@ -25518,17 +26239,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25552,7 +26273,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '336',
             settle_index: '0',
             amt_paid: '0',
@@ -25561,17 +26282,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25595,7 +26316,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '337',
             settle_index: '0',
             amt_paid: '0',
@@ -25604,17 +26325,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25638,7 +26359,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '338',
             settle_index: '0',
             amt_paid: '0',
@@ -25647,17 +26368,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25681,7 +26402,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '339',
             settle_index: '0',
             amt_paid: '0',
@@ -25690,17 +26411,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25724,7 +26445,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '340',
             settle_index: '0',
             amt_paid: '0',
@@ -25733,17 +26454,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25767,7 +26488,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '341',
             settle_index: '0',
             amt_paid: '0',
@@ -25776,17 +26497,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25810,7 +26531,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '342',
             settle_index: '0',
             amt_paid: '0',
@@ -25819,17 +26540,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25853,7 +26574,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '343',
             settle_index: '0',
             amt_paid: '0',
@@ -25862,17 +26583,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25896,7 +26617,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '344',
             settle_index: '0',
             amt_paid: '0',
@@ -25905,17 +26626,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25939,7 +26660,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '345',
             settle_index: '0',
             amt_paid: '0',
@@ -25948,17 +26669,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -25982,7 +26703,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '346',
             settle_index: '0',
             amt_paid: '0',
@@ -25991,17 +26712,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26025,7 +26746,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '347',
             settle_index: '0',
             amt_paid: '0',
@@ -26034,17 +26755,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26068,7 +26789,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '348',
             settle_index: '0',
             amt_paid: '0',
@@ -26077,17 +26798,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26111,7 +26832,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '349',
             settle_index: '0',
             amt_paid: '0',
@@ -26120,17 +26841,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26154,7 +26875,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '350',
             settle_index: '0',
             amt_paid: '0',
@@ -26163,17 +26884,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26197,7 +26918,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '351',
             settle_index: '0',
             amt_paid: '0',
@@ -26206,17 +26927,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26240,7 +26961,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '352',
             settle_index: '0',
             amt_paid: '0',
@@ -26249,17 +26970,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26283,7 +27004,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '353',
             settle_index: '0',
             amt_paid: '0',
@@ -26292,17 +27013,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26326,7 +27047,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '354',
             settle_index: '0',
             amt_paid: '0',
@@ -26335,17 +27056,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26369,7 +27090,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '355',
             settle_index: '0',
             amt_paid: '0',
@@ -26378,17 +27099,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26412,7 +27133,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '356',
             settle_index: '0',
             amt_paid: '0',
@@ -26421,17 +27142,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26455,7 +27176,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '357',
             settle_index: '0',
             amt_paid: '0',
@@ -26464,17 +27185,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26498,7 +27219,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '358',
             settle_index: '0',
             amt_paid: '0',
@@ -26507,17 +27228,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26541,7 +27262,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '359',
             settle_index: '0',
             amt_paid: '0',
@@ -26550,17 +27271,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26584,7 +27305,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '360',
             settle_index: '0',
             amt_paid: '0',
@@ -26593,17 +27314,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26627,7 +27348,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '361',
             settle_index: '0',
             amt_paid: '0',
@@ -26636,17 +27357,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26670,7 +27391,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '362',
             settle_index: '0',
             amt_paid: '0',
@@ -26679,17 +27400,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26713,7 +27434,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '363',
             settle_index: '0',
             amt_paid: '0',
@@ -26722,17 +27443,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26756,7 +27477,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '364',
             settle_index: '0',
             amt_paid: '0',
@@ -26765,17 +27486,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26799,7 +27520,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '365',
             settle_index: '0',
             amt_paid: '0',
@@ -26808,17 +27529,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26842,7 +27563,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '366',
             settle_index: '0',
             amt_paid: '0',
@@ -26851,17 +27572,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26885,7 +27606,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '367',
             settle_index: '0',
             amt_paid: '0',
@@ -26894,17 +27615,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26928,7 +27649,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '368',
             settle_index: '0',
             amt_paid: '0',
@@ -26937,17 +27658,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -26971,7 +27692,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '369',
             settle_index: '0',
             amt_paid: '0',
@@ -26980,17 +27701,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27014,7 +27735,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '370',
             settle_index: '0',
             amt_paid: '0',
@@ -27023,17 +27744,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27057,7 +27778,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '371',
             settle_index: '0',
             amt_paid: '0',
@@ -27066,17 +27787,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27100,7 +27821,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '372',
             settle_index: '0',
             amt_paid: '0',
@@ -27109,17 +27830,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27143,7 +27864,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '373',
             settle_index: '0',
             amt_paid: '0',
@@ -27152,17 +27873,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27186,7 +27907,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '374',
             settle_index: '0',
             amt_paid: '0',
@@ -27195,17 +27916,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27229,7 +27950,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '375',
             settle_index: '0',
             amt_paid: '0',
@@ -27238,17 +27959,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27272,7 +27993,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '376',
             settle_index: '0',
             amt_paid: '0',
@@ -27281,17 +28002,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27315,7 +28036,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '377',
             settle_index: '0',
             amt_paid: '0',
@@ -27324,17 +28045,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27358,7 +28079,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '378',
             settle_index: '0',
             amt_paid: '0',
@@ -27367,17 +28088,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27401,7 +28122,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '379',
             settle_index: '0',
             amt_paid: '0',
@@ -27410,17 +28131,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27444,7 +28165,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '380',
             settle_index: '0',
             amt_paid: '0',
@@ -27453,17 +28174,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27487,7 +28208,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '381',
             settle_index: '0',
             amt_paid: '0',
@@ -27496,17 +28217,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27530,7 +28251,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '382',
             settle_index: '0',
             amt_paid: '0',
@@ -27539,17 +28260,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27573,7 +28294,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '383',
             settle_index: '0',
             amt_paid: '0',
@@ -27582,17 +28303,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27616,7 +28337,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '384',
             settle_index: '0',
             amt_paid: '0',
@@ -27625,17 +28346,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27659,7 +28380,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '385',
             settle_index: '0',
             amt_paid: '0',
@@ -27668,17 +28389,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27702,7 +28423,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '386',
             settle_index: '0',
             amt_paid: '0',
@@ -27711,17 +28432,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27745,7 +28466,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '387',
             settle_index: '0',
             amt_paid: '0',
@@ -27754,17 +28475,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27788,7 +28509,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '388',
             settle_index: '0',
             amt_paid: '0',
@@ -27797,17 +28518,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27831,7 +28552,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '389',
             settle_index: '0',
             amt_paid: '0',
@@ -27840,17 +28561,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27874,7 +28595,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '390',
             settle_index: '0',
             amt_paid: '0',
@@ -27883,17 +28604,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27917,7 +28638,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '391',
             settle_index: '0',
             amt_paid: '0',
@@ -27926,17 +28647,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -27960,7 +28681,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '392',
             settle_index: '0',
             amt_paid: '0',
@@ -27969,17 +28690,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28003,7 +28724,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '393',
             settle_index: '0',
             amt_paid: '0',
@@ -28012,17 +28733,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28046,7 +28767,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '394',
             settle_index: '0',
             amt_paid: '0',
@@ -28055,17 +28776,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28089,7 +28810,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '395',
             settle_index: '0',
             amt_paid: '0',
@@ -28098,17 +28819,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28132,7 +28853,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '396',
             settle_index: '0',
             amt_paid: '0',
@@ -28141,17 +28862,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28175,7 +28896,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '397',
             settle_index: '0',
             amt_paid: '0',
@@ -28184,17 +28905,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28218,7 +28939,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '398',
             settle_index: '0',
             amt_paid: '0',
@@ -28227,17 +28948,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28261,7 +28982,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '399',
             settle_index: '0',
             amt_paid: '0',
@@ -28270,17 +28991,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28304,7 +29025,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '400',
             settle_index: '0',
             amt_paid: '0',
@@ -28313,17 +29034,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28347,7 +29068,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '401',
             settle_index: '0',
             amt_paid: '0',
@@ -28356,17 +29077,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28390,7 +29111,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '402',
             settle_index: '0',
             amt_paid: '0',
@@ -28399,17 +29120,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28433,7 +29154,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '403',
             settle_index: '0',
             amt_paid: '0',
@@ -28442,17 +29163,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28476,7 +29197,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '404',
             settle_index: '0',
             amt_paid: '0',
@@ -28485,17 +29206,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28519,7 +29240,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '405',
             settle_index: '0',
             amt_paid: '0',
@@ -28528,17 +29249,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28562,7 +29283,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '406',
             settle_index: '0',
             amt_paid: '0',
@@ -28571,17 +29292,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28605,7 +29326,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '407',
             settle_index: '0',
             amt_paid: '0',
@@ -28614,17 +29335,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28648,7 +29369,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '408',
             settle_index: '0',
             amt_paid: '0',
@@ -28657,17 +29378,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28691,7 +29412,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '409',
             settle_index: '0',
             amt_paid: '0',
@@ -28700,17 +29421,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28734,7 +29455,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '410',
             settle_index: '0',
             amt_paid: '0',
@@ -28743,17 +29464,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28777,7 +29498,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '411',
             settle_index: '0',
             amt_paid: '0',
@@ -28786,17 +29507,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28820,7 +29541,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '412',
             settle_index: '0',
             amt_paid: '0',
@@ -28829,17 +29550,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28863,7 +29584,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '413',
             settle_index: '0',
             amt_paid: '0',
@@ -28872,17 +29593,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28906,7 +29627,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '414',
             settle_index: '0',
             amt_paid: '0',
@@ -28915,17 +29636,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28949,7 +29670,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '415',
             settle_index: '0',
             amt_paid: '0',
@@ -28958,17 +29679,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -28992,7 +29713,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '416',
             settle_index: '0',
             amt_paid: '0',
@@ -29001,17 +29722,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29035,7 +29756,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '417',
             settle_index: '0',
             amt_paid: '0',
@@ -29044,17 +29765,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29078,7 +29799,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '418',
             settle_index: '0',
             amt_paid: '0',
@@ -29087,17 +29808,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29121,7 +29842,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '419',
             settle_index: '0',
             amt_paid: '0',
@@ -29130,17 +29851,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29164,7 +29885,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '420',
             settle_index: '0',
             amt_paid: '0',
@@ -29173,17 +29894,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29207,7 +29928,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '421',
             settle_index: '0',
             amt_paid: '0',
@@ -29216,17 +29937,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29250,7 +29971,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '422',
             settle_index: '0',
             amt_paid: '0',
@@ -29259,17 +29980,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29293,7 +30014,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '423',
             settle_index: '0',
             amt_paid: '0',
@@ -29302,17 +30023,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29336,7 +30057,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '424',
             settle_index: '0',
             amt_paid: '0',
@@ -29345,17 +30066,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29379,7 +30100,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '425',
             settle_index: '0',
             amt_paid: '0',
@@ -29388,17 +30109,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29422,7 +30143,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '426',
             settle_index: '0',
             amt_paid: '0',
@@ -29431,17 +30152,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29465,7 +30186,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '427',
             settle_index: '0',
             amt_paid: '0',
@@ -29474,17 +30195,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29508,7 +30229,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '428',
             settle_index: '0',
             amt_paid: '0',
@@ -29517,17 +30238,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29551,7 +30272,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '429',
             settle_index: '0',
             amt_paid: '0',
@@ -29560,17 +30281,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29594,7 +30315,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '430',
             settle_index: '0',
             amt_paid: '0',
@@ -29603,17 +30324,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29637,7 +30358,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '431',
             settle_index: '0',
             amt_paid: '0',
@@ -29646,17 +30367,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29680,7 +30401,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '432',
             settle_index: '0',
             amt_paid: '0',
@@ -29689,17 +30410,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29723,7 +30444,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '433',
             settle_index: '0',
             amt_paid: '0',
@@ -29732,17 +30453,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29766,7 +30487,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '434',
             settle_index: '0',
             amt_paid: '0',
@@ -29775,17 +30496,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29809,7 +30530,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '435',
             settle_index: '0',
             amt_paid: '0',
@@ -29818,17 +30539,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29852,7 +30573,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '436',
             settle_index: '0',
             amt_paid: '0',
@@ -29861,17 +30582,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29895,7 +30616,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '437',
             settle_index: '0',
             amt_paid: '0',
@@ -29904,17 +30625,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29938,7 +30659,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '438',
             settle_index: '0',
             amt_paid: '0',
@@ -29947,17 +30668,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -29981,7 +30702,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '439',
             settle_index: '0',
             amt_paid: '0',
@@ -29990,17 +30711,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30024,7 +30745,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '440',
             settle_index: '0',
             amt_paid: '0',
@@ -30033,17 +30754,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30067,7 +30788,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '441',
             settle_index: '0',
             amt_paid: '0',
@@ -30076,17 +30797,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30110,7 +30831,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '442',
             settle_index: '0',
             amt_paid: '0',
@@ -30119,17 +30840,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30153,7 +30874,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '443',
             settle_index: '0',
             amt_paid: '0',
@@ -30162,17 +30883,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30196,7 +30917,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '444',
             settle_index: '0',
             amt_paid: '0',
@@ -30205,17 +30926,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30239,7 +30960,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '445',
             settle_index: '0',
             amt_paid: '0',
@@ -30248,17 +30969,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30282,7 +31003,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '446',
             settle_index: '0',
             amt_paid: '0',
@@ -30291,17 +31012,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30325,7 +31046,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '447',
             settle_index: '0',
             amt_paid: '0',
@@ -30334,17 +31055,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30368,7 +31089,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '448',
             settle_index: '0',
             amt_paid: '0',
@@ -30377,17 +31098,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30411,7 +31132,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '449',
             settle_index: '0',
             amt_paid: '0',
@@ -30420,17 +31141,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30454,7 +31175,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '450',
             settle_index: '0',
             amt_paid: '0',
@@ -30463,17 +31184,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30497,7 +31218,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '451',
             settle_index: '0',
             amt_paid: '0',
@@ -30506,17 +31227,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30540,7 +31261,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '452',
             settle_index: '0',
             amt_paid: '0',
@@ -30549,17 +31270,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30583,7 +31304,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '453',
             settle_index: '0',
             amt_paid: '0',
@@ -30592,17 +31313,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30626,7 +31347,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '454',
             settle_index: '0',
             amt_paid: '0',
@@ -30635,17 +31356,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30669,7 +31390,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '455',
             settle_index: '0',
             amt_paid: '0',
@@ -30678,17 +31399,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30712,7 +31433,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '456',
             settle_index: '0',
             amt_paid: '0',
@@ -30721,17 +31442,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30755,7 +31476,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '457',
             settle_index: '0',
             amt_paid: '0',
@@ -30764,17 +31485,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30798,7 +31519,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '458',
             settle_index: '0',
             amt_paid: '0',
@@ -30807,17 +31528,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30841,7 +31562,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '459',
             settle_index: '0',
             amt_paid: '0',
@@ -30850,17 +31571,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30884,7 +31605,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '460',
             settle_index: '0',
             amt_paid: '0',
@@ -30893,17 +31614,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30927,7 +31648,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '461',
             settle_index: '0',
             amt_paid: '0',
@@ -30936,17 +31657,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -30970,7 +31691,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '462',
             settle_index: '0',
             amt_paid: '0',
@@ -30979,17 +31700,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31013,7 +31734,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '463',
             settle_index: '0',
             amt_paid: '0',
@@ -31022,17 +31743,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31056,7 +31777,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '464',
             settle_index: '0',
             amt_paid: '0',
@@ -31065,17 +31786,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31099,7 +31820,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '465',
             settle_index: '0',
             amt_paid: '0',
@@ -31108,17 +31829,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31142,7 +31863,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '466',
             settle_index: '0',
             amt_paid: '0',
@@ -31151,17 +31872,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31185,7 +31906,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '467',
             settle_index: '0',
             amt_paid: '0',
@@ -31194,17 +31915,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31228,7 +31949,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '468',
             settle_index: '0',
             amt_paid: '0',
@@ -31237,17 +31958,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31271,7 +31992,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '469',
             settle_index: '0',
             amt_paid: '0',
@@ -31280,17 +32001,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31314,7 +32035,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '470',
             settle_index: '0',
             amt_paid: '0',
@@ -31323,17 +32044,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31357,7 +32078,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '471',
             settle_index: '0',
             amt_paid: '0',
@@ -31366,17 +32087,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31400,7 +32121,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '472',
             settle_index: '0',
             amt_paid: '0',
@@ -31409,17 +32130,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31443,7 +32164,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '473',
             settle_index: '0',
             amt_paid: '0',
@@ -31452,17 +32173,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31486,7 +32207,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '474',
             settle_index: '0',
             amt_paid: '0',
@@ -31495,17 +32216,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31529,7 +32250,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '475',
             settle_index: '0',
             amt_paid: '0',
@@ -31538,17 +32259,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31572,7 +32293,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '476',
             settle_index: '0',
             amt_paid: '0',
@@ -31581,17 +32302,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31615,7 +32336,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '477',
             settle_index: '0',
             amt_paid: '0',
@@ -31624,17 +32345,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31658,7 +32379,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '478',
             settle_index: '0',
             amt_paid: '0',
@@ -31667,17 +32388,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31701,7 +32422,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '479',
             settle_index: '0',
             amt_paid: '0',
@@ -31710,17 +32431,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31744,7 +32465,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '480',
             settle_index: '0',
             amt_paid: '0',
@@ -31753,17 +32474,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31787,7 +32508,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '481',
             settle_index: '0',
             amt_paid: '0',
@@ -31796,17 +32517,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31830,7 +32551,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '482',
             settle_index: '0',
             amt_paid: '0',
@@ -31839,17 +32560,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31873,7 +32594,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '483',
             settle_index: '0',
             amt_paid: '0',
@@ -31882,17 +32603,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31916,7 +32637,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '484',
             settle_index: '0',
             amt_paid: '0',
@@ -31925,17 +32646,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -31959,7 +32680,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '485',
             settle_index: '0',
             amt_paid: '0',
@@ -31968,17 +32689,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32002,7 +32723,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '486',
             settle_index: '0',
             amt_paid: '0',
@@ -32011,17 +32732,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32045,7 +32766,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '487',
             settle_index: '0',
             amt_paid: '0',
@@ -32054,17 +32775,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32088,7 +32809,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '488',
             settle_index: '0',
             amt_paid: '0',
@@ -32097,17 +32818,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32131,7 +32852,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '489',
             settle_index: '0',
             amt_paid: '0',
@@ -32140,17 +32861,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32174,7 +32895,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '490',
             settle_index: '0',
             amt_paid: '0',
@@ -32183,17 +32904,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32217,7 +32938,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '491',
             settle_index: '0',
             amt_paid: '0',
@@ -32226,17 +32947,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32260,7 +32981,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '492',
             settle_index: '0',
             amt_paid: '0',
@@ -32269,17 +32990,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32303,7 +33024,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '493',
             settle_index: '0',
             amt_paid: '0',
@@ -32312,17 +33033,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32346,7 +33067,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '494',
             settle_index: '0',
             amt_paid: '0',
@@ -32355,17 +33076,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32389,7 +33110,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '495',
             settle_index: '0',
             amt_paid: '0',
@@ -32398,17 +33119,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32432,7 +33153,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '496',
             settle_index: '0',
             amt_paid: '0',
@@ -32441,17 +33162,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32475,7 +33196,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '497',
             settle_index: '0',
             amt_paid: '0',
@@ -32484,17 +33205,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32518,7 +33239,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '498',
             settle_index: '0',
             amt_paid: '0',
@@ -32527,17 +33248,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32561,7 +33282,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '499',
             settle_index: '0',
             amt_paid: '0',
@@ -32570,17 +33291,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32604,7 +33325,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '500',
             settle_index: '0',
             amt_paid: '0',
@@ -32613,17 +33334,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32647,7 +33368,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '501',
             settle_index: '0',
             amt_paid: '0',
@@ -32656,17 +33377,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32690,7 +33411,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '502',
             settle_index: '0',
             amt_paid: '0',
@@ -32699,17 +33420,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32733,7 +33454,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '503',
             settle_index: '0',
             amt_paid: '0',
@@ -32742,17 +33463,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32776,7 +33497,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '504',
             settle_index: '0',
             amt_paid: '0',
@@ -32785,17 +33506,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32819,7 +33540,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '505',
             settle_index: '0',
             amt_paid: '0',
@@ -32828,17 +33549,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32862,7 +33583,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '506',
             settle_index: '0',
             amt_paid: '0',
@@ -32871,17 +33592,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32905,7 +33626,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '507',
             settle_index: '1',
             amt_paid: '500000',
@@ -32927,17 +33648,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -32961,7 +33682,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '508',
             settle_index: '2',
             amt_paid: '100000',
@@ -32983,17 +33704,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -33017,7 +33738,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '509',
             settle_index: '0',
             amt_paid: '0',
@@ -33026,17 +33747,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -33060,7 +33781,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '510',
             settle_index: '0',
             amt_paid: '0',
@@ -33069,17 +33790,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -33103,7 +33824,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '511',
             settle_index: '0',
             amt_paid: '0',
@@ -33112,17 +33833,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -33146,7 +33867,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '512',
             settle_index: '0',
             amt_paid: '0',
@@ -33155,17 +33876,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -33189,7 +33910,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '513',
             settle_index: '0',
             amt_paid: '0',
@@ -33198,17 +33919,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -33232,7 +33953,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '514',
             settle_index: '3',
             amt_paid: '1000000',
@@ -33254,17 +33975,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -33288,7 +34009,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '515',
             settle_index: '0',
             amt_paid: '0',
@@ -33297,17 +34018,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -33331,7 +34052,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '516',
             settle_index: '0',
             amt_paid: '0',
@@ -33340,17 +34061,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -33374,7 +34095,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '517',
             settle_index: '4',
             amt_paid: '1100000',
@@ -33396,17 +34117,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -33430,7 +34151,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '518',
             settle_index: '0',
             amt_paid: '0',
@@ -33439,17 +34160,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -33473,7 +34194,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '519',
             settle_index: '5',
             amt_paid: '2000000',
@@ -33495,17 +34216,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -33529,7 +34250,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '520',
             settle_index: '6',
             amt_paid: '4000000',
@@ -33551,17 +34272,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -33585,7 +34306,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '521',
             settle_index: '0',
             amt_paid: '0',
@@ -33594,17 +34315,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -33628,7 +34349,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '522',
             settle_index: '7',
             amt_paid: '8000000',
@@ -33650,17 +34371,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -33684,7 +34405,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '523',
             settle_index: '0',
             amt_paid: '0',
@@ -33693,17 +34414,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -33727,7 +34448,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '524',
             settle_index: '0',
             amt_paid: '0',
@@ -33736,17 +34457,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -33770,7 +34491,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '525',
             settle_index: '0',
             amt_paid: '0',
@@ -33779,17 +34500,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -33813,7 +34534,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '526',
             settle_index: '0',
             amt_paid: '0',
@@ -33822,17 +34543,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -33856,7 +34577,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '527',
             settle_index: '0',
             amt_paid: '0',
@@ -33865,17 +34586,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -33899,7 +34620,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '528',
             settle_index: '0',
             amt_paid: '0',
@@ -33908,17 +34629,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -33942,7 +34663,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '529',
             settle_index: '0',
             amt_paid: '0',
@@ -33951,17 +34672,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -33985,7 +34706,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '530',
             settle_index: '0',
             amt_paid: '0',
@@ -33994,17 +34715,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34028,7 +34749,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '531',
             settle_index: '0',
             amt_paid: '0',
@@ -34037,17 +34758,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34071,7 +34792,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '532',
             settle_index: '0',
             amt_paid: '0',
@@ -34080,17 +34801,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34114,7 +34835,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '533',
             settle_index: '0',
             amt_paid: '0',
@@ -34123,17 +34844,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34157,7 +34878,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '534',
             settle_index: '0',
             amt_paid: '0',
@@ -34166,17 +34887,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34200,7 +34921,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '535',
             settle_index: '0',
             amt_paid: '0',
@@ -34209,17 +34930,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34243,7 +34964,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '536',
             settle_index: '0',
             amt_paid: '0',
@@ -34252,17 +34973,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34286,7 +35007,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '537',
             settle_index: '0',
             amt_paid: '0',
@@ -34295,17 +35016,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34329,7 +35050,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '538',
             settle_index: '0',
             amt_paid: '0',
@@ -34338,17 +35059,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34372,7 +35093,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '539',
             settle_index: '0',
             amt_paid: '0',
@@ -34381,17 +35102,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34415,7 +35136,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '540',
             settle_index: '0',
             amt_paid: '0',
@@ -34424,17 +35145,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34458,7 +35179,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '541',
             settle_index: '0',
             amt_paid: '0',
@@ -34467,17 +35188,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34501,7 +35222,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '542',
             settle_index: '0',
             amt_paid: '0',
@@ -34510,17 +35231,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34544,7 +35265,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '543',
             settle_index: '0',
             amt_paid: '0',
@@ -34553,17 +35274,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34587,7 +35308,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '544',
             settle_index: '0',
             amt_paid: '0',
@@ -34596,17 +35317,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34630,7 +35351,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '545',
             settle_index: '0',
             amt_paid: '0',
@@ -34639,17 +35360,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34673,7 +35394,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '546',
             settle_index: '0',
             amt_paid: '0',
@@ -34682,17 +35403,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34716,7 +35437,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '547',
             settle_index: '0',
             amt_paid: '0',
@@ -34725,17 +35446,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34759,7 +35480,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '548',
             settle_index: '0',
             amt_paid: '0',
@@ -34768,17 +35489,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34802,7 +35523,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '549',
             settle_index: '0',
             amt_paid: '0',
@@ -34811,17 +35532,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34845,7 +35566,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '550',
             settle_index: '0',
             amt_paid: '0',
@@ -34854,17 +35575,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34888,7 +35609,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '551',
             settle_index: '0',
             amt_paid: '0',
@@ -34897,17 +35618,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34931,7 +35652,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '552',
             settle_index: '0',
             amt_paid: '0',
@@ -34940,17 +35661,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -34974,7 +35695,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '553',
             settle_index: '0',
             amt_paid: '0',
@@ -34983,17 +35704,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -35017,7 +35738,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '554',
             settle_index: '0',
             amt_paid: '0',
@@ -35026,17 +35747,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -35060,7 +35781,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '555',
             settle_index: '0',
             amt_paid: '0',
@@ -35069,17 +35790,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -35103,7 +35824,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '556',
             settle_index: '0',
             amt_paid: '0',
@@ -35112,17 +35833,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -35146,7 +35867,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '557',
             settle_index: '0',
             amt_paid: '0',
@@ -35155,17 +35876,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -35189,7 +35910,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '558',
             settle_index: '0',
             amt_paid: '0',
@@ -35198,17 +35919,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -35232,7 +35953,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '559',
             settle_index: '0',
             amt_paid: '0',
@@ -35241,17 +35962,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -35275,7 +35996,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '560',
             settle_index: '0',
             amt_paid: '0',
@@ -35284,17 +36005,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -35318,7 +36039,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '561',
             settle_index: '0',
             amt_paid: '0',
@@ -35327,17 +36048,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -35361,7 +36082,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '562',
             settle_index: '0',
             amt_paid: '0',
@@ -35370,17 +36091,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -35404,7 +36125,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '563',
             settle_index: '0',
             amt_paid: '0',
@@ -35413,17 +36134,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -35447,7 +36168,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '564',
             settle_index: '0',
             amt_paid: '0',
@@ -35456,17 +36177,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -35490,7 +36211,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '565',
             settle_index: '0',
             amt_paid: '0',
@@ -35499,17 +36220,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -35533,7 +36254,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '566',
             settle_index: '0',
             amt_paid: '0',
@@ -35542,17 +36263,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -35576,7 +36297,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '567',
             settle_index: '0',
             amt_paid: '0',
@@ -35585,17 +36306,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -35619,7 +36340,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '568',
             settle_index: '8',
             amt_paid: '120000',
@@ -35641,17 +36362,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -35675,7 +36396,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '569',
             settle_index: '9',
             amt_paid: '500000',
@@ -35697,17 +36418,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -35731,7 +36452,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '570',
             settle_index: '0',
             amt_paid: '0',
@@ -35740,17 +36461,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -35774,7 +36495,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '571',
             settle_index: '10',
             amt_paid: '120000',
@@ -35796,17 +36517,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -35830,7 +36551,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '572',
             settle_index: '0',
             amt_paid: '0',
@@ -35839,17 +36560,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -35873,7 +36594,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '573',
             settle_index: '0',
             amt_paid: '0',
@@ -35882,17 +36603,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -35916,7 +36637,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '574',
             settle_index: '11',
             amt_paid: '120000',
@@ -35938,17 +36659,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -35972,7 +36693,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '575',
             settle_index: '12',
             amt_paid: '201000',
@@ -35994,17 +36715,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -36028,7 +36749,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '576',
             settle_index: '0',
             amt_paid: '0',
@@ -36037,17 +36758,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -36071,7 +36792,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '577',
             settle_index: '13',
             amt_paid: '500000',
@@ -36093,17 +36814,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -36127,7 +36848,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '578',
             settle_index: '0',
             amt_paid: '0',
@@ -36136,17 +36857,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -36170,7 +36891,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '579',
             settle_index: '0',
             amt_paid: '0',
@@ -36179,17 +36900,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -36213,7 +36934,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '580',
             settle_index: '14',
             amt_paid: '200000',
@@ -36235,17 +36956,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -36269,7 +36990,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '581',
             settle_index: '0',
             amt_paid: '0',
@@ -36278,17 +36999,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -36312,7 +37033,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '582',
             settle_index: '15',
             amt_paid: '1000',
@@ -36334,17 +37055,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -36368,7 +37089,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '583',
             settle_index: '0',
             amt_paid: '0',
@@ -36377,17 +37098,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -36411,7 +37132,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '584',
             settle_index: '16',
             amt_paid: '5000000',
@@ -36433,17 +37154,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -36467,7 +37188,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '585',
             settle_index: '17',
             amt_paid: '5000000',
@@ -36489,17 +37210,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -36523,7 +37244,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '586',
             settle_index: '0',
             amt_paid: '0',
@@ -36532,17 +37253,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -36566,7 +37287,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '587',
             settle_index: '18',
             amt_paid: '5000000',
@@ -36588,17 +37309,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -36622,7 +37343,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '588',
             settle_index: '0',
             amt_paid: '0',
@@ -36631,17 +37352,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -36665,7 +37386,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '589',
             settle_index: '0',
             amt_paid: '0',
@@ -36674,17 +37395,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -36708,7 +37429,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '590',
             settle_index: '19',
             amt_paid: '200000',
@@ -36730,17 +37451,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -36764,7 +37485,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '591',
             settle_index: '0',
             amt_paid: '0',
@@ -36773,17 +37494,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -36807,7 +37528,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '592',
             settle_index: '20',
             amt_paid: '2000000',
@@ -36829,17 +37550,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -36863,7 +37584,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '593',
             settle_index: '0',
             amt_paid: '0',
@@ -36872,17 +37593,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -36906,7 +37627,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '594',
             settle_index: '0',
             amt_paid: '0',
@@ -36915,17 +37636,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -36949,7 +37670,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '595',
             settle_index: '21',
             amt_paid: '5000000',
@@ -36971,17 +37692,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -37005,7 +37726,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '596',
             settle_index: '0',
             amt_paid: '0',
@@ -37014,17 +37735,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -37048,7 +37769,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '597',
             settle_index: '0',
             amt_paid: '0',
@@ -37057,17 +37778,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -37091,7 +37812,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '598',
             settle_index: '0',
             amt_paid: '0',
@@ -37100,17 +37821,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -37134,7 +37855,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '599',
             settle_index: '22',
             amt_paid: '5000000',
@@ -37156,17 +37877,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -37190,7 +37911,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '600',
             settle_index: '0',
             amt_paid: '0',
@@ -37199,17 +37920,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -37233,7 +37954,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '601',
             settle_index: '0',
             amt_paid: '0',
@@ -37242,17 +37963,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -37276,7 +37997,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '602',
             settle_index: '23',
             amt_paid: '2000000',
@@ -37298,17 +38019,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -37332,7 +38053,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '603',
             settle_index: '24',
             amt_paid: '2000000',
@@ -37354,17 +38075,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -37388,7 +38109,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '604',
             settle_index: '0',
             amt_paid: '0',
@@ -37397,17 +38118,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -37431,7 +38152,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '605',
             settle_index: '0',
             amt_paid: '0',
@@ -37440,17 +38161,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -37474,7 +38195,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '606',
             settle_index: '25',
             amt_paid: '1000000',
@@ -37496,17 +38217,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -37530,7 +38251,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '607',
             settle_index: '0',
             amt_paid: '0',
@@ -37539,17 +38260,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -37573,7 +38294,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '608',
             settle_index: '26',
             amt_paid: '120000',
@@ -37595,17 +38316,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -37629,7 +38350,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '609',
             settle_index: '0',
             amt_paid: '0',
@@ -37638,17 +38359,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -37672,7 +38393,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '610',
             settle_index: '0',
             amt_paid: '0',
@@ -37681,17 +38402,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -37715,7 +38436,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '611',
             settle_index: '27',
             amt_paid: '5000000',
@@ -37737,17 +38458,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -37771,7 +38492,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '612',
             settle_index: '0',
             amt_paid: '0',
@@ -37780,17 +38501,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -37814,7 +38535,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '613',
             settle_index: '0',
             amt_paid: '0',
@@ -37823,17 +38544,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -37857,7 +38578,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '614',
             settle_index: '28',
             amt_paid: '5000000',
@@ -37879,17 +38600,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -37913,7 +38634,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '615',
             settle_index: '0',
             amt_paid: '0',
@@ -37922,17 +38643,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -37956,7 +38677,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '616',
             settle_index: '29',
             amt_paid: '10000000',
@@ -37978,17 +38699,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -38012,7 +38733,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '617',
             settle_index: '30',
             amt_paid: '10000000',
@@ -38034,17 +38755,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -38068,7 +38789,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '618',
             settle_index: '0',
             amt_paid: '0',
@@ -38077,17 +38798,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -38111,7 +38832,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '619',
             settle_index: '0',
             amt_paid: '0',
@@ -38120,17 +38841,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -38154,7 +38875,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '620',
             settle_index: '0',
             amt_paid: '0',
@@ -38163,17 +38884,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -38197,7 +38918,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '621',
             settle_index: '0',
             amt_paid: '0',
@@ -38206,17 +38927,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -38240,7 +38961,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '622',
             settle_index: '0',
             amt_paid: '0',
@@ -38249,17 +38970,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -38283,7 +39004,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '623',
             settle_index: '0',
             amt_paid: '0',
@@ -38292,17 +39013,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -38326,7 +39047,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '624',
             settle_index: '0',
             amt_paid: '0',
@@ -38335,17 +39056,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -38369,7 +39090,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '625',
             settle_index: '0',
             amt_paid: '0',
@@ -38378,17 +39099,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -38412,7 +39133,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '626',
             settle_index: '0',
             amt_paid: '0',
@@ -38421,17 +39142,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -38455,7 +39176,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '627',
             settle_index: '0',
             amt_paid: '0',
@@ -38464,17 +39185,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -38498,7 +39219,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '628',
             settle_index: '0',
             amt_paid: '0',
@@ -38507,17 +39228,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -38541,7 +39262,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '629',
             settle_index: '31',
             amt_paid: '12000000',
@@ -38563,17 +39284,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -38597,7 +39318,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '630',
             settle_index: '0',
             amt_paid: '0',
@@ -38606,17 +39327,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -38640,7 +39361,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '631',
             settle_index: '0',
             amt_paid: '0',
@@ -38649,17 +39370,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -38683,7 +39404,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '632',
             settle_index: '0',
             amt_paid: '0',
@@ -38692,17 +39413,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -38726,7 +39447,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '633',
             settle_index: '0',
             amt_paid: '0',
@@ -38735,17 +39456,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -38769,7 +39490,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '634',
             settle_index: '0',
             amt_paid: '0',
@@ -38778,17 +39499,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -38812,7 +39533,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '635',
             settle_index: '0',
             amt_paid: '0',
@@ -38821,17 +39542,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -38855,7 +39576,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '636',
             settle_index: '33',
             amt_paid: '6000000',
@@ -38877,17 +39598,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -38911,7 +39632,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '637',
             settle_index: '32',
             amt_paid: '6000000',
@@ -38933,17 +39654,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -38967,7 +39688,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '638',
             settle_index: '34',
             amt_paid: '5000000',
@@ -38989,17 +39710,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -39023,7 +39744,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '639',
             settle_index: '35',
             amt_paid: '5000000',
@@ -39045,17 +39766,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -39079,7 +39800,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '640',
             settle_index: '0',
             amt_paid: '0',
@@ -39088,17 +39809,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -39122,7 +39843,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '641',
             settle_index: '36',
             amt_paid: '2500000',
@@ -39144,17 +39865,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -39178,7 +39899,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '642',
             settle_index: '0',
             amt_paid: '0',
@@ -39187,17 +39908,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -39221,7 +39942,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '643',
             settle_index: '0',
             amt_paid: '0',
@@ -39230,17 +39951,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -39264,7 +39985,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '644',
             settle_index: '0',
             amt_paid: '0',
@@ -39273,17 +39994,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -39307,7 +40028,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '645',
             settle_index: '0',
             amt_paid: '0',
@@ -39316,17 +40037,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -39350,7 +40071,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '646',
             settle_index: '37',
             amt_paid: '100000000',
@@ -39372,17 +40093,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -39406,7 +40127,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '647',
             settle_index: '38',
             amt_paid: '100000000',
@@ -39428,17 +40149,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -39462,7 +40183,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '648',
             settle_index: '0',
             amt_paid: '0',
@@ -39471,17 +40192,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -39505,7 +40226,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '649',
             settle_index: '39',
             amt_paid: '50000000',
@@ -39527,17 +40248,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -39561,7 +40282,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '650',
             settle_index: '40',
             amt_paid: '5000000',
@@ -39583,17 +40304,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -39617,7 +40338,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '651',
             settle_index: '0',
             amt_paid: '0',
@@ -39626,17 +40347,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -39660,7 +40381,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '652',
             settle_index: '0',
             amt_paid: '0',
@@ -39669,17 +40390,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -39703,7 +40424,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '653',
             settle_index: '0',
             amt_paid: '0',
@@ -39712,17 +40433,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -39746,7 +40467,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '654',
             settle_index: '0',
             amt_paid: '0',
@@ -39755,17 +40476,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -39789,7 +40510,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '655',
             settle_index: '0',
             amt_paid: '0',
@@ -39798,17 +40519,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -39832,7 +40553,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '656',
             settle_index: '0',
             amt_paid: '0',
@@ -39841,17 +40562,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -39875,7 +40596,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '657',
             settle_index: '0',
             amt_paid: '0',
@@ -39884,17 +40605,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -39918,7 +40639,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '658',
             settle_index: '0',
             amt_paid: '0',
@@ -39927,17 +40648,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -39961,7 +40682,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '659',
             settle_index: '0',
             amt_paid: '0',
@@ -39970,17 +40691,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -40004,7 +40725,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '660',
             settle_index: '0',
             amt_paid: '0',
@@ -40013,17 +40734,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -40047,7 +40768,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '661',
             settle_index: '0',
             amt_paid: '0',
@@ -40056,17 +40777,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -40090,7 +40811,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '662',
             settle_index: '0',
             amt_paid: '0',
@@ -40099,17 +40820,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -40133,7 +40854,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '663',
             settle_index: '0',
             amt_paid: '0',
@@ -40142,17 +40863,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -40176,7 +40897,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '664',
             settle_index: '0',
             amt_paid: '0',
@@ -40185,17 +40906,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -40219,7 +40940,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '665',
             settle_index: '0',
             amt_paid: '0',
@@ -40228,17 +40949,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -40262,7 +40983,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '666',
             settle_index: '0',
             amt_paid: '0',
@@ -40271,17 +40992,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -40305,7 +41026,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '667',
             settle_index: '0',
             amt_paid: '0',
@@ -40314,17 +41035,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -40348,7 +41069,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '668',
             settle_index: '0',
             amt_paid: '0',
@@ -40357,17 +41078,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -40391,7 +41112,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '669',
             settle_index: '0',
             amt_paid: '0',
@@ -40400,17 +41121,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -40434,7 +41155,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '670',
             settle_index: '41',
             amt_paid: '101000',
@@ -40456,17 +41177,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -40490,7 +41211,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '671',
             settle_index: '42',
             amt_paid: '200000',
@@ -40512,17 +41233,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -40546,7 +41267,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '672',
             settle_index: '43',
             amt_paid: '1000000',
@@ -40568,17 +41289,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -40602,7 +41323,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '673',
             settle_index: '44',
             amt_paid: '1000000',
@@ -40624,17 +41345,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -40658,7 +41379,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '674',
             settle_index: '45',
             amt_paid: '2000000',
@@ -40680,17 +41401,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -40714,7 +41435,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '675',
             settle_index: '46',
             amt_paid: '3000000',
@@ -40736,17 +41457,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -40770,7 +41491,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '676',
             settle_index: '47',
             amt_paid: '1000000',
@@ -40792,17 +41513,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -40826,7 +41547,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '677',
             settle_index: '0',
             amt_paid: '0',
@@ -40835,17 +41556,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -40869,7 +41590,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '678',
             settle_index: '0',
             amt_paid: '0',
@@ -40878,17 +41599,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -40912,7 +41633,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '679',
             settle_index: '48',
             amt_paid: '200000',
@@ -40934,17 +41655,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -40968,7 +41689,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '680',
             settle_index: '0',
             amt_paid: '0',
@@ -40977,17 +41698,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -41011,7 +41732,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '681',
             settle_index: '49',
             amt_paid: '233000',
@@ -41033,17 +41754,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -41067,7 +41788,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '682',
             settle_index: '50',
             amt_paid: '900000',
@@ -41089,17 +41810,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -41123,7 +41844,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '683',
             settle_index: '0',
             amt_paid: '0',
@@ -41132,17 +41853,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -41166,7 +41887,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '684',
             settle_index: '51',
             amt_paid: '800000',
@@ -41188,17 +41909,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -41222,7 +41943,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '685',
             settle_index: '52',
             amt_paid: '700000',
@@ -41244,17 +41965,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -41278,7 +41999,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '686',
             settle_index: '0',
             amt_paid: '0',
@@ -41287,17 +42008,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -41321,7 +42042,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '687',
             settle_index: '0',
             amt_paid: '0',
@@ -41330,17 +42051,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -41364,7 +42085,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '688',
             settle_index: '53',
             amt_paid: '800000',
@@ -41386,17 +42107,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -41420,7 +42141,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '689',
             settle_index: '54',
             amt_paid: '1100000',
@@ -41442,17 +42163,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -41476,7 +42197,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '690',
             settle_index: '0',
             amt_paid: '0',
@@ -41485,17 +42206,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -41519,7 +42240,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '691',
             settle_index: '55',
             amt_paid: '500000',
@@ -41541,17 +42262,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -41575,7 +42296,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '692',
             settle_index: '0',
             amt_paid: '0',
@@ -41584,17 +42305,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -41618,7 +42339,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '693',
             settle_index: '0',
             amt_paid: '0',
@@ -41627,17 +42348,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -41661,7 +42382,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '694',
             settle_index: '0',
             amt_paid: '0',
@@ -41670,17 +42391,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -41704,7 +42425,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '695',
             settle_index: '0',
             amt_paid: '0',
@@ -41713,17 +42434,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -41747,7 +42468,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '696',
             settle_index: '56',
             amt_paid: '650000',
@@ -41769,17 +42490,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -41803,7 +42524,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '697',
             settle_index: '0',
             amt_paid: '0',
@@ -41812,17 +42533,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -41846,7 +42567,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '698',
             settle_index: '59',
             amt_paid: '100000',
@@ -41868,17 +42589,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -41902,7 +42623,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '699',
             settle_index: '58',
             amt_paid: '500000',
@@ -41924,17 +42645,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -41958,7 +42679,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '700',
             settle_index: '57',
             amt_paid: '101000',
@@ -41980,17 +42701,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -42014,7 +42735,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '701',
             settle_index: '60',
             amt_paid: '200000',
@@ -42036,17 +42757,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -42070,7 +42791,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '702',
             settle_index: '61',
             amt_paid: '1000000',
@@ -42092,17 +42813,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -42126,7 +42847,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '703',
             settle_index: '62',
             amt_paid: '1100000',
@@ -42148,17 +42869,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -42182,7 +42903,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '704',
             settle_index: '63',
             amt_paid: '1200000',
@@ -42204,17 +42925,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -42238,7 +42959,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '705',
             settle_index: '64',
             amt_paid: '130000',
@@ -42260,17 +42981,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -42294,7 +43015,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '706',
             settle_index: '65',
             amt_paid: '140000',
@@ -42316,17 +43037,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -42350,7 +43071,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '707',
             settle_index: '66',
             amt_paid: '150000',
@@ -42372,17 +43093,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -42406,7 +43127,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '708',
             settle_index: '67',
             amt_paid: '160000',
@@ -42428,17 +43149,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -42462,7 +43183,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '709',
             settle_index: '68',
             amt_paid: '2040000',
@@ -42616,17 +43337,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -42650,7 +43371,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '710',
             settle_index: '69',
             amt_paid: '2100000',
@@ -42672,17 +43393,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -42706,7 +43427,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '711',
             settle_index: '70',
             amt_paid: '220000',
@@ -42728,17 +43449,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -42762,7 +43483,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '712',
             settle_index: '71',
             amt_paid: '200000',
@@ -42784,17 +43505,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -42818,7 +43539,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '713',
             settle_index: '0',
             amt_paid: '0',
@@ -42827,17 +43548,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -42861,7 +43582,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '714',
             settle_index: '72',
             amt_paid: '300000',
@@ -42883,17 +43604,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -42917,7 +43638,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '715',
             settle_index: '73',
             amt_paid: '240000',
@@ -42939,17 +43660,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -42973,7 +43694,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '716',
             settle_index: '74',
             amt_paid: '10000000',
@@ -42995,17 +43716,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -43029,7 +43750,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '717',
             settle_index: '75',
             amt_paid: '10000000',
@@ -43051,17 +43772,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -43085,7 +43806,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '718',
             settle_index: '0',
             amt_paid: '0',
@@ -43094,17 +43815,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -43128,7 +43849,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '719',
             settle_index: '0',
             amt_paid: '0',
@@ -43137,17 +43858,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -43171,7 +43892,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '720',
             settle_index: '0',
             amt_paid: '0',
@@ -43180,17 +43901,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -43214,7 +43935,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '721',
             settle_index: '0',
             amt_paid: '0',
@@ -43223,17 +43944,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -43257,7 +43978,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '722',
             settle_index: '0',
             amt_paid: '0',
@@ -43266,17 +43987,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -43300,7 +44021,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '723',
             settle_index: '0',
             amt_paid: '0',
@@ -43309,17 +44030,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -43343,7 +44064,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '724',
             settle_index: '0',
             amt_paid: '0',
@@ -43352,17 +44073,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -43386,7 +44107,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '725',
             settle_index: '0',
             amt_paid: '0',
@@ -43395,17 +44116,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -43429,7 +44150,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '726',
             settle_index: '0',
             amt_paid: '0',
@@ -43438,17 +44159,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -43472,7 +44193,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '727',
             settle_index: '0',
             amt_paid: '0',
@@ -43481,17 +44202,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -43515,7 +44236,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '728',
             settle_index: '0',
             amt_paid: '0',
@@ -43524,17 +44245,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -43558,7 +44279,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '729',
             settle_index: '0',
             amt_paid: '0',
@@ -43567,17 +44288,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -43601,7 +44322,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '730',
             settle_index: '0',
             amt_paid: '0',
@@ -43610,17 +44331,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -43644,7 +44365,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '731',
             settle_index: '0',
             amt_paid: '0',
@@ -43653,17 +44374,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -43687,7 +44408,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '732',
             settle_index: '0',
             amt_paid: '0',
@@ -43696,17 +44417,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -43730,7 +44451,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '733',
             settle_index: '0',
             amt_paid: '0',
@@ -43739,17 +44460,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -43773,7 +44494,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '734',
             settle_index: '0',
             amt_paid: '0',
@@ -43782,17 +44503,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -43816,7 +44537,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '735',
             settle_index: '76',
             amt_paid: '130000',
@@ -43838,17 +44559,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -43872,7 +44593,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '736',
             settle_index: '77',
             amt_paid: '5000000',
@@ -43894,17 +44615,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -43928,7 +44649,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '737',
             settle_index: '0',
             amt_paid: '0',
@@ -43937,17 +44658,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -43971,7 +44692,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '738',
             settle_index: '0',
             amt_paid: '0',
@@ -43980,17 +44701,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -44014,7 +44735,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '739',
             settle_index: '0',
             amt_paid: '0',
@@ -44023,17 +44744,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -44057,7 +44778,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '740',
             settle_index: '0',
             amt_paid: '0',
@@ -44066,17 +44787,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -44100,7 +44821,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '741',
             settle_index: '0',
             amt_paid: '0',
@@ -44109,17 +44830,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -44143,7 +44864,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '742',
             settle_index: '0',
             amt_paid: '0',
@@ -44152,17 +44873,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -44186,7 +44907,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '743',
             settle_index: '0',
             amt_paid: '0',
@@ -44195,17 +44916,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -44229,7 +44950,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '744',
             settle_index: '0',
             amt_paid: '0',
@@ -44238,17 +44959,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -44272,7 +44993,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '745',
             settle_index: '0',
             amt_paid: '0',
@@ -44281,17 +45002,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -44315,7 +45036,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '746',
             settle_index: '0',
             amt_paid: '0',
@@ -44324,17 +45045,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -44358,7 +45079,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '747',
             settle_index: '0',
             amt_paid: '0',
@@ -44367,17 +45088,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -44401,7 +45122,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '748',
             settle_index: '0',
             amt_paid: '0',
@@ -44410,17 +45131,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -44444,7 +45165,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '749',
             settle_index: '0',
             amt_paid: '0',
@@ -44453,17 +45174,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -44487,7 +45208,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '750',
             settle_index: '0',
             amt_paid: '0',
@@ -44496,17 +45217,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -44530,7 +45251,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '751',
             settle_index: '0',
             amt_paid: '0',
@@ -44539,17 +45260,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -44573,7 +45294,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '752',
             settle_index: '0',
             amt_paid: '0',
@@ -44582,17 +45303,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -44616,7 +45337,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '753',
             settle_index: '0',
             amt_paid: '0',
@@ -44625,17 +45346,17 @@ export const mockRTLStoreState = {
             state: 'OPEN',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -44659,7 +45380,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '754',
             settle_index: '78',
             amt_paid: '10000000',
@@ -44681,17 +45402,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -44715,7 +45436,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '755',
             settle_index: '79',
             amt_paid: '10000000',
@@ -44737,17 +45458,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -44771,7 +45492,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '756',
             settle_index: '80',
             amt_paid: '10000000',
@@ -44793,17 +45514,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -44827,7 +45548,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '757',
             settle_index: '81',
             amt_paid: '10000000',
@@ -44849,17 +45570,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -44883,7 +45604,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '758',
             settle_index: '82',
             amt_paid: '20000000',
@@ -44905,17 +45626,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -44939,7 +45660,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '759',
             settle_index: '83',
             amt_paid: '20000000',
@@ -44961,17 +45682,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -44995,7 +45716,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '760',
             settle_index: '84',
             amt_paid: '10000000',
@@ -45017,17 +45738,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -45051,7 +45772,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '761',
             settle_index: '85',
             amt_paid: '10000000',
@@ -45073,17 +45794,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -45107,7 +45828,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '762',
             settle_index: '86',
             amt_paid: '10000000',
@@ -45129,17 +45850,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -45163,7 +45884,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '763',
             settle_index: '0',
             amt_paid: '0',
@@ -45172,17 +45893,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -45206,7 +45927,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '764',
             settle_index: '87',
             amt_paid: '10000000',
@@ -45228,17 +45949,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -45262,7 +45983,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '765',
             settle_index: '88',
             amt_paid: '10000000',
@@ -45284,17 +46005,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -45318,7 +46039,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '766',
             settle_index: '0',
             amt_paid: '0',
@@ -45327,17 +46048,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -45361,7 +46082,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '767',
             settle_index: '0',
             amt_paid: '0',
@@ -45370,17 +46091,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -45404,7 +46125,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '768',
             settle_index: '0',
             amt_paid: '0',
@@ -45413,17 +46134,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -45447,7 +46168,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '769',
             settle_index: '89',
             amt_paid: '1000000',
@@ -45469,17 +46190,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -45503,7 +46224,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '770',
             settle_index: '90',
             amt_paid: '10000000',
@@ -45525,17 +46246,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -45582,7 +46303,7 @@ export const mockRTLStoreState = {
                 ]
               }
             ],
-            'private': true,
+            private: true,
             add_index: '771',
             settle_index: '91',
             amt_paid: '249650000',
@@ -45604,17 +46325,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -45661,7 +46382,7 @@ export const mockRTLStoreState = {
                 ]
               }
             ],
-            'private': true,
+            private: true,
             add_index: '772',
             settle_index: '0',
             amt_paid: '0',
@@ -45683,17 +46404,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -45740,7 +46461,7 @@ export const mockRTLStoreState = {
                 ]
               }
             ],
-            'private': true,
+            private: true,
             add_index: '773',
             settle_index: '92',
             amt_paid: '249650000',
@@ -45762,17 +46483,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -45819,7 +46540,7 @@ export const mockRTLStoreState = {
                 ]
               }
             ],
-            'private': true,
+            private: true,
             add_index: '774',
             settle_index: '0',
             amt_paid: '0',
@@ -45841,17 +46562,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -45875,7 +46596,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '775',
             settle_index: '93',
             amt_paid: '100000',
@@ -45897,17 +46618,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -45931,7 +46652,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '776',
             settle_index: '94',
             amt_paid: '200000',
@@ -45953,17 +46674,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -45987,7 +46708,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '777',
             settle_index: '0',
             amt_paid: '0',
@@ -45996,17 +46717,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -46030,7 +46751,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '778',
             settle_index: '0',
             amt_paid: '0',
@@ -46039,17 +46760,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -46073,7 +46794,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '779',
             settle_index: '0',
             amt_paid: '0',
@@ -46082,17 +46803,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -46116,7 +46837,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '780',
             settle_index: '0',
             amt_paid: '0',
@@ -46125,17 +46846,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -46159,7 +46880,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '781',
             settle_index: '0',
             amt_paid: '0',
@@ -46168,17 +46889,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -46202,7 +46923,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '782',
             settle_index: '0',
             amt_paid: '0',
@@ -46211,17 +46932,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -46245,7 +46966,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '783',
             settle_index: '0',
             amt_paid: '0',
@@ -46254,17 +46975,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -46288,7 +47009,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '784',
             settle_index: '0',
             amt_paid: '0',
@@ -46297,17 +47018,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -46331,7 +47052,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '785',
             settle_index: '0',
             amt_paid: '0',
@@ -46340,17 +47061,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -46374,7 +47095,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '786',
             settle_index: '0',
             amt_paid: '0',
@@ -46383,17 +47104,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -46417,7 +47138,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '787',
             settle_index: '0',
             amt_paid: '0',
@@ -46426,17 +47147,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -46483,7 +47204,7 @@ export const mockRTLStoreState = {
                 ]
               }
             ],
-            'private': true,
+            private: true,
             add_index: '788',
             settle_index: '95',
             amt_paid: '249954000',
@@ -46505,17 +47226,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -46562,7 +47283,7 @@ export const mockRTLStoreState = {
                 ]
               }
             ],
-            'private': true,
+            private: true,
             add_index: '789',
             settle_index: '0',
             amt_paid: '0',
@@ -46584,17 +47305,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -46618,7 +47339,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '790',
             settle_index: '0',
             amt_paid: '0',
@@ -46627,17 +47348,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -46661,7 +47382,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '791',
             settle_index: '0',
             amt_paid: '0',
@@ -46670,17 +47391,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -46704,7 +47425,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '792',
             settle_index: '0',
             amt_paid: '0',
@@ -46713,17 +47434,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -46747,7 +47468,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '793',
             settle_index: '0',
             amt_paid: '0',
@@ -46756,17 +47477,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -46790,7 +47511,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '794',
             settle_index: '0',
             amt_paid: '0',
@@ -46799,17 +47520,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -46833,7 +47554,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '795',
             settle_index: '0',
             amt_paid: '0',
@@ -46842,17 +47563,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -46876,7 +47597,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '796',
             settle_index: '0',
             amt_paid: '0',
@@ -46885,17 +47606,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -46919,7 +47640,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '797',
             settle_index: '0',
             amt_paid: '0',
@@ -46928,17 +47649,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -46962,7 +47683,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '798',
             settle_index: '0',
             amt_paid: '0',
@@ -46971,17 +47692,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -47005,7 +47726,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '799',
             settle_index: '0',
             amt_paid: '0',
@@ -47014,17 +47735,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -47048,7 +47769,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '800',
             settle_index: '0',
             amt_paid: '0',
@@ -47057,17 +47778,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -47091,7 +47812,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '801',
             settle_index: '0',
             amt_paid: '0',
@@ -47100,17 +47821,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -47134,7 +47855,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '802',
             settle_index: '0',
             amt_paid: '0',
@@ -47143,17 +47864,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -47177,7 +47898,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '803',
             settle_index: '0',
             amt_paid: '0',
@@ -47186,17 +47907,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -47220,7 +47941,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '804',
             settle_index: '0',
             amt_paid: '0',
@@ -47229,17 +47950,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -47263,7 +47984,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '805',
             settle_index: '0',
             amt_paid: '0',
@@ -47272,17 +47993,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -47306,7 +48027,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '806',
             settle_index: '0',
             amt_paid: '0',
@@ -47315,17 +48036,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -47349,7 +48070,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '807',
             settle_index: '0',
             amt_paid: '0',
@@ -47358,17 +48079,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -47392,7 +48113,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '808',
             settle_index: '0',
             amt_paid: '0',
@@ -47401,17 +48122,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -47435,7 +48156,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '809',
             settle_index: '0',
             amt_paid: '0',
@@ -47444,17 +48165,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -47478,7 +48199,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '810',
             settle_index: '0',
             amt_paid: '0',
@@ -47487,17 +48208,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -47521,7 +48242,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '811',
             settle_index: '0',
             amt_paid: '0',
@@ -47530,17 +48251,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -47564,7 +48285,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '812',
             settle_index: '0',
             amt_paid: '0',
@@ -47573,17 +48294,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -47607,7 +48328,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '813',
             settle_index: '0',
             amt_paid: '0',
@@ -47616,17 +48337,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -47650,7 +48371,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '814',
             settle_index: '0',
             amt_paid: '0',
@@ -47659,17 +48380,17 @@ export const mockRTLStoreState = {
             state: 'CANCELED',
             htlcs: [],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '15': {
+              15: {
                 name: 'payment-addr',
                 is_required: false,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -47693,7 +48414,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '815',
             settle_index: '96',
             amt_paid: '500000',
@@ -47715,17 +48436,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '14': {
+              14: {
                 name: 'payment-addr',
                 is_required: true,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -47749,7 +48470,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '816',
             settle_index: '98',
             amt_paid: '600000',
@@ -47771,17 +48492,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '14': {
+              14: {
                 name: 'payment-addr',
                 is_required: true,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -47805,7 +48526,7 @@ export const mockRTLStoreState = {
             fallback_addr: '',
             cltv_expiry: '40',
             route_hints: [],
-            'private': false,
+            private: false,
             add_index: '817',
             settle_index: '97',
             amt_paid: '700000',
@@ -47827,17 +48548,17 @@ export const mockRTLStoreState = {
               }
             ],
             features: {
-              '9': {
+              9: {
                 name: 'tlv-onion',
                 is_required: false,
                 is_known: true
               },
-              '14': {
+              14: {
                 name: 'payment-addr',
                 is_required: true,
                 is_known: true
               },
-              '17': {
+              17: {
                 name: 'multi-path-payments',
                 is_required: false,
                 is_known: true
@@ -47859,7 +48580,7 @@ export const mockRTLStoreState = {
   cl: {
     nodeSettings: {
       userPersona: 'OPERATOR',
-      channelBackupPath: '..\\RTL\\backup\\node-1',
+      channelBackupPath: '..\\\\RTL\\\\backup\\\\node-1',
       selCurrencyUnit: 'USD',
       currencyUnits: [
         'Sats',
@@ -47892,7 +48613,7 @@ export const mockRTLStoreState = {
   ecl: {
     nodeSettings: {
       userPersona: 'OPERATOR',
-      channelBackupPath: '..\\RTL\\backup\\node-1',
+      channelBackupPath: '..\\\\RTL\\\\backup\\\\node-1',
       selCurrencyUnit: 'USD',
       currencyUnits: [
         'Sats',
@@ -47926,4 +48647,3 @@ export const mockRTLStoreState = {
     invoices: []
   }
 };
-

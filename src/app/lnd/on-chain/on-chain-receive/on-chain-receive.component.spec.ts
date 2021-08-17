@@ -14,7 +14,7 @@ describe('OnChainReceiveComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ OnChainReceiveComponent ],
+      declarations: [OnChainReceiveComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -28,8 +28,8 @@ describe('OnChainReceiveComponent', () => {
       providers: [
         { provide: LNDEffects, useClass: mockLNDEffects }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -45,5 +45,4 @@ describe('OnChainReceiveComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

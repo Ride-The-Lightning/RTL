@@ -21,6 +21,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   styleUrls: ['./node-settings.component.scss']
 })
 export class NodeSettingsComponent implements OnInit, OnDestroy {
+
   public faExclamationTriangle = faExclamationTriangle;
   public faMoneyBillAlt = faMoneyBillAlt;
   public faPaintBrush = faPaintBrush;
@@ -47,27 +48,34 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('root')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
-      this.appConfig = rtlStore.appConfig;
-      this.selNode = rtlStore.selNode;
-      this.selectedThemeMode = this.themeModes.find(themeMode => this.selNode.settings.themeMode === themeMode.id);
-      this.selectedThemeColor = this.selNode.settings.themeColor;
-      this.information = rtlStore.nodeData;
-      if(!this.selNode.settings.fiatConversion) {
-        this.selNode.settings.currencyUnit = null;
-      }
-      this.previousSettings = JSON.parse(JSON.stringify(this.selNode.settings));
-      this.logger.info(rtlStore);
-    });
+    this.store.select('root').
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.appConfig = rtlStore.appConfig;
+        this.selNode = rtlStore.selNode;
+        this.selectedThemeMode = this.themeModes.find((themeMode) => this.selNode.settings.themeMode === themeMode.id);
+        this.selectedThemeColor = this.selNode.settings.themeColor;
+        this.information = rtlStore.nodeData;
+        if (!this.selNode.settings.fiatConversion) {
+          this.selNode.settings.currencyUnit = null;
+        }
+        this.previousSettings = JSON.parse(JSON.stringify(this.selNode.settings));
+        this.logger.info(rtlStore);
+      });
   }
 
   onCurrencyChange(event: any) {
     this.selNode.settings.currencyUnits = [...CURRENCY_UNITS, event.value];
-    this.store.dispatch(new LNDActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: event.value, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl}));
-    this.store.dispatch(new CLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: event.value, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl}));
-    this.store.dispatch(new ECLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: event.value, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl}));
+    this.store.dispatch(new LNDActions.SetChildNodeSettings({
+      userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: event.value, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
+      lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
+    }));
+    this.store.dispatch(new CLActions.SetChildNodeSettings({
+      userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: event.value, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
+    }));
+    this.store.dispatch(new ECLActions.SetChildNodeSettings({
+      userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: event.value, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
+    }));
   }
 
   toggleSettings(toggleField: string, event?: any) {
@@ -83,24 +91,32 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
     this.selNode.settings.themeMode = this.selectedThemeMode.id;
   }
 
-  onUpdateSettings():boolean|void {
-    if(this.selNode.settings.fiatConversion && !this.selNode.settings.currencyUnit) { return true; }
+  onUpdateSettings(): boolean | void {
+    if (this.selNode.settings.fiatConversion && !this.selNode.settings.currencyUnit) {
+      return true;
+    }
     this.logger.info(this.selNode.settings);
-    this.store.dispatch(new RTLActions.SaveSettings({uiMessage: UI_MESSAGES.UPDATE_NODE_SETTINGS, settings: this.selNode.settings}));
-    this.store.dispatch(new LNDActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl}));
-    this.store.dispatch(new CLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl}));
-    this.store.dispatch(new ECLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl}));
+    this.store.dispatch(new RTLActions.SaveSettings({ uiMessage: UI_MESSAGES.UPDATE_NODE_SETTINGS, settings: this.selNode.settings }));
+    this.store.dispatch(new LNDActions.SetChildNodeSettings({
+      userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
+    }));
+    this.store.dispatch(new CLActions.SetChildNodeSettings({
+      userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
+    }));
+    this.store.dispatch(new ECLActions.SetChildNodeSettings({
+      userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
+    }));
   }
 
   onResetSettings() {
     this.selNode.settings = this.previousSettings;
-    this.selectedThemeMode = this.themeModes.find(themeMode => themeMode.id === this.previousSettings.themeMode);
+    this.selectedThemeMode = this.themeModes.find((themeMode) => themeMode.id === this.previousSettings.themeMode);
     this.selectedThemeColor = this.previousSettings.themeColor;
-    this.store.dispatch(new RTLActions.SetSelelectedNode({ uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: this.selNode, isInitialSetup: true }));    
-  }  
+    this.store.dispatch(new RTLActions.SetSelelectedNode({ uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: this.selNode, isInitialSetup: true }));
+  }
 
   ngOnDestroy() {
-    this.unSubs.forEach(unsub => {
+    this.unSubs.forEach((unsub) => {
       unsub.next();
       unsub.complete();
     });

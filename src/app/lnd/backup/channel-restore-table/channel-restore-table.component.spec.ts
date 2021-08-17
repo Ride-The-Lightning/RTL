@@ -18,7 +18,7 @@ describe('ChannelRestoreTableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelRestoreTableComponent ],
+      declarations: [ChannelRestoreTableComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -36,8 +36,8 @@ describe('ChannelRestoreTableComponent', () => {
         { provide: LNDEffects, useClass: mockLNDEffects }
       ]
 
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -53,5 +53,4 @@ describe('ChannelRestoreTableComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

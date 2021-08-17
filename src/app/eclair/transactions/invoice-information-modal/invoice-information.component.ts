@@ -15,6 +15,7 @@ import { ScreenSizeEnum } from '../../../shared/services/consts-enums-functions'
   styleUrls: ['./invoice-information.component.scss']
 })
 export class ECLInvoiceInformationComponent implements OnInit {
+
   public faReceipt = faReceipt;
   public faExclamationTriangle = faExclamationTriangle;
   public showAdvanced = false;
@@ -30,7 +31,7 @@ export class ECLInvoiceInformationComponent implements OnInit {
     this.invoice = this.data.invoice;
     this.newlyAdded = this.data.newlyAdded;
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.qrWidth = 220;
     }
   }
@@ -41,10 +42,11 @@ export class ECLInvoiceInformationComponent implements OnInit {
 
   onShowAdvanced() {
     this.showAdvanced = !this.showAdvanced;
-  }  
+  }
 
   onCopyPayment(payload: string) {
     this.snackBar.open('Invoice copied.');
     this.logger.info('Copied Text: ' + payload);
   }
+
 }

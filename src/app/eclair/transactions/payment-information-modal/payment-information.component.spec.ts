@@ -11,14 +11,14 @@ describe('ECLPaymentInformationComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLPaymentInformationComponent ],
-      imports: [ SharedModule ],
-      providers: [ 
+      declarations: [ECLPaymentInformationComponent],
+      imports: [SharedModule],
+      providers: [
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {payment:{}, sentPaymentInfo:{}} }
+        { provide: MAT_DIALOG_DATA, useValue: { payment: {}, sentPaymentInfo: {} } }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -34,5 +34,4 @@ describe('ECLPaymentInformationComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

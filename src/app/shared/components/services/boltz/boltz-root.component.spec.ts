@@ -18,8 +18,8 @@ describe('BoltzRootComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ BoltzRootComponent ],
-      imports: [ 
+      declarations: [BoltzRootComponent],
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
@@ -30,13 +30,13 @@ describe('BoltzRootComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: DataService, useClass: mockDataService },
         { provide: BoltzService, useClass: mockBoltzService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,5 +52,4 @@ describe('BoltzRootComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

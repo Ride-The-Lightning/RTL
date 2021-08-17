@@ -16,7 +16,7 @@ describe('CurrencyUnitConverterComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CurrencyUnitConverterComponent ],
+      declarations: [CurrencyUnitConverterComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -27,12 +27,12 @@ describe('CurrencyUnitConverterComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -48,5 +48,4 @@ describe('CurrencyUnitConverterComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

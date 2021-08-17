@@ -12,10 +12,10 @@ describe('NodeConfigComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ NodeConfigComponent ],
-      imports: [ 
+      declarations: [NodeConfigComponent],
+      imports: [
         SharedModule,
-        RouterTestingModule, 
+        RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
@@ -23,8 +23,8 @@ describe('NodeConfigComponent', () => {
           }
         })
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -40,5 +40,4 @@ describe('NodeConfigComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

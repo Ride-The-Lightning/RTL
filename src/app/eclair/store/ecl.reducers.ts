@@ -23,7 +23,16 @@ export interface ECLState {
 }
 
 export const initECLState: ECLState = {
-  apisCallStatus: { FetchInfo: { status: APICallStatusEnum.UN_INITIATED }, FetchFees: { status: APICallStatusEnum.UN_INITIATED }, FetchChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchOnchainBalance: { status: APICallStatusEnum.UN_INITIATED }, FetchPeers: { status: APICallStatusEnum.UN_INITIATED }, FetchPayments: { status: APICallStatusEnum.UN_INITIATED }, FetchInvoices: { status: APICallStatusEnum.UN_INITIATED }, FetchTransactions: { status: APICallStatusEnum.UN_INITIATED } },
+  apisCallStatus: {
+    FetchInfo: { status: APICallStatusEnum.UN_INITIATED },
+    FetchFees: { status: APICallStatusEnum.UN_INITIATED },
+    FetchChannels: { status: APICallStatusEnum.UN_INITIATED },
+    FetchOnchainBalance: { status: APICallStatusEnum.UN_INITIATED },
+    FetchPeers: { status: APICallStatusEnum.UN_INITIATED },
+    FetchPayments: { status: APICallStatusEnum.UN_INITIATED },
+    FetchInvoices: { status: APICallStatusEnum.UN_INITIATED },
+    FetchTransactions: { status: APICallStatusEnum.UN_INITIATED }
+  },
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
   information: {},
   fees: {},
@@ -33,12 +42,12 @@ export const initECLState: ECLState = {
   channelsStatus: {},
   channelStats: [],
   onchainBalance: { total: 0, confirmed: 0, unconfirmed: 0 },
-  lightningBalance:  { localBalance: -1, remoteBalance: -1 },
+  lightningBalance: { localBalance: -1, remoteBalance: -1 },
   peers: [],
   payments: {},
   transactions: [],
   invoices: []
-}
+};
 
 export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) {
   switch (action.type) {
@@ -49,7 +58,7 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
         statusCode: action.payload.statusCode,
         message: action.payload.message,
         URL: action.payload.URL,
-        filePath: action.payload.filePath      
+        filePath: action.payload.filePath
       };
       return {
         ...state,
@@ -59,11 +68,11 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
       return {
         ...state,
         nodeSettings: action.payload
-      }
+      };
     case ECLActions.RESET_ECL_STORE:
       return {
         ...initECLState,
-        nodeSettings: action.payload,
+        nodeSettings: action.payload
       };
     case ECLActions.SET_INFO_ECL:
       return {
@@ -78,27 +87,27 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
     case ECLActions.SET_ACTIVE_CHANNELS_ECL:
       return {
         ...state,
-        activeChannels: action.payload,
+        activeChannels: action.payload
       };
     case ECLActions.SET_PENDING_CHANNELS_ECL:
       return {
         ...state,
-        pendingChannels: action.payload,
+        pendingChannels: action.payload
       };
     case ECLActions.SET_INACTIVE_CHANNELS_ECL:
       return {
         ...state,
-        inactiveChannels: action.payload,
+        inactiveChannels: action.payload
       };
     case ECLActions.SET_CHANNELS_STATUS_ECL:
       return {
         ...state,
-        channelsStatus: action.payload,
+        channelsStatus: action.payload
       };
     case ECLActions.SET_CHANNEL_STATS_ECL:
       return {
         ...state,
-        channelStats: action.payload,
+        channelStats: action.payload
       };
     case ECLActions.SET_ONCHAIN_BALANCE_ECL:
       return {
@@ -117,9 +126,7 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
       };
     case ECLActions.REMOVE_PEER_ECL:
       const modifiedPeers = [...state.peers];
-      const removePeerIdx = state.peers.findIndex(peer => {
-        return peer.nodeId === action.payload.nodeId;
-      });
+      const removePeerIdx = state.peers.findIndex((peer) => peer.nodeId === action.payload.nodeId);
       if (removePeerIdx > -1) {
         modifiedPeers.splice(removePeerIdx, 1);
       }
@@ -129,9 +136,7 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
       };
     case ECLActions.REMOVE_CHANNEL_ECL:
       const modifiedChannels = [...state.activeChannels];
-      const removeChannelIdx = state.activeChannels.findIndex(channel => {
-        return channel.channelId === action.payload.channelId;
-      });
+      const removeChannelIdx = state.activeChannels.findIndex((channel) => channel.channelId === action.payload.channelId);
       if (removeChannelIdx > -1) {
         modifiedChannels.splice(removeChannelIdx, 1);
       }
@@ -142,20 +147,24 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
     case ECLActions.SET_PAYMENTS_ECL:
       if (action.payload && action.payload.relayed) {
         const storedChannels = [...state.activeChannels, ...state.pendingChannels, ...state.inactiveChannels];
-        action.payload.relayed.forEach(event => {
+        action.payload.relayed.forEach((event) => {
           if (storedChannels && storedChannels.length > 0) {
             for (let idx = 0; idx < storedChannels.length; idx++) {
               if (storedChannels[idx].channelId.toString() === event.fromChannelId) {
                 event.fromChannelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : event.fromChannelId;
                 event.fromShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
-                if (event.toChannelAlias) { return; }
+                if (event.toChannelAlias) {
+                  return;
+                }
               }
               if (storedChannels[idx].channelId.toString() === event.toChannelId) {
                 event.toChannelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : event.toChannelId;
                 event.toShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
-                if (event.fromChannelAlias) { return; }
+                if (event.fromChannelAlias) {
+                  return;
+                }
               }
-              if (idx === storedChannels.length-1) {
+              if (idx === storedChannels.length - 1) {
                 if (!event.fromChannelAlias) {
                   event.fromChannelAlias = event.fromChannelId.substring(0, 17) + '...';
                   event.fromShortChannelId = '';
@@ -198,5 +207,4 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
     default:
       return state;
   }
-
 }

@@ -21,8 +21,8 @@ describe('OnChainComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ OnChainComponent, UTXOTablesComponent, OnChainTransactionHistoryComponent, OnChainUTXOsComponent ],
-      imports: [ 
+      declarations: [OnChainComponent, UTXOTablesComponent, OnChainTransactionHistoryComponent, OnChainUTXOsComponent],
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
@@ -40,8 +40,8 @@ describe('OnChainComponent', () => {
         { provide: RTLEffects, useClass: mockRTLEffects },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -57,5 +57,4 @@ describe('OnChainComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

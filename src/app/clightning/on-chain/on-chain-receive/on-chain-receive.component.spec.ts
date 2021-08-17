@@ -15,7 +15,7 @@ describe('CLOnChainReceiveComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLOnChainReceiveComponent ],
+      declarations: [CLOnChainReceiveComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -30,8 +30,8 @@ describe('CLOnChainReceiveComponent', () => {
       providers: [
         { provide: CLEffects, useClass: mockCLEffects }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -47,5 +47,4 @@ describe('CLOnChainReceiveComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

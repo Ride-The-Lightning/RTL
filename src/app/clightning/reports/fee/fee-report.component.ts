@@ -19,6 +19,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   animations: [fadeIn]
 })
 export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
+
   public reportPeriod = SCROLL_RANGES[0];
   public secondsInADay = 24 * 60 * 60;
   public events: ForwardingHistoryRes = {};
@@ -39,7 +40,7 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public apisCallStatus: ApiCallsListCL = null;
-  public apiCallStatusEnum = APICallStatusEnum;  
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
@@ -47,46 +48,46 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select('cl')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
-      this.errorMessage = '';
-      this.apisCallStatus = rtlStore.apisCallStatus;
-      if (rtlStore.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
-        this.errorMessage = (typeof(rtlStore.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(rtlStore.apisCallStatus.GetForwardingHistory.message) : rtlStore.apisCallStatus.GetForwardingHistory.message;
-      }
-      this.events = (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events) ? rtlStore.forwardingHistory : {};
-      this.filterForwardingEvents(this.startDate, this.endDate);
-      this.logger.info(rtlStore);
-    });
+    this.store.select('cl').
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.errorMessage = '';
+        this.apisCallStatus = rtlStore.apisCallStatus;
+        if (rtlStore.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (rtlStore.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(rtlStore.apisCallStatus.GetForwardingHistory.message) : rtlStore.apisCallStatus.GetForwardingHistory.message;
+        }
+        this.events = (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events) ? rtlStore.forwardingHistory : {};
+        this.filterForwardingEvents(this.startDate, this.endDate);
+        this.logger.info(rtlStore);
+      });
   }
 
   ngAfterContentInit() {
     const CONTAINER_SIZE = this.commonService.getContainerSize();
     switch (this.screenSize) {
       case ScreenSizeEnum.MD:
-        this.screenPaddingX = CONTAINER_SIZE.width/10;
+        this.screenPaddingX = CONTAINER_SIZE.width / 10;
         break;
 
       case ScreenSizeEnum.LG:
-        this.screenPaddingX = CONTAINER_SIZE.width/16;
+        this.screenPaddingX = CONTAINER_SIZE.width / 16;
         break;
 
       default:
-        this.screenPaddingX = CONTAINER_SIZE.width/20;
+        this.screenPaddingX = CONTAINER_SIZE.width / 20;
         break;
     }
-    this.view = [CONTAINER_SIZE.width - this.screenPaddingX, CONTAINER_SIZE.height/2.2];
+    this.view = [CONTAINER_SIZE.width - this.screenPaddingX, CONTAINER_SIZE.height / 2.2];
   }
 
   filterForwardingEvents(start: Date, end: Date) {
-    const startDateInSeconds = Math.round(start.getTime()/1000);
-    const endDateInSeconds = Math.round(end.getTime()/1000);
+    const startDateInSeconds = Math.round(start.getTime() / 1000);
+    const endDateInSeconds = Math.round(end.getTime() / 1000);
     this.filteredEventsBySelectedPeriod = [];
     this.feeReportData = [];
     this.totalFeeMsat = null;
-    if (this.events && this.events.forwarding_events  && this.events.forwarding_events.length > 0) {
-      this.events.forwarding_events.forEach(event => {
+    if (this.events && this.events.forwarding_events && this.events.forwarding_events.length > 0) {
+      this.events.forwarding_events.forEach((event) => {
         if (event.status === 'settled' && event.received_time >= startDateInSeconds && event.received_time < endDateInSeconds) {
           this.filteredEventsBySelectedPeriod.push(event);
         }
@@ -100,9 +101,9 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
       this.eventFilterValue = '';
     }
   }
-  
+
   onChartBarSelected(event) {
-    if(this.reportPeriod === SCROLL_RANGES[1]) {
+    if (this.reportPeriod === SCROLL_RANGES[1]) {
       this.eventFilterValue = event.name + '/' + this.startDate.getFullYear();
     } else {
       this.eventFilterValue = event.name.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
@@ -110,27 +111,29 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
   }
 
   prepareFeeReport(start: Date) {
-    const startDateInSeconds = Math.round(start.getTime()/1000);
-    let feeReport = [];
+    const startDateInSeconds = Math.round(start.getTime() / 1000);
+    const feeReport = [];
     if (this.reportPeriod === SCROLL_RANGES[1]) {
       for (let i = 0; i < 12; i++) {
-        feeReport.push({name: MONTHS[i].name, value: 0.000000001, extra: {totalEvents: 0}});
+        feeReport.push({ name: MONTHS[i].name, value: 0.000000001, extra: { totalEvents: 0 } });
       }
-      this.filteredEventsBySelectedPeriod.map(event => {
-        let monthNumber = new Date((+event.received_time)*1000).getMonth();
+      this.filteredEventsBySelectedPeriod.map((event) => {
+        const monthNumber = new Date((+event.received_time) * 1000).getMonth();
         feeReport[monthNumber].value = feeReport[monthNumber].value + (+event.fee / 1000);
         feeReport[monthNumber].extra.totalEvents = feeReport[monthNumber].extra.totalEvents + 1;
         this.totalFeeMsat = (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee;
+        return this.filteredEventsBySelectedPeriod;
       });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
-        feeReport.push({name: i + 1, value: 0.000000001, extra: {totalEvents: 0}});
+        feeReport.push({ name: i + 1, value: 0.000000001, extra: { totalEvents: 0 } });
       }
-      this.filteredEventsBySelectedPeriod.map(event => {
-        let dateNumber = Math.floor((+event.received_time - startDateInSeconds) / this.secondsInADay);
+      this.filteredEventsBySelectedPeriod.map((event) => {
+        const dateNumber = Math.floor((+event.received_time - startDateInSeconds) / this.secondsInADay);
         feeReport[dateNumber].value = feeReport[dateNumber].value + (+event.fee / 1000);
         feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
         this.totalFeeMsat = (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee;
+        return this.filteredEventsBySelectedPeriod;
       });
     }
     return feeReport;
@@ -152,13 +155,14 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
   }
 
   getMonthDays(selMonth: number, selYear: number) {
-    return (selMonth === 1 && selYear%4 === 0) ? (MONTHS[selMonth].days+1) : MONTHS[selMonth].days;
+    return (selMonth === 1 && selYear % 4 === 0) ? (MONTHS[selMonth].days + 1) : MONTHS[selMonth].days;
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

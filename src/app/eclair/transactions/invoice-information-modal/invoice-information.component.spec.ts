@@ -15,17 +15,17 @@ describe('ECLInvoiceInformationComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLInvoiceInformationComponent ],
-      imports: [ SharedModule ],
-      providers: [ 
+      declarations: [ECLInvoiceInformationComponent],
+      imports: [SharedModule],
+      providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {invoice:{}} }
+        { provide: MAT_DIALOG_DATA, useValue: { invoice: {} } }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -41,5 +41,4 @@ describe('ECLInvoiceInformationComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

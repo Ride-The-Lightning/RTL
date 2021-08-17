@@ -18,7 +18,7 @@ describe('PeersComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ PeersComponent ],
+      declarations: [PeersComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -36,8 +36,8 @@ describe('PeersComponent', () => {
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
 
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -53,5 +53,4 @@ describe('PeersComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

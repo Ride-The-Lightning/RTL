@@ -18,7 +18,7 @@ describe('OnChainUTXOsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ OnChainUTXOsComponent ],
+      declarations: [OnChainUTXOsComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -35,8 +35,8 @@ describe('OnChainUTXOsComponent', () => {
         { provide: DataService, useClass: mockDataService },
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,5 +52,4 @@ describe('OnChainUTXOsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

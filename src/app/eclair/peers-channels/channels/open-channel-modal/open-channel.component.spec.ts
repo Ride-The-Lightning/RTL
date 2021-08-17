@@ -15,7 +15,7 @@ describe('ECLOpenChannelComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLOpenChannelComponent ],
+      declarations: [ECLOpenChannelComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -27,12 +27,12 @@ describe('ECLOpenChannelComponent', () => {
         }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
-      providers: [ 
+      providers: [
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {message:{}} }
+        { provide: MAT_DIALOG_DATA, useValue: { message: {} } }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -48,5 +48,4 @@ describe('ECLOpenChannelComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

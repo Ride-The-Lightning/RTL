@@ -22,7 +22,20 @@ export interface CLState {
 }
 
 export const initCLState: CLState = {
-  apisCallStatus: { FetchInfo: { status: APICallStatusEnum.UN_INITIATED }, FetchInvoices: { status: APICallStatusEnum.UN_INITIATED }, FetchFees: { status: APICallStatusEnum.UN_INITIATED }, FetchChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchBalance: { status: APICallStatusEnum.UN_INITIATED }, FetchLocalRemoteBalance: { status: APICallStatusEnum.UN_INITIATED }, FetchFeeRatesperkb: { status: APICallStatusEnum.UN_INITIATED }, FetchFeeRatesperkw: { status: APICallStatusEnum.UN_INITIATED }, FetchPeers: { status: APICallStatusEnum.UN_INITIATED }, FetchUTXOs: { status: APICallStatusEnum.UN_INITIATED }, FetchPayments: { status: APICallStatusEnum.UN_INITIATED }, GetForwardingHistory: { status: APICallStatusEnum.UN_INITIATED } },
+  apisCallStatus: {
+    FetchInfo: { status: APICallStatusEnum.UN_INITIATED },
+    FetchInvoices: { status: APICallStatusEnum.UN_INITIATED },
+    FetchFees: { status: APICallStatusEnum.UN_INITIATED },
+    FetchChannels: { status: APICallStatusEnum.UN_INITIATED },
+    FetchBalance: { status: APICallStatusEnum.UN_INITIATED },
+    FetchLocalRemoteBalance: { status: APICallStatusEnum.UN_INITIATED },
+    FetchFeeRatesperkb: { status: APICallStatusEnum.UN_INITIATED },
+    FetchFeeRatesperkw: { status: APICallStatusEnum.UN_INITIATED },
+    FetchPeers: { status: APICallStatusEnum.UN_INITIATED },
+    FetchUTXOs: { status: APICallStatusEnum.UN_INITIATED },
+    FetchPayments: { status: APICallStatusEnum.UN_INITIATED },
+    GetForwardingHistory: { status: APICallStatusEnum.UN_INITIATED }
+  },
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
   information: {},
   fees: {},
@@ -36,7 +49,7 @@ export const initCLState: CLState = {
   forwardingHistory: {},
   invoices: { invoices: [] },
   utxos: []
-}
+};
 
 export function CLReducer(state = initCLState, action: CLActions.CLActions) {
   switch (action.type) {
@@ -47,7 +60,7 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
         statusCode: action.payload.statusCode,
         message: action.payload.message,
         URL: action.payload.URL,
-        filePath: action.payload.filePath      
+        filePath: action.payload.filePath
       };
       return {
         ...state,
@@ -57,11 +70,11 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
       return {
         ...state,
         nodeSettings: action.payload
-      }
+      };
     case CLActions.RESET_CL_STORE:
       return {
         ...initCLState,
-        nodeSettings: action.payload,
+        nodeSettings: action.payload
       };
     case CLActions.SET_INFO_CL:
       return {
@@ -87,7 +100,7 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
       } else {
         return {
           ...state
-        }
+        };
       }
     case CLActions.SET_BALANCE_CL:
       return {
@@ -111,9 +124,7 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
       };
     case CLActions.REMOVE_PEER_CL:
       const modifiedPeers = [...state.peers];
-      const removePeerIdx = state.peers.findIndex(peer => {
-        return peer.id === action.payload.id;
-      });
+      const removePeerIdx = state.peers.findIndex((peer) => peer.id === action.payload.id);
       if (removePeerIdx > -1) {
         modifiedPeers.splice(removePeerIdx, 1);
       }
@@ -124,13 +135,11 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
     case CLActions.SET_CHANNELS_CL:
       return {
         ...state,
-        allChannels: action.payload,
+        allChannels: action.payload
       };
     case CLActions.REMOVE_CHANNEL_CL:
       const modifiedChannels = [...state.allChannels];
-      const removeChannelIdx = state.allChannels.findIndex(channel => {
-        return channel.channel_id === action.payload.channelId;
-      });
+      const removeChannelIdx = state.allChannels.findIndex((channel) => channel.channel_id === action.payload.channelId);
       if (removeChannelIdx > -1) {
         modifiedChannels.splice(removeChannelIdx, 1);
       }
@@ -147,21 +156,25 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
       const modifiedFeeWithTxCount = state.fees;
       if (action.payload.forwarding_events && action.payload.forwarding_events.length > 0) {
         const storedChannels = [...state.allChannels];
-        action.payload.forwarding_events.forEach(event => {
+        action.payload.forwarding_events.forEach((event) => {
           if (storedChannels && storedChannels.length > 0) {
             for (let idx = 0; idx < storedChannels.length; idx++) {
               if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id === event.in_channel) {
                 event.in_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : event.in_channel;
-                if (event.out_channel_alias) { return; }
+                if (event.out_channel_alias) {
+                  return;
+                }
               }
               if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id.toString() === event.out_channel) {
                 event.out_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : event.out_channel;
-                if (event.in_channel_alias) { return; }
+                if (event.in_channel_alias) {
+                  return;
+                }
               }
             }
           }
         });
-        modifiedFeeWithTxCount.totalTxCount = action.payload.forwarding_events.filter(event => event.status === 'settled').length;
+        modifiedFeeWithTxCount.totalTxCount = action.payload.forwarding_events.filter((event) => event.status === 'settled').length;
       } else {
         action.payload = {};
       }
@@ -190,5 +203,4 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
     default:
       return state;
   }
-
 }

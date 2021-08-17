@@ -11,7 +11,7 @@ describe('CLChannelLookupComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLChannelLookupComponent ],
+      declarations: [CLChannelLookupComponent],
       imports: [
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
@@ -19,10 +19,10 @@ describe('CLChannelLookupComponent', () => {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
+        })
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -38,5 +38,4 @@ describe('CLChannelLookupComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

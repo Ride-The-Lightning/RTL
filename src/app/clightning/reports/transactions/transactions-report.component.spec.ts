@@ -16,8 +16,8 @@ describe('CLTransactionsReportComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLTransactionsReportComponent ],
-      imports: [ 
+      declarations: [CLTransactionsReportComponent],
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
@@ -27,16 +27,16 @@ describe('CLTransactionsReportComponent', () => {
           }
         })
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
-    
+
   beforeEach(() => {
-    let service = TestBed.inject(CommonService);
+    const service = TestBed.inject(CommonService);
     fixture = TestBed.createComponent(CLTransactionsReportComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -49,5 +49,4 @@ describe('CLTransactionsReportComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

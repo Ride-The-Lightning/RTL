@@ -18,7 +18,7 @@ describe('LookupsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LookupsComponent ],
+      declarations: [LookupsComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -36,8 +36,8 @@ describe('LookupsComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
 
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -53,5 +53,4 @@ describe('LookupsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

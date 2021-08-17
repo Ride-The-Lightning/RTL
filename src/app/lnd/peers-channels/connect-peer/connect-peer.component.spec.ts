@@ -18,7 +18,7 @@ describe('ConnectPeerComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ConnectPeerComponent ],
+      declarations: [ConnectPeerComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -30,14 +30,14 @@ describe('ConnectPeerComponent', () => {
         }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
-      providers: [ 
+      providers: [
         LoggerService,
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {message:{}} },
+        { provide: MAT_DIALOG_DATA, useValue: { message: {} } },
         { provide: LNDEffects, useClass: mockLNDEffects }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -53,5 +53,4 @@ describe('ConnectPeerComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

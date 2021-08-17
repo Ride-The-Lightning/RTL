@@ -18,6 +18,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   animations: [fadeIn]
 })
 export class ECLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
+
   public reportPeriod = SCROLL_RANGES[0];
   public secondsInADay = 24 * 60 * 60;
   public events: PaymentRelayed[] = [];
@@ -43,43 +44,43 @@ export class ECLFeeReportComponent implements OnInit, AfterContentInit, OnDestro
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select('ecl')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
-      this.events = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
-      this.filterForwardingEvents(this.startDate, this.endDate);
-      this.logger.info(rtlStore);
-    });
+    this.store.select('ecl').
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.events = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
+        this.filterForwardingEvents(this.startDate, this.endDate);
+        this.logger.info(rtlStore);
+      });
   }
 
   ngAfterContentInit() {
     const CONTAINER_SIZE = this.commonService.getContainerSize();
     switch (this.screenSize) {
       case ScreenSizeEnum.MD:
-        this.screenPaddingX = CONTAINER_SIZE.width/10;
+        this.screenPaddingX = CONTAINER_SIZE.width / 10;
         break;
 
       case ScreenSizeEnum.LG:
-        this.screenPaddingX = CONTAINER_SIZE.width/16;
+        this.screenPaddingX = CONTAINER_SIZE.width / 16;
         break;
 
       default:
-        this.screenPaddingX = CONTAINER_SIZE.width/20;
+        this.screenPaddingX = CONTAINER_SIZE.width / 20;
         break;
     }
-    this.view = [CONTAINER_SIZE.width - this.screenPaddingX, CONTAINER_SIZE.height/2.2];
+    this.view = [CONTAINER_SIZE.width - this.screenPaddingX, CONTAINER_SIZE.height / 2.2];
   }
 
   filterForwardingEvents(start: Date, end: Date) {
-    const startDateInSeconds = Math.round(start.getTime()/1000);
-    const endDateInSeconds = Math.round(end.getTime()/1000);
+    const startDateInSeconds = Math.round(start.getTime() / 1000);
+    const endDateInSeconds = Math.round(end.getTime() / 1000);
     this.logger.info('Filtering Forwarding Events Starting at ' + new Date(Date.now()).toLocaleString() + ' From ' + start.toLocaleString() + ' To ' + end.toLocaleString());
     this.filteredEventsBySelectedPeriod = [];
     this.feeReportData = [];
     this.totalFeeSat = null;
     if (this.events && this.events.length > 0) {
-      this.events.forEach(event => {
-        if (Math.floor(event.timestamp/1000) >= startDateInSeconds && Math.floor(event.timestamp/1000) < endDateInSeconds) {
+      this.events.forEach((event) => {
+        if (Math.floor(event.timestamp / 1000) >= startDateInSeconds && Math.floor(event.timestamp / 1000) < endDateInSeconds) {
           this.filteredEventsBySelectedPeriod.push(event);
         }
       });
@@ -93,9 +94,9 @@ export class ECLFeeReportComponent implements OnInit, AfterContentInit, OnDestro
       this.eventFilterValue = '';
     }
   }
-  
+
   onChartBarSelected(event) {
-    if(this.reportPeriod === SCROLL_RANGES[1]) {
+    if (this.reportPeriod === SCROLL_RANGES[1]) {
       this.eventFilterValue = event.name + '/' + this.startDate.getFullYear();
     } else {
       this.eventFilterValue = event.name.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
@@ -103,28 +104,30 @@ export class ECLFeeReportComponent implements OnInit, AfterContentInit, OnDestro
   }
 
   prepareFeeReport(start: Date) {
-    const startDateInSeconds = Math.round(start.getTime()/1000);
-    let feeReport = [];
+    const startDateInSeconds = Math.round(start.getTime() / 1000);
+    const feeReport = [];
     this.logger.info('Fee Report Prepare Starting at ' + new Date(Date.now()).toLocaleString() + ' From ' + start.toLocaleString());
     if (this.reportPeriod === SCROLL_RANGES[1]) {
       for (let i = 0; i < 12; i++) {
-        feeReport.push({name: MONTHS[i].name, value: 0.000000001, extra: {totalEvents: 0}});
+        feeReport.push({ name: MONTHS[i].name, value: 0.000000001, extra: { totalEvents: 0 } });
       }
-      this.filteredEventsBySelectedPeriod.map(event => {
-        let monthNumber = new Date(event.timestamp).getMonth();
+      this.filteredEventsBySelectedPeriod.map((event) => {
+        const monthNumber = new Date(event.timestamp).getMonth();
         feeReport[monthNumber].value = feeReport[monthNumber].value + (event.amountIn - event.amountOut);
         feeReport[monthNumber].extra.totalEvents = feeReport[monthNumber].extra.totalEvents + 1;
         this.totalFeeSat = (this.totalFeeSat ? this.totalFeeSat : 0) + (event.amountIn - event.amountOut);
+        return this.filteredEventsBySelectedPeriod;
       });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
-        feeReport.push({name: i + 1, value: 0.000000001, extra: {totalEvents: 0}});
+        feeReport.push({ name: i + 1, value: 0.000000001, extra: { totalEvents: 0 } });
       }
-      this.filteredEventsBySelectedPeriod.map(event => {
-        let dateNumber = Math.floor((Math.floor(event.timestamp/1000) - startDateInSeconds) / this.secondsInADay);
+      this.filteredEventsBySelectedPeriod.map((event) => {
+        const dateNumber = Math.floor((Math.floor(event.timestamp / 1000) - startDateInSeconds) / this.secondsInADay);
         feeReport[dateNumber].value = feeReport[dateNumber].value + (event.amountIn - event.amountOut);
         feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
         this.totalFeeSat = (this.totalFeeSat ? this.totalFeeSat : 0) + (event.amountIn - event.amountOut);
+        return this.filteredEventsBySelectedPeriod;
       });
     }
     this.logger.info('Fee Report Prepare Finished at ' + new Date(Date.now()).toLocaleString());
@@ -147,13 +150,14 @@ export class ECLFeeReportComponent implements OnInit, AfterContentInit, OnDestro
   }
 
   getMonthDays(selMonth: number, selYear: number) {
-    return (selMonth === 1 && selYear%4 === 0) ? (MONTHS[selMonth].days+1) : MONTHS[selMonth].days;
+    return (selMonth === 1 && selYear % 4 === 0) ? (MONTHS[selMonth].days + 1) : MONTHS[selMonth].days;
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

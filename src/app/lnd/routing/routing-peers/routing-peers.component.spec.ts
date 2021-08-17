@@ -17,7 +17,7 @@ describe('RoutingPeersComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ RoutingPeersComponent ],
+      declarations: [RoutingPeersComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -33,8 +33,8 @@ describe('RoutingPeersComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -50,5 +50,4 @@ describe('RoutingPeersComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

@@ -14,8 +14,8 @@ describe('CLChannelInformationComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLChannelInformationComponent ],
-      imports: [ 
+      declarations: [CLChannelInformationComponent],
+      imports: [
         SharedModule
       ],
       providers: [
@@ -23,10 +23,10 @@ describe('CLChannelInformationComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {channel:{}} }
+        { provide: MAT_DIALOG_DATA, useValue: { channel: {} } }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -42,5 +42,4 @@ describe('CLChannelInformationComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

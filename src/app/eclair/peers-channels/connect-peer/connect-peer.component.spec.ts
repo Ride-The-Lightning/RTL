@@ -17,7 +17,7 @@ describe('ECLConnectPeerComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLConnectPeerComponent ],
+      declarations: [ECLConnectPeerComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -29,13 +29,13 @@ describe('ECLConnectPeerComponent', () => {
         }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
-      providers: [ 
+      providers: [
         LoggerService,
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {message:{}} }
+        { provide: MAT_DIALOG_DATA, useValue: { message: {} } }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -51,5 +51,4 @@ describe('ECLConnectPeerComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

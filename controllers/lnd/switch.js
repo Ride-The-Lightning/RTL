@@ -9,7 +9,7 @@ var responseData = { forwarding_events: [], last_offset_index: 0 };
 exports.forwardingHistory = (req, res, next) => {
   return this.getAllForwardingEvents(req.body.start_time, req.body.end_time, 0, (eventsResponse) => {
     if (eventsResponse.error) {
-      res.status(500).json(eventsResponse);
+      res.status(error.statusCode).json(eventsResponse);
     } else {
       res.status(201).json(eventsResponse);
     }
@@ -45,17 +45,7 @@ exports.getAllForwardingEvents = (start, end, offset, callback) => {
     }    
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Switch', msg: 'Get All Forwarding Events Error', error: err});
-    return callback({
-      message: "Forwarding Events Failed!",
-      error: err.error
-    });
+    const err = common.handleError(errRes,  'Switch', 'Get All Forwarding Events Error');
+    return callback({message: err.message, error: err.error, statusCode: err.statusCode});
   });  
 }

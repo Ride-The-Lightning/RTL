@@ -8,6 +8,7 @@ import { CommonService } from '../../../shared/services/common.service';
   styleUrls: ['./node-info.component.scss']
 })
 export class ECLNodeInfoComponent implements OnChanges {
+
   @Input() information: GetInfo;
   @Input() showColorFieldSeparately: boolean;
   public chains: Array<string> = [''];

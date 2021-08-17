@@ -8,9 +8,9 @@ describe('ECLChannelStatusInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLChannelStatusInfoComponent ]
-    })
-    .compileComponents();
+      declarations: [ECLChannelStatusInfoComponent]
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -26,5 +26,4 @@ describe('ECLChannelStatusInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

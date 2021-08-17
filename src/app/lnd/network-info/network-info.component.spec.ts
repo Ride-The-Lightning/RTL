@@ -16,7 +16,7 @@ describe('NetworkInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ NetworkInfoComponent ],
+      declarations: [NetworkInfoComponent],
       imports: [
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
@@ -32,8 +32,8 @@ describe('NetworkInfoComponent', () => {
         { provide: DataService, useClass: mockDataService }
       ]
 
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -49,5 +49,4 @@ describe('NetworkInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

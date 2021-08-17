@@ -12,7 +12,7 @@ describe('ECLOnChainReceiveComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLOnChainReceiveComponent ],
+      declarations: [ECLOnChainReceiveComponent],
       imports: [
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
@@ -24,8 +24,8 @@ describe('ECLOnChainReceiveComponent', () => {
       providers: [
         { provide: ECLEffects, useClass: mockECLEffects }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -41,5 +41,4 @@ describe('ECLOnChainReceiveComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

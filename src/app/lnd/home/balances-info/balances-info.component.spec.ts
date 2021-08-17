@@ -9,10 +9,10 @@ describe('BalancesInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ BalancesInfoComponent ],
-      imports: [ SharedModule ]
-    })
-    .compileComponents();
+      declarations: [BalancesInfoComponent],
+      imports: [SharedModule]
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -28,5 +28,4 @@ describe('BalancesInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

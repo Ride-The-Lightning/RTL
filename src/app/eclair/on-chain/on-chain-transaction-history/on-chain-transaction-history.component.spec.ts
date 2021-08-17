@@ -17,7 +17,7 @@ describe('ECLOnChainTransactionHistoryComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLOnChainTransactionHistoryComponent ],
+      declarations: [ECLOnChainTransactionHistoryComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -26,15 +26,15 @@ describe('ECLOnChainTransactionHistoryComponent', () => {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
+        })
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -50,5 +50,4 @@ describe('ECLOnChainTransactionHistoryComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

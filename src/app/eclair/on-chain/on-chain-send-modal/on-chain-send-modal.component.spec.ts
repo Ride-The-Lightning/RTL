@@ -19,7 +19,7 @@ describe('ECLOnChainSendModalComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLOnChainSendModalComponent ],
+      declarations: [ECLOnChainSendModalComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -31,15 +31,15 @@ describe('ECLOnChainSendModalComponent', () => {
         }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
-      providers: [ 
+      providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -55,5 +55,4 @@ describe('ECLOnChainSendModalComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

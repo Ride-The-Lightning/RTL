@@ -8,9 +8,9 @@ describe('ECLFeeInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLFeeInfoComponent ]
-    })
-    .compileComponents();
+      declarations: [ECLFeeInfoComponent]
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -26,5 +26,4 @@ describe('ECLFeeInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

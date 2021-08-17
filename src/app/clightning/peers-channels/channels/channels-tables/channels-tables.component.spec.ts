@@ -17,8 +17,8 @@ describe('CLChannelsTablesComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLChannelsTablesComponent ],
-      imports: [ 
+      declarations: [CLChannelsTablesComponent],
+      imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
@@ -34,8 +34,8 @@ describe('CLChannelsTablesComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -51,5 +51,4 @@ describe('CLChannelsTablesComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-  
 });

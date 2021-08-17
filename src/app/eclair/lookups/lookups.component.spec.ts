@@ -18,26 +18,26 @@ describe('ECLLookupsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLLookupsComponent ],
-       imports: [
+      declarations: [ECLLookupsComponent],
+      imports: [
         BrowserAnimationsModule,
-         SharedModule,
-         StoreModule.forRoot(RTLReducer, {
+        SharedModule,
+        StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
         }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
-       ],
-       providers: [
+      ],
+      providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
- 
-    })
-    .compileComponents();
+
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -53,5 +53,4 @@ describe('ECLLookupsComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

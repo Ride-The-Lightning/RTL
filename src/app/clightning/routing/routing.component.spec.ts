@@ -10,10 +10,10 @@ describe('CLRoutingComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLRoutingComponent ],
-      imports: [ SharedModule, RouterTestingModule ]
-    })
-    .compileComponents();
+      declarations: [CLRoutingComponent],
+      imports: [SharedModule, RouterTestingModule]
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -29,5 +29,4 @@ describe('CLRoutingComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

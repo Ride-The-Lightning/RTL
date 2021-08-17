@@ -19,7 +19,7 @@ describe('CLPeersComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLPeersComponent ],
+      declarations: [CLPeersComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -37,8 +37,8 @@ describe('CLPeersComponent', () => {
         { provide: DataService, useClass: mockDataService },
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -54,5 +54,4 @@ describe('CLPeersComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

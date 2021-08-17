@@ -16,7 +16,7 @@ describe('CLNetworkInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLNetworkInfoComponent, CLFeeRatesComponent ],
+      declarations: [CLNetworkInfoComponent, CLFeeRatesComponent],
       imports: [
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
@@ -24,15 +24,15 @@ describe('CLNetworkInfoComponent', () => {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
+        })
       ],
       providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -48,5 +48,4 @@ describe('CLNetworkInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

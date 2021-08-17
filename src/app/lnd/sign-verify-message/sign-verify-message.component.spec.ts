@@ -10,10 +10,10 @@ describe('SignVerifyMessageComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SignVerifyMessageComponent ],
-      imports: [ SharedModule, RouterTestingModule ]
-    })
-    .compileComponents();
+      declarations: [SignVerifyMessageComponent],
+      imports: [SharedModule, RouterTestingModule]
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -29,5 +29,4 @@ describe('SignVerifyMessageComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

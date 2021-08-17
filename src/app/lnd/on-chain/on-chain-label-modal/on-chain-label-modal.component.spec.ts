@@ -17,7 +17,7 @@ describe('OnChainLabelModalComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ OnChainLabelModalComponent ],
+      declarations: [OnChainLabelModalComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -32,10 +32,10 @@ describe('OnChainLabelModalComponent', () => {
         CommonService,
         { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {utxo:{}} }
+        { provide: MAT_DIALOG_DATA, useValue: { utxo: {} } }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -51,5 +51,4 @@ describe('OnChainLabelModalComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

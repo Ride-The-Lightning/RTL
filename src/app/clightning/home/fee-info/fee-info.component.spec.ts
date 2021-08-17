@@ -9,10 +9,10 @@ describe('CLFeeInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLFeeInfoComponent ],
-      imports: [ SharedModule ]
-    })
-    .compileComponents();
+      declarations: [CLFeeInfoComponent],
+      imports: [SharedModule]
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -28,5 +28,4 @@ describe('CLFeeInfoComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });

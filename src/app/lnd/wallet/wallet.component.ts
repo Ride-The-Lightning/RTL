@@ -8,6 +8,7 @@ import { faWallet } from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./wallet.component.scss']
 })
 export class WalletComponent {
+
   public faWallet = faWallet;
 
   constructor() {}

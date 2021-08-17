@@ -18,7 +18,7 @@ describe('ChannelBackupTableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelBackupTableComponent ],
+      declarations: [ChannelBackupTableComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -35,8 +35,8 @@ describe('ChannelBackupTableComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,5 +52,4 @@ describe('ChannelBackupTableComponent', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
 });
