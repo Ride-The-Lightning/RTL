@@ -70,10 +70,10 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
       this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['remote_alias', 'uptime', 'local_balance', 'remote_balance', 'actions'];
+      this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'balancedness', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['remote_alias', 'uptime', 'local_balance', 'remote_balance', 'actions'];
+      this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'balancedness', 'actions'];
     } else {
       this.flgSticky = true;
       this.displayedColumns = ['remote_alias', 'uptime', 'total_satoshis_sent', 'total_satoshis_received', 'local_balance', 'remote_balance', 'balancedness', 'actions'];

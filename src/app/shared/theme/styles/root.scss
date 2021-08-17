@@ -133,6 +133,9 @@ body {
 
 .padding-gap-x {
   padding: 0 $gap 0 $gap !important;
+  @include for_screensize(tab-land) {
+    padding: 0 $gap/2 0 $gap/2 !important;
+  }
   @include for_screensize(tab-port) {
     padding: 0 $gap/2 0 $gap/2 !important;
   }
@@ -143,8 +146,11 @@ body {
 
 .padding-gap-large {
   padding: $gap * 2 !important;
-  @include for_screensize(tab-port) {
+  @include for_screensize(tab-land) {
     padding: $gap !important;
+  }
+  @include for_screensize(tab-port) {
+    padding: $gap/2 !important;
   }
   @include for_screensize(phone) {
     padding: $gap/4 !important;
@@ -153,8 +159,11 @@ body {
 
 .padding-gap-x-large {
   padding: 0 ($gap*2) 0 ($gap*2) !important;
-  @include for_screensize(tab-port) {
+  @include for_screensize(tab-land) {
     padding: 0 $gap 0 $gap !important;
+  }
+  @include for_screensize(tab-port) {
+    padding: 0 $gap/2 0 $gap/2 !important;
   }
   @include for_screensize(phone) {
     padding: 0 $gap/4 0 $gap/4 !important;
@@ -521,6 +530,16 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
   }
 }
 
+.ml-5 {
+  margin-left: 5rem !important;
+  @include for_screensize(tab-port) {
+    margin-left: 2rem !important;
+  }
+  @include for_screensize(phone) {
+    margin-left: 1rem !important;
+  }
+}
+
 .mr-4 {
   margin-right: 4rem !important;
   @include for_screensize(tab-port) {
@@ -528,6 +547,16 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
   }
   @include for_screensize(phone) {
     margin-right: 0.8rem !important;
+  }
+}
+
+.mr-5 {
+  margin-right: 5rem !important;
+  @include for_screensize(tab-port) {
+    margin-right: 2rem !important;
+  }
+  @include for_screensize(phone) {
+    margin-right: 1rem !important;
   }
 }
 
@@ -1266,6 +1295,30 @@ a {
 
 table {
   width:100%;
+}
+
+th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type {
+  @include for_screensize(tab-land) {
+    padding-left: $gap*2 !important;
+  }
+  @include for_screensize(tab-port) {
+    padding-left: $gap*1.5 !important;
+  }
+  @include for_screensize(phone) {
+    padding-left: $gap !important;
+  }
+}
+
+th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:last-of-type {
+  @include for_screensize(tab-land) {
+    padding-right: $gap*2 !important;
+  }
+  @include for_screensize(tab-port) {
+    padding-right: $gap*1.5 !important;
+  }
+  @include for_screensize(phone) {
+    padding-right: $gap !important;
+  }
 }
 
 .dot {
