@@ -27,7 +27,7 @@ exports.decodePayment = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Payments', 'Decode Payment Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -44,7 +44,7 @@ exports.postPayment = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Payments', 'Send Payment Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -78,7 +78,7 @@ exports.queryPaymentRoute = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Payments', 'Query Route Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -95,7 +95,7 @@ exports.getSentPaymentsInformation = (req, res, next) => {
     })
     .catch(errRes => {
       const err = common.handleError(errRes,  'Payments', 'Sent Payment Error');
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     });
   } else {
     logger.log({level: 'INFO', fileName: 'Payments', msg: 'Empty Sent Payment Information Received'});

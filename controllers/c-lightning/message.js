@@ -15,7 +15,7 @@ exports.signMessage = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Message', 'Sign Message Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -30,6 +30,6 @@ exports.verifyMessage = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Message', 'Verify Message Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

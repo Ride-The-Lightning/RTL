@@ -71,7 +71,7 @@ export class ECLEffects implements OnDestroy {
           }),
           catchError((err) => {
             const code = this.commonService.extractErrorCode(err);
-            const msg = (code === 'ECONNREFUSED') ? 'Unable to Connect to Eclair Server.' : this.commonService.extractErrorMessage(err);
+            const msg = (code === 503) ? 'Unable to Connect to Eclair Server.' : this.commonService.extractErrorMessage(err);
             this.router.navigate(['/error'], { state: { errorCode: code, errorMessage: msg } });
             this.handleErrorWithoutAlert('FetchInfo', UI_MESSAGES.GET_NODE_INFO, 'Fetching Node Info Failed.', { status: code, error: msg });
             return of({ type: RTLActions.VOID });

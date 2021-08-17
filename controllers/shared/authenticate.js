@@ -29,7 +29,7 @@ handleMultipleFailedAttemptsError = (failed, currentTime, errMsg) => {
   if (failed.count >= ALLOWED_LOGIN_ATTEMPTS && (currentTime <= (failed.lastTried + LOCKING_PERIOD))) {
     return {
       message: "Multiple Failed Login Attempts!",
-      error: "Application locked for " + (LOCKING_PERIOD/ONE_MINUTE)  + " minutes due to multiple failed login attempts! Try again after " + common.convertTimestampToTime((failed.lastTried + LOCKING_PERIOD)/1000) + "!"
+      error: "Application locked for " + (LOCKING_PERIOD/ONE_MINUTE)  + " minutes due to multiple failed attempts!\nTry again after " + common.convertTimestampToTime((failed.lastTried + LOCKING_PERIOD)/1000) + "!"
     };
   } else {
     return {
@@ -60,7 +60,7 @@ exports.authenticateUser = (req, res, next) => {
     } else {
       const errMsg = 'SSO Authentication Failed! Access key too short or does not match.';
       const err = common.handleError({ statusCode: 406, message: 'SSO Authentication Error', error: errMsg },  'Authenticate', errMsg);
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     }
   } else {
     const currentTime = new Date().getTime();
@@ -94,7 +94,7 @@ exports.resetPassword = (req, res, next) => {
   if (+common.rtl_sso) {
     const errMsg = 'Password cannot be reset for SSO authentication';
     const err = common.handleError({ statusCode: 401, message: 'Password Reset Error', error: errMsg },  'Authenticate', errMsg);
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   } else {
     const currPassword = req.body.currPassword;
     if (common.rtl_pass === currPassword) {
@@ -105,7 +105,7 @@ exports.resetPassword = (req, res, next) => {
     } else {
       const errMsg = 'Incorrect Old Password';
       const err = common.handleError({ statusCode: 401, message: 'Password Reset Error', error: errMsg },  'Authenticate', errMsg);
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     }
   }
 };

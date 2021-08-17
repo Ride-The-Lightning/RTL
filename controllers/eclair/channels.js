@@ -108,7 +108,7 @@ exports.getChannels = (req, res, next) => {
     })
     .catch(errRes => {
       const err = common.handleError(errRes,  'Channels', 'List Channels Error');
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     });
   }
 };
@@ -125,7 +125,7 @@ exports.getChannelStats = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Channels', 'Get Channel Stats Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });  
 }
 
@@ -142,7 +142,7 @@ exports.openChannel = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Channels', 'Open Channel Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 }
 
@@ -159,7 +159,7 @@ exports.updateChannelRelayFee = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Channels', 'Update Relay Fee Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 }
 
@@ -181,7 +181,7 @@ exports.closeChannel = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Channels', 'Close Channel Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 }
 

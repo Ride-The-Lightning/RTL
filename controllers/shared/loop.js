@@ -9,7 +9,7 @@ exports.loopOut = (req, res, next) => {
   if (options.url === '') { 
     const errMsg = 'Loop Server URL is missing in the configuration.';
     const err = common.handleError({ statusCode: 500, message: 'Loop Out Error', error: errMsg },  'Loop', errMsg);
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   }
   options.url = options.url + '/v1/loop/out';
   options.body = {
@@ -33,7 +33,7 @@ exports.loopOut = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Loop', 'Loop Out Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -43,7 +43,7 @@ exports.loopOutTerms = (req, res, next) => {
   if (options.url === '') { 
     const errMsg = 'Loop Server URL is missing in the configuration.';
     const err = common.handleError({ statusCode: 500, message: 'Loop Out Terms Error', error: errMsg },  'Loop', errMsg);
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   }
   options.url = options.url + '/v1/loop/out/terms';
   request(options).then(function (body) {
@@ -53,7 +53,7 @@ exports.loopOutTerms = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Loop', 'Loop Out Terms Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -63,7 +63,7 @@ exports.loopOutQuote = (req, res, next) => {
   if (options.url === '') {
     const errMsg = 'Loop Server URL is missing in the configuration.';
     const err = common.handleError({ statusCode: 500, message: 'Loop Out Quotes Error', error: errMsg },  'Loop', errMsg);
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   }
   options.url = options.url + '/v1/loop/out/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
   logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Quote URL', data: options.url});
@@ -76,7 +76,7 @@ exports.loopOutQuote = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Loop', 'Loop Out Quotes Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -86,7 +86,7 @@ exports.loopOutTermsAndQuotes = (req, res, next) => {
   if (options.url === '') {
     const errMsg = 'Loop Server URL is missing in the configuration.';
     const err = common.handleError({ statusCode: 500, message: 'Loop Out Terms & Quotes Error', error: errMsg },  'Loop', errMsg);
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   }
   options.url = options.url + '/v1/loop/out/terms';
   request(options).then(function(terms) {
@@ -108,12 +108,12 @@ exports.loopOutTermsAndQuotes = (req, res, next) => {
     })
     .catch(errRes => {
       const err = common.handleError(errRes,  'Loop', 'Loop Out Terms & Quotes Error');
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     });
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Loop', 'Loop Out Terms & Quotes Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -123,7 +123,7 @@ exports.loopIn = (req, res, next) => {
   if (options.url === '') {
     const errMsg = 'Loop Server URL is missing in the configuration.';
     const err = common.handleError({ statusCode: 500, message: 'Loop In Error', error: errMsg },  'Loop', errMsg);
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   }
   options.url = options.url + '/v1/loop/in';
   options.body = {
@@ -140,7 +140,7 @@ exports.loopIn = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Loop', 'Loop In Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -150,7 +150,7 @@ exports.loopInTerms = (req, res, next) => {
   if (options.url === '') {
     const errMsg = 'Loop Server URL is missing in the configuration.';
     const err = common.handleError({ statusCode: 500, message: 'Loop In Terms Error', error: errMsg },  'Loop', errMsg);
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   }
   options.url = options.url + '/v1/loop/in/terms';
   request(options).then(function (body) {
@@ -160,7 +160,7 @@ exports.loopInTerms = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Loop', 'Loop In Terms Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -170,7 +170,7 @@ exports.loopInQuote = (req, res, next) => {
   if (options.url === '') {
     const errMsg = 'Loop Server URL is missing in the configuration.';
     const err = common.handleError({ statusCode: 500, message: 'Loop In Quotes Error', error: errMsg },  'Loop', errMsg);
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   }
   options.url = options.url + '/v1/loop/in/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
   logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Quote Options', data: options.url});
@@ -183,7 +183,7 @@ exports.loopInQuote = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Loop', 'Loop In Quote Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -193,7 +193,7 @@ exports.loopInTermsAndQuotes = (req, res, next) => {
   if (options.url === '') {
     const errMsg = 'Loop Server URL is missing in the configuration.';
     const err = common.handleError({ statusCode: 500, message: 'Loop In Terms & Quotes Error', error: errMsg },  'Loop', errMsg);
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   }
   options.url = options.url + '/v1/loop/in/terms';
   request(options).then(function(terms) {
@@ -215,12 +215,12 @@ exports.loopInTermsAndQuotes = (req, res, next) => {
     })
     .catch(errRes => {
       const err = common.handleError(errRes,  'Loop', 'Loop In Terms & Quotes Error');
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     });
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Loop', 'Loop In Terms & Quotes Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -230,7 +230,7 @@ exports.swaps = (req, res, next) => {
   if (options.url === '') {
     const errMsg = 'Loop Server URL is missing in the configuration.';
     const err = common.handleError({ statusCode: 500, message: 'List Swaps Error', error: errMsg },  'Loop', errMsg);
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   }
   options.url = options.url + '/v1/loop/swaps';
   request(options).then(function (body) {
@@ -244,7 +244,7 @@ exports.swaps = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Loop', 'List Swaps Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -254,7 +254,7 @@ exports.swap = (req, res, next) => {
   if (options.url === '') {
     const errMsg = 'Loop Server URL is missing in the configuration.';
     const err = common.handleError({ statusCode: 500, message: 'Get Swap Error', error: errMsg },  'Loop', errMsg);
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   }
   options.url = options.url + '/v1/loop/swap/' + req.params.id;
   request(options).then(function (body) {
@@ -264,6 +264,6 @@ exports.swap = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Loop', 'Get Swap Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

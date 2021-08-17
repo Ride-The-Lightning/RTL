@@ -18,7 +18,7 @@ exports.getPayments = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Payments', 'List Payments Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -35,6 +35,6 @@ exports.getAllLightningTransactions = (req, res, next) => {
     res.status(200).json({paymentsAll: values[0], invoicesAll: values[1]});
   }).catch(errRes => {
     const err = common.handleError(errRes,  'Payments', 'All Lightning Transactions Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

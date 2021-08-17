@@ -20,7 +20,7 @@ exports.getInfo = (req, res, next) => {
     if (!options.headers || !options.headers.authorization) {
       const errMsg = 'Eclair Get info failed due to missing or wrong password!';
       const err = common.handleError({ statusCode: 502, message: 'Missing or Wrong Password', error: errMsg },  'GetInfo', errMsg);
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     } else {
       request.post(options).then((body) => {
         logger.log({level: 'DEBUG', fileName: 'GetInfo', msg: 'Get Info Response', data: body});
@@ -30,7 +30,7 @@ exports.getInfo = (req, res, next) => {
       })
       .catch(errRes => {
         const err = common.handleError(errRes,  'GetInfo', 'Get Info Error');
-        res.status(err.statusCode).json({message: err.message, error: err.error});
+        return res.status(err.statusCode).json({message: err.message, error: err.error});
       });
     }
   }

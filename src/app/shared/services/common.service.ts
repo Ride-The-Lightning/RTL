@@ -71,7 +71,11 @@ export class CommonService {
   }
 
   titleCase(str) {
-    return str.charAt(0).toUpperCase() + str.substring(1).toLowerCase();
+    if (str.indexOf('!\n') > 0 || str.indexOf('.\n') > 0) {
+      return str.split('\n').reduce((accumulator, currentStr) => accumulator + currentStr.charAt(0).toUpperCase() + currentStr.substring(1).toLowerCase() + '\n', '');
+    } else {
+      return str.charAt(0).toUpperCase() + str.substring(1).toLowerCase();
+    }
   }
 
   convertCurrency(value: number, from: string, to: string, otherCurrencyUnit: string, fiatConversion: boolean): Observable<any> {

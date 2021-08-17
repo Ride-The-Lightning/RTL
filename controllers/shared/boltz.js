@@ -9,7 +9,7 @@ exports.getInfo = (req, res, next) => {
   if (options.url === '') {
     const errMsg = 'Boltz Server URL is missing in the configuration.';
     const err = common.handleError({ statusCode: 500, message: 'Get Info Error', error: errMsg },  'Boltz', errMsg);
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   }
   options.url = options.url + '/v1/info';
   request(options).then(function (body) {
@@ -19,7 +19,7 @@ exports.getInfo = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Boltz', 'Get Info Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -29,7 +29,7 @@ exports.getServiceInfo = (req, res, next) => {
   if (options.url === '') {
     const errMsg = 'Boltz Server URL is missing in the configuration.';
     const err = common.handleError({ statusCode: 500, message: 'Get Service Information Error', error: errMsg },  'Boltz', errMsg);
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   }
   options.url = options.url + '/v1/serviceinfo';
   request(options).then(function (body) {
@@ -39,7 +39,7 @@ exports.getServiceInfo = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Boltz', 'Get Service Information Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -49,7 +49,7 @@ exports.listSwaps = (req, res, next) => {
   if (options.url === '') {
     const errMsg = 'Boltz Server URL is missing in the configuration.';
     const err = common.handleError({ statusCode: 500, message: 'List Swaps Error', error: errMsg },  'Boltz', errMsg);
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   }
   options.url = options.url + '/v1/listswaps';
   request(options).then(function (body) {
@@ -61,7 +61,7 @@ exports.listSwaps = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Boltz', 'List Swaps Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -71,7 +71,7 @@ exports.getSwapInfo = (req, res, next) => {
   if (options.url === '') {
     const errMsg = 'Boltz Server URL is missing in the configuration.';
     const err = common.handleError({ statusCode: 500, message: 'Get Swap Information Error', error: errMsg },  'Boltz', errMsg);
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   }
   options.url = options.url + '/v1/swap/' + req.params.swapId;
   request(options).then(function (body) {
@@ -81,7 +81,7 @@ exports.getSwapInfo = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Boltz', 'Swap Info Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -91,7 +91,7 @@ exports.createSwap = (req, res, next) => {
   if (options.url === '') {
     const errMsg = 'Boltz Server URL is missing in the configuration.';
     const err = common.handleError({ statusCode: 500, message: 'Create Swap Error', error: errMsg },  'Boltz', errMsg);
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   }
   options.url = options.url + '/v1/createswap';
   options.body = { amount: req.body.amount };
@@ -104,7 +104,7 @@ exports.createSwap = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Boltz', 'Create Swap Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -114,7 +114,7 @@ exports.createReverseSwap = (req, res, next) => {
   if (options.url === '') {
     const errMsg = 'Boltz Server URL is missing in the configuration.';
     const err = common.handleError({ statusCode: 500, message: 'Create Reverse Swap Error', error: errMsg },  'Boltz', errMsg);
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   }
   options.url = options.url + '/v1/createreverseswap';
   options.body = { amount: req.body.amount };
@@ -127,7 +127,7 @@ exports.createReverseSwap = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Boltz', 'Create Reverse Swap Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -137,7 +137,7 @@ exports.createChannel = (req, res, next) => {
   if (options.url === '') {
     const errMsg = 'Boltz Server URL is missing in the configuration.';
     const err = common.handleError({ statusCode: 500, message: 'Create Channel Error', error: errMsg },  'Boltz', errMsg);
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   }
   options.url = options.url + '/v1/createchannel';
   options.body = { amount: req.body.amount };
@@ -150,7 +150,7 @@ exports.createChannel = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Boltz', 'Create Channel Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -160,7 +160,7 @@ exports.deposit = (req, res, next) => {
   if (options.url === '') {
     const errMsg = 'Boltz Server URL is missing in the configuration.';
     const err = common.handleError({ statusCode: 500, message: 'Deposit Error', error: errMsg },  'Boltz', errMsg);
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   }
   options.url = options.url + '/v1/deposit';
   request.post(options).then(depositRes => {
@@ -170,6 +170,6 @@ exports.deposit = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Boltz', 'Deposit Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

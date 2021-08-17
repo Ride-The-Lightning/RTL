@@ -14,7 +14,7 @@ exports.getInfo = (req, res, next) => {
   if (!options.headers || !options.headers['Grpc-Metadata-macaroon']) {
     const errMsg = 'LND Get info failed due to bad or missing macaroon!';
     const err = common.handleError({ statusCode: 502, message: 'Bad or Missing Macaroon', error: errMsg },  'GetInfo', errMsg);
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   } else {
     common.nodes.map(node => { if (node.lnImplementation === 'LND') { connect.getAllNodeAllChannelBackup(node); }});
     request(options).then((body) => {
@@ -24,7 +24,7 @@ exports.getInfo = (req, res, next) => {
       if (!body || search_idx > -1 || body.error) {
         if (body && !body.error) { body.error = 'Error From Server!'; }
         const err = common.handleError(body,  'GetInfo', 'Get Info Error');
-        res.status(err.statusCode).json({message: err.message, error: err.error});
+        return res.status(err.statusCode).json({message: err.message, error: err.error});
       } else {
         logger.log({level: 'INFO', fileName: 'GetInfo', msg: 'LND Node Information Received'});
         res.status(200).json(body);
@@ -32,7 +32,7 @@ exports.getInfo = (req, res, next) => {
     })
     .catch(errRes => {
       const err = common.handleError(errRes,  'GetInfo', 'Get Info Error');
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     });
   }
 };

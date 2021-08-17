@@ -21,7 +21,7 @@ exports.listChannels = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Channels', 'List Channels Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 }
 
@@ -38,7 +38,7 @@ exports.openChannel = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Channels', 'Open Channel Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 }
 
@@ -55,7 +55,7 @@ exports.setChannelFee = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Channels', 'Update Channel Policy Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 }
 
@@ -73,7 +73,7 @@ exports.closeChannel = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Channels', 'Close Channel Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });  
 }
 
@@ -90,7 +90,7 @@ exports.getLocalRemoteBalance = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Channels', 'Local Remote Balance Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -107,6 +107,6 @@ exports.listForwards = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Channels', 'Forwarding History Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

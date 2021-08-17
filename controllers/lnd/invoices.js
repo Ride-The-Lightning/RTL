@@ -14,7 +14,7 @@ exports.getInvoice = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Invoices', 'Get Invoice Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });  
 };
 
@@ -39,7 +39,7 @@ exports.listInvoices = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Invoices', 'List Invoices Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -65,6 +65,6 @@ exports.addInvoice = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Invoices', 'Add Invoice Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

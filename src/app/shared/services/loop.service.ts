@@ -143,13 +143,13 @@ export class LoopService implements OnDestroy {
       errMsg = 'Unauthorized User.';
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
-    } else if (err.error.code === 'ECONNREFUSED' || err.error.error.code === 'ECONNREFUSED') {
+    } else if (err.status === 503) {
       errMsg = 'Unable to Connect to Loop Server.';
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: 'ERROR',
           alertTitle: 'Loop Not Connected',
-          message: { code: 'ECONNREFUSED', message: 'Unable to Connect to Loop Server', URL: actionName },
+          message: { code: err.status, message: 'Unable to Connect to Loop Server', URL: actionName },
           component: ErrorMessageComponent
         }
       }));
@@ -167,13 +167,13 @@ export class LoopService implements OnDestroy {
       errMsg = 'Unauthorized User.';
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
-    } else if (err.error.code === 'ECONNREFUSED' || err.error.error.code === 'ECONNREFUSED') {
+    } else if (err.status === 503) {
       errMsg = 'Unable to Connect to Loop Server.';
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: 'ERROR',
           alertTitle: 'Loop Not Connected',
-          message: { code: 'ECONNREFUSED', message: 'Unable to Connect to Loop Server', URL: errURL },
+          message: { code: err.status, message: 'Unable to Connect to Loop Server', URL: errURL },
           component: ErrorMessageComponent
         }
       }));

@@ -15,7 +15,7 @@ exports.deleteExpiredInvoice = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Invoice', 'Delete Invoice Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });  
 };
 
@@ -35,7 +35,7 @@ exports.listInvoices = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Invoice', 'List Invoices Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -51,6 +51,6 @@ exports.addInvoice = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Invoice', 'Add Invoice Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

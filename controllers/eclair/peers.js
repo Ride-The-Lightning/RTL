@@ -46,7 +46,7 @@ exports.getPeers = (req, res, next) => {
     })
     .catch(errRes => {
       const err = common.handleError(errRes,  'Peers', 'List Peers Error');
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     });
   }
 };
@@ -62,12 +62,12 @@ exports.connectPeer = (req, res, next) => {
   }
   request.post(options, (error, response, body) => {
     logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Add Peer Response', data: body});
-    if (typeof body === 'string' && body.included('already connected')) {
+    if (typeof body === 'string' && body.includes('already connected')) {
       const err = common.handleError({ statusCode: 500, message: 'Connect Peer Error', error: body },  'Peers', body);
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     } else if (typeof body === 'string' && body.includes('connection failed')) {
       const err = common.handleError({ statusCode: 500, message: 'Connect Peer Error', error: body },  'Peers', body);
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     }
     options.url = common.getSelLNServerUrl() + '/peers';
     options.form = {};
@@ -95,11 +95,11 @@ exports.connectPeer = (req, res, next) => {
       }
     }).catch(errRes => {
       const err = common.handleError(errRes,  'Peers', 'Connect Peer Error');
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     });
   }).catch(errRes => {
     const err = common.handleError(errRes,  'Peers', 'Connect Peer Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -120,6 +120,6 @@ exports.deletePeer = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Peers', 'Disconnect Peer Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

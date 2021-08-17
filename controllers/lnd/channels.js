@@ -45,7 +45,7 @@ exports.getAllChannels = (req, res, next) => {
       })
       .catch(errRes => {
         const err = common.handleError(errRes,  'Channels', 'Get All Channel Aliases Error');
-        res.status(err.statusCode).json({message: err.message, error: err.error});
+        return res.status(err.statusCode).json({message: err.message, error: err.error});
       });
     } else {
       body.channels = [];
@@ -55,7 +55,7 @@ exports.getAllChannels = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Channels', 'List Channels Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -88,12 +88,12 @@ exports.getPendingChannels = (req, res, next) => {
     })
     .catch(errRes => {
       const err = common.handleError(errRes,  'Channels', 'Get Pending Channel Aliases Error');
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     });      
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Channels', 'List Pending Channels Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -118,7 +118,7 @@ exports.getClosedChannels = (req, res, next) => {
       })
       .catch(errRes => {
         const err = common.handleError(errRes,  'Channels', 'Get Closed Channel Aliases Error');
-        res.status(err.statusCode).json({message: err.message, error: err.error});
+        return res.status(err.statusCode).json({message: err.message, error: err.error});
       });
     } else {
       body.channels = [];
@@ -127,7 +127,7 @@ exports.getClosedChannels = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Channels', 'List Closed Channels Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -154,7 +154,7 @@ exports.postChannel = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Channels', 'Open Channel Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -176,7 +176,7 @@ exports.postTransactions = (req, res, next) => {
     logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Send Payment Response', data: body});
     if (body.payment_error) {
       const err = common.handleError(bosy.payment_error,  'Channels', 'Send Payment Error');
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     } else {
       logger.log({level: 'INFO', fileName: 'Channels', msg: 'Payment Sent'});
       res.status(201).json(body);
@@ -184,7 +184,7 @@ exports.postTransactions = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Channels', 'Send Payment Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -204,7 +204,7 @@ exports.closeChannel = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Channels', 'Close Channel Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 }
 
@@ -238,6 +238,6 @@ exports.postChanPolicy = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Channels', 'Update Channel Policy Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

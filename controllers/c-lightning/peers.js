@@ -16,7 +16,7 @@ exports.getPeers = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Peers', 'List Peers Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -37,7 +37,7 @@ exports.postPeer = (req, res, next) => {
       res.status(201).json(peers);
       }).catch(errRes => {
         const err = common.handleError(errRes,  'Peers', 'Connect Peer Error');
-        res.status(err.statusCode).json({message: err.message, error: err.error});
+        return res.status(err.statusCode).json({message: err.message, error: err.error});
       });
   });
 };
@@ -54,6 +54,6 @@ exports.deletePeer = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Peers', 'Detach Peer Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

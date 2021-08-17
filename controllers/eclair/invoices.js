@@ -66,7 +66,7 @@ exports.listInvoices = (req, res, next) => {
         })
         .catch(errRes => {
           const err = common.handleError(errRes,  'Invoices', 'List Invoices Error');
-          res.status(err.statusCode).json({message: err.message, error: err.error});
+          return res.status(err.statusCode).json({message: err.message, error: err.error});
         });    
       } else {
         logger.log({level: 'INFO', fileName: 'Invoices', msg: 'Empty List Invoice Received'});
@@ -75,7 +75,7 @@ exports.listInvoices = (req, res, next) => {
     })
     .catch(errRes => {
       const err = common.handleError(errRes,  'Invoices', 'List Invoices Error');
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     });
   }
 };
@@ -93,6 +93,6 @@ exports.createInvoice = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Invoices', 'Create Invoice Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

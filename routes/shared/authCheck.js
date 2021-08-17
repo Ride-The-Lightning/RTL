@@ -9,6 +9,6 @@ module.exports = (req, res, next) => {
   } catch (error) {
     const errMsg = 'Authentication Failed! Please Login First!';
     const err = common.handleError({ statusCode: 401, message: 'Authentication Error', error: errMsg },  'AuthCheck', errMsg);
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   }
 };

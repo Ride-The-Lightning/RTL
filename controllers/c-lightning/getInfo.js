@@ -13,7 +13,7 @@ exports.getInfo = (req, res, next) => {
   if (!options.headers || !options.headers.macaroon) {
     const errMsg = 'C-Lightning get info failed due to bad or missing macaroon!';
     const err = common.handleError({ statusCode: 502, message: 'Bad Macaroon', error: errMsg },  'GetInfo', errMsg);
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   } else {
     request(options).then((body) => {
       logger.log({level: 'DEBUG', fileName: 'GetInfo', msg: 'Node Information', data: body});
@@ -22,7 +22,7 @@ exports.getInfo = (req, res, next) => {
       if (!body || search_idx > -1 || body.error) {
         if (body && !body.error) { body.error = 'Error From Server!'; }
         const err = common.handleError(body,  'GetInfo', 'Get Info Error');
-        res.status(err.statusCode).json({message: err.message, error: err.error});
+        return res.status(err.statusCode).json({message: err.message, error: err.error});
       } else {
         body.lnImplementation = 'C-Lightning';
         let chainObj = { chain: '', network: '' };
@@ -52,7 +52,7 @@ exports.getInfo = (req, res, next) => {
     })
     .catch(errRes => {
       const err = common.handleError(errRes,  'GetInfo', 'Get Info Error');
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     });
   }
 };

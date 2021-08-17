@@ -17,7 +17,7 @@ exports.getTransactions = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Transactions', 'List Transactions Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -42,6 +42,6 @@ exports.postTransactions = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Transactions', 'Send Transaction Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

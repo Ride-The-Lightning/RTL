@@ -14,7 +14,7 @@ exports.getRoute = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Network', 'Query Routes Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -29,7 +29,7 @@ exports.listNode = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Network', 'Node Lookup Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -44,7 +44,7 @@ exports.listChannel = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Network', 'Channel Lookup Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -58,6 +58,6 @@ exports.feeRates = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Network', 'Fee Rates Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

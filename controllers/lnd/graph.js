@@ -23,7 +23,7 @@ exports.getDescribeGraph = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Graph', 'Describe Graph Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -38,7 +38,7 @@ exports.getGraphInfo = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Graph', 'Graph Information Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -53,7 +53,7 @@ exports.getGraphNode = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Graph', 'Get Node Info Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });  
 };
 
@@ -68,7 +68,7 @@ exports.getGraphEdge = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Graph', 'Get Edge Info Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -96,7 +96,7 @@ exports.getQueryRoutes = (req, res, next) => {
       })
       .catch(errRes => {
         const err = common.handleError(errRes,  'Graph', 'Get Query Routes Error');
-        res.status(err.statusCode).json({message: err.message, error: err.error});
+        return res.status(err.statusCode).json({message: err.message, error: err.error});
       });    
     } else {
       logger.log({level: 'INFO', fileName: 'Graph', msg: 'Graph Routes Received'});
@@ -105,7 +105,7 @@ exports.getQueryRoutes = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Graph', 'Get Query Routes Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -134,7 +134,7 @@ exports.getRemoteFeePolicy = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Graph', 'Remote Fee Policy Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -149,7 +149,7 @@ exports.getAliasesForPubkeys = (req, res, next) => {
     })
     .catch(errRes => {
       const err = common.handleError(errRes,  'Graph', 'Get Aliases for Pubkeys Error');
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     });    
   } else {
     res.status(200).json([]);

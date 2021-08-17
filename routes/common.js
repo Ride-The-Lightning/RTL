@@ -246,8 +246,8 @@ common.handleError = (errRes, fileName, errMsg) => {
   const msgStr = '\r\n[' + new Date().toISOString() + '] ERROR: ' + fileName + ' => ' + errMsg + ': ' + (typeof err === 'object' ? JSON.stringify(err) : (typeof err === 'string') ? err : 'Unknown Error');
   console.error(msgStr);
   if (common.selectedNode) { fs.appendFile(common.selectedNode.log_file, msgStr, () => {}) }
-  return {
-    statusCode: err.statusCode ? err.statusCode : 500,
+  const newErrorObj = {
+    statusCode: err.statusCode ? err.statusCode : err.status ? err.status : (err.error && err.error.code && err.error.code === 'ECONNREFUSED') ? 503 : 500,
     message: err.message ? err.message : errMsg, 
     error: (
       (err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : 
@@ -257,6 +257,7 @@ common.handleError = (errRes, fileName, errMsg) => {
       (typeof err === 'string') ? err : 'Unknown Error'
     )
   };
+  return newErrorObj;
 }
 
 common.getRequestIP = (req) => {

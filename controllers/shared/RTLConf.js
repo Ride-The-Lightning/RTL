@@ -19,7 +19,6 @@ exports.updateSelectedNode = (req, res, next) => {
 exports.getRTLConfig = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Getting RTL Configuration..'});
   var confFile = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';
-  logger.log({level: 'DEBUG', fileName: 'RTLConf', msg: 'Getting Node Config'});
   fs.readFile(confFile, 'utf8', function(errRes, data) {
     if (errRes) {
       if (errRes.code === 'ENOENT') {
@@ -28,7 +27,7 @@ exports.getRTLConfig = (req, res, next) => {
       } else {
         const errMsg = 'Get Node Config Error';
         const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes },  'RTLConf', errMsg);
-        res.status(err.statusCode).json({message: err.error, error: err.error});
+        return res.status(err.statusCode).json({message: err.error, error: err.error});
       }
     } else {
       const nodeConfData = JSON.parse(data);
@@ -104,7 +103,7 @@ exports.updateUISettings = (req, res, next) => {
   catch (errRes) {
     const errMsg = 'Update Node Settings Error';
     const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes },  'RTLConf', errMsg);
-    res.status(err.statusCode).json({message: err.error, error: err.error});
+    return res.status(err.statusCode).json({message: err.error, error: err.error});
   }
 };
 
@@ -124,7 +123,7 @@ exports.update2FASettings = (req, res, next) => {
   catch (errRes) {
     const errMsg = 'Update 2FA Settings Error';
     const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes },  'RTLConf', errMsg);
-    res.status(err.statusCode).json({message: err.error, error: err.error});
+    return res.status(err.statusCode).json({message: err.error, error: err.error});
   }
 };
 
@@ -142,7 +141,7 @@ exports.updateDefaultNode = (req, res, next) => {
   catch (errRes) {
     const errMsg = 'Update Default Node Error';
     const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes },  'RTLConf', errMsg);
-    res.status(err.statusCode).json({message: err.error, error: err.error});
+    return res.status(err.statusCode).json({message: err.error, error: err.error});
   }
 };
 
@@ -170,7 +169,7 @@ exports.getConfig = (req, res, next) => {
     if (errRes) {
       const errMsg = 'Reading Config Error';
       const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes },  'RTLConf', errMsg);
-      res.status(err.statusCode).json({message: err.error, error: err.error});
+      return res.status(err.statusCode).json({message: err.error, error: err.error});
     } else {
       let jsonConfig = {};
       if (fileFormat === 'JSON') {
@@ -200,7 +199,7 @@ exports.getFile = (req, res, next) => {
       if (errRes.code && errRes.code === 'ENOENT') { errRes.code = 'File Not Found!'; }
       const errMsg = 'Reading File Error';
       const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes },  'RTLConf', errMsg);
-      res.status(err.statusCode).json({message: err.error, error: err.error});
+      return res.status(err.statusCode).json({message: err.error, error: err.error});
     } else {
       logger.log({level: 'DEBUG', fileName: 'RTLConf', msg: 'File Data', data: data});
       logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'File Data Received'});
@@ -219,7 +218,7 @@ exports.getCurrencyRates = (req, res, next) => {
   .catch(errRes => {
     const errMsg = 'Get Rates Error';
     const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes },  'RTLConf', errMsg);
-    res.status(err.statusCode).json({message: err.error, error: err.error});
+    return res.status(err.statusCode).json({message: err.error, error: err.error});
   });
 };
 
@@ -238,7 +237,7 @@ exports.updateSSO = (req, res, next) => {
   catch (errRes) {
     const errMsg = 'Update SSO Error';
     const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes },  'RTLConf', errMsg);
-    res.status(err.statusCode).json({message: err.error, error: err.error});
+    return res.status(err.statusCode).json({message: err.error, error: err.error});
   }
 };
 
@@ -293,7 +292,7 @@ exports.updateServiceSettings = (req, res, next) => {
   catch (errRes) {
     const errMsg = 'Update Service Settings Error';
     const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes },  'RTLConf', errMsg);
-    res.status(err.statusCode).json({message: err.error, error: err.error});
+    return res.status(err.statusCode).json({message: err.error, error: err.error});
   }
 };
 

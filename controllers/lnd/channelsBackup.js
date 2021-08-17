@@ -52,7 +52,7 @@ exports.getBackup = (req, res, next) => {
       }
       catch (errRes) {
         const err = common.handleError(errRes,  'ChannelsBackup', 'Backup Channels Error');
-        res.status(err.statusCode).json({message: err.message, error: err.error});
+        return res.status(err.statusCode).json({message: err.message, error: err.error});
       }
     }
   }
@@ -61,7 +61,7 @@ exports.getBackup = (req, res, next) => {
     fs.writeFile(channel_backup_file, JSON.stringify(body), function(errRes) {
       if (errRes) {
         const err = common.handleError(errRes,  'ChannelsBackup', 'Backup Channels Error');
-        res.status(err.statusCode).json({message: err.message, error: err.error});
+        return res.status(err.statusCode).json({message: err.message, error: err.error});
       } else {
         logger.log({level: 'INFO', fileName: 'ChannelBackup', msg: 'Channel Backup Finished'});
         res.status(200).json({ message: message });
@@ -70,7 +70,7 @@ exports.getBackup = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'ChannelsBackup', 'Backup Channels Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -94,13 +94,13 @@ exports.postBackupVerify = (req, res, next) => {
       } else {
         const errMsg = 'Channel backup to verify does not Exist.';
         const err = common.handleError({ statusCode: 404, message: 'Verify Channel Error', error: errMsg },  'ChannelBackup', errMsg);
-        res.status(err.statusCode).json({message: err.message, error: err.error});
+        return res.status(err.statusCode).json({message: err.message, error: err.error});
       }
     } else {
       verify_backup = '';
       const errMsg = 'Channel backup to verify does not Exist.';
       const err = common.handleError({ statusCode: 404, message: 'Verify Channel Error', error: errMsg },  'ChannelBackup', errMsg);
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     }
   } else {
     message = 'Channel Verify Successful.';
@@ -113,7 +113,7 @@ exports.postBackupVerify = (req, res, next) => {
       verify_backup = '';
       const errMsg = 'Channel backup to verify does not Exist.';
       const err = common.handleError({ statusCode: 404, message: 'Verify Channel Error', error: errMsg },  'ChannelBackup', errMsg);
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     }
   }
   if (verify_backup !== '') {
@@ -124,7 +124,7 @@ exports.postBackupVerify = (req, res, next) => {
     })
     .catch(errRes => {
       const err = common.handleError(errRes,  'ChannelsBackup', 'Verify Channels Error');
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     });
   }
 };
@@ -149,7 +149,7 @@ exports.postRestore = (req, res, next) => {
       } else {
         const errMsg = 'Channel backup to restore does not Exist.';
         const err = common.handleError({ statusCode: 404, message: 'Restore Channel Error', error: errMsg },  'ChannelBackup', errMsg);
-        res.status(err.statusCode).json({message: err.message, error: err.error});
+        return res.status(err.statusCode).json({message: err.message, error: err.error});
       }
     } else if (downloaded_exists) {
       restore_backup = fs.readFileSync(channel_restore_file + 'backup-channel-all.bak', 'utf-8');
@@ -159,13 +159,13 @@ exports.postRestore = (req, res, next) => {
       } else {
         const errMsg = 'Channel backup to restore does not Exist.';
         const err = common.handleError({ statusCode: 404, message: 'Restore Channel Error', error: errMsg },  'ChannelBackup', errMsg);
-        res.status(err.statusCode).json({message: err.message, error: err.error});
+        return res.status(err.statusCode).json({message: err.message, error: err.error});
       }
     } else {
       restore_backup = '';
       const errMsg = 'Channel backup to restore does not Exist.';
       const err = common.handleError({ statusCode: 404, message: 'Restore Channel Error', error: errMsg },  'ChannelBackup', errMsg);
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     }
   } else {
     message = 'Channel Restore Successful.';
@@ -178,18 +178,19 @@ exports.postRestore = (req, res, next) => {
       restore_backup = '';
       const errMsg = 'Channel backup to restore does not Exist.';
       const err = common.handleError({ statusCode: 404, message: 'Restore Channel Error', error: errMsg },  'ChannelBackup', errMsg);
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     }
   }
   if (restore_backup !== '') {
     request.post(options).then(function (body) {
       logger.log({level: 'DEBUG', fileName: 'ChannelBackup', msg: 'Channel Backup Restore', data: body});
+      if(req.params.channelPoint === 'ALL') { channel_restore_file = channel_restore_file + 'channel-all.bak'; }
       fs.rename(channel_restore_file, channel_restore_file + '.restored', () => {
         getFilesList(getFilesListRes => {
           if (getFilesListRes.error) {
             const errMsg = getFilesListRes.error;
             const err = common.handleError({ statusCode: 500, message: 'Restore Channel Error', error: errMsg },  'ChannelBackup', errMsg);
-            res.status(err.statusCode).json({message: err.error, list: getFilesListRes});
+            return res.status(err.statusCode).json({message: err.error, list: getFilesListRes});
           } else {
             logger.log({level: 'INFO', fileName: 'ChannelBackup', msg: 'Channel Restored'});
             return res.status(201).json({ message: message, list: getFilesListRes });
@@ -199,7 +200,7 @@ exports.postRestore = (req, res, next) => {
     })
     .catch(errRes => {
       const err = common.handleError(errRes,  'ChannelsBackup', 'Restore Channel Error');
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     });
   }
 };

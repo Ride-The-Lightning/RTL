@@ -34,7 +34,7 @@ exports.getPeers = (req, res, next) => {
     })
   }).catch(errRes => {
     const err = common.handleError(errRes,  'Peers', 'List Peers Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -43,7 +43,7 @@ exports.postPeer = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/peers';
   options.form = JSON.stringify({ 
-    addr: { host: req.body.host, pubkey: req.body.pubkey },
+    // addr: { host: req.body.host, pubkey: req.body.pubkey },
     perm: req.body.perm
   });
   request.post(options, (error, response, body) => {
@@ -64,7 +64,7 @@ exports.postPeer = (req, res, next) => {
       })
       .catch(errRes => {
         const err = common.handleError(errRes,  'Peers', 'Connect Peer Error');
-        res.status(err.statusCode).json({message: err.message, error: err.error});
+        return res.status(err.statusCode).json({message: err.message, error: err.error});
       });
     })
   });
@@ -82,6 +82,6 @@ exports.deletePeer = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Peers', 'Disconnect Peer Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

@@ -14,6 +14,6 @@ exports.getNewAddress = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'NewAddress', 'New Address Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

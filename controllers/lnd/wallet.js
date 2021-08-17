@@ -18,7 +18,7 @@ exports.genSeed = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Wallet', 'Gen Seed Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 }
 
@@ -56,18 +56,18 @@ exports.operateWallet = (req, res, next) => {
     if (!body) {
       const errMsg = error ? error : err_message;
       const err = common.handleError({ statusCode: 500, message: 'Wallet Error', error: errMsg },  'Wallet', errMsg);
-      res.status(err.statusCode).json({message: err.error, error: err.error});
+      return res.status(err.statusCode).json({message: err.error, error: err.error});
     } else if (search_idx > -1) {
       const errMsg = err_message;
       const err = common.handleError({ statusCode: 500, message: 'Wallet Error', error: errMsg },  'Wallet', errMsg);
-      res.status(err.statusCode).json({message: err.error, error: err.error});
+      return res.status(err.statusCode).json({message: err.error, error: err.error});
     } else if (body.error) {
       if ((body.code === 1 && body.error === 'context canceled') || (body.code === 14 && body.error === 'transport is closing')) {
         res.status(201).json('Successful');  
       } else {
         const errMsg = (body.error && typeof body.error === 'object') ? JSON.stringify(body.error) : (body.error && typeof body.error === 'string') ? body.error : err_message;
         const err = common.handleError({ statusCode: 500, message: 'Wallet Error', error: errMsg },  'Wallet', errMsg);
-        res.status(err.statusCode).json({message: err.error, error: err.error});
+        return res.status(err.statusCode).json({message: err.error, error: err.error});
       }
     } else {
       logger.log({level: 'INFO', fileName: 'Wallet', msg: 'Wallet Unlocked/Initialized'});
@@ -79,7 +79,7 @@ exports.operateWallet = (req, res, next) => {
       res.status(201).json('Successful');  
     } else {
       const err = common.handleError(errRes, 'Wallet', err_message);
-      res.status(err.statusCode).json({message: err.message, error: err.error});
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     }
   });
 };
@@ -100,7 +100,7 @@ exports.getUTXOs = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Wallet', 'List UTXOs Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 }
 
@@ -126,7 +126,7 @@ exports.bumpFee = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Wallet', 'Bump Fee Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 }
 
@@ -147,7 +147,7 @@ exports.labelTransaction = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Wallet', 'Label Transaction Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 }
 
@@ -170,7 +170,7 @@ exports.leaseUTXO = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Wallet', 'Lease UTXO Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 }
 
@@ -192,6 +192,6 @@ exports.releaseUTXO = (req, res, next) => {
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Wallet', 'Release UTXO Error');
-    res.status(err.statusCode).json({message: err.message, error: err.error});
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 }

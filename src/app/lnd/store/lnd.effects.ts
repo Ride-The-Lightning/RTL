@@ -105,7 +105,7 @@ export class LNDEffects implements OnDestroy {
             this.handleErrorWithoutAlert('FetchInfo', UI_MESSAGES.GET_NODE_INFO, 'Fetching Node Info Failed.', err);
           } else {
             const code = this.commonService.extractErrorCode(err);
-            const msg = (code === 'ECONNREFUSED') ? 'Unable to Connect to LND Server.' : this.commonService.extractErrorMessage(err);
+            const msg = (code === 503) ? 'Unable to Connect to LND Server.' : this.commonService.extractErrorMessage(err);
             this.router.navigate(['/error'], { state: { errorCode: code, errorMessage: msg } });
             this.handleErrorWithoutAlert('FetchInfo', UI_MESSAGES.GET_NODE_INFO, 'Fetching Node Info Failed.', { status: code, error: msg });
           }

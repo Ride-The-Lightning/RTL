@@ -350,20 +350,18 @@ connect.refreshCookie = (cookieFile) => {
 }
 
 connect.logEnvVariables = () => {
-  if (common.nodes && common.nodes.length > 0) {
-    common.nodes.forEach((node, idx) => {
-      logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'PORT: ' + common.port, node });
-      logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'HOST: ' + common.host, node });
-      logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + common.selectedNode.index });
-      logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'SSO: ' + common.rtl_sso, node });
-      logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + common.logout_redirect_link + '\r\n', node });
-      logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'INDEX: ' + node.index, node });
-      logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN NODE: ' + node.ln_node, node });
-      logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + node.ln_implementation, node });
-      logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + node.fiat_conversion, node });
-      logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + node.currency_unit, node });
-      logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + node.ln_server_url, node });
-    });
+  if (common.selectedNode && common.selectedNode.index) {
+    logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'PORT: ' + common.port});
+    logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'HOST: ' + common.host });
+    logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'SSO: ' + common.rtl_sso });
+    logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + common.selectedNode.index });
+    logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'INDEX: ' + common.selectedNode.index });
+    logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN NODE: ' + common.selectedNode.ln_node });
+    logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + common.selectedNode.ln_implementation });
+    logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + common.selectedNode.fiat_conversion });
+    logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + common.selectedNode.currency_unit });
+    logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + common.selectedNode.ln_server_url });
+    logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + common.logout_redirect_link + '\r\n' });
   }
 }
 
