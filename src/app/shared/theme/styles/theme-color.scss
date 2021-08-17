@@ -251,6 +251,7 @@
   .table-actions-select {
     padding: 0.5rem 1rem;
     margin: 0.7rem 0;
+    min-width: 10rem;
     width: 10rem;
     float: right;
     & .mat-select-placeholder {

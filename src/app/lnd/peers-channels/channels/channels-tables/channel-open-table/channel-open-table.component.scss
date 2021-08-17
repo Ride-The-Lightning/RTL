@@ -9,9 +9,16 @@
 }
 
 .mat-column-balancedness {
-  padding-left: 2rem;
   flex: 0 0 20%;
   width: 20%;
+  @include for_screensize(tab-land) {
+    flex: 0 0 35%;
+    width: 35%;
+  }
+  @include for_screensize(tab-port) {
+    flex: 0 0 25%;
+    width: 25%;
+  }
 }
 
 .mat-column-uptime, .mat-column-local_balance, .mat-column-remote_balance, .mat-column-total_satoshis_sent, .mat-column-total_satoshis_received {
@@ -19,7 +26,16 @@
   width: 10%;
   white-space: nowrap;
   overflow: hidden;  
-  text-overflow: ellipsis;  
+  text-overflow: ellipsis;
+  @include for_screensize(tab-land) {
+    white-space: unset;
+    flex: 1 1 25%;
+    width: 25%;
+  }
+  @include for_screensize(tab-port) {
+    flex: 0 0 15%;
+    width: 15%;
+  }
   @include for_screensize(phone) {
     white-space: unset;
   }
@@ -30,7 +46,7 @@
   & .bordered-box.table-actions-select {
     flex: 0 0 100%;
     @include for_screensize(tab-port) {
-      flex: 0 0 60%;
+      flex: 0 0 90%;
     }
     @include for_screensize(phone) {
       flex: 0 0 80%;
