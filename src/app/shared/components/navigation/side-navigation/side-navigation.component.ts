@@ -93,7 +93,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
         if (window.innerWidth <= 414) {
           this.smallScreen = true;
         }
-        if (this.settings.lnServerUrl) {
+        if (this.selNode && this.selNode.lnImplementation) {
           this.filterSideMenuNodes();
         }
         this.logger.info(rtlStore);
@@ -138,22 +138,18 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   }
 
   filterSideMenuNodes() {
-    if (this.selNode && this.selNode.lnImplementation) {
-      switch (this.selNode.lnImplementation.toUpperCase()) {
-        case 'CLT':
-          this.loadCLTMenu();
-          break;
+    switch (this.selNode.lnImplementation.toUpperCase()) {
+      case 'CLT':
+        this.loadCLTMenu();
+        break;
 
-        case 'ECL':
-          this.loadECLMenu();
-          break;
+      case 'ECL':
+        this.loadECLMenu();
+        break;
 
-        default:
-          this.loadLNDMenu();
-          break;
-      }
-    } else {
-      this.loadLNDMenu();
+      default:
+        this.loadLNDMenu();
+        break;
     }
   }
 

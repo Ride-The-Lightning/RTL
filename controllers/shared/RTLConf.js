@@ -16,6 +16,46 @@ exports.updateSelectedNode = (req, res, next) => {
   res.status(200).json({status: 'Selected Node Updated To: ' + JSON.stringify(responseVal) + '!'});
 };
 
+exports.getRTLConfigInitial = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Getting Initial RTL Configuration..'});
+  var confFile = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';
+  fs.readFile(confFile, 'utf8', function(errRes, data) {
+    if (errRes) {
+      if (errRes.code === 'ENOENT') {
+        logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Node config does not exist!', error: {error: 'Node config does not exist.'}});
+        res.status(200).json({ defaultNodeIndex: 0, selectedNodeIndex: 0, sso: {}, nodes: [] });
+      } else {
+        const errMsg = 'Get Node Config Error';
+        const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes },  'RTLConf', errMsg);
+        return res.status(err.statusCode).json({message: err.error, error: err.error});
+      }
+    } else {
+      const nodeConfData = JSON.parse(data);
+      const sso = { rtlSSO: common.rtl_sso, logoutRedirectLink: common.logout_redirect_link };
+      const enable2FA = !common.rtl_secret2fa ? false : true;
+      var nodesArr = [];
+      if (common.nodes && common.nodes.length > 0) {
+        common.nodes.forEach((node, i) => {
+          const settings = {};
+          settings.userPersona = node.user_persona ? node.user_persona : 'MERCHANT';
+          settings.themeMode = (node.theme_mode) ? node.theme_mode : 'DAY';
+          settings.themeColor = (node.theme_color) ? node.theme_color : 'PURPLE';
+          settings.fiatConversion = (node.fiat_conversion) ? !!node.fiat_conversion : false;
+          settings.currencyUnit = node.currency_unit;
+          nodesArr.push({
+            index: node.index,
+            lnNode: node.ln_node,
+            lnImplementation: node.ln_implementation,
+            settings: settings,
+            authentication: {}})
+        });
+      }
+      logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Initial RTL Configuration Received'});
+      res.status(200).json({ defaultNodeIndex: nodeConfData.defaultNodeIndex, selectedNodeIndex: common.selectedNode.index, sso: sso, enable2FA: enable2FA, nodes: nodesArr });
+    }
+  });
+};
+
 exports.getRTLConfig = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Getting RTL Configuration..'});
   var confFile = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';

@@ -193,7 +193,11 @@ export class RTLEffects implements OnDestroy {
         }
         this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_RTL_CONFIG));
         this.store.dispatch(new RTLActions.UpdateAPICallStatus({ action: 'FetchRTLConfig', status: APICallStatusEnum.INITIATED }));
-        return this.httpClient.get(environment.CONF_API + '/rtlconf');
+        if (this.sessionService.getItem('token')) {
+          return this.httpClient.get(environment.CONF_API + '/rtlconf');
+        } else {
+          return this.httpClient.get(environment.CONF_API + '/rtlconfinit');
+        }
       }),
       map((rtlConfig: RTLConfiguration) => {
         this.logger.info(rtlConfig);
@@ -575,14 +579,13 @@ export class RTLEffects implements OnDestroy {
   setLoggedInDetails(defaultPassword: boolean, postRes: any, rootStore: any) {
     this.logger.info('Successfully Authorized!');
     this.SetToken(postRes.token);
+    this.store.dispatch(new RTLActions.FetchRTLConfig());
     rootStore.selNode.settings.currencyUnits = [...CURRENCY_UNITS, rootStore.selNode.settings.currencyUnit];
     this.sessionService.setItem('defaultPassword', defaultPassword);
     if (defaultPassword) {
       this.sessionService.setItem('defaultPassword', 'true');
       this.store.dispatch(new RTLActions.OpenSnackBar('Reset your password.'));
       this.router.navigate(['/settings/auth']);
-    } else {
-      this.store.dispatch(new RTLActions.SetSelelectedNode({ uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: rootStore.selNode, isInitialSetup: true }));
     }
   }
 
