@@ -111,6 +111,12 @@
       }
     }
   }
+  .mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
+    color: $primary-darker;
+  }
+  .mat-select-panel {
+    background-color: mat.get-color-from-palette($background, dialog);
+  }  
   .mat-tree {
     background: mat.get-color-from-palette($background, dialog);
   }

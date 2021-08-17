@@ -48,6 +48,7 @@ Contributions via code is the most sought after contribution and something we en
 	
 ##### Node Server for Development
 * To run RTL node server in development mode, go to workspace/RTL and excute `npm run server` in the command window. This will run the script named `server` defined in package.json. This script sets the node environment as development and starts the server from rtl.js. Nodemon restarts the node application when file changes in the directory are detected.
+* This `server` script has been written for windows machine. Please update the script to set the `NODE_ENV=development` according to your machine's OS.
 * To check all available scripts for the project, explore the `scripts` section of package.json. 
 ![](../screenshots/node-server-dev.jpg)
 
