@@ -9,7 +9,8 @@ $teal-primary: mat.define-palette(mat.$teal-palette, 800, 300, A200);
 $teal-accent:  mat.define-palette(mat.$gray-palette, 800, 600, 900);
 $teal-accent-night:  mat.define-palette($mat-white, 300, 600, 900);
 $teal-warn: mat.define-palette($red-warn, 500);
+$teal-warn-night: mat.define-palette($red-warn, A700);
 
-$teal-night-theme: create-dark-bright-theme($teal-primary, $teal-accent-night, $teal-warn);
+$teal-night-theme: create-dark-bright-theme($teal-primary, $teal-accent-night, $teal-warn-night);
 
 $teal-day-theme: mat.define-light-theme($teal-primary, $teal-accent, $teal-warn);

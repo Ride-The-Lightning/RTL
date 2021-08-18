@@ -248,13 +248,14 @@ common.handleError = (errRes, fileName, errMsg) => {
   if (common.selectedNode) { fs.appendFile(common.selectedNode.log_file, msgStr, () => {}) }
   const newErrorObj = {
     statusCode: err.statusCode ? err.statusCode : err.status ? err.status : (err.error && err.error.code && err.error.code === 'ECONNREFUSED') ? 503 : 500,
-    message: err.message ? err.message : errMsg, 
+    message: (err.error && err.error.message) ? err.error.message : err.message ? err.message : errMsg, 
     error: (
       (err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : 
       (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error : 
-      (err.error && typeof err.error === 'string') ? err.error : 
-      (err.error && typeof err.error === 'object') ? JSON.stringify(err.error) : 
-      (typeof err === 'string') ? err : 'Unknown Error'
+      (err.error && err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message :
+      (err.error && err.error.message && typeof err.error.message === 'string') ? err.error.message :
+      (err.message && typeof err.message === 'string') ? err.message :
+      (err.error) ? err.error : (typeof err === 'string') ? err : 'Unknown Error'
     )
   };
   return newErrorObj;
