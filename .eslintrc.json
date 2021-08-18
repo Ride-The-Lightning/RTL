@@ -122,7 +122,6 @@
         "no-undefined": "error",
         "block-spacing": "error",
         "brace-style": "error",
-        "capitalized-comments": "error",
         "comma-style": "error",
         "func-call-spacing": "error",
         "func-name-matching": "error",
