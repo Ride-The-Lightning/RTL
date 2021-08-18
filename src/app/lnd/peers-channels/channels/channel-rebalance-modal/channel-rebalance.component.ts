@@ -29,7 +29,6 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   public invoices: ListInvoices = {};
   public selChannel: Channel = {};
   public activeChannels = [];
-  public sortedActiveChannels: Channel[] = [];
   public filteredActiveChannels: Observable<Channel[]>;
   public feeLimitTypes = [];
   public queryRoute: QueryRoutes = {};
@@ -49,8 +48,15 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   constructor(public dialogRef: MatDialogRef<ChannelRebalanceComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelRebalanceAlert, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe) { }
 
   ngOnInit() {
+    let x = '';
+    let y = '';
     this.selChannel = this.data.message.selChannel;
-    this.activeChannels = this.data.message.channels;
+    this.activeChannels = this.data.message.channels.filter((channel) => channel.active && channel.chan_id !== this.selChannel.chan_id && channel.remote_balance > 0);
+    this.activeChannels = this.activeChannels.sort((c1: Channel, c2: Channel) => {
+      x = c1.remote_alias ? c1.remote_alias.toLowerCase() : c1.chan_id ? c1.chan_id.toLowerCase() : '';
+      y = c2.remote_alias ? c2.remote_alias.toLowerCase() : c1.chan_id.toLowerCase();
+      return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    });
     FEE_LIMIT_TYPES.forEach((FEE_LIMIT_TYPE, i) => {
       if (i > 0) {
         this.feeLimitTypes.push(FEE_LIMIT_TYPE);
@@ -69,29 +75,14 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
       hiddenFeeLimit: ['', [Validators.required]]
     });
     this.statusFormGroup = this.formBuilder.group({});
-    let x = '';
-    let y = '';
-    this.sortedActiveChannels = this.activeChannels.sort((p1: Channel, p2: Channel) => {
-      x = p1.remote_alias ? p1.remote_alias.toLowerCase() : p1.chan_id ? p1.chan_id.toLowerCase() : '';
-      y = p2.remote_alias ? p2.remote_alias.toLowerCase() : p1.chan_id.toLowerCase();
-      return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-    });
-    // this.filteredActiveChannels = this.inputFormGroup.controls.rebalanceAmount.valueChanges.pipe(
-    //   takeUntil(this.unSubs[0]),
-    //   map((amount) => (amount ? this.filterActiveChannels() : this.sortedActiveChannels.slice()))
-    // );
-    // this.filteredActiveChannels = this.inputFormGroup.controls.selRebalancePeer.valueChanges.pipe(
-    //   takeUntil(this.unSubs[1]), startWith(''),
-    //   map((peer) => (typeof peer === 'string' ? peer : peer.remote_alias ? peer.remote_alias : peer.chan_id)),
-    //   map((alias) => (alias ? this.filterActiveChannels() : this.sortedActiveChannels.slice())));
     this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[2])).
+      pipe(takeUntil(this.unSubs[0])).
       subscribe((rtlStore) => {
         this.invoices = rtlStore.invoices;
         this.logger.info(rtlStore);
       });
     this.actions.pipe(
-      takeUntil(this.unSubs[3]),
+      takeUntil(this.unSubs[1]),
       filter((action) => action.type === LNDActions.SET_QUERY_ROUTES_LND || action.type === LNDActions.SEND_PAYMENT_STATUS_LND || action.type === LNDActions.NEWLY_SAVED_INVOICE_LND)).
       subscribe((action: (LNDActions.SetQueryRoutes | LNDActions.SendPaymentStatus | LNDActions.NewlySavedInvoice)) => {
         if (action.type === LNDActions.SET_QUERY_ROUTES_LND) {
@@ -109,10 +100,27 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
           this.sendPayment(action.payload.paymentRequest);
         }
       });
+    this.inputFormGroup.get('rebalanceAmount').valueChanges.pipe(
+      takeUntil(this.unSubs[2]), startWith(0)).
+      subscribe((amount) => {
+        this.inputFormGroup.controls.selRebalancePeer.setValue('');
+        this.inputFormGroup.controls.selRebalancePeer.setErrors(null);
+        this.filteredActiveChannels = of(amount ? this.filterActiveChannels() : this.activeChannels.slice());
+      });
+    this.inputFormGroup.get('selRebalancePeer').valueChanges.pipe(
+      takeUntil(this.unSubs[3]), startWith('')).
+      subscribe((alias) => {
+        if (typeof alias === 'string') {
+          this.filteredActiveChannels = of(this.filterActiveChannels());
+        }
+      });
   }
 
   onEstimateFee(): boolean|void {
-    if (!this.inputFormGroup.controls.selRebalancePeer.value || !this.inputFormGroup.controls.rebalanceAmount.value) {
+    if (this.inputFormGroup.controls.selRebalancePeer.value && typeof this.inputFormGroup.controls.selRebalancePeer.value === 'string') {
+      this.onSelectedPeerChanged();
+    }
+    if (!this.inputFormGroup.controls.selRebalancePeer.value || typeof this.inputFormGroup.controls.selRebalancePeer.value === 'string' || !this.inputFormGroup.controls.rebalanceAmount.value) {
       return true;
     }
     if (this.stepper.selectedIndex === 0) {
@@ -209,23 +217,20 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   }
 
   filterActiveChannels() {
-    this.filteredActiveChannels = of(this.sortedActiveChannels.filter((channel) => channel.remote_balance >= this.inputFormGroup.controls.rebalanceAmount.value && channel.chan_id !== this.selChannel.chan_id && channel.remote_alias.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0));
+    return this.activeChannels.filter((channel) => channel.remote_balance >= this.inputFormGroup.controls.rebalanceAmount.value &&
+      channel.chan_id !== this.selChannel.chan_id && ((channel.remote_alias.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0) || (channel.chan_id.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0)));
   }
 
   onSelectedPeerChanged() {
-    let selectedRemoteAlias = '';
     if (this.inputFormGroup.controls.selRebalancePeer.value && this.inputFormGroup.controls.selRebalancePeer.value.length > 0) {
-      selectedRemoteAlias = (this.inputFormGroup.controls.selRebalancePeer.value && this.inputFormGroup.controls.selRebalancePeer.value.pub_key) ? this.inputFormGroup.controls.selRebalancePeer.value.pub_key : null;
       if (typeof this.inputFormGroup.controls.selRebalancePeer.value === 'string') {
-        const selPeer = this.activeChannels.filter((channel) => channel.remote_alias.length === this.inputFormGroup.controls.selRebalancePeer.value.length && channel.remote_alias.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0);
-        if (selPeer.length === 1 && selPeer[0].remote_alias) {
-          selectedRemoteAlias = selPeer[0].remote_alias;
+        const foundChannels = this.activeChannels.filter((channel) => channel.remote_alias.length === this.inputFormGroup.controls.selRebalancePeer.value.length && channel.remote_alias.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0);
+        if (foundChannels && foundChannels.length > 0) {
+          this.inputFormGroup.controls.selRebalancePeer.setValue(foundChannels[0]);
+          this.inputFormGroup.controls.selRebalancePeer.setErrors(null);
+        } else {
+          this.inputFormGroup.controls.selRebalancePeer.setErrors({ notfound: true });
         }
-      }
-      if (this.inputFormGroup.controls.selRebalancePeer.value && !selectedRemoteAlias) {
-        this.inputFormGroup.controls.selRebalancePeer.setErrors({ notfound: true });
-      } else {
-        this.inputFormGroup.controls.selRebalancePeer.setErrors(null);
       }
     }
   }

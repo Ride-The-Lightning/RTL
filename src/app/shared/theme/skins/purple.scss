@@ -7,10 +7,11 @@
 @import '~@angular/material/theming';
 
 $purple-primary: mat.define-palette($purple-primary, 500, 300, A200);
-$purple-accent:  mat.define-palette(mat.$gray-palette, 800, 600, 900);
-$purple-accent-night:  mat.define-palette($mat-white, 300, 600, 900);
-$purple-warn:    mat.define-palette($red-warn, 500);
+$purple-accent: mat.define-palette(mat.$gray-palette, 800, 600, 900);
+$purple-accent-night: mat.define-palette($mat-white, 300, 600, 900);
+$purple-warn: mat.define-palette($red-warn, 500);
+$purple-warn-night: mat.define-palette($red-warn, A700);
 
-$purple-night-theme: create-dark-bright-theme($purple-primary, $purple-accent-night, $purple-warn);
+$purple-night-theme: create-dark-bright-theme($purple-primary, $purple-accent-night, $purple-warn-night);
 
 $purple-day-theme: mat.define-light-theme($purple-primary, $purple-accent, $purple-warn);

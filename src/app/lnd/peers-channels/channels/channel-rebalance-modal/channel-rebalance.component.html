@@ -25,7 +25,7 @@
               <ng-template matStepLabel>{{inputFormLabel}}</ng-template>
               <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">              
                 <mat-form-field fxFlex="48">
-                  <input autoFocus matInput placeholder="Amount" type="number" [step]="100" tabindex="1" formControlName="rebalanceAmount" (change)="filterActiveChannels()" required>
+                  <input autoFocus matInput placeholder="Amount" type="number" [step]="100" tabindex="1" formControlName="rebalanceAmount" required>
                   <mat-hint>(Local Bal: {{selChannel?.local_balance}}, Remaining: {{selChannel?.local_balance - ((inputFormGroup.controls.rebalanceAmount.value) ? inputFormGroup.controls.rebalanceAmount.value : 0)}})</mat-hint>
                   <span matSuffix>Sats</span>
                   <mat-error *ngIf="inputFormGroup.controls.rebalanceAmount.errors?.required">Amount is required.</mat-error>
@@ -33,7 +33,7 @@
                   <mat-error *ngIf="inputFormGroup.controls.rebalanceAmount.errors?.max">Amount must be less than or equal to {{selChannel?.local_balance}}.</mat-error>
                 </mat-form-field>
                 <mat-form-field fxFlex="48" fxLayoutAlign="start end">
-                  <input type="text" placeholder="Receive from Peer" aria-label="Receive from Peer" matInput formControlName="selRebalancePeer" (change)="filterActiveChannels()" [matAutocomplete]="auto" tabindex="2" required>
+                  <input type="text" placeholder="Receive from Peer" aria-label="Receive from Peer" matInput formControlName="selRebalancePeer" (change)="onSelectedPeerChanged()" [matAutocomplete]="auto" tabindex="2" required>
                   <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectedPeerChanged()">
                     <mat-option *ngFor="let activeChannel of filteredActiveChannels | async" [value]="activeChannel">{{activeChannel.remote_alias || activeChannel.chan_id}}</mat-option>
                   </mat-autocomplete>
