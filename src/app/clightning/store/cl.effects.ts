@@ -460,10 +460,12 @@ export class CLEffects implements OnDestroy {
           this.store.dispatch(new RTLActions.CloseSpinner(action.payload.uiMessage));
           this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'SendPayment', status: APICallStatusEnum.COMPLETED }));
           this.store.dispatch(new RTLActions.OpenSnackBar('Payment Sent Successfully!'));
-          this.store.dispatch(new CLActions.FetchChannels());
-          this.store.dispatch(new CLActions.FetchBalance());
-          this.store.dispatch(new CLActions.FetchPayments());
           this.store.dispatch(new CLActions.SetDecodedPayment({}));
+          setTimeout(() => {
+            this.store.dispatch(new CLActions.FetchChannels());
+            this.store.dispatch(new CLActions.FetchBalance());
+            this.store.dispatch(new CLActions.FetchPayments());
+          }, 1000);
           return {
             type: CLActions.SEND_PAYMENT_STATUS_CL,
             payload: sendRes

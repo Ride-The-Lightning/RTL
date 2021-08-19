@@ -10,7 +10,7 @@ exports.signMessage = (req, res, next) => {
   options.form = JSON.stringify({ 
     msg: Buffer.from(req.body.message).toString('base64')
   });
-  request.post(options, (error, response, body) => {
+  request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Messages', msg: 'Message Signed', data: body});
     logger.log({level: 'INFO', fileName: 'Message', msg: 'Message Signed'});
     res.status(201).json(body);
@@ -29,7 +29,7 @@ exports.verifyMessage = (req, res, next) => {
     msg: Buffer.from(req.body.message).toString('base64'),
     signature: req.body.signature
   });
-  request.post(options, (error, response, body) => {
+  request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Messages', msg: 'Message Verified', data: body});
     logger.log({level: 'INFO', fileName: 'Message', msg: 'Message Verified'});
     res.status(201).json(body);

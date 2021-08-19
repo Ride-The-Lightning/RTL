@@ -8,7 +8,7 @@ exports.signMessage = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/utility/signMessage';
   options.form = { message: req.body.message };
-  request.post(options, (error, response, body) => {
+  request.post(options).then((body) => {  
     logger.log({level: 'DEBUG', fileName: 'Messages', msg: 'Message Signed', data: body});
     logger.log({level: 'INFO', fileName: 'Message', msg: 'Message Signed'});
     res.status(201).json(body);

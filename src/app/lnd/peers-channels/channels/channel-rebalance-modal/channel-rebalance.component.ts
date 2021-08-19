@@ -222,15 +222,13 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   }
 
   onSelectedPeerChanged() {
-    if (this.inputFormGroup.controls.selRebalancePeer.value && this.inputFormGroup.controls.selRebalancePeer.value.length > 0) {
-      if (typeof this.inputFormGroup.controls.selRebalancePeer.value === 'string') {
-        const foundChannels = this.activeChannels.filter((channel) => channel.remote_alias.length === this.inputFormGroup.controls.selRebalancePeer.value.length && channel.remote_alias.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0);
-        if (foundChannels && foundChannels.length > 0) {
-          this.inputFormGroup.controls.selRebalancePeer.setValue(foundChannels[0]);
-          this.inputFormGroup.controls.selRebalancePeer.setErrors(null);
-        } else {
-          this.inputFormGroup.controls.selRebalancePeer.setErrors({ notfound: true });
-        }
+    if (this.inputFormGroup.controls.selRebalancePeer.value && this.inputFormGroup.controls.selRebalancePeer.value.length > 0 && typeof this.inputFormGroup.controls.selRebalancePeer.value === 'string') {
+      const foundChannels = this.activeChannels.filter((channel) => channel.remote_alias.length === this.inputFormGroup.controls.selRebalancePeer.value.length && channel.remote_alias.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0);
+      if (foundChannels && foundChannels.length > 0) {
+        this.inputFormGroup.controls.selRebalancePeer.setValue(foundChannels[0]);
+        this.inputFormGroup.controls.selRebalancePeer.setErrors(null);
+      } else {
+        this.inputFormGroup.controls.selRebalancePeer.setErrors({ notfound: true });
       }
     }
   }
