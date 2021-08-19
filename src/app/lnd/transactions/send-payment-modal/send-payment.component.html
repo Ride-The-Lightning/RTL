@@ -38,11 +38,16 @@
               <mat-error *ngIf="selFeeLimitType !== feeLimitTypes[0] && !feeLimit">{{selFeeLimitType.placeholder}} is required.</mat-error>
             </mat-form-field>
             <mat-form-field fxFlex="40" fxLayoutAlign="start end">
-              <mat-select tabindex="7" [(value)]="selActiveChannel" placeholder="First Outgoing Channel" [disabled]="filteredMinAmtActvChannels && filteredMinAmtActvChannels.length < 1">
+              <!-- <mat-select tabindex="7" [(value)]="selActiveChannel" placeholder="First Outgoing Channel" [disabled]="filteredMinAmtActvChannels && filteredMinAmtActvChannels.length < 1">
                 <mat-option *ngFor="let activeChannel of filteredMinAmtActvChannels" [value]="activeChannel">
                   {{activeChannel.remote_alias || activeChannel.chan_id}}
                 </mat-option>
-              </mat-select>
+              </mat-select> -->
+              <input type="text" placeholder="First Outgoing Channel" aria-label="First Outgoing Channel" matInput [formControl]="selectedChannelCtrl" (change)="onSelectedChannelChanged()" [matAutocomplete]="auto" tabindex="7">
+              <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectedChannelChanged()">
+                <mat-option *ngFor="let activeChannel of filteredMinAmtActvChannels" [value]="activeChannel">{{activeChannel.remote_alias || activeChannel.chan_id}}</mat-option>
+              </mat-autocomplete>
+              <mat-error *ngIf="selectedChannelCtrl.errors?.notfound">Channel not found in the list.</mat-error>
             </mat-form-field>
           </div>
         </mat-expansion-panel>

@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { NgModel } from '@angular/forms';
+import { FormControl, NgModel } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
-import { Subject } from 'rxjs';
-import { take, takeUntil, filter } from 'rxjs/operators';
+import { Observable, of, Subject } from 'rxjs';
+import { take, takeUntil, filter, startWith, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -36,7 +36,8 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   public showAdvanced = false;
   public selActiveChannel: Channel = {};
   public activeChannels = [];
-  public filteredMinAmtActvChannels = [];
+  public filteredMinAmtActvChannels: Channel[];
+  public selectedChannelCtrl = new FormControl({ value: '', disabled: false });
   public feeLimit = null;
   public selFeeLimitType = FEE_LIMIT_TYPES[0];
   public feeLimitTypes = FEE_LIMIT_TYPES;
@@ -52,7 +53,6 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
       subscribe((rtlStore) => {
         this.selNode = rtlStore.nodeSettings;
         this.activeChannels = rtlStore.allChannels.filter((channel) => channel.active);
-        this.filteredMinAmtActvChannels = this.activeChannels;
         this.logger.info(rtlStore);
       });
     this.actions.pipe(
@@ -67,6 +67,44 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
           this.paymentError = action.payload.message;
         }
       });
+    let x = '';
+    let y = '';
+    this.activeChannels = this.activeChannels.sort((c1: Channel, c2: Channel) => {
+      x = c1.remote_alias ? c1.remote_alias.toLowerCase() : c1.chan_id ? c1.chan_id.toLowerCase() : '';
+      y = c2.remote_alias ? c2.remote_alias.toLowerCase() : c1.chan_id.toLowerCase();
+      return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    }); ;
+    this.selectedChannelCtrl.valueChanges.pipe(takeUntil(this.unSubs[1]), startWith(''),
+      map((channel) => {
+        this.filteredMinAmtActvChannels = (typeof channel === 'string') ? this.filterChannels() : this.activeChannels.slice();
+        if (this.filteredMinAmtActvChannels.length && this.filteredMinAmtActvChannels.length < 1) {
+          this.selectedChannelCtrl.disable();
+        } else {
+          this.selectedChannelCtrl.enable();
+        }
+      }));
+  }
+
+  private filterChannels(): Channel[] {
+    return this.activeChannels.filter((channel) => channel.remote_alias.toLowerCase().indexOf(this.selectedChannelCtrl.value.toLowerCase()) === 0 && channel.local_balance >= (this.paymentDecoded.num_satoshis ? this.paymentDecoded.num_satoshis : 0));
+  }
+
+  displayFn(channel: Channel): string {
+    return (channel && channel.remote_alias) ? channel.remote_alias : (channel && channel.chan_id) ? channel.chan_id : '';
+  }
+
+  onSelectedChannelChanged() {
+    if (this.selectedChannelCtrl.value && this.selectedChannelCtrl.value.length > 0) {
+      if (typeof this.selectedChannelCtrl.value === 'string') {
+        const foundChannels = this.activeChannels.filter((channel) => channel.remote_alias.length === this.selectedChannelCtrl.value.length && channel.remote_alias.toLowerCase().indexOf(this.selectedChannelCtrl.value ? this.selectedChannelCtrl.value.toLowerCase() : '') === 0);
+        if (foundChannels && foundChannels.length > 0) {
+          this.selectedChannelCtrl.setValue(foundChannels[0]);
+          this.selectedChannelCtrl.setErrors(null);
+        } else {
+          this.selectedChannelCtrl.setErrors({ notfound: true });
+        }
+      }
+    }
   }
 
   onSendPayment(): boolean|void {
@@ -116,7 +154,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
           }
           if (this.paymentDecoded.num_satoshis && this.paymentDecoded.num_satoshis !== '' && this.paymentDecoded.num_satoshis !== '0') {
             this.zeroAmtInvoice = false;
-            this.filteredMinAmtActvChannels = this.activeChannels.filter((actvChannel) => actvChannel.local_balance >= this.paymentDecoded.num_satoshis);
+            this.filteredMinAmtActvChannels = this.filterChannels();
             if (this.selNode.fiatConversion) {
               this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
                 pipe(takeUntil(this.unSubs[2])).
@@ -130,7 +168,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
             }
           } else {
             this.zeroAmtInvoice = true;
-            this.filteredMinAmtActvChannels = this.activeChannels;
+            this.filteredMinAmtActvChannels = this.filterChannels();
             this.paymentDecodedHint = 'Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
           }
         }, error: (err) => {
