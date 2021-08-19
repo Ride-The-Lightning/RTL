@@ -116,7 +116,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
       });
   }
 
-  onEstimateFee(): boolean|void {
+  onSelectFee(): boolean|void {
     if (this.inputFormGroup.controls.selRebalancePeer.value && typeof this.inputFormGroup.controls.selRebalancePeer.value === 'string') {
       this.onSelectedPeerChanged();
     }
@@ -130,7 +130,10 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     this.queryRoute = null;
     this.feeFormGroup.reset();
     this.feeFormGroup.controls.selFeeLimitType.setValue(this.feeLimitTypes[0]);
-    this.store.dispatch(new LNDActions.GetQueryRoutes({ destPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, amount: this.inputFormGroup.controls.rebalanceAmount.value, outgoingChanId: this.selChannel.chan_id }));
+    this.feeFormGroup.controls.feeLimit.setValue('');
+    this.feeFormGroup.controls.feeLimit.setErrors(null);
+    this.feeFormGroup.controls.hiddenFeeLimit.setValue('');
+    this.feeFormGroup.controls.hiddenFeeLimit.setErrors(null);
   }
 
   stepSelectionChanged(event: any) {
@@ -176,11 +179,6 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
         this.feeFormGroup.controls.hiddenFeeLimit.setValue('');
       }
     }
-  }
-
-  onUseEstimate() {
-    this.feeFormGroup.controls.selFeeLimitType.setValue(this.feeLimitTypes[0]);
-    this.feeFormGroup.controls.feeLimit.setValue((this.queryRoute.routes && this.queryRoute.routes.length > 0 && this.queryRoute.routes[0].total_fees_msat) ? Math.ceil(+this.queryRoute.routes[0].total_fees_msat / 1000) : 0);
   }
 
   onRebalance(): boolean|void {
@@ -249,6 +247,13 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     this.inputFormGroup.reset();
     this.feeFormGroup.reset();
     this.statusFormGroup.reset();
+    this.inputFormGroup.controls.hiddenAmount.setValue('');
+    this.inputFormGroup.controls.hiddenAmount.setErrors(null);
+    this.inputFormGroup.controls.rebalanceAmount.setValue('');
+    this.inputFormGroup.controls.rebalanceAmount.setErrors(null);
+    this.inputFormGroup.controls.selRebalancePeer.setValue('');
+    this.inputFormGroup.controls.selRebalancePeer.setErrors(null);
+    this.filteredActiveChannels = of(this.activeChannels);
   }
 
   ngOnDestroy() {

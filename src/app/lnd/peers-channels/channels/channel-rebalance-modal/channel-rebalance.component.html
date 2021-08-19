@@ -42,7 +42,7 @@
                 </mat-form-field>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="3" type="submit" (click)="onEstimateFee()">Estimate Fee</button>
+                <button mat-stroked-button color="primary" tabindex="3" type="submit" (click)="onSelectFee()">Select Fee</button>
               </div>
             </form>
           </mat-step>
@@ -50,17 +50,6 @@
             <form [formGroup]="feeFormGroup" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
               <ng-template matStepLabel disabled="true">{{feeFormLabel}}</ng-template>
               <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
-                <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
-                  <div fxFlex="75" class="alert">
-                    <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
-                    <span>
-                      <strong>Estimated Fee: </strong>{{queryRoute && queryRoute.routes && queryRoute.routes.length > 0 && queryRoute.routes[0].total_fees_msat ? queryRoute.routes[0].total_fees_msat : 0}} mSats |
-                      <strong>Number of Hops: </strong>{{queryRoute && queryRoute.routes && queryRoute.routes.length > 0 && queryRoute.routes[0].hops && queryRoute.routes[0].hops.length ? queryRoute.routes[0].hops.length : 0}}
-                    </span>
-                  </div>
-                  <button mat-stroked-button type="button" tabindex="4" (click)="onEstimateFee()" class="h-35px" matTooltip="Re-estimate Fee"><mat-icon class="mb-5px">loop</mat-icon></button>
-                  <button mat-stroked-button type="button" tabindex="5" class="h-35px" (click)="onUseEstimate()">Use Estimate</button>
-                </div>
                 <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
                   <mat-form-field fxFlex="48" fxLayoutAlign="start end">
                     <mat-select tabindex="6" formControlName="selFeeLimitType" Placeholder="Fee Limits" required>
