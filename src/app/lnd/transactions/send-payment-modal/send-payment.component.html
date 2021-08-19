@@ -19,7 +19,7 @@
           <mat-hint>It is a zero amount invoice, enter amount to be paid.</mat-hint>
           <mat-error *ngIf="!paymentAmount">Payment amount is required.</mat-error>
         </mat-form-field>
-        <mat-expansion-panel fxFlex="100" class="flat-expansion-panel mt-2" expanded="false" (closed)="onAdvancedPanelToggle(true)" (opened)="onAdvancedPanelToggle(false)">
+        <mat-expansion-panel fxFlex="100" class="flat-expansion-panel mt-2" expanded="false" (closed)="onAdvancedPanelToggle(true, false)" (opened)="onAdvancedPanelToggle(false, false)">
           <mat-expansion-panel-header>
             <mat-panel-title>
               <span>{{advancedTitle}}</span>
@@ -38,12 +38,7 @@
               <mat-error *ngIf="selFeeLimitType !== feeLimitTypes[0] && !feeLimit">{{selFeeLimitType.placeholder}} is required.</mat-error>
             </mat-form-field>
             <mat-form-field fxFlex="40" fxLayoutAlign="start end">
-              <!-- <mat-select tabindex="7" [(value)]="selActiveChannel" placeholder="First Outgoing Channel" [disabled]="filteredMinAmtActvChannels && filteredMinAmtActvChannels.length < 1">
-                <mat-option *ngFor="let activeChannel of filteredMinAmtActvChannels" [value]="activeChannel">
-                  {{activeChannel.remote_alias || activeChannel.chan_id}}
-                </mat-option>
-              </mat-select> -->
-              <input type="text" placeholder="First Outgoing Channel" aria-label="First Outgoing Channel" matInput [formControl]="selectedChannelCtrl" (change)="onSelectedChannelChanged()" [matAutocomplete]="auto" tabindex="7">
+              <input type="text" placeholder="First Outgoing Channel" aria-label="First Outgoing Channel" matInput [formControl]="selectedChannelCtrl" [matAutocomplete]="auto" tabindex="7">
               <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectedChannelChanged()">
                 <mat-option *ngFor="let activeChannel of filteredMinAmtActvChannels" [value]="activeChannel">{{activeChannel.remote_alias || activeChannel.chan_id}}</mat-option>
               </mat-autocomplete>
