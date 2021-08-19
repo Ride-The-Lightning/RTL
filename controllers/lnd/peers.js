@@ -46,10 +46,10 @@ exports.postPeer = (req, res, next) => {
     // addr: { host: req.body.host, pubkey: req.body.pubkey },
     perm: req.body.perm
   });
-  request.post(options, (error, response, body) => {
+  request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Peer Added', data: body});
     options.url = common.getSelLNServerUrl() + '/v1/peers';
-    request(options).then(function (body) {
+    request(options).then((body) => {
       let peers = (!body.peers) ? [] : body.peers;
       return Promise.all(peers.map(peer => getAliasForPeers(peer))).then(function(values) {
         if (body.peers) {
@@ -61,12 +61,17 @@ exports.postPeer = (req, res, next) => {
         logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Peer Added Successfully'});
         logger.log({level: 'INFO', fileName: 'Peers', msg: 'Peer Connected'});
         res.status(201).json(body.peers);
-      })
-      .catch(errRes => {
+      }).catch(errRes => {
         const err = common.handleError(errRes,  'Peers', 'Connect Peer Error');
         return res.status(err.statusCode).json({message: err.message, error: err.error});
       });
-    })
+    }).catch(errRes => {
+      const err = common.handleError(errRes,  'Peers', 'Connect Peer Error');
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
+    });
+  }).catch(errRes => {
+    const err = common.handleError(errRes,  'Peers', 'Connect Peer Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
