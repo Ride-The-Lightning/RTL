@@ -175,7 +175,7 @@ exports.postTransactions = (req, res, next) => {
   request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Send Payment Response', data: body});
     if (body.payment_error) {
-      const err = common.handleError(bosy.payment_error,  'Channels', 'Send Payment Error');
+      const err = common.handleError(body.payment_error,  'Channels', 'Send Payment Error');
       return res.status(err.statusCode).json({message: err.message, error: err.error});
     } else {
       logger.log({level: 'INFO', fileName: 'Channels', msg: 'Payment Sent'});
