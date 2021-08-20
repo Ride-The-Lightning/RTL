@@ -44,7 +44,8 @@ export const FEE_LIMIT_TYPES = [
 export const FEE_RATE_TYPES = [
   { feeRateId: 'urgent', feeRateType: 'Urgent' },
   { feeRateId: 'normal', feeRateType: 'Normal' },
-  { feeRateId: 'slow', feeRateType: 'Slow' }
+  { feeRateId: 'slow', feeRateType: 'Slow' },
+  { feeRateId: 'customperkb', feeRateType: 'Custom (Sats/vB)' }
 ];
 
 
