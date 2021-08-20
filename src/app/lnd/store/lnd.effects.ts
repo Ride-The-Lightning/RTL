@@ -297,18 +297,10 @@ export class LNDEffects implements OnDestroy {
         map((postRes: any) => {
           this.logger.info(postRes);
           this.store.dispatch(new RTLActions.CloseSpinner(action.payload.forcibly ? UI_MESSAGES.FORCE_CLOSE_CHANNEL : UI_MESSAGES.CLOSE_CHANNEL));
-          this.store.dispatch(new LNDActions.FetchBalance('Blockchain'));
           this.store.dispatch(new LNDActions.FetchAllChannels());
-          if (action.payload.forcibly) {
-            this.store.dispatch(new LNDActions.FetchPendingChannels());
-          } else {
-            this.store.dispatch(new LNDActions.FetchClosedChannels());
-          }
-          this.store.dispatch(new LNDActions.BackupChannels({ uiMessage: UI_MESSAGES.NO_SPINNER, channelPoint: 'ALL', showMessage: 'Channel Closed Successfully!' }));
-          return {
-            type: LNDActions.REMOVE_CHANNEL_LND,
-            payload: { channelPoint: action.payload.channelPoint }
-          };
+          this.store.dispatch(new LNDActions.FetchPendingChannels());
+          this.store.dispatch(new LNDActions.BackupChannels({ uiMessage: UI_MESSAGES.NO_SPINNER, channelPoint: 'ALL', showMessage: postRes.message }));
+          return { type: RTLActions.VOID };
         }),
         catchError((err: any) => {
           this.handleErrorWithAlert('CloseChannel', (action.payload.forcibly ? UI_MESSAGES.FORCE_CLOSE_CHANNEL : UI_MESSAGES.CLOSE_CHANNEL), 'Unable to Close Channel. Try again later.', this.CHILD_API_URL + environment.CHANNELS_API + '/' + action.payload.channelPoint + '?force=' + action.payload.forcibly, err);
