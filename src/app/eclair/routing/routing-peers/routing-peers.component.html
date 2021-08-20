@@ -10,7 +10,7 @@
       </div>
       <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start start" fxFlex="100" class="table-container">
         <mat-progress-bar *ngIf="apisCallStatus?.FetchPayments.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-        <table mat-table #tableIn fxFlex="100" [dataSource]="RoutingPeersIncoming" matSort class="overflow-auto incoming-table">
+        <table mat-table #tableIn [dataSource]="RoutingPeersIncoming" matSort class="overflow-auto incoming-table">
           <ng-container matColumnDef="channelId">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel ID</th>
             <td mat-cell *matCellDef="let rPeer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '5rem' : '10rem'}">{{rPeer.channelId}}</td>
@@ -55,7 +55,7 @@
       </div>
       <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container">
         <mat-progress-bar *ngIf="apisCallStatus?.FetchPayments.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-        <table mat-table #tableOut fxFlex="100" [dataSource]="RoutingPeersOutgoing" matSort class="overflow-auto outgoing-table">
+        <table mat-table #tableOut [dataSource]="RoutingPeersOutgoing" matSort class="overflow-auto outgoing-table">
           <ng-container matColumnDef="channelId">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel ID</th>
             <td mat-cell *matCellDef="let rPeer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '5rem' : '10rem'}">{{rPeer.channelId}}</td>

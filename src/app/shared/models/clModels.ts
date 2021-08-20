@@ -268,3 +268,11 @@ export interface UTXO {
   address?: string;
   amount_msat?: string;
 }
+
+export interface RoutingPeer {
+  channel_id?: string;
+  alias?: string;
+  events?: number;
+  total_amount?: number;
+  total_fee?: number;
+}
