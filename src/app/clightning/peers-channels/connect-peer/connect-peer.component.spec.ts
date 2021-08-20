@@ -5,9 +5,11 @@ import { StoreModule } from '@ngrx/store';
 import { RTLReducer } from '../../../store/rtl.reducers';
 import { SharedModule } from '../../../shared/shared.module';
 import { LoggerService } from '../../../shared/services/logger.service';
+import { CommonService } from '../../../shared/services/common.service';
+import { DataService } from '../../../shared/services/data.service';
 
 import { CLConnectPeerComponent } from './connect-peer.component';
-import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/test-helpers/mock-services';
+import { mockCLEffects, mockDataService, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/test-helpers/mock-services';
 import { EffectsModule } from '@ngrx/effects';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -30,7 +32,8 @@ describe('CLConnectPeerComponent', () => {
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
-        LoggerService,
+        LoggerService, CommonService,
+        { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: { alertTitle: '', titleMessage: '', message: {}, newlyAdded: true } }
       ]
