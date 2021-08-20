@@ -24,7 +24,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sortIn: MatSort;
+  @ViewChild('tableIn', { read: MatSort, static: false }) sortIn: MatSort;
   @ViewChild('tableOut', { read: MatSort, static: false }) sortOut: MatSort;
   @ViewChild('paginatorIn', { static: false }) paginatorIn: MatPaginator|undefined;
   @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator|undefined;

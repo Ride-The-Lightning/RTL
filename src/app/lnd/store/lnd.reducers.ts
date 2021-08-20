@@ -267,33 +267,33 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
     case LNDActions.SET_FORWARDING_HISTORY_LND:
       if (action.payload.forwarding_events) {
         const storedChannels = [...state.allChannels, ...state.closedChannels];
-        action.payload.forwarding_events.forEach((event) => {
+        action.payload.forwarding_events.forEach((fhEvent) => {
           if (storedChannels && storedChannels.length > 0) {
             for (let idx = 0; idx < storedChannels.length; idx++) {
-              if (storedChannels[idx].chan_id.toString() === event.chan_id_in) {
-                event.alias_in = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : event.chan_id_in;
-                if (event.alias_out) {
+              if (storedChannels[idx].chan_id.toString() === fhEvent.chan_id_in) {
+                fhEvent.alias_in = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : fhEvent.chan_id_in;
+                if (fhEvent.alias_out) {
                   return;
                 }
               }
-              if (storedChannels[idx].chan_id.toString() === event.chan_id_out) {
-                event.alias_out = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : event.chan_id_out;
-                if (event.alias_in) {
+              if (storedChannels[idx].chan_id.toString() === fhEvent.chan_id_out) {
+                fhEvent.alias_out = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : fhEvent.chan_id_out;
+                if (fhEvent.alias_in) {
                   return;
                 }
               }
               if (idx === storedChannels.length - 1) {
-                if (!event.alias_in) {
-                  event.alias_in = event.chan_id_in;
+                if (!fhEvent.alias_in) {
+                  fhEvent.alias_in = fhEvent.chan_id_in;
                 }
-                if (!event.alias_out) {
-                  event.alias_out = event.chan_id_out;
+                if (!fhEvent.alias_out) {
+                  fhEvent.alias_out = fhEvent.chan_id_out;
                 }
               }
             }
           } else {
-            event.alias_in = event.chan_id_in;
-            event.alias_out = event.chan_id_out;
+            fhEvent.alias_in = fhEvent.chan_id_in;
+            fhEvent.alias_out = fhEvent.chan_id_out;
           }
         });
       } else {

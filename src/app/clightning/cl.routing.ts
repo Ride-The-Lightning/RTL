@@ -23,6 +23,8 @@ import { CLSignComponent } from './sign-verify-message/sign/sign.component';
 import { CLVerifyComponent } from './sign-verify-message/verify/verify.component';
 import { CLForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
 import { CLFailedTransactionsComponent } from './routing/failed-transactions/failed-transactions.component';
+import { CLRoutingPeersComponent } from './routing/routing-peers/routing-peers.component';
+
 import { CLReportsComponent } from './reports/reports.component';
 import { CLFeeReportComponent } from './reports/fee/fee-report.component';
 import { CLTransactionsReportComponent } from './reports/transactions/transactions-report.component';
@@ -63,7 +65,8 @@ export const ClRoutes: Routes = [
       { path: 'routing', component: CLRoutingComponent, canActivate: [CLUnlockedGuard], children: [
         { path: '', pathMatch: 'full', redirectTo: 'forwardinghistory' },
         { path: 'forwardinghistory', component: CLForwardingHistoryComponent, canActivate: [CLUnlockedGuard] },
-        { path: 'failedtransactions', component: CLFailedTransactionsComponent, canActivate: [CLUnlockedGuard] }
+        { path: 'failedtransactions', component: CLFailedTransactionsComponent, canActivate: [CLUnlockedGuard] },
+        { path: 'routingpeers', component: CLRoutingPeersComponent, canActivate: [CLUnlockedGuard] }
       ] },
       { path: 'reports', component: CLReportsComponent, canActivate: [CLUnlockedGuard], children: [
         { path: '', pathMatch: 'full', redirectTo: 'routingfees' },

@@ -147,39 +147,39 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
     case ECLActions.SET_PAYMENTS_ECL:
       if (action.payload && action.payload.relayed) {
         const storedChannels = [...state.activeChannels, ...state.pendingChannels, ...state.inactiveChannels];
-        action.payload.relayed.forEach((event) => {
+        action.payload.relayed.forEach((rlEvent) => {
           if (storedChannels && storedChannels.length > 0) {
             for (let idx = 0; idx < storedChannels.length; idx++) {
-              if (storedChannels[idx].channelId.toString() === event.fromChannelId) {
-                event.fromChannelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : event.fromChannelId;
-                event.fromShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
-                if (event.toChannelAlias) {
+              if (storedChannels[idx].channelId.toString() === rlEvent.fromChannelId) {
+                rlEvent.fromChannelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : rlEvent.fromChannelId;
+                rlEvent.fromShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
+                if (rlEvent.toChannelAlias) {
                   return;
                 }
               }
-              if (storedChannels[idx].channelId.toString() === event.toChannelId) {
-                event.toChannelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : event.toChannelId;
-                event.toShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
-                if (event.fromChannelAlias) {
+              if (storedChannels[idx].channelId.toString() === rlEvent.toChannelId) {
+                rlEvent.toChannelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : rlEvent.toChannelId;
+                rlEvent.toShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
+                if (rlEvent.fromChannelAlias) {
                   return;
                 }
               }
               if (idx === storedChannels.length - 1) {
-                if (!event.fromChannelAlias) {
-                  event.fromChannelAlias = event.fromChannelId.substring(0, 17) + '...';
-                  event.fromShortChannelId = '';
+                if (!rlEvent.fromChannelAlias) {
+                  rlEvent.fromChannelAlias = rlEvent.fromChannelId.substring(0, 17) + '...';
+                  rlEvent.fromShortChannelId = '';
                 }
-                if (!event.toChannelAlias) {
-                  event.toChannelAlias = event.toChannelId.substring(0, 17) + '...';
-                  event.toShortChannelId = '';
+                if (!rlEvent.toChannelAlias) {
+                  rlEvent.toChannelAlias = rlEvent.toChannelId.substring(0, 17) + '...';
+                  rlEvent.toShortChannelId = '';
                 }
               }
             }
           } else {
-            event.fromChannelAlias = event.fromChannelId.substring(0, 17) + '...';
-            event.fromShortChannelId = '';
-            event.toChannelAlias = event.toChannelId.substring(0, 17) + '...';
-            event.toShortChannelId = '';
+            rlEvent.fromChannelAlias = rlEvent.fromChannelId.substring(0, 17) + '...';
+            rlEvent.fromShortChannelId = '';
+            rlEvent.toChannelAlias = rlEvent.toChannelId.substring(0, 17) + '...';
+            rlEvent.toShortChannelId = '';
           }
         });
       }

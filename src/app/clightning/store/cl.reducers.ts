@@ -156,25 +156,28 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
       const modifiedFeeWithTxCount = state.fees;
       if (action.payload.forwarding_events && action.payload.forwarding_events.length > 0) {
         const storedChannels = [...state.allChannels];
-        action.payload.forwarding_events.forEach((event) => {
+        action.payload.forwarding_events.forEach((fhEvent, i) => {
           if (storedChannels && storedChannels.length > 0) {
             for (let idx = 0; idx < storedChannels.length; idx++) {
-              if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id === event.in_channel) {
-                event.in_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : event.in_channel;
-                if (event.out_channel_alias) {
-                  return;
-                }
+              if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id === fhEvent.in_channel) {
+                fhEvent.in_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.in_channel;
+                if (fhEvent.out_channel_alias) { return; }
               }
-              if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id.toString() === event.out_channel) {
-                event.out_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : event.out_channel;
-                if (event.in_channel_alias) {
-                  return;
-                }
+              if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id.toString() === fhEvent.out_channel) {
+                fhEvent.out_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.out_channel;
+                if (fhEvent.in_channel_alias) { return; }
+              }
+              if (idx === storedChannels.length - 1) {
+                if (!fhEvent.in_channel_alias) { fhEvent.in_channel_alias = fhEvent.in_channel; }
+                if (!fhEvent.out_channel_alias) { fhEvent.out_channel_alias = fhEvent.out_channel; }
               }
             }
+          } else {
+            fhEvent.in_channel_alias = fhEvent.in_channel;
+            fhEvent.out_channel_alias = fhEvent.out_channel;
           }
         });
-        modifiedFeeWithTxCount.totalTxCount = action.payload.forwarding_events.filter((event) => event.status === 'settled').length;
+        modifiedFeeWithTxCount.totalTxCount = action.payload.forwarding_events.filter((fhEvent) => fhEvent.status === 'settled').length;
       } else {
         action.payload = {};
       }
