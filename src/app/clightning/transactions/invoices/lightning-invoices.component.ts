@@ -110,11 +110,6 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
             this.loadInvoicesTable(this.invoiceJSONArr);
           }
         }
-        if (resLookup.type === CLActions.UPDATE_API_CALL_STATUS_CL && resLookup.payload.action === 'Lookup' && resLookup.payload.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = '';
-          this.errorMessage = (typeof (resLookup.payload.message) === 'object') ? JSON.stringify(resLookup.payload.message) : resLookup.payload.message;
-          this.logger.error(this.errorMessage);
-        }
       });
   }
 

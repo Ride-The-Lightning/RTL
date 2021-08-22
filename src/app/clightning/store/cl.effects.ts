@@ -58,6 +58,7 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.FETCH_INFO_CL),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [CLActions.FetchInfo, fromRTLReducer.RootState]) => {
+      this.flgInitialized = false;
       this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.INITIATED }));
       this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_NODE_INFO));
       return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API).
@@ -588,7 +589,8 @@ export class CLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('Lookup', UI_MESSAGES.SEARCHING_INVOICE, 'Invoice Lookup Failed', this.CHILD_API_URL + environment.INVOICES_API + '?label=' + action.payload, err);
+            this.handleErrorWithoutAlert('Lookup', UI_MESSAGES.SEARCHING_INVOICE, 'Invoice Lookup Failed', err);
+            this.store.dispatch(new RTLActions.OpenSnackBar({ message: 'Invoice Refresh Failed.', type: 'ERROR' }));
             return of({ type: RTLActions.VOID });
           })
         );

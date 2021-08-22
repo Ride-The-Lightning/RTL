@@ -62,7 +62,7 @@ export class CloseAllDialogs implements Action {
 export class OpenSnackBar implements Action {
 
   readonly type = OPEN_SNACK_BAR;
-  constructor(public payload: string | {message: string, duration: number}) {}
+  constructor(public payload: string | {message: string, duration?: number, type?: string}) {}
 
 }
 

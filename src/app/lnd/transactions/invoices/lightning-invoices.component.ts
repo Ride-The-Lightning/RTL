@@ -112,11 +112,6 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
             this.loadInvoicesTable(this.invoicesData);
           }
         }
-        if (resLookup.type === LNDActions.UPDATE_API_CALL_STATUS_LND && resLookup.payload.action === 'Lookup' && resLookup.payload.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = '';
-          this.errorMessage = (typeof (resLookup.payload.message) === 'object') ? JSON.stringify(resLookup.payload.message) : resLookup.payload.message;
-          this.logger.error(this.errorMessage);
-        }
       });
   }
 

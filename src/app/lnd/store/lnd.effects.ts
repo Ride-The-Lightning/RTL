@@ -61,6 +61,7 @@ export class LNDEffects implements OnDestroy {
     ofType(LNDActions.FETCH_INFO_LND),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [LNDActions.FetchInfo, fromRTLReducer.RootState]) => {
+      this.flgInitialized = false;
       this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_NODE_INFO));
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.INITIATED }));
       return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API).pipe(
@@ -1037,7 +1038,8 @@ export class LNDEffects implements OnDestroy {
           };
         }),
         catchError((err: any) => {
-          this.handleErrorWithAlert('Lookup', UI_MESSAGES.SEARCHING_INVOICE, 'Invoice Lookup Failed', this.CHILD_API_URL + environment.INVOICES_API + '/' + action.payload, err);
+          this.handleErrorWithoutAlert('Lookup', UI_MESSAGES.SEARCHING_INVOICE, 'Invoice Lookup Failed', err);
+          this.store.dispatch(new RTLActions.OpenSnackBar({ message: 'Invoice Refresh Failed.', type: 'ERROR' }));
           return of({ type: RTLActions.VOID });
         })
       );

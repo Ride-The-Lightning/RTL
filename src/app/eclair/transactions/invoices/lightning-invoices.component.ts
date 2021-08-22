@@ -107,11 +107,6 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
             this.loadInvoicesTable(this.invoiceJSONArr);
           }
         }
-        if (resLookup.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && resLookup.payload.action === 'Lookup' && resLookup.payload.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = '';
-          this.errorMessage = (typeof (resLookup.payload.message) === 'object') ? JSON.stringify(resLookup.payload.message) : resLookup.payload.message;
-          this.logger.error(this.errorMessage);
-        }
       });
   }
 
