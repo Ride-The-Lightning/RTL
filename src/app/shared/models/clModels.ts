@@ -242,21 +242,28 @@ export interface LookupNode {
 }
 
 export interface FeeRatePerObj {
-  urgent?: number;
-  normal?: number;
-  slow?: number;
   min_acceptable?: number;
   max_acceptable?: number;
+  opening?: number;
+  mutual_close?: number;
+  unilateral_close?: number;
+  delayed_to_us?: number;
+  htlc_resolution?: number;
+  penalty?: number;
+}
+
+export interface OnChainFeeEstimates {
+  opening_channel_satoshis?: number;
+  mutual_close_satoshis?: number;
+  unilateral_close_satoshis?: number;
+  htlc_timeout_satoshis?: number;
+  htlc_success_satoshis?: number;
 }
 
 export interface FeeRates {
   perkb?: FeeRatePerObj;
   perkw?: FeeRatePerObj;
-  onchain_fee_estimates?: {
-    opening_channel_satoshis?: number;
-    mutual_close_satoshis?: number;
-    unilateral_close_satoshis?: number;
-  };
+  onchain_fee_estimates?: OnChainFeeEstimates;
 }
 
 export interface UTXO {
