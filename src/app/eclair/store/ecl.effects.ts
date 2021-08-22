@@ -42,7 +42,8 @@ export class ECLEffects implements OnDestroy {
       pipe(takeUntil(this.unSubs[0])).
       subscribe((rtlStore) => {
         if (
-          ((rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
+          ((rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) &&
+          (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
           (rtlStore.apisCallStatus.FetchOnchainBalance.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchOnchainBalance.status === APICallStatusEnum.ERROR) &&
           (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR)) &&
           !this.flgInitialized
@@ -55,8 +56,7 @@ export class ECLEffects implements OnDestroy {
 
   infoFetchECL = createEffect(() => this.actions.pipe(
     ofType(ECLActions.FETCH_INFO_ECL),
-    withLatestFrom(this.store.select('root')),
-    mergeMap(([action, store]: [ECLActions.FetchInfo, fromRTLReducer.RootState]) => {
+    mergeMap((action: ECLActions.FetchInfo) => {
       this.flgInitialized = false;
       this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_NODE_INFO));
       this.store.dispatch(new ECLActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.INITIATED }));
@@ -65,9 +65,9 @@ export class ECLEffects implements OnDestroy {
           takeUntil(this.actions.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
           map((info) => {
             this.logger.info(info);
+            this.initializeRemainingData(info, action.payload.loadPage);
             this.store.dispatch(new ECLActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.COMPLETED }));
             this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_NODE_INFO));
-            this.initializeRemainingData(info, action.payload.loadPage);
             return {
               type: ECLActions.SET_INFO_ECL,
               payload: info ? info : {}
