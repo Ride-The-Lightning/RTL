@@ -47,6 +47,24 @@
   }
   .rtl-snack-bar {
     max-width: 90vw !important;
+    font-weight: 600;
+    background-color: $background-color;
+    opacity: 0.9 !important;
+    color: $primary-color;
+  }
+  .rtl-warn-snack-bar {
+    max-width: 90vw !important;
+    font-weight: 600;
+    background-color: $background-color;
+    opacity: 0.9 !important;
+    color: $warn-color;
+  }
+  .rtl-accent-snack-bar {
+    max-width: 90vw !important;
+    font-weight: 600;
+    background-color: $background-color;
+    opacity: 0.9 !important;
+    color: $accent-color;
   }
   .mat-tab-label {
     &.mat-tab-label-active {

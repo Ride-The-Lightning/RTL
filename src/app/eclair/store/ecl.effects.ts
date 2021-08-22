@@ -25,6 +25,7 @@ import * as RTLActions from '../../store/rtl.actions';
 export class ECLEffects implements OnDestroy {
 
   CHILD_API_URL = API_URL + '/ecl';
+  private flgInitialized = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(
@@ -41,11 +42,13 @@ export class ECLEffects implements OnDestroy {
       pipe(takeUntil(this.unSubs[0])).
       subscribe((rtlStore) => {
         if (
-          (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
+          ((rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
           (rtlStore.apisCallStatus.FetchOnchainBalance.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchOnchainBalance.status === APICallStatusEnum.ERROR) &&
-          (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR)
+          (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR)) &&
+          !this.flgInitialized
         ) {
           this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
+          this.flgInitialized = true;
         }
       });
   }
@@ -54,6 +57,7 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.FETCH_INFO_ECL),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [ECLActions.FetchInfo, fromRTLReducer.RootState]) => {
+      this.flgInitialized = false;
       this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_NODE_INFO));
       this.store.dispatch(new ECLActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.INITIATED }));
       return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API).
@@ -566,6 +570,31 @@ export class ECLEffects implements OnDestroy {
           }),
           catchError((err: any) => {
             this.handleErrorWithAlert('Lookup', UI_MESSAGES.SEARCHING_NODE, 'Peer Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/nodes/' + action.payload, err);
+            return of({ type: RTLActions.VOID });
+          })
+        );
+    })
+  ));
+
+  invoiceLookup = createEffect(() => this.actions.pipe(
+    ofType(ECLActions.INVOICE_LOOKUP_ECL),
+    mergeMap((action: ECLActions.InvoiceLookup) => {
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEARCHING_INVOICE));
+      this.store.dispatch(new ECLActions.UpdateAPICallStatus({ action: 'Lookup', status: APICallStatusEnum.INITIATED }));
+      return this.httpClient.get(this.CHILD_API_URL + environment.INVOICES_API + '/' + action.payload).
+        pipe(
+          map((resInvoice) => {
+            this.logger.info(resInvoice);
+            this.store.dispatch(new ECLActions.UpdateAPICallStatus({ action: 'Lookup', status: APICallStatusEnum.COMPLETED }));
+            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.SEARCHING_INVOICE));
+            return {
+              type: ECLActions.SET_LOOKUP_ECL,
+              payload: resInvoice
+            };
+          }),
+          catchError((err: any) => {
+            this.handleErrorWithoutAlert('Lookup', UI_MESSAGES.SEARCHING_INVOICE, 'Invoice Lookup Failed', err);
+            this.store.dispatch(new RTLActions.OpenSnackBar({ message: 'Invoice Refresh Failed.', type: 'ERROR' }));
             return of({ type: RTLActions.VOID });
           })
         );

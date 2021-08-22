@@ -49,6 +49,17 @@
   }
   .rtl-snack-bar {
     max-width: 90vw !important;
+    font-weight: 700;
+  }
+  .rtl-warn-snack-bar {
+    max-width: 90vw !important;
+    font-weight: 700;
+    color: $warn-color;
+  }
+  .rtl-accent-snack-bar {
+    max-width: 90vw !important;
+    font-weight: 700;
+    color: $accent-color;
   }
   .mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar {
     background-color: $primary-darker;

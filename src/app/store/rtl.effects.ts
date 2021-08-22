@@ -67,7 +67,13 @@ export class RTLEffects implements OnDestroy {
         if (typeof action.payload === 'string') {
           this.snackBar.open(action.payload);
         } else {
-          this.snackBar.open(action.payload.message, '', { duration: action.payload.duration });
+          if (action.payload.type === 'ERROR') {
+            this.snackBar.open(action.payload.message, '', { duration: action.payload.duration ? action.payload.duration : 2000, panelClass: 'rtl-warn-snack-bar' });
+          } else if (action.payload.type === 'WARN') {
+            this.snackBar.open(action.payload.message, '', { duration: action.payload.duration ? action.payload.duration : 2000, panelClass: 'rtl-accent-snack-bar' });
+          } else {
+            this.snackBar.open(action.payload.message, '', { duration: action.payload.duration ? action.payload.duration : 2000, panelClass: 'rtl-snack-bar' });
+          }
         }
       })),
     { dispatch: false }

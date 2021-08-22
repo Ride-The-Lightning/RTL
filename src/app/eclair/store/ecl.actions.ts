@@ -51,6 +51,7 @@ export const SET_TOTAL_INVOICES_ECL = 'SET_TOTAL_INVOICES_ECL';
 export const CREATE_INVOICE_ECL = 'CREATE_INVOICE_ECL';
 export const ADD_INVOICE_ECL = 'ADD_INVOICE_ECL';
 export const PEER_LOOKUP_ECL = 'PEER_LOOKUP_ECL';
+export const INVOICE_LOOKUP_ECL = 'INVOICE_LOOKUP_ECL';
 export const SET_LOOKUP_ECL = 'SET_LOOKUP_ECL';
 
 export class UpdateAPICallStatus implements Action {
@@ -360,6 +361,13 @@ export class PeerLookup implements Action {
 
 }
 
+export class InvoiceLookup implements Action {
+
+  readonly type = INVOICE_LOOKUP_ECL;
+  constructor(public payload: string) {} // Payload = paymentHash
+
+}
+
 export class SetLookup implements Action {
 
   readonly type = SET_LOOKUP_ECL;
@@ -374,7 +382,7 @@ export type ECLActions = ResetECLStore | UpdateAPICallStatus | SetChildNodeSetti
   SetChannelsStatus | FetchChannelStats | SetChannelStats |
   FetchOnchainBalance | SetOnchainBalance | GetNewAddress | SetNewAddress |
   SendOnchainFunds | SendOnchainFundsRes | FetchTransactions | SetTransactions |
-  SetLightningBalance | FetchPeers | SetPeers | PeerLookup | SetLookup |
+  SetLightningBalance | FetchPeers | SetPeers | PeerLookup | InvoiceLookup | SetLookup |
   SaveNewChannel | UpdateChannels | CloseChannel | RemoveChannel |
   FetchPayments | SetPayments | SendPayment | SendPaymentStatus |
   FetchInvoices | SetInvoices | CreateInvoice | AddInvoice;

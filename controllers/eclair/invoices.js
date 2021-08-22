@@ -30,6 +30,25 @@ getReceivedPaymentInfo = (invoice) => {
   }
 }
 
+exports.getInvoice = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Channels', msg: 'Getting Invoice..'});
+  options = common.getOptions();
+  options.url = common.getSelLNServerUrl() + '/getinvoice';
+  options.form = { paymentHash: req.params.paymentHash };
+  request.post(options).then(function (body) {
+    logger.log({level: 'DEBUG', fileName: 'Invoice', msg: 'Invoice Found', data: body});
+    let current_time = (Math.round(new Date(Date.now()).getTime()/1000)).toString();
+    body.amount = body.amount ? body.amount/1000 : 0;
+    body.expiresAt = body.expiresAt ? body.expiresAt : (body.timestamp + body.expiry);
+	  body.status = body.status ? body.status : (+body.expiresAt < current_time ? "expired" : "unknown");
+    res.status(200).json(body);
+  })
+  .catch(errRes => {
+    const err = common.handleError(errRes,  'Invoices', 'Get Invoice Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
+  });
+};
+
 exports.listInvoices = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Invoices', msg: 'Getting List Invoices..'});
   options = common.getOptions();
