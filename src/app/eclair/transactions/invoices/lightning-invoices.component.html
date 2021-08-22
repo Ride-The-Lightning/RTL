@@ -73,7 +73,13 @@
             </div>
           </th>
           <td mat-cell *matCellDef="let invoice" [ngClass]="{'px-3': screenSize !== screenSizeEnum.XS}" fxLayoutAlign="end center">
-            <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onInvoiceClick(invoice, $event)">View Info</button>          
+            <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
+              <mat-select placeholder="Actions" tabindex="4" class="mr-0">
+                <mat-select-trigger></mat-select-trigger>
+                <mat-option (click)="onInvoiceClick(invoice)">View Info</mat-option>
+                <mat-option (click)="onRefreshInvoice(invoice)">Refresh</mat-option>
+              </mat-select>
+            </div>            
           </td>
         </ng-container>
         <ng-container matColumnDef="no_invoice">

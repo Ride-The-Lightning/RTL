@@ -10,6 +10,9 @@ exports.getInvoice = (req, res, next) => {
   request(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Invoice', msg: 'Invoice Info Received', data: body});
     logger.log({level: 'INFO', fileName: 'Invoice', msg: 'Invoice Information Received'});
+    body.r_preimage = body.r_preimage ? Buffer.from(body.r_preimage, 'base64').toString('hex') : '';
+    body.r_hash = body.r_hash ? Buffer.from(body.r_hash, 'base64').toString('hex') : '';
+    body.description_hash = body.description_hash ? Buffer.from(body.description_hash, 'base64').toString('hex') : null;
     res.status(200).json(body);
   })
   .catch(errRes => {

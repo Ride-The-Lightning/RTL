@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
+import { Actions } from '@ngrx/effects';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -64,7 +65,7 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private rtlEffects: RTLEffects, private datePipe: DatePipe) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private rtlEffects: RTLEffects, private datePipe: DatePipe, private actions: Actions) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -101,6 +102,20 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
         }, 5000);
         this.logger.info(rtlStore);
       });
+    this.actions.pipe(takeUntil(this.unSubs[1]), filter((action) => (action.type === CLActions.SET_LOOKUP_CL || action.type === CLActions.UPDATE_API_CALL_STATUS_CL))).
+      subscribe((resLookup: CLActions.SetLookup | CLActions.UpdateAPICallStatus) => {
+        if (resLookup.type === CLActions.SET_LOOKUP_CL) {
+          if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator && resLookup.payload) {
+            this.updateInvoicesData(JSON.parse(JSON.stringify(resLookup.payload)));
+            this.loadInvoicesTable(this.invoiceJSONArr);
+          }
+        }
+        if (resLookup.type === CLActions.UPDATE_API_CALL_STATUS_CL && resLookup.payload.action === 'Lookup' && resLookup.payload.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = '';
+          this.errorMessage = (typeof (resLookup.payload.message) === 'object') ? JSON.stringify(resLookup.payload.message) : resLookup.payload.message;
+          this.logger.error(this.errorMessage);
+        }
+      });
   }
 
   ngAfterViewInit() {
@@ -135,7 +150,7 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
       data: { type: 'CONFIRM', titleMessage: 'Delete Expired Invoices', noBtnText: 'Cancel', yesBtnText: 'Delete Invoices' }
     }));
     this.rtlEffects.closeConfirm.
-      pipe(takeUntil(this.unSubs[1])).
+      pipe(takeUntil(this.unSubs[2])).
       subscribe((confirmRes) => {
         if (confirmRes) {
           this.store.dispatch(new CLActions.DeleteExpiredInvoice());
@@ -143,7 +158,7 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
       });
   }
 
-  onInvoiceClick(selInvoice: Invoice, event: any) {
+  onInvoiceClick(selInvoice: Invoice) {
     const reCreatedInvoice: Invoice = {
       msatoshi: selInvoice.msatoshi,
       label: selInvoice.label,
@@ -178,13 +193,21 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
     if (this.selNode.fiatConversion && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
       this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
-        pipe(takeUntil(this.unSubs[1])).
+        pipe(takeUntil(this.unSubs[3])).
         subscribe({ next: (data) => {
           this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
         }, error: (err) => {
           this.invoiceValueHint = 'Conversion Error: ' + err;
         } });
     }
+  }
+
+  onRefreshInvoice(selInvoice: Invoice) {
+    this.store.dispatch(new CLActions.InvoiceLookup(selInvoice.label));
+  }
+
+  updateInvoicesData(newInvoice: Invoice) {
+    this.invoiceJSONArr = this.invoiceJSONArr.map((invoice) => ((invoice.label === newInvoice.label) ? newInvoice : invoice));
   }
 
   loadInvoicesTable(invs: Invoice[]) {

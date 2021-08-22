@@ -4,6 +4,7 @@ const router = express.Router();
 const authCheck = require("../shared/authCheck");
 
 router.get("/", authCheck, invoicesController.listInvoices);
+router.get("/:paymentHash", authCheck, invoicesController.getInvoice);
 router.post("/", authCheck, invoicesController.createInvoice);
 
 module.exports = router;

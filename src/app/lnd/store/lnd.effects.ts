@@ -27,6 +27,7 @@ export class LNDEffects implements OnDestroy {
 
   dialogRef: any;
   CHILD_API_URL = API_URL + '/lnd';
+  private flgInitialized = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(
@@ -44,12 +45,14 @@ export class LNDEffects implements OnDestroy {
       pipe(takeUntil(this.unSubs[0])).
       subscribe((rtlStore) => {
         if (
-          (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
+          ((rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
           (rtlStore.apisCallStatus.FetchBalanceBlockchain.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchBalanceBlockchain.status === APICallStatusEnum.ERROR) &&
           (rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.ERROR) &&
-          (rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.ERROR)
+          (rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.ERROR)) &&
+          !this.flgInitialized
         ) {
           this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
+          this.flgInitialized = true;
         }
       });
   }

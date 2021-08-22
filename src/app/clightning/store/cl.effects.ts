@@ -25,6 +25,7 @@ import * as fromCLReducers from '../store/cl.reducers';
 export class CLEffects implements OnDestroy {
 
   CHILD_API_URL = API_URL + '/cl';
+  private flgInitialized = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(
@@ -41,12 +42,14 @@ export class CLEffects implements OnDestroy {
       pipe(takeUntil(this.unSubs[0])).
       subscribe((rtlStore) => {
         if (
-          (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
+          ((rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
           (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) &&
           (rtlStore.apisCallStatus.FetchBalance.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchBalance.status === APICallStatusEnum.ERROR) &&
-          (rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.ERROR)
+          (rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.ERROR)) &&
+          !this.flgInitialized
         ) {
           this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
+          this.flgInitialized = true;
         }
       });
   }
@@ -562,6 +565,30 @@ export class CLEffects implements OnDestroy {
               this.store.dispatch(new RTLActions.CloseSpinner(action.payload.uiMessage));
             }
             this.store.dispatch(new CLActions.SetLookup([]));
+            return of({ type: RTLActions.VOID });
+          })
+        );
+    })
+  ));
+
+  invoiceLookupCL = createEffect(() => this.actions.pipe(
+    ofType(CLActions.INVOICE_LOOKUP_CL),
+    mergeMap((action: CLActions.InvoiceLookup) => {
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEARCHING_INVOICE));
+      this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'Lookup', status: APICallStatusEnum.INITIATED }));
+      return this.httpClient.get(this.CHILD_API_URL + environment.INVOICES_API + '?label=' + action.payload).
+        pipe(
+          map((resInvoice: any) => {
+            this.logger.info(resInvoice);
+            this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'Lookup', status: APICallStatusEnum.COMPLETED }));
+            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.SEARCHING_INVOICE));
+            return {
+              type: CLActions.SET_LOOKUP_CL,
+              payload: resInvoice.invoices && resInvoice.invoices.length && resInvoice.invoices.length > 0 ? resInvoice.invoices[0] : resInvoice
+            };
+          }),
+          catchError((err: any) => {
+            this.handleErrorWithAlert('Lookup', UI_MESSAGES.SEARCHING_INVOICE, 'Invoice Lookup Failed', this.CHILD_API_URL + environment.INVOICES_API + '?label=' + action.payload, err);
             return of({ type: RTLActions.VOID });
           })
         );
