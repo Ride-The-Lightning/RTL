@@ -17,11 +17,11 @@ import * as CLActions from '../../../store/cl.actions';
 
 
 @Component({
-  selector: 'rtl-bump-fee',
+  selector: 'rtl-cl-bump-fee',
   templateUrl: './bump-fee.component.html',
   styleUrls: ['./bump-fee.component.scss']
 })
-export class BumpFeeComponent implements OnInit, OnDestroy {
+export class CLBumpFeeComponent implements OnInit, OnDestroy {
 
   private outputIdx: NgModel;
   @ViewChild('outputIdx') set payReq(outIdx: NgModel) {
@@ -45,43 +45,43 @@ export class BumpFeeComponent implements OnInit, OnDestroy {
   public faExclamationTriangle = faExclamationTriangle;
   public bumpFeeError = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
-  
 
-  constructor(public dialogRef: MatDialogRef<BumpFeeComponent>, @Inject(MAT_DIALOG_DATA) public data: CLChannelInformation, private store: Store<fromRTLReducer.RTLState>, private clEffects: CLEffects, private logger: LoggerService, private dataService: DataService, private snackBar: MatSnackBar) {}
+
+  constructor(public dialogRef: MatDialogRef<CLBumpFeeComponent>, @Inject(MAT_DIALOG_DATA) public data: CLChannelInformation, private store: Store<fromRTLReducer.RTLState>, private clEffects: CLEffects, private logger: LoggerService, private dataService: DataService, private snackBar: MatSnackBar) {}
 
   ngOnInit() {
     this.bumpFeeChannel = this.data.channel;
   }
 
   onBumpFee(): boolean|void {
-    if(typeof this.outputIndex === "undefined" || typeof this.fees === "undefined") {
-      console.log(typeof this.outputIndex.toString(), "---", typeof this.fees)
+    if (!this.outputIndex || !this.fees) {
+      console.warn(typeof this.outputIndex.toString(), '---', typeof this.fees);
       return true;
     }
-    const utxoString = this.bumpFeeChannel.funding_txid+':'+this.outputIndex.toString();
+    const utxoString = this.bumpFeeChannel.funding_txid + ':' + this.outputIndex.toString();
     this.store.dispatch(new CLActions.GetNewAddress(this.selectedAddressType));
     this.clEffects.setNewAddressCL.
       pipe(take(1)).
-      subscribe({next : (newAddress) => {
+      subscribe({ next : (newAddress) => {
         this.newAddress = newAddress;
-        console.log(this.newAddress, ", all ,", this.fees, 0, [utxoString], "\n")
+        console.warn(this.newAddress, ', all ,', this.fees, 0, [utxoString], '\n');
         this.store.dispatch(new CLActions.SetChannelTransaction({
           address:this.newAddress,
           satoshis:'all',
           feeRate:this.fees,
           utxos:[utxoString]
-        }))
+        }));
         this.clEffects.SetChannelTransactionCL.
-        pipe(take(1)).
-        subscribe({next:(data) => {
-          this.dialogRef.close(false);
-        }, error:(err) => {
-          this.logger.error(err)
-        }})
+          pipe(take(1)).
+          subscribe({ next:(data) => {
+            this.dialogRef.close(false);
+          }, error:(err) => {
+            this.logger.error(err);
+          } });
       }, error: (err) => {
         this.bumpFeeError = err.message ? err.message : err;
-        this.logger.error(err)
-      }});
+        this.logger.error(err);
+      } });
   }
 
   onCopyID(payload: string) {

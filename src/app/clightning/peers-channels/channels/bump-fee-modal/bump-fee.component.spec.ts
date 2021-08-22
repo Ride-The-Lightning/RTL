@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BumpFeeComponent } from './bump-fee.component';
+import { CLBumpFeeComponent } from './bump-fee.component';
 
-describe('BumpFeeComponent', () => {
-  let component: BumpFeeComponent;
-  let fixture: ComponentFixture<BumpFeeComponent>;
+describe('CLBumpFeeComponent', () => {
+  let component: CLBumpFeeComponent;
+  let fixture: ComponentFixture<CLBumpFeeComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BumpFeeComponent ]
-    })
-    .compileComponents();
+      declarations: [CLBumpFeeComponent]
+    }).
+      compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BumpFeeComponent);
+    fixture = TestBed.createComponent(CLBumpFeeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

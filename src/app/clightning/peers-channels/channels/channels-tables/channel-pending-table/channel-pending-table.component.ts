@@ -17,6 +17,7 @@ import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as CLActions from '../../../../store/cl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
+import { CLBumpFeeComponent } from '../../bump-fee-modal/bump-fee.component';
 
 @Component({
   selector: 'rtl-cl-channel-pending-table',
@@ -98,6 +99,13 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
 
   applyFilter() {
     this.channels.filter = this.selFilter.trim().toLowerCase();
+  }
+
+  onBumpFee(selChannel: Channel) {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
+      channel: selChannel,
+      component: CLBumpFeeComponent
+    } }));
   }
 
   onChannelClick(selChannel: Channel, event: any) {
