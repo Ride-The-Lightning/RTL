@@ -75,8 +75,7 @@ export class LNDEffects implements OnDestroy {
           )
           ) {
             this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.COMPLETED }));
-            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_NODE_INFO));
-            this.store.dispatch(new RTLActions.CloseAllDialogs());
+            this.store.dispatch(new RTLActions.CloseAllDialogs()); // Multiple UI_MESSAGES.GET_NODE_INFO after unlock & UI_MESSAGES.WAIT_SYNC_NODE
             this.store.dispatch(new RTLActions.OpenAlert({
               data: {
                 type: AlertTypeEnum.ERROR,
@@ -87,7 +86,7 @@ export class LNDEffects implements OnDestroy {
             return { type: RTLActions.LOGOUT };
           } else if (!info.identity_pubkey) {
             this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.COMPLETED }));
-            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_NODE_INFO));
+            this.store.dispatch(new RTLActions.CloseAllDialogs()); // Multiple UI_MESSAGES.GET_NODE_INFO after unlock & UI_MESSAGES.WAIT_SYNC_NODE
             this.sessionService.removeItem('lndUnlocked');
             this.logger.info('Redirecting to Unlock');
             this.router.navigate(['/lnd/wallet']);
@@ -99,7 +98,7 @@ export class LNDEffects implements OnDestroy {
             info.lnImplementation = 'LND';
             this.initializeRemainingData(info, action.payload.loadPage);
             this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.COMPLETED }));
-            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_NODE_INFO));
+            this.store.dispatch(new RTLActions.CloseAllDialogs()); // Multiple UI_MESSAGES.GET_NODE_INFO after unlock & UI_MESSAGES.WAIT_SYNC_NODE
             return {
               type: LNDActions.SET_INFO_LND,
               payload: info ? info : {}
@@ -107,11 +106,19 @@ export class LNDEffects implements OnDestroy {
           }
         }),
         catchError((err) => {
-          if ((typeof err.error.error === 'string' && err.error.error.includes('Not Found')) || err.status === 502) {
+          if (
+            (typeof err.error.error === 'string' && err.error.error.includes('Not Found')) ||
+            (typeof err.error.error === 'string' && err.error.error.includes('wallet locked')) ||
+            err.status === 502
+          ) {
             this.sessionService.removeItem('lndUnlocked');
             this.logger.info('Redirecting to Unlock');
             this.router.navigate(['/lnd/wallet']);
             this.handleErrorWithoutAlert('FetchInfo', UI_MESSAGES.GET_NODE_INFO, 'Fetching Node Info Failed.', err);
+          } else if (typeof err.error.error === 'string' && err.error.error.includes('starting up') && err.status === 500) {
+            setTimeout(() => {
+              this.store.dispatch(new LNDActions.FetchInfo({ loadPage: 'HOME' }));
+            }, 2000);
           } else {
             const code = this.commonService.extractErrorCode(err);
             const msg = (code === 503) ? 'Unable to Connect to LND Server.' : this.commonService.extractErrorMessage(err);
@@ -968,7 +975,7 @@ export class LNDEffects implements OnDestroy {
             setTimeout(() => {
               this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.WAIT_SYNC_NODE));
               this.store.dispatch(new LNDActions.FetchInfo({ loadPage: 'HOME' }));
-            }, 1000 * 5);
+            }, 5000);
             return { type: RTLActions.VOID };
           }),
           catchError((err) => {
