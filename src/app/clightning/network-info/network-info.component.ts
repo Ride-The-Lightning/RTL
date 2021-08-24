@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { faBolt, faServer, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
+import { faBolt, faServer, faNetworkWired, faLink } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfo, Fees, ChannelsStatus, FeeRates } from '../../shared/models/clModels';
@@ -23,6 +23,7 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
   public faBolt = faBolt;
   public faServer = faServer;
   public faNetworkWired = faNetworkWired;
+  public faLink = faLink;
   public selNode: SelNodeChild = {};
   public information: GetInfo = {};
   public fees: Fees;
@@ -46,24 +47,28 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 6, rows: 3 },
         { id: 'status', icon: this.faNetworkWired, title: 'Channels', cols: 6, rows: 3 },
         { id: 'fee', icon: this.faBolt, title: 'Routing Fee', cols: 6, rows: 1 },
-        { id: 'feeRatesKB', icon: this.faServer, title: 'Fee Rate Per KB', cols: 6, rows: 4 },
-        { id: 'feeRatesKW', icon: this.faNetworkWired, title: 'Fee Rate Per KW', cols: 6, rows: 4 }
+        { id: 'feeRatesKB', icon: this.faServer, title: 'Fee Rate Per KB', cols: 4, rows: 4 },
+        { id: 'feeRatesKW', icon: this.faNetworkWired, title: 'Fee Rate Per KW', cols: 4, rows: 4 },
+        { id: 'onChainFeeEstimates', icon: this.faLink, title: 'Onchain Fee Estimates', cols: 4, rows: 4 }
       ];
       this.nodeCardsOperator = [
-        { id: 'feeRatesKB', icon: this.faServer, title: 'Fee Rate Per KB', cols: 6, rows: 4 },
-        { id: 'feeRatesKW', icon: this.faNetworkWired, title: 'Fee Rate Per KW', cols: 6, rows: 4 }
+        { id: 'feeRatesKB', icon: this.faServer, title: 'Fee Rate Per KB', cols: 4, rows: 4 },
+        { id: 'feeRatesKW', icon: this.faNetworkWired, title: 'Fee Rate Per KW', cols: 4, rows: 4 },
+        { id: 'onChainFeeEstimates', icon: this.faLink, title: 'Onchain Fee Estimates', cols: 4, rows: 4 }
       ];
     } else {
       this.nodeCardsMerchant = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 2, rows: 3 },
         { id: 'status', icon: this.faNetworkWired, title: 'Channels', cols: 2, rows: 3 },
         { id: 'fee', icon: this.faBolt, title: 'Routing Fee', cols: 2, rows: 3 },
-        { id: 'feeRatesKB', icon: this.faServer, title: 'Fee Rate Per KB', cols: 3, rows: 4 },
-        { id: 'feeRatesKW', icon: this.faNetworkWired, title: 'Fee Rate Per KW', cols: 3, rows: 4 }
+        { id: 'feeRatesKB', icon: this.faServer, title: 'Fee Rate Per KB', cols: 2, rows: 4 },
+        { id: 'feeRatesKW', icon: this.faNetworkWired, title: 'Fee Rate Per KW', cols: 2, rows: 4 },
+        { id: 'onChainFeeEstimates', icon: this.faLink, title: 'Onchain Fee Estimates', cols: 2, rows: 4 }
       ];
       this.nodeCardsOperator = [
-        { id: 'feeRatesKB', icon: this.faServer, title: 'Fee Rate Per KB', cols: 3, rows: 4 },
-        { id: 'feeRatesKW', icon: this.faNetworkWired, title: 'Fee Rate Per KW', cols: 3, rows: 4 }
+        { id: 'feeRatesKB', icon: this.faServer, title: 'Fee Rate Per KB', cols: 2, rows: 4 },
+        { id: 'feeRatesKW', icon: this.faNetworkWired, title: 'Fee Rate Per KW', cols: 2, rows: 4 },
+        { id: 'onChainFeeEstimates', icon: this.faLink, title: 'Onchain Fee Estimates', cols: 2, rows: 4 }
       ];
     }
   }

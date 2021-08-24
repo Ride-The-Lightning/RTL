@@ -133,8 +133,12 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   onCircularRebalance(selChannel: any) {
+    const channelsToRebalanceMessage = {
+      channels: this.channelsData,
+      selChannel: selChannel
+    };
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      channel: selChannel,
+      message: channelsToRebalanceMessage,
       component: ChannelRebalanceComponent
     } }));
   }

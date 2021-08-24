@@ -4,9 +4,10 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 
 import { ForwardingEvent, RoutingPeers } from '../../../shared/models/lndModels';
-import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, getPaginatorLabel, PAGE_SIZE, PAGE_SIZE_OPTIONS, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -17,20 +18,29 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 @Component({
   selector: 'rtl-routing-peers',
   templateUrl: './routing-peers.component.html',
-  styleUrls: ['./routing-peers.component.scss']
+  styleUrls: ['./routing-peers.component.scss'],
+  providers: [
+    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') }
+  ]
 })
 export class RoutingPeersComponent implements OnInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sortIn: MatSort;
+  @ViewChild('tableIn', { read: MatSort, static: false }) sortIn: MatSort;
   @ViewChild('tableOut', { read: MatSort, static: false }) sortOut: MatSort;
+  @ViewChild('paginatorIn', { static: false }) paginatorIn: MatPaginator|undefined;
+  @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator|undefined;
   public routingPeersData = [];
   public displayedColumns: any[] = [];
   public RoutingPeersIncoming: any;
   public RoutingPeersOutgoing: any;
   public flgSticky = false;
+  public pageSize = PAGE_SIZE;
+  public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
+  public filterIn = '';
+  public filterOut = '';
   public apisCallStatus: ApiCallsListLND = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
@@ -66,7 +76,9 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
         } else {
           this.routingPeersData = [];
         }
-        this.loadRoutingPeersTable(this.routingPeersData);
+        if (this.routingPeersData.length > 0 && this.sortIn && this.paginatorIn && this.sortOut && this.paginatorOut) {
+          this.loadRoutingPeersTable(this.routingPeersData);
+        }
         this.logger.info(rtlStore);
       });
   }
@@ -92,15 +104,19 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
   }
 
   loadRoutingPeersTable(forwardingEvents: ForwardingEvent[]) {
+    this.filterIn = '';
+    this.filterOut = '';
     if (forwardingEvents.length > 0) {
       const results = this.groupRoutingPeers(forwardingEvents);
       this.RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>(results[0]);
       this.RoutingPeersIncoming.sort = this.sortIn;
       this.RoutingPeersIncoming.filterPredicate = (rpIn: RoutingPeers, fltr: string) => JSON.stringify(rpIn).toLowerCase().includes(fltr);
+      this.RoutingPeersIncoming.paginator = this.paginatorIn;
       this.logger.info(this.RoutingPeersIncoming);
       this.RoutingPeersOutgoing = new MatTableDataSource<RoutingPeers>(results[1]);
       this.RoutingPeersOutgoing.sort = this.sortOut;
       this.RoutingPeersOutgoing.filterPredicate = (rpOut: RoutingPeers, fltr: string) => JSON.stringify(rpOut).toLowerCase().includes(fltr);
+      this.RoutingPeersOutgoing.paginator = this.paginatorOut;
       this.logger.info(this.RoutingPeersOutgoing);
     } else {
       // To reset table after other Forwarding history calls

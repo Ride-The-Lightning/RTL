@@ -25,6 +25,7 @@ import * as fromCLReducers from '../store/cl.reducers';
 export class CLEffects implements OnDestroy {
 
   CHILD_API_URL = API_URL + '/cl';
+  private flgInitialized = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(
@@ -41,12 +42,15 @@ export class CLEffects implements OnDestroy {
       pipe(takeUntil(this.unSubs[0])).
       subscribe((rtlStore) => {
         if (
+          ((rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) &&
           (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
           (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) &&
           (rtlStore.apisCallStatus.FetchBalance.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchBalance.status === APICallStatusEnum.ERROR) &&
-          (rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.ERROR)
+          (rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.ERROR)) &&
+          !this.flgInitialized
         ) {
           this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
+          this.flgInitialized = true;
         }
       });
   }
@@ -55,6 +59,7 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.FETCH_INFO_CL),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [CLActions.FetchInfo, fromRTLReducer.RootState]) => {
+      this.flgInitialized = false;
       this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.INITIATED }));
       this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_NODE_INFO));
       return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API).
@@ -62,11 +67,11 @@ export class CLEffects implements OnDestroy {
           takeUntil(this.actions.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
           map((info) => {
             this.logger.info(info);
-            this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.COMPLETED }));
-            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_NODE_INFO));
             if (info.chains && info.chains.length && info.chains[0] &&
                 (typeof info.chains[0] === 'object' && info.chains[0].hasOwnProperty('chain') && info.chains[0].chain.toLowerCase().indexOf('bitcoin') < 0)
             ) {
+              this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.COMPLETED }));
+              this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_NODE_INFO));
               this.store.dispatch(new RTLActions.CloseAllDialogs());
               this.store.dispatch(new RTLActions.OpenAlert({
                 data: {
@@ -80,6 +85,8 @@ export class CLEffects implements OnDestroy {
               };
             } else {
               this.initializeRemainingData(info, action.payload.loadPage);
+              this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.COMPLETED }));
+              this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_NODE_INFO));
               return {
                 type: CLActions.SET_INFO_CL,
                 payload: info ? info : {}
@@ -460,10 +467,12 @@ export class CLEffects implements OnDestroy {
           this.store.dispatch(new RTLActions.CloseSpinner(action.payload.uiMessage));
           this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'SendPayment', status: APICallStatusEnum.COMPLETED }));
           this.store.dispatch(new RTLActions.OpenSnackBar('Payment Sent Successfully!'));
-          this.store.dispatch(new CLActions.FetchChannels());
-          this.store.dispatch(new CLActions.FetchBalance());
-          this.store.dispatch(new CLActions.FetchPayments());
           this.store.dispatch(new CLActions.SetDecodedPayment({}));
+          setTimeout(() => {
+            this.store.dispatch(new CLActions.FetchChannels());
+            this.store.dispatch(new CLActions.FetchBalance());
+            this.store.dispatch(new CLActions.FetchPayments());
+          }, 1000);
           return {
             type: CLActions.SEND_PAYMENT_STATUS_CL,
             payload: sendRes
@@ -560,6 +569,31 @@ export class CLEffects implements OnDestroy {
               this.store.dispatch(new RTLActions.CloseSpinner(action.payload.uiMessage));
             }
             this.store.dispatch(new CLActions.SetLookup([]));
+            return of({ type: RTLActions.VOID });
+          })
+        );
+    })
+  ));
+
+  invoiceLookupCL = createEffect(() => this.actions.pipe(
+    ofType(CLActions.INVOICE_LOOKUP_CL),
+    mergeMap((action: CLActions.InvoiceLookup) => {
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEARCHING_INVOICE));
+      this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'Lookup', status: APICallStatusEnum.INITIATED }));
+      return this.httpClient.get(this.CHILD_API_URL + environment.INVOICES_API + '?label=' + action.payload).
+        pipe(
+          map((resInvoice: any) => {
+            this.logger.info(resInvoice);
+            this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'Lookup', status: APICallStatusEnum.COMPLETED }));
+            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.SEARCHING_INVOICE));
+            return {
+              type: CLActions.SET_LOOKUP_CL,
+              payload: resInvoice.invoices && resInvoice.invoices.length && resInvoice.invoices.length > 0 ? resInvoice.invoices[0] : resInvoice
+            };
+          }),
+          catchError((err: any) => {
+            this.handleErrorWithoutAlert('Lookup', UI_MESSAGES.SEARCHING_INVOICE, 'Invoice Lookup Failed', err);
+            this.store.dispatch(new RTLActions.OpenSnackBar({ message: 'Invoice Refresh Failed.', type: 'ERROR' }));
             return of({ type: RTLActions.VOID });
           })
         );

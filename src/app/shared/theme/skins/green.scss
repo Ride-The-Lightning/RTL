@@ -10,7 +10,8 @@ $green-primary: mat.define-palette($green-primary, 500, 300, A200);
 $green-accent:  mat.define-palette(mat.$gray-palette, 800, 600, 900);
 $green-accent-night:  mat.define-palette($mat-white, 300, 600, 900);
 $green-warn: mat.define-palette($red-warn, 500);
+$green-warn-night: mat.define-palette($red-warn, A700);
 
-$green-night-theme: create-dark-bright-theme($green-primary, $green-accent-night, $green-warn);
+$green-night-theme: create-dark-bright-theme($green-primary, $green-accent-night, $green-warn-night);
 
 $green-day-theme: mat.define-light-theme($green-primary, $green-accent, $green-warn);

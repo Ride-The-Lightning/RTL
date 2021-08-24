@@ -10,7 +10,8 @@ $yellow-primary: mat.define-palette($yellow-primary, 500, 300, A200);
 $yellow-accent:  mat.define-palette(mat.$gray-palette, 800, 600, 900);
 $yellow-accent-night:  mat.define-palette($mat-white, 300, 600, 900);
 $yellow-warn: mat.define-palette($red-warn, 500);
+$yellow-warn-night: mat.define-palette($red-warn, A700);
 
-$yellow-night-theme: create-dark-bright-theme($yellow-primary, $yellow-accent-night, $yellow-warn);
+$yellow-night-theme: create-dark-bright-theme($yellow-primary, $yellow-accent-night, $yellow-warn-night);
 
 $yellow-day-theme: mat.define-light-theme($yellow-primary, $yellow-accent, $yellow-warn);

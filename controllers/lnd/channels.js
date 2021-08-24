@@ -175,7 +175,7 @@ exports.postTransactions = (req, res, next) => {
   request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Send Payment Response', data: body});
     if (body.payment_error) {
-      const err = common.handleError(bosy.payment_error,  'Channels', 'Send Payment Error');
+      const err = common.handleError(body.payment_error,  'Channels', 'Send Payment Error');
       return res.status(err.statusCode).json({message: err.message, error: err.error});
     } else {
       logger.log({level: 'INFO', fileName: 'Channels', msg: 'Payment Sent'});
@@ -189,23 +189,20 @@ exports.postTransactions = (req, res, next) => {
 };
 
 exports.closeChannel = (req, res, next) => {
-  logger.log({level: 'INFO', fileName: 'Channels', msg: 'Closing Channel..'});
-  req.setTimeout(60000 * 10); // timeout 10 mins
-  options = common.getOptions();
-  let channelpoint = req.params.channelPoint.replace(':', '/');
-  options.url = common.getSelLNServerUrl() + '/v1/channels/' + channelpoint + '?force=' + req.query.force;
-  if (req.query.target_conf) { options.url = options.url + '&target_conf=' + req.query.target_conf; }
-  if (req.query.sat_per_byte) { options.url = options.url + '&sat_per_byte=' + req.query.sat_per_byte; }
-  logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Closing Channel Options URL', data: options.url});
-  request.delete(options).then((body) => {
-    logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Close Channel Response', data: body});
-    logger.log({level: 'INFO', fileName: 'Channels', msg: 'Channel Closed'});
-    res.status(204).json({message: 'Channel Closed!'});
-  })
-  .catch(errRes => {
-    const err = common.handleError(errRes,  'Channels', 'Close Channel Error');
-    return res.status(err.statusCode).json({message: err.message, error: err.error});
-  });
+  try {
+    logger.log({level: 'INFO', fileName: 'Channels', msg: 'Closing Channel..'});
+    options = common.getOptions();
+    let channelpoint = req.params.channelPoint.replace(':', '/');
+    options.url = common.getSelLNServerUrl() + '/v1/channels/' + channelpoint + '?force=' + req.query.force;
+    if (req.query.target_conf) { options.url = options.url + '&target_conf=' + req.query.target_conf; }
+    if (req.query.sat_per_byte) { options.url = options.url + '&sat_per_byte=' + req.query.sat_per_byte; }
+    logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Closing Channel Options URL', data: options.url});
+    request.delete(options);
+    res.status(202).json({message: 'Close channel request has been submitted.'});
+  } catch (error) {
+    logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Close Channel Error', error: error.message}); 
+    return res.status(500).json({message: 'Close Channel Error', error: error.message});
+  }
 }
 
 exports.postChanPolicy = (req, res, next) => {

@@ -60,7 +60,7 @@ exports.connectPeer = (req, res, next) => {
     options.form = req.query;
     logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Connect Peer Params', data: options.form});
   }
-  request.post(options, (error, response, body) => {
+  request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Add Peer Response', data: body});
     if (typeof body === 'string' && body.includes('already connected')) {
       const err = common.handleError({ statusCode: 500, message: 'Connect Peer Error', error: body },  'Peers', body);
@@ -71,7 +71,7 @@ exports.connectPeer = (req, res, next) => {
     }
     options.url = common.getSelLNServerUrl() + '/peers';
     options.form = {};
-    request.post(options).then(function (body) {
+    request.post(options).then((body) => {
       logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Peers Received', data: body});
       if (body && body.length) {
         let peersNodeIds = '';
@@ -112,7 +112,7 @@ exports.deletePeer = (req, res, next) => {
     options.form = { nodeId: req.params.nodeId };
     logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Disconnect Peer Params', data: options.form});
   }
-  request.post(options, (error, response, body) => {
+  request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Disconnect Peer Response', data: body});
     logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Peer Disconnected: ' + req.params.nodeId});
     logger.log({level: 'INFO', fileName: 'Peers', msg: 'Peer Disconnected'});
