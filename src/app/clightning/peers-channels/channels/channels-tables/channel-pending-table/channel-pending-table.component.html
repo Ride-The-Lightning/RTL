@@ -58,7 +58,7 @@
               <mat-select-trigger></mat-select-trigger>
               <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
               <mat-option (click)="onChannelClose(channel)" *ngIf="isCompatibleVersion && !channel.connected && channel.state === 'CHANNELD_NORMAL'">Close Channel</mat-option>
-              <mat-option (click)="onBumpFee(channel)">Bump Fee</mat-option>
+              <mat-option (click)="onBumpFee(channel)" *ngIf="channel.state === 'CHANNELD_AWAITING_LOCKIN'">Bump Fee</mat-option>
             </mat-select>
           </div>
         </td>

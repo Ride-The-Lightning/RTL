@@ -3,7 +3,7 @@ import { NgModel } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
-import { filter, take, takeUntil } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
 import { Actions } from '@ngrx/effects';
 import { faCopy, faInfoCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
@@ -15,6 +15,8 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 import { Store } from '@ngrx/store';
 import { CLEffects } from '../../../store/cl.effects';
 import * as CLActions from '../../../store/cl.actions';
+import * as RTLActions from '../../../../store/rtl.actions';
+
 
 
 @Component({
@@ -78,6 +80,7 @@ export class CLBumpFeeComponent implements OnInit, OnDestroy {
         }
         if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR) {
           if (action.payload.action === 'SetChannelTransaction' || action.payload.action === 'GenerateNewAddress') {
+            this.logger.error(action.payload.message);
             this.bumpFeeError = action.payload.message;
           }
         }
