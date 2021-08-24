@@ -15,6 +15,7 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 import { Store } from '@ngrx/store';
 import { CLEffects } from '../../../store/cl.effects';
 import * as CLActions from '../../../store/cl.actions';
+import * as RTLActions from '../../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-cl-bump-fee',
@@ -73,6 +74,7 @@ export class CLBumpFeeComponent implements OnInit, OnDestroy {
         }
         if (action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL) {
           this.dialogRef.close();
+          this.store.dispatch(new RTLActions.OpenSnackBar('Successfully bumped the fee. Use the block explorer to verify transaction.'));
         }
         if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR) {
           if (action.payload.action === 'SetChannelTransaction' || action.payload.action === 'GenerateNewAddress') {

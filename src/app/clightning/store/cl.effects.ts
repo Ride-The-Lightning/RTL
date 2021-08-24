@@ -732,7 +732,6 @@ export class CLEffects implements OnDestroy {
 
             this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'SetChannelTransaction', status: APICallStatusEnum.COMPLETED }));
             this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.SEND_FUNDS));
-            this.store.dispatch(new RTLActions.OpenSnackBar('Successfully bumped the fee. Use the block explorer to verify transaction.'));
             this.store.dispatch(new CLActions.FetchBalance());
             this.store.dispatch(new CLActions.FetchUTXOs());
             return {
