@@ -16,8 +16,6 @@ import { Store } from '@ngrx/store';
 import { CLEffects } from '../../../store/cl.effects';
 import * as CLActions from '../../../store/cl.actions';
 
-
-
 @Component({
   selector: 'rtl-cl-bump-fee',
   templateUrl: './bump-fee.component.html',
@@ -56,7 +54,7 @@ export class CLBumpFeeComponent implements OnInit, OnDestroy {
   }
 
   onBumpFee(): boolean | void {
-    if (this.outputIndex  === null|| this.fees === null) {
+    if (this.outputIndex === null || this.fees === null) {
       return true;
     }
     const utxoString = this.bumpFeeChannel.funding_txid + ':' + this.outputIndex.toString();
@@ -66,7 +64,6 @@ export class CLBumpFeeComponent implements OnInit, OnDestroy {
       filter((action) => action.type === CLActions.SET_NEW_ADDRESS_CL || action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL || action.type === CLActions.UPDATE_API_CALL_STATUS_CL)).
       subscribe((action: (CLActions.SetNewAddress | CLActions.SetChannelTransactionRes | CLActions.UpdateAPICallStatus)) => {
         if (action.type === CLActions.SET_NEW_ADDRESS_CL) {
-          console.log(action.payload, 'all', this.fees, utxoString)
           this.store.dispatch(new CLActions.SetChannelTransaction({
             address: action.payload,
             satoshis: 'all',
@@ -75,7 +72,7 @@ export class CLBumpFeeComponent implements OnInit, OnDestroy {
           }));
         }
         if (action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL) {
-          this.dialogRef.close()
+          this.dialogRef.close();
         }
         if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR) {
           if (action.payload.action === 'SetChannelTransaction' || action.payload.action === 'GenerateNewAddress') {
