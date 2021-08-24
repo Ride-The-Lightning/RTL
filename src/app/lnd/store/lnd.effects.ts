@@ -27,6 +27,7 @@ export class LNDEffects implements OnDestroy {
 
   dialogRef: any;
   CHILD_API_URL = API_URL + '/lnd';
+  private flgInitialized = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(
@@ -44,12 +45,15 @@ export class LNDEffects implements OnDestroy {
       pipe(takeUntil(this.unSubs[0])).
       subscribe((rtlStore) => {
         if (
+          ((rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) &&
           (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
           (rtlStore.apisCallStatus.FetchBalanceBlockchain.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchBalanceBlockchain.status === APICallStatusEnum.ERROR) &&
           (rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.ERROR) &&
-          (rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.ERROR)
+          (rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.ERROR)) &&
+          !this.flgInitialized
         ) {
           this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
+          this.flgInitialized = true;
         }
       });
   }
@@ -58,20 +62,20 @@ export class LNDEffects implements OnDestroy {
     ofType(LNDActions.FETCH_INFO_LND),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [LNDActions.FetchInfo, fromRTLReducer.RootState]) => {
+      this.flgInitialized = false;
       this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_NODE_INFO));
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.INITIATED }));
       return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API).pipe(
         takeUntil(this.actions.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
         map((info) => {
           this.logger.info(info);
-          this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.COMPLETED }));
-          this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_NODE_INFO));
           if (info.chains && info.chains.length && info.chains[0] && (
             (typeof info.chains[0] === 'string' && info.chains[0].toLowerCase().indexOf('bitcoin') < 0) ||
             (typeof info.chains[0] === 'object' && info.chains[0].hasOwnProperty('chain') && info.chains[0].chain.toLowerCase().indexOf('bitcoin') < 0)
           )
           ) {
-            this.store.dispatch(new RTLActions.CloseAllDialogs());
+            this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.COMPLETED }));
+            this.store.dispatch(new RTLActions.CloseAllDialogs()); // Multiple UI_MESSAGES.GET_NODE_INFO after unlock & UI_MESSAGES.WAIT_SYNC_NODE
             this.store.dispatch(new RTLActions.OpenAlert({
               data: {
                 type: AlertTypeEnum.ERROR,
@@ -81,6 +85,8 @@ export class LNDEffects implements OnDestroy {
             }));
             return { type: RTLActions.LOGOUT };
           } else if (!info.identity_pubkey) {
+            this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.COMPLETED }));
+            this.store.dispatch(new RTLActions.CloseAllDialogs()); // Multiple UI_MESSAGES.GET_NODE_INFO after unlock & UI_MESSAGES.WAIT_SYNC_NODE
             this.sessionService.removeItem('lndUnlocked');
             this.logger.info('Redirecting to Unlock');
             this.router.navigate(['/lnd/wallet']);
@@ -91,6 +97,8 @@ export class LNDEffects implements OnDestroy {
           } else {
             info.lnImplementation = 'LND';
             this.initializeRemainingData(info, action.payload.loadPage);
+            this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.COMPLETED }));
+            this.store.dispatch(new RTLActions.CloseAllDialogs()); // Multiple UI_MESSAGES.GET_NODE_INFO after unlock & UI_MESSAGES.WAIT_SYNC_NODE
             return {
               type: LNDActions.SET_INFO_LND,
               payload: info ? info : {}
@@ -98,11 +106,19 @@ export class LNDEffects implements OnDestroy {
           }
         }),
         catchError((err) => {
-          if ((typeof err.error.error === 'string' && err.error.error.includes('Not Found')) || err.status === 502) {
+          if (
+            (typeof err.error.error === 'string' && err.error.error.includes('Not Found')) ||
+            (typeof err.error.error === 'string' && err.error.error.includes('wallet locked')) ||
+            err.status === 502
+          ) {
             this.sessionService.removeItem('lndUnlocked');
             this.logger.info('Redirecting to Unlock');
             this.router.navigate(['/lnd/wallet']);
             this.handleErrorWithoutAlert('FetchInfo', UI_MESSAGES.GET_NODE_INFO, 'Fetching Node Info Failed.', err);
+          } else if (typeof err.error.error === 'string' && err.error.error.includes('starting up') && err.status === 500) {
+            setTimeout(() => {
+              this.store.dispatch(new LNDActions.FetchInfo({ loadPage: 'HOME' }));
+            }, 2000);
           } else {
             const code = this.commonService.extractErrorCode(err);
             const msg = (code === 503) ? 'Unable to Connect to LND Server.' : this.commonService.extractErrorMessage(err);
@@ -297,18 +313,10 @@ export class LNDEffects implements OnDestroy {
         map((postRes: any) => {
           this.logger.info(postRes);
           this.store.dispatch(new RTLActions.CloseSpinner(action.payload.forcibly ? UI_MESSAGES.FORCE_CLOSE_CHANNEL : UI_MESSAGES.CLOSE_CHANNEL));
-          this.store.dispatch(new LNDActions.FetchBalance('Blockchain'));
           this.store.dispatch(new LNDActions.FetchAllChannels());
-          if (action.payload.forcibly) {
-            this.store.dispatch(new LNDActions.FetchPendingChannels());
-          } else {
-            this.store.dispatch(new LNDActions.FetchClosedChannels());
-          }
-          this.store.dispatch(new LNDActions.BackupChannels({ uiMessage: UI_MESSAGES.NO_SPINNER, channelPoint: 'ALL', showMessage: 'Channel Closed Successfully!' }));
-          return {
-            type: LNDActions.REMOVE_CHANNEL_LND,
-            payload: { channelPoint: action.payload.channelPoint }
-          };
+          this.store.dispatch(new LNDActions.FetchPendingChannels());
+          this.store.dispatch(new LNDActions.BackupChannels({ uiMessage: UI_MESSAGES.NO_SPINNER, channelPoint: 'ALL', showMessage: postRes.message }));
+          return { type: RTLActions.VOID };
         }),
         catchError((err: any) => {
           this.handleErrorWithAlert('CloseChannel', (action.payload.forcibly ? UI_MESSAGES.FORCE_CLOSE_CHANNEL : UI_MESSAGES.CLOSE_CHANNEL), 'Unable to Close Channel. Try again later.', this.CHILD_API_URL + environment.CHANNELS_API + '/' + action.payload.channelPoint + '?force=' + action.payload.forcibly, err);
@@ -967,7 +975,7 @@ export class LNDEffects implements OnDestroy {
             setTimeout(() => {
               this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.WAIT_SYNC_NODE));
               this.store.dispatch(new LNDActions.FetchInfo({ loadPage: 'HOME' }));
-            }, 1000 * 5);
+            }, 5000);
             return { type: RTLActions.VOID };
           }),
           catchError((err) => {
@@ -1042,7 +1050,8 @@ export class LNDEffects implements OnDestroy {
           };
         }),
         catchError((err: any) => {
-          this.handleErrorWithAlert('Lookup', UI_MESSAGES.SEARCHING_INVOICE, 'Invoice Lookup Failed', this.CHILD_API_URL + environment.INVOICES_API + '/' + action.payload, err);
+          this.handleErrorWithoutAlert('Lookup', UI_MESSAGES.SEARCHING_INVOICE, 'Invoice Lookup Failed', err);
+          this.store.dispatch(new RTLActions.OpenSnackBar({ message: 'Invoice Refresh Failed.', type: 'ERROR' }));
           return of({ type: RTLActions.VOID });
         })
       );

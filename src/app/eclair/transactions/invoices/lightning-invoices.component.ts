@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
+import { Actions } from '@ngrx/effects';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -61,7 +62,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private datePipe: DatePipe) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private datePipe: DatePipe, private actions: Actions) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -98,6 +99,15 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
         }, 5000);
         this.logger.info(rtlStore);
       });
+    this.actions.pipe(takeUntil(this.unSubs[1]), filter((action) => (action.type === ECLActions.SET_LOOKUP_ECL || action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL))).
+      subscribe((resLookup: ECLActions.SetLookup | ECLActions.UpdateAPICallStatus) => {
+        if (resLookup.type === ECLActions.SET_LOOKUP_ECL) {
+          if (this.invoiceJSONArr.length > 0 && this.sort && this.paginator && resLookup.payload) {
+            this.updateInvoicesData(JSON.parse(JSON.stringify(resLookup.payload)));
+            this.loadInvoicesTable(this.invoiceJSONArr);
+          }
+        }
+      });
   }
 
   ngAfterViewInit() {
@@ -131,12 +141,20 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
     this.resetData();
   }
 
-  onInvoiceClick(selInvoice: Invoice, event: any) {
+  onInvoiceClick(selInvoice: Invoice) {
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       invoice: selInvoice,
       newlyAdded: false,
       component: ECLInvoiceInformationComponent
     } }));
+  }
+
+  onRefreshInvoice(selInvoice: Invoice) {
+    this.store.dispatch(new ECLActions.InvoiceLookup(selInvoice.paymentHash));
+  }
+
+  updateInvoicesData(newInvoice: Invoice) {
+    this.invoiceJSONArr = this.invoiceJSONArr.map((invoice) => ((invoice.paymentHash === newInvoice.paymentHash) ? newInvoice : invoice));
   }
 
   loadInvoicesTable(invs: Invoice[]) {
@@ -165,7 +183,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
     if (this.selNode.fiatConversion && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
       this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
-        pipe(takeUntil(this.unSubs[1])).
+        pipe(takeUntil(this.unSubs[2])).
         subscribe({ next: (data) => {
           this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
         }, error: (err) => {

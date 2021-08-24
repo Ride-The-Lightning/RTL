@@ -8,9 +8,10 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
+import { CommonService } from '../../../../shared/services/common.service';
 import { Peer, GetInfo, UTXO } from '../../../../shared/models/clModels';
 import { CLOpenChannelAlert } from '../../../../shared/models/alertData';
-import { APICallStatusEnum, FEE_RATE_TYPES } from '../../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, FEE_RATE_TYPES, ScreenSizeEnum } from '../../../../shared/services/consts-enums-functions';
 
 import * as CLActions from '../../../store/cl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
@@ -44,11 +45,16 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
   public isPrivate = false;
   public feeRateTypes = FEE_RATE_TYPES;
   public selFeeRate = '';
+  public customFeeRate = null;
   public flgMinConf = false;
   public minConfValue = null;
+  public screenSize = '';
+  public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private decimalPipe: DecimalPipe) { }
+  constructor(public dialogRef: MatDialogRef<CLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private decimalPipe: DecimalPipe, private commonService: CommonService) {
+    this.screenSize = this.commonService.getScreenSize();
+  }
 
   ngOnInit() {
     this.isCompatibleVersion = this.data.message.isCompatibleVersion;
@@ -132,7 +138,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
           this.advancedTitle = this.advancedTitle + ' | Min Confirmation Blocks: ' + this.minConfValue;
         }
         if (this.selFeeRate) {
-          this.advancedTitle = this.advancedTitle + ' | Fee Rate: ' + this.feeRateTypes.find((feeRateType) => feeRateType.feeRateId === this.selFeeRate).feeRateType;
+          this.advancedTitle = this.advancedTitle + ' | Fee Rate: ' + (this.customFeeRate ? (this.customFeeRate + ' (Sats/vB)') : (this.feeRateTypes.find((feeRateType) => feeRateType.feeRateId === this.selFeeRate).feeRateType));
         }
         if (this.selUTXOs.length && this.selUTXOs.length > 0) {
           this.advancedTitle = this.advancedTitle + ' | Total Selected: ' + this.selUTXOs.length + ' | Selected UTXOs: ' + this.decimalPipe.transform(this.totalSelectedUTXOAmount) + ' Sats';
@@ -169,10 +175,11 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
   }
 
   onOpenChannel(): boolean | void {
-    if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || (this.flgMinConf && !this.minConfValue))) {
+    if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || (this.flgMinConf && !this.minConfValue)) || (this.selFeeRate === 'customperkb' && !this.flgMinConf && !this.customFeeRate)) {
       return true;
     }
-    const newChannel = { peerId: ((!this.peer || !this.peer.id) ? this.selectedPubkey : this.peer.id), satoshis: (this.flgUseAllBalance) ? 'all' : this.fundingAmount.toString(), announce: !this.isPrivate, feeRate: this.selFeeRate, minconf: this.flgMinConf ? this.minConfValue : null };
+    const newChannel = { peerId: ((!this.peer || !this.peer.id) ? this.selectedPubkey : this.peer.id), satoshis: (this.flgUseAllBalance) ? 'all' : this.fundingAmount.toString(), announce: !this.isPrivate, minconf: this.flgMinConf ? this.minConfValue : null };
+    newChannel['feeRate'] = (this.selFeeRate === 'customperkb' && !this.flgMinConf && this.customFeeRate) ? (this.customFeeRate * 1000) + 'perkb' : this.selFeeRate;
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
       newChannel['utxos'] = [];
       this.selUTXOs.forEach((utxo) => newChannel['utxos'].push(utxo.txid + ':' + utxo.output));

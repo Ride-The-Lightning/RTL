@@ -9,7 +9,8 @@ $blue-primary: mat.define-palette(mat.$blue-palette, 700, 200, A200);
 $blue-accent:  mat.define-palette(mat.$gray-palette, 800, 600, 900);
 $blue-accent-night:  mat.define-palette($mat-white, 300, 600, 900);
 $blue-warn: mat.define-palette($red-warn, 500);
+$blue-warn-night: mat.define-palette($red-warn, A700);
 
-$blue-night-theme: create-dark-bright-theme($blue-primary, $blue-accent-night, $blue-warn);
+$blue-night-theme: create-dark-bright-theme($blue-primary, $blue-accent-night, $blue-warn-night);
 
 $blue-day-theme: mat.define-light-theme($blue-primary, $blue-accent, $blue-warn);

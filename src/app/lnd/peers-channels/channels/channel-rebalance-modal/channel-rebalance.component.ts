@@ -3,13 +3,13 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatStepper } from '@angular/material/stepper';
-import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { Subject, Observable, of } from 'rxjs';
+import { takeUntil, filter, startWith, map } from 'rxjs/operators';
 import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
-import { ChannelInformation } from '../../../../shared/models/alertData';
+import { ChannelRebalanceAlert } from '../../../../shared/models/alertData';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { Channel, QueryRoutes, ListInvoices } from '../../../../shared/models/lndModels';
 import { FEE_LIMIT_TYPES, PAGE_SIZE, UI_MESSAGES } from '../../../../shared/services/consts-enums-functions';
@@ -29,7 +29,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   public invoices: ListInvoices = {};
   public selChannel: Channel = {};
   public activeChannels = [];
-  public filteredActiveChannels = [];
+  public filteredActiveChannels: Observable<Channel[]>;
   public feeLimitTypes = [];
   public queryRoute: QueryRoutes = {};
   public paymentRequest = '';
@@ -45,10 +45,18 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   statusFormGroup: FormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ChannelRebalanceComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelInformation, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe) { }
+  constructor(public dialogRef: MatDialogRef<ChannelRebalanceComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelRebalanceAlert, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe) { }
 
   ngOnInit() {
-    this.selChannel = this.data.channel;
+    let x = '';
+    let y = '';
+    this.selChannel = this.data.message.selChannel;
+    this.activeChannels = this.data.message.channels.filter((channel) => channel.active && channel.chan_id !== this.selChannel.chan_id && channel.remote_balance > 0);
+    this.activeChannels = this.activeChannels.sort((c1: Channel, c2: Channel) => {
+      x = c1.remote_alias ? c1.remote_alias.toLowerCase() : c1.chan_id ? c1.chan_id.toLowerCase() : '';
+      y = c2.remote_alias ? c2.remote_alias.toLowerCase() : c1.chan_id.toLowerCase();
+      return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    });
     FEE_LIMIT_TYPES.forEach((FEE_LIMIT_TYPE, i) => {
       if (i > 0) {
         this.feeLimitTypes.push(FEE_LIMIT_TYPE);
@@ -70,7 +78,6 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     this.store.select('lnd').
       pipe(takeUntil(this.unSubs[0])).
       subscribe((rtlStore) => {
-        this.activeChannels = rtlStore.allChannels.filter((channel) => channel.active && channel.remote_balance >= this.inputFormGroup.controls.rebalanceAmount.value && channel.chan_id !== this.selChannel.chan_id);
         this.invoices = rtlStore.invoices;
         this.logger.info(rtlStore);
       });
@@ -93,10 +100,27 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
           this.sendPayment(action.payload.paymentRequest);
         }
       });
+    this.inputFormGroup.get('rebalanceAmount').valueChanges.pipe(
+      takeUntil(this.unSubs[2]), startWith(0)).
+      subscribe((amount) => {
+        this.inputFormGroup.controls.selRebalancePeer.setValue('');
+        this.inputFormGroup.controls.selRebalancePeer.setErrors(null);
+        this.filteredActiveChannels = of(amount ? this.filterActiveChannels() : this.activeChannels.slice());
+      });
+    this.inputFormGroup.get('selRebalancePeer').valueChanges.pipe(
+      takeUntil(this.unSubs[3]), startWith('')).
+      subscribe((alias) => {
+        if (typeof alias === 'string') {
+          this.filteredActiveChannels = of(this.filterActiveChannels());
+        }
+      });
   }
 
-  onEstimateFee(): boolean|void {
-    if (!this.inputFormGroup.controls.selRebalancePeer.value || !this.inputFormGroup.controls.rebalanceAmount.value) {
+  onSelectFee(): boolean|void {
+    if (this.inputFormGroup.controls.selRebalancePeer.value && typeof this.inputFormGroup.controls.selRebalancePeer.value === 'string') {
+      this.onSelectedPeerChanged();
+    }
+    if (!this.inputFormGroup.controls.selRebalancePeer.value || typeof this.inputFormGroup.controls.selRebalancePeer.value === 'string' || !this.inputFormGroup.controls.rebalanceAmount.value) {
       return true;
     }
     if (this.stepper.selectedIndex === 0) {
@@ -106,7 +130,10 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     this.queryRoute = null;
     this.feeFormGroup.reset();
     this.feeFormGroup.controls.selFeeLimitType.setValue(this.feeLimitTypes[0]);
-    this.store.dispatch(new LNDActions.GetQueryRoutes({ destPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, amount: this.inputFormGroup.controls.rebalanceAmount.value, outgoingChanId: this.selChannel.chan_id }));
+    this.feeFormGroup.controls.feeLimit.setValue('');
+    this.feeFormGroup.controls.feeLimit.setErrors(null);
+    this.feeFormGroup.controls.hiddenFeeLimit.setValue('');
+    this.feeFormGroup.controls.hiddenFeeLimit.setErrors(null);
   }
 
   stepSelectionChanged(event: any) {
@@ -154,11 +181,6 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     }
   }
 
-  onUseEstimate() {
-    this.feeFormGroup.controls.selFeeLimitType.setValue(this.feeLimitTypes[0]);
-    this.feeFormGroup.controls.feeLimit.setValue((this.queryRoute.routes && this.queryRoute.routes.length > 0 && this.queryRoute.routes[0].total_fees_msat) ? Math.ceil(+this.queryRoute.routes[0].total_fees_msat / 1000) : 0);
-  }
-
   onRebalance(): boolean|void {
     if (!this.inputFormGroup.controls.rebalanceAmount.value || this.inputFormGroup.controls.rebalanceAmount.value <= 0 || this.inputFormGroup.controls.rebalanceAmount.value > +this.selChannel.local_balance || !this.feeFormGroup.controls.feeLimit.value || this.feeFormGroup.controls.feeLimit.value < 0 || !this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey) {
       return true;
@@ -193,7 +215,24 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   }
 
   filterActiveChannels() {
-    this.filteredActiveChannels = this.activeChannels.filter((channel) => channel.remote_balance >= this.inputFormGroup.controls.rebalanceAmount.value && channel.chan_id !== this.selChannel.chan_id);
+    return this.activeChannels.filter((channel) => channel.remote_balance >= this.inputFormGroup.controls.rebalanceAmount.value &&
+      channel.chan_id !== this.selChannel.chan_id && ((channel.remote_alias.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0) || (channel.chan_id.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0)));
+  }
+
+  onSelectedPeerChanged() {
+    if (this.inputFormGroup.controls.selRebalancePeer.value && this.inputFormGroup.controls.selRebalancePeer.value.length > 0 && typeof this.inputFormGroup.controls.selRebalancePeer.value === 'string') {
+      const foundChannels = this.activeChannels.filter((channel) => channel.remote_alias.length === this.inputFormGroup.controls.selRebalancePeer.value.length && channel.remote_alias.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0);
+      if (foundChannels && foundChannels.length > 0) {
+        this.inputFormGroup.controls.selRebalancePeer.setValue(foundChannels[0]);
+        this.inputFormGroup.controls.selRebalancePeer.setErrors(null);
+      } else {
+        this.inputFormGroup.controls.selRebalancePeer.setErrors({ notfound: true });
+      }
+    }
+  }
+
+  displayFn(channel: Channel): string {
+    return (channel && channel.remote_alias) ? channel.remote_alias : (channel && channel.chan_id) ? channel.chan_id : '';
   }
 
   onClose() {
@@ -208,6 +247,13 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     this.inputFormGroup.reset();
     this.feeFormGroup.reset();
     this.statusFormGroup.reset();
+    this.inputFormGroup.controls.hiddenAmount.setValue('');
+    this.inputFormGroup.controls.hiddenAmount.setErrors(null);
+    this.inputFormGroup.controls.rebalanceAmount.setValue('');
+    this.inputFormGroup.controls.rebalanceAmount.setErrors(null);
+    this.inputFormGroup.controls.selRebalancePeer.setValue('');
+    this.inputFormGroup.controls.selRebalancePeer.setErrors(null);
+    this.filteredActiveChannels = of(this.activeChannels);
   }
 
   ngOnDestroy() {

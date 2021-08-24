@@ -10,7 +10,7 @@
       <form fxLayout="column" (submit)="onOpenChannel()" (reset)="resetData()" #form="ngForm">
         <div fxLayout="column">
           <mat-form-field fxFlex="100" *ngIf="!peer && peers && peers.length > 0">
-            <input type="text" placeholder="Peer Alias" aria-label="Peers" matInput [formControl]="selectedPeer" (change)="onSelectedPeerChanged()" [matAutocomplete]="auto" tabindex="1" required>
+            <input type="text" placeholder="Peer Alias" aria-label="Peers" matInput [formControl]="selectedPeer" [matAutocomplete]="auto" tabindex="1" required>
             <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectedPeerChanged()">
               <mat-option *ngFor="let peer of filteredPeers | async" [value]="peer">{{peer.alias ? peer.alias : peer.pub_key ? peer.pub_key : ''}}</mat-option>
             </mat-autocomplete>

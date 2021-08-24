@@ -560,6 +560,16 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
   }
 }
 
+.mr-6 {
+  margin-right: 6rem !important;
+  @include for_screensize(tab-port) {
+    margin-right: 3rem !important;
+  }
+  @include for_screensize(phone) {
+    margin-right: 2rem !important;
+  }
+}
+
 .mx-2 {
   margin: 0 2rem !important;
   @include for_screensize(tab-port) {
