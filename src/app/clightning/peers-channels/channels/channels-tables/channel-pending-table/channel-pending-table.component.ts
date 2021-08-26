@@ -7,7 +7,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { GetInfo, Channel } from '../../../../../shared/models/clModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum, APICallStatusEnum } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum, APICallStatusEnum, CLChannelPendingState } from '../../../../../shared/services/consts-enums-functions';
 import { ApiCallsListCL } from '../../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
@@ -42,6 +42,7 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
   public feeRateTypes = FEE_RATE_TYPES;
   public selFilter = '';
   public flgSticky = false;
+  public CLChannelPendingState = CLChannelPendingState;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -83,7 +84,8 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
         }
         this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
         this.totalBalance = rtlStore.balance.totalBalance;
-        this.channelsData = this.commonService.sortByKey(rtlStore.allChannels.filter((channel) => !(channel.state === 'CHANNELD_NORMAL' && channel.connected)), 'state', 'string');
+        this.channelsData = rtlStore.allChannels.filter((channel) => !(channel.state === 'CHANNELD_NORMAL' && channel.connected));
+        this.channelsData = this.channelsData.sort((a, b) => ((this.CLChannelPendingState[a.state] >= this.CLChannelPendingState[b.state]) ? 1 : -1));
         if (this.channelsData && this.channelsData.length > 0) {
           this.loadChannelsTable(this.channelsData);
         }
@@ -139,14 +141,22 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
     this.channels.filterPredicate = (channel: Channel, fltr: string) => {
       const newChannel = ((channel.connected) ? 'connected' : 'disconnected') + (channel.channel_id ? channel.channel_id.toLowerCase() : '') +
       (channel.short_channel_id ? channel.short_channel_id.toLowerCase() : '') + (channel.id ? channel.id.toLowerCase() : '') + (channel.alias ? channel.alias.toLowerCase() : '') +
-      (channel.private ? 'private' : 'public') + (channel.state ? channel.state.toLowerCase() : '') +
+      (channel.private ? 'private' : 'public') + ((channel.state && this.CLChannelPendingState[channel.state]) ? this.CLChannelPendingState[channel.state].toLowerCase() : '') +
       (channel.funding_txid ? channel.funding_txid.toLowerCase() : '') + (channel.msatoshi_to_us ? channel.msatoshi_to_us : '') +
       (channel.msatoshi_total ? channel.msatoshi_total : '') + (channel.their_channel_reserve_satoshis ? channel.their_channel_reserve_satoshis : '') +
       (channel.our_channel_reserve_satoshis ? channel.our_channel_reserve_satoshis : '') + (channel.spendable_msatoshi ? channel.spendable_msatoshi : '');
       return newChannel.includes(fltr);
     };
     this.channels.sort = this.sort;
-    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => {
+      switch (sortHeaderId) {
+        case 'state':
+          return this.CLChannelPendingState[data.state];
+
+        default:
+          return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+      }
+    };
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
   }

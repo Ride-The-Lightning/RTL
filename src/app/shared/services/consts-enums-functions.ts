@@ -126,6 +126,20 @@ export const WALLET_ADDRESS_TYPE = {
   UNUSED_NESTED_PUBKEY_HASH: { name: 'Unused Nested Pubkey Hash', tooltip: '' }
 };
 
+export enum CLChannelPendingState {
+  CHANNELD_NORMAL = 'Active',
+  OPENINGD = 'Opening',
+  CHANNELD_AWAITING_LOCKIN = 'Pending Open',
+  CHANNELD_SHUTTING_DOWN = 'Shutting Down',
+  CLOSINGD_SIGEXCHANGE = 'Closing: Sig Exchange',
+  CLOSINGD_COMPLETE = 'Closed',
+  AWAITING_UNILATERAL = 'Awaiting Unilateral Close',
+  FUNDING_SPEND_SEEN = 'Funding Spend Seen',
+  ONCHAIN = 'Onchain',
+  DUALOPEND_OPEN_INIT = 'Dual Open Initialized',
+  DUALOPEND_AWAITING_LOCKIN = 'Dual Pending Open'
+}
+
 export enum LoopStateEnum {
   INITIATED = 'Initiated',
   PREIMAGE_REVEALED = 'Preimage Revealed',

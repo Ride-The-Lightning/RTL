@@ -26,7 +26,7 @@
       </ng-container>
       <ng-container matColumnDef="state">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> State </th>
-        <td mat-cell *matCellDef="let channel"> {{channel?.state}}</td>
+        <td mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : ''}"> {{CLChannelPendingState[channel?.state]}} </td>
       </ng-container>
       <ng-container matColumnDef="msatoshi_to_us">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> mSatoshi To Us </th>

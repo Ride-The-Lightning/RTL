@@ -1,21 +1,21 @@
 import { Component, OnInit, OnDestroy, ViewChild, Inject } from '@angular/core';
 import { NgModel } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
+import { filter, take } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faCopy, faInfoCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 import { Channel } from '../../../../shared/models/clModels';
 import { CLChannelInformation } from '../../../../shared/models/alertData';
-import { ADDRESS_TYPES, APICallStatusEnum, TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
-import { DataService } from '../../../../shared/services/data.service';
+import { ADDRESS_TYPES, APICallStatusEnum } from '../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../shared/services/logger.service';
-import { Store } from '@ngrx/store';
-import { CLEffects } from '../../../store/cl.effects';
+
 import * as CLActions from '../../../store/cl.actions';
 import * as RTLActions from '../../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-cl-bump-fee',
@@ -31,14 +31,8 @@ export class CLBumpFeeComponent implements OnInit, OnDestroy {
     }
   }
 
-  public addressTypes = ADDRESS_TYPES;
-  public selectedAddressType = ADDRESS_TYPES[0];
   public newAddress = '';
-
   public bumpFeeChannel: Channel;
-  public transTypes = [...TRANS_TYPES];
-  public selTransType = '2';
-  public blocks = null;
   public fees = null;
   public outputIndex = null;
   public faCopy = faCopy;
@@ -47,40 +41,37 @@ export class CLBumpFeeComponent implements OnInit, OnDestroy {
   public bumpFeeError = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-
-  constructor(private actions: Actions, public dialogRef: MatDialogRef<CLBumpFeeComponent>, @Inject(MAT_DIALOG_DATA) public data: CLChannelInformation, private store: Store<fromRTLReducer.RTLState>, private clEffects: CLEffects, private logger: LoggerService, private dataService: DataService, private snackBar: MatSnackBar) { }
+  constructor(private actions: Actions, public dialogRef: MatDialogRef<CLBumpFeeComponent>, @Inject(MAT_DIALOG_DATA) public data: CLChannelInformation, private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.bumpFeeChannel = this.data.channel;
   }
 
   onBumpFee(): boolean | void {
-    if (this.outputIndex === null || this.fees === null) {
+    if ((!this.outputIndex && this.outputIndex !== 0) || !this.fees) {
       return true;
     }
-    const utxoString = this.bumpFeeChannel.funding_txid + ':' + this.outputIndex.toString();
-    this.store.dispatch(new CLActions.GetNewAddress(this.selectedAddressType));
+    this.bumpFeeError = '';
+    this.store.dispatch(new CLActions.GetNewAddress(ADDRESS_TYPES[0]));
     this.actions.pipe(
-      takeUntil(this.unSubs[1]),
-      filter((action) => action.type === CLActions.SET_NEW_ADDRESS_CL || action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL || action.type === CLActions.UPDATE_API_CALL_STATUS_CL)).
+      filter((action) => action.type === CLActions.SET_NEW_ADDRESS_CL || action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL || action.type === CLActions.UPDATE_API_CALL_STATUS_CL),
+      take(3)).
       subscribe((action: (CLActions.SetNewAddress | CLActions.SetChannelTransactionRes | CLActions.UpdateAPICallStatus)) => {
         if (action.type === CLActions.SET_NEW_ADDRESS_CL) {
           this.store.dispatch(new CLActions.SetChannelTransaction({
             address: action.payload,
             satoshis: 'all',
             feeRate: this.fees,
-            utxos: [utxoString]
+            utxos: [this.bumpFeeChannel.funding_txid + ':' + this.outputIndex.toString()]
           }));
         }
         if (action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL) {
-          this.dialogRef.close();
           this.store.dispatch(new RTLActions.OpenSnackBar('Successfully bumped the fee. Use the block explorer to verify transaction.'));
+          this.dialogRef.close();
         }
-        if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR) {
-          if (action.payload.action === 'SetChannelTransaction' || action.payload.action === 'GenerateNewAddress') {
-            this.logger.error(action.payload.message);
-            this.bumpFeeError = action.payload.message;
-          }
+        if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR && (action.payload.action === 'SetChannelTransaction' || action.payload.action === 'GenerateNewAddress')) {
+          this.logger.error(action.payload.message);
+          this.bumpFeeError = action.payload.message;
         }
       });
   }

@@ -180,6 +180,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   onPageChange(event: PageEvent) {
     let reverse = true;
     let index_offset = this.lastOffset;
+    let page_size = event.pageSize;
     if (event.pageIndex === 0) {
       reverse = true;
       index_offset = 0;
@@ -191,7 +192,8 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
       index_offset = this.firstOffset;
     } else if (event.length <= ((event.pageIndex + 1) * event.pageSize)) {
       reverse = false;
-      index_offset = event.length - (event.pageIndex * event.pageSize) + 1;
+      index_offset = 0;
+      page_size = event.length - (event.pageIndex * event.pageSize);
     }
     this.store.dispatch(new LNDActions.FetchInvoices({ num_max_invoices: event.pageSize, index_offset: index_offset, reversed: reverse }));
   }
