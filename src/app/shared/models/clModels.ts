@@ -177,11 +177,6 @@ export interface ForwardingEvent {
   resolved_time?: number;
 }
 
-export interface ForwardingHistoryRes {
-  last_offset_index?: number;
-  forwarding_events?: ForwardingEvent[];
-}
-
 export interface Routes {
   id?: string;
   channel?: string;

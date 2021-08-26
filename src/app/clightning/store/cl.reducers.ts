@@ -1,6 +1,6 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { APICallStatusEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ForwardingHistoryRes, ListInvoices, UTXO } from '../../shared/models/clModels';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ForwardingEvent, ListInvoices, UTXO } from '../../shared/models/clModels';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 import * as CLActions from '../store/cl.actions';
 
@@ -16,7 +16,8 @@ export interface CLState {
   peers: Peer[];
   allChannels: Channel[];
   payments: Payment[];
-  forwardingHistory: ForwardingHistoryRes;
+  forwardingHistory: ForwardingEvent[];
+  failedForwardingHistory: ForwardingEvent[];
   invoices: ListInvoices;
   utxos: UTXO[];
 }
@@ -34,7 +35,8 @@ export const initCLState: CLState = {
     FetchPeers: { status: APICallStatusEnum.UN_INITIATED },
     FetchUTXOs: { status: APICallStatusEnum.UN_INITIATED },
     FetchPayments: { status: APICallStatusEnum.UN_INITIATED },
-    GetForwardingHistory: { status: APICallStatusEnum.UN_INITIATED }
+    GetForwardingHistory: { status: APICallStatusEnum.UN_INITIATED },
+    GetFailedForwardingHistory: { status: APICallStatusEnum.UN_INITIATED }
   },
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
   information: {},
@@ -46,7 +48,8 @@ export const initCLState: CLState = {
   peers: [],
   allChannels: [],
   payments: [],
-  forwardingHistory: {},
+  forwardingHistory: [],
+  failedForwardingHistory: [],
   invoices: { invoices: [] },
   utxos: []
 };
@@ -154,9 +157,9 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
       };
     case CLActions.SET_FORWARDING_HISTORY_CL:
       const modifiedFeeWithTxCount = state.fees;
-      if (action.payload.forwarding_events && action.payload.forwarding_events.length > 0) {
+      if (action.payload && action.payload.length > 0) {
         const storedChannels = [...state.allChannels];
-        action.payload.forwarding_events.forEach((fhEvent, i) => {
+        action.payload.forEach((fhEvent, i) => {
           if (storedChannels && storedChannels.length > 0) {
             for (let idx = 0; idx < storedChannels.length; idx++) {
               if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id === fhEvent.in_channel) {
@@ -177,14 +180,45 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
             fhEvent.out_channel_alias = fhEvent.out_channel;
           }
         });
-        modifiedFeeWithTxCount.totalTxCount = action.payload.forwarding_events.filter((fhEvent) => fhEvent.status === 'settled').length;
+        modifiedFeeWithTxCount.totalTxCount = action.payload.length;
       } else {
-        action.payload = {};
+        action.payload = [];
       }
       return {
         ...state,
         fee: modifiedFeeWithTxCount,
         forwardingHistory: action.payload
+      };
+    case CLActions.SET_FAILED_FORWARDING_HISTORY_CL:
+      if (action.payload && action.payload.length > 0) {
+        const storedChannels = [...state.allChannels];
+        action.payload.forEach((fhEvent, i) => {
+          if (storedChannels && storedChannels.length > 0) {
+            for (let idx = 0; idx < storedChannels.length; idx++) {
+              if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id === fhEvent.in_channel) {
+                fhEvent.in_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.in_channel;
+                if (fhEvent.out_channel_alias) { return; }
+              }
+              if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id.toString() === fhEvent.out_channel) {
+                fhEvent.out_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.out_channel;
+                if (fhEvent.in_channel_alias) { return; }
+              }
+              if (idx === storedChannels.length - 1) {
+                if (!fhEvent.in_channel_alias) { fhEvent.in_channel_alias = fhEvent.in_channel; }
+                if (!fhEvent.out_channel_alias) { fhEvent.out_channel_alias = fhEvent.out_channel; }
+              }
+            }
+          } else {
+            fhEvent.in_channel_alias = fhEvent.in_channel;
+            fhEvent.out_channel_alias = fhEvent.out_channel;
+          }
+        });
+      } else {
+        action.payload = [];
+      }
+      return {
+        ...state,
+        failedForwardingHistory: action.payload
       };
     case CLActions.ADD_INVOICE_CL:
       const newInvoices = state.invoices;

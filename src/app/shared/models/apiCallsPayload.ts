@@ -46,6 +46,7 @@ export interface ApiCallsListCL {
   FetchUTXOs: any;
   FetchPayments: any;
   GetForwardingHistory: any;
+  GetFailedForwardingHistory: any;
 }
 
 export interface ApiCallsListECL {

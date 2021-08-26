@@ -97,13 +97,13 @@ exports.getLocalRemoteBalance = (req, res, next) => {
 exports.listForwards = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Channels', msg: 'Getting Channel List Forwards..'});
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/v1/channel/listForwards/';
+  options.url = common.getSelLNServerUrl() + '/v1/channel/listForwards?status=' + req.query.status;
   request.get(options).then((body) => {
-    logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Forwarding History Response', data: body});
+    logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Forwarding History Response For Status ' + req.query.status, data: body});
     if (body && body.length > 0) { body = common.sortDescByKey(body, 'received_time'); }
-    logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Forwarding History Received', data: body});
-    logger.log({level: 'INFO', fileName: 'Channels', msg: 'Channel List Forwards Received'});
-    res.status(200).json({ last_offset_index: 0, forwarding_events: body });
+    logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Forwarding History Received For Status' + req.query.status, data: body});
+    logger.log({level: 'INFO', fileName: 'Channels', msg: 'Channel List Forwards Received For Status ' + req.query.status});
+    res.status(200).json(body);
   })
   .catch(errRes => {
     const err = common.handleError(errRes,  'Channels', 'Forwarding History Error');
