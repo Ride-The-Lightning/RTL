@@ -26,6 +26,7 @@ import { CLNodeLookupComponent } from './lookups/node-lookup/node-lookup.compone
 import { CLQueryRoutesComponent } from './transactions/query-routes/query-routes.component';
 import { CLChannelOpenTableComponent } from './peers-channels/channels/channels-tables/channel-open-table/channel-open-table.component';
 import { CLChannelPendingTableComponent } from './peers-channels/channels/channels-tables/channel-pending-table/channel-pending-table.component';
+import { CLBumpFeeComponent } from './peers-channels/channels/bump-fee-modal/bump-fee.component';
 import { CLNodeInfoComponent } from './home/node-info/node-info.component';
 import { CLBalancesInfoComponent } from './home/balances-info/balances-info.component';
 import { CLFeeInfoComponent } from './home/fee-info/fee-info.component';
@@ -81,6 +82,7 @@ import { CLUnlockedGuard } from '../shared/services/auth.guard';
     CLChannelsTablesComponent,
     CLChannelOpenTableComponent,
     CLChannelPendingTableComponent,
+    CLBumpFeeComponent,
     CLNodeInfoComponent,
     CLBalancesInfoComponent,
     CLFeeInfoComponent,

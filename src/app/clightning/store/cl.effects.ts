@@ -729,13 +729,13 @@ export class CLEffects implements OnDestroy {
         pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
-            this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'SetChannelTransaction', status: APICallStatusEnum.COMPLETED }));
+            this.store.dispatch(new CLActions.SetChannelTransactionRes(postRes));
             this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.SEND_FUNDS));
             this.store.dispatch(new CLActions.FetchBalance());
             this.store.dispatch(new CLActions.FetchUTXOs());
             return {
-              type: CLActions.SET_CHANNEL_TRANSACTION_RES_CL,
-              payload: postRes
+              type: CLActions.UPDATE_API_CALL_STATUS_CL,
+              payload: { action: 'SetChannelTransaction', status: APICallStatusEnum.COMPLETED }
             };
           }),
           catchError((err: any) => {
