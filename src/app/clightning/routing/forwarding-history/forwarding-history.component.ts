@@ -67,7 +67,7 @@ export class CLForwardingHistoryComponent implements OnInit, OnChanges, AfterVie
           if (this.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
             this.errorMessage = (typeof (this.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(this.apisCallStatus.GetForwardingHistory.message) : this.apisCallStatus.GetForwardingHistory.message;
           }
-          this.successfulEvents = (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length > 0) ? this.filterSuccessfulEvents(rtlStore.forwardingHistory.forwarding_events) : [];
+          this.successfulEvents = rtlStore.forwardingHistory ? rtlStore.forwardingHistory : [];
           if (this.successfulEvents.length > 0 && this.sort && this.paginator) {
             this.loadForwardingEventsTable(this.successfulEvents);
           }
@@ -95,14 +95,10 @@ export class CLForwardingHistoryComponent implements OnInit, OnChanges, AfterVie
     }
   }
 
-  filterSuccessfulEvents(events) {
-    return events.filter((event) => event.status === 'settled');
-  }
-
   onForwardingEventClick(selFEvent: ForwardingEvent, event: any) {
     const reorderedFHEvent = [
       [{ key: 'payment_hash', value: selFEvent.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }],
-      [{ key: 'status', value: (selFEvent.status === 'settled' ? 'Settled' : 'Failed'), title: 'Status', width: 50, type: DataTypeEnum.STRING },
+      [{ key: 'status', value: 'Settled', title: 'Status', width: 50, type: DataTypeEnum.STRING },
         { key: 'fee', value: selFEvent.fee, title: 'Fee (mSats)', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'received_time', value: selFEvent.received_time, title: 'Received Time', width: 50, type: DataTypeEnum.DATE_TIME },
         { key: 'resolved_time', value: selFEvent.resolved_time, title: 'Resolved Time', width: 50, type: DataTypeEnum.DATE_TIME }],

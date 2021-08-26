@@ -3,7 +3,7 @@ import { Action } from '@ngrx/store';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfo, Fees, Peer, Payment, PayRequest, QueryRoutes, Channel, FeeRates,
-  ForwardingHistoryRes, Invoice, ListInvoices, OnChain, UTXO } from '../../shared/models/clModels';
+  ForwardingEvent, Invoice, ListInvoices, OnChain, UTXO } from '../../shared/models/clModels';
 
 export const RESET_CL_STORE = 'RESET_CL_STORE';
 export const UPDATE_API_CALL_STATUS_CL = 'UPDATE_API_CALL_STATUS_CL';
@@ -49,6 +49,8 @@ export const INVOICE_LOOKUP_CL = 'INVOICE_LOOKUP_CL';
 export const SET_LOOKUP_CL = 'SET_LOOKUP_CL';
 export const GET_FORWARDING_HISTORY_CL = 'GET_FORWARDING_HISTORY_CL';
 export const SET_FORWARDING_HISTORY_CL = 'SET_FORWARDING_HISTORY_CL';
+export const GET_FAILED_FORWARDING_HISTORY_CL = 'GET_FAILED_FORWARDING_HISTORY_CL';
+export const SET_FAILED_FORWARDING_HISTORY_CL = 'SET_FAILED_FORWARDING_HISTORY_CL';
 export const FETCH_INVOICES_CL = 'FETCH_INVOICES_CL';
 export const SET_INVOICES_CL = 'SET_INVOICES_CL';
 export const SAVE_NEW_INVOICE_CL = 'SAVE_NEW_INVOICE_CL';
@@ -334,14 +336,27 @@ export class SetLookup implements Action {
 export class GetForwardingHistory implements Action {
 
   readonly type = GET_FORWARDING_HISTORY_CL;
-  // Constructor(public payload: SwitchReq) {}
+  constructor(public payload: { status: string }) {}
 
 }
 
 export class SetForwardingHistory implements Action {
 
   readonly type = SET_FORWARDING_HISTORY_CL;
-  constructor(public payload: ForwardingHistoryRes) {}
+  constructor(public payload: ForwardingEvent[]) {}
+
+}
+
+export class GetFailedForwardingHistory implements Action {
+
+  readonly type = GET_FAILED_FORWARDING_HISTORY_CL;
+
+}
+
+export class SetFailedForwardingHistory implements Action {
+
+  readonly type = SET_FAILED_FORWARDING_HISTORY_CL;
+  constructor(public payload: ForwardingEvent[]) {}
 
 }
 
@@ -416,5 +431,5 @@ FetchChannels | SetChannels | UpdateChannels | SaveNewChannel | CloseChannel | R
 FetchPayments | SetPayments | SendPayment | SendPaymentStatus | DecodePayment | SetDecodedPayment |
 GetQueryRoutes | SetQueryRoutes | SetChannelTransaction | SetChannelTransactionRes |
 PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
-GetForwardingHistory | SetForwardingHistory |
+GetForwardingHistory | SetForwardingHistory | GetFailedForwardingHistory | SetFailedForwardingHistory |
 FetchInvoices | SetInvoices | SaveNewInvoice | AddInvoice | DeleteExpiredInvoice;

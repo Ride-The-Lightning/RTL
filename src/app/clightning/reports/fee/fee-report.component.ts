@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { ForwardingHistoryRes, ForwardingEvent } from '../../../shared/models/clModels';
+import { ForwardingEvent } from '../../../shared/models/clModels';
 import { APICallStatusEnum, MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
 import { ApiCallsListCL } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -22,7 +22,7 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
 
   public reportPeriod = SCROLL_RANGES[0];
   public secondsInADay = 24 * 60 * 60;
-  public events: ForwardingHistoryRes = {};
+  public events: ForwardingEvent[] = [];
   public filteredEventsBySelectedPeriod: ForwardingEvent[] = [];
   public eventFilterValue = '';
   public totalFeeMsat = null;
@@ -56,7 +56,7 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
         if (rtlStore.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
           this.errorMessage = (typeof (rtlStore.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(rtlStore.apisCallStatus.GetForwardingHistory.message) : rtlStore.apisCallStatus.GetForwardingHistory.message;
         }
-        this.events = (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events) ? rtlStore.forwardingHistory : {};
+        this.events = rtlStore.forwardingHistory ? rtlStore.forwardingHistory : [];
         this.filterForwardingEvents(this.startDate, this.endDate);
         this.logger.info(rtlStore);
       });
@@ -86,9 +86,9 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
     this.filteredEventsBySelectedPeriod = [];
     this.feeReportData = [];
     this.totalFeeMsat = null;
-    if (this.events && this.events.forwarding_events && this.events.forwarding_events.length > 0) {
-      this.events.forwarding_events.forEach((event) => {
-        if (event.status === 'settled' && event.received_time >= startDateInSeconds && event.received_time < endDateInSeconds) {
+    if (this.events && this.events.length > 0) {
+      this.events.forEach((event) => {
+        if (event.received_time >= startDateInSeconds && event.received_time < endDateInSeconds) {
           this.filteredEventsBySelectedPeriod.push(event);
         }
       });

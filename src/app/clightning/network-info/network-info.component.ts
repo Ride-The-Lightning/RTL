@@ -106,8 +106,8 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
         this.fees = rtlStore.fees;
         this.fees.totalTxCount = 0;
 
-        if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length) {
-          this.fees.totalTxCount = rtlStore.forwardingHistory.forwarding_events.filter((event) => event.status === 'settled').length;
+        if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.length) {
+          this.fees.totalTxCount = rtlStore.forwardingHistory.length;
         }
 
         this.channelsStatus = {

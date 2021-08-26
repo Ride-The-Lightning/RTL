@@ -71,7 +71,7 @@ export class CLRoutingPeersComponent implements OnInit, OnChanges, AfterViewInit
           if (this.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
             this.errorMessage = (typeof (this.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(this.apisCallStatus.GetForwardingHistory.message) : this.apisCallStatus.GetForwardingHistory.message;
           }
-          this.successfulEvents = (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length > 0) ? this.filterSuccessfulEvents(rtlStore.forwardingHistory.forwarding_events) : [];
+          this.successfulEvents = rtlStore.forwardingHistory ? rtlStore.forwardingHistory : [];
           if (this.successfulEvents.length > 0 && this.sortIn && this.paginatorIn && this.sortOut && this.paginatorOut) {
             this.loadRoutingPeersTable(this.successfulEvents);
           }
@@ -94,10 +94,6 @@ export class CLRoutingPeersComponent implements OnInit, OnChanges, AfterViewInit
         this.loadRoutingPeersTable(this.successfulEvents);
       }
     }
-  }
-
-  filterSuccessfulEvents(events) {
-    return events.filter((event) => event.status === 'settled');
   }
 
   loadRoutingPeersTable(events: ForwardingEvent[]) {
