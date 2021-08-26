@@ -13,7 +13,7 @@ import { CommonService } from '../../shared/services/common.service';
 import { SessionService } from '../../shared/services/session.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer } from '../../shared/models/clModels';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer, ForwardingEvent } from '../../shared/models/clModels';
 import { AlertTypeEnum, APICallStatusEnum, UI_MESSAGES } from '../../shared/services/consts-enums-functions';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
@@ -613,13 +613,28 @@ export class CLEffects implements OnDestroy {
 
   fetchForwardingHistoryCL = createEffect(() => this.actions.pipe(
     ofType(CLActions.GET_FORWARDING_HISTORY_CL),
-    mergeMap((action: CLActions.GetForwardingHistory) => {
+    withLatestFrom(this.store.select('cl')),
+    mergeMap(([action, clStore]: [CLActions.GetForwardingHistory, fromCLReducers.CLState]) => {
       this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'GetForwardingHistory', status: APICallStatusEnum.INITIATED }));
       return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=' + action.payload.status).
         pipe(
           map((fhRes: any) => {
             this.logger.info(fhRes);
             this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'GetForwardingHistory', status: APICallStatusEnum.COMPLETED }));
+            const isNewerVersion = (clStore.information.api_version) ? this.commonService.isVersionCompatible(clStore.information.api_version, '0.5.0') : false;
+            if (!isNewerVersion) {
+              const filteredFailedEvents = [];
+              const filteredSuccesfulEvents = [];
+              fhRes.forEach((event: ForwardingEvent) => {
+                if (event.status === 'settled') {
+                  filteredSuccesfulEvents.push(event);
+                } else if (event.status === 'failed' || event.status === 'local_failed') {
+                  filteredFailedEvents.push(event);
+                }
+              });
+              fhRes = JSON.parse(JSON.stringify(filteredSuccesfulEvents));
+              this.store.dispatch(new CLActions.SetFailedForwardingHistory(filteredFailedEvents));
+            }
             return {
               type: CLActions.SET_FORWARDING_HISTORY_CL,
               payload: fhRes
@@ -635,8 +650,15 @@ export class CLEffects implements OnDestroy {
 
   fetchFailedForwardingHistoryCL = createEffect(() => this.actions.pipe(
     ofType(CLActions.GET_FAILED_FORWARDING_HISTORY_CL),
-    mergeMap((action: CLActions.GetFailedForwardingHistory) => {
+    withLatestFrom(this.store.select('cl')),
+    mergeMap(([action, clStore]: [CLActions.GetFailedForwardingHistory, fromCLReducers.CLState]) => {
       this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'GetFailedForwardingHistory', status: APICallStatusEnum.INITIATED }));
+      // For backwards compatibility < 0.5.0 START
+      const isNewerVersion = (clStore.information.api_version) ? this.commonService.isVersionCompatible(clStore.information.api_version, '0.5.0') : false;
+      if (!isNewerVersion) {
+        this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'GetFailedForwardingHistory', status: APICallStatusEnum.COMPLETED }));
+        return of({ type: RTLActions.VOID });
+      } // For backwards compatibility < 0.5.0 END
       let failedEventsReq = new Observable();
       const failedRes = this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=failed');
       const localFailedRes = this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=local_failed');
@@ -776,13 +798,13 @@ export class CLEffects implements OnDestroy {
         pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
-            this.store.dispatch(new CLActions.SetChannelTransactionRes(postRes));
+            this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'SetChannelTransaction', status: APICallStatusEnum.COMPLETED }));
             this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.SEND_FUNDS));
             this.store.dispatch(new CLActions.FetchBalance());
             this.store.dispatch(new CLActions.FetchUTXOs());
             return {
-              type: CLActions.UPDATE_API_CALL_STATUS_CL,
-              payload: { action: 'SetChannelTransaction', status: APICallStatusEnum.COMPLETED }
+              type: CLActions.SET_CHANNEL_TRANSACTION_RES_CL,
+              payload: postRes
             };
           }),
           catchError((err: any) => {

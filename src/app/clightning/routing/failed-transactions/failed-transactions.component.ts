@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -42,7 +43,7 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe, private router: Router) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -57,6 +58,8 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngOnInit() {
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+    this.router.onSameUrlNavigation = 'reload';
     this.store.dispatch(new CLActions.GetFailedForwardingHistory());
     this.store.select('cl').
       pipe(takeUntil(this.unSubs[0])).
@@ -101,7 +104,7 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
     this.failedForwardingEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.failedForwardingEvents.paginator = this.paginator;
     this.failedForwardingEvents.filterPredicate = (event: ForwardingEvent, fltr: string) => {
-      const newEvent = (event.status ? event.status.toLowerCase() : '') +
+      const newEvent = (event.status ? (event.status === 'local_failed') ? 'local failed' : event.status.toLowerCase() : '') +
       (event.received_time ? this.datePipe.transform(new Date(event.received_time * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') +
       (event.resolved_time ? this.datePipe.transform(new Date(event.resolved_time * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') +
       (event.in_channel ? event.in_channel.toLowerCase() : '') + (event.out_channel ? event.out_channel.toLowerCase() : '') +

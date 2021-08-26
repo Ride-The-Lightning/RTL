@@ -12,7 +12,7 @@ import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
 export class CLRoutingComponent implements OnInit, OnDestroy {
 
   public faMapSigns = faMapSigns;
-  public links = [{ link: 'forwardinghistory', name: 'Forwarding History' }, { link: 'failedtransactions', name: 'Failed Transactions' }, { link: 'routingpeers', name: 'Routing Peers' }];
+  public links = [{ link: 'forwardinghistory', name: 'Forwarding History' }, { link: 'routingpeers', name: 'Routing Peers' }, { link: 'failedtransactions', name: 'Failed Transactions' }];
   public activeLink = this.links[0].link;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 

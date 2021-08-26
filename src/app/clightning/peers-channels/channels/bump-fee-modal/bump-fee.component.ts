@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, Inject } from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { filter, take } from 'rxjs/operators';
+import { filter, take, takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faCopy, faInfoCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
@@ -53,23 +53,23 @@ export class CLBumpFeeComponent implements OnInit, OnDestroy {
     }
     this.bumpFeeError = '';
     this.store.dispatch(new CLActions.GetNewAddress(ADDRESS_TYPES[0]));
-    this.actions.pipe(
-      filter((action) => action.type === CLActions.SET_NEW_ADDRESS_CL || action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL || action.type === CLActions.UPDATE_API_CALL_STATUS_CL),
-      take(3)).
-      subscribe((action: (CLActions.SetNewAddress | CLActions.SetChannelTransactionRes | CLActions.UpdateAPICallStatus)) => {
-        if (action.type === CLActions.SET_NEW_ADDRESS_CL) {
-          this.store.dispatch(new CLActions.SetChannelTransaction({
-            address: action.payload,
-            satoshis: 'all',
-            feeRate: this.fees,
-            utxos: [this.bumpFeeChannel.funding_txid + ':' + this.outputIndex.toString()]
-          }));
-        }
-        if (action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL) {
-          this.store.dispatch(new RTLActions.OpenSnackBar('Successfully bumped the fee. Use the block explorer to verify transaction.'));
-          this.dialogRef.close();
-        }
-        if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR && (action.payload.action === 'SetChannelTransaction' || action.payload.action === 'GenerateNewAddress')) {
+    this.actions.pipe(filter((action) => action.type === CLActions.SET_NEW_ADDRESS_CL), take(1)).
+      subscribe((action: CLActions.SetNewAddress) => {
+        this.store.dispatch(new CLActions.SetChannelTransaction({
+          address: action.payload,
+          satoshis: 'all',
+          feeRate: this.fees,
+          utxos: [this.bumpFeeChannel.funding_txid + ':' + this.outputIndex.toString()]
+        }));
+      });
+    this.actions.pipe(filter((action) => action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL), take(1)).
+      subscribe((action: CLActions.SetChannelTransactionRes) => {
+        this.store.dispatch(new RTLActions.OpenSnackBar('Successfully bumped the fee. Use the block explorer to verify transaction.'));
+        this.dialogRef.close();
+      });
+    this.actions.pipe(filter((action) => action.type === CLActions.UPDATE_API_CALL_STATUS_CL), takeUntil(this.unSubs[0])).
+      subscribe((action: CLActions.UpdateAPICallStatus) => {
+        if (action.payload.status === APICallStatusEnum.ERROR && (action.payload.action === 'SetChannelTransaction' || action.payload.action === 'GenerateNewAddress')) {
           this.logger.error(action.payload.message);
           this.bumpFeeError = action.payload.message;
         }

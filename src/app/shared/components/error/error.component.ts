@@ -18,6 +18,8 @@ export class ErrorComponent implements OnInit {
   constructor(private activatedRoute: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+    this.router.onSameUrlNavigation = 'reload';
     this.activatedRoute.paramMap.
       pipe(takeUntil(this.unsubs[0])).
       subscribe((data) => {
