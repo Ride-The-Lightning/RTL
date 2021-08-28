@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, NgModel } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
-import { take, takeUntil, filter, startWith, map } from 'rxjs/operators';
+import { take, takeUntil, filter, startWith, map, subscribeOn } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -79,12 +79,12 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
       y = c2.remote_alias ? c2.remote_alias.toLowerCase() : c2.chan_id ? c2.chan_id.toLowerCase() : '';
       return ((x < y) ? -1 : ((x > y) ? 1 : 0));
     });
-    this.selectedChannelCtrl.valueChanges.pipe(takeUntil(this.unSubs[2]),
-      map((channel) => {
+    this.selectedChannelCtrl.valueChanges.pipe(takeUntil(this.unSubs[2])).
+      subscribe((channel) => {
         if (typeof channel === 'string') {
           this.filteredMinAmtActvChannels = this.filterChannels();
         }
-      }));
+      });
   }
 
   private filterChannels(): Channel[] {

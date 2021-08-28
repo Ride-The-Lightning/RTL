@@ -9,7 +9,7 @@
       <mat-card-content class="padding-gap-x-large">
         <form fxLayout="column">
           <div fxLayout="column" class="bordered-box mb-1 p-2">
-            <p fxLayoutAlign="start center" class="pb-1 word-break">Bump fee for channel point: {{bumpFeeChannel?.funding_txid}}
+            <p fxLayoutAlign="start center" class="pb-1 word-break">Bump fee for transaction id: {{bumpFeeChannel?.funding_txid}}
               <fa-icon class="ml-1" [icon]="faCopy" matSuffix rtlClipboard [payload]="bumpFeeChannel?.funding_txid" (copied)="onCopyID($event)" matTooltip="Copy transaction ID"></fa-icon>
             </p>
             <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">

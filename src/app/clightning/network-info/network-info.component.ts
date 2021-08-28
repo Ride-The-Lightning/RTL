@@ -49,12 +49,12 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
         { id: 'fee', icon: this.faBolt, title: 'Routing Fee', cols: 6, rows: 1 },
         { id: 'feeRatesKB', icon: this.faServer, title: 'Fee Rate Per KB', cols: 4, rows: 4 },
         { id: 'feeRatesKW', icon: this.faNetworkWired, title: 'Fee Rate Per KW', cols: 4, rows: 4 },
-        { id: 'onChainFeeEstimates', icon: this.faLink, title: 'Onchain Fee Estimates', cols: 4, rows: 4 }
+        { id: 'onChainFeeEstimates', icon: this.faLink, title: 'Onchain Fee Estimates (Sats)', cols: 4, rows: 4 }
       ];
       this.nodeCardsOperator = [
         { id: 'feeRatesKB', icon: this.faServer, title: 'Fee Rate Per KB', cols: 4, rows: 4 },
         { id: 'feeRatesKW', icon: this.faNetworkWired, title: 'Fee Rate Per KW', cols: 4, rows: 4 },
-        { id: 'onChainFeeEstimates', icon: this.faLink, title: 'Onchain Fee Estimates', cols: 4, rows: 4 }
+        { id: 'onChainFeeEstimates', icon: this.faLink, title: 'Onchain Fee Estimates (Sats)', cols: 4, rows: 4 }
       ];
     } else {
       this.nodeCardsMerchant = [
@@ -63,12 +63,12 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
         { id: 'fee', icon: this.faBolt, title: 'Routing Fee', cols: 2, rows: 3 },
         { id: 'feeRatesKB', icon: this.faServer, title: 'Fee Rate Per KB', cols: 2, rows: 4 },
         { id: 'feeRatesKW', icon: this.faNetworkWired, title: 'Fee Rate Per KW', cols: 2, rows: 4 },
-        { id: 'onChainFeeEstimates', icon: this.faLink, title: 'Onchain Fee Estimates', cols: 2, rows: 4 }
+        { id: 'onChainFeeEstimates', icon: this.faLink, title: 'Onchain Fee Estimates (Sats)', cols: 2, rows: 4 }
       ];
       this.nodeCardsOperator = [
         { id: 'feeRatesKB', icon: this.faServer, title: 'Fee Rate Per KB', cols: 2, rows: 4 },
         { id: 'feeRatesKW', icon: this.faNetworkWired, title: 'Fee Rate Per KW', cols: 2, rows: 4 },
-        { id: 'onChainFeeEstimates', icon: this.faLink, title: 'Onchain Fee Estimates', cols: 2, rows: 4 }
+        { id: 'onChainFeeEstimates', icon: this.faLink, title: 'Onchain Fee Estimates (Sats)', cols: 2, rows: 4 }
       ];
     }
   }
