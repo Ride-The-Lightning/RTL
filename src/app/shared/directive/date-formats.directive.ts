@@ -3,6 +3,7 @@ import { DateAdapter, MAT_DATE_FORMATS, NativeDateAdapter, MatDateFormats } from
 import { MONTHS } from '../services/consts-enums-functions';
 
 @Injectable() class CustomDateAdapter extends NativeDateAdapter {
+
   format(date: Date, displayFormat: Object): string {
     if (displayFormat === 'MMM YYYY') {
       return MONTHS[date.getMonth()].name + ', ' + date.getFullYear();
@@ -12,6 +13,7 @@ import { MONTHS } from '../services/consts-enums-functions';
       return date.getDate() + '/' + MONTHS[date.getMonth()].name + '/' + date.getFullYear();
     }
   }
+
 }
 
 export const MONTHLY_DATE_FORMATS: MatDateFormats = {
@@ -41,17 +43,17 @@ export const YEARLY_DATE_FORMATS: MatDateFormats = {
 @Directive({
   selector: '[monthlyDate]',
   providers: [
-    {provide: DateAdapter, useClass: CustomDateAdapter},
-    {provide: MAT_DATE_FORMATS, useValue: MONTHLY_DATE_FORMATS}
-  ],
+    { provide: DateAdapter, useClass: CustomDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: MONTHLY_DATE_FORMATS }
+  ]
 })
 export class MonthlyDateDirective {}
 
 @Directive({
   selector: '[yearlyDate]',
   providers: [
-    {provide: DateAdapter, useClass: CustomDateAdapter},
-    {provide: MAT_DATE_FORMATS, useValue: YEARLY_DATE_FORMATS}
-  ],
+    { provide: DateAdapter, useClass: CustomDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: YEARLY_DATE_FORMATS }
+  ]
 })
 export class YearlyDateDirective {}

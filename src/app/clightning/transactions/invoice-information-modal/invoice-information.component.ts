@@ -6,8 +6,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { CLInvoiceInformation } from '../../../shared/models/alertData';
-import { Invoice } from '../../../shared/models/clModels';
 import { ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+
+import { Invoice } from '../../../shared/models/clModels';
 
 @Component({
   selector: 'rtl-cl-invoice-information',
@@ -15,6 +16,7 @@ import { ScreenSizeEnum } from '../../../shared/services/consts-enums-functions'
   styleUrls: ['./invoice-information.component.scss']
 })
 export class CLInvoiceInformationComponent implements OnInit {
+
   public faReceipt = faReceipt;
   public faExclamationTriangle = faExclamationTriangle;
   public showAdvanced = false;
@@ -30,7 +32,7 @@ export class CLInvoiceInformationComponent implements OnInit {
     this.invoice = this.data.invoice;
     this.newlyAdded = this.data.newlyAdded;
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.qrWidth = 220;
     }
   }
@@ -41,10 +43,11 @@ export class CLInvoiceInformationComponent implements OnInit {
 
   onShowAdvanced() {
     this.showAdvanced = !this.showAdvanced;
-  }  
+  }
 
   onCopyPayment(payload: string) {
     this.snackBar.open('Invoice copied.');
     this.logger.info('Copied Text: ' + payload);
   }
+
 }

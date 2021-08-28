@@ -5,17 +5,16 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatVerticalStepper } from '@angular/material/stepper';
+import { MatStepper } from '@angular/material/stepper';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
+import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { Peer } from '../../../shared/models/clModels';
 import { CLOpenChannelAlert } from '../../../shared/models/alertData';
-import { FEE_RATE_TYPES } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, FEE_RATE_TYPES, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 
-import { CLEffects } from '../../store/cl.effects';
 import * as CLActions from '../../store/cl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
@@ -24,8 +23,9 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./connect-peer.component.scss']
 })
 export class CLConnectPeerComponent implements OnInit, OnDestroy {
-  @ViewChild('peersForm', {static: false}) form: any;
-  @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
+
+  @ViewChild('peersForm', { static: false }) form: any;
+  @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
   public peerAddress = '';
   public totalBalance = 0;
@@ -38,17 +38,21 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
   public channelConnectionError = '';
   public peerFormLabel = 'Peer Details';
   public channelFormLabel = 'Open Channel (Optional)';
+  public screenSize = '';
+  public screenSizeEnum = ScreenSizeEnum;
   peerFormGroup: FormGroup;
-  channelFormGroup: FormGroup;  
-  statusFormGroup: FormGroup;  
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  channelFormGroup: FormGroup;
+  statusFormGroup: FormGroup;
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private clEffects: CLEffects, private formBuilder: FormBuilder, private actions$: Actions, private logger: LoggerService) {}
+  constructor(public dialogRef: MatDialogRef<CLConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private formBuilder: FormBuilder, private actions: Actions, private logger: LoggerService, private commonService: CommonService) {
+    this.screenSize = this.commonService.getScreenSize();
+  }
 
   ngOnInit() {
     this.totalBalance = this.data.message.balance;
-    this.peerAddress = (this.data.message.peer && this.data.message.peer.id && this.data.message.peer.netaddr) ? (this.data.message.peer.id + '@' + this.data.message.peer.netaddr) : 
-    (this.data.message.peer && this.data.message.peer.id && !this.data.message.peer.netaddr) ? this.data.message.peer.id : '';
+    this.peerAddress = (this.data.message.peer && this.data.message.peer.id && this.data.message.peer.netaddr) ? (this.data.message.peer.id + '@' + this.data.message.peer.netaddr) :
+      (this.data.message.peer && this.data.message.peer.id && !this.data.message.peer.netaddr) ? this.data.message.peer.id : '';
     this.peerFormGroup = this.formBuilder.group({
       hiddenAddress: ['', [Validators.required]],
       peerAddress: [this.peerAddress, [Validators.required]]
@@ -57,59 +61,76 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
       fundingAmount: ['', [Validators.required, Validators.min(1), Validators.max(this.totalBalance)]],
       isPrivate: [false],
       selFeeRate: [null],
+      customFeeRate: [null],
       flgMinConf: [false],
-      minConfValue: [null],
+      minConfValue: [{ value: null, disabled: true }],
       hiddenAmount: ['', [Validators.required]]
-    });    
-    this.statusFormGroup = this.formBuilder.group({}); 
-    this.channelFormGroup.controls.flgMinConf.valueChanges.pipe(takeUntil(this.unSubs[0])).subscribe(flg => {
+    });
+    this.statusFormGroup = this.formBuilder.group({});
+    this.channelFormGroup.controls.flgMinConf.valueChanges.pipe(takeUntil(this.unSubs[0])).subscribe((flg) => {
       if (flg) {
         this.channelFormGroup.controls.selFeeRate.setValue(null);
         this.channelFormGroup.controls.selFeeRate.disable();
+        this.channelFormGroup.controls.customFeeRate.setValue(null);
+        this.channelFormGroup.controls.minConfValue.reset();
         this.channelFormGroup.controls.minConfValue.enable();
         this.channelFormGroup.controls.minConfValue.setValidators([Validators.required]);
       } else {
         this.channelFormGroup.controls.selFeeRate.enable();
+        this.channelFormGroup.controls.minConfValue.setValue(null);
         this.channelFormGroup.controls.minConfValue.disable();
         this.channelFormGroup.controls.minConfValue.setValidators(null);
       }
     });
-    this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter((action) => action.type === CLActions.NEWLY_ADDED_PEER_CL || action.type === CLActions.FETCH_CHANNELS_CL || action.type === CLActions.EFFECT_ERROR_CL))
-    .subscribe((action: (CLActions.NewlyAddedPeer | CLActions.FetchChannels | CLActions.EffectError)) => {
-      if (action.type === CLActions.NEWLY_ADDED_PEER_CL) { 
-        this.logger.info(action.payload);
-        this.flgEditable = false;
-        this.newlyAddedPeer = action.payload.peer;
-        this.peerFormGroup.controls.hiddenAddress.setValue(this.peerFormGroup.controls.peerAddress.value);
-        this.stepper.next();
-      }
-      if (action.type === CLActions.FETCH_CHANNELS_CL) { 
-        this.dialogRef.close();
-      }
-      if (action.type === CLActions.EFFECT_ERROR_CL) { 
-        if (action.payload.action === 'SaveNewPeer') {
-          this.peerConnectionError = action.payload.message;
-        } else if (action.payload.action === 'SaveNewChannel') {
-          this.channelConnectionError = action.payload.message;
-        }
+    this.channelFormGroup.controls.selFeeRate.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe((feeRate) => {
+      this.channelFormGroup.controls.customFeeRate.setValue(null);
+      this.channelFormGroup.controls.customFeeRate.reset();
+      if (feeRate === 'customperkb' && !this.channelFormGroup.controls.flgMinConf.value) {
+        this.channelFormGroup.controls.customFeeRate.setValidators([Validators.required]);
+      } else {
+        this.channelFormGroup.controls.customFeeRate.setValidators(null);
       }
     });
+    this.actions.pipe(
+      takeUntil(this.unSubs[2]),
+      filter((action) => action.type === CLActions.NEWLY_ADDED_PEER_CL || action.type === CLActions.FETCH_CHANNELS_CL || action.type === CLActions.UPDATE_API_CALL_STATUS_CL)).
+      subscribe((action: (CLActions.NewlyAddedPeer | CLActions.FetchChannels | CLActions.UpdateAPICallStatus)) => {
+        if (action.type === CLActions.NEWLY_ADDED_PEER_CL) {
+          this.logger.info(action.payload);
+          this.flgEditable = false;
+          this.newlyAddedPeer = action.payload.peer;
+          this.peerFormGroup.controls.hiddenAddress.setValue(this.peerFormGroup.controls.peerAddress.value);
+          this.stepper.next();
+        }
+        if (action.type === CLActions.FETCH_CHANNELS_CL) {
+          this.dialogRef.close();
+        }
+        if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR) {
+          if (action.payload.action === 'SaveNewPeer') {
+            this.peerConnectionError = action.payload.message;
+          } else if (action.payload.action === 'SaveNewChannel') {
+            this.channelConnectionError = action.payload.message;
+          }
+        }
+      });
   }
 
-  onConnectPeer():boolean|void {
-    if(!this.peerFormGroup.controls.peerAddress.value) { return true; }
+  onConnectPeer(): boolean|void {
+    if (!this.peerFormGroup.controls.peerAddress.value) {
+      return true;
+    }
     this.peerConnectionError = '';
-    this.store.dispatch(new RTLActions.OpenSpinner('Adding Peer...'));
-    this.store.dispatch(new CLActions.SaveNewPeer({id: this.peerFormGroup.controls.peerAddress.value}));
-}
+    this.store.dispatch(new CLActions.SaveNewPeer({ id: this.peerFormGroup.controls.peerAddress.value }));
+  }
 
-  onOpenChannel():boolean|void {
-    if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) || (this.channelFormGroup.controls.flgMinConf.value && !this.channelFormGroup.controls.minConfValue.value)) { return true; }
+  onOpenChannel(): boolean|void {
+    if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) || (this.channelFormGroup.controls.flgMinConf.value && !this.channelFormGroup.controls.minConfValue.value)) {
+      return true;
+    }
     this.channelConnectionError = '';
-    this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
     this.store.dispatch(new CLActions.SaveNewChannel({
-      peerId: this.newlyAddedPeer.id, satoshis: this.channelFormGroup.controls.fundingAmount.value, announce: !this.channelFormGroup.controls.isPrivate.value, feeRate: this.channelFormGroup.controls.selFeeRate.value, minconf: this.channelFormGroup.controls.flgMinConf.value ? this.channelFormGroup.controls.minConfValue.value : null
+      peerId: this.newlyAddedPeer.id, satoshis: this.channelFormGroup.controls.fundingAmount.value, announce: !this.channelFormGroup.controls.isPrivate.value,
+      feeRate: (this.channelFormGroup.controls.selFeeRate.value === 'customperkb' && !this.channelFormGroup.controls.flgMinConf.value && this.channelFormGroup.controls.customFeeRate.value) ? ((this.channelFormGroup.controls.customFeeRate.value * 1000) + 'perkb') : this.channelFormGroup.controls.selFeeRate.value, minconf: this.channelFormGroup.controls.flgMinConf.value ? this.channelFormGroup.controls.minConfValue.value : null
     }));
   }
 
@@ -123,7 +144,7 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
         this.peerFormLabel = 'Peer Details';
         this.channelFormLabel = 'Open Channel (Optional)';
         break;
-    
+
       case 1:
         if (this.peerFormGroup.controls.peerAddress.value) {
           this.peerFormLabel = 'Peer Added: ' + (this.newlyAddedPeer.alias ? this.newlyAddedPeer.alias : this.newlyAddedPeer.id);
@@ -157,11 +178,11 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
       } else if (event.selectedIndex === 1) {
         this.channelFormGroup.controls.hiddenAmount.setValue('');
       }
-    }    
+    }
   }
-  
+
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

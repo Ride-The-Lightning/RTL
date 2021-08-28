@@ -12,31 +12,34 @@ import { LoggerService } from '../../../shared/services/logger.service';
   styleUrls: ['./verify.component.scss']
 })
 export class VerifyComponent implements OnDestroy {
+
   public message = '';
   public verifiedMessage = '';
   public signature = '';
   public verifiedSignature = '';
   public showVerifyStatus = false;
-  public verifyRes = {pubkey: '', valid: null};
+  public verifyRes = { pubkey: '', valid: null };
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private dataService: DataService, private snackBar: MatSnackBar, private logger: LoggerService) {}
 
-  onVerify():boolean|void {
-    if ((!this.message || this.message === '') || (!this.signature || this.signature === '')) { return true; }
-    this.dataService.verifyMessage(this.message, this.signature).pipe(takeUntil(this.unSubs[0]))
-    .subscribe(res => { 
-      this.verifyRes = res; 
-      this.showVerifyStatus = true;
-      this.verifiedMessage = this.message;
-      this.verifiedSignature = this.signature;
-    });
-  } 
+  onVerify(): boolean|void {
+    if ((!this.message || this.message === '') || (!this.signature || this.signature === '')) {
+      return true;
+    }
+    this.dataService.verifyMessage(this.message, this.signature).pipe(takeUntil(this.unSubs[0])).
+      subscribe((res) => {
+        this.verifyRes = res;
+        this.showVerifyStatus = true;
+        this.verifiedMessage = this.message;
+        this.verifiedSignature = this.signature;
+      });
+  }
 
   onChange() {
-    if (this.verifiedMessage !== this.message || this.verifiedSignature !== this.signature) { 
+    if (this.verifiedMessage !== this.message || this.verifiedSignature !== this.signature) {
       this.showVerifyStatus = false;
-      this.verifyRes = {pubkey: '', valid: null}; 
+      this.verifyRes = { pubkey: '', valid: null };
     }
   }
 
@@ -53,9 +56,10 @@ export class VerifyComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

@@ -11,9 +11,11 @@ import { CommonService } from '../../../shared/services/common.service';
   styleUrls: ['./channel-liquidity-info.component.scss']
 })
 export class ECLChannelLiquidityInfoComponent implements OnInit {
+
   @Input() direction: string;
   @Input() totalLiquidity: number;
   @Input() allChannels: Channel[];
+  @Input() errorMessage: string;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
 

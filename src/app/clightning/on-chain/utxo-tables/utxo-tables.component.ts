@@ -14,44 +14,33 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./utxo-tables.component.scss']
 })
 export class CLUTXOTablesComponent implements OnInit, OnDestroy {
+
   @Input() selectedTableIndex = 0;
-  @Output() selectedTableIndexChange = new EventEmitter<number>();
+  @Output() readonly selectedTableIndexChange = new EventEmitter<number>();
   public utxos: UTXO[] = [];
   public numUtxos = 0;
   public dustUtxos: UTXO[] = [];
   public numDustUtxos = 0;
-  public flgLoading: Array<Boolean | 'error'> = [true, true];
   private unSubs: Array<Subject<void>> = [new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
-    this.store.select('cl')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchUTXOs') {
-          this.flgLoading[1] = 'error';
+    this.store.select('cl').
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        if (rtlStore.utxos && rtlStore.utxos.length > 0) {
+          this.utxos = rtlStore.utxos;
+          this.numUtxos = this.utxos.length;
+          this.dustUtxos = rtlStore.utxos.filter((utxo) => +utxo.value < 1000);
+          this.numDustUtxos = this.dustUtxos.length;
         }
+        if (rtlStore.utxos && rtlStore.utxos.length > 0) {
+          this.utxos = rtlStore.utxos;
+          this.numUtxos = this.utxos.length;
+        }
+        this.logger.info(rtlStore);
       });
-      if (rtlStore.utxos && rtlStore.utxos.length > 0) {
-        this.utxos = rtlStore.utxos;
-        this.numUtxos = this.utxos.length;
-        this.dustUtxos = rtlStore.utxos.filter(utxo => +utxo.value < 1000);
-        this.numDustUtxos = this.dustUtxos.length;
-      }
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (rtlStore.utxos) ? false : true;
-      }
-      if (rtlStore.utxos && rtlStore.utxos.length > 0) {
-        this.utxos = rtlStore.utxos;
-        this.numUtxos = this.utxos.length;
-      }
-      if (this.flgLoading[1] !== 'error') {
-        this.flgLoading[1] = (rtlStore.utxos) ? false : true;
-      }
-      this.logger.info(rtlStore);
-    });
   }
 
   onSelectedIndexChanged(event) {
@@ -59,9 +48,10 @@ export class CLUTXOTablesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

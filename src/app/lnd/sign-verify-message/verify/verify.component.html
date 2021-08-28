@@ -10,7 +10,7 @@
     </mat-form-field>
     <p *ngIf="showVerifyStatus && !verifyRes.valid" fxFlex="100" class="color-warn" fxLayoutAlign="start center"><mat-icon class="mr-1 icon-small">close</mat-icon>Verification failed, please double check message and signature</p>
     <div fxLayout="row" class="my-1">
-      <button mat-stroked-button class="mr-1" color="primary" tabindex="3" type="reset" (click)="resetData()" type="reset">Clear Fields</button>
+      <button mat-stroked-button class="mr-1" color="primary" tabindex="3" (click)="resetData()" type="reset">Clear Fields</button>
       <button mat-flat-button color="primary" (click)="onVerify()" tabindex="4" type="submit">Verify</button>
     </div>
     <div *ngIf="showVerifyStatus && verifyRes.valid" fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">

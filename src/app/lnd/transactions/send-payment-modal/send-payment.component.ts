@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { NgModel } from '@angular/forms';
+import { FormControl, NgModel } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
-import { take, takeUntil, filter } from 'rxjs/operators';
+import { take, takeUntil, filter, startWith, map, subscribeOn } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -10,21 +10,21 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { PayRequest, Channel } from '../../../shared/models/lndModels';
-import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { DataService } from '../../../shared/services/data.service';
 
 import * as LNDActions from '../../store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-lightning-send-payments',
   templateUrl: './send-payment.component.html',
-  styleUrls: ['./send-payment.component.scss'],
+  styleUrls: ['./send-payment.component.scss']
 })
 export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
+
   @ViewChild('paymentReq', { static: false }) paymentReq: NgModel;
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: SelNodeChild = {};
@@ -34,80 +34,96 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   public paymentRequest = '';
   public paymentDecodedHint = '';
   public showAdvanced = false;
-  public selActiveChannel: Channel = {};
   public activeChannels = [];
-  public filteredMinAmtActvChannels = [];
+  public filteredMinAmtActvChannels: Channel[] = [];
+  public selectedChannelCtrl = new FormControl();
   public feeLimit = null;
   public selFeeLimitType = FEE_LIMIT_TYPES[0];
   public feeLimitTypes = FEE_LIMIT_TYPES;
   public advancedTitle = 'Advanced Options';
   public paymentError = '';
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<LightningSendPaymentsComponent>, private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions$: Actions, private dataService: DataService) {}
+  constructor(public dialogRef: MatDialogRef<LightningSendPaymentsComponent>, private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions, private dataService: DataService) {}
 
   ngOnInit() {
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
-      this.selNode = rtlStore.nodeSettings;
-      this.activeChannels = rtlStore.allChannels.filter(channel => channel.active);
-      this.filteredMinAmtActvChannels = this.activeChannels;
-      this.logger.info(rtlStore);
-    });
-    this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === LNDActions.EFFECT_ERROR_LND || action.type === LNDActions.SEND_PAYMENT_STATUS_LND))
-    .subscribe((action: LNDActions.EffectError | LNDActions.SendPaymentStatus) => {
-      if (action.type === LNDActions.SEND_PAYMENT_STATUS_LND) { 
-        this.dialogRef.close();
-      }    
-      if (action.type === LNDActions.EFFECT_ERROR_LND) {
-        if (action.payload.action === 'SendPayment') {
-          delete this.paymentDecoded.num_satoshis;          
+    this.store.select('lnd').
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.selNode = rtlStore.nodeSettings;
+        this.activeChannels = rtlStore.allChannels.filter((channel) => channel.active);
+        this.filteredMinAmtActvChannels = this.activeChannels;
+        if (this.filteredMinAmtActvChannels.length && this.filteredMinAmtActvChannels.length > 0) {
+          this.selectedChannelCtrl.enable();
+        } else {
+          this.selectedChannelCtrl.disable();
+        }
+        this.logger.info(rtlStore);
+      });
+    this.actions.pipe(
+      takeUntil(this.unSubs[1]),
+      filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.SEND_PAYMENT_STATUS_LND)).
+      subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.SendPaymentStatus) => {
+        if (action.type === LNDActions.SEND_PAYMENT_STATUS_LND) {
+          this.dialogRef.close();
+        }
+        if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SendPayment') {
+          delete this.paymentDecoded.num_satoshis;
           this.paymentError = action.payload.message;
         }
-      }
+      });
+    let x = '';
+    let y = '';
+    this.activeChannels = this.activeChannels.sort((c1: Channel, c2: Channel) => {
+      x = c1.remote_alias ? c1.remote_alias.toLowerCase() : c1.chan_id ? c1.chan_id.toLowerCase() : '';
+      y = c2.remote_alias ? c2.remote_alias.toLowerCase() : c2.chan_id ? c2.chan_id.toLowerCase() : '';
+      return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    });
+    this.selectedChannelCtrl.valueChanges.pipe(takeUntil(this.unSubs[2])).
+      subscribe((channel) => {
+        if (typeof channel === 'string') {
+          this.filteredMinAmtActvChannels = this.filterChannels();
+        }
+      });
+  }
+
+  private filterChannels(): Channel[] {
+    return this.activeChannels.filter((channel) => {
+      const alias = channel.remote_alias ? channel.remote_alias.toLowerCase() : channel.chan_id ? channel.chan_id.toLowerCase() : '';
+      return alias.indexOf(this.selectedChannelCtrl.value ? this.selectedChannelCtrl.value.toLowerCase() : '') === 0 && channel.local_balance >= +(this.paymentDecoded.num_satoshis ? this.paymentDecoded.num_satoshis : 0);
     });
   }
 
-  onSendPayment():boolean|void {
-    if(!this.paymentRequest) { return true; } 
-    if ( this.paymentDecoded.timestamp) {
+  displayFn(channel: Channel): string {
+    return (channel && channel.remote_alias) ? channel.remote_alias : (channel && channel.chan_id) ? channel.chan_id : '';
+  }
+
+  onSelectedChannelChanged() {
+    if (this.selectedChannelCtrl.value && this.selectedChannelCtrl.value.length > 0 && typeof this.selectedChannelCtrl.value === 'string') {
+      const foundChannels = this.activeChannels.filter((channel) => {
+        const alias = channel.remote_alias ? channel.remote_alias.toLowerCase() : channel.chan_id ? channel.chan_id.toLowerCase() : '';
+        return alias.length === this.selectedChannelCtrl.value.length && alias.indexOf(this.selectedChannelCtrl.value ? this.selectedChannelCtrl.value.toLowerCase() : '') === 0;
+      });
+      if (foundChannels && foundChannels.length > 0) {
+        this.selectedChannelCtrl.setValue(foundChannels[0]);
+        this.selectedChannelCtrl.setErrors(null);
+      } else {
+        this.selectedChannelCtrl.setErrors({ notfound: true });
+      }
+    }
+  }
+
+  onSendPayment(): boolean|void {
+    if (this.selectedChannelCtrl.value && typeof this.selectedChannelCtrl.value === 'string') {
+      this.onSelectedChannelChanged();
+    }
+    if (!this.paymentRequest || (this.zeroAmtInvoice && (!this.paymentAmount || this.paymentAmount <= 0)) || typeof this.selectedChannelCtrl.value === 'string') {
+      return true;
+    }
+    if (this.paymentDecoded.timestamp) {
       this.sendPayment();
     } else {
-      this.paymentAmount = null;
-      this.paymentError = '';
-      this.paymentDecodedHint = '';
-      this.paymentReq.control.setErrors(null);
-      this.dataService.decodePayment(this.paymentRequest, true)
-      .pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
-        this.selActiveChannel = {};
-        this.paymentDecoded = decodedPayment;
-        if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
-          this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
-        }
-        if(this.paymentDecoded.num_satoshis && this.paymentDecoded.num_satoshis !== '' && this.paymentDecoded.num_satoshis !== '0') {
-          this.zeroAmtInvoice = false;
-          this.filteredMinAmtActvChannels = this.activeChannels.filter(actvChannel => actvChannel.local_balance >= this.paymentDecoded.num_satoshis);
-          if(this.selNode.fiatConversion) {
-            this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
-            .pipe(takeUntil(this.unSubs[2]))
-            .subscribe(data => {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
-            });
-          } else {
-            this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
-          }
-        } else {
-          this.zeroAmtInvoice = true;
-          this.filteredMinAmtActvChannels = this.activeChannels;
-          this.paymentDecodedHint = 'Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
-        }
-      }, err => {
-        this.logger.error(err);
-        this.paymentDecodedHint = 'ERROR: ' + err.message;
-        this.paymentReq.control.setErrors({'decodeError': true});
-      });
+      this.onPaymentRequestEntry(this.paymentRequest);
     }
   }
 
@@ -115,14 +131,13 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
       this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
     }
-    this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
-    if (!this.paymentDecoded.num_satoshis || this.paymentDecoded.num_satoshis === '' ||  this.paymentDecoded.num_satoshis === '0') {
+    if (!this.paymentDecoded.num_satoshis || this.paymentDecoded.num_satoshis === '' || this.paymentDecoded.num_satoshis === '0') {
       this.zeroAmtInvoice = true;
       this.paymentDecoded.num_satoshis = this.paymentAmount;
-      this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, paymentAmount:this.paymentAmount, outgoingChannel: this.selActiveChannel, feeLimitType: this.selFeeLimitType, feeLimit: this.feeLimit, fromDialog: true}));
+      this.store.dispatch(new LNDActions.SendPayment({ uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, paymentAmount: this.paymentAmount, outgoingChannel: this.selectedChannelCtrl.value, feeLimitType: { id: this.selFeeLimitType.id, name: this.selFeeLimitType.name }, feeLimit: this.feeLimit, fromDialog: true }));
     } else {
       this.zeroAmtInvoice = false;
-      this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, outgoingChannel: this.selActiveChannel, feeLimitType: this.selFeeLimitType, feeLimit: this.feeLimit, fromDialog: true}));
+      this.store.dispatch(new LNDActions.SendPayment({ uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, outgoingChannel: this.selectedChannelCtrl.value, feeLimitType: { id: this.selFeeLimitType.id, name: this.selFeeLimitType.name }, feeLimit: this.feeLimit, fromDialog: true }));
     }
   }
 
@@ -136,44 +151,58 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     this.paymentError = '';
     this.paymentDecodedHint = '';
     this.zeroAmtInvoice = false;
-    if(this.paymentRequest && this.paymentRequest.length > 100) {
+    if (this.paymentRequest && this.paymentRequest.length > 100) {
       this.paymentReq.control.setErrors(null);
       this.zeroAmtInvoice = false;
-      this.dataService.decodePayment(this.paymentRequest, true)
-      .pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
-        this.paymentDecoded = decodedPayment;
-        this.selActiveChannel = {};
-        if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
-          this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
-        }
-        if(this.paymentDecoded.num_satoshis && this.paymentDecoded.num_satoshis !== '' && this.paymentDecoded.num_satoshis !== '0') {
-          this.zeroAmtInvoice = false;
-          this.filteredMinAmtActvChannels = this.activeChannels.filter(actvChannel => actvChannel.local_balance >= this.paymentDecoded.num_satoshis);
-          if(this.selNode.fiatConversion) {
-            this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
-            .pipe(takeUntil(this.unSubs[2]))
-            .subscribe(data => {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
-            });
-          } else {
-            this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
+      this.dataService.decodePayment(this.paymentRequest, true).
+        pipe(take(1)).subscribe({ next: (decodedPayment: PayRequest) => {
+          this.paymentDecoded = decodedPayment;
+          this.selectedChannelCtrl.setValue(null);
+          this.onAdvancedPanelToggle(true, true);
+          if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
+            this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
           }
-        } else {
-          this.zeroAmtInvoice = true;
-          this.filteredMinAmtActvChannels = this.activeChannels;
-          this.paymentDecodedHint = 'Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
-        }
-      }, err => {
-        this.logger.error(err);
-        this.paymentDecodedHint = 'ERROR: ' + err.message;
-        this.paymentReq.control.setErrors({'decodeError': true});
-      });
+          if (this.paymentDecoded.num_satoshis && this.paymentDecoded.num_satoshis !== '' && this.paymentDecoded.num_satoshis !== '0') {
+            this.filteredMinAmtActvChannels = this.filterChannels();
+            if (this.filteredMinAmtActvChannels.length && this.filteredMinAmtActvChannels.length > 0) {
+              this.selectedChannelCtrl.enable();
+            } else {
+              this.selectedChannelCtrl.disable();
+            }
+            this.zeroAmtInvoice = false;
+            if (this.selNode.fiatConversion) {
+              this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
+                pipe(takeUntil(this.unSubs[4])).
+                subscribe({ next: (data) => {
+                  this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats (' + data.symbol + ' ' + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
+                }, error: (error) => {
+                  this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None') + '. Unable to convert currency.';
+                } });
+            } else {
+              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
+            }
+          } else {
+            this.zeroAmtInvoice = true;
+            this.filteredMinAmtActvChannels = this.activeChannels;
+            if (this.filteredMinAmtActvChannels.length && this.filteredMinAmtActvChannels.length > 0) {
+              this.selectedChannelCtrl.enable();
+            } else {
+              this.selectedChannelCtrl.disable();
+            }
+            this.paymentDecodedHint = 'Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
+          }
+        }, error: (err) => {
+          this.logger.error(err);
+          this.paymentDecodedHint = 'ERROR: ' + err.message;
+          this.paymentReq.control.setErrors({ decodeError: true });
+        } });
     }
   }
 
-  onAdvancedPanelToggle(isClosed: boolean) {
-    if (isClosed) {
-      this.advancedTitle = 'Advanced Options | ' + this.selFeeLimitType.name + (this.selFeeLimitType.id === 'none' ? '' : (': ' + this.feeLimit)) + ((this.selActiveChannel.remote_alias || this.selActiveChannel.chan_id) ? ' | First Outgoing Channel: ' + (this.selActiveChannel.remote_alias ? this.selActiveChannel.remote_alias : this.selActiveChannel.chan_id) : '');
+  onAdvancedPanelToggle(isClosed: boolean, isReset: boolean) {
+    if (isClosed && !isReset) {
+      const alias = (this.selectedChannelCtrl.value && this.selectedChannelCtrl.value.remote_alias) ? this.selectedChannelCtrl.value.remote_alias : (this.selectedChannelCtrl.value && this.selectedChannelCtrl.value.chan_id) ? this.selectedChannelCtrl.value.chan_id : '';
+      this.advancedTitle = 'Advanced Options | ' + this.selFeeLimitType.name + (this.selFeeLimitType.id === 'none' ? '' : (': ' + this.feeLimit)) + ((alias !== '') ? ' | First Outgoing Channel: ' + alias : '');
     } else {
       this.advancedTitle = 'Advanced Options';
     }
@@ -182,8 +211,13 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   resetData() {
     this.paymentDecoded = {};
     this.paymentRequest = '';
-    this.selActiveChannel = null;
+    this.selectedChannelCtrl.setValue(null);
     this.filteredMinAmtActvChannels = this.activeChannels;
+    if (this.filteredMinAmtActvChannels.length && this.filteredMinAmtActvChannels.length > 0) {
+      this.selectedChannelCtrl.enable();
+    } else {
+      this.selectedChannelCtrl.disable();
+    }
     this.feeLimit = null;
     this.selFeeLimitType = FEE_LIMIT_TYPES[0];
     this.advancedTitle = 'Advanced Options';
@@ -194,7 +228,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

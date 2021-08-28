@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, OnChanges, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil, takeLast, first } from 'rxjs/operators';
+import { takeUntil, first } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS } from '../../services/consts-enums-functions';
@@ -14,64 +14,69 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./currency-unit-converter.component.scss']
 })
 export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDestroy {
+
   @Input() values = [];
   public currencyUnitEnum = CurrencyUnitEnum;
   public currencyUnitFormats = CURRENCY_UNIT_FORMATS;
   public currencyUnits = [];
   public fiatConversion = false;
-  private unSubs = [new Subject(), new Subject()];
-  // private _values: Array<any>;
-  // get values(): Array<any> { return this._values; }  
-  // @Input() set values(data: Array<any>) { 
-  //   this._values = data;
-  //   if(this.currencyUnits.length > 1 && this._values[0].dataValue >= 0) {
-  //     this.getCurrencyValues(this._values);
-  //   }
-  // }
+  public conversionErrorMsg = '';
+  private unSubs = [new Subject(), new Subject(), new Subject()];
 
-  constructor(public commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(public commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) { }
 
   ngOnInit() {
-    this.store.select('root')
-    .pipe(first())
-    .subscribe((rtlStore) => {
-      this.fiatConversion = rtlStore.selNode.settings.fiatConversion;
-      this.currencyUnits = rtlStore.selNode.settings.currencyUnits;
-      if(!this.fiatConversion) {
-        this.currencyUnits.splice(2, 1);
-      }
-      if(this.currencyUnits.length > 1 && this.values[0].dataValue >= 0) {
-        this.getCurrencyValues(this.values);
-      }
-    });
+    this.store.select('root').
+      pipe(first()).
+      subscribe((rtlStore) => {
+        this.fiatConversion = rtlStore.selNode.settings.fiatConversion;
+        this.currencyUnits = rtlStore.selNode.settings.currencyUnits;
+        if (!this.fiatConversion) {
+          this.currencyUnits.splice(2, 1);
+        }
+        if (this.currencyUnits.length > 1 && this.values[0] && this.values[0].dataValue >= 0) {
+          this.getCurrencyValues(this.values);
+        }
+      });
   }
 
   ngOnChanges() {
-    if(this.currencyUnits.length > 1 && this.values[0].dataValue >= 0) {
+    if (this.currencyUnits.length > 1 && this.values[0] && this.values[0].dataValue >= 0) {
       this.getCurrencyValues(this.values);
     }
   }
 
   getCurrencyValues(values) {
-    values.forEach(value => {
-      if(value.dataValue > 0) {
-        this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, this.currencyUnits[2], this.fiatConversion)
-        .pipe(takeUntil(this.unSubs[1]))
-        .subscribe(data => {
-          value[CurrencyUnitEnum.BTC] = data.BTC;
-          value[CurrencyUnitEnum.OTHER] = data.OTHER;
-        });
+    values.forEach((value) => {
+      if (value.dataValue > 0) {
+        this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.BTC, '', true).
+          pipe(takeUntil(this.unSubs[1])).
+          subscribe((data) => {
+            value[CurrencyUnitEnum.BTC] = data.BTC;
+          });
+        this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.currencyUnits[2], this.fiatConversion).
+          pipe(takeUntil(this.unSubs[2])).
+          subscribe({
+            next: (data) => {
+              value[CurrencyUnitEnum.OTHER] = data.OTHER;
+            }, error: (err) => {
+              this.conversionErrorMsg = 'Conversion Error: ' + err;
+            }
+          });
       } else {
         value[CurrencyUnitEnum.BTC] = value.dataValue;
-        value[CurrencyUnitEnum.OTHER] = value.dataValue;
+        if (this.conversionErrorMsg === '') {
+          value[CurrencyUnitEnum.OTHER] = value.dataValue;
+        }
       }
     });
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

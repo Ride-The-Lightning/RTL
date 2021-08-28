@@ -10,18 +10,21 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './error.component.html'
 })
 export class ErrorComponent implements OnInit {
-  error = {errorCode: '', errorMessage: ''};
+
+  error = { errorCode: '', errorMessage: '' };
   public faTimes = faTimes;
   private unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private activatedRoute: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
-    this.activatedRoute.paramMap
-    .pipe(takeUntil(this.unsubs[0]))
-    .subscribe(data => {
-      this.error = window.history.state;
-    });
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+    this.router.onSameUrlNavigation = 'reload';
+    this.activatedRoute.paramMap.
+      pipe(takeUntil(this.unsubs[0])).
+      subscribe((data) => {
+        this.error = window.history.state;
+      });
   }
 
   goToHelp(): void {

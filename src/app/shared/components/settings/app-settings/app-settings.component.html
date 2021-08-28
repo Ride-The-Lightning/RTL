@@ -1,5 +1,5 @@
 <div [perfectScrollbar] fxLayout="column" fxFlex="100" class="padding-gap-x-large">
-  <form *ngIf="appConfig.nodes && appConfig.nodes.length && appConfig.nodes.length > 1" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1" #form="ngForm">
+  <form *ngIf="appConfig.nodes && appConfig.nodes.length && appConfig.nodes.length > 0" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1" #form="ngForm">
     <div fxLayout="row">
       <fa-icon [icon]="faWindowRestore" class="page-title-img mr-1"></fa-icon>
       <span class="page-title">Default Node</span>
@@ -7,7 +7,7 @@
     <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="my-2">
       <div fxLayout="row" fxFlex="100" class="alert alert-info">
         <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
-        <span>The setting will apply after RTL server restart.</span>
+        <span>The setting will apply after RTL server restarts.</span>
       </div>
       <div fxLayout="row" fxLayoutAlign="start start">
         <mat-form-field fxLayout="row" fxLayoutAlign="start start">

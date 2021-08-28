@@ -5,10 +5,9 @@
     </mat-form-field>
   </div>
   <div fxLayout="row" fxLayoutAlign="start start">
-    <div [perfectScrollbar] class="table-container" fxFlex="100">
-      <mat-progress-bar *ngIf="errorLoading===true" mode="indeterminate"></mat-progress-bar>
-      <table mat-table #table [dataSource]="listTransactions" matSort
-        [ngClass]="{'overflow-auto error-border': errorLoading==='error','overflow-auto': true}">
+    <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container">
+      <mat-progress-bar *ngIf="apisCallStatus?.FetchTransactions.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+      <table mat-table #table fxFlex="100" [dataSource]="listTransactions" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="time_stamp">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Date/Time </th>
           <td mat-cell *matCellDef="let transaction">{{(transaction.time_stamp * 1000) | date:'dd/MMM/YYYY HH:mm'}}</td>
@@ -52,7 +51,9 @@
         </ng-container>
         <ng-container matColumnDef="no_transaction">
           <td mat-footer-cell *matFooterCellDef colspan="4">
-            <p *ngIf="!listTransactions?.data || listTransactions?.data?.length<1">No transactions available.</p>
+            <p *ngIf="(!listTransactions?.data || listTransactions?.data?.length<1) && apisCallStatus?.FetchTransactions.status === apiCallStatusEnum.COMPLETED">No transaction available.</p>
+            <p *ngIf="(!listTransactions?.data || listTransactions?.data?.length<1) && apisCallStatus?.FetchTransactions.status === apiCallStatusEnum.INITIATED">Getting transactions...</p>
+            <p *ngIf="(!listTransactions?.data || listTransactions?.data?.length<1) && apisCallStatus?.FetchTransactions.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
           </td>
         </ng-container>
         <tr mat-footer-row *matFooterRowDef="['no_transaction']" [ngClass]="{'display-none': listTransactions?.data && listTransactions?.data?.length>0}"></tr>

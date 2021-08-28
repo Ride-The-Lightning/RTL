@@ -5,7 +5,7 @@ export enum feeRateStyle {
 
 export interface ChannelStatus {
   channels?: number;
-  capacity?:number;
+  capacity?: number;
 }
 
 export interface ChannelsStatus {
@@ -43,14 +43,11 @@ export interface GetInfo {
   chains?: GetInfoChain[];
   msatoshi_fees_collected?: number;
   fees_collected_msat?: string;
-  currency_unit?: string;
-  smaller_currency_unit?: string;
   lnImplementation?: string;
 }
 
 export interface Fees {
   feeCollected?: number;
-  btc_feeCollected?: number;
   totalTxCount?: number;
 }
 
@@ -58,9 +55,6 @@ export interface Balance {
   totalBalance?: number;
   confBalance?: number;
   unconfBalance?: number;
-  btc_totalBalance?: number;
-  btc_confBalance?: number;
-  btc_unconfBalance?: number;
 }
 
 export interface LocalRemoteBalance {
@@ -68,10 +62,6 @@ export interface LocalRemoteBalance {
   remoteBalance: number;
   pendingBalance?: number;
   inactiveBalance?: number;
-  btc_localBalance?: number;
-  btc_remoteBalance?: number;
-  btc_pendingBalance?: number;
-  btc_inactiveBalance?: number;
 }
 
 export interface Peer {
@@ -104,7 +94,7 @@ export interface ListInvoices {
 }
 
 export interface OnChain {
-  address?:	string;
+  address?: string;
   satoshis?: string;
   feeRate?: string;
   minconf?: number;
@@ -114,14 +104,29 @@ export interface OnChain {
 export interface Hop {
   hop_sequence?: number;
   pubkey_alias?: string;
-  chan_id?:	string;
-  chan_capacity?:	string;
-  amt_to_forward?:	string;
-  fee?:	string;
-  expiry?:	number;
-  amt_to_forward_msat?:	string;
+  chan_id?: string;
+  chan_capacity?: string;
+  amt_to_forward?: string;
+  fee?: string;
+  expiry?: number;
+  amt_to_forward_msat?: string;
   fee_msat?: string;
-  pub_key?:	string;
+  pub_key?: string;
+}
+
+export interface MPP {
+  amount_msat?: string;
+  amount_sent_msat?: string;
+  bolt11?: string;
+  created_at?: number;
+  destination?: string;
+  id?: number;
+  msatoshi?: number;
+  msatoshi_sent?: number;
+  payment_hash?: string;
+  payment_preimage?: string;
+  status?: string;
+  partid?: number;
 }
 
 export interface Payment {
@@ -140,21 +145,6 @@ export interface Payment {
   is_expanded?: boolean;
   total_parts?: number;
   mpps?: MPP[];
-}
-
-export interface MPP {
-  amount_msat?: string;
-  amount_sent_msat?: string;
-  bolt11?: string;
-  created_at?: number;
-  destination?: string;
-  id?: number;
-  msatoshi?: number;
-  msatoshi_sent?: number;
-  payment_hash?: string;
-  payment_preimage?: string;
-  status?: string;
-  partid?: number;
 }
 
 export interface PayRequest {
@@ -187,15 +177,6 @@ export interface ForwardingEvent {
   resolved_time?: number;
 }
 
-export interface ForwardingHistoryRes {
-  last_offset_index?: number;
-  forwarding_events?: ForwardingEvent[];
-}
-
-export interface QueryRoutes {
-  routes: Routes[];
-}
-
 export interface Routes {
   id?: string;
   channel?: string;
@@ -204,6 +185,10 @@ export interface Routes {
   amount_msat?: string;
   delay?: number;
   alias?: string;
+}
+
+export interface QueryRoutes {
+  routes: Routes[];
 }
 
 export interface Channel {
@@ -251,22 +236,29 @@ export interface LookupNode {
   addresses?: Address[];
 }
 
-export interface FeeRates {
-  perkb?: FeeRatePerObj,
-  perkw?: FeeRatePerObj,
-  onchain_fee_estimates?: {
-      opening_channel_satoshis?: number;
-      mutual_close_satoshis?: number;
-      unilateral_close_satoshis?: number;
-  }
-}
-
 export interface FeeRatePerObj {
-  urgent?: number;
-  normal?: number;
-  slow?: number;
   min_acceptable?: number;
   max_acceptable?: number;
+  opening?: number;
+  mutual_close?: number;
+  unilateral_close?: number;
+  delayed_to_us?: number;
+  htlc_resolution?: number;
+  penalty?: number;
+}
+
+export interface OnChainFeeEstimates {
+  opening_channel_satoshis?: number;
+  mutual_close_satoshis?: number;
+  unilateral_close_satoshis?: number;
+  htlc_timeout_satoshis?: number;
+  htlc_success_satoshis?: number;
+}
+
+export interface FeeRates {
+  perkb?: FeeRatePerObj;
+  perkw?: FeeRatePerObj;
+  onchain_fee_estimates?: OnChainFeeEstimates;
 }
 
 export interface UTXO {
@@ -277,4 +269,12 @@ export interface UTXO {
   blockheight?: string;
   address?: string;
   amount_msat?: string;
+}
+
+export interface RoutingPeer {
+  channel_id?: string;
+  alias?: string;
+  events?: number;
+  total_amount?: number;
+  total_fee?: number;
 }

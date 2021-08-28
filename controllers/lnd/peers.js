@@ -33,18 +33,8 @@ exports.getPeers = (req, res, next) => {
       res.status(200).json(body.peers);
     })
   }).catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Peers', msg: 'List Peers Error', error: err});
-    return res.status(500).json({
-      message: "Peers List Failed!",
-      error: err.error
-    });
+    const err = common.handleError(errRes,  'Peers', 'List Peers Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -53,48 +43,35 @@ exports.postPeer = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/peers';
   options.form = JSON.stringify({ 
-    addr: { host: req.body.host, pubkey: req.body.pubkey },
+    // addr: { host: req.body.host, pubkey: req.body.pubkey },
     perm: req.body.perm
   });
-  request.post(options, (error, response, body) => {
+  request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Peer Added', data: body});
-    if(!body || body.error) {
-      logger.log({level: 'ERROR', fileName: 'Peers', msg: 'Add Peer Error', error: body.error});
-      res.status(500).json({
-        message: "Adding peer failed!",
-        error: (!body) ? 'Error From Server!' : body.error
+    options.url = common.getSelLNServerUrl() + '/v1/peers';
+    request(options).then((body) => {
+      let peers = (!body.peers) ? [] : body.peers;
+      return Promise.all(peers.map(peer => getAliasForPeers(peer))).then(function(values) {
+        if (body.peers) {
+          body.peers = common.sortDescByStrKey(body.peers, 'alias');
+          logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Peer with Alias', data: body});
+          body.peers = common.newestOnTop(body.peers, 'pub_key', req.body.pubkey);
+          logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Peer with Newest On Top', data: body});
+        }
+        logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Peer Added Successfully'});
+        logger.log({level: 'INFO', fileName: 'Peers', msg: 'Peer Connected'});
+        res.status(201).json(body.peers);
+      }).catch(errRes => {
+        const err = common.handleError(errRes,  'Peers', 'Connect Peer Error');
+        return res.status(err.statusCode).json({message: err.message, error: err.error});
       });
-    } else {
-      options.url = common.getSelLNServerUrl() + '/v1/peers';
-      request(options).then(function (body) {
-        let peers = (!body.peers) ? [] : body.peers;
-        return Promise.all(peers.map(peer => getAliasForPeers(peer))).then(function(values) {
-          if (body.peers) {
-            body.peers = common.sortDescByStrKey(body.peers, 'alias');
-            logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Peer with Alias', data: body});
-            body.peers = common.newestOnTop(body.peers, 'pub_key', req.body.pubkey);
-            logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Peer with Newest On Top', data: body});
-          }
-          logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Peer Added Successfully'});
-          logger.log({level: 'INFO', fileName: 'Peers', msg: 'Peer Connected'});
-          res.status(201).json(body.peers);
-        })
-        .catch(errRes => {
-          let err = JSON.parse(JSON.stringify(errRes));
-          if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-            delete err.options.headers['Grpc-Metadata-macaroon'];
-          }
-          if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-            delete err.response.request.headers['Grpc-Metadata-macaroon'];
-          }
-          logger.log({level: 'ERROR', fileName: 'Peer', msg: 'Add Peer Error', error: err});
-          return res.status(500).json({
-            message: "Peer Add Failed!",
-            error: err.error
-          });
-        });
-      })
-    }
+    }).catch(errRes => {
+      const err = common.handleError(errRes,  'Peers', 'Connect Peer Error');
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
+    });
+  }).catch(errRes => {
+    const err = common.handleError(errRes,  'Peers', 'Connect Peer Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -104,30 +81,12 @@ exports.deletePeer = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/peers/' + req.params.peerPubKey;
   request.delete(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Detach Peer Response', data: body});
-    if(!body || body.error) {
-      logger.log({level: 'ERROR', fileName: 'Peers', msg: 'Detach Peer Error', error: body.error});
-      res.status(500).json({
-        message: "Detach peer failed!",
-        error: (!body) ? 'Error From Server!' : body.error
-      });
-    } else {
-      logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Peer Detached', data: req.params.peerPubKey});
-      logger.log({level: 'INFO', fileName: 'Peers', msg: 'Peer Disconnected'});
-      res.status(204).json({});
-    }
+    logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Peer Detached', data: req.params.peerPubKey});
+    logger.log({level: 'INFO', fileName: 'Peers', msg: 'Peer Disconnected'});
+    res.status(204).json({});
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Peers', msg: 'Detach Peer Error', error: err});
-    return res.status(500).json({
-      message: "Detach Peer Failed!",
-      error: err.error
-    });
+    const err = common.handleError(errRes,  'Peers', 'Disconnect Peer Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

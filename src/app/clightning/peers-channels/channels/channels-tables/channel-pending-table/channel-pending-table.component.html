@@ -5,9 +5,9 @@
       <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" name="filter" placeholder="Filter">
     </mat-form-field>
   </div>
+  <mat-progress-bar *ngIf="apisCallStatus?.FetchChannels.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
   <div [perfectScrollbar] fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100">
-    <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
-    <table mat-table #table [dataSource]="channels" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
+    <table mat-table #table [dataSource]="channels" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
       <ng-container matColumnDef="short_channel_id">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Short Channel ID </th>
         <td mat-cell *matCellDef="let channel"> {{channel?.short_channel_id}}</td>
@@ -26,7 +26,7 @@
       </ng-container>
       <ng-container matColumnDef="state">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> State </th>
-        <td mat-cell *matCellDef="let channel"> {{channel?.state}}</td>
+        <td mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : ''}"> {{CLChannelPendingState[channel?.state]}} </td>
       </ng-container>
       <ng-container matColumnDef="msatoshi_to_us">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> mSatoshi To Us </th>
@@ -58,14 +58,17 @@
               <mat-select-trigger></mat-select-trigger>
               <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
               <mat-option (click)="onChannelClose(channel)" *ngIf="isCompatibleVersion && !channel.connected && channel.state === 'CHANNELD_NORMAL'">Close Channel</mat-option>
+              <mat-option (click)="onBumpFee(channel)" *ngIf="channel.state === 'CHANNELD_AWAITING_LOCKIN'">Bump Fee</mat-option>
             </mat-select>
           </div>
         </td>
       </ng-container>
       <ng-container matColumnDef="no_peer">
         <td mat-footer-cell *matFooterCellDef colspan="4">
-          <p *ngIf="numPeers<1 && (!channels?.data || channels?.data?.length<1)">No peers connected. Add a peer in order to open a channel.</p>
-          <p *ngIf="numPeers>0 && (!channels?.data || channels?.data?.length<1)">No channels available.</p>
+          <p *ngIf="numPeers<1 && (!channels?.data || channels?.data?.length<1) && apisCallStatus?.FetchChannels.status === apiCallStatusEnum.COMPLETED">No peers connected. Add a peer in order to open a channel.</p>
+          <p *ngIf="numPeers>0 && (!channels?.data || channels?.data?.length<1) && apisCallStatus?.FetchChannels.status === apiCallStatusEnum.COMPLETED">No pending/inactive channel available.</p>
+          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apisCallStatus?.FetchChannels.status === apiCallStatusEnum.INITIATED">Getting pending/inactive channels...</p>
+          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apisCallStatus?.FetchChannels.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
         </td>
       </ng-container>
       <tr mat-footer-row *matFooterRowDef="['no_peer']" [ngClass]="{'display-none': numPeers>0 && channels?.data && channels?.data?.length>0}"></tr>

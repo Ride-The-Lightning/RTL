@@ -1,5 +1,7 @@
 import { ActionReducerMap } from '@ngrx/store';
-import { ErrorPayload } from '../shared/models/errorPayload';
+
+import { ApiCallsListRoot } from '../shared/models/apiCallsPayload';
+import { APICallStatusEnum } from '../shared/services/consts-enums-functions';
 import { RTLConfiguration, ConfigSettingsNode, GetInfoRoot } from '../shared/models/RTLconfig';
 
 import * as fromECL from '../eclair/store/ecl.reducers';
@@ -8,46 +10,42 @@ import * as fromLND from '../lnd/store/lnd.reducers';
 import * as RTLActions from './rtl.actions';
 
 export interface RootState {
-  effectErrorsRoot: ErrorPayload[];
+  apisCallStatus: ApiCallsListRoot;
   selNode: ConfigSettingsNode;
   appConfig: RTLConfiguration;
   nodeData: GetInfoRoot;
 }
 
 const initNodeSettings = { userPersona: 'OPERATOR', themeMode: 'DAY', themeColor: 'PURPLE', channelBackupPath: '', selCurrencyUnit: 'USD', fiatConversion: false, currencyUnits: ['Sats', 'BTC', 'USD'], bitcoindConfigPath: '' };
-const initNodeAuthentication = { configPath: '', swapMacaroonPath: '', boltzMacaroonPath: '',  };
+const initNodeAuthentication = { configPath: '', swapMacaroonPath: '', boltzMacaroonPath: '' };
 
-const initRootState: RootState = {
-  effectErrorsRoot: [],
-  selNode: {settings: initNodeSettings, authentication: initNodeAuthentication, lnImplementation: 'LND'},
+export const initRootState: RootState = {
+  apisCallStatus: { Login: { status: APICallStatusEnum.UN_INITIATED }, IsAuthorized: { status: APICallStatusEnum.UN_INITIATED } },
+  selNode: { settings: initNodeSettings, authentication: initNodeAuthentication, lnImplementation: 'LND' },
   appConfig: {
     defaultNodeIndex: -1,
     selectedNodeIndex: -1,
     sso: { rtlSSO: 0, logoutRedirectLink: '' },
     enable2FA: false,
-    nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication}]
+    nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication }]
   },
   nodeData: {}
 };
 
 export function RootReducer(state = initRootState, action: RTLActions.RTLActions) {
   switch (action.type) {
-    case RTLActions.CLEAR_EFFECT_ERROR_ROOT:
-      const clearedEffectErrors = [...state.effectErrorsRoot];
-      const removeEffectIdx = state.effectErrorsRoot.findIndex(err => {
-        return err.action === action.payload;
-      });
-      if (removeEffectIdx > -1) {
-        clearedEffectErrors.splice(removeEffectIdx, 1);
-      }
-      return {
-        ...state,
-        effectErrorsRoot: clearedEffectErrors
+    case RTLActions.UPDATE_API_CALL_STATUS_ROOT:
+      const updatedApisCallStatus = state.apisCallStatus;
+      updatedApisCallStatus[action.payload.action] = {
+        status: action.payload.status,
+        statusCode: action.payload.statusCode,
+        message: action.payload.message,
+        URL: action.payload.URL,
+        filePath: action.payload.filePath
       };
-    case RTLActions.EFFECT_ERROR_ROOT:
       return {
         ...state,
-        effectErrorsRoot: [...state.effectErrorsRoot, action.payload]
+        apisCallStatus: updatedApisCallStatus
       };
     case RTLActions.RESET_ROOT_STORE:
       return {
@@ -73,7 +71,6 @@ export function RootReducer(state = initRootState, action: RTLActions.RTLActions
     default:
       return state;
   }
-
 }
 
 export interface RTLState {

@@ -20,11 +20,13 @@ import { CLLookupsComponent } from './lookups/lookups.component';
 import { CLRoutingComponent } from './routing/routing.component';
 import { CLForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
 import { CLFailedTransactionsComponent } from './routing/failed-transactions/failed-transactions.component';
+import { CLRoutingPeersComponent } from './routing/routing-peers/routing-peers.component';
 import { CLChannelLookupComponent } from './lookups/channel-lookup/channel-lookup.component';
 import { CLNodeLookupComponent } from './lookups/node-lookup/node-lookup.component';
 import { CLQueryRoutesComponent } from './transactions/query-routes/query-routes.component';
 import { CLChannelOpenTableComponent } from './peers-channels/channels/channels-tables/channel-open-table/channel-open-table.component';
 import { CLChannelPendingTableComponent } from './peers-channels/channels/channels-tables/channel-pending-table/channel-pending-table.component';
+import { CLBumpFeeComponent } from './peers-channels/channels/bump-fee-modal/bump-fee.component';
 import { CLNodeInfoComponent } from './home/node-info/node-info.component';
 import { CLBalancesInfoComponent } from './home/balances-info/balances-info.component';
 import { CLFeeInfoComponent } from './home/fee-info/fee-info.component';
@@ -33,6 +35,7 @@ import { CLChannelCapacityInfoComponent } from './home/channel-capacity-info/cha
 import { CLChannelLiquidityInfoComponent } from './home/channel-liquidity-info/channel-liquidity-info.component';
 import { CLNetworkInfoComponent } from './network-info/network-info.component';
 import { CLFeeRatesComponent } from './network-info/fee-rates/fee-rates.component';
+import { CLOnChainFeeEstimatesComponent } from './network-info/on-chain-fee-estimates/on-chain-fee-estimates.component';
 import { CLSignVerifyMessageComponent } from './sign-verify-message/sign-verify-message.component';
 import { CLSignComponent } from './sign-verify-message/sign/sign.component';
 import { CLVerifyComponent } from './sign-verify-message/verify/verify.component';
@@ -68,6 +71,7 @@ import { CLUnlockedGuard } from '../shared/services/auth.guard';
     CLRoutingComponent,
     CLForwardingHistoryComponent,
     CLFailedTransactionsComponent,
+    CLRoutingPeersComponent,
     CLChannelLookupComponent,
     CLNodeLookupComponent,
     CLQueryRoutesComponent,
@@ -78,6 +82,7 @@ import { CLUnlockedGuard } from '../shared/services/auth.guard';
     CLChannelsTablesComponent,
     CLChannelOpenTableComponent,
     CLChannelPendingTableComponent,
+    CLBumpFeeComponent,
     CLNodeInfoComponent,
     CLBalancesInfoComponent,
     CLFeeInfoComponent,
@@ -86,6 +91,7 @@ import { CLUnlockedGuard } from '../shared/services/auth.guard';
     CLChannelLiquidityInfoComponent,
     CLNetworkInfoComponent,
     CLFeeRatesComponent,
+    CLOnChainFeeEstimatesComponent,
     CLSignVerifyMessageComponent,
     CLSignComponent,
     CLVerifyComponent,

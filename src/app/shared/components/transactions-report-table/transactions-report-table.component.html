@@ -44,7 +44,7 @@
           </ng-container>
           <ng-container matColumnDef="no_transaction">
             <td mat-footer-cell *matFooterCellDef colspan="4">
-              <p *ngIf="!transactions?.data || transactions?.data?.length<1">No transactions available.</p>
+              <p *ngIf="!transactions?.data || transactions?.data?.length<1">No transaction available.</p>
             </td>
           </ng-container>
           <tr mat-footer-row *matFooterRowDef="['no_transaction']" [ngClass]="{'display-none': transactions?.data && transactions?.data?.length>0}"></tr>

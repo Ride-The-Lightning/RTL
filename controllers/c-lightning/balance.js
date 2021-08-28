@@ -9,39 +9,14 @@ exports.getBalance = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/getBalance';
   request(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Balance', msg: 'Balance Received', data: body});
-    if(!body.totalBalance) {
-      body.totalBalance = 0;
-      body.btc_totalBalance = 0;
-    } else {
-      body.btc_totalBalance = common.convertToBTC(body.totalBalance);
-    }
-    if(!body.confBalance) {
-      body.confBalance = 0;
-      body.btc_confBalance = 0;
-    } else {
-      body.btc_confBalance = common.convertToBTC(body.confBalance);
-    }
-    if(!body.unconfBalance) {
-      body.unconfBalance = 0;
-      body.btc_unconfBalance = 0;
-    } else {
-      body.btc_unconfBalance = common.convertToBTC(body.unconfBalance);
-    }
+    if (!body.totalBalance) { body.totalBalance = 0; }
+    if (!body.confBalance) { body.confBalance = 0; }
+    if (!body.unconfBalance) { body.unconfBalance = 0; }
     logger.log({level: 'INFO', fileName: 'Balance', msg: 'Balance Received'});
     res.status(200).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers.macaroon) {
-      delete err.options.headers.macaroon;
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
-      delete err.response.request.headers.macaroon;
-    }
-    logger.log({level: 'ERROR', fileName: 'Balance', msg: 'Balance Fetch Error', error: err});
-    return res.status(500).json({
-      message: "Fetching balance failed!",
-      error: err.error
-    });
+    const err = common.handleError(errRes,  'Balance', 'Get Balance Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

@@ -1,5 +1,6 @@
 import { NgModule, Injectable } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DecimalPipe, TitleCasePipe, DatePipe } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -41,10 +42,7 @@ import { MatTreeModule } from '@angular/material/tree';
 
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { QRCodeModule } from 'angularx-qrcode';
-import { DecimalPipe, TitleCasePipe, DatePipe } from '@angular/common';
-import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
-import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
-import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
+import { PerfectScrollbarModule, PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 
 import { ThemeOverlay } from './theme/overlay-container/theme-overlay';
 import { OverlayContainer } from '@angular/cdk/overlay';
@@ -108,6 +106,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
 };
 
 @Injectable() class DefaultDateAdapter extends NativeDateAdapter {
+
   format(date: Date, displayFormat: Object): string {
     if (displayFormat === 'input') {
       let day: string = date.getDate().toString();
@@ -116,6 +115,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     }
     return MONTHS[date.getMonth()].name.toUpperCase() + ' ' + date.getFullYear();
   }
+
 }
 
 export const DEFAULT_DATE_FORMAT: MatDateFormats = {
@@ -126,7 +126,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     dateInput: 'input',
     monthYearLabel: { month: 'short', year: 'numeric' },
     dateA11yLabel: { day: 'numeric', month: 'short', year: 'numeric' },
-    monthYearA11yLabel: { month: 'short', year: 'numeric' },
+    monthYearA11yLabel: { month: 'short', year: 'numeric' }
   }
 };
 

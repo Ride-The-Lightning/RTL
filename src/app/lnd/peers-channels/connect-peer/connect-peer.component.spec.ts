@@ -1,16 +1,43 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { StoreModule } from '@ngrx/store';
+
+import { RTLReducer } from '../../../store/rtl.reducers';
+import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ConnectPeerComponent } from './connect-peer.component';
+import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/test-helpers/mock-services';
+import { LNDEffects } from '../../store/lnd.effects';
+import { SharedModule } from '../../../shared/shared.module';
+import { EffectsModule } from '@ngrx/effects';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ConnectPeerComponent', () => {
   let component: ConnectPeerComponent;
   let fixture: ComponentFixture<ConnectPeerComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ConnectPeerComponent ]
-    })
-    .compileComponents();
+      declarations: [ConnectPeerComponent],
+      imports: [
+        BrowserAnimationsModule,
+        SharedModule,
+        StoreModule.forRoot(RTLReducer, {
+          runtimeChecks: {
+            strictStateImmutability: false,
+            strictActionImmutability: false
+          }
+        }),
+        EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
+      ],
+      providers: [
+        LoggerService,
+        { provide: MatDialogRef, useClass: mockMatDialogRef },
+        { provide: MAT_DIALOG_DATA, useValue: { message: {} } },
+        { provide: LNDEffects, useClass: mockLNDEffects }
+      ]
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -21,5 +48,9 @@ describe('ConnectPeerComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
   });
 });

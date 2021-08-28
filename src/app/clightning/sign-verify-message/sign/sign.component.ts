@@ -12,6 +12,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
   styleUrls: ['./sign.component.scss']
 })
 export class CLSignComponent implements OnDestroy {
+
   public message = '';
   public signedMessage = '';
   public signature = '';
@@ -19,23 +20,27 @@ export class CLSignComponent implements OnDestroy {
 
   constructor(private dataService: DataService, private snackBar: MatSnackBar, private logger: LoggerService) {}
 
-  onSign():boolean|void {
-    if (!this.message || this.message === '') { return true; }
-    this.dataService.signMessage(this.message).pipe(takeUntil(this.unSubs[0])).subscribe(res => { 
+  onSign(): boolean|void {
+    if (!this.message || this.message === '') {
+      return true;
+    }
+    this.dataService.signMessage(this.message).pipe(takeUntil(this.unSubs[0])).subscribe((res) => {
       this.signedMessage = this.message;
-      this.signature = res.zbase; 
+      this.signature = res.zbase;
     });
-  } 
+  }
 
   onMessageChange() {
-    if (this.signedMessage !== this.message) { this.signature = ''; }
+    if (this.signedMessage !== this.message) {
+      this.signature = '';
+    }
   }
 
   onCopyField(payload: string) {
     this.snackBar.open('Signature copied.');
     this.logger.info('Copied Text: ' + payload);
   }
-  
+
   resetData() {
     this.message = '';
     this.signature = '';
@@ -43,9 +48,10 @@ export class CLSignComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

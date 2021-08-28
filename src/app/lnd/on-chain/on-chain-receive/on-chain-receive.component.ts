@@ -17,6 +17,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./on-chain-receive.component.scss']
 })
 export class OnChainReceiveComponent {
+
   public addressTypes = ADDRESS_TYPES;
   public selectedAddressType: AddressType = ADDRESS_TYPES[0];
   public newAddress = '';
@@ -24,21 +25,20 @@ export class OnChainReceiveComponent {
   constructor(private store: Store<fromRTLReducer.RTLState>, private lndEffects: LNDEffects) {}
 
   onGenerateAddress() {
-    this.store.dispatch(new RTLActions.OpenSpinner('Getting New Address...'));
     this.store.dispatch(new LNDActions.GetNewAddress(this.selectedAddressType));
-    this.lndEffects.setNewAddress
-    .pipe(take(1))
-    .subscribe(newAddress => {
-      this.newAddress = newAddress;
-      this.store.dispatch(new RTLActions.OpenAlert({
-        width: '58%',
-        data: {
-          address: this.newAddress,
-          addressType: this.selectedAddressType.addressTp,
-          component: OnChainGeneratedAddressComponent
-        }
-      }));
-    });
+    this.lndEffects.setNewAddress.
+      pipe(take(1)).
+      subscribe((newAddress) => {
+        this.newAddress = newAddress;
+        this.store.dispatch(new RTLActions.OpenAlert({
+          width: '58%',
+          data: {
+            address: this.newAddress,
+            addressType: this.selectedAddressType.addressTp,
+            component: OnChainGeneratedAddressComponent
+          }
+        }));
+      });
   }
 
 }

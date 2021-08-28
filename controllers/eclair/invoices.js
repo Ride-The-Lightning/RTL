@@ -30,6 +30,25 @@ getReceivedPaymentInfo = (invoice) => {
   }
 }
 
+exports.getInvoice = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Channels', msg: 'Getting Invoice..'});
+  options = common.getOptions();
+  options.url = common.getSelLNServerUrl() + '/getinvoice';
+  options.form = { paymentHash: req.params.paymentHash };
+  request.post(options).then(function (body) {
+    logger.log({level: 'DEBUG', fileName: 'Invoice', msg: 'Invoice Found', data: body});
+    let current_time = (Math.round(new Date(Date.now()).getTime()/1000)).toString();
+    body.amount = body.amount ? body.amount/1000 : 0;
+    body.expiresAt = body.expiresAt ? body.expiresAt : (body.timestamp + body.expiry);
+	  body.status = body.status ? body.status : (+body.expiresAt < current_time ? "expired" : "unknown");
+    res.status(200).json(body);
+  })
+  .catch(errRes => {
+    const err = common.handleError(errRes,  'Invoices', 'Get Invoice Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
+  });
+};
+
 exports.listInvoices = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Invoices', msg: 'Getting List Invoices..'});
   options = common.getOptions();
@@ -65,18 +84,8 @@ exports.listInvoices = (req, res, next) => {
           res.status(200).json(invoices);
         })
         .catch(errRes => {
-          let err = JSON.parse(JSON.stringify(errRes));
-          if (err.options && err.options.headers && err.options.headers.authorization) {
-            delete err.options.headers.authorization;
-          }
-          if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-            delete err.response.request.headers.authorization;
-          }
-          logger.log({level: 'ERROR', fileName: 'Invoice', msg: 'List Invoices Error', error: err});
-          return res.status(err.statusCode ? err.statusCode : 500).json({
-            message: "Fetching Invoices failed!",
-            error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-          });
+          const err = common.handleError(errRes,  'Invoices', 'List Invoices Error');
+          return res.status(err.statusCode).json({message: err.message, error: err.error});
         });    
       } else {
         logger.log({level: 'INFO', fileName: 'Invoices', msg: 'Empty List Invoice Received'});
@@ -84,18 +93,8 @@ exports.listInvoices = (req, res, next) => {
       }
     })
     .catch(errRes => {
-      let err = JSON.parse(JSON.stringify(errRes));
-      if (err.options && err.options.headers && err.options.headers.authorization) {
-        delete err.options.headers.authorization;
-      }
-      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-        delete err.response.request.headers.authorization;
-      }
-      logger.log({level: 'ERROR', fileName: 'Invoice', msg: 'List Invoices Error', error: err});
-      return res.status(err.statusCode ? err.statusCode : 500).json({
-        message: "Fetching Invoices failed!",
-        error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-      });
+      const err = common.handleError(errRes,  'Invoices', 'List Invoices Error');
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     });
   }
 };
@@ -112,17 +111,7 @@ exports.createInvoice = (req, res, next) => {
     res.status(201).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers.authorization) {
-      delete err.options.headers.authorization;
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-      delete err.response.request.headers.authorization;
-    }
-    logger.log({level: 'ERROR', fileName: 'Invoice', msg: 'Create Invoice Error', error: err});
-    return res.status(err.statusCode ? err.statusCode : 500).json({
-      message: "Create Invoice Failed!",
-      error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-    });
+    const err = common.handleError(errRes,  'Invoices', 'Create Invoice Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

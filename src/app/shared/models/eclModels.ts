@@ -8,14 +8,7 @@ export interface GetInfo {
   network?: string;
   blockHeight?: number;
   publicAddresses?: string[];
-  currency_unit?: string;
-  smaller_currency_unit?: string;
   lnImplementation?: string;
-}
-
-export interface Audit {
-  fees: Fees;
-  payments: Payments;
 }
 
 export interface Fees {
@@ -27,10 +20,13 @@ export interface Fees {
   monthly_txs?: number;
 }
 
-export interface Payments {
-  sent?: PaymentSent[];
-  received?: PaymentReceived[];
-  relayed?: PaymentRelayed[];
+export interface PaymentSentPart {
+  id?: string;
+  amount?: number;
+  feesPaid?: number;
+  toChannelId?: string;
+  toChannelAlias?: string;
+  timestamp?: number;
 }
 
 export interface PaymentSent {
@@ -46,12 +42,9 @@ export interface PaymentSent {
   parts: PaymentSentPart[];
 }
 
-export interface PaymentSentPart {
-  id?: string;
+export interface PaymentReceivedPart {
   amount?: number;
-  feesPaid?: number;
-  toChannelId?: string;
-  toChannelAlias?: string;
+  fromChannelId?: string;
   timestamp?: number;
 }
 
@@ -60,12 +53,6 @@ export interface PaymentReceived {
   paymentHash?: string;
   firstPartTimestamp?: number;
   parts: PaymentReceivedPart[];
-}
-
-export interface PaymentReceivedPart {
-  amount?: number;
-  fromChannelId?: string;
-  timestamp?: number;
 }
 
 export interface PaymentRelayed {
@@ -80,6 +67,17 @@ export interface PaymentRelayed {
   toShortChannelId?: string;
   toChannelAlias?: string;
   timestamp?: number;
+}
+
+export interface Payments {
+  sent?: PaymentSent[];
+  received?: PaymentReceived[];
+  relayed?: PaymentRelayed[];
+}
+
+export interface Audit {
+  fees: Fees;
+  payments: Payments;
 }
 
 export interface PayRequest {
@@ -124,23 +122,17 @@ export interface OnChainBalance {
   total?: number;
   confirmed?: number;
   unconfirmed?: number;
-  btc_total?: number;
-  btc_confirmed?: number;
-  btc_unconfirmed?: number;
 }
 
 export interface LightningBalance {
   localBalance: number;
   remoteBalance: number;
   pendingBalance?: number;
-  btc_localBalance?: number;
-  btc_remoteBalance?: number;
-  btc_pendingBalance?: number;
 }
 
 export interface ChannelStatus {
   channels?: number;
-  capacity?:number;
+  capacity?: number;
 }
 
 export interface ChannelsStatus {
@@ -159,7 +151,7 @@ export interface Peer {
 }
 
 export interface SendPaymentOnChain {
-  address?:	string;
+  address?: string;
   amount?: number;
   blocks?: number;
 }
@@ -178,6 +170,10 @@ export interface Transaction {
   txid?: string;
   timestamp?: number;
 }
+export interface Feature {
+  name?: string;
+  support?: string;
+}
 
 export interface Invoice {
   prefix?: string;
@@ -192,12 +188,7 @@ export interface Invoice {
   expiry?: number;
   amount?: number;
   amountSettled?: number;
-  features?: { activated: Feature[], unknown: Feature[] }
-}
-
-export interface Feature {
-  name?: string;
-  support?: string;
+  features?: { activated: Feature[], unknown: Feature[] };
 }
 
 export interface LookupNode {

@@ -15,10 +15,13 @@ import { ScreenSizeEnum } from '../../../shared/services/consts-enums-functions'
   styleUrls: ['./invoice-information.component.scss']
 })
 export class InvoiceInformationComponent implements OnInit {
+
   private scrollContainer: ElementRef;
   @ViewChild('scrollContainer') set container(containerContent: ElementRef) {
-    if(containerContent) { this.scrollContainer = containerContent; }
-  }  
+    if (containerContent) {
+      this.scrollContainer = containerContent;
+    }
+  }
   public faReceipt = faReceipt;
   public showAdvanced = false;
   public newlyAdded = false;
@@ -34,7 +37,7 @@ export class InvoiceInformationComponent implements OnInit {
     this.invoice = this.data.invoice;
     this.newlyAdded = this.data.newlyAdded;
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
+    if (this.screenSize === ScreenSizeEnum.XS) {
       this.qrWidth = 220;
     }
   }
@@ -46,23 +49,24 @@ export class InvoiceInformationComponent implements OnInit {
   onShowAdvanced() {
     this.showAdvanced = !this.showAdvanced;
     this.flgOpened = false;
-  }  
+  }
 
   onScrollDown() {
     this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollTop + 60;
   }
 
   onExpansionClosed() {
-    this.flgOpened = false
+    this.flgOpened = false;
     this.scrollContainer.nativeElement.scrollTop = 0;
-  }  
+  }
 
   onCopyPayment(payload: string) {
     this.snackBar.open('Payment request copied.');
     this.logger.info('Copied Text: ' + payload);
   }
 
-  getDecimalFormat(htlc: any):string {
+  getDecimalFormat(htlc: any): string {
     return htlc.amt_msat < 1000 ? '1.0-4' : '1.0-0';
   }
+
 }

@@ -49,6 +49,17 @@
   }
   .rtl-snack-bar {
     max-width: 90vw !important;
+    font-weight: 700;
+  }
+  .rtl-warn-snack-bar {
+    max-width: 90vw !important;
+    font-weight: 700;
+    color: $warn-color;
+  }
+  .rtl-accent-snack-bar {
+    max-width: 90vw !important;
+    font-weight: 700;
+    color: $accent-color;
   }
   .mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar {
     background-color: $primary-darker;
@@ -76,7 +87,18 @@
     cursor: pointer;
     fill: $primary-darker; 
   }
-  .mat-tree-node:hover, .mat-nested-tree-node-parent:hover, .mat-select-panel .mat-option:hover, .mat-menu-panel .mat-menu-content .mat-menu-item:hover {
+
+  .mat-autocomplete-panel .mat-option.mat-selected:not(.mat-active):not(:hover):not(.mat-option-disabled),
+  .mat-autocomplete-panel .mat-option.mat-selected:not(.mat-active):not(:hover),
+  .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
+    color: $primary-darker; 
+  }
+
+  .mat-tree-node:hover, .mat-nested-tree-node-parent:hover, .mat-select-panel .mat-option:hover, .mat-menu-panel .mat-menu-content .mat-menu-item:hover,
+    .mat-autocomplete-panel .mat-option.mat-active,
+    .mat-autocomplete-panel .mat-option.mat-selected.mat-active,
+    .mat-autocomplete-panel .mat-option:hover:not(.mat-option-disabled),
+    .mat-autocomplete-panel .mat-option:focus:not(.mat-option-disabled) {
     color: $primary-darker; 
     cursor: pointer;
     background: $hover-background-dark;
@@ -111,6 +133,12 @@
       }
     }
   }
+  .mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
+    color: $primary-darker;
+  }
+  .mat-select-panel {
+    background-color: mat.get-color-from-palette($background, dialog);
+  }  
   .mat-tree {
     background: mat.get-color-from-palette($background, dialog);
   }
@@ -217,6 +245,10 @@
     background-color: $tooltip-background;
     color: $background-color;
     font-size: 120%;
+  }
+
+  .mat-slide-toggle-bar, .mat-step-header .mat-step-icon:not(.mat-step-icon-selected) {
+    background-color: mat.get-color-from-palette($background, lightest-background);
   }
 
   .mat-slide-toggle.mat-disabled {

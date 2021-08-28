@@ -6,7 +6,11 @@ var options = {};
 exports.getInfo = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Getting Boltz Information..'});
   options = common.getBoltzServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Boltz Get Info Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
+  if (options.url === '') {
+    const errMsg = 'Boltz Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Get Info Error', error: errMsg },  'Boltz', errMsg);
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
+  }
   options.url = options.url + '/v1/info';
   request(options).then(function (body) {
     logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Boltz Information Received'});
@@ -14,25 +18,19 @@ exports.getInfo = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Boltz Get Info Error', error: err});
-    return res.status(500).json({
-      message: "Boltz Get Info Failed!",
-      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
-    });
+    const err = common.handleError(errRes,  'Boltz', 'Get Info Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
 exports.getServiceInfo = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Getting Service Information..'});
   options = common.getBoltzServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Boltz Get Service Info Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
+  if (options.url === '') {
+    const errMsg = 'Boltz Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Get Service Information Error', error: errMsg },  'Boltz', errMsg);
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
+  }
   options.url = options.url + '/v1/serviceinfo';
   request(options).then(function (body) {
     logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Service Information Received'});
@@ -40,25 +38,19 @@ exports.getServiceInfo = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Boltz Get Service Info Error', error: err});
-    return res.status(500).json({
-      message: "Boltz Get Service Info Failed!",
-      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
-    });
+    const err = common.handleError(errRes,  'Boltz', 'Get Service Information Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
 exports.listSwaps = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Getting List Swaps..'});
   options = common.getBoltzServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Boltz List Swaps Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
+  if (options.url === '') {
+    const errMsg = 'Boltz Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'List Swaps Error', error: errMsg },  'Boltz', errMsg);
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
+  }
   options.url = options.url + '/v1/listswaps';
   request(options).then(function (body) {
     logger.log({level: 'DEBUG', fileName: 'Boltz', msg: 'Boltz List Swaps Info', data: body});
@@ -68,25 +60,19 @@ exports.listSwaps = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Boltz List Swaps Error', error: err});
-    return res.status(500).json({
-      message: "Boltz List Swaps Failed!",
-      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
-    });
+    const err = common.handleError(errRes,  'Boltz', 'List Swaps Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
 exports.getSwapInfo = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Getting Swap..'});
   options = common.getBoltzServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Boltz Swap Info Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
+  if (options.url === '') {
+    const errMsg = 'Boltz Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Get Swap Information Error', error: errMsg },  'Boltz', errMsg);
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
+  }
   options.url = options.url + '/v1/swap/' + req.params.swapId;
   request(options).then(function (body) {
     logger.log({level: 'DEBUG', fileName: 'Boltz', msg: 'Boltz Swap Info', data: body});
@@ -94,162 +80,96 @@ exports.getSwapInfo = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Boltz Swap Info Error', error: err});
-    return res.status(500).json({
-      message: "Boltz Swap Info Failed!",
-      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
-    });
+    const err = common.handleError(errRes,  'Boltz', 'Swap Info Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
 exports.createSwap = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Creating Swap..'});
   options = common.getBoltzServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Create Swap Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
+  if (options.url === '') {
+    const errMsg = 'Boltz Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Create Swap Error', error: errMsg },  'Boltz', errMsg);
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
+  }
   options.url = options.url + '/v1/createswap';
   options.body = { amount: req.body.amount };
   if (req.body.address !== '') { options.body.address = req.body.address; }
   logger.log({level: 'DEBUG', fileName: 'Boltz', msg: 'Create Swap Body', data: options.body});
   request.post(options).then(createSwapRes => {
     logger.log({level: 'DEBUG', fileName: 'Boltz', msg: 'Create Swap Response', data: createSwapRes});
-    if(!createSwapRes || createSwapRes.error) {
-      logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Create Swap Error', error: createSwapRes.error});
-      res.status(500).json({
-        message: 'Create Swap Failed!',
-        error: (!createSwapRes) ? 'Error From Server!' : createSwapRes.error.message
-      });
-    } else {
-      logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Swap Created'});
-      res.status(201).json(createSwapRes);
-    }
+    logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Swap Created'});
+    res.status(201).json(createSwapRes);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Create Swap Error', error: err});
-    return res.status(500).json({
-      message: "Create Swap Failed!",
-      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
-    });
+    const err = common.handleError(errRes,  'Boltz', 'Create Swap Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
 exports.createReverseSwap = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Creating Reverse Swap..'});
   options = common.getBoltzServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Create Reverse Swap Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
+  if (options.url === '') {
+    const errMsg = 'Boltz Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Create Reverse Swap Error', error: errMsg },  'Boltz', errMsg);
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
+  }
   options.url = options.url + '/v1/createreverseswap';
   options.body = { amount: req.body.amount };
   if (req.body.address !== '') { options.body.address = req.body.address; }
   logger.log({level: 'DEBUG', fileName: 'Boltz', msg: 'Create Reverse Swap Body', data: options.body});
   request.post(options).then(createReverseSwapRes => {
     logger.log({level: 'DEBUG', fileName: 'Boltz', msg: 'Create Reverse Swap Response', data: createReverseSwapRes});
-    if(!createReverseSwapRes || createReverseSwapRes.error) {
-      logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Create Reverse Swap Error', error: createReverseSwapRes.error});
-      res.status(500).json({
-        message: 'Create Reverse Swap Failed!',
-        error: (!createReverseSwapRes) ? 'Error From Server!' : createReverseSwapRes.error.message
-      });
-    } else {
-      logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Reverse Swap Created'});
-      res.status(201).json(createReverseSwapRes);
-    }
+    logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Reverse Swap Created'});
+    res.status(201).json(createReverseSwapRes);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Create Reverse Swap Error', error: err});
-    return res.status(500).json({
-      message: "Create Reverse Swap Failed!",
-      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
-    });
+    const err = common.handleError(errRes,  'Boltz', 'Create Reverse Swap Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
 exports.createChannel = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Creating Boltz Channel..'});
   options = common.getBoltzServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Create Channel Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
+  if (options.url === '') {
+    const errMsg = 'Boltz Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Create Channel Error', error: errMsg },  'Boltz', errMsg);
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
+  }
   options.url = options.url + '/v1/createchannel';
   options.body = { amount: req.body.amount };
   if (req.body.address !== '') { options.body.address = req.body.address; }
   logger.log({level: 'DEBUG', fileName: 'Boltz', msg: 'Create Channel Body', data: options.body});
   request.post(options).then(createChannelRes => {
     logger.log({level: 'DEBUG', fileName: 'Boltz', msg: 'Create Channel Response', data: createChannelRes});
-    if(!createChannelRes || createChannelRes.error) {
-      logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Create Channel Error', error: createChannelRes.error});
-      res.status(500).json({
-        message: 'Create Channel Failed!',
-        error: (!createChannelRes) ? 'Error From Server!' : createChannelRes.error.message
-      });
-    } else {
-      logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Boltz Channel Created'});
-      res.status(201).json(createChannelRes);
-    }
+    logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Boltz Channel Created'});
+    res.status(201).json(createChannelRes);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Create Channel Error', error: err});
-    return res.status(500).json({
-      message: "Create Channel Failed!",
-      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
-    });
+    const err = common.handleError(errRes,  'Boltz', 'Create Channel Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
 exports.deposit = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Boltz Deposit Start..'});
   options = common.getBoltzServerOptions();
-  if(options.url === '') { return res.status(500).json({message: "Deposit Failed!",error: { message: 'Boltz Server URL is missing in the configuration.'}}); }
+  if (options.url === '') {
+    const errMsg = 'Boltz Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Deposit Error', error: errMsg },  'Boltz', errMsg);
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
+  }
   options.url = options.url + '/v1/deposit';
   request.post(options).then(depositRes => {
     logger.log({level: 'DEBUG', fileName: 'Boltz', msg: 'Deposit Response', data: depositRes});
-    if(!depositRes || depositRes.error) {
-      logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Deposit Error', error: depositRes.error});
-      res.status(500).json({
-        message: 'Deposit Failed!',
-        error: (!depositRes) ? 'Error From Server!' : depositRes.error.message
-      });
-    } else {
-      logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Boltz Deposit Finished'});
-      res.status(201).json(depositRes);
-    }
+    logger.log({level: 'INFO', fileName: 'Boltz', msg: 'Boltz Deposit Finished'});
+    res.status(201).json(depositRes);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Deposit Error', error: err});
-    return res.status(500).json({
-      message: "Deposit Failed!",
-      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
-    });
+    const err = common.handleError(errRes,  'Boltz', 'Deposit Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

@@ -23,6 +23,8 @@ import { CLSignComponent } from './sign-verify-message/sign/sign.component';
 import { CLVerifyComponent } from './sign-verify-message/verify/verify.component';
 import { CLForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
 import { CLFailedTransactionsComponent } from './routing/failed-transactions/failed-transactions.component';
+import { CLRoutingPeersComponent } from './routing/routing-peers/routing-peers.component';
+
 import { CLReportsComponent } from './reports/reports.component';
 import { CLFeeReportComponent } from './reports/fee/fee-report.component';
 import { CLTransactionsReportComponent } from './reports/transactions/transactions-report.component';
@@ -37,8 +39,8 @@ export const ClRoutes: Routes = [
       { path: 'onchain', component: CLOnChainComponent, canActivate: [CLUnlockedGuard], children: [
         { path: '', pathMatch: 'full', redirectTo: 'receive/utxos' },
         { path: 'receive/:selTab', component: CLOnChainReceiveComponent, canActivate: [CLUnlockedGuard] },
-        { path: 'send/:selTab', component: CLOnChainSendComponent, data : {sweepAll : false}, canActivate: [CLUnlockedGuard] },
-        { path: 'sweep/:selTab', component: CLOnChainSendComponent, data : {sweepAll : true}, canActivate: [CLUnlockedGuard] }
+        { path: 'send/:selTab', component: CLOnChainSendComponent, data: { sweepAll: false }, canActivate: [CLUnlockedGuard] },
+        { path: 'sweep/:selTab', component: CLOnChainSendComponent, data: { sweepAll: true }, canActivate: [CLUnlockedGuard] }
       ] },
       { path: 'connections', component: CLConnectionsComponent, canActivate: [CLUnlockedGuard], children: [
         { path: '', pathMatch: 'full', redirectTo: 'channels' },
@@ -47,7 +49,7 @@ export const ClRoutes: Routes = [
           { path: 'open', component: CLChannelOpenTableComponent, canActivate: [CLUnlockedGuard] },
           { path: 'pending', component: CLChannelPendingTableComponent, canActivate: [CLUnlockedGuard] }
         ] },
-        { path: 'peers', component: CLPeersComponent, data : {sweepAll : false}, canActivate: [CLUnlockedGuard] }
+        { path: 'peers', component: CLPeersComponent, data: { sweepAll: false }, canActivate: [CLUnlockedGuard] }
       ] },
       { path: 'transactions', component: CLTransactionsComponent, canActivate: [CLUnlockedGuard], children: [
         { path: '', pathMatch: 'full', redirectTo: 'payments' },
@@ -63,7 +65,8 @@ export const ClRoutes: Routes = [
       { path: 'routing', component: CLRoutingComponent, canActivate: [CLUnlockedGuard], children: [
         { path: '', pathMatch: 'full', redirectTo: 'forwardinghistory' },
         { path: 'forwardinghistory', component: CLForwardingHistoryComponent, canActivate: [CLUnlockedGuard] },
-        { path: 'failedtransactions', component: CLFailedTransactionsComponent, canActivate: [CLUnlockedGuard] }
+        { path: 'failedtransactions', component: CLFailedTransactionsComponent, canActivate: [CLUnlockedGuard] },
+        { path: 'routingpeers', component: CLRoutingPeersComponent, canActivate: [CLUnlockedGuard] }
       ] },
       { path: 'reports', component: CLReportsComponent, canActivate: [CLUnlockedGuard], children: [
         { path: '', pathMatch: 'full', redirectTo: 'routingfees' },
@@ -76,8 +79,7 @@ export const ClRoutes: Routes = [
       { path: 'network', redirectTo: 'rates' },
       { path: 'wallet', redirectTo: 'home' },
       { path: 'backup', redirectTo: 'home' }
-    ]
-  }
+    ] }
 ];
 
 export const CLRouting: ModuleWithProviders<RouterModule> = RouterModule.forChild(ClRoutes);

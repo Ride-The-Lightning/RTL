@@ -1,0 +1,6 @@
+.mat-column-channelId, .mat-column-alias {
+  flex: 1 1 10%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

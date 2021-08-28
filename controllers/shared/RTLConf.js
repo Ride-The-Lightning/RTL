@@ -16,21 +16,58 @@ exports.updateSelectedNode = (req, res, next) => {
   res.status(200).json({status: 'Selected Node Updated To: ' + JSON.stringify(responseVal) + '!'});
 };
 
-exports.getRTLConfig = (req, res, next) => {
-  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Getting RTL Configuration..'});
+exports.getRTLConfigInitial = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Getting Initial RTL Configuration..'});
   var confFile = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';
-  logger.log({level: 'DEBUG', fileName: 'RTLConf', msg: 'Getting Node Config'});
-  fs.readFile(confFile, 'utf8', function(err, data) {
-    if (err) {
-      if (err.code === 'ENOENT') {
+  fs.readFile(confFile, 'utf8', function(errRes, data) {
+    if (errRes) {
+      if (errRes.code === 'ENOENT') {
         logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Node config does not exist!', error: {error: 'Node config does not exist.'}});
         res.status(200).json({ defaultNodeIndex: 0, selectedNodeIndex: 0, sso: {}, nodes: [] });
       } else {
-        logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Getting Node Config Failed!', error: err});
-        res.status(500).json({
-          message: "Reading Node Config Failed!",
-          error: err
+        const errMsg = 'Get Node Config Error';
+        const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes },  'RTLConf', errMsg);
+        return res.status(err.statusCode).json({message: err.error, error: err.error});
+      }
+    } else {
+      const nodeConfData = JSON.parse(data);
+      const sso = { rtlSSO: common.rtl_sso, logoutRedirectLink: common.logout_redirect_link };
+      const enable2FA = !common.rtl_secret2fa ? false : true;
+      var nodesArr = [];
+      if (common.nodes && common.nodes.length > 0) {
+        common.nodes.forEach((node, i) => {
+          const settings = {};
+          settings.userPersona = node.user_persona ? node.user_persona : 'MERCHANT';
+          settings.themeMode = (node.theme_mode) ? node.theme_mode : 'DAY';
+          settings.themeColor = (node.theme_color) ? node.theme_color : 'PURPLE';
+          settings.fiatConversion = (node.fiat_conversion) ? !!node.fiat_conversion : false;
+          settings.currencyUnit = node.currency_unit;
+          nodesArr.push({
+            index: node.index,
+            lnNode: node.ln_node,
+            lnImplementation: node.ln_implementation,
+            settings: settings,
+            authentication: {}})
         });
+      }
+      logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Initial RTL Configuration Received'});
+      res.status(200).json({ defaultNodeIndex: nodeConfData.defaultNodeIndex, selectedNodeIndex: common.selectedNode.index, sso: sso, enable2FA: enable2FA, nodes: nodesArr });
+    }
+  });
+};
+
+exports.getRTLConfig = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Getting RTL Configuration..'});
+  var confFile = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';
+  fs.readFile(confFile, 'utf8', function(errRes, data) {
+    if (errRes) {
+      if (errRes.code === 'ENOENT') {
+        logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Node config does not exist!', error: {error: 'Node config does not exist.'}});
+        res.status(200).json({ defaultNodeIndex: 0, selectedNodeIndex: 0, sso: {}, nodes: [] });
+      } else {
+        const errMsg = 'Get Node Config Error';
+        const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes },  'RTLConf', errMsg);
+        return res.status(err.statusCode).json({message: err.error, error: err.error});
       }
     } else {
       const nodeConfData = JSON.parse(data);
@@ -49,7 +86,7 @@ exports.getRTLConfig = (req, res, next) => {
           settings.themeColor = (node.theme_color) ? node.theme_color : 'PURPLE';
           settings.fiatConversion = (node.fiat_conversion) ? !!node.fiat_conversion : false;
           settings.bitcoindConfigPath = node.bitcoind_config_path;
-          settings.enableLogging = node.enable_logging ? !!node.enable_logging : false;
+          settings.logLevel = node.log_level ? node.log_level : 'ERROR';
           settings.lnServerUrl = node.ln_server_url;
           settings.swapServerUrl = node.swap_server_url;
           settings.boltzServerUrl = node.boltz_server_url;
@@ -74,12 +111,12 @@ exports.updateUISettings = (req, res, next) => {
   var RTLConfFile = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';
   var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
   config.nodes.find(node => {
-    if(node.index == common.selectedNode.index) {
+    if (node.index == common.selectedNode.index) {
       node.Settings.userPersona = req.body.updatedSettings.userPersona;
       node.Settings.themeMode = req.body.updatedSettings.themeMode;
       node.Settings.themeColor = req.body.updatedSettings.themeColor;
       node.Settings.fiatConversion = req.body.updatedSettings.fiatConversion;
-      if(req.body.updatedSettings.fiatConversion) {
+      if (req.body.updatedSettings.fiatConversion) {
         node.Settings.currencyUnit = req.body.updatedSettings.currencyUnit ? req.body.updatedSettings.currencyUnit : 'USD';
       } else {
         delete node.Settings.currencyUnit;
@@ -89,7 +126,7 @@ exports.updateUISettings = (req, res, next) => {
       selectedNode.theme_mode = req.body.updatedSettings.themeMode;
       selectedNode.theme_color = req.body.updatedSettings.themeColor;
       selectedNode.fiat_conversion = req.body.updatedSettings.fiatConversion;
-      if(req.body.updatedSettings.fiatConversion) {
+      if (req.body.updatedSettings.fiatConversion) {
         selectedNode.currency_unit = req.body.updatedSettings.currencyUnit ? req.body.updatedSettings.currencyUnit : 'USD';
       } else {
         delete selectedNode.currency_unit;
@@ -103,12 +140,10 @@ exports.updateUISettings = (req, res, next) => {
     logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'UI Settings Updated'});
     res.status(201).json({message: 'Node Settings Updated Successfully'});
   }
-  catch (err) {
-    logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Updating Node Settings Failed!', error: {error: 'Updating node settings failed.'}});
-    res.status(500).json({
-      message: "Updating Node Settings Failed!",
-      error: 'Updating Node Settings Failed!'
-    });
+  catch (errRes) {
+    const errMsg = 'Update Node Settings Error';
+    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes },  'RTLConf', errMsg);
+    return res.status(err.statusCode).json({message: err.error, error: err.error});
   }
 };
 
@@ -125,12 +160,10 @@ exports.update2FASettings = (req, res, next) => {
     logger.log({level: 'INFO', fileName: 'RTLConf', msg: '2FA Updated'});
     res.status(201).json({message: message});
   }
-  catch (err) {
-    logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Updating 2FA Settings Failed!', error: {error: 'Updating 2FA settings failed.'}});
-    res.status(500).json({
-      message: "Updating 2FA Settings Failed!",
-      error: 'Updating 2FA Settings Failed!'
-    });
+  catch (errRes) {
+    const errMsg = 'Update 2FA Settings Error';
+    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes },  'RTLConf', errMsg);
+    return res.status(err.statusCode).json({message: err.error, error: err.error});
   }
 };
 
@@ -145,12 +178,10 @@ exports.updateDefaultNode = (req, res, next) => {
     logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Default Node Updated'});
     res.status(201).json({message: 'Default Node Updated Successfully'});
   }
-  catch (err) {
-    logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Updating Default Node Failed!', error: {error: 'Updating dafault node failed.'}});
-    res.status(500).json({
-      message: "Updating Default Node Failed!",
-      error: 'Updating Default Node Failed!'
-    });
+  catch (errRes) {
+    const errMsg = 'Update Default Node Error';
+    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes },  'RTLConf', errMsg);
+    return res.status(err.statusCode).json({message: err.error, error: err.error});
   }
 };
 
@@ -174,13 +205,11 @@ exports.getConfig = (req, res, next) => {
       break;
   }
   logger.log({level: 'DEBUG', fileName: 'RTLConf', msg: '[Node Type, File Path]', data: [req.params.nodeType, confFile]});
-  fs.readFile(confFile, 'utf8', function(err, data) {
-    if (err) {
-      logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Reading Conf Failed!', error: err});
-      res.status(500).json({
-        message: "Reading Config File Failed!",
-        error: err
-      });
+  fs.readFile(confFile, 'utf8', function(errRes, data) {
+    if (errRes) {
+      const errMsg = 'Reading Config Error';
+      const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes },  'RTLConf', errMsg);
+      return res.status(err.statusCode).json({message: err.error, error: err.error});
     } else {
       let jsonConfig = {};
       if (fileFormat === 'JSON') {
@@ -205,16 +234,12 @@ exports.getFile = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Getting File..'});
   let file = req.query.path ? req.query.path : (common.selectedNode.channel_backup_path + common.path_separator + 'channel-' + req.query.channel.replace(':', '-') + '.bak');
   logger.log({level: 'DEBUG', fileName: 'RTLConf', msg: '[Channel Point, File Path]', data: [req.query.channel, file]});
-  fs.readFile(file, 'utf8', function(err, data) {
-    if (err) {
-      logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Reading File Failed!', error: err});
-      if (err.code && err.code === 'ENOENT') {
-        err.code = 'Backup File Not Found!';
-      }
-      res.status(500).json({
-        message: "Reading File Failed!",
-        error: err
-      });
+  fs.readFile(file, 'utf8', function(errRes, data) {
+    if (errRes) {
+      if (errRes.code && errRes.code === 'ENOENT') { errRes.code = 'File Not Found!'; }
+      const errMsg = 'Reading File Error';
+      const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes },  'RTLConf', errMsg);
+      return res.status(err.statusCode).json({message: err.error, error: err.error});
     } else {
       logger.log({level: 'DEBUG', fileName: 'RTLConf', msg: 'File Data', data: data});
       logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'File Data Received'});
@@ -227,22 +252,13 @@ exports.getCurrencyRates = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Getting Currency Rates..'});
   options.url = 'https://blockchain.info/ticker';
   request(options).then((body) => {
-    if(!body || body.error) {
-      res.status(500).json({
-        message: "Fetching Rates Failed!",
-        error: (!body) ? 'Error From External Server!' : body.error
-      });
-    } else {
-      logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Currency Rates Received'});
-      res.status(200).json(JSON.parse(body));
-    }
+    logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Currency Rates Received'});
+    res.status(200).json(JSON.parse(body));
   })
-  .catch(function (err) {
-    logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Fetching Rates Failed!', error: err});
-    return res.status(500).json({
-      message: "Fetching Rates Failed!",
-      error: err.error
-    });
+  .catch(errRes => {
+    const errMsg = 'Get Rates Error';
+    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes },  'RTLConf', errMsg);
+    return res.status(err.statusCode).json({message: err.error, error: err.error});
   });
 };
 
@@ -258,12 +274,10 @@ exports.updateSSO = (req, res, next) => {
     logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'SSO Setting Updated'});
     res.status(201).json({message: 'SSO Updated Successfully'});
   }
-  catch (err) {
-    logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Updating SSO Failed!', error: {error: 'Updating SSO failed.'}});
-    res.status(500).json({
-      message: "Updating SSO Failed!",
-      error: 'Updating SSO Failed!'
-    });
+  catch (errRes) {
+    const errMsg = 'Update SSO Error';
+    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes },  'RTLConf', errMsg);
+    return res.status(err.statusCode).json({message: err.error, error: err.error});
   }
 };
 
@@ -273,7 +287,7 @@ exports.updateServiceSettings = (req, res, next) => {
   var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
   const selectedNode = common.findNode(common.selectedNode.index);
   config.nodes.find(node => {
-    if(node.index == common.selectedNode.index) {
+    if (node.index == common.selectedNode.index) {
       switch (req.body.service) {
         case 'LOOP':
           if (req.body.settings.enable) {
@@ -315,12 +329,10 @@ exports.updateServiceSettings = (req, res, next) => {
     logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Service Settings Updated'});
     res.status(201).json({message: 'Service Settings Updated Successfully'});
   }
-  catch (err) {
-    logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Updating Service Settings Failed!', error: {error: 'Updating service settings failed.'}});
-    res.status(500).json({
-      message: "Updating Service Settings Failed!",
-      error: 'Updating Service Settings Failed!'
-    });
+  catch (errRes) {
+    const errMsg = 'Update Service Settings Error';
+    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes },  'RTLConf', errMsg);
+    return res.status(err.statusCode).json({message: err.error, error: err.error});
   }
 };
 

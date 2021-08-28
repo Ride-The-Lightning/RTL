@@ -14,7 +14,6 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import { LNDEffects } from '../../store/lnd.effects';
 import * as LNDActions from '../../store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
@@ -26,8 +25,9 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]
 })
 export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDestroy {
+
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public selNode: SelNodeChild = {};
@@ -48,37 +48,36 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
 
   ngOnInit() {
     this.store.dispatch(new LNDActions.RestoreChannelsList());
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
-      this.selNode = rtlStore.nodeSettings;
-      this.logger.info(rtlStore);
-    });    
-    this.lndEffects.setRestoreChannelList
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((resRCList) => {
-      this.allRestoreExists = resRCList.all_restore_exists;
-      this.channelsData = resRCList.files;
-      if (this.channelsData.length > 0) {
-        this.loadRestoreTable(this.channelsData);
-      }
-      if (this.flgLoading[0] !== 'error' || (resRCList && resRCList.files)) {
-        this.flgLoading[0] = false;
-      }
-      this.logger.info(resRCList);
-    });
+    this.store.select('lnd').
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.selNode = rtlStore.nodeSettings;
+        this.logger.info(rtlStore);
+      });
+    this.lndEffects.setRestoreChannelList.
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((resRCList) => {
+        this.allRestoreExists = resRCList.all_restore_exists;
+        this.channelsData = resRCList.files;
+        if (this.channelsData.length > 0) {
+          this.loadRestoreTable(this.channelsData);
+        }
+        if (this.flgLoading[0] !== 'error' || (resRCList && resRCList.files)) {
+          this.flgLoading[0] = false;
+        }
+        this.logger.info(resRCList);
+      });
   }
 
   ngAfterViewInit() {
-    if (this.channelsData.length > 0) {
+    if (this.channelsData && this.channelsData.length > 0) {
       this.loadRestoreTable(this.channelsData);
     }
   }
 
   onRestoreChannels(selChannel: Channel) {
-    this.store.dispatch(new RTLActions.OpenSpinner('Restoring Channels...'));
-    this.store.dispatch(new LNDActions.RestoreChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL'}));
-  }  
+    this.store.dispatch(new LNDActions.RestoreChannels({ channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL' }));
+  }
 
   applyFilter(selFilter: any) {
     this.channels.filter = selFilter.value.trim().toLowerCase();
@@ -87,13 +86,13 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
   loadRestoreTable(channels: any[]) {
     this.channels = new MatTableDataSource([...channels]);
     this.channels.sort = this.sort;
-    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.channels.filterPredicate = (channel: Channel, fltr: string) => JSON.stringify(channel).toLowerCase().includes(fltr);
     this.channels.paginator = this.paginator;
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

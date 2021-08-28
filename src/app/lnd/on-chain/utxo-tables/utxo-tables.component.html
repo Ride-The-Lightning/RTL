@@ -4,19 +4,19 @@
       <ng-template mat-tab-label>
         <span matBadge="{{numUtxos}}" matBadgeOverlap="false" class="tab-badge">UTXOs</span>
       </ng-template>
-      <rtl-on-chain-utxos [utxos]="utxos" [errorLoading]="flgLoading[0]" [numDustUTXOs]="numDustUtxos" [isDustUTXO]="false" fxLayout="row" fxFlex="100"></rtl-on-chain-utxos>
+      <rtl-on-chain-utxos [isDustUTXO]="false" fxLayout="row" fxFlex="100"></rtl-on-chain-utxos>
     </mat-tab>
     <mat-tab>
       <ng-template mat-tab-label>
         <span matBadge="{{numTransactions}}" matBadgeOverlap="false" class="tab-badge">Transactions</span>
       </ng-template>
-      <rtl-on-chain-transaction-history [transactions]="transactions" [errorLoading]="flgLoading[1]" fxLayout="row" fxFlex="100"></rtl-on-chain-transaction-history>
+      <rtl-on-chain-transaction-history fxLayout="row" fxFlex="100"></rtl-on-chain-transaction-history>
     </mat-tab>
     <mat-tab>
       <ng-template mat-tab-label>
         <span matBadge="{{numDustUtxos}}" matBadgeOverlap="false" class="tab-badge">Dust UTXOs</span>
       </ng-template>
-      <rtl-on-chain-utxos [utxos]="dustUtxos" [errorLoading]="flgLoading[0]" [numDustUTXOs]="numDustUtxos" [isDustUTXO]="true" fxLayout="row" fxFlex="100"></rtl-on-chain-utxos>
+      <rtl-on-chain-utxos [isDustUTXO]="true" fxLayout="row" fxFlex="100"></rtl-on-chain-utxos>
     </mat-tab>
   </mat-tab-group>
 </div>

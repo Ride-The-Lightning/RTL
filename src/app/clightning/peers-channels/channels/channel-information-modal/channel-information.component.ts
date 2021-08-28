@@ -15,6 +15,7 @@ import { ScreenSizeEnum } from '../../../../shared/services/consts-enums-functio
   styleUrls: ['./channel-information.component.scss']
 })
 export class CLChannelInformationComponent implements OnInit {
+
   public faReceipt = faReceipt;
   public showAdvanced = false;
   public showCopy = true;
@@ -37,10 +38,11 @@ export class CLChannelInformationComponent implements OnInit {
 
   onShowAdvanced() {
     this.showAdvanced = !this.showAdvanced;
-  }  
+  }
 
   onCopyChanID(payload: string) {
     this.snackBar.open('Short channel ID ' + payload + ' copied.');
     this.logger.info('Copied Text: ' + payload);
   }
+
 }

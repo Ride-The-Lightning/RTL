@@ -1,12 +1,11 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfo, Channel, ChannelStats, Fees, OnChainBalance, LightningBalance, Peer, ChannelsStatus, Payments, Transaction, Invoice } from '../../shared/models/eclModels';
-import { ErrorPayload } from '../../shared/models/errorPayload';
-import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
+import { ApiCallsListECL } from '../../shared/models/apiCallsPayload';
+import { APICallStatusEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import * as ECLActions from './ecl.actions';
 
 export interface ECLState {
-  initialAPIResponseStatus: String[];
-  effectErrors: ErrorPayload[];
+  apisCallStatus: ApiCallsListECL;
   nodeSettings: SelNodeChild;
   information: GetInfo;
   fees: Fees;
@@ -24,8 +23,16 @@ export interface ECLState {
 }
 
 export const initECLState: ECLState = {
-  initialAPIResponseStatus: ['INCOMPLETE'], //[0] for All Data Status
-  effectErrors: [],
+  apisCallStatus: {
+    FetchInfo: { status: APICallStatusEnum.UN_INITIATED },
+    FetchFees: { status: APICallStatusEnum.UN_INITIATED },
+    FetchChannels: { status: APICallStatusEnum.UN_INITIATED },
+    FetchOnchainBalance: { status: APICallStatusEnum.UN_INITIATED },
+    FetchPeers: { status: APICallStatusEnum.UN_INITIATED },
+    FetchPayments: { status: APICallStatusEnum.UN_INITIATED },
+    FetchInvoices: { status: APICallStatusEnum.UN_INITIATED },
+    FetchTransactions: { status: APICallStatusEnum.UN_INITIATED }
+  },
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
   information: {},
   fees: {},
@@ -35,43 +42,37 @@ export const initECLState: ECLState = {
   channelsStatus: {},
   channelStats: [],
   onchainBalance: { total: 0, confirmed: 0, unconfirmed: 0 },
-  lightningBalance:  { localBalance: -1, remoteBalance: -1 },
+  lightningBalance: { localBalance: -1, remoteBalance: -1 },
   peers: [],
   payments: {},
   transactions: [],
   invoices: []
-}
+};
 
 export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) {
-  let newAPIStatus = state.initialAPIResponseStatus;
-
   switch (action.type) {
-    case ECLActions.CLEAR_EFFECT_ERROR_ECL:
-      const clearedEffectErrors = [...state.effectErrors];
-      const removeEffectIdx = state.effectErrors.findIndex(err => {
-        return err.action === action.payload;
-      });
-      if (removeEffectIdx > -1) {
-        clearedEffectErrors.splice(removeEffectIdx, 1);
-      }
-      return {
-        ...state,
-        effectErrors: clearedEffectErrors
+    case ECLActions.UPDATE_API_CALL_STATUS_ECL:
+      const updatedApisCallStatus = state.apisCallStatus;
+      updatedApisCallStatus[action.payload.action] = {
+        status: action.payload.status,
+        statusCode: action.payload.statusCode,
+        message: action.payload.message,
+        URL: action.payload.URL,
+        filePath: action.payload.filePath
       };
-    case ECLActions.EFFECT_ERROR_ECL:
       return {
         ...state,
-        effectErrors: [...state.effectErrors, action.payload]
+        apisCallStatus: updatedApisCallStatus
       };
     case ECLActions.SET_CHILD_NODE_SETTINGS_ECL:
       return {
         ...state,
         nodeSettings: action.payload
-      }
+      };
     case ECLActions.RESET_ECL_STORE:
       return {
         ...initECLState,
-        nodeSettings: action.payload,
+        nodeSettings: action.payload
       };
     case ECLActions.SET_INFO_ECL:
       return {
@@ -79,44 +80,38 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
         information: action.payload
       };
     case ECLActions.SET_FEES_ECL:
-      newAPIStatus = [...state.initialAPIResponseStatus, 'FEES'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         fees: action.payload
       };
     case ECLActions.SET_ACTIVE_CHANNELS_ECL:
       return {
         ...state,
-        activeChannels: action.payload,
+        activeChannels: action.payload
       };
     case ECLActions.SET_PENDING_CHANNELS_ECL:
       return {
         ...state,
-        pendingChannels: action.payload,
+        pendingChannels: action.payload
       };
     case ECLActions.SET_INACTIVE_CHANNELS_ECL:
       return {
         ...state,
-        inactiveChannels: action.payload,
+        inactiveChannels: action.payload
       };
     case ECLActions.SET_CHANNELS_STATUS_ECL:
-      newAPIStatus = [...state.initialAPIResponseStatus, 'CHANNELS'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
-        channelsStatus: action.payload,
+        channelsStatus: action.payload
       };
     case ECLActions.SET_CHANNEL_STATS_ECL:
       return {
         ...state,
-        channelStats: action.payload,
+        channelStats: action.payload
       };
     case ECLActions.SET_ONCHAIN_BALANCE_ECL:
-      newAPIStatus = [...state.initialAPIResponseStatus, 'ONCHAINBALANCE'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         onchainBalance: action.payload
       };
     case ECLActions.SET_LIGHTNING_BALANCE_ECL:
@@ -125,17 +120,13 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
         lightningBalance: action.payload
       };
     case ECLActions.SET_PEERS_ECL:
-      newAPIStatus = [...state.initialAPIResponseStatus, 'PEERS'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         peers: action.payload
       };
     case ECLActions.REMOVE_PEER_ECL:
       const modifiedPeers = [...state.peers];
-      const removePeerIdx = state.peers.findIndex(peer => {
-        return peer.nodeId === action.payload.nodeId;
-      });
+      const removePeerIdx = state.peers.findIndex((peer) => peer.nodeId === action.payload.nodeId);
       if (removePeerIdx > -1) {
         modifiedPeers.splice(removePeerIdx, 1);
       }
@@ -145,9 +136,7 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
       };
     case ECLActions.REMOVE_CHANNEL_ECL:
       const modifiedChannels = [...state.activeChannels];
-      const removeChannelIdx = state.activeChannels.findIndex(channel => {
-        return channel.channelId === action.payload.channelId;
-      });
+      const removeChannelIdx = state.activeChannels.findIndex((channel) => channel.channelId === action.payload.channelId);
       if (removeChannelIdx > -1) {
         modifiedChannels.splice(removeChannelIdx, 1);
       }
@@ -158,42 +147,44 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
     case ECLActions.SET_PAYMENTS_ECL:
       if (action.payload && action.payload.relayed) {
         const storedChannels = [...state.activeChannels, ...state.pendingChannels, ...state.inactiveChannels];
-        action.payload.relayed.forEach(event => {
+        action.payload.relayed.forEach((rlEvent) => {
           if (storedChannels && storedChannels.length > 0) {
             for (let idx = 0; idx < storedChannels.length; idx++) {
-              if (storedChannels[idx].channelId.toString() === event.fromChannelId) {
-                event.fromChannelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : event.fromChannelId;
-                event.fromShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
-                if (event.toChannelAlias) { return; }
-              }
-              if (storedChannels[idx].channelId.toString() === event.toChannelId) {
-                event.toChannelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : event.toChannelId;
-                event.toShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
-                if (event.fromChannelAlias) { return; }
-              }
-              if (idx === storedChannels.length-1) {
-                if (!event.fromChannelAlias) {
-                  event.fromChannelAlias = event.fromChannelId.substring(0, 17) + '...';
-                  event.fromShortChannelId = '';
+              if (storedChannels[idx].channelId.toString() === rlEvent.fromChannelId) {
+                rlEvent.fromChannelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : rlEvent.fromChannelId;
+                rlEvent.fromShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
+                if (rlEvent.toChannelAlias) {
+                  return;
                 }
-                if (!event.toChannelAlias) {
-                  event.toChannelAlias = event.toChannelId.substring(0, 17) + '...';
-                  event.toShortChannelId = '';
+              }
+              if (storedChannels[idx].channelId.toString() === rlEvent.toChannelId) {
+                rlEvent.toChannelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : rlEvent.toChannelId;
+                rlEvent.toShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
+                if (rlEvent.fromChannelAlias) {
+                  return;
+                }
+              }
+              if (idx === storedChannels.length - 1) {
+                if (!rlEvent.fromChannelAlias) {
+                  rlEvent.fromChannelAlias = rlEvent.fromChannelId.substring(0, 17) + '...';
+                  rlEvent.fromShortChannelId = '';
+                }
+                if (!rlEvent.toChannelAlias) {
+                  rlEvent.toChannelAlias = rlEvent.toChannelId.substring(0, 17) + '...';
+                  rlEvent.toShortChannelId = '';
                 }
               }
             }
           } else {
-            event.fromChannelAlias = event.fromChannelId.substring(0, 17) + '...';
-            event.fromShortChannelId = '';
-            event.toChannelAlias = event.toChannelId.substring(0, 17) + '...';
-            event.toShortChannelId = '';
+            rlEvent.fromChannelAlias = rlEvent.fromChannelId.substring(0, 17) + '...';
+            rlEvent.fromShortChannelId = '';
+            rlEvent.toChannelAlias = rlEvent.toChannelId.substring(0, 17) + '...';
+            rlEvent.toShortChannelId = '';
           }
         });
       }
-      newAPIStatus = [...state.initialAPIResponseStatus, 'PAYMENTS'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         payments: action.payload
       };
     case ECLActions.SET_TRANSACTIONS_ECL:
@@ -216,5 +207,4 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
     default:
       return state;
   }
-
 }

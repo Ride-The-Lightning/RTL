@@ -1,0 +1,53 @@
+<div fxLayout="row">
+    <div fxFlex="100">
+      <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
+        <div fxFlex="95" fxLayoutAlign="start start">
+          <span class="page-title">Bump Fee</span>
+        </div>
+        <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+      </mat-card-header>    
+      <mat-card-content class="padding-gap-x-large">
+        <form fxLayout="column">
+          <div fxLayout="column" class="bordered-box mb-1 p-2">
+            <p fxLayoutAlign="start center" class="pb-1 word-break">Bump fee for transaction id: {{bumpFeeChannel?.funding_txid}}
+              <fa-icon class="ml-1" [icon]="faCopy" matSuffix rtlClipboard [payload]="bumpFeeChannel?.funding_txid" (copied)="onCopyID($event)" matTooltip="Copy transaction ID"></fa-icon>
+            </p>
+            <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+              <div fxFlex="100" class="alert alert-info">
+                <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
+                <span fxLayout="column" fxFlex="100">Bumping fee on pending open channels is an advanced feature, attempt it only if you are familiar with the functionality of Bitcoin transactions.
+                  <div>Before attempting fee bump ensure the following:</div>
+                  <div class="pl-1">1: Use a Bitcoin block explorer to ensure that channel opening transaction is not confirmed.</div>
+                  <div class="pl-1">2: The channel opening transaction must have a sizable change output, which can be spent further. The fee cannot be bumped without the change output.</div>
+                  <div class="pl-1">3: Find the index value of the change output via a block explorer.</div>
+                  <div class="pl-1">4: Enter the index value of the change output in the form below and the desired fee rate.</div>
+                  <div class="pl-1">5: Upon successful fee bump, use your block explorer to track the child transaction in the mempool, which should be linked with the change output transaction.</div>
+                </span>
+              </div>
+              <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
+                <mat-form-field fxFlex="49">
+                  <input autoFocus matInput [(ngModel)]="outputIndex" placeholder="Output Index" type="number" [step]="1" [min]="0" tabindex="1" required name="outputIdx" #outputIdx="ngModel">
+                  <mat-error *ngIf="outputIdx.errors?.required">Output Index required.</mat-error>
+                  <mat-error *ngIf="outputIdx.errors?.pendingChannelOutputIndex">Invalid index value.</mat-error>
+                </mat-form-field>
+                <mat-form-field fxFlex="49">
+                  <input matInput [(ngModel)]="fees" placeholder="Fees (Sats/vByte)"
+                    type="number" name="fees" [step]="1" [min]="0" required tabindex="4" #fee="ngModel">
+                  <mat-error *ngIf="!fees">Fees is required.</mat-error>
+                </mat-form-field>
+              </div>
+              <div fxFlex="100" class="alert alert-danger mt-1" *ngIf="bumpFeeError !== ''">
+                <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+                <span>{{bumpFeeError}}</span>
+              </div>
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="end center">
+            <button mat-stroked-button color="primary" type="reset" class="mr-1" (click)="resetData()" tabindex="5" default>Clear</button>
+            <button mat-flat-button color="primary" type="submit" tabindex="6" (click)="onBumpFee()">{{bumpFeeError !== '' ? 'Retry Bump Fee' : 'Bump Fee'}}</button>
+          </div>
+        </form>
+      </mat-card-content>
+    </div>
+  </div>
+  

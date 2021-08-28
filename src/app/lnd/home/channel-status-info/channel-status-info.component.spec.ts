@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChannelStatusInfoComponent } from './channel-status-info.component';
 
@@ -6,11 +6,11 @@ describe('ChannelStatusInfoComponent', () => {
   let component: ChannelStatusInfoComponent;
   let fixture: ComponentFixture<ChannelStatusInfoComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelStatusInfoComponent ]
-    })
-    .compileComponents();
+      declarations: [ChannelStatusInfoComponent]
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -21,5 +21,9 @@ describe('ChannelStatusInfoComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
   });
 });

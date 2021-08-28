@@ -8,6 +8,7 @@ import { SwapTypeEnum } from '../../../../services/consts-enums-functions';
   styleUrls: ['./swap-status.component.scss']
 })
 export class SwapStatusComponent {
+
   @Input() swapStatus: any = null;
   @Input() direction = SwapTypeEnum.SWAP_OUT;
   public swapTypeEnum = SwapTypeEnum;

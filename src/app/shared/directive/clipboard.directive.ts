@@ -4,10 +4,11 @@ import { Directive, Input, Output, EventEmitter, HostListener } from '@angular/c
   selector: '[rtlClipboard]'
 })
 export class ClipboardDirective {
+
   @Input() payload: string;
 
   @Output()
-  public copied: EventEmitter<string> = new EventEmitter<string>();
+  public readonly copied: EventEmitter<string> = new EventEmitter<string>();
 
   @HostListener('click', ['$event'])
   public onClick(event: MouseEvent): void {
@@ -25,4 +26,5 @@ export class ClipboardDirective {
     document.execCommand('copy');
     document.removeEventListener('copy', listener, false);
   }
+
 }

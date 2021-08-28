@@ -10,8 +10,8 @@
 
 .mat-column-alias {
   padding-left: 1rem;
-  flex: 0 0 20%;
-  width: 20%;
+  flex: 0 0 15%;
+  width: 15%;
   & .ellipsis-parent {
     display: flex;
   }
@@ -29,6 +29,11 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  @include for_screensize(tab-port) {
+    white-space: unset;
+    flex: 1 1 20%;
+    width: 20%;
+  }
   @include for_screensize(phone) {
     white-space: unset;
   }
@@ -39,7 +44,7 @@
   & .bordered-box.table-actions-select {
     flex: 0 0 100%;
     @include for_screensize(tab-port) {
-      flex: 0 0 60%;
+      flex: 0 0 90%;
     }
     @include for_screensize(phone) {
       flex: 0 0 80%;

@@ -11,11 +11,11 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { Channel } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
+import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
-import { RTLEffects } from '../../../store/rtl.effects';
 import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -26,11 +26,12 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./channel-backup-table.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Channels') }
-  ]  
+  ]
 })
 export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDestroy {
+
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
   public faInfoCircle = faInfoCircle;
   public faExclamationTriangle = faExclamationTriangle;
   public faArchive = faArchive;
@@ -41,44 +42,41 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
   public selectedChannel: Channel;
   public channelsData = [];
   public channels: any;
-  public flgLoading: Array<Boolean | 'error'> = [true]; // 0: channels
   public flgSticky = false;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private commonService: CommonService, private rtlEffects: RTLEffects) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
   ngOnInit() {
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
-      this.selNode = rtlStore.nodeSettings;
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'Fetchchannels') {
-          this.flgLoading[0] = 'error';
+    this.store.select('lnd').
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.errorMessage = '';
+        this.apisCallStatus = rtlStore.apisCallStatus;
+        if (rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apisCallStatus.FetchAllChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchAllChannels.message) : this.apisCallStatus.FetchAllChannels.message;
         }
+        this.selNode = rtlStore.nodeSettings;
+        this.channelsData = rtlStore.allChannels;
+        if (this.channelsData.length > 0) {
+          this.loadBackupTable(this.channelsData);
+        }
+        this.logger.info(rtlStore);
       });
-      this.channelsData = rtlStore.allChannels;
-      if (this.channelsData.length > 0) {
-        this.loadBackupTable(this.channelsData);
+    this.actions.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === LNDActions.SET_ALL_CHANNELS_LND || action.type === RTLActions.SHOW_FILE)).subscribe((action: LNDActions.SetAllChannels | RTLActions.ShowFile) => {
+      if (action.type === LNDActions.SET_ALL_CHANNELS_LND) {
+        this.selectedChannel = null;
       }
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = false;
-      }
-      this.logger.info(rtlStore);
-    });
-    this.actions$.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === LNDActions.SET_ALL_CHANNELS_LND || action.type === RTLActions.SHOW_FILE)
-    ).subscribe((action: LNDActions.SetAllChannels | RTLActions.ShowFile) => {
-      if(action.type === LNDActions.SET_ALL_CHANNELS_LND) {
-        this.selectedChannel = undefined;
-      }
-      if(action.type === RTLActions.SHOW_FILE) {
+      if (action.type === RTLActions.SHOW_FILE) {
         this.commonService.downloadFile(action.payload, 'channel-' + (this.selectedChannel.channel_point ? this.selectedChannel.channel_point : 'all'), '.bak', '.bak');
-        this.selectedChannel = undefined;
-        this.store.dispatch(new RTLActions.CloseSpinner());
+        this.selectedChannel = null;
       }
     });
   }
@@ -90,27 +88,24 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   onBackupChannels(selChannel: Channel) {
-    this.store.dispatch(new RTLActions.OpenSpinner('Backup Channels...'));
-    this.store.dispatch(new LNDActions.BackupChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL', showMessage: ''}));
+    this.store.dispatch(new LNDActions.BackupChannels({ uiMessage: UI_MESSAGES.BACKUP_CHANNEL, channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL', showMessage: '' }));
   }
 
   onVerifyChannels(selChannel: Channel) {
-    this.store.dispatch(new RTLActions.OpenSpinner('Verify Channels...'));
-    this.store.dispatch(new LNDActions.VerifyChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL'}));
+    this.store.dispatch(new LNDActions.VerifyChannels({ channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL' }));
   }
 
   onDownloadBackup(selChannel: Channel) {
     this.selectedChannel = selChannel;
-    this.store.dispatch(new RTLActions.OpenSpinner('Downloading Backup File...'));
-    this.store.dispatch(new RTLActions.FetchFile({channelPoint: selChannel.channel_point ? selChannel.channel_point : 'all'}));
+    this.store.dispatch(new RTLActions.FetchFile({ channelPoint: selChannel.channel_point ? selChannel.channel_point : 'all' }));
   }
 
   onChannelClick(selChannel: Channel, event: any) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       channel: selChannel,
       showCopy: false,
       component: ChannelInformationComponent
-    }}));
+    } }));
   }
 
   applyFilter(selFilter: any) {
@@ -120,7 +115,7 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
   loadBackupTable(channels: any[]) {
     this.channels = channels ? new MatTableDataSource<Channel>([...channels]) : new MatTableDataSource([]);
     this.channels.sort = this.sort;
-    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.channels.paginator = this.paginator;
     this.channels.filterPredicate = (channel: Channel, fltr: string) => {
       const newChannel = ((channel.active) ? 'active' : 'inactive') + (channel.channel_point ? channel.channel_point.toLowerCase() : '') + (channel.chan_id ? channel.chan_id.toLowerCase() : '') +
@@ -134,7 +129,7 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

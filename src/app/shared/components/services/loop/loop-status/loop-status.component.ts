@@ -7,6 +7,7 @@ import { LoopStatus } from '../../../../models/loopModels';
   styleUrls: ['./loop-status.component.scss']
 })
 export class LoopStatusComponent {
+
   @Input() loopStatus: LoopStatus;
 
   constructor() {}

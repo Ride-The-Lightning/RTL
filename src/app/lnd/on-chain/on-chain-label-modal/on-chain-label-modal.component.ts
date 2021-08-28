@@ -21,7 +21,8 @@ import { CommonService } from '../../../shared/services/common.service';
   styleUrls: ['./on-chain-label-modal.component.scss']
 })
 export class OnChainLabelModalComponent implements OnInit, OnDestroy {
-  @ViewChild('form', { static: true }) form: any;  
+
+  @ViewChild('form', { static: true }) form: any;
   public faExclamationTriangle = faExclamationTriangle;
   public utxo: UTXO = null;
   public label = '';
@@ -36,31 +37,29 @@ export class OnChainLabelModalComponent implements OnInit, OnDestroy {
   }
 
   onLabelUTXO(): boolean|void {
-    if(!this.label || this.label === '') { return true; }
+    if (!this.label || this.label === '') {
+      return true;
+    }
     this.labelError = '';
-    this.store.dispatch(new RTLActions.OpenSpinner('Labelling UTXO...'));
-    this.dataService.labelUTXO(this.utxo.outpoint.txid_bytes, this.label, true)
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe(res => {
-      this.store.dispatch(new RTLActions.CloseSpinner());
-      this.store.dispatch(new LNDActions.FetchTransactions());
-      this.store.dispatch(new LNDActions.FetchUTXOs());
-      this.snackBar.open('Successfully labelled the UTXO.');
-      this.dialogRef.close();
-    }, (err) => {
-      this.store.dispatch(new RTLActions.CloseSpinner());
-      this.labelError = err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : err;
-      this.labelError = (typeof this.labelError === 'string') ? this.commonService.titleCase(this.labelError) : JSON.stringify(this.labelError);
-    });
+    this.dataService.labelUTXO(this.utxo.outpoint.txid_bytes, this.label, true).
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe({ next: (res) => {
+        this.store.dispatch(new LNDActions.FetchTransactions());
+        this.store.dispatch(new LNDActions.FetchUTXOs());
+        this.snackBar.open('Successfully labelled the UTXO.');
+        this.dialogRef.close();
+      }, error: (err) => {
+        this.labelError = err;
+      } });
   }
 
   resetData() {
-    this.labelError = '';    
-    this.label = '';      
+    this.labelError = '';
+    this.label = '';
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

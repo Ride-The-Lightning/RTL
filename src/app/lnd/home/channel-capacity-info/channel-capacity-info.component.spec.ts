@@ -1,4 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { SharedModule } from '../../../shared/shared.module';
 
 import { ChannelCapacityInfoComponent } from './channel-capacity-info.component';
 
@@ -6,11 +8,12 @@ describe('ChannelCapacityInfoComponent', () => {
   let component: ChannelCapacityInfoComponent;
   let fixture: ComponentFixture<ChannelCapacityInfoComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelCapacityInfoComponent ]
-    })
-    .compileComponents();
+      declarations: [ChannelCapacityInfoComponent],
+      imports: [SharedModule, RouterTestingModule]
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -21,5 +24,9 @@ describe('ChannelCapacityInfoComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
   });
 });

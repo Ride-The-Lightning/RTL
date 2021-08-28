@@ -45,18 +45,8 @@ exports.getPeers = (req, res, next) => {
       }
     })
     .catch(errRes => {
-      let err = JSON.parse(JSON.stringify(errRes));
-      if (err.options && err.options.headers && err.options.headers.authorization) {
-        delete err.options.headers.authorization;
-      }
-      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-        delete err.response.request.headers.authorization;
-      }
-      logger.log({level: 'ERROR', fileName: 'Peers', msg: 'Get Peers Error', error: err});
-      return res.status(err.statusCode ? err.statusCode : 500).json({
-        message: 'Fetching Peers Failed!',
-        error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-      });
+      const err = common.handleError(errRes,  'Peers', 'List Peers Error');
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     });
   }
 };
@@ -70,22 +60,18 @@ exports.connectPeer = (req, res, next) => {
     options.form = req.query;
     logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Connect Peer Params', data: options.form});
   }
-  request.post(options, (error, response, body) => {
+  request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Add Peer Response', data: body});
-    if (body === 'already connected') {
-      return res.status(500).json({
-        message: "Connect Peer Failed!",
-        error: "Already connected"
-      });
+    if (typeof body === 'string' && body.includes('already connected')) {
+      const err = common.handleError({ statusCode: 500, message: 'Connect Peer Error', error: body },  'Peers', body);
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     } else if (typeof body === 'string' && body.includes('connection failed')) {
-      return res.status(500).json({
-        message: "Connect Peer Failed!",
-        error: body.charAt(0).toUpperCase() + body.slice(1)
-      });
+      const err = common.handleError({ statusCode: 500, message: 'Connect Peer Error', error: body },  'Peers', body);
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     }
     options.url = common.getSelLNServerUrl() + '/peers';
     options.form = {};
-    request.post(options).then(function (body) {
+    request.post(options).then((body) => {
       logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Peers Received', data: body});
       if (body && body.length) {
         let peersNodeIds = '';
@@ -108,32 +94,12 @@ exports.connectPeer = (req, res, next) => {
         res.status(201).json([]);
       }
     }).catch(errRes => {
-      let err = JSON.parse(JSON.stringify(errRes));
-      if (err.options && err.options.headers && err.options.headers.authorization) {
-        delete err.options.headers.authorization;
-      }
-      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-        delete err.response.request.headers.authorization;
-      }
-      logger.log({level: 'ERROR', fileName: 'Peers', msg: 'Connect Peer Error', error: err});
-      return res.status(err.statusCode ? err.statusCode : 500).json({
-        message: "Connect Peer Failed!",
-        error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-      });
+      const err = common.handleError(errRes,  'Peers', 'Connect Peer Error');
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     });
   }).catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers.authorization) {
-      delete err.options.headers.authorization;
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-      delete err.response.request.headers.authorization;
-    }
-    logger.log({level: 'ERROR', fileName: 'Peers', msg: 'Connect Peer Error', error: err});
-    return res.status(err.statusCode ? err.statusCode : 500).json({
-      message: "Connect Peer Failed!",
-      error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-    });
+    const err = common.handleError(errRes,  'Peers', 'Connect Peer Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -146,24 +112,14 @@ exports.deletePeer = (req, res, next) => {
     options.form = { nodeId: req.params.nodeId };
     logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Disconnect Peer Params', data: options.form});
   }
-  request.post(options, (error, response, body) => {
+  request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Disconnect Peer Response', data: body});
     logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Peer Disconnected: ' + req.params.nodeId});
     logger.log({level: 'INFO', fileName: 'Peers', msg: 'Peer Disconnected'});
     res.status(204).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers.authorization) {
-      delete err.options.headers.authorization;
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-      delete err.response.request.headers.authorization;
-    }
-    logger.log({level: 'ERROR', fileName: 'Peers', msg: 'Disconnect Peer Error', error: err});
-    return res.status(err.statusCode ? err.statusCode : 500).json({
-      message: "Disconnect Peer Failed!",
-      error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-    });
+    const err = common.handleError(errRes,  'Peers', 'Disconnect Peer Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

@@ -1,16 +1,42 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { StoreModule } from '@ngrx/store';
+
+import { RTLReducer } from '../../../../../store/rtl.reducers';
+import { CommonService } from '../../../../../shared/services/common.service';
+import { LoggerService } from '../../../../../shared/services/logger.service';
+import { BoltzService } from '../../../../../shared/services/boltz.service';
 
 import { BoltzSwapsComponent } from './swaps.component';
+import { mockBoltzService, mockDataService, mockLoggerService } from '../../../../test-helpers/mock-services';
+import { SharedModule } from '../../../../shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../../../services/data.service';
 
 describe('BoltzSwapsComponent', () => {
   let component: BoltzSwapsComponent;
   let fixture: ComponentFixture<BoltzSwapsComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ BoltzSwapsComponent ]
-    })
-    .compileComponents();
+      declarations: [BoltzSwapsComponent],
+      imports: [
+        BrowserAnimationsModule,
+        SharedModule,
+        StoreModule.forRoot(RTLReducer, {
+          runtimeChecks: {
+            strictStateImmutability: false,
+            strictActionImmutability: false
+          }
+        })
+      ],
+      providers: [
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
+        { provide: DataService, useClass: mockDataService },
+        { provide: BoltzService, useClass: mockBoltzService }
+      ]
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -21,5 +47,9 @@ describe('BoltzSwapsComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
   });
 });

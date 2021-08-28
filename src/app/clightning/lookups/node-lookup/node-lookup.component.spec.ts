@@ -1,4 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { LoggerService } from '../../../shared/services/logger.service';
+import { SharedModule } from '../../../shared/shared.module';
 
 import { CLNodeLookupComponent } from './node-lookup.component';
 
@@ -6,11 +8,13 @@ describe('CLNodeLookupComponent', () => {
   let component: CLNodeLookupComponent;
   let fixture: ComponentFixture<CLNodeLookupComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLNodeLookupComponent ]
-    })
-    .compileComponents();
+      declarations: [CLNodeLookupComponent],
+      imports: [SharedModule],
+      providers: [LoggerService]
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -21,5 +25,9 @@ describe('CLNodeLookupComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
   });
 });

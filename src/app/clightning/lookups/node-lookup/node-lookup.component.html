@@ -2,24 +2,24 @@
   <mat-divider [inset]="true" class="mb-1"></mat-divider>        
   <div fxLayout="column" fxFlex="100" fxLayoutAlign="end start" class="my-1">
     <h4 fxLayoutAlign="start" class="font-bold-500">Pub Key</h4>
-    <span class="foreground-secondary-text w-100">{{lookupResult.nodeid}}</span>
+    <span class="foreground-secondary-text w-100">{{lookupResult?.nodeid}}</span>
   </div>
   <mat-divider [inset]="true" class="my-1"></mat-divider>        
   <div fxLayout="row">
     <div fxLayout="column" fxFlex="100" fxLayoutAlign="end start" class="my-1">
       <h4 fxLayoutAlign="start" class="font-bold-500">Alias</h4>
-      <span class="foreground-secondary-text">{{lookupResult.alias}}<span class="ml-2" [ngStyle]="{'background-color': '#' + lookupResult.color}">{{lookupResult.color ? '#' + lookupResult.color : ''}}</span></span>
+      <span class="foreground-secondary-text">{{lookupResult?.alias}}<span class="ml-2" [ngStyle]="{'background-color': '#' + lookupResult?.color}">{{lookupResult?.color ? '#' + lookupResult?.color : ''}}</span></span>
     </div>
   </div>
   <mat-divider [inset]="true" class="my-1"></mat-divider>        
   <div fxLayout="row">
     <div fxLayout="column" fxFlex="50" fxLayoutAlign="end start" class="my-1">
       <h4 fxLayoutAlign="start" class="font-bold-500">Last Update</h4>
-      <span class="foreground-secondary-text">{{(lookupResult.last_timestamp * 1000) | date:'dd/MMM/YYYY HH:mm'}}</span>
+      <span class="foreground-secondary-text">{{(lookupResult?.last_timestamp * 1000) | date:'dd/MMM/YYYY HH:mm'}}</span>
     </div>
     <div fxLayout="column" fxFlex="50" fxLayoutAlign="end start" class="my-1">
       <h4 fxLayoutAlign="start" class="font-bold-500">Features</h4>
-      <span class="foreground-secondary-text">{{lookupResult.features}}</span>
+      <span class="foreground-secondary-text">{{lookupResult?.features}}</span>
     </div>
   </div>
   <mat-divider [inset]="true" class="my-1"></mat-divider>        
@@ -43,7 +43,7 @@
           <th mat-header-cell *matHeaderCellDef class="pl-1"><span fxLayoutAlign="end center">Actions</span></th>
           <td mat-cell *matCellDef="let address" class="pl-1">
             <span fxLayoutAlign="end center">
-              <button mat-stroked-button color="primary" type="button" tabindex="1" rtlClipboard [payload]="lookupResult.nodeid + '@' + address.address + ':' + address.port" (copied)="onCopyNodeURI($event)">Copy Node URI</button>          
+              <button mat-stroked-button color="primary" type="button" tabindex="1" rtlClipboard [payload]="lookupResult?.nodeid + '@' + address.address + ':' + address.port" (copied)="onCopyNodeURI($event)">Copy Node URI</button>          
             </span>
           </td>
         </ng-container>

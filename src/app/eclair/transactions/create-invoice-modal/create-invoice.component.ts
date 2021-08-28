@@ -8,13 +8,12 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { ECLInvoiceInformation } from '../../../shared/models/alertData';
-import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE } from '../../../shared/services/consts-enums-functions';
+import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo } from '../../../shared/models/eclModels';
 import { CommonService } from '../../../shared/services/common.service';
 
 import * as ECLActions from '../../store/ecl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
@@ -23,6 +22,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./create-invoice.component.scss']
 })
 export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
+
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: SelNodeChild = {};
   public description = '';
@@ -41,42 +41,44 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
   public invoiceError = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ECLCreateInvoiceComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLInvoiceInformation, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private actions$: Actions) {}
+  constructor(public dialogRef: MatDialogRef<ECLCreateInvoiceComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLInvoiceInformation, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private actions: Actions) {}
 
   ngOnInit() {
     this.pageSize = this.data.pageSize;
-    this.store.select('ecl')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
-      this.selNode = rtlStore.nodeSettings;
-      this.information = rtlStore.information;
-    });
-    this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === ECLActions.EFFECT_ERROR_ECL || action.type === ECLActions.ADD_INVOICE_ECL))
-    .subscribe((action: ECLActions.EffectError | ECLActions.AddInvoice) => {
-      if (action.type === ECLActions.ADD_INVOICE_ECL) {
-        this.dialogRef.close();
-      }    
-      if (action.type === ECLActions.EFFECT_ERROR_ECL && action.payload.action === 'CreateInvoice') {
-        this.invoiceError = action.payload.message;
-      }
-    });
+    this.store.select('ecl').
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        this.selNode = rtlStore.nodeSettings;
+        this.information = rtlStore.information;
+      });
+    this.actions.pipe(
+      takeUntil(this.unSubs[1]),
+      filter((action) => action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL || action.type === ECLActions.ADD_INVOICE_ECL)).
+      subscribe((action: ECLActions.UpdateAPICallStatus | ECLActions.AddInvoice) => {
+        if (action.type === ECLActions.ADD_INVOICE_ECL) {
+          this.dialogRef.close();
+        }
+        if (action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'CreateInvoice') {
+          this.invoiceError = action.payload.message;
+        }
+      });
   }
 
-  onAddInvoice(form: any):boolean|void {
+  onAddInvoice(form: any): boolean|void {
     this.invoiceError = '';
-    if(!this.description) { return true; }
+    if (!this.description) {
+      return true;
+    }
     let expiryInSecs = (this.expiry ? this.expiry : 3600);
     if (this.selTimeUnit !== TimeUnitEnum.SECS) {
       expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
     }
     let invoicePayload = null;
     if (this.invoiceValue) {
-      invoicePayload = { description: this.description, expireIn: expiryInSecs, amountMsat: this.invoiceValue*1000 };
+      invoicePayload = { description: this.description, expireIn: expiryInSecs, amountMsat: this.invoiceValue * 1000 };
     } else {
       invoicePayload = { description: this.description, expireIn: expiryInSecs };
     }
-    this.store.dispatch(new RTLActions.OpenSpinner('Creating Invoice...'));
     this.store.dispatch(new ECLActions.CreateInvoice(invoicePayload));
   }
 
@@ -84,32 +86,34 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
     this.description = '';
     this.invoiceValue = null;
     this.private = false;
-    this.expiry = undefined;
+    this.expiry = null;
     this.invoiceValueHint = '';
     this.selTimeUnit = TimeUnitEnum.SECS;
     this.invoiceError = '';
   }
 
   onInvoiceValueChange() {
-    if(this.selNode.fiatConversion && this.invoiceValue > 99) {
+    if (this.selNode.fiatConversion && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
-      this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
-      .pipe(takeUntil(this.unSubs[2]))
-      .subscribe(data => {
-        this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
-      });
+      this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
+        pipe(takeUntil(this.unSubs[2])).
+        subscribe({ next: (data) => {
+          this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
+        }, error: (err) => {
+          this.invoiceValueHint = 'Conversion Error: ' + err;
+        } });
     }
   }
 
   onTimeUnitChange(event: any) {
-    if(this.expiry && this.selTimeUnit !== event.value) {
+    if (this.expiry && this.selTimeUnit !== event.value) {
       this.expiry = this.commonService.convertTime(this.expiry, this.selTimeUnit, event.value);
     }
     this.selTimeUnit = event.value;
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

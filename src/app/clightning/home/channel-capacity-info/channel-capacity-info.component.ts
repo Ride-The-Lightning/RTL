@@ -10,11 +10,13 @@ import { Channel } from '../../../shared/models/clModels';
   styleUrls: ['./channel-capacity-info.component.scss']
 })
 export class CLChannelCapacityInfoComponent {
+
   public faBalanceScale = faBalanceScale;
   public faDumbbell = faDumbbell;
   @Input() channelBalances: {localBalance: number, remoteBalance: number, balancedness: number};
   @Input() allChannels: Channel[];
-  @Input() sortBy: string = 'Balance Score';
+  @Input() sortBy = 'Balance Score';
+  @Input() errorMessage: string;
 
   constructor(private router: Router) {}
 

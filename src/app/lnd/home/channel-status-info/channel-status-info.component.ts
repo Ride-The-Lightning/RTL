@@ -7,7 +7,9 @@ import { ChannelsStatus } from '../../../shared/models/lndModels';
   styleUrls: ['./channel-status-info.component.scss']
 })
 export class ChannelStatusInfoComponent {
+
   @Input() channelsStatus: ChannelsStatus = {};
+  @Input() errorMessage: string;
 
   constructor() {}
 

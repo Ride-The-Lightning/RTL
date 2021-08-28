@@ -1,5 +1,5 @@
 <div fxLayout="column" fxLayoutAlign="space-between stretch" class="mb-4">
-  <mat-grid-list *ngIf="selNode.userPersona === userPersonaEnum.OPERATOR" cols="6" rowHeight="110px">
+  <mat-grid-list *ngIf="selNode.userPersona === userPersonaEnum.OPERATOR" cols="6" rowHeight="100px">
     <mat-grid-tile class="node-grid-tile" *ngFor="let card of nodeCardsOperator" [colspan]="card.cols" [rowspan]="card.rows">
       <div fxLayout="column" fxLayoutAlign="stretch start" fxFlex="100" class="h-100">
         <div fxLayout="row" fxLayoutAlign="start start" class="w-100">
@@ -10,13 +10,29 @@
         </div>
         <div fxLayout="column" fxLayoutAlign="stretch center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="center stretch" class="w-100 h-93">
           <mat-card fxLayout="row" fxFlex="95" fxLayoutAlign="start stretch" class="dashboard-card w-96 h-93">
-            <mat-card-content fxFlex="100" class="dashboard-card-content">
+            <mat-card-content fxLayout="column" fxFlex="100"
+            [ngClass]="{'dashboard-card-content': true, 
+            'error-border': (card.id === 'node' && apisCallStatus?.FetchInfo.status === apiCallStatusEnum.ERROR) ||
+            (card.id === 'status' && (apisCallStatus?.FetchInfo.status === apiCallStatusEnum.ERROR || apisCallStatus?.FetchLocalRemoteBalance.status === apiCallStatusEnum.ERROR)) ||
+            (card.id === 'fee' && (apisCallStatus?.FetchFees.status === apiCallStatusEnum.ERROR || apisCallStatus?.FetchChannels.status === apiCallStatusEnum.ERROR || apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.ERROR)) ||
+            (card.id === 'feeRatesKB' && apisCallStatus?.FetchFeeRatesperkb.status === apiCallStatusEnum.ERROR) ||
+            (card.id === 'feeRatesKW' && apisCallStatus?.FetchFeeRatesperkw.status === apiCallStatusEnum.ERROR) ||
+            (card.id === 'onChainFeeEstimates' && apisCallStatus?.FetchFeeRatesperkw.status === apiCallStatusEnum.ERROR)}">
+              <mat-progress-bar mode="indeterminate"
+                *ngIf="(card.id === 'node' && apisCallStatus?.FetchInfo.status === apiCallStatusEnum.INITIATED) ||
+                (card.id === 'status' && (apisCallStatus?.FetchInfo.status === apiCallStatusEnum.INITIATED || apisCallStatus?.FetchLocalRemoteBalance.status === apiCallStatusEnum.INITIATED)) ||
+                (card.id === 'fee' && (apisCallStatus?.FetchFees.status === apiCallStatusEnum.INITIATED || apisCallStatus?.FetchChannels.status === apiCallStatusEnum.INITIATED || apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.INITIATED)) ||
+                (card.id === 'feeRatesKB' && apisCallStatus?.FetchFeeRatesperkb.status === apiCallStatusEnum.INITIATED) ||
+                (card.id === 'feeRatesKW' && apisCallStatus?.FetchFeeRatesperkw.status === apiCallStatusEnum.INITIATED) ||
+                (card.id === 'onChainFeeEstimates' && apisCallStatus?.FetchFeeRatesperkw.status === apiCallStatusEnum.INITIATED)"
+              ></mat-progress-bar>
               <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
-                <rtl-cl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="false" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-cl-node-info>
-                <rtl-cl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-cl-channel-status-info>
-                <rtl-cl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees" [ngClass]="{'error-border': flgLoading[1]==='error'}"></rtl-cl-fee-info>
-                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKB'" [flgLoading]="flgLoading[2]" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" class="h-100"></rtl-cl-fee-rates>
-                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKW'" [flgLoading]="flgLoading[2]" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" class="h-100"></rtl-cl-fee-rates>
+                <rtl-cl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="false"></rtl-cl-node-info>
+                <rtl-cl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus" [errorMessage]="errorMessages[0] + ' ' + errorMessages[2]"></rtl-cl-channel-status-info>
+                <rtl-cl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees" [errorMessage]="errorMessages[1] + ' ' + errorMessages[3] + ' ' + errorMessages[4]"></rtl-cl-fee-info>
+                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKB'" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" class="h-100" [errorMessage]="errorMessages[5]"></rtl-cl-fee-rates>
+                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKW'" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" class="h-100" [errorMessage]="errorMessages[6]"></rtl-cl-fee-rates>
+                <rtl-cl-onchain-fee-estimates *ngSwitchCase="'onChainFeeEstimates'" [feeRates]="feeRatesPerKW" class="h-100" [errorMessage]="errorMessages[5]"></rtl-cl-onchain-fee-estimates>
               </div>
             </mat-card-content>
           </mat-card>
@@ -24,7 +40,7 @@
       </div>
     </mat-grid-tile>
   </mat-grid-list>
-  <mat-grid-list *ngIf="selNode.userPersona === userPersonaEnum.MERCHANT" cols="6" rowHeight="110px">
+  <mat-grid-list *ngIf="selNode.userPersona === userPersonaEnum.MERCHANT" cols="6" rowHeight="100px">
     <mat-grid-tile class="node-grid-tile" *ngFor="let card of nodeCardsMerchant" [colspan]="card.cols" [rowspan]="card.rows">
       <div fxLayout="column" fxLayoutAlign="stretch start" fxFlex="100" class="h-100">
         <div fxLayout="row" fxLayoutAlign="start start" class="w-100">
@@ -35,13 +51,29 @@
         </div>
         <div fxLayout="column" fxLayoutAlign="stretch center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="center stretch" class="w-100 h-93">
           <mat-card fxLayout="row" fxFlex="95" fxLayoutAlign="start stretch" class="dashboard-card w-96 h-93">
-            <mat-card-content fxFlex="100" class="dashboard-card-content">
+            <mat-card-content fxLayout="column" fxFlex="100"
+            [ngClass]="{'dashboard-card-content': true, 
+              'error-border': (card.id === 'node' && apisCallStatus?.FetchInfo.status === apiCallStatusEnum.ERROR) ||
+              (card.id === 'status' && (apisCallStatus?.FetchInfo.status === apiCallStatusEnum.ERROR || apisCallStatus?.FetchLocalRemoteBalance.status === apiCallStatusEnum.ERROR)) ||
+              (card.id === 'fee' && (apisCallStatus?.FetchFees.status === apiCallStatusEnum.ERROR || apisCallStatus?.FetchChannels.status === apiCallStatusEnum.ERROR || apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.ERROR)) ||
+              (card.id === 'feeRatesKB' && apisCallStatus?.FetchFeeRatesperkb.status === apiCallStatusEnum.ERROR) ||
+              (card.id === 'feeRatesKW' && apisCallStatus?.FetchFeeRatesperkw.status === apiCallStatusEnum.ERROR) ||
+              (card.id === 'onChainFeeEstimates' && apisCallStatus?.FetchFeeRatesperkw.status === apiCallStatusEnum.ERROR)}">
+              <mat-progress-bar mode="indeterminate"
+                *ngIf="(card.id === 'node' && apisCallStatus?.FetchInfo.status === apiCallStatusEnum.INITIATED) ||
+                (card.id === 'status' && (apisCallStatus?.FetchInfo.status === apiCallStatusEnum.INITIATED || apisCallStatus?.FetchLocalRemoteBalance.status === apiCallStatusEnum.INITIATED)) ||
+                (card.id === 'fee' && (apisCallStatus?.FetchFees.status === apiCallStatusEnum.INITIATED || apisCallStatus?.FetchChannels.status === apiCallStatusEnum.INITIATED || apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.INITIATED)) ||
+                (card.id === 'feeRatesKB' && apisCallStatus?.FetchFeeRatesperkb.status === apiCallStatusEnum.INITIATED) ||
+                (card.id === 'feeRatesKW' && apisCallStatus?.FetchFeeRatesperkw.status === apiCallStatusEnum.INITIATED) ||
+                (card.id === 'onChainFeeEstimates' && apisCallStatus?.FetchFeeRatesperkw.status === apiCallStatusEnum.INITIATED)"
+              ></mat-progress-bar>
               <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
-                <rtl-cl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="false" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-cl-node-info>
-                <rtl-cl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-cl-channel-status-info>
-                <rtl-cl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees" [ngClass]="{'error-border': flgLoading[1]==='error'}"></rtl-cl-fee-info>
-                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKB'" [flgLoading]="flgLoading[2]" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" class="h-100"></rtl-cl-fee-rates>
-                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKW'" [flgLoading]="flgLoading[2]" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" class="h-100"></rtl-cl-fee-rates>
+                <rtl-cl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="false"></rtl-cl-node-info>
+                <rtl-cl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus" [errorMessage]="errorMessages[0] + ' ' + errorMessages[2]"></rtl-cl-channel-status-info>
+                <rtl-cl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees" [errorMessage]="errorMessages[1] + ' ' + errorMessages[3] + ' ' + errorMessages[4]"></rtl-cl-fee-info>
+                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKB'" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" class="h-100" [errorMessage]="errorMessages[5]"></rtl-cl-fee-rates>
+                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKW'" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" class="h-100" [errorMessage]="errorMessages[5]"></rtl-cl-fee-rates>
+                <rtl-cl-onchain-fee-estimates *ngSwitchCase="'onChainFeeEstimates'" [feeRates]="feeRatesPerKW" class="h-100" [errorMessage]="errorMessages[5]"></rtl-cl-onchain-fee-estimates>
               </div>
             </mat-card-content>
           </mat-card>

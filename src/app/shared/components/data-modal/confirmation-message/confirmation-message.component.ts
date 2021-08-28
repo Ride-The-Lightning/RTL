@@ -16,6 +16,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   styleUrls: ['./confirmation-message.component.scss']
 })
 export class ConfirmationMessageComponent implements OnInit {
+
   public faInfoCircle = faInfoCircle;
   public faExclamationTriangle = faExclamationTriangle;
   public informationMessage = '';
@@ -26,10 +27,12 @@ export class ConfirmationMessageComponent implements OnInit {
   public flgShowInput = false;
   public alertTypeEnum = AlertTypeEnum;
   public dataTypeEnum = DataTypeEnum;
-  public getInputs: Array<InputData> = [{placeholder: '', inputType: 'text', inputValue: '', hintText: '', hintFunction: null}];
+  public getInputs: Array<InputData> = [{ placeholder: '', inputType: 'text', inputValue: '', hintText: '', hintFunction: null }];
 
-  constructor(public dialogRef: MatDialogRef<ConfirmationMessageComponent>, @Inject(MAT_DIALOG_DATA) public data: ConfirmationData, private logger: LoggerService,
-   private store: Store<fromRTLReducer.RTLState>) { }
+  constructor(
+    public dialogRef: MatDialogRef<ConfirmationMessageComponent>, @Inject(MAT_DIALOG_DATA) public data: ConfirmationData, private logger: LoggerService,
+    private store: Store<fromRTLReducer.RTLState>
+  ) { }
 
   ngOnInit() {
     this.informationMessage = this.data.informationMessage;
@@ -46,8 +49,11 @@ export class ConfirmationMessageComponent implements OnInit {
     }
   }
 
-  onClose(dialogRes: any):boolean|void {
-    if (dialogRes && this.getInputs && this.getInputs.some(input => !input.inputValue)) { return true; }
+  onClose(dialogRes: any): boolean | void {
+    if (dialogRes && this.getInputs && this.getInputs.some((input) => !input.inputValue)) {
+      return true;
+    }
     this.store.dispatch(new RTLActions.CloseConfirmation(dialogRes));
   }
+
 }

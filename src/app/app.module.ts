@@ -1,4 +1,4 @@
-import { BrowserModule, HammerModule } from '@angular/platform-browser';
+import { HammerModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -30,13 +30,12 @@ import { LayoutModule } from '@angular/cdk/layout';
 
 @NgModule({
   imports: [
-    BrowserModule,
     BrowserAnimationsModule,
     SharedModule,
     routing,
     LayoutModule,
     HammerModule,
-    UserIdleModule.forRoot({idle: 3590, timeout: 10, ping: 12000}), // One hour
+    UserIdleModule.forRoot({ idle: 3590, timeout: 10, ping: 12000 }), // One hour
     StoreModule.forRoot(RTLReducer, {
       runtimeChecks: {
         strictStateImmutability: false,

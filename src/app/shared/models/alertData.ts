@@ -47,6 +47,13 @@ export interface CLOnChainSendFunds {
   component?: any;
 }
 
+export interface ChannelRebalanceAlert {
+  alertTitle?: string;
+  titleMessage?: string;
+  message?: { channels?: Channel[], selChannel?: Channel };
+  component?: any;
+}
+
 export interface OpenChannelAlert {
   alertTitle?: string;
   titleMessage?: string;
@@ -194,5 +201,8 @@ export interface DialogConfig {
   width?: string;
   maxWidth?: string;
   minHeight?: string;
-  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ECLInvoiceInformation | ECLPaymentInformation | ChannelInformation | CLChannelInformation | PendingOpenChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | SwapAlert | AuthConfig | OnChainLabelUTXO | OnChainSendFunds | CLOnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert;
+  data: AlertData | ConfirmationData | ErrorData | ChannelRebalanceAlert | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation |
+        CLInvoiceInformation | ECLInvoiceInformation | ECLPaymentInformation | ChannelInformation | CLChannelInformation |
+        PendingOpenChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | SwapAlert | AuthConfig |
+        OnChainLabelUTXO | OnChainSendFunds | CLOnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert;
 }

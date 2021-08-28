@@ -1,7 +1,7 @@
-<ng-container *ngTemplateOutlet="swapStatus.error ? swapFailedBlock : ((direction === swapTypeEnum.SWAP_OUT) ? swapOutBlock : swapInBlock)"></ng-container>
+<ng-container *ngTemplateOutlet="swapStatus?.error ? swapFailedBlock : ((direction === swapTypeEnum.SWAP_OUT) ? swapOutBlock : swapInBlock)"></ng-container>
 <ng-template #swapFailedBlock>
   <div fxLayout="column"><span
-      class="foreground-secondary-text">{{'Error: ' + ((swapStatus.error && swapStatus.error.message) ? swapStatus.error.message : 'Unknown')}}</span>
+      class="foreground-secondary-text">{{swapStatus?.error ? swapStatus?.error : 'Unknown Error.'}}</span>
   </div>
 </ng-template>
 <ng-template #swapOutBlock>

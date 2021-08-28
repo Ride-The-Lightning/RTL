@@ -1,16 +1,37 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreModule } from '@ngrx/store';
+import { mockCLEffects, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../shared/test-helpers/mock-services';
+import { SharedModule } from '../../../shared/shared.module';
 
+import { RTLReducer } from '../../../store/rtl.reducers';
+import { CLEffects } from '../../store/cl.effects';
 import { CLOnChainReceiveComponent } from './on-chain-receive.component';
 
 describe('CLOnChainReceiveComponent', () => {
   let component: CLOnChainReceiveComponent;
   let fixture: ComponentFixture<CLOnChainReceiveComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLOnChainReceiveComponent ]
-    })
-    .compileComponents();
+      declarations: [CLOnChainReceiveComponent],
+      imports: [
+        BrowserAnimationsModule,
+        SharedModule,
+        StoreModule.forRoot(RTLReducer, {
+          runtimeChecks: {
+            strictStateImmutability: false,
+            strictActionImmutability: false
+          }
+        }),
+        EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
+      ],
+      providers: [
+        { provide: CLEffects, useClass: mockCLEffects }
+      ]
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -21,5 +42,9 @@ describe('CLOnChainReceiveComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
   });
 });

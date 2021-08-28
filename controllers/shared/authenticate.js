@@ -25,11 +25,11 @@ getFailedInfo = (reqIP, currentTime) => {
   return failed;
 }
 
-handleError = (failed, currentTime, errMsg) => {
+handleMultipleFailedAttemptsError = (failed, currentTime, errMsg) => {
   if (failed.count >= ALLOWED_LOGIN_ATTEMPTS && (currentTime <= (failed.lastTried + LOCKING_PERIOD))) {
     return {
       message: "Multiple Failed Login Attempts!",
-      error: "Application locked for " + (LOCKING_PERIOD/ONE_MINUTE)  + " minutes due to multiple failed login attempts! Try again after " + common.convertTimestampToTime((failed.lastTried + LOCKING_PERIOD)/1000) + "!"
+      error: "Application locked for " + (LOCKING_PERIOD/ONE_MINUTE)  + " minutes due to multiple failed attempts!\nTry again after " + common.convertTimestampToTime((failed.lastTried + LOCKING_PERIOD)/1000) + "!"
     };
   } else {
     return {
@@ -48,24 +48,19 @@ exports.verifyToken = (twoFAToken) => {
 
 exports.authenticateUser = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'Authenticating User..'});
-  if(+common.rtl_sso) {
-    if(req.body.authenticateWith === 'JWT' && jwt.verify(req.body.authenticationValue, common.secret_key)) {
+  if (+common.rtl_sso) {
+    if (req.body.authenticateWith === 'JWT' && jwt.verify(req.body.authenticationValue, common.secret_key)) {
       logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated'});
       res.status(200).json({ token: token });
     } else if (req.body.authenticateWith === 'PASSWORD' && common.cookie.trim().length >= 32 && crypto.timingSafeEqual(Buffer.from(crypto.createHash('sha256').update(common.cookie).digest('hex'), 'utf-8'), Buffer.from(req.body.authenticationValue, 'utf-8'))) {
       connect.refreshCookie(common.rtl_cookie_path);
-      const token = jwt.sign(
-        { user: 'SSO_USER', configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
-        common.secret_key
-      );
+      const token = jwt.sign({ user: 'SSO_USER' }, common.secret_key);
       logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated.'});
       res.status(200).json({ token: token });
     } else {
-      logger.log({level: 'ERROR', fileName: 'Authenticate', msg: 'SSO Authentication Failed! Access key too short or does not match.', error: {error: 'Access key too short or does not match.'}});
-      res.status(406).json({
-        message: "SSO Authentication Failed!",
-        error: "SSO failed. Access key too short or does not match."
-      });
+      const errMsg = 'SSO Authentication Failed! Access key too short or does not match.';
+      const err = common.handleError({ statusCode: 406, message: 'SSO Authentication Error', error: errMsg },  'Authenticate', errMsg);
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     }
   } else {
     const currentTime = new Date().getTime();
@@ -78,51 +73,39 @@ exports.authenticateUser = (req, res, next) => {
           logger.log({level: 'ERROR', fileName: 'Authenticate', msg: 'Invalid Token! Failed IP ' + reqIP, error: {error: 'Invalid token.'}});
           failed.count = failed.count + 1;
           failed.lastTried = currentTime;
-          return res.status(401).json(handleError(failed, currentTime, 'Invalid 2FA Token!'));
+          return res.status(401).json(handleMultipleFailedAttemptsError(failed, currentTime, 'Invalid 2FA Token!'));
         }
       }
       delete failedLoginAttempts[reqIP];
-      let rpcUser = 'NODE_USER';
-      const token = jwt.sign(
-        { user: rpcUser, configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
-        common.secret_key
-      );
+      const token = jwt.sign({ user: 'NODE_USER' }, common.secret_key);
       logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated'});
       res.status(200).json({ token: token });
     } else {
       logger.log({level: 'ERROR', fileName: 'Authenticate', msg: 'Invalid Password! Failed IP ' + reqIP, error: {error: 'Invalid password.'}});
       failed.count = common.rtl_pass !== password ? (failed.count + 1) : failed.count;
       failed.lastTried = common.rtl_pass !== password ? currentTime : failed.lastTried;
-      return res.status(401).json(handleError(failed, currentTime, 'Invalid Password!'));
+      return res.status(401).json(handleMultipleFailedAttemptsError(failed, currentTime, 'Invalid Password!'));
     }
   }
 };
 
 exports.resetPassword = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'Resetting Password..'});
-  if(+common.rtl_sso) {
-    logger.log({level: 'ERROR', fileName: 'Authenticate', msg: 'Password Reset Failed!', error: {error: 'Password reset failed.'}});
-    res.status(401).json({
-      message: "Password Reset Failed!",
-      error: "Password cannot be reset for SSO authentication!"
-    });
+  if (+common.rtl_sso) {
+    const errMsg = 'Password cannot be reset for SSO authentication';
+    const err = common.handleError({ statusCode: 401, message: 'Password Reset Error', error: errMsg },  'Authenticate', errMsg);
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   } else {
     const currPassword = req.body.currPassword;
     if (common.rtl_pass === currPassword) {
       common.rtl_pass = connect.replacePasswordWithHash(req.body.newPassword);
-      var rpcUser = 'NODE_USER';
-      const token = jwt.sign(
-        { user: rpcUser, configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
-        common.secret_key
-      );
+      const token = jwt.sign({ user: 'NODE_USER' }, common.secret_key);
       logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'Password Reset Successful'});
       res.status(200).json({ token: token });
     } else {
-      logger.log({level: 'ERROR', fileName: 'Authenticate', msg: 'Password Reset Failed!', error: {error: 'Password reset failed.'}});
-      res.status(401).json({
-        message: "Password Reset Failed!",
-        error: "Old password is not correct!"
-      });
+      const errMsg = 'Incorrect Old Password';
+      const err = common.handleError({ statusCode: 401, message: 'Password Reset Error', error: errMsg },  'Authenticate', errMsg);
+      return res.status(err.statusCode).json({message: err.message, error: err.error});
     }
   }
 };

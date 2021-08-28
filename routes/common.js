@@ -157,10 +157,6 @@ common.replaceNode = (selNodeIndex, newNode) => {
   common.selectedNode = common.findNode(selNodeIndex);
 }
 
-common.convertToBTC = (num) => {
-  return (num / 100000000).toFixed(6);
-};
-
 common.convertTimestampToTime = (num) => {
   let myDate = new Date(+num * 1000);
   let days = myDate.getDate().toString();
@@ -213,6 +209,58 @@ common.newestOnTop = (array, key, value) => {
   return array;
 }
 
+common.handleError = (errRes, fileName, errMsg) => {
+  let err = JSON.parse(JSON.stringify(errRes));
+  switch (common.selectedNode.ln_implementation) {
+    case 'LND':
+      if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+        delete err.options.headers['Grpc-Metadata-macaroon'];
+      }
+      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+        delete err.response.request.headers['Grpc-Metadata-macaroon'];
+      }
+      break;
+
+    case 'CLT':
+      if (err.options && err.options.headers && err.options.headers.macaroon) {
+        delete err.options.headers.macaroon;
+      }
+      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
+        delete err.response.request.headers.macaroon;
+      }
+      break;
+
+    case 'ECL':
+      if (err.options && err.options.headers && err.options.headers.authorization) {
+        delete err.options.headers.authorization;
+      }
+      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
+        delete err.response.request.headers.authorization;
+      }
+      break;
+
+    default:
+      if (err.options && err.options.headers) { delete err.options.headers; }
+      break;
+  }
+  const msgStr = '\r\n[' + new Date().toISOString() + '] ERROR: ' + fileName + ' => ' + errMsg + ': ' + (typeof err === 'object' ? JSON.stringify(err) : (typeof err === 'string') ? err : 'Unknown Error');
+  console.error(msgStr);
+  if (common.selectedNode) { fs.appendFile(common.selectedNode.log_file, msgStr, () => {}) }
+  const newErrorObj = {
+    statusCode: err.statusCode ? err.statusCode : err.status ? err.status : (err.error && err.error.code && err.error.code === 'ECONNREFUSED') ? 503 : 500,
+    message: (err.error && err.error.message) ? err.error.message : err.message ? err.message : errMsg, 
+    error: (
+      (err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : 
+      (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error : 
+      (err.error && err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message :
+      (err.error && err.error.message && typeof err.error.message === 'string') ? err.error.message :
+      (err.message && typeof err.message === 'string') ? err.message :
+      (err.error) ? err.error : (typeof err === 'string') ? err : 'Unknown Error'
+    )
+  };
+  return newErrorObj;
+}
+
 common.getRequestIP = (req) => {
   return (typeof req.headers['x-forwarded-for'] === 'string' && req.headers['x-forwarded-for'].split(',').shift())
     || req.ip
@@ -249,41 +297,36 @@ common.getMonthDays = (selMonth, selYear) => {
 
 filterData = (data_key) => {
   let search_string = '';
-  switch (data_key) {
-    case 'GetInfo':
-      search_string = 'INFO: GetInfo => Get Info Response: ';
-      break;
-  
-    case 'Fees':
-      search_string = 'INFO: Fees => Fee Response: ';
-      break;
-
-    case 'Payments':
-      search_string = 'INFO: Fees => Payments Response: ';
-      break;
-
-    case 'Invoices':
-      search_string = 'INFO: Invoice => Invoices List Received: ';
-      break;
-  
-    case 'OnChainBalance':
-      search_string = 'INFO: Onchain => Balance Received: ';
-      break;
-
-    case 'Peers':
-      search_string = 'INFO: Peers => Peers with Alias: ';
-      break;
-        
-    case 'Channels':
-      search_string = 'INFO: Channels => Simplified Channels with Alias: ';
-      break;
-
-    default:
-      search_string = 'INFO: GetInfo => Get Info Response: ';
-      break;
+  if (common.selectedNode.ln_implementation === 'ECL') {
+    switch (data_key) {
+      case 'GetInfo': search_string = 'INFO: GetInfo => Get Info Response: '; break;
+      case 'Fees': search_string = 'INFO: Fees => Fee Response: '; break;
+      case 'Payments': search_string = 'INFO: Fees => Payments Response: '; break;
+      case 'Invoices': search_string = 'INFO: Invoice => Invoices List Received: '; break;
+      case 'OnChainBalance': search_string = 'INFO: Onchain => Balance Received: '; break;
+      case 'Peers': search_string = 'INFO: Peers => Peers with Alias: '; break;
+      case 'Channels': search_string = 'INFO: Channels => Simplified Channels with Alias: '; break;
+      default: search_string = 'Random Line'; break;
+    }
+  } else if (common.selectedNode.ln_implementation === 'CLT') {
+    switch (data_key) {
+      case 'GetInfo': search_string = 'DEBUG: GetInfo => Node Information. '; break;
+      case 'Fees': search_string = 'DEBUG: Fees => Fee Received. '; break;
+      case 'Payments': search_string = 'DEBUG: Payments => Payment List Received: '; break;
+      case 'Invoices': search_string = 'DEBUG: Invoice => Invoices List Received. '; break;
+      case 'ChannelBalance': search_string = 'DEBUG: Channels => Local Remote Balance. '; break;
+      case 'Peers': search_string = 'DEBUG: Peers => Peers with Alias: '; break;
+      case 'Channels': search_string = 'DEBUG: Channels => List Channels: '; break;
+      case 'Balance': search_string = 'DEBUG: Balance => Balance Received. '; break;
+      case 'ForwardingHistory': search_string = 'DEBUG: Channels => Forwarding History Received: '; break;
+      case 'UTXOs': search_string = 'DEBUG: OnChain => List Funds Received. '; break;
+      case 'FeeRateperkb': search_string = 'DEBUG: Network => Network Fee Rates Received for perkb. '; break;
+      case 'FeeRateperkw': search_string = 'DEBUG: Network => Network Fee Rates Received for perkw. '; break;
+      default: search_string = 'Random Line'; break;
+    }
   }
   let foundDataLine = dummy_data_array_from_file.find(dataItem => dataItem.includes(search_string));
-  let dataStr = foundDataLine ? foundDataLine.replace(search_string, '') : {};
+  let dataStr = foundDataLine ? foundDataLine.substring((foundDataLine.indexOf(search_string)) + search_string.length) : '{}';
   return JSON.parse(dataStr);
 }
 

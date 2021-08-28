@@ -1,19 +1,18 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
+import { APICallStatusEnum, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
+import { CommonService } from '../../shared/services/common.service';
+import { LookupNode } from '../../shared/models/eclModels';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import * as ECLActions from '../store/ecl.actions';
-import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
-import { ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
-import { CommonService } from '../../shared/services/common.service';
-import { FormControl } from '@angular/forms';
-import { LookupNode } from '../../shared/models/eclModels';
 
 @Component({
   selector: 'rtl-ecl-lookups',
@@ -21,9 +20,10 @@ import { LookupNode } from '../../shared/models/eclModels';
   styleUrls: ['./lookups.component.scss']
 })
 export class ECLLookupsComponent implements OnInit, OnDestroy {
+
   @ViewChild('form', { static: true }) form: any;
   public lookupKeyCtrl = new FormControl();
-  // public lookupKey = '';
+  // Public lookupKey = '';
   public nodeLookupValue: LookupNode = {};
   public channelLookupValue = [];
   public flgSetLookupValue = false;
@@ -31,8 +31,8 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
   public messageObj = [];
   public selectedFieldId = 0;
   public lookupFields = [
-    { id: 0, name: 'Node', placeholder: 'Node ID'},
-    { id: 1, name: 'Channel', placeholder: 'Short Channel ID'}
+    { id: 0, name: 'Node', placeholder: 'Node ID' },
+    { id: 1, name: 'Channel', placeholder: 'Short Channel ID' }
   ];
   public flgLoading: Array<Boolean | 'error'> = [true];
   public faSearch = faSearch;
@@ -40,18 +40,20 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
   ngOnInit() {
-    this.actions$.pipe(takeUntil(this.unSubs[0]),
-      filter((action) => (action.type === ECLActions.SET_LOOKUP_ECL || action.type === ECLActions.EFFECT_ERROR_ECL))).subscribe((resLookup: ECLActions.SetLookup | ECLActions.EffectError) => {
-        if(resLookup.type === ECLActions.SET_LOOKUP_ECL) {
+    this.actions.pipe(
+      takeUntil(this.unSubs[0]),
+      filter((action) => (action.type === ECLActions.SET_LOOKUP_ECL || action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL))).
+      subscribe((resLookup: ECLActions.SetLookup | ECLActions.UpdateAPICallStatus) => {
+        if (resLookup.type === ECLActions.SET_LOOKUP_ECL) {
           this.flgLoading[0] = true;
           switch (this.selectedFieldId) {
             case 0:
-              this.nodeLookupValue = resLookup.payload[0] ? JSON.parse(JSON.stringify(resLookup.payload[0])) : {nodeid: ''};
+              this.nodeLookupValue = resLookup.payload[0] ? JSON.parse(JSON.stringify(resLookup.payload[0])) : { nodeid: '' };
               break;
             case 1:
               this.channelLookupValue = resLookup.payload ? JSON.parse(JSON.stringify(resLookup.payload)) : [];
@@ -63,23 +65,23 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
           this.logger.info(this.nodeLookupValue);
           this.logger.info(this.channelLookupValue);
         }
-        if (resLookup.type === ECLActions.EFFECT_ERROR_ECL && resLookup.payload.action === 'Lookup') {
+        if (resLookup.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && resLookup.payload.status === APICallStatusEnum.ERROR && resLookup.payload.action === 'Lookup') {
           this.flgLoading[0] = 'error';
         }
-    });
-    this.lookupKeyCtrl.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe(value => {
+      });
+    this.lookupKeyCtrl.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe((value) => {
       this.nodeLookupValue = {};
       this.channelLookupValue = [];
       this.flgSetLookupValue = false;
     });
   }
 
-  onLookup():boolean|void {
+  onLookup(): boolean|void {
     if (!this.lookupKeyCtrl.value) {
-      this.lookupKeyCtrl.setErrors({required: true});
+      this.lookupKeyCtrl.setErrors({ required: true });
       return true;
     } else if (this.lookupKeyCtrl.value && (this.lookupKeyCtrl.value.includes('@') || this.lookupKeyCtrl.value.includes(','))) {
-      this.lookupKeyCtrl.setErrors({invalid: true});
+      this.lookupKeyCtrl.setErrors({ invalid: true });
       return true;
     } else {
       if (!this.selectedFieldId) {
@@ -88,13 +90,12 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
       this.flgSetLookupValue = false;
       this.nodeLookupValue = {};
       this.channelLookupValue = [];
-      this.store.dispatch(new RTLActions.OpenSpinner('Searching ' + this.lookupFields[this.selectedFieldId].name + '...'));
       switch (this.selectedFieldId) {
         case 0:
           this.store.dispatch(new ECLActions.PeerLookup(this.lookupKeyCtrl.value.trim()));
           break;
         case 1:
-          // this.store.dispatch(new ECLActions.ChannelLookup({shortChannelID: this.lookupKey.trim(), showError: false}));
+        // This.store.dispatch(new ECLActions.ChannelLookup({shortChannelID: this.lookupKey.trim(), showError: false}));
           break;
         default:
           break;
@@ -123,7 +124,7 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });

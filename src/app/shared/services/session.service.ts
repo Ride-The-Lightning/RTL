@@ -3,6 +3,7 @@ import { Subject, Observable } from 'rxjs';
 
 @Injectable()
 export class SessionService {
+
   private sessionSub= new Subject<any>();
 
   watchSession(): Observable<any> {

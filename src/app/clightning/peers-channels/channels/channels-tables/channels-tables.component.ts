@@ -19,6 +19,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   styleUrls: ['./channels-tables.component.scss']
 })
 export class CLChannelsTablesComponent implements OnInit, OnDestroy {
+
   public openChannels = 0;
   public pendingChannels = 0;
   public selNode: SelNodeChild = {};
@@ -26,58 +27,58 @@ export class CLChannelsTablesComponent implements OnInit, OnDestroy {
   public peers: Peer[] = [];
   public utxos: UTXO[] = [];
   public totalBalance = 0;
-  public links = [{link: 'open', name: 'Open'}, {link: 'pending', name: 'Pending/Inactive'}];
+  public links = [{ link: 'open', name: 'Open' }, { link: 'pending', name: 'Pending/Inactive' }];
   public activeLink = 0;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService, private router: Router) {}
 
   ngOnInit() {
-    this.activeLink = this.links.findIndex(link => link.link === this.router.url.substring(this.router.url.lastIndexOf('/') + 1));
-    this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd))
-    .subscribe((value: ResolveEnd) => {
-      this.activeLink = this.links.findIndex(link => link.link === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
-    });
-    this.store.select('cl')
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe((rtlStore) => {
-      if (rtlStore.allChannels && rtlStore.allChannels.length) {
-        this.openChannels = 0;
-        this.pendingChannels = 0;
-        rtlStore.allChannels.forEach(channel => {
-          if(channel.state === 'CHANNELD_NORMAL' && channel.connected) {
-            this.openChannels++;
-          } else {
-            this.pendingChannels++;
-          }
-        });
-      } else {
-        this.openChannels = 0;
-        this.pendingChannels = 0;
-      }
-      this.selNode = rtlStore.nodeSettings;
-      this.information = rtlStore.information;    
-      this.peers = rtlStore.peers;
-      this.utxos = this.commonService.sortAscByKey(rtlStore.utxos.filter(utxo => utxo.status === 'confirmed'), 'value');
-      this.totalBalance = rtlStore.balance.totalBalance;
-      this.logger.info(rtlStore);
-    });
+    this.activeLink = this.links.findIndex((link) => link.link === this.router.url.substring(this.router.url.lastIndexOf('/') + 1));
+    this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
+      subscribe((value: ResolveEnd) => {
+        this.activeLink = this.links.findIndex((link) => link.link === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
+      });
+    this.store.select('cl').
+      pipe(takeUntil(this.unSubs[1])).
+      subscribe((rtlStore) => {
+        if (rtlStore.allChannels && rtlStore.allChannels.length) {
+          this.openChannels = 0;
+          this.pendingChannels = 0;
+          rtlStore.allChannels.forEach((channel) => {
+            if (channel.state === 'CHANNELD_NORMAL' && channel.connected) {
+              this.openChannels++;
+            } else {
+              this.pendingChannels++;
+            }
+          });
+        } else {
+          this.openChannels = 0;
+          this.pendingChannels = 0;
+        }
+        this.selNode = rtlStore.nodeSettings;
+        this.information = rtlStore.information;
+        this.peers = rtlStore.peers;
+        this.utxos = this.commonService.sortAscByKey(rtlStore.utxos.filter((utxo) => utxo.status === 'confirmed'), 'value');
+        this.totalBalance = rtlStore.balance.totalBalance;
+        this.logger.info(rtlStore);
+      });
   }
 
   onOpenChannel() {
     const peerToAddChannelMessage = {
-      peers: this.peers, 
+      peers: this.peers,
       information: this.information,
       balance: this.totalBalance,
       utxos: this.utxos,
       isCompatibleVersion: this.commonService.isVersionCompatible(this.information.version, '0.9.0') &&
       this.commonService.isVersionCompatible(this.information.api_version, '0.4.0')
     };
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       alertTitle: 'Open Channel',
       message: peerToAddChannelMessage,
       component: CLOpenChannelComponent
-    }}));
+    } }));
   }
 
   onSelectedTabChange(event) {
@@ -85,9 +86,10 @@ export class CLChannelsTablesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
+    this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();
     });
   }
+
 }

@@ -12,7 +12,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./channel-lookup.component.scss']
 })
 export class CLChannelLookupComponent implements OnInit {
-  @Input() lookupResult: ChannelEdge[];
+
+  @Input() lookupResult: ChannelEdge[] = [];
   public node1_match = false;
   public node2_match = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
@@ -20,16 +21,16 @@ export class CLChannelLookupComponent implements OnInit {
   constructor(private store: Store<fromRTLReducer.RTLState>) { }
 
   ngOnInit() {
-    this.store.select('cl')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
-      if (this.lookupResult.length > 0 && this.lookupResult[0].source === rtlStore.information.id) {
-        this.node1_match = true;
-      }
-      if (this.lookupResult.length > 1 && this.lookupResult[1].source === rtlStore.information.id) {
-        this.node2_match = true;
-      }
-    });
+    this.store.select('cl').
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe((rtlStore) => {
+        if (this.lookupResult.length > 0 && this.lookupResult[0].source === rtlStore.information.id) {
+          this.node1_match = true;
+        }
+        if (this.lookupResult.length > 1 && this.lookupResult[1].source === rtlStore.information.id) {
+          this.node2_match = true;
+        }
+      });
   }
 
 }

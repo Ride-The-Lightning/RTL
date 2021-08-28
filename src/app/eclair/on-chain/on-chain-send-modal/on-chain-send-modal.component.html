@@ -15,7 +15,7 @@
         <mat-form-field fxFlex="30">
           <input matInput [(ngModel)]="transaction.amount" placeholder="Amount" name="amt" type="number" [step]="100" [min]="0" tabindex="2" required #amnt="ngModel">
           <span matSuffix> {{selAmountUnit}} </span>
-          <mat-error *ngIf="!transaction.amount">Amount is required.</mat-error>
+          <mat-error *ngIf="!transaction.amount">{{amountError}}</mat-error>
         </mat-form-field>
         <mat-form-field fxFlex="10" fxLayoutAlign="start end">
           <mat-select [value]="selAmountUnit" tabindex="3" required name="amountUnit" (selectionChange)="onAmountUnitChange($event)">

@@ -10,29 +10,12 @@ exports.deleteExpiredInvoice = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/invoice/delExpiredInvoice' + queryStr;
   request.delete(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices Deleted', data: body});
-    if(!body || body.error) {
-      logger.log({level: 'ERROR', fileName: 'Invoice', msg: 'Invoice Delete Error', error: body.error});
-      res.status(500).json({
-        message: "Deleting Invoice Failed!",
-        error: (!body) ? 'Error From Server!' : body.error
-      });
-    }
     logger.log({level: 'INFO', fileName: 'Invoices', msg: 'Expired Invoices Deleted'});
     res.status(204).json({status: 'Invoice Deleted Successfully'});
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers.macaroon) {
-      delete err.options.headers.macaroon;
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
-      delete err.response.request.headers.macaroon;
-    }
-    logger.log({level: 'ERROR', fileName: 'Invoice', msg: 'Invoice Delete Error', error: err});
-    return res.status(500).json({
-      message: "Deleting Invoice Failed!",
-      error: err.error
-    });
+    const err = common.handleError(errRes,  'Invoice', 'Delete Invoice Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });  
 };
 
@@ -43,34 +26,16 @@ exports.listInvoices = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/invoice/listInvoices' + labelQuery;
   request(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received', data: body});
-    if(!body || body.error) {
-      logger.log({level: 'ERROR', fileName: 'Invoice', msg: 'List Invoice Error', error: body.error});
-      res.status(500).json({
-        message: "Fetching Invoice Info failed!",
-        error: (!body) ? 'Error From Server!' : body.error
-      });
-    } else {
-      if ( body.invoices && body.invoices.length > 0) {
-        body.invoices = common.sortDescByKey(body.invoices, 'expires_at');
-      }
-      logger.log({level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received', data: body});
-      logger.log({level: 'INFO', fileName: 'Invoices', msg: 'Invoices Received'});
-      res.status(200).json(body);
+    if ( body.invoices && body.invoices.length > 0) {
+      body.invoices = common.sortDescByKey(body.invoices, 'expires_at');
     }
+    logger.log({level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received', data: body});
+    logger.log({level: 'INFO', fileName: 'Invoices', msg: 'Invoices Received'});
+    res.status(200).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers.macaroon) {
-      delete err.options.headers.macaroon;
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
-      delete err.response.request.headers.macaroon;
-    }
-    logger.log({level: 'ERROR', fileName: 'Invoice', msg: 'List Invoice Error', error: err});
-    return res.status(500).json({
-      message: "Fetching Invoice Info failed!",
-      error: err.error
-    });
+    const err = common.handleError(errRes,  'Invoice', 'List Invoices Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };
 
@@ -81,29 +46,11 @@ exports.addInvoice = (req, res, next) => {
   options.body = req.body;
   request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Invoice', msg: 'Add Invoice Responce', data: body});
-    if(!body || body.error) {
-      logger.log({level: 'ERROR', fileName: 'Invoice', msg: 'Add Invoice Error', error: body.error});
-      res.status(500).json({
-        message: "Add Invoice Failed!",
-        error: (!body) ? 'Error From Server!' : body.error
-      });
-    } else {
-      logger.log({level: 'INFO', fileName: 'Invoices', msg: 'Invoice Created'});
-      res.status(201).json(body);
-    }
+    logger.log({level: 'INFO', fileName: 'Invoices', msg: 'Invoice Created'});
+    res.status(201).json(body);
   })
   .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers.macaroon) {
-      delete err.options.headers.macaroon;
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
-      delete err.response.request.headers.macaroon;
-    }
-    logger.log({level: 'ERROR', fileName: 'Invoice', msg: 'Add Invoice Error', error: err});
-    return res.status(500).json({
-      message: "Add Invoice Failed!",
-      error: err.error
-    });
+    const err = common.handleError(errRes,  'Invoice', 'Add Invoice Error');
+    return res.status(err.statusCode).json({message: err.message, error: err.error});
   });
 };

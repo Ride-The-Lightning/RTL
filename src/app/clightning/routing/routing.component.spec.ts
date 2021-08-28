@@ -1,4 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { SharedModule } from '../../shared/shared.module';
 
 import { CLRoutingComponent } from './routing.component';
 
@@ -6,11 +8,12 @@ describe('CLRoutingComponent', () => {
   let component: CLRoutingComponent;
   let fixture: ComponentFixture<CLRoutingComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLRoutingComponent ]
-    })
-    .compileComponents();
+      declarations: [CLRoutingComponent],
+      imports: [SharedModule, RouterTestingModule]
+    }).
+      compileComponents();
   }));
 
   beforeEach(() => {
@@ -21,5 +24,9 @@ describe('CLRoutingComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
   });
 });
