@@ -1044,6 +1044,7 @@ export class LNDEffects implements OnDestroy {
           this.logger.info(resInvoice);
           this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.SEARCHING_INVOICE));
           this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'Lookup', status: APICallStatusEnum.COMPLETED }));
+          this.store.dispatch(new LNDActions.UpdateInvoice(resInvoice));
           return {
             type: LNDActions.SET_LOOKUP_LND,
             payload: resInvoice

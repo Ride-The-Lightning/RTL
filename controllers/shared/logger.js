@@ -40,6 +40,7 @@ exports.log = (msgJSON, selNode = common.selectedNode) => {
             msgStr = msgStr + ': ' + (typeof msgJSON.data === 'object' ? JSON.stringify(msgJSON.data) : typeof msgJSON.data == 'string' ? msgJSON.data : '');
           }
         }
+        console.log(msgStr);
         fs.appendFile(selNode.log_file, msgStr, () => {});
       }
       break;

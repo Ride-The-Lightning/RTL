@@ -232,6 +232,13 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
         ...state,
         invoices: action.payload
       };
+    case CLActions.UPDATE_INVOICE_CL:
+      const modifiedInvoices = state.invoices;
+      modifiedInvoices.invoices = modifiedInvoices.invoices.map((invoice) => ((invoice.label === action.payload.label) ? action.payload : invoice));
+      return {
+        ...state,
+        invoices: modifiedInvoices
+      };
     case CLActions.SET_UTXOS_CL:
       return {
         ...state,

@@ -50,6 +50,7 @@ export const SET_INVOICES_ECL = 'SET_INVOICES_ECL';
 export const SET_TOTAL_INVOICES_ECL = 'SET_TOTAL_INVOICES_ECL';
 export const CREATE_INVOICE_ECL = 'CREATE_INVOICE_ECL';
 export const ADD_INVOICE_ECL = 'ADD_INVOICE_ECL';
+export const UPDATE_INVOICE_ECL = 'UPDATE_INVOICE_ECL';
 export const PEER_LOOKUP_ECL = 'PEER_LOOKUP_ECL';
 export const INVOICE_LOOKUP_ECL = 'INVOICE_LOOKUP_ECL';
 export const SET_LOOKUP_ECL = 'SET_LOOKUP_ECL';
@@ -354,6 +355,14 @@ export class AddInvoice implements Action {
 
 }
 
+export class UpdateInvoice implements Action {
+
+  readonly type = UPDATE_INVOICE_ECL;
+  constructor(public payload: Invoice) {}
+
+}
+
+
 export class PeerLookup implements Action {
 
   readonly type = PEER_LOOKUP_ECL;
@@ -385,4 +394,4 @@ export type ECLActions = ResetECLStore | UpdateAPICallStatus | SetChildNodeSetti
   SetLightningBalance | FetchPeers | SetPeers | PeerLookup | InvoiceLookup | SetLookup |
   SaveNewChannel | UpdateChannels | CloseChannel | RemoveChannel |
   FetchPayments | SetPayments | SendPayment | SendPaymentStatus |
-  FetchInvoices | SetInvoices | CreateInvoice | AddInvoice;
+  FetchInvoices | SetInvoices | CreateInvoice | AddInvoice | UpdateInvoice;
