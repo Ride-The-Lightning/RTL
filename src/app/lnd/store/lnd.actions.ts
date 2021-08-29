@@ -47,6 +47,7 @@ export const RESTORE_CHANNELS_LND = 'RESTORE_CHANNELS_LND';
 export const RESTORE_CHANNELS_RES_LND = 'RESTORE_CHANNELS_RES_LND';
 export const FETCH_INVOICES_LND = 'FETCH_INVOICES_LND';
 export const SET_INVOICES_LND = 'SET_INVOICES_LND';
+export const UPDATE_INVOICE_LND = 'UPDATE_INVOICE_LND';
 export const SET_TOTAL_INVOICES_LND = 'SET_TOTAL_INVOICES_LND';
 export const FETCH_TRANSACTIONS_LND = 'FETCH_TRANSACTIONS_LND';
 export const SET_TRANSACTIONS_LND = 'SET_TRANSACTIONS_LND';
@@ -351,6 +352,13 @@ export class SetInvoices implements Action {
 
 }
 
+export class UpdateInvoice implements Action {
+
+  readonly type = UPDATE_INVOICE_LND;
+  constructor(public payload: Invoice) {}
+
+}
+
 export class SetTotalInvoices implements Action {
 
   readonly type = SET_TOTAL_INVOICES_LND;
@@ -569,7 +577,7 @@ SaveNewChannel | CloseChannel | RemoveChannel |
 BackupChannels | VerifyChannels | BackupChannelsRes | VerifyChannelsRes |
 RestoreChannels | RestoreChannelsRes | RestoreChannelsList | SetRestoreChannelsList |
 FetchTransactions | SetTransactions | FetchUTXOs | SetUTXOs |
-FetchInvoices | SetInvoices | SetTotalInvoices |
+FetchInvoices | SetInvoices | UpdateInvoice | SetTotalInvoices |
 FetchPayments | SetPayments | SendPayment | SendPaymentStatus |
 GetAllLightningTransactions | SetAllLightningTransactions |
 FetchGraphNode | SetGraphNode | GetQueryRoutes | SetQueryRoutes |

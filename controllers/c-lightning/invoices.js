@@ -24,6 +24,7 @@ exports.listInvoices = (req, res, next) => {
   options = common.getOptions();
   const labelQuery = req.query.label ? '?label=' + req.query.label : '';
   options.url = common.getSelLNServerUrl() + '/v1/invoice/listInvoices' + labelQuery;
+  logger.log({level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List URL', data: options.url});
   request(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received', data: body});
     if ( body.invoices && body.invoices.length > 0) {

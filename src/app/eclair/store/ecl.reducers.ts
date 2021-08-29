@@ -204,6 +204,13 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
         ...state,
         invoices: action.payload
       };
+    case ECLActions.UPDATE_INVOICE_ECL:
+      let modifiedInvoices = state.invoices;
+      modifiedInvoices = modifiedInvoices.map((invoice) => ((invoice.paymentHash === action.payload.paymentHash) ? action.payload : invoice));
+      return {
+        ...state,
+        invoices: modifiedInvoices
+      };
     default:
       return state;
   }

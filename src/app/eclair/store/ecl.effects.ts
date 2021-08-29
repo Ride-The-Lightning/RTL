@@ -587,6 +587,7 @@ export class ECLEffects implements OnDestroy {
             this.logger.info(resInvoice);
             this.store.dispatch(new ECLActions.UpdateAPICallStatus({ action: 'Lookup', status: APICallStatusEnum.COMPLETED }));
             this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.SEARCHING_INVOICE));
+            this.store.dispatch(new ECLActions.UpdateInvoice(resInvoice));
             return {
               type: ECLActions.SET_LOOKUP_ECL,
               payload: resInvoice

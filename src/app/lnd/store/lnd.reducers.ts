@@ -132,6 +132,13 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
         ...state,
         invoices: newInvoices
       };
+    case LNDActions.UPDATE_INVOICE_LND:
+      const modifiedInvoices = state.invoices;
+      modifiedInvoices.invoices = modifiedInvoices.invoices.map((invoice) => ((invoice.r_hash === action.payload.r_hash) ? action.payload : invoice));
+      return {
+        ...state,
+        invoices: modifiedInvoices
+      };
     case LNDActions.SET_FEES_LND:
       return {
         ...state,
