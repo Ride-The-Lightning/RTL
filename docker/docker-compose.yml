@@ -101,7 +101,7 @@ services:
       
   rtl:
     container_name: ${COMPOSE_PROJECT_NAME}_rtl
-    image: shahanafarooqui/rtl:0.11.1
+    image: shahanafarooqui/rtl:0.11.2
     restart: unless-stopped
     depends_on:
       - lnd
