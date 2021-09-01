@@ -244,6 +244,8 @@ connect.validateNodeConfig = (config) => {
         console.error('Something went wrong while creating the backup directory: \n' + err);
       }
       common.nodes[idx].log_file = common.rtl_conf_file_path + '/logs/RTL-Node-' + node.index + '.log';
+      console.warn('Validate Config');
+      console.warn(common.nodes[idx]);
       const log_file = common.nodes[idx].log_file;
       if (fs.existsSync(log_file)) {
         fs.writeFile(log_file, '', () => { });

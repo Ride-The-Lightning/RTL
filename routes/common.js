@@ -62,7 +62,9 @@ common.getSelLNServerUrl = () => {
 };
 
 common.getOptions = () => {
-  common.selectedNode.options.method = common.selectedNode.ln_implementation.toUpperCase() !== 'ECL' ? 'GET' : 'POST';
+  console.warn('Get options');
+  console.warn(common.selectedNode);
+  common.selectedNode.options.method = (common.selectedNode && common.selectedNode.ln_implementation && common.selectedNode.ln_implementation.toUpperCase() !== 'ECL') ? 'GET' : 'POST';
   delete common.selectedNode.options.form;
   common.selectedNode.options.qs = {};
   return common.selectedNode.options;
@@ -79,6 +81,8 @@ common.updateSelectedNodeOptions = () => {
     form: null
   };
   try {
+    console.warn('Update Selected Node');
+    console.warn(common.selectedNode);
     if (common.selectedNode && common.selectedNode.ln_implementation) {
       switch (common.selectedNode.ln_implementation.toUpperCase()) {
         case 'CLT':
@@ -211,7 +215,7 @@ common.newestOnTop = (array, key, value) => {
 
 common.handleError = (errRes, fileName, errMsg) => {
   let err = JSON.parse(JSON.stringify(errRes));
-  switch (common.selectedNode.ln_implementation) {
+  switch (common.selectedNode && common.selectedNode.ln_implementation) {
     case 'LND':
       if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
         delete err.options.headers['Grpc-Metadata-macaroon'];
