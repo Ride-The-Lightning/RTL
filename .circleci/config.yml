@@ -15,6 +15,7 @@ jobs:
             sudo docker login --username=$DOCKERHUB_USER --password=$DOCKERHUB_PASS
             sudo docker build --pull -t "$DOCKERHUB_DESTINATION" -f "$DOCKERHUB_DOCKERFILE" .
             sudo docker push "$DOCKERHUB_DESTINATION"
+          no_output_timeout: 20m
 
   publish_docker_linuxarm32v7:
     machine:
@@ -30,6 +31,7 @@ jobs:
             sudo docker login --username=$DOCKERHUB_USER --password=$DOCKERHUB_PASS
             sudo docker build --pull -t "$DOCKERHUB_DESTINATION" -f "$DOCKERHUB_DOCKERFILE" .
             sudo docker push "$DOCKERHUB_DESTINATION"
+          no_output_timeout: 20m
 
   publish_docker_linuxarm64v8:
     machine:
@@ -45,6 +47,7 @@ jobs:
             sudo docker login --username=$DOCKERHUB_USER --password=$DOCKERHUB_PASS
             sudo docker build --pull -t "$DOCKERHUB_DESTINATION" -f "$DOCKERHUB_DOCKERFILE" .
             sudo docker push "$DOCKERHUB_DESTINATION"
+          no_output_timeout: 20m
 
   publish_docker_multiarch:
     machine:
@@ -65,6 +68,7 @@ jobs:
             sudo docker manifest annotate "$DOCKERHUB_REPO:$LATEST_TAG" "$DOCKERHUB_REPO:$LATEST_TAG-arm32v7" --os linux --arch arm --variant v7
             sudo docker manifest annotate "$DOCKERHUB_REPO:$LATEST_TAG" "$DOCKERHUB_REPO:$LATEST_TAG-arm64v8" --os linux --arch arm64 --variant v8
             sudo docker manifest push "$DOCKERHUB_REPO:$LATEST_TAG" -p
+          no_output_timeout: 20m
 
 workflows:
   version: 2
