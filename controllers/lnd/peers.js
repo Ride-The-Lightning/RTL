@@ -43,7 +43,7 @@ exports.postPeer = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/peers';
   options.form = JSON.stringify({ 
-    // addr: { host: req.body.host, pubkey: req.body.pubkey },
+    addr: { host: req.body.host, pubkey: req.body.pubkey },
     perm: req.body.perm
   });
   request.post(options).then((body) => {
