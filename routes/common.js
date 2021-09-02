@@ -1,9 +1,11 @@
+var platform = require('os').platform();
 var fs = require('fs');
 var crypto = require('crypto');
 var path = require('path');
 var common = {};
 const MONTHS = [{name: 'JAN', days: 31}, {name: 'FEB', days: 28}, {name: 'MAR', days: 31}, {name: 'APR', days: 30}, {name: 'MAY', days: 31}, {name: 'JUN', days: 30}, {name: 'JUL', days: 31}, {name: 'AUG', days: 31}, {name: 'SEP', days: 30}, {name: 'OCT', days: 31}, {name: 'NOV', days: 30}, {name: 'DEC', days: 31}];
 var dummy_data_array_from_file = [];
+common.path_separator = (platform === 'win32') ? '\\' : '/';
 
 common.rtl_conf_file_path = '';
 common.rtl_pass = '';
@@ -35,6 +37,9 @@ common.getSwapServerOptions = () => {
       console.error('Loop macaroon Error: ' + JSON.stringify(err));
     }
   }
+  if (common.selectedNode && common.selectedNode.log_level == "DEBUG") {
+    console.log('Swap Options: ' + JSON.stringify(swapOptions));
+  }
   return swapOptions;
 };
 
@@ -54,6 +59,9 @@ common.getBoltzServerOptions = () => {
       console.error('Boltz macaroon Error: ' + JSON.stringify(err));
     }
   }
+  if (common.selectedNode && common.selectedNode.log_level == "DEBUG") {
+    console.log('Boltz Options: ' + JSON.stringify(boltzOptions));
+  }
   return boltzOptions;
 };
 
@@ -62,8 +70,6 @@ common.getSelLNServerUrl = () => {
 };
 
 common.getOptions = () => {
-  console.warn('Get options');
-  console.warn(common.selectedNode);
   common.selectedNode.options.method = (common.selectedNode && common.selectedNode.ln_implementation && common.selectedNode.ln_implementation.toUpperCase() !== 'ECL') ? 'GET' : 'POST';
   delete common.selectedNode.options.form;
   common.selectedNode.options.qs = {};
@@ -97,6 +103,9 @@ common.updateSelectedNodeOptions = () => {
           common.selectedNode.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(path.join(common.selectedNode.macaroon_path, 'admin.macaroon')).toString('hex') };
           break;
       }
+    }
+    if (common.selectedNode && common.selectedNode.log_level == "DEBUG") {
+      console.log('\r\n[' + new Date().toLocaleString() + '] DEBUG: Common => Updated Node Options: ' + JSON.stringify(common.selectedNode.options));
     }
     return { status: 200, message: 'Updated Successfully!' };
   } catch(err) {
@@ -145,6 +154,9 @@ common.setOptions = () => {
           json: true,
           form: ''
         };
+      }
+      if (common.selectedNode && common.selectedNode.log_level == "DEBUG") {
+        console.log('\r\n[' + new Date().toLocaleString() + '] DEBUG: Common => Set Node Options: ' + JSON.stringify(node.options));
       }
     });
     common.updateSelectedNodeOptions();        

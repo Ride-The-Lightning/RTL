@@ -2,7 +2,7 @@ var fs = require('fs');
 var common = require('../../routes/common');
 
 exports.log = (msgJSON, selNode = common.selectedNode) => {
-  let msgStr = '\r\n[' + new Date().toISOString() + '] ' + msgJSON.level + ': ' + msgJSON.fileName + ' => ' + msgJSON.msg;
+  let msgStr = '\r\n[' + new Date().toLocaleString() + '] ' + msgJSON.level + ': ' + msgJSON.fileName + ' => ' + msgJSON.msg;
   switch (msgJSON.level) {
     case 'ERROR':
       if (selNode) {
