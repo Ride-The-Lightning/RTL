@@ -1,3 +1,6 @@
+import { pipe } from 'rxjs';
+import { scan } from 'rxjs/operators';
+import { createFeatureSelector, createSelector, select } from '@ngrx/store';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { ApiCallsListLND } from '../../shared/models/apiCallsPayload';
 import {
@@ -314,3 +317,7 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
       return state;
   }
 }
+
+export const getLNDState = createFeatureSelector<LNDState>('lnd');
+export const getInformation = createSelector(getLNDState, (state: LNDState) => state.information);
+export const takeLastGetInfo = (count: number) => pipe(select(getInformation), scan((acc, curr) => [curr, ...acc].filter((val, index) => index < count && val.hasOwnProperty('identity_pubkey')), [] as GetInfo[]));
