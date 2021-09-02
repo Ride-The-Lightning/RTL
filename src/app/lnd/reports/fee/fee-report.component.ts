@@ -10,6 +10,7 @@ import { DataService } from '../../../shared/services/data.service';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import * as fromLNDReducer from '../../store/lnd.reducers';
 
 @Component({
   selector: 'rtl-fee-report',
@@ -36,14 +37,18 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private dataService: DataService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.fetchEvents(this.startDate, this.endDate);
+    this.store.select(fromLNDReducer.getInformation).pipe(takeUntil(this.unSubs[0])).subscribe((info) => {
+      if (info.identity_pubkey) {
+        this.fetchEvents(this.startDate, this.endDate);
+      }
+    });
   }
 
   ngAfterContentInit() {
