@@ -5,7 +5,7 @@ RUN apk add --no-cache tini
 WORKDIR /RTL
 
 COPY package.json /RTL/package.json
-COPY package-lock.json /RTL/package-lock.json
+COPY pnpm-lock.yaml /RTL/pnpm-lock.yaml
 
 # Install dependencies
 RUN pnpm install --production
