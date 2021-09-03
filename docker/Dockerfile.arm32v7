@@ -15,7 +15,7 @@ COPY package.json /RTL/package.json
 COPY package-lock.json /RTL/package-lock.json
 
 # Install dependencies
-RUN npm install --production
+RUN pnpm install --production
 
 COPY . /RTL
 
