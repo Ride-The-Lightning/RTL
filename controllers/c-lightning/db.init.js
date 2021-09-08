@@ -1,3 +1,3 @@
 const mongoose = require("mongoose")
-require("./models/offerModels")
-mongoose.connect("mongodb://localhost/RTL")
+require("./models/offerModels") //initiate models
+mongoose.connect("mongodb://localhost/RTL") //<mongoProtocol>://localhost/<database>
