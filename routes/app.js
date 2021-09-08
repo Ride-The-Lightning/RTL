@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const csurf = require("csurf");
 const common = require("./common");
+const DB = require("../database/db");
 
 const baseHref = "/rtl/";
 const apiRoot = baseHref + "api/";
@@ -42,6 +43,7 @@ const paymentsCLRoutes = require("./c-lightning/payments");
 const peersCLRoutes = require("./c-lightning/peers");
 const networkCLRoutes = require("./c-lightning/network");
 const messageCLRoutes = require("./c-lightning/message");
+const offersCLRoutes = require("./c-lightning/offers");
 
 const infoECLRoutes = require("./eclair/getInfo");
 const feesECLRoutes = require("./eclair/fees");
@@ -98,7 +100,6 @@ app.use(apiLNDRoot + "switch", switchRoutes);
 app.use(apiLNDRoot + "loop", loopRoutes);
 app.use(apiLNDRoot + "message", messageRoutes);
 
-require('../controllers/c-lightning/db.init') //initiating database for clightning offers
 app.use(apiCLRoot + "getinfo", infoCLRoutes);
 app.use(apiCLRoot + "fees", feesCLRoutes);
 app.use(apiCLRoot + "balance", balanceCLRoutes);
@@ -109,6 +110,7 @@ app.use(apiCLRoot + "payments", paymentsCLRoutes);
 app.use(apiCLRoot + "peers", peersCLRoutes);
 app.use(apiCLRoot + "network", networkCLRoutes);
 app.use(apiCLRoot + "message", messageCLRoutes);
+app.use(apiCLRoot + "offers", offersCLRoutes);
 
 app.use(apiECLRoot + "getinfo", infoECLRoutes);
 app.use(apiECLRoot + "fees", feesECLRoutes);
@@ -117,6 +119,8 @@ app.use(apiECLRoot + "onchain", onChainECLRoutes);
 app.use(apiECLRoot + "peers", peersECLRoutes);
 app.use(apiECLRoot + "invoices", invoicesECLRoutes);
 app.use(apiECLRoot + "payments", paymentsECLRoutes);
+app.use(apiECLRoot + "network", networkECLRoutes);
+
 app.use(apiECLRoot + "network", networkECLRoutes);
 
 app.use((req, res, next) => {

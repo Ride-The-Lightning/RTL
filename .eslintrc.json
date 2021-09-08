@@ -5,6 +5,8 @@
     "rtl.js",
     "/routes/**/*.js",
     "/controllers/**/*.js",
+    "/database/**/*.js",
+    "/models/**/*.js",
     "/src/prebuild.js"
   ],
   "overrides": [
