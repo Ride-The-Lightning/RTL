@@ -98,6 +98,7 @@ app.use(apiLNDRoot + "switch", switchRoutes);
 app.use(apiLNDRoot + "loop", loopRoutes);
 app.use(apiLNDRoot + "message", messageRoutes);
 
+require('../controllers/c-lightning/db.init') //initiating database for clightning offers
 app.use(apiCLRoot + "getinfo", infoCLRoutes);
 app.use(apiCLRoot + "fees", feesCLRoutes);
 app.use(apiCLRoot + "balance", balanceCLRoutes);
