@@ -1,0 +1,24 @@
+.circleci/
+.git/
+.github/
+.vscode/
+backup/
+cookies/
+coverage/
+docker/
+docs/
+logs/
+node_modules/
+product management/
+screenshots/
+src/
+
+.browserlistrc
+.DS_Store
+.env
+.eslintrc.json
+.gitattributes
+.gitignore
+angular.json
+RTL_Config.json
+tsconfig.json
