@@ -1,6 +1,6 @@
 {
   "name": "rtl",
-  "version": "0.11.2-beta",
+  "version": "0.11.3-beta",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
