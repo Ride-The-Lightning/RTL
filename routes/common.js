@@ -85,8 +85,6 @@ common.updateSelectedNodeOptions = () => {
     form: null
   };
   try {
-    console.warn('Update Selected Node');
-    console.warn(common.selectedNode);
     if (common.selectedNode && common.selectedNode.ln_implementation) {
       switch (common.selectedNode.ln_implementation.toUpperCase()) {
         case 'CLT':

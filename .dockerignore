@@ -15,7 +15,6 @@ src/
 
 .browserlistrc
 .DS_Store
-.env
 .eslintrc.json
 .gitattributes
 .gitignore
