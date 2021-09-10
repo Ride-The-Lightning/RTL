@@ -100,8 +100,8 @@ common.updateSelectedNodeOptions = () => {
           break;
       }
     }
-    if (common.selectedNode && common.selectedNode.log_level == "DEBUG") {
-      console.log('\r\n[' + new Date().toLocaleString() + '] DEBUG: Common => Updated Node Options: ' + JSON.stringify(common.selectedNode.options));
+    if (common.selectedNode) {
+      console.log('\r\n[' + new Date().toLocaleString() + '] INFO: Common => Updated Node Options: ' + JSON.stringify(common.selectedNode.options));
     }
     return { status: 200, message: 'Updated Successfully!' };
   } catch(err) {
@@ -151,13 +151,8 @@ common.setOptions = () => {
           form: ''
         };
       }
-      if (common.selectedNode && common.selectedNode.log_level == "DEBUG") {
-        console.log('\r\n[' + new Date().toLocaleString() + '] DEBUG: Common => Set Node Options: ' + JSON.stringify(node.options));
-      }
+      console.log('\r\n[' + new Date().toLocaleString() + '] INFO: Common => Set Node Options: ' + JSON.stringify(node.options));
     });
-    if (common.selectedNode && common.selectedNode.log_level == "DEBUG") {
-      console.log('\r\n[' + new Date().toLocaleString() + '] DEBUG: Common => Set Node Options: ' + JSON.stringify(node.options));
-    }    
     common.updateSelectedNodeOptions();        
   }
 }
@@ -260,7 +255,7 @@ common.handleError = (errRes, fileName, errMsg) => {
   }
   const msgStr = '\r\n[' + new Date().toLocaleString() + '] ERROR: ' + fileName + ' => ' + errMsg + ': ' + (typeof err === 'object' ? JSON.stringify(err) : (typeof err === 'string') ? err : 'Unknown Error');
   console.error(msgStr);
-  if (common.selectedNode) { fs.appendFile(common.selectedNode.log_file, msgStr, () => {}) }
+  if (common.selectedNode && common.selectedNode.log_file) { fs.appendFile(common.selectedNode.log_file, msgStr, () => {}) }
   const newErrorObj = {
     statusCode: err.statusCode ? err.statusCode : err.status ? err.status : (err.error && err.error.code && err.error.code === 'ECONNREFUSED') ? 503 : 500,
     message: (err.error && err.error.message) ? err.error.message : err.message ? err.message : errMsg, 
