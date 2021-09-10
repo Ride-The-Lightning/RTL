@@ -75,7 +75,7 @@ exports.operateWallet = (req, res, next) => {
     }
   })
   .catch(errRes => {
-    if ((err.error.code === 1 && err.error.error === 'context canceled') || (err.error.code === 14 && err.error.error === 'transport is closing')) {
+    if ((errRes.error.code === 1 && errRes.error.error === 'context canceled') || (errRes.error.code === 14 && errRes.error.error === 'transport is closing')) {
       res.status(201).json('Successful');  
     } else {
       const err = common.handleError(errRes, 'Wallet', err_message);

@@ -1,4 +1,4 @@
-FROM node:14-stretch-slim AS builder
+FROM node:16-stretch-slim AS builder
 
 ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini-static-armel /tini
 ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini-static-armel.asc /tini.asc
@@ -19,7 +19,7 @@ RUN npm install --production
 
 COPY . /RTL
 
-FROM arm32v7/node:14-stretch-slim
+FROM arm32v7/node:16-stretch-slim
 
 WORKDIR /RTL
 
