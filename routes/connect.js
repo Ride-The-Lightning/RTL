@@ -243,11 +243,7 @@ connect.validateNodeConfig = (config) => {
         logger.log({ level: 'ERROR', fileName: 'Connect', msg: 'Something went wrong while creating the backup directory: \n' + err });
       }
       common.nodes[idx].log_file = common.rtl_conf_file_path + '/logs/RTL-Node-' + node.index + '.log';
-<<<<<<< Updated upstream
-      logger.log({ level: 'DEBUG', fileName: 'Connect', msg: 'Node Information: ' + common.nodes[idx]});
-=======
       logger.log({ level: 'DEBUG', fileName: 'Connect', msg: 'Node Information', data: common.nodes[idx] });
->>>>>>> Stashed changes
       const log_file = common.nodes[idx].log_file;
       if (fs.existsSync(log_file)) {
         fs.writeFile(log_file, '', () => { });

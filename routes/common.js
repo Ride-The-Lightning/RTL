@@ -39,13 +39,7 @@ common.getSwapServerOptions = () => {
       console.error('\r\n[' + new Date().toLocaleString() + '] INFO: Common => Loop macaroon Error: ' + JSON.stringify(err));
     }
   }
-<<<<<<< Updated upstream
-  if (common.selectedNode && common.selectedNode.log_level == "DEBUG") {
-    console.log('Swap Options: ' + JSON.stringify(swapOptions));
-  }
-=======
   console.log('\r\n[' + new Date().toLocaleString() + '] INFO: Common => Swap Options: ' + JSON.stringify(swapOptions));
->>>>>>> Stashed changes
   return swapOptions;
 };
 
@@ -65,13 +59,7 @@ common.getBoltzServerOptions = () => {
       console.error('\r\n[' + new Date().toLocaleString() + '] INFO: Common => Boltz macaroon Error: ' + JSON.stringify(err));
     }
   }
-<<<<<<< Updated upstream
-  if (common.selectedNode && common.selectedNode.log_level == "DEBUG") {
-    console.log('Boltz Options: ' + JSON.stringify(boltzOptions));
-  }
-=======
   console.log('\r\n[' + new Date().toLocaleString() + '] INFO: Common => Boltz Options: ' + JSON.stringify(boltzOptions));
->>>>>>> Stashed changes
   return boltzOptions;
 };
 
@@ -116,11 +104,7 @@ common.updateSelectedNodeOptions = () => {
     }
     if (common.selectedNode && common.selectedNode.log_level == "DEBUG") {
       console.log('\r\n[' + new Date().toLocaleString() + '] DEBUG: Common => Updated Node Options: ' + JSON.stringify(common.selectedNode.options));
-<<<<<<< Updated upstream
     }
-=======
-    }    
->>>>>>> Stashed changes
     return { status: 200, message: 'Updated Successfully!' };
   } catch(err) {
     common.selectedNode.options = {

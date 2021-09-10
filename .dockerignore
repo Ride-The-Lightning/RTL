@@ -20,5 +20,5 @@ src/
 .gitattributes
 .gitignore
 angular.json
-RTL_Config.json
+RTL-Config.json
 tsconfig.json
