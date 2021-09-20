@@ -16,7 +16,11 @@ exports.getInfo = (req, res, next) => {
     const err = common.handleError({ statusCode: 502, message: 'Bad or Missing Macaroon', error: errMsg },  'GetInfo', errMsg);
     return res.status(err.statusCode).json({message: err.message, error: err.error});
   } else {
-    common.nodes.map(node => { if (node.lnImplementation === 'LND') { connect.getAllNodeAllChannelBackup(node); }});
+    common.nodes.map(node => { 
+      if (node.ln_implementation === 'LND') { 
+        connect.getAllNodeAllChannelBackup(node); 
+      }
+    });
     request(options).then((body) => {
       logger.log({level: 'DEBUG', fileName: 'GetInfo', msg: 'Node Information', data: body});
       const body_str = (!body) ? '' : JSON.stringify(body);

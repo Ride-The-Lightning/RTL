@@ -233,8 +233,12 @@ connect.validateNodeConfig = (config) => {
         let exists = fs.existsSync(common.nodes[idx].channel_backup_path + common.path_separator + 'channel-all.bak');
         if (!exists) {
           try {
-            var createStream = fs.createWriteStream(common.nodes[idx].channel_backup_path + common.path_separator + 'channel-all.bak');
-            createStream.end();
+            if (common.nodes[idx].ln_implementation === 'LND') {
+              connect.getAllNodeAllChannelBackup(common.nodes[idx]);
+            } else {
+              var createStream = fs.createWriteStream(common.nodes[idx].channel_backup_path + common.path_separator + 'channel-all.bak');
+              createStream.end();
+            }
           } catch (err) {
             logger.log({ level: 'ERROR', fileName: 'Connect', msg: 'Something went wrong while creating backup file: \n' + err });
           }
@@ -368,7 +372,7 @@ connect.logEnvVariables = () => {
 connect.getAllNodeAllChannelBackup = (node) => {
   let channel_backup_file = node.channel_backup_path + common.path_separator + 'channel-all.bak';
   let options = {
-    url: node.ln_server_url + '/channels/backup',
+    url: node.ln_server_url + '/v1/channels/backup',
     rejectUnauthorized: false,
     json: true,
     headers: { 'Grpc-Metadata-macaroon': fs.readFileSync(node.macaroon_path + '/admin.macaroon').toString('hex') }
@@ -391,6 +395,11 @@ connect.getAllNodeAllChannelBackup = (node) => {
     });
   }, (err) => {
     logger.log({ level: 'ERROR', fileName: 'Connect', msg: 'Channel Backup Response Error', error: err });
+    fs.writeFile(channel_backup_file, '', (writeErr) => {
+      if (writeErr) {
+        logger.log({ level: 'ERROR', fileName: 'Connect', msg: 'Channel Backup Response Empty File Write Error', error: writeErr });
+      }
+    });
   })
 };
 
