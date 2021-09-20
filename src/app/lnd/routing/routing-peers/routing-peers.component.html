@@ -9,7 +9,7 @@
         </mat-form-field>
       </div>
       <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start start" fxFlex="100" class="table-container">
-        <mat-progress-bar *ngIf="apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+        <mat-progress-bar *ngIf="apisCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
         <table mat-table #tableIn [dataSource]="RoutingPeersIncoming" matSort class="overflow-auto incoming-table">
           <ng-container matColumnDef="chan_id">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel ID</th>
@@ -36,12 +36,12 @@
           </ng-container>
           <ng-container matColumnDef="no_incoming_event">
             <td mat-footer-cell *matFooterCellDef colspan="4">
-              <p *ngIf="(!RoutingPeersIncoming?.data || RoutingPeersIncoming?.data?.length<1) && apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.COMPLETED">No incoming routing peer available.</p>
-              <p *ngIf="(!RoutingPeersIncoming?.data || RoutingPeersIncoming?.data?.length<1) && apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.INITIATED">Getting incoming routing peers...</p>
-              <p *ngIf="(!RoutingPeersIncoming?.data || RoutingPeersIncoming?.data?.length<1) && apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+              <p *ngIf="(!RoutingPeersIncoming?.data || RoutingPeersIncoming?.data?.length<1) && apisCallStatus?.status === apiCallStatusEnum.COMPLETED">No incoming routing peer available.</p>
+              <p *ngIf="(!RoutingPeersIncoming?.data || RoutingPeersIncoming?.data?.length<1) && apisCallStatus?.status === apiCallStatusEnum.INITIATED">Getting incoming routing peers...</p>
+              <p *ngIf="(!RoutingPeersIncoming?.data || RoutingPeersIncoming?.data?.length<1) && apisCallStatus?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
             </td>
           </ng-container>
-          <tr mat-footer-row *matFooterRowDef="['no_incoming_event']" [ngClass]="{'display-none': RoutingPeersIncoming?.data && RoutingPeersIncoming?.data?.length>0}"></tr>
+          <tr mat-footer-row *matFooterRowDef="['no_incoming_event']" [ngClass]="{'display-none': RoutingPeersIncoming?.data?.length>0}"></tr>
           <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
@@ -56,7 +56,7 @@
         </mat-form-field>
       </div>
       <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start start" fxFlex="100" class="table-container">
-        <mat-progress-bar *ngIf="apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+        <mat-progress-bar *ngIf="apisCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
         <table mat-table #tableOut [dataSource]="RoutingPeersOutgoing" matSort class="overflow-auto outgoing-table">
           <ng-container matColumnDef="chan_id">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel ID</th>
@@ -83,12 +83,12 @@
           </ng-container>
           <ng-container matColumnDef="no_outgoing_event">
             <td mat-footer-cell *matFooterCellDef colspan="4">
-              <p *ngIf="(!RoutingPeersOutgoing?.data || RoutingPeersOutgoing?.data?.length<1) && apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.COMPLETED">No outgoing routing peer available.</p>
-              <p *ngIf="(!RoutingPeersOutgoing?.data || RoutingPeersOutgoing?.data?.length<1) && apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.INITIATED">Getting outgoing routing peers...</p>
-              <p *ngIf="(!RoutingPeersOutgoing?.data || RoutingPeersOutgoing?.data?.length<1) && apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+              <p *ngIf="(!RoutingPeersOutgoing?.data || RoutingPeersOutgoing?.data?.length<1) && apisCallStatus?.status === apiCallStatusEnum.COMPLETED">No outgoing routing peer available.</p>
+              <p *ngIf="(!RoutingPeersOutgoing?.data || RoutingPeersOutgoing?.data?.length<1) && apisCallStatus?.status === apiCallStatusEnum.INITIATED">Getting outgoing routing peers...</p>
+              <p *ngIf="(!RoutingPeersOutgoing?.data || RoutingPeersOutgoing?.data?.length<1) && apisCallStatus?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
             </td>
           </ng-container>
-          <tr mat-footer-row *matFooterRowDef="['no_outgoing_event']" [ngClass]="{'display-none': RoutingPeersOutgoing?.data && RoutingPeersOutgoing?.data?.length>0}"></tr>
+          <tr mat-footer-row *matFooterRowDef="['no_outgoing_event']" [ngClass]="{'display-none': RoutingPeersOutgoing?.data?.length>0}"></tr>
           <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>

@@ -86,14 +86,14 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
 
   onHopClick(selHop: Hop, event: any) {
     const reorderedHop = [
-      [{ key: 'hop_sequence', value: selHop.hop_sequence, title: 'Sequence', width: 30, type: DataTypeEnum.NUMBER },
-        { key: 'amt_to_forward', value: selHop.amt_to_forward, title: 'Amount To Forward (Sats)', width: 30, type: DataTypeEnum.NUMBER },
-        { key: 'fee_msat', value: selHop.fee_msat, title: 'Fee (mSats)', width: 40, type: DataTypeEnum.NUMBER }],
-      [{ key: 'pubkey_alias', value: selHop.pubkey_alias, title: 'Peer Alias', width: 30, type: DataTypeEnum.STRING },
-        { key: 'pub_key', value: selHop.pub_key, title: 'Peer Pubkey', width: 70, type: DataTypeEnum.STRING }],
-      [{ key: 'expiry', value: selHop.expiry, title: 'Expiry', width: 30, type: DataTypeEnum.NUMBER },
-        { key: 'chan_id', value: selHop.chan_id, title: 'Channel ID', width: 30, type: DataTypeEnum.STRING },
-        { key: 'chan_capacity', value: selHop.chan_capacity, title: 'Channel Capacity', width: 40, type: DataTypeEnum.NUMBER }]
+      [{ key: 'hop_sequence', value: selHop.hop_sequence, title: 'Sequence', width: 33, type: DataTypeEnum.NUMBER },
+        { key: 'amt_to_forward', value: selHop.amt_to_forward, title: 'Amount To Forward (Sats)', width: 33, type: DataTypeEnum.NUMBER },
+        { key: 'fee_msat', value: selHop.fee_msat, title: 'Fee (mSats)', width: 34, type: DataTypeEnum.NUMBER }],
+      [{ key: 'chan_capacity', value: selHop.chan_capacity, title: 'Channel Capacity (Sats)', width: 50, type: DataTypeEnum.NUMBER },
+        { key: 'expiry', value: selHop.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.NUMBER }],
+      [{ key: 'pubkey_alias', value: selHop.pubkey_alias, title: 'Peer Alias', width: 50, type: DataTypeEnum.STRING },
+        { key: 'chan_id', value: selHop.chan_id, title: 'Channel ID', width: 50, type: DataTypeEnum.STRING }],
+      [{ key: 'pub_key', value: selHop.pub_key, title: 'Peer Pubkey', width: 100, type: DataTypeEnum.STRING }]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
