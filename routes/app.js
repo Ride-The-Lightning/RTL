@@ -42,6 +42,8 @@ const paymentsCLRoutes = require("./c-lightning/payments");
 const peersCLRoutes = require("./c-lightning/peers");
 const networkCLRoutes = require("./c-lightning/network");
 const messageCLRoutes = require("./c-lightning/message");
+const offersCLRoutes = require("./c-lightning/offers");
+
 
 const infoECLRoutes = require("./eclair/getInfo");
 const feesECLRoutes = require("./eclair/fees");
@@ -70,11 +72,11 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Methods",
     "GET, POST, PATCH, PUT, DELETE, OPTIONS"
   );
-  if (process.env.NODE_ENV == 'development') {
+  // if (process.env.NODE_ENV == 'development') {
   	res.setHeader("Access-Control-Allow-Origin", req.headers.origin ? req.headers.origin : '');
     return next(); 
-  }
-  csrfProtection(req, res, next);
+  // }
+  // csrfProtection(req, res, next);
 });
 
 app.use(apiRoot + "authenticate", authenticateRoutes);
@@ -108,6 +110,8 @@ app.use(apiCLRoot + "payments", paymentsCLRoutes);
 app.use(apiCLRoot + "peers", peersCLRoutes);
 app.use(apiCLRoot + "network", networkCLRoutes);
 app.use(apiCLRoot + "message", messageCLRoutes);
+app.use(apiCLRoot + "offers", offersCLRoutes);
+
 
 app.use(apiECLRoot + "getinfo", infoECLRoutes);
 app.use(apiECLRoot + "fees", feesECLRoutes);
