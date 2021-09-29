@@ -320,4 +320,6 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
 
 export const getLNDState = createFeatureSelector<LNDState>('lnd');
 export const getInformation = createSelector(getLNDState, (state: LNDState) => state.information);
+export const getForwardingHistory = createSelector(getLNDState, (state: LNDState) => state.forwardingHistory);
+export const getForwardingHistoryAPIStatus = createSelector(getLNDState, (state: LNDState) => state.apisCallStatus.GetForwardingHistory);
 export const takeLastGetInfo = (count: number) => pipe(select(getInformation), scan((acc, curr) => [curr, ...acc].filter((val, index) => index < count && val.hasOwnProperty('identity_pubkey')), [] as GetInfo[]));

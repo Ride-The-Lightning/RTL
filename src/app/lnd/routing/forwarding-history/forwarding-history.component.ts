@@ -1,6 +1,6 @@
 import { Component, OnInit, OnChanges, ViewChild, Input, SimpleChanges, OnDestroy, AfterViewInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { Subject } from 'rxjs';
+import { combineLatest, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
@@ -9,12 +9,13 @@ import { MatTableDataSource } from '@angular/material/table';
 
 import { ForwardingEvent } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
-import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import * as fromLNDReducer from '../../store/lnd.reducers';
 
 @Component({
   selector: 'rtl-forwarding-history',
@@ -39,7 +40,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListLND = null;
+  public apisCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -58,18 +59,18 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   }
 
   ngOnInit() {
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    combineLatest([this.store.select(fromLNDReducer.getForwardingHistory), this.store.select(fromLNDReducer.getForwardingHistoryAPIStatus)]).
+      pipe(takeUntil(this.unSubs[0])).subscribe(([forwardingHistory, apiCallStatus]) => {
         if (this.eventsData.length <= 0) {
           this.errorMessage = '';
-          this.apisCallStatus = rtlStore.apisCallStatus;
-          if (rtlStore.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
-            this.errorMessage = (typeof (this.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(this.apisCallStatus.GetForwardingHistory.message) : this.apisCallStatus.GetForwardingHistory.message;
+          this.apisCallStatus = apiCallStatus;
+          if (apiCallStatus?.status === APICallStatusEnum.ERROR) {
+            this.errorMessage = (typeof (this.apisCallStatus.message) === 'object') ? JSON.stringify(this.apisCallStatus.message) : this.apisCallStatus.message;
           }
-          this.forwardingHistoryData = (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events) ? rtlStore.forwardingHistory.forwarding_events : [];
+          this.forwardingHistoryData = (forwardingHistory?.forwarding_events) ? forwardingHistory.forwarding_events : [];
           this.loadForwardingEventsTable(this.forwardingHistoryData);
-          this.logger.info(rtlStore);
+          this.logger.info(apiCallStatus);
+          this.logger.info(forwardingHistory);
         }
       });
   }

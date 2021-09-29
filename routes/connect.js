@@ -11,7 +11,6 @@ var errMsg = '';
 var request = require('request-promise');
 var ini = require('ini');
 var parseHocon = require('hocon-parser');
-common.path_separator = (platform === 'win32') ? '\\' : '/';
 
 connect.setDefaultConfig = () => {
   var homeDir = os.userInfo().homedir;
@@ -91,7 +90,7 @@ connect.replacePasswordWithHash = (multiPassHashed) => {
     config.multiPassHashed = multiPassHashed;
     delete config.multiPass;
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
-    console.log('Please note that, RTL has encrypted the plaintext password into its corresponding hash.');
+    logger.log({ level: 'INFO', fileName: 'Connect', msg: 'Please note that, RTL has encrypted the plaintext password into its corresponding hash' });
     return config.multiPassHashed;
   } catch (err) {
     errMsg = errMsg + '\nPassword hashing failed!';
@@ -234,16 +233,21 @@ connect.validateNodeConfig = (config) => {
         let exists = fs.existsSync(common.nodes[idx].channel_backup_path + common.path_separator + 'channel-all.bak');
         if (!exists) {
           try {
-            var createStream = fs.createWriteStream(common.nodes[idx].channel_backup_path + common.path_separator + 'channel-all.bak');
-            createStream.end();
+            if (common.nodes[idx].ln_implementation === 'LND') {
+              connect.getAllNodeAllChannelBackup(common.nodes[idx]);
+            } else {
+              var createStream = fs.createWriteStream(common.nodes[idx].channel_backup_path + common.path_separator + 'channel-all.bak');
+              createStream.end();
+            }
           } catch (err) {
-            console.error('Something went wrong while creating backup file: \n' + err);
+            logger.log({ level: 'ERROR', fileName: 'Connect', msg: 'Something went wrong while creating backup file: \n' + err });
           }
         }
       } catch (err) {
-        console.error('Something went wrong while creating the backup directory: \n' + err);
+        logger.log({ level: 'ERROR', fileName: 'Connect', msg: 'Something went wrong while creating the backup directory: \n' + err });
       }
       common.nodes[idx].log_file = common.rtl_conf_file_path + '/logs/RTL-Node-' + node.index + '.log';
+      logger.log({ level: 'DEBUG', fileName: 'Connect', msg: 'Node Information', data: common.nodes[idx] });
       const log_file = common.nodes[idx].log_file;
       if (fs.existsSync(log_file)) {
         fs.writeFile(log_file, '', () => { });
@@ -255,7 +259,7 @@ connect.validateNodeConfig = (config) => {
           createStream.end();
         }
         catch (err) {
-          console.error('Something went wrong while creating log file ' + log_file + ': \n' + err);
+          logger.log({ level: 'ERROR', fileName: 'Connect', msg: 'Something went wrong while creating log file ' + log_file + ': \n' + err });
         }
       }
     });
@@ -321,7 +325,7 @@ connect.readCookie = (cookieFile) => {
     try {
       common.cookie = fs.readFileSync(cookieFile, 'utf-8');
     } catch (err) {
-      console.error('Something went wrong while reading cookie: \n' + err);
+      logger.log({ level: 'ERROR', fileName: 'Connect', msg: 'Something went wrong while reading cookie: \n' + err });
       throw new Error(err);
     }
   } else {
@@ -332,7 +336,7 @@ connect.readCookie = (cookieFile) => {
       common.cookie = fs.readFileSync(cookieFile, 'utf-8');
     }
     catch (err) {
-      console.error('Something went wrong while reading the cookie: \n' + err);
+      logger.log({ level: 'ERROR', fileName: 'Connect', msg: 'Something went wrong while reading the cookie: \n' + err });
       throw new Error(err);
     }
   }
@@ -344,7 +348,7 @@ connect.refreshCookie = (cookieFile) => {
     common.cookie = fs.readFileSync(cookieFile, 'utf-8');
   }
   catch (err) {
-    console.error('Something went wrong while refreshing cookie: \n' + err);
+    logger.log({ level: 'ERROR', fileName: 'Connect', msg: 'Something went wrong while refreshing cookie: \n' + err });
     throw new Error(err);
   }
 }
@@ -368,7 +372,7 @@ connect.logEnvVariables = () => {
 connect.getAllNodeAllChannelBackup = (node) => {
   let channel_backup_file = node.channel_backup_path + common.path_separator + 'channel-all.bak';
   let options = {
-    url: node.ln_server_url + '/channels/backup',
+    url: node.ln_server_url + '/v1/channels/backup',
     rejectUnauthorized: false,
     json: true,
     headers: { 'Grpc-Metadata-macaroon': fs.readFileSync(node.macaroon_path + '/admin.macaroon').toString('hex') }
@@ -391,6 +395,11 @@ connect.getAllNodeAllChannelBackup = (node) => {
     });
   }, (err) => {
     logger.log({ level: 'ERROR', fileName: 'Connect', msg: 'Channel Backup Response Error', error: err });
+    fs.writeFile(channel_backup_file, '', (writeErr) => {
+      if (writeErr) {
+        logger.log({ level: 'ERROR', fileName: 'Connect', msg: 'Channel Backup Response Empty File Write Error', error: writeErr });
+      }
+    });
   })
 };
 
@@ -543,22 +552,22 @@ connect.upgradeConfig = (confFileFullPath) => {
     const singleNodeExists = fs.existsSync(singleNodeConfFile);
     const multiNodeExists = fs.existsSync(multiNodeConfFile);
     if ((singleNodeExists && multiNodeExists) || (!singleNodeExists && multiNodeExists)) {
-      console.log('Start...config migration for file ' + multiNodeConfFile);
+      logger.log({ level: 'INFO', fileName: 'Connect', msg: 'Start...config migration for file', data: multiNodeConfFile });
       connect.modifyJsonMultiNodeConfig(confFileFullPath);
-      console.log('End...config migration.');
+      logger.log({ level: 'INFO', fileName: 'Connect', msg: 'End...config migration' });
     } else if (singleNodeExists && !multiNodeExists) {
-      console.log('Start...config migration for file ' + singleNodeConfFile);
+      logger.log({ level: 'INFO', fileName: 'Connect', msg: 'Start...config migration for file ', data: singleNodeConfFile });
       connect.modifyIniSingleNodeConfig(confFileFullPath);
-      console.log('End...config migration.');
+      logger.log({ level: 'INFO', fileName: 'Connect', msg: 'End...config migration' });
     } else if (!singleNodeExists && !multiNodeExists) {
       if (!fs.existsSync(confFileFullPath)) {
-        console.log('Start...config creation at: ' + confFileFullPath);
+        logger.log({ level: 'INFO', fileName: 'Connect', msg: 'Start...config creation at ', data: confFileFullPath });
         fs.writeFileSync(confFileFullPath, JSON.stringify(connect.setDefaultConfig(), null, 2), 'utf-8');
-        console.log('End...config creation.');
+        logger.log({ level: 'INFO', fileName: 'Connect', msg: 'End...config creation' });
       }
     }
   } catch (err) {
-    console.error('Something went wrong while upgrading the RTL config file: \n' + err);
+    logger.log({ level: 'ERROR', fileName: 'Connect', msg: 'Something went wrong while upgrading the RTL config file: \n' + err });
     throw new Error(err);
   }
 }
@@ -576,7 +585,7 @@ connect.setServerConfiguration = () => {
     connect.setSelectedNode(config);
     connect.logEnvVariables();
   } catch (err) {
-    console.error('Something went wrong while configuring the node server: \n' + err);
+    logger.log({ level: 'ERROR', fileName: 'Connect', msg: 'Something went wrong while configuring the node server: \n' + err });
     throw new Error(err);
   }
 }

@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit } from '@angular/core';
+import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatSort } from '@angular/material/sort';
@@ -8,12 +8,13 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 
 import { ForwardingEvent, RoutingPeers } from '../../../shared/models/lndModels';
 import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, getPaginatorLabel, PAGE_SIZE, PAGE_SIZE_OPTIONS, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
-import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import * as fromLNDReducer from '../../store/lnd.reducers';
 
 @Component({
   selector: 'rtl-routing-peers',
@@ -23,7 +24,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') }
   ]
 })
-export class RoutingPeersComponent implements OnInit, OnDestroy {
+export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('tableIn', { read: MatSort, static: false }) sortIn: MatSort;
   @ViewChild('tableOut', { read: MatSort, static: false }) sortOut: MatSort;
@@ -31,8 +32,8 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
   @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator|undefined;
   public routingPeersData = [];
   public displayedColumns: any[] = [];
-  public RoutingPeersIncoming: any;
-  public RoutingPeersOutgoing: any;
+  public RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>([]);
+  public RoutingPeersOutgoing = new MatTableDataSource<RoutingPeers>([]);
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -41,7 +42,7 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
   public errorMessage = '';
   public filterIn = '';
   public filterOut = '';
-  public apisCallStatus: ApiCallsListLND = null;
+  public apisCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -63,24 +64,30 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    combineLatest([this.store.select(fromLNDReducer.getForwardingHistory), this.store.select(fromLNDReducer.getForwardingHistoryAPIStatus)]).
+      pipe(takeUntil(this.unSubs[0])).subscribe(([forwardingHistory, apiCallStatus]) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(this.apisCallStatus.GetForwardingHistory.message) : this.apisCallStatus.GetForwardingHistory.message;
+        this.apisCallStatus = apiCallStatus;
+        if (apiCallStatus?.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apisCallStatus.message) === 'object') ? JSON.stringify(this.apisCallStatus.message) : this.apisCallStatus.message;
         }
-        if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events) {
-          this.routingPeersData = rtlStore.forwardingHistory.forwarding_events;
+        if (forwardingHistory.forwarding_events) {
+          this.routingPeersData = forwardingHistory.forwarding_events;
         } else {
           this.routingPeersData = [];
         }
         if (this.routingPeersData.length > 0 && this.sortIn && this.paginatorIn && this.sortOut && this.paginatorOut) {
           this.loadRoutingPeersTable(this.routingPeersData);
         }
-        this.logger.info(rtlStore);
+        this.logger.info(apiCallStatus);
+        this.logger.info(forwardingHistory);
       });
+  }
+
+  ngAfterViewInit() {
+    if (this.routingPeersData.length > 0) {
+      this.loadRoutingPeersTable(this.routingPeersData);
+    }
   }
 
   onRoutingPeerClick(selRPeer: RoutingPeers, event: any, direction: string) {
