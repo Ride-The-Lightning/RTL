@@ -1,10 +1,10 @@
 var datastore = require('nedb');
 var logger = require('../controllers/shared/logger');
-var database = new datastore('./database/database.db')
+var offerStore = new datastore('./database/offerStore.db')
 try {
-    database.loadDatabase();
-    logger.log({level: 'INFO', fileName: 'Database', msg: 'Database loaded'});
+    offerStore.loadDatabase();
+    logger.log({level: 'INFO', fileName: 'offerStore', msg: 'offerStore loaded'});
 } catch(err) {
-    logger.log({level: 'ERROR', fileName: 'Database', msg: 'failed to load the database', error: err}); 
+    logger.log({level: 'ERROR', fileName: 'offerStore', msg: 'failed to load the offerStore', error: err}); 
 }
-module.exports = database
+module.exports = offerStore

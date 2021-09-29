@@ -1,10 +1,10 @@
-const database = require('../../database/db');
+const offerStore = require('../../database/db');
 var common = require('../../routes/common');
 var logger = require('../shared/logger');
 
 exports.getOffers = (req, res, next) => {
   try {
-    database.find({}, function (err, allOffers) {
+    offerStore.find({}, function (err, allOffers) {
       if (err) {
         const errResp = common.handleError(err, 'Offers', 'Get Offers Error');
         return res.status(500).json({ message: errResp.message, error: errResp.error });
@@ -22,7 +22,7 @@ exports.getOffers = (req, res, next) => {
 exports.getOffer = (req, res, next) => {
   const idRequested = req.params.id
   try {
-    database.findOne({ _id: idRequested }, function (err, offerRequested) {
+    offerStore.findOne({ _id: idRequested }, function (err, offerRequested) {
       if (err) {
         const errResp = common.handleError(err, 'Offers', 'Get Offer Error');
         return res.status(500).json({ message: errResp.message, error: errResp.error });
@@ -40,7 +40,7 @@ exports.getOffer = (req, res, next) => {
 exports.saveOffer = (req, res, next) => {
   const offerToSave = { alias: req.body.alias, invoice: req.body.invoice };
   try {
-    database.insert(offerToSave)
+    offerStore.insert(offerToSave)
     logger.log({ level: 'DEBUG', fileName: 'Offers', msg: 'Offer Saved', data: offerToSave });
     res.status(200).send({ message: "Offer saved successfully" });
   } catch (err) {
@@ -56,7 +56,7 @@ exports.updateOffer = (req, res, next) => {
     invoice: req.body.invoice
   };
   try {
-    database.update({ _id: req.body.id }, { $set: updatedOffer }, { multi: false })
+    offerStore.update({ _id: req.body.id }, { $set: updatedOffer }, { multi: false })
     logger.log({ level: 'DEBUG', fileName: 'Offers', msg: 'Offer Update', data: updatedOffer });
     res.status(200).send({ message: "Offer updated successfully" });
   } catch (err) {
@@ -67,7 +67,7 @@ exports.updateOffer = (req, res, next) => {
 
 exports.deleteOffer = (req, res, next) => {
   try {
-    database.remove({ _id: req.params.id }, {})
+    offerStore.remove({ _id: req.params.id }, {})
     logger.log({ level: 'DEBUG', fileName: 'Offers', msg: 'Offer Deleted', data: { id: req.params.id } });
     res.status(200).json({ message: "Offer deleted successfully" });
   } catch (err) {

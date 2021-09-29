@@ -72,11 +72,11 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Methods",
     "GET, POST, PATCH, PUT, DELETE, OPTIONS"
   );
-  // if (process.env.NODE_ENV == 'development') {
+  if (process.env.NODE_ENV == 'development') {
   	res.setHeader("Access-Control-Allow-Origin", req.headers.origin ? req.headers.origin : '');
     return next(); 
-  // }
-  // csrfProtection(req, res, next);
+  }
+  csrfProtection(req, res, next);
 });
 
 app.use(apiRoot + "authenticate", authenticateRoutes);
