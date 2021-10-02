@@ -11,7 +11,7 @@ console.log('\n\n=============================================');
 console.log('Updating application version to ' + appVersion + '.');
 console.log('=============================================');
 
-const commonFilePath = path.join(__dirname, "..", "routes", "common.js");
+const commonFilePath = path.join(__dirname, "..", "backend", "utils", "common.js");
 const commonFileData = fs.readFileSync(commonFilePath, 'utf-8');
 const commonFileLined = commonFileData.split(os.EOL);
 const foundDataLine = commonFileLined.find(lineItem => lineItem.includes('common.read_dummy_data =') || lineItem.includes('common.read_dummy_data='));

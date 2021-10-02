@@ -1,4 +1,4 @@
-![](../screenshots/RTL-ECL-Dashboard.png)
+![](./screenshots/RTL-ECL-Dashboard.png)
 
 ## RTL Eclair setup
 

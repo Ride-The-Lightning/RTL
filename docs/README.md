@@ -1,5 +1,5 @@
 ## Ride The Lightning (RTL)
-![](../screenshots/RTL-LND-Dashboard.png)
+![](./screenshots/RTL-LND-Dashboard.png)
 
 <a href="https://snyk.io/test/github/Ride-The-Lightning/RTL"><img src="https://snyk.io/test/github/Ride-The-Lightning/RTL/badge.svg" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/Ride-The-Lightning/RTL" style="max-width:100%;"></a>
 [![license](https://img.shields.io/github/license/DAVFoundation/captain-n3m0.svg?style=flat-square)](https://github.com/DAVFoundation/captain-n3m0/blob/master/LICENSE)
@@ -41,7 +41,7 @@ RTL is available on the below platforms/services:
 Docker Image: https://hub.docker.com/r/shahanafarooqui/rtl
 
 ### <a name="arch"></a>Architecture
-![](../screenshots/RTL-LND-Arch-2.png)
+![](./screenshots/RTL-LND-Arch-2.png)
 
 ### <a name="prereq"></a>Prerequisites
 * Functioning and synced LND lightning node.
