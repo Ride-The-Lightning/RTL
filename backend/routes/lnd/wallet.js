@@ -1,15 +1,15 @@
-const WalletController = require("../../controllers/lnd/wallet");
-const express = require("express");
-const router = express.Router();
-const authCheck = require("../../utils/authCheck");
-
-router.get("/genseed/:passphrase?", authCheck, WalletController.genSeed);
-router.get("/updateSelNodeOptions", authCheck, WalletController.updateSelNodeOptions);
-router.get("/getUTXOs", authCheck, WalletController.getUTXOs);
-router.post("/wallet/:operation", authCheck, WalletController.operateWallet);
-router.post("/bumpfee", authCheck, WalletController.bumpFee);
-router.post("/label", authCheck, WalletController.labelTransaction);
-router.post("/lease", authCheck, WalletController.leaseUTXO);
-router.post("/release", authCheck, WalletController.releaseUTXO);
-
-module.exports = router;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authCheck_1 = require("../../utils/authCheck");
+const wallet_1 = require("../../controllers/lnd/wallet");
+const router = express_1.Router();
+router.get('/genseed/:passphrase?', authCheck_1.isAuthenticated, wallet_1.genSeed);
+router.get('/updateSelNodeOptions', authCheck_1.isAuthenticated, wallet_1.updateSelNodeOptions);
+router.get('/getUTXOs', authCheck_1.isAuthenticated, wallet_1.getUTXOs);
+router.post('/wallet/:operation', authCheck_1.isAuthenticated, wallet_1.operateWallet);
+router.post('/bumpfee', authCheck_1.isAuthenticated, wallet_1.bumpFee);
+router.post('/label', authCheck_1.isAuthenticated, wallet_1.labelTransaction);
+router.post('/lease', authCheck_1.isAuthenticated, wallet_1.leaseUTXO);
+router.post('/release', authCheck_1.isAuthenticated, wallet_1.releaseUTXO);
+exports.default = router;

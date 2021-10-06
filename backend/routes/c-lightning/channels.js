@@ -1,14 +1,13 @@
-const ChannelsController = require("../../controllers/c-lightning/channels");
-const express = require("express");
-const router = express.Router();
-const authCheck = require("../../utils/authCheck");
-
-router.get("/listChannels", authCheck, ChannelsController.listChannels);
-router.post("/", authCheck, ChannelsController.openChannel);
-router.post("/setChannelFee", authCheck, ChannelsController.setChannelFee);
-router.delete("/:channelId", authCheck, ChannelsController.closeChannel);
-
-router.get("/localremotebalance", authCheck, ChannelsController.getLocalRemoteBalance);
-router.get("/listForwards", authCheck, ChannelsController.listForwards);
-
-module.exports = router;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authCheck_1 = require("../../utils/authCheck");
+const channels_1 = require("../../controllers/c-lightning/channels");
+const router = express_1.Router();
+router.get('/listChannels', authCheck_1.isAuthenticated, channels_1.listChannels);
+router.post('/', authCheck_1.isAuthenticated, channels_1.openChannel);
+router.post('/setChannelFee', authCheck_1.isAuthenticated, channels_1.setChannelFee);
+router.delete('/:channelId', authCheck_1.isAuthenticated, channels_1.closeChannel);
+router.get('/localremotebalance', authCheck_1.isAuthenticated, channels_1.getLocalRemoteBalance);
+router.get('/listForwards', authCheck_1.isAuthenticated, channels_1.listForwards);
+exports.default = router;

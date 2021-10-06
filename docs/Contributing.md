@@ -47,7 +47,8 @@ Contributions via code is the most sought after contribution and something we en
 * Sometimes after installation, user receives a message from npm to fix dependency vulnerability by running `npm audit fix`. Please do not follow this step as it can break some of the working RTL code on your machine. We audit and fix these vulnerabilities as soon as possible at our end.
 	
 ##### Node Server for Development
-* To run RTL node server in development mode, go to workspace/RTL and excute `npm run server` in the command window. This will run the script named `server` defined in package.json. This script sets the node environment as development and starts the server from rtl.js. Nodemon restarts the node application when file changes in the directory are detected.
+* The RTL server code has been written in typescript and `npm run watchserver` script can be used to compile and generate their javascript equivalents. Keep the script running to watch for realtime changes and compilation. `watchserver` and `buildserver` scripts get the configuration options from tsconfig, read .ts files from the `./server` folder and save the compiled .js and .map files in `./backend` folder.
+* To run RTL node server in development mode, open another command window, go to workspace/RTL and excute `npm run server`. This will run the script named `server` defined in package.json. This script sets the node environment as development and starts the server from rtl.js. Nodemon restarts the node application when file changes in the directory are detected.
 * This `server` script has been written for windows machine. Please update the script to set the `NODE_ENV=development` according to your machine's OS.
 * To check all available scripts for the project, explore the `scripts` section of package.json. 
 ![](./screenshots/node-server-dev.jpg)

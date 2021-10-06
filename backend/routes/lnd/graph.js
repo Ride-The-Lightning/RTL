@@ -1,14 +1,14 @@
-const graphController = require("../../controllers/lnd/graph");
-const express = require("express");
-const router = express.Router();
-const authCheck = require("../../utils/authCheck");
-
-router.get("/", authCheck, graphController.getDescribeGraph);
-router.get("/info", authCheck, graphController.getGraphInfo);
-router.get("/nodes", authCheck, graphController.getAliasesForPubkeys);
-router.get("/node/:pubKey", authCheck, graphController.getGraphNode);
-router.get("/edge/:chanid", authCheck, graphController.getGraphEdge);
-router.get("/edge/:chanid/:localPubkey", authCheck, graphController.getRemoteFeePolicy);
-router.get("/routes/:destPubkey/:amount", authCheck, graphController.getQueryRoutes);
-
-module.exports = router;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authCheck_1 = require("../../utils/authCheck");
+const graph_1 = require("../../controllers/lnd/graph");
+const router = express_1.Router();
+router.get('/', authCheck_1.isAuthenticated, graph_1.getDescribeGraph);
+router.get('/info', authCheck_1.isAuthenticated, graph_1.getGraphInfo);
+router.get('/nodes', authCheck_1.isAuthenticated, graph_1.getAliasesForPubkeys);
+router.get('/node/:pubKey', authCheck_1.isAuthenticated, graph_1.getGraphNode);
+router.get('/edge/:chanid', authCheck_1.isAuthenticated, graph_1.getGraphEdge);
+router.get('/edge/:chanid/:localPubkey', authCheck_1.isAuthenticated, graph_1.getRemoteFeePolicy);
+router.get('/routes/:destPubkey/:amount', authCheck_1.isAuthenticated, graph_1.getQueryRoutes);
+exports.default = router;

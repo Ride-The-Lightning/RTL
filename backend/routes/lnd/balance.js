@@ -1,8 +1,8 @@
-const BalanceController = require("../../controllers/lnd/balance");
-const express = require("express");
-const router = express.Router();
-const authCheck = require("../../utils/authCheck");
-
-router.get("/:source", authCheck, BalanceController.getBalance);
-
-module.exports = router;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authCheck_1 = require("../../utils/authCheck");
+const balance_1 = require("../../controllers/lnd/balance");
+const router = express_1.Router();
+router.get('/:source', authCheck_1.isAuthenticated, balance_1.getBalance);
+exports.default = router;

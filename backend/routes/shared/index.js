@@ -1,19 +1,18 @@
-const express = require('express');
-const router = express.Router();
-const authenticateRoutes = require('./authenticate');
-const boltzRoutes = require('./boltz');
-const loopRoutes = require('./loop');
-const RTLConfRoutes = require('./RTLConf');
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authenticate_1 = require("./authenticate");
+const boltz_1 = require("./boltz");
+const loop_1 = require("./loop");
+const RTLConf_1 = require("./RTLConf");
+const router = express_1.Router();
 const sharedRoutes = [
-  { path: '/authenticate', route: authenticateRoutes },
-  { path: '/boltz', route: boltzRoutes },
-  { path: '/loop', route: loopRoutes },
-  { path: '/conf', route: RTLConfRoutes }
+    { path: '/authenticate', route: authenticate_1.default },
+    { path: '/boltz', route: boltz_1.default },
+    { path: '/loop', route: loop_1.default },
+    { path: '/conf', route: RTLConf_1.default }
 ];
-
 sharedRoutes.forEach((route) => {
-  router.use(route.path, route.route);
+    router.use(route.path, route.route);
 });
-
-module.exports = router;
+exports.default = router;

@@ -1,0 +1,12 @@
+import { Router } from 'express';
+import { isAuthenticated } from '../../utils/authCheck';
+import { getRoute, listNode, listChannel, feeRates } from '../../controllers/c-lightning/network';
+
+const router = Router();
+
+router.get('/getRoute/:destPubkey/:amount', isAuthenticated, getRoute);
+router.get('/listNode/:id', isAuthenticated, listNode);
+router.get('/listChannel/:channelShortId', isAuthenticated, listChannel);
+router.get('/feeRates/:feeRateStyle', isAuthenticated, feeRates);
+
+export default router;

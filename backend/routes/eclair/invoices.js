@@ -1,10 +1,10 @@
-const invoicesController = require("../../controllers/eclair/invoices");
-const express = require("express");
-const router = express.Router();
-const authCheck = require("../../utils/authCheck");
-
-router.get("/", authCheck, invoicesController.listInvoices);
-router.get("/:paymentHash", authCheck, invoicesController.getInvoice);
-router.post("/", authCheck, invoicesController.createInvoice);
-
-module.exports = router;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authCheck_1 = require("../../utils/authCheck");
+const invoices_1 = require("../../controllers/eclair/invoices");
+const router = express_1.Router();
+router.get('/', authCheck_1.isAuthenticated, invoices_1.listInvoices);
+router.get('/:paymentHash', authCheck_1.isAuthenticated, invoices_1.getInvoice);
+router.post('/', authCheck_1.isAuthenticated, invoices_1.createInvoice);
+exports.default = router;

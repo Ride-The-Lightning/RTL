@@ -1,11 +1,11 @@
-const PaymentsController = require("../../controllers/eclair/payments");
-const express = require("express");
-const router = express.Router();
-const authCheck = require("../../utils/authCheck");
-
-router.get("/route/", authCheck, PaymentsController.queryPaymentRoute);
-router.get("/:invoice", authCheck, PaymentsController.decodePayment);
-router.post("/getsentinfos", authCheck, PaymentsController.getSentPaymentsInformation);
-router.post("/", authCheck, PaymentsController.postPayment);
-
-module.exports = router;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authCheck_1 = require("../../utils/authCheck");
+const payments_1 = require("../../controllers/eclair/payments");
+const router = express_1.Router();
+router.get('/route/', authCheck_1.isAuthenticated, payments_1.queryPaymentRoute);
+router.get('/:invoice', authCheck_1.isAuthenticated, payments_1.decodePayment);
+router.post('/getsentinfos', authCheck_1.isAuthenticated, payments_1.getSentPaymentsInformation);
+router.post('/', authCheck_1.isAuthenticated, payments_1.postPayment);
+exports.default = router;

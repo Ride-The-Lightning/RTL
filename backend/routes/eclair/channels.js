@@ -1,12 +1,12 @@
-const ChannelsController = require("../../controllers/eclair/channels");
-const express = require("express");
-const router = express.Router();
-const authCheck = require("../../utils/authCheck");
-
-router.get("/", authCheck, ChannelsController.getChannels);
-router.get("/stats", authCheck, ChannelsController.getChannelStats);
-router.post("/", authCheck, ChannelsController.openChannel);
-router.post("/updateRelayFee", authCheck, ChannelsController.updateChannelRelayFee);
-router.delete("/", authCheck, ChannelsController.closeChannel);
-
-module.exports = router;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authCheck_1 = require("../../utils/authCheck");
+const channels_1 = require("../../controllers/eclair/channels");
+const router = express_1.Router();
+router.get('/', authCheck_1.isAuthenticated, channels_1.getChannels);
+router.get('/stats', authCheck_1.isAuthenticated, channels_1.getChannelStats);
+router.post('/', authCheck_1.isAuthenticated, channels_1.openChannel);
+router.post('/updateRelayFee', authCheck_1.isAuthenticated, channels_1.updateChannelRelayFee);
+router.delete('/', authCheck_1.isAuthenticated, channels_1.closeChannel);
+exports.default = router;

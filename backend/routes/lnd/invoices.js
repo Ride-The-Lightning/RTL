@@ -1,10 +1,10 @@
-const invoicesController = require("../../controllers/lnd/invoices");
-const express = require("express");
-const router = express.Router();
-const authCheck = require("../../utils/authCheck");
-
-router.get("/", authCheck, invoicesController.listInvoices);
-router.get("/:rHashStr", authCheck, invoicesController.getInvoice);
-router.post("/", authCheck, invoicesController.addInvoice);
-
-module.exports = router;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authCheck_1 = require("../../utils/authCheck");
+const invoices_1 = require("../../controllers/lnd/invoices");
+const router = express_1.Router();
+router.get('/', authCheck_1.isAuthenticated, invoices_1.listInvoices);
+router.get('/:rHashStr', authCheck_1.isAuthenticated, invoices_1.getInvoice);
+router.post('/', authCheck_1.isAuthenticated, invoices_1.addInvoice);
+exports.default = router;

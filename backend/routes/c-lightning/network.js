@@ -1,11 +1,11 @@
-const NetworkController = require("../../controllers/c-lightning/network");
-const express = require("express");
-const router = express.Router();
-const authCheck = require("../../utils/authCheck");
-
-router.get("/getRoute/:destPubkey/:amount", authCheck, NetworkController.getRoute);
-router.get("/listNode/:id", authCheck, NetworkController.listNode);
-router.get("/listChannel/:channelShortId", authCheck, NetworkController.listChannel);
-router.get("/feeRates/:feeRateStyle", authCheck, NetworkController.feeRates);
-
-module.exports = router;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authCheck_1 = require("../../utils/authCheck");
+const network_1 = require("../../controllers/c-lightning/network");
+const router = express_1.Router();
+router.get('/getRoute/:destPubkey/:amount', authCheck_1.isAuthenticated, network_1.getRoute);
+router.get('/listNode/:id', authCheck_1.isAuthenticated, network_1.listNode);
+router.get('/listChannel/:channelShortId', authCheck_1.isAuthenticated, network_1.listChannel);
+router.get('/feeRates/:feeRateStyle', authCheck_1.isAuthenticated, network_1.feeRates);
+exports.default = router;

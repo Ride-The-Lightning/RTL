@@ -1,11 +1,11 @@
-const OnChainController = require("../../controllers/eclair/onchain");
-const express = require("express");
-const router = express.Router();
-const authCheck = require("../../utils/authCheck");
-
-router.get("/", authCheck, OnChainController.getNewAddress);
-router.get("/balance/", authCheck, OnChainController.getBalance);
-router.get("/transactions/", authCheck, OnChainController.getTransactions);
-router.post("/", authCheck, OnChainController.sendFunds);
-
-module.exports = router;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authCheck_1 = require("../../utils/authCheck");
+const onchain_1 = require("../../controllers/eclair/onchain");
+const router = express_1.Router();
+router.get('/', authCheck_1.isAuthenticated, onchain_1.getNewAddress);
+router.get('/balance/', authCheck_1.isAuthenticated, onchain_1.getBalance);
+router.get('/transactions/', authCheck_1.isAuthenticated, onchain_1.getTransactions);
+router.post('/', authCheck_1.isAuthenticated, onchain_1.sendFunds);
+exports.default = router;

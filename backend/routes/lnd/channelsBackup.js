@@ -1,11 +1,11 @@
-const ChannelsBackupController = require("../../controllers/lnd/channelsBackup");
-const express = require("express");
-const router = express.Router();
-const authCheck = require("../../utils/authCheck");
-
-router.get("/:channelPoint", authCheck, ChannelsBackupController.getBackup);
-router.get("/restore/list", authCheck, ChannelsBackupController.getRestoreList);
-router.post("/verify/:channelPoint", authCheck, ChannelsBackupController.postBackupVerify);
-router.post("/restore/:channelPoint", authCheck, ChannelsBackupController.postRestore);
-
-module.exports = router;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authCheck_1 = require("../../utils/authCheck");
+const channelsBackup_1 = require("../../controllers/lnd/channelsBackup");
+const router = express_1.Router();
+router.get('/:channelPoint', authCheck_1.isAuthenticated, channelsBackup_1.getBackup);
+router.get('/restore/list', authCheck_1.isAuthenticated, channelsBackup_1.getRestoreList);
+router.post('/verify/:channelPoint', authCheck_1.isAuthenticated, channelsBackup_1.postBackupVerify);
+router.post('/restore/:channelPoint', authCheck_1.isAuthenticated, channelsBackup_1.postRestore);
+exports.default = router;

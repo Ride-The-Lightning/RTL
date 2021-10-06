@@ -1,17 +1,17 @@
-const LoopController = require("../../controllers/shared/loop");
-const express = require("express");
-const router = express.Router();
-const authCheck = require("../../utils/authCheck");
-
-router.get("/in/terms", authCheck, LoopController.loopInTerms);
-router.get("/in/quote/:amount", authCheck, LoopController.loopInQuote);
-router.get("/in/termsAndQuotes", authCheck, LoopController.loopInTermsAndQuotes);
-router.post("/in", authCheck, LoopController.loopIn);
-router.get("/out/terms", authCheck, LoopController.loopOutTerms);
-router.get("/out/quote/:amount", authCheck, LoopController.loopOutQuote);
-router.get("/out/termsAndQuotes", authCheck, LoopController.loopOutTermsAndQuotes);
-router.post("/out", authCheck, LoopController.loopOut);
-router.get("/swaps", authCheck, LoopController.swaps);
-router.get("/swap/:id", authCheck, LoopController.swap);
-
-module.exports = router;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authCheck_1 = require("../../utils/authCheck");
+const loop_1 = require("../../controllers/shared/loop");
+const router = express_1.Router();
+router.get('/in/terms', authCheck_1.isAuthenticated, loop_1.loopInTerms);
+router.get('/in/quote/:amount', authCheck_1.isAuthenticated, loop_1.loopInQuote);
+router.get('/in/termsAndQuotes', authCheck_1.isAuthenticated, loop_1.loopInTermsAndQuotes);
+router.post('/in', authCheck_1.isAuthenticated, loop_1.loopIn);
+router.get('/out/terms', authCheck_1.isAuthenticated, loop_1.loopOutTerms);
+router.get('/out/quote/:amount', authCheck_1.isAuthenticated, loop_1.loopOutQuote);
+router.get('/out/termsAndQuotes', authCheck_1.isAuthenticated, loop_1.loopOutTermsAndQuotes);
+router.post('/out', authCheck_1.isAuthenticated, loop_1.loopOut);
+router.get('/swaps', authCheck_1.isAuthenticated, loop_1.swaps);
+router.get('/swap/:id', authCheck_1.isAuthenticated, loop_1.swap);
+exports.default = router;

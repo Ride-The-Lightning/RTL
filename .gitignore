@@ -35,6 +35,9 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
+backend/channels-backup
+backend/logs
+server/cookies
 
 # System Files
 .DS_Store
@@ -54,7 +57,3 @@ RTL-Multi-Node-Conf-1.json
 RTL-Config-for-BTC-Testing.json
 ECLDummyData.log
 _config.yml
-backend/channels-backup
-backend/logs
-backend/controllers/eclair/websocket.js
-backend/utils/websocketServer.js

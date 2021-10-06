@@ -1,9 +1,9 @@
-const MessagesController = require("../../controllers/c-lightning/message");
-const express = require("express");
-const router = express.Router();
-const authCheck = require("../../utils/authCheck");
-
-router.post("/sign", authCheck, MessagesController.signMessage);
-router.post("/verify", authCheck, MessagesController.verifyMessage);
-
-module.exports = router;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authCheck_1 = require("../../utils/authCheck");
+const message_1 = require("../../controllers/c-lightning/message");
+const router = express_1.Router();
+router.post('/sign', authCheck_1.isAuthenticated, message_1.signMessage);
+router.post('/verify', authCheck_1.isAuthenticated, message_1.verifyMessage);
+exports.default = router;

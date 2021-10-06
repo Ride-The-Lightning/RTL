@@ -1,9 +1,9 @@
-const PayRequestController = require("../../controllers/lnd/payReq");
-const express = require("express");
-const router = express.Router();
-const authCheck = require("../../utils/authCheck");
-
-router.get("/:payRequest", authCheck, PayRequestController.decodePayment);
-router.post("/", authCheck, PayRequestController.decodePayments);
-
-module.exports = router;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authCheck_1 = require("../../utils/authCheck");
+const payReq_1 = require("../../controllers/lnd/payReq");
+const router = express_1.Router();
+router.get('/:payRequest', authCheck_1.isAuthenticated, payReq_1.decodePayment);
+router.post('/', authCheck_1.isAuthenticated, payReq_1.decodePayments);
+exports.default = router;

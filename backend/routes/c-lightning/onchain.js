@@ -1,10 +1,10 @@
-const OnChainController = require("../../controllers/c-lightning/onchain");
-const express = require("express");
-const router = express.Router();
-const authCheck = require("../../utils/authCheck");
-
-router.get("/", authCheck, OnChainController.getNewAddress);
-router.post("/", authCheck, OnChainController.onChainWithdraw);
-router.get("/utxos/", authCheck, OnChainController.getUTXOs);
-
-module.exports = router;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authCheck_1 = require("../../utils/authCheck");
+const onchain_1 = require("../../controllers/c-lightning/onchain");
+const router = express_1.Router();
+router.get('/', authCheck_1.isAuthenticated, onchain_1.getNewAddress);
+router.post('/', authCheck_1.isAuthenticated, onchain_1.onChainWithdraw);
+router.get('/utxos/', authCheck_1.isAuthenticated, onchain_1.getUTXOs);
+exports.default = router;

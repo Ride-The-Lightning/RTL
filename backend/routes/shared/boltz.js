@@ -1,15 +1,15 @@
-const BoltzController = require("../../controllers/shared/boltz");
-const express = require("express");
-const router = express.Router();
-const authCheck = require("../../utils/authCheck");
-
-router.get("/info", authCheck, BoltzController.getInfo);
-router.get("/serviceInfo", authCheck, BoltzController.getServiceInfo);
-router.get("/listSwaps", authCheck, BoltzController.listSwaps);
-router.get("/swapInfo/:swapId", authCheck, BoltzController.getSwapInfo);
-router.post("/createSwap", authCheck, BoltzController.createSwap);
-router.post("/createReverseSwap", authCheck, BoltzController.createReverseSwap);
-router.post("/createChannel", authCheck, BoltzController.createChannel);
-router.post("/deposit", authCheck, BoltzController.deposit);
-
-module.exports = router;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authCheck_1 = require("../../utils/authCheck");
+const boltz_1 = require("../../controllers/shared/boltz");
+const router = express_1.Router();
+router.get('/info', authCheck_1.isAuthenticated, boltz_1.getInfo);
+router.get('/serviceInfo', authCheck_1.isAuthenticated, boltz_1.getServiceInfo);
+router.get('/listSwaps', authCheck_1.isAuthenticated, boltz_1.listSwaps);
+router.get('/swapInfo/:swapId', authCheck_1.isAuthenticated, boltz_1.getSwapInfo);
+router.post('/createSwap', authCheck_1.isAuthenticated, boltz_1.createSwap);
+router.post('/createReverseSwap', authCheck_1.isAuthenticated, boltz_1.createReverseSwap);
+router.post('/createChannel', authCheck_1.isAuthenticated, boltz_1.createChannel);
+router.post('/deposit', authCheck_1.isAuthenticated, boltz_1.deposit);
+exports.default = router;

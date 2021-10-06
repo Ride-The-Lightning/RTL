@@ -1,14 +1,14 @@
-const ChannelsController = require("../../controllers/lnd/channels");
-const express = require("express");
-const router = express.Router();
-const authCheck = require("../../utils/authCheck");
-
-router.get("/", authCheck, ChannelsController.getAllChannels);
-router.get("/pending", authCheck, ChannelsController.getPendingChannels);
-router.get("/closed", authCheck, ChannelsController.getClosedChannels);
-router.post("/", authCheck, ChannelsController.postChannel);
-router.post("/transactions", authCheck, ChannelsController.postTransactions);
-router.delete("/:channelPoint", authCheck, ChannelsController.closeChannel);
-router.post("/chanPolicy", authCheck, ChannelsController.postChanPolicy);
-
-module.exports = router;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authCheck_1 = require("../../utils/authCheck");
+const channels_1 = require("../../controllers/lnd/channels");
+const router = express_1.Router();
+router.get('/', authCheck_1.isAuthenticated, channels_1.getAllChannels);
+router.get('/pending', authCheck_1.isAuthenticated, channels_1.getPendingChannels);
+router.get('/closed', authCheck_1.isAuthenticated, channels_1.getClosedChannels);
+router.post('/', authCheck_1.isAuthenticated, channels_1.postChannel);
+router.post('/transactions', authCheck_1.isAuthenticated, channels_1.postTransactions);
+router.delete('/:channelPoint', authCheck_1.isAuthenticated, channels_1.closeChannel);
+router.post('/chanPolicy', authCheck_1.isAuthenticated, channels_1.postChanPolicy);
+exports.default = router;

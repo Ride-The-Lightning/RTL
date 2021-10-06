@@ -1,10 +1,10 @@
-const PaymentsController = require("../../controllers/c-lightning/payments");
-const express = require("express");
-const router = express.Router();
-const authCheck = require("../../utils/authCheck");
-
-router.get("/", authCheck, PaymentsController.listPayments);
-router.get("/:invoice", authCheck, PaymentsController.decodePayment);
-router.post("/:type", authCheck, PaymentsController.postPayment);
-
-module.exports = router;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authCheck_1 = require("../../utils/authCheck");
+const payments_1 = require("../../controllers/c-lightning/payments");
+const router = express_1.Router();
+router.get('/', authCheck_1.isAuthenticated, payments_1.listPayments);
+router.get('/:invoice', authCheck_1.isAuthenticated, payments_1.decodePayment);
+router.post('/:type', authCheck_1.isAuthenticated, payments_1.postPayment);
+exports.default = router;
