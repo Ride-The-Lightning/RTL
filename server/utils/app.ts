@@ -39,24 +39,31 @@ class ExpressApplication {
 
   public getApp = () => this.app;
 
+  public loadConfiguration = () => {
+    this.config.setServerConfiguration();
+  }
+
+  public loadDatabase = () => {
+    this.logger.log({ level: 'DEBUG', fileName: 'App', msg: 'LOAD DATABASE: IN PROGRESS' });
+  }
+
   public setCORS = () => { CORS.mount(this.app); }
 
   public setCSRF = () => { CSRF.mount(this.app); }
 
   public setApplicationRoutes = () => {
     this.logger.log({ level: 'DEBUG', fileName: 'App', msg: 'Setting up Application Routes.' });
-    this.app.use(this.baseHref, express.static(path.join(__dirname, '../..', 'angular')));
 
     this.app.use(this.baseHref + '/api', sharedRoutes);
     this.app.use(this.baseHref + '/api/lnd', lndRoutes);
     this.app.use(this.baseHref + '/api/cl', clRoutes);
     this.app.use(this.baseHref + '/api/ecl', eclRoutes);
-    this.app.use((err, req, res, next) => this.handleApplicationErrors(err, res));
-
+    this.app.use(this.baseHref, express.static(path.join(__dirname, '../..', 'angular')));
     this.app.use((req, res, next) => {
       res.cookie('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : '');
       res.sendFile(path.join(__dirname, '../..', 'angular', 'index.html'));
     });
+    this.app.use((err, req, res, next) => this.handleApplicationErrors(err, res));
   }
 
   public handleApplicationErrors = (err, res) => {
@@ -83,14 +90,6 @@ class ExpressApplication {
         break;
     }
   };
-
-  public loadConfiguration = () => {
-    this.config.setServerConfiguration();
-  }
-
-  public loadDatabase = () => {
-    this.logger.log({ level: 'DEBUG', fileName: 'App', msg: 'LOAD DATABASE: IN PROGRESS' });
-  }
 
 }
 

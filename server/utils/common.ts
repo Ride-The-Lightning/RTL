@@ -36,9 +36,7 @@ export class CommonService {
       url: this.selectedNode.swap_server_url,
       rejectUnauthorized: false,
       json: true,
-      headers: {
-        'Grpc-Metadata-macaroon': ''
-      }
+      headers: { 'Grpc-Metadata-macaroon': '' }
     };
     if (this.selectedNode.swap_macaroon_path) {
       try {
@@ -56,9 +54,7 @@ export class CommonService {
       url: this.selectedNode.boltz_server_url,
       rejectUnauthorized: false,
       json: true,
-      headers: {
-        'Grpc-Metadata-macaroon': ''
-      }
+      headers: { 'Grpc-Metadata-macaroon': '' }
     };
     if (this.selectedNode.boltz_macaroon_path) {
       try {

@@ -8,11 +8,10 @@ class CSRF {
   public logger: LoggerService = Logger;
 
   public mount(app: Application): Application {
-    this.logger.log({ level: 'DEBUG', fileName: 'App', msg: 'Setting up CSRF.' });
-    app.use((req, res, next) => {
-      this.csrfProtection(req, res, next);
-    });
-
+    this.logger.log({ level: 'DEBUG', fileName: 'CSRF', msg: 'Setting up CSRF.' });
+    if (process.env.NODE_ENV !== 'development') {
+      app.use((req, res, next) => this.csrfProtection(req, res, next));
+    }
     return app;
   };
 

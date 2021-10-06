@@ -205,7 +205,7 @@ export class RTLEffects implements OnDestroy {
           return this.httpClient.get(environment.CONF_API + '/rtlconfinit');
         }
       }),
-      map((rtlConfig: RTLConfiguration) => {
+      map((rtlConfig: any) => {
         this.logger.info(rtlConfig);
         this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_RTL_CONFIG));
         this.store.dispatch(new RTLActions.UpdateAPICallStatus({ action: 'FetchRTLConfig', status: APICallStatusEnum.COMPLETED }));
@@ -229,7 +229,7 @@ export class RTLEffects implements OnDestroy {
         }
       }),
       catchError((err) => {
-        this.handleErrorWithoutAlert('FetchRTLConfig', UI_MESSAGES.GET_RTL_CONFIG, err);
+        this.handleErrorWithAlert('FetchRTLConfig', UI_MESSAGES.GET_RTL_CONFIG, 'Fetch RTL Config Failed!', environment.CONF_API, err);
         return of({ type: RTLActions.VOID });
       }))
   );
@@ -395,10 +395,6 @@ export class RTLEffects implements OnDestroy {
           }),
           catchError((err) => {
             this.logger.info('Redirecting to Login Error Page');
-            if (err.status === 0 && err.statusText && err.statusText === 'Unknown Error') {
-              err.status = '400';
-              err.error.error = 'Origin Not Allowed';
-            }
             this.handleErrorWithoutAlert('Login', UI_MESSAGES.NO_SPINNER, err);
             if (+rootStore.appConfig.sso.rtlSSO) {
               this.router.navigate(['/error'], { state: { errorCode: '406', errorMessage: err.error && err.error.error ? err.error.error : 'Single Sign On Failed!' } });
@@ -496,10 +492,6 @@ export class RTLEffects implements OnDestroy {
             return { type: RTLActions.VOID };
           }),
           catchError((err: any) => {
-            if (err.status === 0 && err.statusText && err.statusText === 'Unknown Error') {
-              err.status = '400';
-              err.error.message = 'Origin Not Allowed';
-            }
             this.handleErrorWithAlert('UpdateSelNode', action.payload.uiMessage, 'Update Selected Node Failed!', environment.CONF_API + '/updateSelNode', err);
             return of({ type: RTLActions.VOID });
           })
@@ -608,8 +600,11 @@ export class RTLEffects implements OnDestroy {
     }
   }
 
-  handleErrorWithAlert(actionName: string, uiMessage: string, alertTitle: string, errURL: string, err: { status: number, error: any }) {
+  handleErrorWithAlert(actionName: string, uiMessage: string, alertTitle: string, errURL: string, err: { status: number, error: any, statusText?: string }) {
     this.logger.error(err);
+    if (err.status === 0 && err.statusText && err.statusText === 'Unknown Error') {
+      err = { status: 400, error: { message: 'Unknown Error / CORS Origin Not Allowed' } };
+    }
     if (err.status === 401 && actionName !== 'Login') {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.CloseAllDialogs());

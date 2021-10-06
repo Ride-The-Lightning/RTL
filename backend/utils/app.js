@@ -22,20 +22,26 @@ class ExpressApplication {
         this.config = config_1.Config;
         this.baseHref = '/rtl';
         this.getApp = () => this.app;
+        this.loadConfiguration = () => {
+            this.config.setServerConfiguration();
+        };
+        this.loadDatabase = () => {
+            this.logger.log({ level: 'DEBUG', fileName: 'App', msg: 'LOAD DATABASE: IN PROGRESS' });
+        };
         this.setCORS = () => { cors_1.default.mount(this.app); };
         this.setCSRF = () => { csrf_1.default.mount(this.app); };
         this.setApplicationRoutes = () => {
             this.logger.log({ level: 'DEBUG', fileName: 'App', msg: 'Setting up Application Routes.' });
-            this.app.use(this.baseHref, express.static(path.join(__dirname, '../..', 'angular')));
             this.app.use(this.baseHref + '/api', shared_1.default);
             this.app.use(this.baseHref + '/api/lnd', lnd_1.default);
             this.app.use(this.baseHref + '/api/cl', c_lightning_1.default);
             this.app.use(this.baseHref + '/api/ecl', eclair_1.default);
-            this.app.use((err, req, res, next) => this.handleApplicationErrors(err, res));
+            this.app.use(this.baseHref, express.static(path.join(__dirname, '../..', 'angular')));
             this.app.use((req, res, next) => {
                 res.cookie('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : '');
                 res.sendFile(path.join(__dirname, '../..', 'angular', 'index.html'));
             });
+            this.app.use((err, req, res, next) => this.handleApplicationErrors(err, res));
         };
         this.handleApplicationErrors = (err, res) => {
             switch (err.code) {
@@ -60,12 +66,6 @@ class ExpressApplication {
                     res.status(400).send(JSON.stringify(err));
                     break;
             }
-        };
-        this.loadConfiguration = () => {
-            this.config.setServerConfiguration();
-        };
-        this.loadDatabase = () => {
-            this.logger.log({ level: 'DEBUG', fileName: 'App', msg: 'LOAD DATABASE: IN PROGRESS' });
         };
         this.logger.log({ level: 'DEBUG', fileName: 'App', msg: 'Starting Express Application.' });
         this.app.set('trust proxy', true);
