@@ -513,7 +513,7 @@ export class ConfigService {
     }
   }
 
-  private setServerConfiguration = () => {
+  public setServerConfiguration = () => {
     try {
       this.common.rtl_conf_file_path = (process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH : path.join(__dirname, '../..');
       const confFileFullPath = this.common.rtl_conf_file_path + this.common.path_separator + 'RTL-Config.json';
