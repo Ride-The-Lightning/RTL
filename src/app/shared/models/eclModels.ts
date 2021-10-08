@@ -92,6 +92,14 @@ export interface PayRequest {
   amount?: number;
 }
 
+export interface GetChannelsRes {
+  activeChannels?: Channel[];
+  pendingChannels?: Channel[];
+  inactiveChannels?: Channel[];
+  lightningBalances?: LightningBalance;
+  channelStatus?: ChannelsStatus;
+}
+
 export interface Channel {
   alias?: string;
   nodeId?: string;

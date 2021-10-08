@@ -14,6 +14,7 @@ const eclair_1 = require("../routes/eclair");
 const common_1 = require("./common");
 const logger_1 = require("./logger");
 const config_1 = require("./config");
+const WebSocketServer = require("./webSocketServer");
 class ExpressApplication {
     constructor() {
         this.app = express();
@@ -76,6 +77,7 @@ class ExpressApplication {
         this.loadDatabase();
         this.setCORS();
         this.setCSRF();
+        this.app = WebSocketServer.plugIn(this.app);
         this.setApplicationRoutes();
     }
 }

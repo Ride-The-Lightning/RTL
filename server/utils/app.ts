@@ -13,6 +13,7 @@ import eclRoutes from '../routes/eclair';
 import { Common, CommonService } from './common';
 import { Logger, LoggerService } from './logger';
 import { Config, ConfigService } from './config';
+import * as WebSocketServer from './webSocketServer';
 
 class ExpressApplication {
 
@@ -34,6 +35,7 @@ class ExpressApplication {
     this.loadDatabase();
     this.setCORS();
     this.setCSRF();
+    this.app = WebSocketServer.plugIn(this.app);
     this.setApplicationRoutes();
   }
 

@@ -51,6 +51,11 @@ export const initECLState: ECLState = {
 
 export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) {
   switch (action.type) {
+    case ECLActions.SET_CHILD_NODE_SETTINGS_ECL:
+      return {
+        ...state,
+        apiURL: action.payload
+      };
     case ECLActions.UPDATE_API_CALL_STATUS_ECL:
       const updatedApisCallStatus = state.apisCallStatus;
       updatedApisCallStatus[action.payload.action] = {

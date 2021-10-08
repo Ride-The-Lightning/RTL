@@ -9,6 +9,7 @@ const peers_1 = require("./peers");
 const invoices_1 = require("./invoices");
 const payments_1 = require("./payments");
 const network_1 = require("./network");
+const webSocket_1 = require("./webSocket");
 const router = express_1.Router();
 const eclRoutes = [
     { path: '/getinfo', route: getInfo_1.default },
@@ -18,7 +19,8 @@ const eclRoutes = [
     { path: '/peers', route: peers_1.default },
     { path: '/invoices', route: invoices_1.default },
     { path: '/payments', route: payments_1.default },
-    { path: '/network', route: network_1.default }
+    { path: '/network', route: network_1.default },
+    { path: '/ws', route: webSocket_1.default }
 ];
 eclRoutes.forEach((route) => {
     router.use(route.path, route.route);

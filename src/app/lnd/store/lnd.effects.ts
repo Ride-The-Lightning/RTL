@@ -63,6 +63,7 @@ export class LNDEffects implements OnDestroy {
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [LNDActions.FetchInfo, fromRTLReducer.RootState]) => {
       this.flgInitialized = false;
+      this.store.dispatch(new RTLActions.SetApiUrl(this.CHILD_API_URL));
       this.store.dispatch(new RTLActions.CloseAllDialogs());
       this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_NODE_INFO));
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.INITIATED }));

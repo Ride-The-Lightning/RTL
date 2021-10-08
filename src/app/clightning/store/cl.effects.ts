@@ -60,6 +60,7 @@ export class CLEffects implements OnDestroy {
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [CLActions.FetchInfo, fromRTLReducer.RootState]) => {
       this.flgInitialized = false;
+      this.store.dispatch(new RTLActions.SetApiUrl(this.CHILD_API_URL));
       this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.INITIATED }));
       this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_NODE_INFO));
       return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API).
@@ -247,7 +248,7 @@ export class CLEffects implements OnDestroy {
     mergeMap(([action, clData]: [CLActions.SaveNewPeer, fromCLReducers.CLState]) => {
       this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.CONNECT_PEER));
       this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'SaveNewPeer', status: APICallStatusEnum.INITIATED }));
-      return this.httpClient.post(this.CHILD_API_URL + environment.PEERS_API, { id: action.payload.id }).
+      return this.httpClient.post<Peer[]>(this.CHILD_API_URL + environment.PEERS_API, { id: action.payload.id }).
         pipe(
           map((postRes: Peer[]) => {
             this.logger.info(postRes);

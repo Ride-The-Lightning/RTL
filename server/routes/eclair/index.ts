@@ -7,6 +7,7 @@ import peersECLRoutes from './peers';
 import invoicesECLRoutes from './invoices';
 import paymentsECLRoutes from './payments';
 import networkECLRoutes from './network';
+import websocketECLRoutes from './webSocket';
 
 const router = Router();
 
@@ -18,7 +19,8 @@ const eclRoutes = [
   { path: '/peers', route: peersECLRoutes },
   { path: '/invoices', route: invoicesECLRoutes },
   { path: '/payments', route: paymentsECLRoutes },
-  { path: '/network', route: networkECLRoutes }
+  { path: '/network', route: networkECLRoutes },
+  { path: '/ws', route: websocketECLRoutes }
 ];
 
 eclRoutes.forEach((route) => {

@@ -9,7 +9,8 @@ import { map, mergeMap, catchError, take, withLatestFrom, takeUntil } from 'rxjs
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { environment } from '../../environments/environment';
+import { environment, API_URL } from '../../environments/environment';
+import { WSService } from '../shared/services/web-socket.service';
 import { LoggerService } from '../shared/services/logger.service';
 import { SessionService } from '../shared/services/session.service';
 import { CommonService } from '../shared/services/common.service';
@@ -43,6 +44,7 @@ export class RTLEffects implements OnDestroy {
     private httpClient: HttpClient,
     private store: Store<fromRTLReducer.RTLState>,
     private logger: LoggerService,
+    private wsService: WSService,
     private sessionService: SessionService,
     private commonService: CommonService,
     private dataService: DataService,
@@ -200,12 +202,12 @@ export class RTLEffects implements OnDestroy {
         this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_RTL_CONFIG));
         this.store.dispatch(new RTLActions.UpdateAPICallStatus({ action: 'FetchRTLConfig', status: APICallStatusEnum.INITIATED }));
         if (this.sessionService.getItem('token')) {
-          return this.httpClient.get(environment.CONF_API + '/rtlconf');
+          return this.httpClient.get<RTLConfiguration>(environment.CONF_API + '/rtlconf');
         } else {
-          return this.httpClient.get(environment.CONF_API + '/rtlconfinit');
+          return this.httpClient.get<RTLConfiguration>(environment.CONF_API + '/rtlconfinit');
         }
       }),
-      map((rtlConfig: any) => {
+      map((rtlConfig: RTLConfiguration) => {
         this.logger.info(rtlConfig);
         this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_RTL_CONFIG));
         this.store.dispatch(new RTLActions.UpdateAPICallStatus({ action: 'FetchRTLConfig', status: APICallStatusEnum.COMPLETED }));
@@ -546,6 +548,7 @@ export class RTLEffects implements OnDestroy {
     this.store.dispatch(new CLActions.ResetCLStore(selNode));
     this.store.dispatch(new ECLActions.ResetECLStore(selNode));
     if (this.sessionService.getItem('token')) {
+      this.wsService.connectWebSocket(API_URL.replace(/^http/, 'ws') + environment.Web_SOCKET_API);
       node.lnImplementation = node.lnImplementation.toUpperCase();
       this.dataService.setChildAPIUrl(node.lnImplementation);
       switch (node.lnImplementation) {

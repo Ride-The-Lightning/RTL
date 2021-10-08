@@ -12,7 +12,7 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { SessionService } from '../../shared/services/session.service';
 import { CommonService } from '../../shared/services/common.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
-import { GetInfo, Channel, OnChainBalance, LightningBalance, ChannelsStatus, ChannelStats, Peer, Audit, Transaction, Invoice } from '../../shared/models/eclModels';
+import { GetInfo, OnChainBalance, ChannelStats, Peer, Audit, Transaction, Invoice, GetChannelsRes } from '../../shared/models/eclModels';
 import { APICallStatusEnum, UI_MESSAGES } from '../../shared/services/consts-enums-functions';
 import { ECLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 
@@ -58,6 +58,7 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.FETCH_INFO_ECL),
     mergeMap((action: ECLActions.FetchInfo) => {
       this.flgInitialized = false;
+      this.store.dispatch(new RTLActions.SetApiUrl(this.CHILD_API_URL));
       this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_NODE_INFO));
       this.store.dispatch(new ECLActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.INITIATED }));
       return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API).
@@ -132,9 +133,9 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.FETCH_CHANNELS_ECL),
     mergeMap((action: ECLActions.FetchChannels) => {
       this.store.dispatch(new ECLActions.UpdateAPICallStatus({ action: 'FetchChannels', status: APICallStatusEnum.INITIATED }));
-      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API).
+      return this.httpClient.get<GetChannelsRes>(this.CHILD_API_URL + environment.CHANNELS_API).
         pipe(
-          map((channelsRes: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalances: LightningBalance, channelStatus: ChannelsStatus }) => {
+          map((channelsRes: GetChannelsRes) => {
             this.logger.info(channelsRes);
             this.store.dispatch(new ECLActions.UpdateAPICallStatus({ action: 'FetchChannels', status: APICallStatusEnum.COMPLETED }));
             this.store.dispatch(new ECLActions.SetActiveChannels((channelsRes && channelsRes.activeChannels.length > 0) ? channelsRes.activeChannels : []));
@@ -161,7 +162,7 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.FETCH_CHANNEL_STATS_ECL),
     mergeMap((action: ECLActions.FetchChannelStats) => {
       this.store.dispatch(new ECLActions.UpdateAPICallStatus({ action: 'FetchChannelStats', status: APICallStatusEnum.INITIATED }));
-      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/stats').
+      return this.httpClient.get<ChannelStats[]>(this.CHILD_API_URL + environment.CHANNELS_API + '/stats').
         pipe(
           map((channelStats: ChannelStats[]) => {
             this.logger.info(channelStats);
@@ -203,7 +204,7 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.FETCH_PEERS_ECL),
     mergeMap((action: ECLActions.FetchPeers) => {
       this.store.dispatch(new ECLActions.UpdateAPICallStatus({ action: 'FetchPeers', status: APICallStatusEnum.INITIATED }));
-      return this.httpClient.get(this.CHILD_API_URL + environment.PEERS_API).
+      return this.httpClient.get<Peer[]>(this.CHILD_API_URL + environment.PEERS_API).
         pipe(
           map((peers: Peer[]) => {
             this.logger.info(peers);
@@ -259,7 +260,7 @@ export class ECLEffects implements OnDestroy {
     mergeMap(([action, eclData]: [ECLActions.SaveNewPeer, fromECLReducer.ECLState]) => {
       this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.CONNECT_PEER));
       this.store.dispatch(new ECLActions.UpdateAPICallStatus({ action: 'SaveNewPeer', status: APICallStatusEnum.INITIATED }));
-      return this.httpClient.post(this.CHILD_API_URL + environment.PEERS_API + ((action.payload.id.includes('@') ? '?uri=' : '?nodeId=') + action.payload.id), {}).
+      return this.httpClient.post<Peer[]>(this.CHILD_API_URL + environment.PEERS_API + ((action.payload.id.includes('@') ? '?uri=' : '?nodeId=') + action.payload.id), {}).
         pipe(
           map((postRes: Peer[]) => {
             this.logger.info(postRes);
