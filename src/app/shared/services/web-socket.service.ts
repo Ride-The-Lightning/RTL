@@ -4,9 +4,10 @@ import { takeUntil } from 'rxjs/operators';
 import { WebSocketSubject } from 'rxjs/webSocket';
 
 import { LoggerService } from '../../shared/services/logger.service';
+import { SessionService } from './session.service';
 
 @Injectable()
-export class WSService implements OnDestroy {
+export class WebSocketClientService implements OnDestroy {
 
   public wsMessage: BehaviorSubject<any> = new BehaviorSubject(null);
   private wsUrl = '';
@@ -15,13 +16,16 @@ export class WSService implements OnDestroy {
   private RECONNECT_TIMEOUT = null;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService) {}
+  constructor(private logger: LoggerService, private sessionService: SessionService) {}
 
   connectWebSocket(finalWSUrl: string) {
     this.wsUrl = finalWSUrl;
     this.logger.info('Websocket Url: ' + this.wsUrl);
     if (!this.socket || this.socket.closed) {
-      this.socket = new WebSocketSubject(finalWSUrl);
+      this.socket = new WebSocketSubject({
+        url: finalWSUrl,
+        protocol: [this.sessionService.getItem('token')]
+      });
       this.subscribeToMessages();
     }
   }
@@ -43,15 +47,32 @@ export class WSService implements OnDestroy {
     }
   }
 
+  sendMessage(msg: any) {
+    if (this.socket) {
+      const payload = { token: 'token_from_session_service', message: msg };
+      this.socket.next(payload);
+    }
+  }
+
   private subscribeToMessages() {
     this.socket.pipe(takeUntil(this.unSubs[1])).subscribe({
-      next: (msg) => { this.wsMessage.next(msg); },
-      error: (err) => {
-        this.logger.error(err);
-        this.wsMessage.error(err);
-        this.reconnectOnError();
-      }
+      next: (msg) => {
+        if (typeof msg === 'string') { msg = JSON.parse(msg); }
+        if (msg.error) {
+          this.handleError(msg.error);
+        } else {
+          this.wsMessage.next(msg);
+        }
+      },
+      error: (err) => this.handleError(err),
+      complete: () => { this.logger.info('Web Socket Closed'); }
     });
+  }
+
+  private handleError(err) {
+    this.logger.error(err);
+    this.wsMessage.error(err);
+    this.reconnectOnError();
   }
 
   ngOnDestroy() {

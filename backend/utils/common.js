@@ -22,6 +22,7 @@ export class CommonService {
         this.cookie = '';
         this.read_dummy_data = false;
         this.platform = '/';
+        this.baseHref = '/rtl';
         this.dummy_data_array_from_file = [];
         this.MONTHS = [{ name: 'JAN', days: 31 }, { name: 'FEB', days: 28 }, { name: 'MAR', days: 31 }, { name: 'APR', days: 30 }, { name: 'MAY', days: 31 }, { name: 'JUN', days: 30 }, { name: 'JUL', days: 31 }, { name: 'AUG', days: 31 }, { name: 'SEP', days: 30 }, { name: 'OCT', days: 31 }, { name: 'NOV', days: 30 }, { name: 'DEC', days: 31 }];
         this.getSwapServerOptions = () => {

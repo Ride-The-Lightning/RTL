@@ -5,7 +5,7 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { ECLOpenChannelComponent } from '../open-channel-modal/open-channel.component';
-import { WSService } from '../../../../shared/services/web-socket.service';
+import { WebSocketClientService } from '../../../../shared/services/web-socket.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { GetInfo, Peer } from '../../../../shared/models/eclModels';
 import { SelNodeChild } from '../../../../shared/models/RTLconfig';
@@ -31,7 +31,7 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
   public activeLink = 0;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private router: Router, private wsService: WSService) {}
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private router: Router, private wsService: WebSocketClientService) {}
 
   ngOnInit() {
     this.activeLink = this.links.findIndex((link) => link.link === this.router.url.substring(this.router.url.lastIndexOf('/') + 1));
@@ -51,10 +51,10 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
         this.totalBalance = rtlStore.onchainBalance.total;
         this.logger.info(rtlStore);
       });
-    this.wsService.wsMessage.pipe(takeUntil(this.unSubs[2])).
-      subscribe((message) => {
-        this.logger.warn(message);
-      });
+    // this.wsService.wsMessage.pipe(takeUntil(this.unSubs[2])).
+    //   subscribe((message) => {
+    //     this.logger.warn(message);
+    //   });
   }
 
   onOpenChannel() {

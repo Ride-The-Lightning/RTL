@@ -10,7 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { environment, API_URL } from '../../environments/environment';
-import { WSService } from '../shared/services/web-socket.service';
+import { WebSocketClientService } from '../shared/services/web-socket.service';
 import { LoggerService } from '../shared/services/logger.service';
 import { SessionService } from '../shared/services/session.service';
 import { CommonService } from '../shared/services/common.service';
@@ -44,7 +44,7 @@ export class RTLEffects implements OnDestroy {
     private httpClient: HttpClient,
     private store: Store<fromRTLReducer.RTLState>,
     private logger: LoggerService,
-    private wsService: WSService,
+    private wsService: WebSocketClientService,
     private sessionService: SessionService,
     private commonService: CommonService,
     private dataService: DataService,
@@ -548,8 +548,8 @@ export class RTLEffects implements OnDestroy {
     this.store.dispatch(new LNDActions.ResetLNDStore(selNode));
     this.store.dispatch(new CLActions.ResetCLStore(selNode));
     this.store.dispatch(new ECLActions.ResetECLStore(selNode));
-    this.wsService.connectWebSocket(API_URL.replace(/^http/, 'ws') + environment.Web_SOCKET_API);
     if (this.sessionService.getItem('token')) {
+      this.wsService.connectWebSocket(API_URL.replace(/^http/, 'ws') + environment.Web_SOCKET_API);
       node.lnImplementation = node.lnImplementation.toUpperCase();
       this.dataService.setChildAPIUrl(node.lnImplementation);
       switch (node.lnImplementation) {
