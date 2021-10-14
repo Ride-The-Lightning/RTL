@@ -53,7 +53,7 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
       });
     this.wsService.wsMessage.pipe(takeUntil(this.unSubs[2])).
       subscribe((message) => {
-        console.warn(message);
+        this.logger.warn(message);
       });
   }
 

@@ -45,7 +45,7 @@
     "hocon-parser": "^1.0.1",
     "ini": "^2.0.0",
     "jsonwebtoken": "^8.5.1",
-    "lowdb": "^3.0.0",
+    "lowdb": "3.0.0",
     "material-design-icons": "^3.0.1",
     "ngx-perfect-scrollbar": "^10.0.1",
     "otplib": "^12.0.1",
