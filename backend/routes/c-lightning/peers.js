@@ -1,10 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = require("express");
-const authCheck_1 = require("../../utils/authCheck");
-const peers_1 = require("../../controllers/c-lightning/peers");
-const router = express_1.Router();
-router.get('/', authCheck_1.isAuthenticated, peers_1.getPeers);
-router.post('/', authCheck_1.isAuthenticated, peers_1.postPeer);
-router.delete('/:peerId', authCheck_1.isAuthenticated, peers_1.deletePeer);
-exports.default = router;
+import { Router } from 'express';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { getPeers, postPeer, deletePeer } from '../../controllers/c-lightning/peers.js';
+const router = Router();
+router.get('/', isAuthenticated, getPeers);
+router.post('/', isAuthenticated, postPeer);
+router.delete('/:peerId', isAuthenticated, deletePeer);
+export default router;

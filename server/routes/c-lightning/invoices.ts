@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../../utils/authCheck';
-import { listInvoices, addInvoice, deleteExpiredInvoice } from '../../controllers/c-lightning/invoices';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { listInvoices, addInvoice, deleteExpiredInvoice } from '../../controllers/c-lightning/invoices.js';
 
 const router = Router();
 

@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.addInvoice = exports.listInvoices = exports.deleteExpiredInvoice = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
-const deleteExpiredInvoice = (req, res, next) => {
+const logger = Logger;
+const common = Common;
+export const deleteExpiredInvoice = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Invoices', msg: 'Deleting Expired Invoices..' });
     options = common.getOptions();
     const queryStr = req.query.maxExpiry ? '?maxexpiry=' + req.query.maxExpiry : '';
@@ -21,8 +18,7 @@ const deleteExpiredInvoice = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.deleteExpiredInvoice = deleteExpiredInvoice;
-const listInvoices = (req, res, next) => {
+export const listInvoices = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Invoices', msg: 'Getting Invoices..' });
     options = common.getOptions();
     const labelQuery = req.query.label ? '?label=' + req.query.label : '';
@@ -41,8 +37,7 @@ const listInvoices = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.listInvoices = listInvoices;
-const addInvoice = (req, res, next) => {
+export const addInvoice = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Invoices', msg: 'Creating Invoice..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/invoice/genInvoice';
@@ -56,4 +51,3 @@ const addInvoice = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.addInvoice = addInvoice;

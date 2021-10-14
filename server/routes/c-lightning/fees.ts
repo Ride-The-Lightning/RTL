@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../../utils/authCheck';
-const FeesController = require('../../controllers/c-lightning/fees');
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { getFees } from '../../controllers/c-lightning/fees.js';
 
 const router = Router();
 
-router.get('/', isAuthenticated, FeesController.getFees);
+router.get('/', isAuthenticated, getFees);
 
 export default router;

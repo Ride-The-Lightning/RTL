@@ -16,7 +16,7 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "es6",
-    "module": "commonjs",
+    "module": "es2020",
     "typeRoots": [
       "node_modules/@types"
     ],

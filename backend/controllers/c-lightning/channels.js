@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.listForwards = exports.getLocalRemoteBalance = exports.closeChannel = exports.setChannelFee = exports.openChannel = exports.listChannels = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
-const listChannels = (req, res, next) => {
+const logger = Logger;
+const common = Common;
+export const listChannels = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Channels', msg: 'Getting Channels..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/channel/listChannels';
@@ -30,8 +27,7 @@ const listChannels = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.listChannels = listChannels;
-const openChannel = (req, res, next) => {
+export const openChannel = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Channels', msg: 'Opening Channel..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/channel/openChannel';
@@ -46,8 +42,7 @@ const openChannel = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.openChannel = openChannel;
-const setChannelFee = (req, res, next) => {
+export const setChannelFee = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Channels', msg: 'Setting Channel Fee..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/channel/setChannelFee';
@@ -62,8 +57,7 @@ const setChannelFee = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.setChannelFee = setChannelFee;
-const closeChannel = (req, res, next) => {
+export const closeChannel = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Channels', msg: 'Closing Channel..' });
     req.setTimeout(60000 * 10); // timeout 10 mins
     options = common.getOptions();
@@ -79,8 +73,7 @@ const closeChannel = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.closeChannel = closeChannel;
-const getLocalRemoteBalance = (req, res, next) => {
+export const getLocalRemoteBalance = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Channels', msg: 'Getting Local & Remote Balances..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/channel/localremotebal';
@@ -99,8 +92,7 @@ const getLocalRemoteBalance = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getLocalRemoteBalance = getLocalRemoteBalance;
-const listForwards = (req, res, next) => {
+export const listForwards = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Channels', msg: 'Getting Channel List Forwards..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/channel/listForwards?status=' + req.query.status;
@@ -117,4 +109,3 @@ const listForwards = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.listForwards = listForwards;

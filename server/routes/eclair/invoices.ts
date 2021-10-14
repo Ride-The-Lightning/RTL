@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../../utils/authCheck';
-import { listInvoices, getInvoice, createInvoice } from '../../controllers/eclair/invoices';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { listInvoices, getInvoice, createInvoice } from '../../controllers/eclair/invoices.js';
 
 const router = Router();
 

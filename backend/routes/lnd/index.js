@@ -1,40 +1,38 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = require("express");
-const getInfo_1 = require("./getInfo");
-const channels_1 = require("./channels");
-const channelsBackup_1 = require("./channelsBackup");
-const peers_1 = require("./peers");
-const fees_1 = require("./fees");
-const balance_1 = require("./balance");
-const wallet_1 = require("./wallet");
-const graph_1 = require("./graph");
-const newAddress_1 = require("./newAddress");
-const transactions_1 = require("./transactions");
-const payReq_1 = require("./payReq");
-const payments_1 = require("./payments");
-const invoices_1 = require("./invoices");
-const switch_1 = require("./switch");
-const message_1 = require("./message");
-const router = express_1.Router();
+import { Router } from 'express';
+import infoRoutes from './getInfo.js';
+import channelsRoutes from './channels.js';
+import channelsBackupRoutes from './channelsBackup.js';
+import peersRoutes from './peers.js';
+import feesRoutes from './fees.js';
+import balanceRoutes from './balance.js';
+import walletRoutes from './wallet.js';
+import graphRoutes from './graph.js';
+import newAddressRoutes from './newAddress.js';
+import transactionsRoutes from './transactions.js';
+import payReqRoutes from './payReq.js';
+import paymentsRoutes from './payments.js';
+import invoiceRoutes from './invoices.js';
+import switchRoutes from './switch.js';
+import messageRoutes from './message.js';
+const router = Router();
 const lndRoutes = [
-    { path: '/getinfo', route: getInfo_1.default },
-    { path: '/channels', route: channels_1.default },
-    { path: '/channels/backup', route: channelsBackup_1.default },
-    { path: '/peers', route: peers_1.default },
-    { path: '/fees', route: fees_1.default },
-    { path: '/balance', route: balance_1.default },
-    { path: '/wallet', route: wallet_1.default },
-    { path: '/network', route: graph_1.default },
-    { path: '/newaddress', route: newAddress_1.default },
-    { path: '/transactions', route: transactions_1.default },
-    { path: '/payreq', route: payReq_1.default },
-    { path: '/payments', route: payments_1.default },
-    { path: '/invoices', route: invoices_1.default },
-    { path: '/switch', route: switch_1.default },
-    { path: '/message', route: message_1.default }
+    { path: '/getinfo', route: infoRoutes },
+    { path: '/channels', route: channelsRoutes },
+    { path: '/channels/backup', route: channelsBackupRoutes },
+    { path: '/peers', route: peersRoutes },
+    { path: '/fees', route: feesRoutes },
+    { path: '/balance', route: balanceRoutes },
+    { path: '/wallet', route: walletRoutes },
+    { path: '/network', route: graphRoutes },
+    { path: '/newaddress', route: newAddressRoutes },
+    { path: '/transactions', route: transactionsRoutes },
+    { path: '/payreq', route: payReqRoutes },
+    { path: '/payments', route: paymentsRoutes },
+    { path: '/invoices', route: invoiceRoutes },
+    { path: '/switch', route: switchRoutes },
+    { path: '/message', route: messageRoutes }
 ];
 lndRoutes.forEach((route) => {
     router.use(route.path, route.route);
 });
-exports.default = router;
+export default router;

@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetPassword = exports.authenticateUser = exports.verifyToken = exports.getFailedInfo = void 0;
-const jwt = require("jsonwebtoken");
-const otplib = require("otplib");
-const crypto = require("crypto");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
-const logger = logger_1.Logger;
-const common = common_1.Common;
+import jwt from 'jsonwebtoken';
+import * as otplib from 'otplib';
+import * as crypto from 'crypto';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
+const logger = Logger;
+const common = Common;
 const ONE_MINUTE = 60000;
 const LOCKING_PERIOD = 30 * ONE_MINUTE; // HALF AN HOUR
 const ALLOWED_LOGIN_ATTEMPTS = 5;
@@ -20,7 +17,7 @@ const loginInterval = setInterval(() => {
         }
     }
 }, LOCKING_PERIOD);
-const getFailedInfo = (reqIP, currentTime) => {
+export const getFailedInfo = (reqIP, currentTime) => {
     let failed = { count: 0, lastTried: currentTime };
     if ((!failedLoginAttempts[reqIP]) || (currentTime > (failed.lastTried + LOCKING_PERIOD))) {
         failed = { count: 0, lastTried: currentTime };
@@ -31,7 +28,6 @@ const getFailedInfo = (reqIP, currentTime) => {
     }
     return failed;
 };
-exports.getFailedInfo = getFailedInfo;
 const handleMultipleFailedAttemptsError = (failed, currentTime, errMsg) => {
     if (failed.count >= ALLOWED_LOGIN_ATTEMPTS && (currentTime <= (failed.lastTried + LOCKING_PERIOD))) {
         return {
@@ -46,9 +42,8 @@ const handleMultipleFailedAttemptsError = (failed, currentTime, errMsg) => {
         };
     }
 };
-const verifyToken = (twoFAToken) => !!(common.rtl_secret2fa && common.rtl_secret2fa !== '' && otplib.authenticator.check(twoFAToken, common.rtl_secret2fa));
-exports.verifyToken = verifyToken;
-const authenticateUser = (req, res, next) => {
+export const verifyToken = (twoFAToken) => !!(common.rtl_secret2fa && common.rtl_secret2fa !== '' && otplib.authenticator.check(twoFAToken, common.rtl_secret2fa));
+export const authenticateUser = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Authenticate', msg: 'Authenticating User..' });
     if (+common.rtl_sso) {
         if (req.body.authenticateWith === 'JWT' && jwt.verify(req.body.authenticationValue, common.secret_key)) {
@@ -70,11 +65,11 @@ const authenticateUser = (req, res, next) => {
     else {
         const currentTime = new Date().getTime();
         const reqIP = common.getRequestIP(req);
-        const failed = exports.getFailedInfo(reqIP, currentTime);
+        const failed = getFailedInfo(reqIP, currentTime);
         const password = req.body.authenticationValue;
         if (common.rtl_pass === password && failed.count < ALLOWED_LOGIN_ATTEMPTS) {
             if (req.body.twoFAToken && req.body.twoFAToken !== '') {
-                if (!exports.verifyToken(req.body.twoFAToken)) {
+                if (!verifyToken(req.body.twoFAToken)) {
                     logger.log({ level: 'ERROR', fileName: 'Authenticate', msg: 'Invalid Token! Failed IP ' + reqIP, error: { error: 'Invalid token.' } });
                     failed.count = failed.count + 1;
                     failed.lastTried = currentTime;
@@ -94,8 +89,7 @@ const authenticateUser = (req, res, next) => {
         }
     }
 };
-exports.authenticateUser = authenticateUser;
-const resetPassword = (req, res, next) => {
+export const resetPassword = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Authenticate', msg: 'Resetting Password..' });
     if (+common.rtl_sso) {
         const errMsg = 'Password cannot be reset for SSO authentication';
@@ -117,4 +111,3 @@ const resetPassword = (req, res, next) => {
         }
     }
 };
-exports.resetPassword = resetPassword;

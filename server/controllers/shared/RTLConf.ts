@@ -1,10 +1,10 @@
 import * as fs from 'fs';
-import * as ini from 'ini';
-import * as parseHocon from 'hocon-parser';
-import * as request from 'request-promise';
-import { Logger, LoggerService } from '../../utils/logger';
-import { Common, CommonService } from '../../utils/common';
-import { AuthenticationConfiguration, NodeSettingsConfiguration } from '../../models/config.model';
+import ini from 'ini';
+import parseHocon from 'hocon-parser';
+import request from 'request-promise';
+import { Logger, LoggerService } from '../../utils/logger.js';
+import { Common, CommonService } from '../../utils/common.js';
+import { AuthenticationConfiguration, NodeSettingsConfiguration } from '../../models/config.model.js';
 
 const options = { url: '' };
 const logger: LoggerService = Logger;

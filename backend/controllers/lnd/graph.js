@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAliasesForPubkeys = exports.getRemoteFeePolicy = exports.getQueryRoutes = exports.getGraphEdge = exports.getGraphNode = exports.getGraphInfo = exports.getDescribeGraph = exports.getAliasFromPubkey = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
-const getAliasFromPubkey = (pubkey) => {
+const logger = Logger;
+const common = Common;
+export const getAliasFromPubkey = (pubkey) => {
     options.url = common.getSelLNServerUrl() + '/v1/graph/node/' + pubkey;
     return request(options).then((res) => {
         logger.log({ level: 'DEBUG', fileName: 'Graph', msg: 'Alias', data: res.node.alias });
@@ -15,8 +12,7 @@ const getAliasFromPubkey = (pubkey) => {
     }).
         catch((err) => pubkey.substring(0, 17) + '...');
 };
-exports.getAliasFromPubkey = getAliasFromPubkey;
-const getDescribeGraph = (req, res, next) => {
+export const getDescribeGraph = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Graph', msg: 'Getting Network Graph..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/graph';
@@ -29,8 +25,7 @@ const getDescribeGraph = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getDescribeGraph = getDescribeGraph;
-const getGraphInfo = (req, res, next) => {
+export const getGraphInfo = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Graph', msg: 'Getting Graph Information..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/graph/info';
@@ -43,8 +38,7 @@ const getGraphInfo = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getGraphInfo = getGraphInfo;
-const getGraphNode = (req, res, next) => {
+export const getGraphNode = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Graph', msg: 'Getting Graph Node Information..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/graph/node/' + req.params.pubKey;
@@ -57,8 +51,7 @@ const getGraphNode = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getGraphNode = getGraphNode;
-const getGraphEdge = (req, res, next) => {
+export const getGraphEdge = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Graph', msg: 'Getting Graph Edge Information..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/graph/edge/' + req.params.chanid;
@@ -71,8 +64,7 @@ const getGraphEdge = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getGraphEdge = getGraphEdge;
-const getQueryRoutes = (req, res, next) => {
+export const getQueryRoutes = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Graph', msg: 'Getting Graph Routes..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/graph/routes/' + req.params.destPubkey + '/' + req.params.amount;
@@ -83,7 +75,7 @@ const getQueryRoutes = (req, res, next) => {
     request(options).then((body) => {
         logger.log({ level: 'DEBUG', fileName: 'Graph', msg: 'Query Routes Received', data: body });
         if (body.routes && body.routes.length && body.routes.length > 0 && body.routes[0].hops && body.routes[0].hops.length && body.routes[0].hops.length > 0) {
-            return Promise.all(body.routes[0].hops.map((hop) => exports.getAliasFromPubkey(hop.pub_key))).
+            return Promise.all(body.routes[0].hops.map((hop) => getAliasFromPubkey(hop.pub_key))).
                 then((values) => {
                 body.routes[0].hops.map((hop, i) => {
                     hop.hop_sequence = i + 1;
@@ -108,8 +100,7 @@ const getQueryRoutes = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getQueryRoutes = getQueryRoutes;
-const getRemoteFeePolicy = (req, res, next) => {
+export const getRemoteFeePolicy = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Graph', msg: 'Getting Remote Fee Policy..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/graph/edge/' + req.params.chanid;
@@ -137,12 +128,11 @@ const getRemoteFeePolicy = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getRemoteFeePolicy = getRemoteFeePolicy;
-const getAliasesForPubkeys = (req, res, next) => {
+export const getAliasesForPubkeys = (req, res, next) => {
     options = common.getOptions();
     if (req.query.pubkeys) {
         const pubkeyArr = req.query.pubkeys.split(',');
-        return Promise.all(pubkeyArr.map((pubkey) => exports.getAliasFromPubkey(pubkey))).
+        return Promise.all(pubkeyArr.map((pubkey) => getAliasFromPubkey(pubkey))).
             then((values) => {
             logger.log({ level: 'DEBUG', fileName: 'Graph', msg: 'Node Alias', data: values });
             res.status(200).json(values);
@@ -156,4 +146,3 @@ const getAliasesForPubkeys = (req, res, next) => {
         return res.status(200).json([]);
     }
 };
-exports.getAliasesForPubkeys = getAliasesForPubkeys;

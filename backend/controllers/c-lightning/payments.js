@@ -1,12 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.postPayment = exports.decodePayment = exports.listPayments = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
+const logger = Logger;
+const common = Common;
 function paymentReducer(accumulator, currentPayment) {
     const currPayHash = currentPayment.payment_hash;
     if (!currentPayment.partid) {
@@ -50,7 +47,7 @@ function groupBy(payments) {
         return acc.concat(temp);
     }, []);
 }
-const listPayments = (req, res, next) => {
+export const listPayments = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Payments', msg: 'List Payments..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/pay/listPayments';
@@ -66,8 +63,7 @@ const listPayments = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.listPayments = listPayments;
-const decodePayment = (req, res, next) => {
+export const decodePayment = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Payments', msg: 'Decoding Payment..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/pay/decodePay/' + req.params.invoice;
@@ -80,8 +76,7 @@ const decodePayment = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.decodePayment = decodePayment;
-const postPayment = (req, res, next) => {
+export const postPayment = (req, res, next) => {
     options = common.getOptions();
     if (req.params.type === 'keysend') {
         logger.log({ level: 'INFO', fileName: 'Payments', msg: 'Keysend Payment..' });
@@ -101,4 +96,3 @@ const postPayment = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.postPayment = postPayment;

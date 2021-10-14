@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendFunds = exports.getTransactions = exports.getBalance = exports.getNewAddress = exports.arrangeBalances = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
-const arrangeBalances = (body) => {
+const logger = Logger;
+const common = Common;
+export const arrangeBalances = (body) => {
     if (!body.confirmed) {
         body.confirmed = 0;
     }
@@ -18,8 +15,7 @@ const arrangeBalances = (body) => {
     body.btc_total = +body.btc_confirmed + +body.btc_unconfirmed;
     return body;
 };
-exports.arrangeBalances = arrangeBalances;
-const getNewAddress = (req, res, next) => {
+export const getNewAddress = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'OnChain', msg: 'Generating New Address..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/getnewaddress';
@@ -33,20 +29,19 @@ const getNewAddress = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getNewAddress = getNewAddress;
-const getBalance = (req, res, next) => {
+export const getBalance = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'OnChain', msg: 'Getting On Chain Balance..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/onchainbalance';
     options.form = {};
     if (common.read_dummy_data) {
-        common.getDummyData('OnChainBalance').then((data) => { res.status(200).json(exports.arrangeBalances(data)); });
+        common.getDummyData('OnChainBalance').then((data) => { res.status(200).json(arrangeBalances(data)); });
     }
     else {
         request.post(options).then((body) => {
             logger.log({ level: 'DEBUG', fileName: 'Onchain', msg: 'Balance Received', data: body });
             logger.log({ level: 'INFO', fileName: 'OnChain', msg: 'On Chain Balance Received' });
-            res.status(200).json(exports.arrangeBalances(body));
+            res.status(200).json(arrangeBalances(body));
         }).
             catch((errRes) => {
             const err = common.handleError(errRes, 'OnChain', 'Get Balance Error');
@@ -54,8 +49,7 @@ const getBalance = (req, res, next) => {
         });
     }
 };
-exports.getBalance = getBalance;
-const getTransactions = (req, res, next) => {
+export const getTransactions = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'OnChain', msg: 'Getting On Chain Transactions..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/onchaintransactions';
@@ -76,8 +70,7 @@ const getTransactions = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getTransactions = getTransactions;
-const sendFunds = (req, res, next) => {
+export const sendFunds = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'OnChain', msg: 'Sending On Chain Funds..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/sendonchain';
@@ -96,4 +89,3 @@ const sendFunds = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.sendFunds = sendFunds;

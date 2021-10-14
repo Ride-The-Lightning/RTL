@@ -1,16 +1,13 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.maskPasswords = exports.updateServiceSettings = exports.updateSSO = exports.getCurrencyRates = exports.getFile = exports.getConfig = exports.updateDefaultNode = exports.update2FASettings = exports.updateUISettings = exports.getRTLConfig = exports.getRTLConfigInitial = exports.updateSelectedNode = void 0;
-const fs = require("fs");
-const ini = require("ini");
-const parseHocon = require("hocon-parser");
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import * as fs from 'fs';
+import ini from 'ini';
+import parseHocon from 'hocon-parser';
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 const options = { url: '' };
-const logger = logger_1.Logger;
-const common = common_1.Common;
-const updateSelectedNode = (req, res, next) => {
+const logger = Logger;
+const common = Common;
+export const updateSelectedNode = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Updating Selected Node..' });
     const selNodeIndex = req.body.selNodeIndex;
     common.selectedNode = common.findNode(selNodeIndex);
@@ -19,8 +16,7 @@ const updateSelectedNode = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Selected Node Updated' });
     res.status(200).json({ status: 'Selected Node Updated To: ' + JSON.stringify(responseVal) + '!' });
 };
-exports.updateSelectedNode = updateSelectedNode;
-const getRTLConfigInitial = (req, res, next) => {
+export const getRTLConfigInitial = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Getting Initial RTL Configuration..' });
     const confFile = common.rtl_conf_file_path + common.path_separator + 'RTL-Config.json';
     fs.readFile(confFile, 'utf8', (errRes, data) => {
@@ -60,8 +56,7 @@ const getRTLConfigInitial = (req, res, next) => {
         }
     });
 };
-exports.getRTLConfigInitial = getRTLConfigInitial;
-const getRTLConfig = (req, res, next) => {
+export const getRTLConfig = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Getting RTL Configuration..' });
     const confFile = common.rtl_conf_file_path + common.path_separator + 'RTL-Config.json';
     fs.readFile(confFile, 'utf8', (errRes, data) => {
@@ -111,8 +106,7 @@ const getRTLConfig = (req, res, next) => {
         }
     });
 };
-exports.getRTLConfig = getRTLConfig;
-const updateUISettings = (req, res, next) => {
+export const updateUISettings = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Updating UI Settings..' });
     const RTLConfFile = common.rtl_conf_file_path + common.path_separator + 'RTL-Config.json';
     const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
@@ -155,8 +149,7 @@ const updateUISettings = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.error, error: err.error });
     }
 };
-exports.updateUISettings = updateUISettings;
-const update2FASettings = (req, res, next) => {
+export const update2FASettings = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Updating 2FA Settings..' });
     const RTLConfFile = common.rtl_conf_file_path + common.path_separator + 'RTL-Config.json';
     const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
@@ -175,8 +168,7 @@ const update2FASettings = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.error, error: err.error });
     }
 };
-exports.update2FASettings = update2FASettings;
-const updateDefaultNode = (req, res, next) => {
+export const updateDefaultNode = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Updating Default Node..' });
     const RTLConfFile = common.rtl_conf_file_path + common.path_separator + 'RTL-Config.json';
     const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
@@ -193,8 +185,7 @@ const updateDefaultNode = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.error, error: err.error });
     }
 };
-exports.updateDefaultNode = updateDefaultNode;
-const getConfig = (req, res, next) => {
+export const getConfig = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Reading Configuration File..' });
     let confFile = '';
     let fileFormat = 'INI';
@@ -233,15 +224,14 @@ const getConfig = (req, res, next) => {
                     jsonConfig = parseHocon(data);
                 }
             }
-            jsonConfig = exports.maskPasswords(jsonConfig);
+            jsonConfig = maskPasswords(jsonConfig);
             const responseJSON = (fileFormat === 'JSON') ? jsonConfig : ini.stringify(jsonConfig);
             logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Configuration Data Received' });
             res.status(200).json({ format: fileFormat, data: responseJSON });
         }
     });
 };
-exports.getConfig = getConfig;
-const getFile = (req, res, next) => {
+export const getFile = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Getting File..' });
     const file = req.query.path ? req.query.path : (common.selectedNode.channel_backup_path + common.path_separator + 'channel-' + req.query.channel.replace(':', '-') + '.bak');
     logger.log({ level: 'DEBUG', fileName: 'RTLConf', msg: '[Channel Point, File Path]', data: [req.query.channel, file] });
@@ -261,8 +251,7 @@ const getFile = (req, res, next) => {
         }
     });
 };
-exports.getFile = getFile;
-const getCurrencyRates = (req, res, next) => {
+export const getCurrencyRates = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Getting Currency Rates..' });
     options.url = 'https://blockchain.info/ticker';
     request(options).then((body) => {
@@ -274,8 +263,7 @@ const getCurrencyRates = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.error, error: err.error });
     });
 };
-exports.getCurrencyRates = getCurrencyRates;
-const updateSSO = (req, res, next) => {
+export const updateSSO = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Updating SSO Settings..' });
     const RTLConfFile = common.rtl_conf_file_path + common.path_separator + 'RTL-Config.json';
     const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
@@ -293,8 +281,7 @@ const updateSSO = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.error, error: err.error });
     }
 };
-exports.updateSSO = updateSSO;
-const updateServiceSettings = (req, res, next) => {
+export const updateServiceSettings = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Updating Service Settings..' });
     const RTLConfFile = common.rtl_conf_file_path + common.path_separator + 'RTL-Config.json';
     const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
@@ -349,14 +336,13 @@ const updateServiceSettings = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.error, error: err.error });
     }
 };
-exports.updateServiceSettings = updateServiceSettings;
-const maskPasswords = (obj) => {
+export const maskPasswords = (obj) => {
     const keys = Object.keys(obj);
     const length = keys.length;
     if (length !== 0) {
         for (let i = 0; i < length; i++) {
             if (typeof obj[keys[i]] === 'object') {
-                keys[keys[i]] = exports.maskPasswords(obj[keys[i]]);
+                keys[keys[i]] = maskPasswords(obj[keys[i]]);
             }
             if (typeof keys[i] === 'string' &&
                 (keys[i].toLowerCase().includes('password') || keys[i].toLowerCase().includes('multipass') ||
@@ -367,4 +353,3 @@ const maskPasswords = (obj) => {
     }
     return obj;
 };
-exports.maskPasswords = maskPasswords;

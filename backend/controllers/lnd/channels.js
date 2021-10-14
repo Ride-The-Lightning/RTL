@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.postChanPolicy = exports.closeChannel = exports.postTransactions = exports.postChannel = exports.getClosedChannels = exports.getPendingChannels = exports.getAllChannels = exports.getAliasForChannel = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
-const getAliasForChannel = (channel) => {
+const logger = Logger;
+const common = Common;
+export const getAliasForChannel = (channel) => {
     const pubkey = (channel.remote_pubkey) ? channel.remote_pubkey : (channel.remote_node_pub) ? channel.remote_node_pub : '';
     options.url = common.getSelLNServerUrl() + '/v1/graph/node/' + pubkey;
     return request(options).then((aliasBody) => {
@@ -19,8 +16,7 @@ const getAliasForChannel = (channel) => {
         return pubkey;
     });
 };
-exports.getAliasForChannel = getAliasForChannel;
-const getAllChannels = (req, res, next) => {
+export const getAllChannels = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Channels', msg: 'Getting Channels..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/channels';
@@ -36,7 +32,7 @@ const getAllChannels = (req, res, next) => {
                 remote = (channel.remote_balance) ? +channel.remote_balance : 0;
                 total = local + remote;
                 channel.balancedness = (total === 0) ? 1 : (1 - Math.abs((local - remote) / total)).toFixed(3);
-                return exports.getAliasForChannel(channel);
+                return getAliasForChannel(channel);
             })).then((values) => {
                 body.channels = common.sortDescByKey(body.channels, 'balancedness');
                 logger.log({ level: 'DEBUG', fileName: 'Channels', msg: 'All Channels with Alias', data: body });
@@ -57,8 +53,7 @@ const getAllChannels = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getAllChannels = getAllChannels;
-const getPendingChannels = (req, res, next) => {
+export const getPendingChannels = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Channels', msg: 'Getting Pending Channels..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/channels/pending';
@@ -69,16 +64,16 @@ const getPendingChannels = (req, res, next) => {
         }
         const promises = [];
         if (body.pending_open_channels && body.pending_open_channels.length > 0) {
-            body.pending_open_channels.map((channel) => promises.push(exports.getAliasForChannel(channel.channel)));
+            body.pending_open_channels.map((channel) => promises.push(getAliasForChannel(channel.channel)));
         }
         if (body.pending_closing_channels && body.pending_closing_channels.length > 0) {
-            body.pending_closing_channels.map((channel) => promises.push(exports.getAliasForChannel(channel.channel)));
+            body.pending_closing_channels.map((channel) => promises.push(getAliasForChannel(channel.channel)));
         }
         if (body.pending_force_closing_channels && body.pending_force_closing_channels.length > 0) {
-            body.pending_force_closing_channels.map((channel) => promises.push(exports.getAliasForChannel(channel.channel)));
+            body.pending_force_closing_channels.map((channel) => promises.push(getAliasForChannel(channel.channel)));
         }
         if (body.waiting_close_channels && body.waiting_close_channels.length > 0) {
-            body.waiting_close_channels.map((channel) => promises.push(exports.getAliasForChannel(channel.channel)));
+            body.waiting_close_channels.map((channel) => promises.push(getAliasForChannel(channel.channel)));
         }
         return Promise.all(promises).then((values) => {
             logger.log({ level: 'DEBUG', fileName: 'Channels', msg: 'Pending Channels', data: body });
@@ -94,8 +89,7 @@ const getPendingChannels = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getPendingChannels = getPendingChannels;
-const getClosedChannels = (req, res, next) => {
+export const getClosedChannels = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Channels', msg: 'Getting Closed Channels..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/channels/closed';
@@ -104,7 +98,7 @@ const getClosedChannels = (req, res, next) => {
         if (body.channels && body.channels.length > 0) {
             return Promise.all(body.channels.map((channel) => {
                 channel.close_type = (!channel.close_type) ? 'COOPERATIVE_CLOSE' : channel.close_type;
-                return exports.getAliasForChannel(channel);
+                return getAliasForChannel(channel);
             })).then((values) => {
                 body.channels = common.sortDescByKey(body.channels, 'close_height');
                 logger.log({ level: 'DEBUG', fileName: 'Channels', msg: 'Closed Channels', data: body });
@@ -124,8 +118,7 @@ const getClosedChannels = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getClosedChannels = getClosedChannels;
-const postChannel = (req, res, next) => {
+export const postChannel = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Channels', msg: 'Opening Channel..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/channels';
@@ -151,8 +144,7 @@ const postChannel = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.postChannel = postChannel;
-const postTransactions = (req, res, next) => {
+export const postTransactions = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Channels', msg: 'Sending Payment..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/channels/transactions';
@@ -189,8 +181,7 @@ const postTransactions = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.postTransactions = postTransactions;
-const closeChannel = (req, res, next) => {
+export const closeChannel = (req, res, next) => {
     try {
         logger.log({ level: 'INFO', fileName: 'Channels', msg: 'Closing Channel..' });
         options = common.getOptions();
@@ -211,8 +202,7 @@ const closeChannel = (req, res, next) => {
         return res.status(500).json({ message: 'Close Channel Error', error: error.message });
     }
 };
-exports.closeChannel = closeChannel;
-const postChanPolicy = (req, res, next) => {
+export const postChanPolicy = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Channels', msg: 'Updating Channel Policy..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/chanpolicy';
@@ -245,4 +235,3 @@ const postChanPolicy = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.postChanPolicy = postChanPolicy;

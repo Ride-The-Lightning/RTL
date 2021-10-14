@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.LogJSONObj = exports.NodeSettingsConfiguration = exports.AuthenticationConfiguration = exports.CommonSelectedNode = void 0;
-class CommonSelectedNode {
+export class CommonSelectedNode {
     constructor(options, ln_server_url, macaroon_path, ln_api_password, swap_server_url, boltz_server_url, config_path, rtl_conf_file_path, swap_macaroon_path, boltz_macaroon_path, bitcoind_config_path, channel_backup_path, log_level, log_file, index, ln_node, ln_implementation, user_persona, theme_mode, theme_color, fiat_conversion, currency_unit) {
         this.options = options;
         this.ln_server_url = ln_server_url;
@@ -27,16 +24,14 @@ class CommonSelectedNode {
         this.currency_unit = currency_unit;
     }
 }
-exports.CommonSelectedNode = CommonSelectedNode;
-class AuthenticationConfiguration {
+export class AuthenticationConfiguration {
     constructor(configPath, swapMacaroonPath, boltzMacaroonPath) {
         this.configPath = configPath;
         this.swapMacaroonPath = swapMacaroonPath;
         this.boltzMacaroonPath = boltzMacaroonPath;
     }
 }
-exports.AuthenticationConfiguration = AuthenticationConfiguration;
-class NodeSettingsConfiguration {
+export class NodeSettingsConfiguration {
     constructor(userPersona, themeMode, themeColor, fiatConversion, currencyUnit, bitcoindConfigPath, logLevel, lnServerUrl, swapServerUrl, boltzServerUrl, channelBackupPath) {
         this.userPersona = userPersona;
         this.themeMode = themeMode;
@@ -51,8 +46,7 @@ class NodeSettingsConfiguration {
         this.channelBackupPath = channelBackupPath;
     }
 }
-exports.NodeSettingsConfiguration = NodeSettingsConfiguration;
-class LogJSONObj {
+export class LogJSONObj {
     constructor(level, msg, data, error, fileName) {
         this.level = level;
         this.msg = msg;
@@ -61,4 +55,3 @@ class LogJSONObj {
         this.fileName = fileName;
     }
 }
-exports.LogJSONObj = LogJSONObj;

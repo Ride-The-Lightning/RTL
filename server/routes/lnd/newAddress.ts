@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../../utils/authCheck';
-import { getNewAddress } from '../../controllers/lnd/newAddress';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { getNewAddress } from '../../controllers/lnd/newAddress.js';
 
 const router = Router();
 

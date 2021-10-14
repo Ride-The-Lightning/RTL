@@ -1,14 +1,11 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createInvoice = exports.listInvoices = exports.getInvoice = exports.getReceivedPaymentInfo = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
+const logger = Logger;
+const common = Common;
 let pendingInvoices = [];
-const getReceivedPaymentInfo = (invoice) => {
+export const getReceivedPaymentInfo = (invoice) => {
     let idx = -1;
     invoice.expiresAt = (!invoice.expiry) ? null : (+invoice.timestamp + +invoice.expiry);
     if (invoice.amount) {
@@ -36,8 +33,7 @@ const getReceivedPaymentInfo = (invoice) => {
         return invoice;
     }
 };
-exports.getReceivedPaymentInfo = getReceivedPaymentInfo;
-const getInvoice = (req, res, next) => {
+export const getInvoice = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Channels', msg: 'Getting Invoice..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/getinvoice';
@@ -54,8 +50,7 @@ const getInvoice = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getInvoice = getInvoice;
-const listInvoices = (req, res, next) => {
+export const listInvoices = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Invoices', msg: 'Getting List Invoices..' });
     options = common.getOptions();
     options.form = {};
@@ -69,7 +64,7 @@ const listInvoices = (req, res, next) => {
         return common.getDummyData('Invoices').then((body) => {
             const invoices = (!body[0] || body[0].length <= 0) ? [] : body[0];
             pendingInvoices = (!body[1] || body[1].length <= 0) ? [] : body[1];
-            return Promise.all(invoices.map((invoice) => exports.getReceivedPaymentInfo(invoice))).
+            return Promise.all(invoices.map((invoice) => getReceivedPaymentInfo(invoice))).
                 then((values) => {
                 body = common.sortDescByKey(invoices, 'expiresAt');
                 return res.status(200).json(invoices);
@@ -83,7 +78,7 @@ const listInvoices = (req, res, next) => {
             const invoices = (!body[0] || body[0].length <= 0) ? [] : body[0];
             pendingInvoices = (!body[1] || body[1].length <= 0) ? [] : body[1];
             if (invoices && invoices.length > 0) {
-                return Promise.all(invoices.map((invoice) => exports.getReceivedPaymentInfo(invoice))).
+                return Promise.all(invoices.map((invoice) => getReceivedPaymentInfo(invoice))).
                     then((values) => {
                     body = common.sortDescByKey(invoices, 'expiresAt');
                     logger.log({ level: 'DEBUG', fileName: 'Invoice', msg: 'Final Invoices List', data: invoices });
@@ -106,8 +101,7 @@ const listInvoices = (req, res, next) => {
         });
     }
 };
-exports.listInvoices = listInvoices;
-const createInvoice = (req, res, next) => {
+export const createInvoice = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Invoices', msg: 'Creating Invoice..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/createinvoice';
@@ -124,4 +118,3 @@ const createInvoice = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.createInvoice = createInvoice;

@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import authenticateRoutes from './authenticate';
-import boltzRoutes from './boltz';
-import loopRoutes from './loop';
-import RTLConfRoutes from './RTLConf';
+import authenticateRoutes from './authenticate.js';
+import boltzRoutes from './boltz.js';
+import loopRoutes from './loop.js';
+import RTLConfRoutes from './RTLConf.js';
 
 const router = Router();
 

@@ -1,12 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Logger = exports.LoggerService = void 0;
 /* eslint-disable no-console */
-const fs = require("fs");
-const common_1 = require("./common");
-class LoggerService {
+import * as fs from 'fs';
+import { Common } from './common.js';
+export class LoggerService {
     constructor() {
-        this.common = common_1.Common;
+        this.common = Common;
         this.log = (msgJSON, selNode = this.common.selectedNode) => {
             let msgStr = '\r\n[' + new Date().toLocaleString() + '] ' + msgJSON.level + ': ' + msgJSON.fileName + ' => ' + msgJSON.msg;
             switch (msgJSON.level) {
@@ -76,6 +73,5 @@ class LoggerService {
         };
     }
 }
-exports.LoggerService = LoggerService;
 ;
-exports.Logger = new LoggerService();
+export const Logger = new LoggerService();

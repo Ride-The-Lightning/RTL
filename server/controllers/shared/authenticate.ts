@@ -1,8 +1,8 @@
-import * as jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import * as otplib from 'otplib';
 import * as crypto from 'crypto';
-import { Logger, LoggerService } from '../../utils/logger';
-import { Common, CommonService } from '../../utils/common';
+import { Logger, LoggerService } from '../../utils/logger.js';
+import { Common, CommonService } from '../../utils/common.js';
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
 const ONE_MINUTE = 60000;

@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.swap = exports.swaps = exports.loopInTermsAndQuotes = exports.loopInQuote = exports.loopInTerms = exports.loopIn = exports.loopOutTermsAndQuotes = exports.loopOutQuote = exports.loopOutTerms = exports.loopOut = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
-const loopOut = (req, res, next) => {
+const logger = Logger;
+const common = Common;
+export const loopOut = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Loop', msg: 'Looping Out..' });
     options = common.getSwapServerOptions();
     if (options.url === '') {
@@ -43,8 +40,7 @@ const loopOut = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.loopOut = loopOut;
-const loopOutTerms = (req, res, next) => {
+export const loopOutTerms = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Loop', msg: 'Getting Loop Out Terms..' });
     options = common.getSwapServerOptions();
     if (options.url === '') {
@@ -62,8 +58,7 @@ const loopOutTerms = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.loopOutTerms = loopOutTerms;
-const loopOutQuote = (req, res, next) => {
+export const loopOutQuote = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Loop', msg: 'Getting Loop Out Quotes..' });
     options = common.getSwapServerOptions();
     if (options.url === '') {
@@ -84,8 +79,7 @@ const loopOutQuote = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.loopOutQuote = loopOutQuote;
-const loopOutTermsAndQuotes = (req, res, next) => {
+export const loopOutTermsAndQuotes = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Loop', msg: 'Getting Loop Out Terms & Quotes..' });
     options = common.getSwapServerOptions();
     if (options.url === '') {
@@ -121,8 +115,7 @@ const loopOutTermsAndQuotes = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.loopOutTermsAndQuotes = loopOutTermsAndQuotes;
-const loopIn = (req, res, next) => {
+export const loopIn = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Loop', msg: 'Looping In..' });
     options = common.getSwapServerOptions();
     if (options.url === '') {
@@ -147,8 +140,7 @@ const loopIn = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.loopIn = loopIn;
-const loopInTerms = (req, res, next) => {
+export const loopInTerms = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Loop', msg: 'Getting Loop In Terms..' });
     options = common.getSwapServerOptions();
     if (options.url === '') {
@@ -166,8 +158,7 @@ const loopInTerms = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.loopInTerms = loopInTerms;
-const loopInQuote = (req, res, next) => {
+export const loopInQuote = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Loop', msg: 'Getting Loop In Quotes..' });
     options = common.getSwapServerOptions();
     if (options.url === '') {
@@ -188,8 +179,7 @@ const loopInQuote = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.loopInQuote = loopInQuote;
-const loopInTermsAndQuotes = (req, res, next) => {
+export const loopInTermsAndQuotes = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Loop', msg: 'Getting Loop In Terms & Quotes..' });
     options = common.getSwapServerOptions();
     if (options.url === '') {
@@ -225,8 +215,7 @@ const loopInTermsAndQuotes = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.loopInTermsAndQuotes = loopInTermsAndQuotes;
-const swaps = (req, res, next) => {
+export const swaps = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Loop', msg: 'Getting List Swaps..' });
     options = common.getSwapServerOptions();
     if (options.url === '') {
@@ -248,8 +237,7 @@ const swaps = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.swaps = swaps;
-const swap = (req, res, next) => {
+export const swap = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Loop', msg: 'Getting Swap Information..' });
     options = common.getSwapServerOptions();
     if (options.url === '') {
@@ -267,4 +255,3 @@ const swap = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.swap = swap;

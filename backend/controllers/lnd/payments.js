@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllLightningTransactions = exports.getPayments = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
-const getPayments = (req, res, next) => {
+const logger = Logger;
+const common = Common;
+export const getPayments = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Payments', msg: 'Getting Payments List..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/payments?max_payments=' + req.query.max_payments + '&index_offset=' + req.query.index_offset + '&reversed=' + req.query.reversed;
@@ -24,8 +21,7 @@ const getPayments = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getPayments = getPayments;
-const getAllLightningTransactions = (req, res, next) => {
+export const getAllLightningTransactions = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Payments', msg: 'Getting All Lightning Transactions..' });
     const options1 = JSON.parse(JSON.stringify(common.getOptions()));
     const options2 = JSON.parse(JSON.stringify(common.getOptions()));
@@ -41,4 +37,3 @@ const getAllLightningTransactions = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getAllLightningTransactions = getAllLightningTransactions;

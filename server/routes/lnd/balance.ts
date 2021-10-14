@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../../utils/authCheck';
-import { getBalance } from '../../controllers/lnd/balance';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { getBalance } from '../../controllers/lnd/balance.js';
 
 const router = Router();
 

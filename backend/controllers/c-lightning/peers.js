@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletePeer = exports.postPeer = exports.getPeers = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
-const getPeers = (req, res, next) => {
+const logger = Logger;
+const common = Common;
+export const getPeers = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Peers', msg: 'List Peers..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/peer/listPeers';
@@ -26,8 +23,7 @@ const getPeers = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getPeers = getPeers;
-const postPeer = (req, res, next) => {
+export const postPeer = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Peers', msg: 'Connecting Peer..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/peer/connect';
@@ -51,8 +47,7 @@ const postPeer = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.postPeer = postPeer;
-const deletePeer = (req, res, next) => {
+export const deletePeer = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Peers', msg: 'Disconnecting Peer..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/peer/disconnect/' + req.params.peerId + '?force=' + req.query.force;
@@ -66,4 +61,3 @@ const deletePeer = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.deletePeer = deletePeer;

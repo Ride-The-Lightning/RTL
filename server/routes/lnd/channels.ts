@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../../utils/authCheck';
-import { getAllChannels, getPendingChannels, getClosedChannels, postChannel, postTransactions, closeChannel, postChanPolicy } from '../../controllers/lnd/channels';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { getAllChannels, getPendingChannels, getClosedChannels, postChannel, postTransactions, closeChannel, postChanPolicy } from '../../controllers/lnd/channels.js';
 
 const router = Router();
 

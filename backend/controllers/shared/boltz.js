@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.deposit = exports.createChannel = exports.createReverseSwap = exports.createSwap = exports.getSwapInfo = exports.listSwaps = exports.getServiceInfo = exports.getInfo = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
-const getInfo = (req, res, next) => {
+const logger = Logger;
+const common = Common;
+export const getInfo = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Boltz', msg: 'Getting Boltz Information..' });
     options = common.getBoltzServerOptions();
     if (options.url === '') {
@@ -25,8 +22,7 @@ const getInfo = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getInfo = getInfo;
-const getServiceInfo = (req, res, next) => {
+export const getServiceInfo = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Boltz', msg: 'Getting Service Information..' });
     options = common.getBoltzServerOptions();
     if (options.url === '') {
@@ -44,8 +40,7 @@ const getServiceInfo = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getServiceInfo = getServiceInfo;
-const listSwaps = (req, res, next) => {
+export const listSwaps = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Boltz', msg: 'Getting List Swaps..' });
     options = common.getBoltzServerOptions();
     if (options.url === '') {
@@ -69,8 +64,7 @@ const listSwaps = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.listSwaps = listSwaps;
-const getSwapInfo = (req, res, next) => {
+export const getSwapInfo = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Boltz', msg: 'Getting Swap..' });
     options = common.getBoltzServerOptions();
     if (options.url === '') {
@@ -88,8 +82,7 @@ const getSwapInfo = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getSwapInfo = getSwapInfo;
-const createSwap = (req, res, next) => {
+export const createSwap = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Boltz', msg: 'Creating Swap..' });
     options = common.getBoltzServerOptions();
     if (options.url === '') {
@@ -112,8 +105,7 @@ const createSwap = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.createSwap = createSwap;
-const createReverseSwap = (req, res, next) => {
+export const createReverseSwap = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Boltz', msg: 'Creating Reverse Swap..' });
     options = common.getBoltzServerOptions();
     if (options.url === '') {
@@ -136,8 +128,7 @@ const createReverseSwap = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.createReverseSwap = createReverseSwap;
-const createChannel = (req, res, next) => {
+export const createChannel = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Boltz', msg: 'Creating Boltz Channel..' });
     options = common.getBoltzServerOptions();
     if (options.url === '') {
@@ -160,8 +151,7 @@ const createChannel = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.createChannel = createChannel;
-const deposit = (req, res, next) => {
+export const deposit = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Boltz', msg: 'Boltz Deposit Start..' });
     options = common.getBoltzServerOptions();
     if (options.url === '') {
@@ -179,4 +169,3 @@ const deposit = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.deposit = deposit;

@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import * as fs from 'fs';
-import { Common, CommonService } from './common';
-import { LogJSONObj, CommonSelectedNode } from '../models/config.model';
+import { Common, CommonService } from './common.js';
+import { LogJSONObj, CommonSelectedNode } from '../models/config.model.js';
 
 export class LoggerService {
 

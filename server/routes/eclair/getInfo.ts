@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../../utils/authCheck';
-import { getInfo } from '../../controllers/eclair/getInfo';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { getInfo } from '../../controllers/eclair/getInfo.js';
 
 const router = Router();
 

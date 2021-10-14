@@ -1,46 +1,54 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.App = void 0;
-const express = require("express");
-const path = require("path");
-const cookieParser = require("cookie-parser");
-const bodyParser = require("body-parser");
-const cors_1 = require("./cors");
-const csrf_1 = require("./csrf");
-const shared_1 = require("../routes/shared");
-const lnd_1 = require("../routes/lnd");
-const c_lightning_1 = require("../routes/c-lightning");
-const eclair_1 = require("../routes/eclair");
-const common_1 = require("./common");
-const logger_1 = require("./logger");
-const config_1 = require("./config");
-const WebSocketServer = require("./webSocketServer");
-class ExpressApplication {
+import { __awaiter } from "tslib";
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { Low, JSONFile } from 'lowdb';
+import CORS from './cors.js';
+import CSRF from './csrf.js';
+import sharedRoutes from '../routes/shared/index.js';
+import lndRoutes from '../routes/lnd/index.js';
+import clRoutes from '../routes/c-lightning/index.js';
+import eclRoutes from '../routes/eclair/index.js';
+import { Common } from './common.js';
+import { Logger } from './logger.js';
+import { Config } from './config.js';
+export class ExpressApplication {
     constructor() {
         this.app = express();
-        this.logger = logger_1.Logger;
-        this.common = common_1.Common;
-        this.config = config_1.Config;
+        this.logger = Logger;
+        this.common = Common;
+        this.config = Config;
         this.baseHref = '/rtl';
+        this.directoryName = dirname(fileURLToPath(import.meta.url));
         this.getApp = () => this.app;
         this.loadConfiguration = () => {
             this.config.setServerConfiguration();
         };
-        this.loadDatabase = () => {
-            this.logger.log({ level: 'DEBUG', fileName: 'App', msg: 'LOAD DATABASE: IN PROGRESS' });
-        };
-        this.setCORS = () => { cors_1.default.mount(this.app); };
-        this.setCSRF = () => { csrf_1.default.mount(this.app); };
+        this.loadDatabase = () => __awaiter(this, void 0, void 0, function* () {
+            this.logger.log({ level: 'INFO', fileName: 'App', msg: 'LOAD DATABASE: IN PROGRESS' });
+            const adapter = new JSONFile(join(this.directoryName, '../..', 'db', 'db.json'));
+            const db = new Low(adapter);
+            yield db.read();
+            db.data.posts.push('Hello World');
+            this.logger.log({ level: 'INFO', fileName: 'App', msg: 'Test Data:', data: db.data.posts });
+            db.data.posts.push('Next Post');
+            yield db.write();
+            this.logger.log({ level: 'INFO', fileName: 'App', msg: 'Test Data After Write:', data: db.data.posts });
+        });
+        this.setCORS = () => { CORS.mount(this.app); };
+        this.setCSRF = () => { CSRF.mount(this.app); };
         this.setApplicationRoutes = () => {
             this.logger.log({ level: 'DEBUG', fileName: 'App', msg: 'Setting up Application Routes.' });
-            this.app.use(this.baseHref + '/api', shared_1.default);
-            this.app.use(this.baseHref + '/api/lnd', lnd_1.default);
-            this.app.use(this.baseHref + '/api/cl', c_lightning_1.default);
-            this.app.use(this.baseHref + '/api/ecl', eclair_1.default);
-            this.app.use(this.baseHref, express.static(path.join(__dirname, '../..', 'angular')));
+            this.app.use(this.baseHref + '/api', sharedRoutes);
+            this.app.use(this.baseHref + '/api/lnd', lndRoutes);
+            this.app.use(this.baseHref + '/api/cl', clRoutes);
+            this.app.use(this.baseHref + '/api/ecl', eclRoutes);
+            this.app.use(this.baseHref, express.static(join(this.directoryName, '../..', 'angular')));
             this.app.use((req, res, next) => {
                 res.cookie('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : '');
-                res.sendFile(path.join(__dirname, '../..', 'angular', 'index.html'));
+                res.sendFile(join(this.directoryName, '../..', 'angular', 'index.html'));
             });
             this.app.use((err, req, res, next) => this.handleApplicationErrors(err, res));
         };
@@ -77,8 +85,7 @@ class ExpressApplication {
         this.loadDatabase();
         this.setCORS();
         this.setCSRF();
-        this.app = WebSocketServer.plugIn(this.app);
         this.setApplicationRoutes();
     }
 }
-exports.App = new ExpressApplication();
+export default ExpressApplication;

@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../../utils/authCheck';
-import { getRTLConfigInitial, getRTLConfig, updateUISettings, update2FASettings, getConfig, getFile, updateSelectedNode, updateDefaultNode, updateServiceSettings, updateSSO, getCurrencyRates } from '../../controllers/shared/RTLConf';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { getRTLConfigInitial, getRTLConfig, updateUISettings, update2FASettings, getConfig, getFile, updateSelectedNode, updateDefaultNode, updateServiceSettings, updateSSO, getCurrencyRates } from '../../controllers/shared/RTLConf.js';
 
 const router = Router();
 

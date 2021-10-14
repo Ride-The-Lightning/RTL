@@ -1,7 +1,11 @@
-const http = require('http');
-const app = require('./backend/utils/app').App;
-const common = require('./backend/utils/common').Common;
-const logger = require('./backend/utils/logger').Logger;
+import http from 'http';
+import App from './backend/utils/app.js';
+import { Logger } from './backend/utils/logger.js';
+import { Common } from './backend/utils/common.js';
+
+const logger = Logger;
+const common = Common;
+const app = new App();
 
 const onError = (error) => {
   if (error.syscall !== 'listen') { throw error; }

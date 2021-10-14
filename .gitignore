@@ -30,6 +30,7 @@
 /.sass-cache
 /connect.lock
 /coverage
+/db
 /libpeerconnection.log
 npm-debug.log
 yarn-error.log

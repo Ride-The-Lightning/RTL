@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../../utils/authCheck';
-import { getPeers, postPeer, deletePeer } from '../../controllers/lnd/peers';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { getPeers, postPeer, deletePeer } from '../../controllers/lnd/peers.js';
 
 const router = Router();
 

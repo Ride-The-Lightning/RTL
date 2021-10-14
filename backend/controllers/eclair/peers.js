@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletePeer = exports.connectPeer = exports.getPeers = exports.getFilteredNodes = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
-const getFilteredNodes = (peersNodeIds) => {
+const logger = Logger;
+const common = Common;
+export const getFilteredNodes = (peersNodeIds) => {
     options.url = common.getSelLNServerUrl() + '/nodes';
     options.form = { nodeIds: peersNodeIds };
     return request.post(options).then((nodes) => {
@@ -15,8 +12,7 @@ const getFilteredNodes = (peersNodeIds) => {
         return nodes;
     }).catch((err) => []);
 };
-exports.getFilteredNodes = getFilteredNodes;
-const getPeers = (req, res, next) => {
+export const getPeers = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Peers', msg: 'Getting Peers..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/peers';
@@ -31,7 +27,7 @@ const getPeers = (req, res, next) => {
                 let peersNodeIds = '';
                 body.forEach((peer) => { peersNodeIds = peersNodeIds + ',' + peer.nodeId; });
                 peersNodeIds = peersNodeIds.substring(1);
-                return exports.getFilteredNodes(peersNodeIds).then((peersWithAlias) => {
+                return getFilteredNodes(peersNodeIds).then((peersWithAlias) => {
                     let foundPeer = null;
                     body.map((peer) => {
                         foundPeer = peersWithAlias.find((peerWithAlias) => peer.nodeId === peerWithAlias.nodeId);
@@ -55,8 +51,7 @@ const getPeers = (req, res, next) => {
         });
     }
 };
-exports.getPeers = getPeers;
-const connectPeer = (req, res, next) => {
+export const connectPeer = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Peers', msg: 'Conneting Peer..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/connect';
@@ -83,7 +78,7 @@ const connectPeer = (req, res, next) => {
                 let peersNodeIds = '';
                 body.forEach((peer) => { peersNodeIds = peersNodeIds + ',' + peer.nodeId; });
                 peersNodeIds = peersNodeIds.substring(1);
-                return exports.getFilteredNodes(peersNodeIds).then((peersWithAlias) => {
+                return getFilteredNodes(peersNodeIds).then((peersWithAlias) => {
                     let foundPeer = null;
                     body.map((peer) => {
                         foundPeer = peersWithAlias.find((peerWithAlias) => peer.nodeId === peerWithAlias.nodeId);
@@ -110,8 +105,7 @@ const connectPeer = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.connectPeer = connectPeer;
-const deletePeer = (req, res, next) => {
+export const deletePeer = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Peers', msg: 'Disconneting Peer..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/disconnect';
@@ -130,4 +124,3 @@ const deletePeer = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.deletePeer = deletePeer;

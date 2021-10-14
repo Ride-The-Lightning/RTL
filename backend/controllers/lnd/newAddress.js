@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getNewAddress = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
-const getNewAddress = (req, res, next) => {
+const logger = Logger;
+const common = Common;
+export const getNewAddress = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'NewAddress', msg: 'Getting New Address..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/newaddress?type=' + req.query.type;
@@ -20,4 +17,3 @@ const getNewAddress = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getNewAddress = getNewAddress;

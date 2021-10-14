@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../../utils/authCheck';
-import { getPayments, getAllLightningTransactions } from '../../controllers/lnd/payments';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { getPayments, getAllLightningTransactions } from '../../controllers/lnd/payments.js';
 
 const router = Router();
 

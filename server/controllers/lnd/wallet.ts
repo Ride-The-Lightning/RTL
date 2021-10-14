@@ -1,7 +1,7 @@
-import * as atob from 'atob';
-import * as request from 'request-promise';
-import { Logger, LoggerService } from '../../utils/logger';
-import { Common, CommonService } from '../../utils/common';
+import atob from 'atob';
+import request from 'request-promise';
+import { Logger, LoggerService } from '../../utils/logger.js';
+import { Common, CommonService } from '../../utils/common.js';
 let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;

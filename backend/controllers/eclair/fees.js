@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPayments = exports.getFees = exports.arrangePayments = exports.arrangeFees = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
-const arrangeFees = (body, current_time) => {
+const logger = Logger;
+const common = Common;
+export const arrangeFees = (body, current_time) => {
     const fees = { daily_fee: 0, daily_txs: 0, weekly_fee: 0, weekly_txs: 0, monthly_fee: 0, monthly_txs: 0 };
     const week_start_time = current_time - 604800000;
     const day_start_time = current_time - 86400000;
@@ -28,8 +25,7 @@ const arrangeFees = (body, current_time) => {
     logger.log({ level: 'DEBUG', fileName: 'Fees', msg: 'Arranged Fee', data: fees });
     return fees;
 };
-exports.arrangeFees = arrangeFees;
-const arrangePayments = (body) => {
+export const arrangePayments = (body) => {
     const payments = {
         sent: body && body.sent ? body.sent : [],
         received: body && body.received ? body.received : [],
@@ -75,8 +71,7 @@ const arrangePayments = (body) => {
     logger.log({ level: 'DEBUG', fileName: 'Fees', msg: 'Arranged Payments', data: payments });
     return payments;
 };
-exports.arrangePayments = arrangePayments;
-const getFees = (req, res, next) => {
+export const getFees = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Fees', msg: 'Getting Fees..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/audit';
@@ -89,33 +84,32 @@ const getFees = (req, res, next) => {
     };
     logger.log({ level: 'DEBUG', fileName: 'Fees', msg: 'Fee Audit Options', data: options.form });
     if (common.read_dummy_data) {
-        common.getDummyData('Fees').then((data) => { res.status(200).json(exports.arrangeFees(data, Math.round((new Date().getTime())))); });
+        common.getDummyData('Fees').then((data) => { res.status(200).json(arrangeFees(data, Math.round((new Date().getTime())))); });
     }
     else {
         request.post(options).then((body) => {
             logger.log({ level: 'DEBUG', fileName: 'Fees', msg: 'Fee Response', data: body });
             logger.log({ level: 'INFO', fileName: 'Fees', msg: 'Fee Received' });
-            res.status(200).json(exports.arrangeFees(body, Math.round((new Date().getTime()))));
+            res.status(200).json(arrangeFees(body, Math.round((new Date().getTime()))));
         }).catch((errRes) => {
             const err = common.handleError(errRes, 'Fees', 'Get Fees Error');
             return res.status(err.statusCode).json({ message: err.message, error: err.error });
         });
     }
 };
-exports.getFees = getFees;
-const getPayments = (req, res, next) => {
+export const getPayments = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Fees', msg: 'Getting Payments..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/audit';
     options.form = null;
     if (common.read_dummy_data) {
-        common.getDummyData('Payments').then((data) => { res.status(200).json(exports.arrangePayments(data)); });
+        common.getDummyData('Payments').then((data) => { res.status(200).json(arrangePayments(data)); });
     }
     else {
         request.post(options).then((body) => {
             logger.log({ level: 'DEBUG', fileName: 'Fees', msg: 'Payments Response', data: body });
             logger.log({ level: 'INFO', fileName: 'Fees', msg: 'Payments Received' });
-            res.status(200).json(exports.arrangePayments(body));
+            res.status(200).json(arrangePayments(body));
         }).
             catch((errRes) => {
             const err = common.handleError(errRes, 'Fees', 'Get Payments Error');
@@ -123,4 +117,3 @@ const getPayments = (req, res, next) => {
         });
     }
 };
-exports.getPayments = getPayments;

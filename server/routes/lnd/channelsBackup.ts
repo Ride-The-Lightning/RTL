@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../../utils/authCheck';
-import { getBackup, getRestoreList, postBackupVerify, postRestore } from '../../controllers/lnd/channelsBackup';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { getBackup, getRestoreList, postBackupVerify, postRestore } from '../../controllers/lnd/channelsBackup.js';
 
 const router = Router();
 

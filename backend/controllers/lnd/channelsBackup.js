@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRestoreList = exports.postRestore = exports.postBackupVerify = exports.getBackup = void 0;
-const fs = require("fs");
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import * as fs from 'fs';
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
+const logger = Logger;
+const common = Common;
 function getFilesList(callback) {
     const files_list = [];
     let all_restore_exists = false;
@@ -32,7 +29,7 @@ function getFilesList(callback) {
         callback(response);
     });
 }
-const getBackup = (req, res, next) => {
+export const getBackup = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'ChannelBackup', msg: 'Getting Channel Backup..' });
     options = common.getOptions();
     let channel_backup_file = '';
@@ -79,8 +76,7 @@ const getBackup = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getBackup = getBackup;
-const postBackupVerify = (req, res, next) => {
+export const postBackupVerify = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'ChannelBackup', msg: 'Verifying Channel Backup..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/channels/backup/verify';
@@ -138,8 +134,7 @@ const postBackupVerify = (req, res, next) => {
         });
     }
 };
-exports.postBackupVerify = postBackupVerify;
-const postRestore = (req, res, next) => {
+export const postRestore = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'ChannelBackup', msg: 'Restoring Channel Backup..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/channels/backup/restore';
@@ -223,8 +218,7 @@ const postRestore = (req, res, next) => {
         });
     }
 };
-exports.postRestore = postRestore;
-const getRestoreList = (req, res, next) => {
+export const getRestoreList = (req, res, next) => {
     getFilesList((getFilesListRes) => {
         if (getFilesListRes.error) {
             return res.status(getFilesListRes.statusCode).json(getFilesListRes);
@@ -234,4 +228,3 @@ const getRestoreList = (req, res, next) => {
         }
     });
 };
-exports.getRestoreList = getRestoreList;

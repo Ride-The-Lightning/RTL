@@ -1,14 +1,11 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.releaseUTXO = exports.leaseUTXO = exports.labelTransaction = exports.bumpFee = exports.getUTXOs = exports.updateSelNodeOptions = exports.operateWallet = exports.genSeed = void 0;
-const atob = require("atob");
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import atob from 'atob';
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
-const genSeed = (req, res, next) => {
+const logger = Logger;
+const common = Common;
+export const genSeed = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Wallet', msg: 'Generating Seed..' });
     options = common.getOptions();
     if (req.params.passphrase) {
@@ -25,8 +22,7 @@ const genSeed = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.genSeed = genSeed;
-const operateWallet = (req, res, next) => {
+export const operateWallet = (req, res, next) => {
     let err_message = '';
     options = common.getOptions();
     options.method = 'POST';
@@ -92,13 +88,11 @@ const operateWallet = (req, res, next) => {
         }
     });
 };
-exports.operateWallet = operateWallet;
-const updateSelNodeOptions = (req, res, next) => {
+export const updateSelNodeOptions = (req, res, next) => {
     const response = common.updateSelectedNodeOptions();
     res.status(response.status).json({ updateMessage: response.message });
 };
-exports.updateSelNodeOptions = updateSelNodeOptions;
-const getUTXOs = (req, res, next) => {
+export const getUTXOs = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Wallet', msg: 'Getting UTXOs..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v2/wallet/utxos?max_confs=' + req.query.max_confs;
@@ -111,8 +105,7 @@ const getUTXOs = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getUTXOs = getUTXOs;
-const bumpFee = (req, res, next) => {
+export const bumpFee = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Wallet', msg: 'Bumping Fee..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v2/wallet/bumpfee';
@@ -137,8 +130,7 @@ const bumpFee = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.bumpFee = bumpFee;
-const labelTransaction = (req, res, next) => {
+export const labelTransaction = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Wallet', msg: 'Labelling Transaction..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v2/wallet/tx/label';
@@ -157,8 +149,7 @@ const labelTransaction = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.labelTransaction = labelTransaction;
-const leaseUTXO = (req, res, next) => {
+export const leaseUTXO = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Wallet', msg: 'Leasing UTXO..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v2/wallet/utxos/lease';
@@ -179,8 +170,7 @@ const leaseUTXO = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.leaseUTXO = leaseUTXO;
-const releaseUTXO = (req, res, next) => {
+export const releaseUTXO = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Wallet', msg: 'Releasing UTXO..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v2/wallet/utxos/release';
@@ -200,4 +190,3 @@ const releaseUTXO = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.releaseUTXO = releaseUTXO;
