@@ -30,12 +30,12 @@ export class ExpressApplication {
             this.logger.log({ level: 'INFO', fileName: 'App', msg: 'LOAD DATABASE: IN PROGRESS' });
             const adapter = new JSONFile(join(this.directoryName, '../..', 'db', 'db.json'));
             const db = new Low(adapter);
-            yield db.read();
-            db.data.posts.push('Hello World');
-            this.logger.log({ level: 'INFO', fileName: 'App', msg: 'Test Data:', data: db.data.posts });
-            db.data.posts.push('Next Post');
-            yield db.write();
-            this.logger.log({ level: 'INFO', fileName: 'App', msg: 'Test Data After Write:', data: db.data.posts });
+            // await db.read();
+            // db.data.posts.push('Hello World');
+            // this.logger.log({ level: 'INFO', fileName: 'App', msg: 'Test Data:', data: db.data.posts });
+            // db.data.posts.push('Next Post');
+            // await db.write();
+            // this.logger.log({ level: 'INFO', fileName: 'App', msg: 'Test Data After Write:', data: db.data.posts });
         });
         this.setCORS = () => { CORS.mount(this.app); };
         this.setCSRF = () => { CSRF.mount(this.app); };

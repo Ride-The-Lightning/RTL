@@ -1,29 +1,25 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.SSEventControl = exports.testRxjsScheduler = exports.connect = exports.reconnet = void 0;
-const rxjs_1 = require("rxjs");
-const operators_1 = require("rxjs/operators");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
-const logger = logger_1.Logger;
-const common = common_1.Common;
+import { Observable, asyncScheduler } from 'rxjs';
+import { observeOn } from 'rxjs/operators';
+import { Logger } from '../../utils/logger';
+import { Common } from '../../utils/common';
+const logger = Logger;
+const common = Common;
 const WS_LINK = 'ws://user:' + common.selectedNode.ln_api_password + '@' + common.getSelLNServerUrl() + '/ws';
 let reconnectTimeOut = null;
 let waitTime = 0.5;
-const reconnet = () => {
+export const reconnet = () => {
     if (reconnectTimeOut) {
         return;
     }
     waitTime = (waitTime >= 16) ? 16 : (waitTime * 2);
     reconnectTimeOut = setTimeout(() => {
         logger.log({ level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Reconnecting to the Eclair\'s Websocket Server.' });
-        exports.connect();
+        connect();
         reconnectTimeOut = null;
     }, waitTime * 1000);
 };
-exports.reconnet = reconnet;
-const connect = () => {
-    exports.testRxjsScheduler();
+export const connect = () => {
+    testRxjsScheduler();
     logger.log({ level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Connecting to the Eclair\'s Websocket Server.' });
     const webSocketClient = new WebSocket(WS_LINK);
     webSocketClient.onopen = () => {
@@ -37,24 +33,23 @@ const connect = () => {
     };
     webSocketClient.onclose = (e) => {
         logger.log({ level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Web socket disconnected, will reconnect again..' });
-        exports.reconnet();
+        reconnet();
     };
     webSocketClient.onerror = (err) => {
         logger.log({ level: 'ERROR', fileName: 'ECLWebSocket', msg: 'Web socket error', error: err });
         // sendEventsToAllWSClients('Error', err.error);
         // sendEventsToAllSSEClients('Error', err.error);
-        exports.reconnet();
+        reconnet();
     };
 };
-exports.connect = connect;
 /* eslint-disable no-console */
-const testRxjsScheduler = () => {
-    const observable = new rxjs_1.Observable((observer) => {
+export const testRxjsScheduler = () => {
+    const observable = new Observable((observer) => {
         observer.next(1);
         observer.next(2);
         observer.next(3);
         observer.complete();
-    }).pipe(operators_1.observeOn(rxjs_1.asyncScheduler));
+    }).pipe(observeOn(asyncScheduler));
     console.log('just before subscribe');
     observable.subscribe({
         next(x) {
@@ -69,10 +64,9 @@ const testRxjsScheduler = () => {
     });
     console.log('just after subscribe');
 };
-exports.testRxjsScheduler = testRxjsScheduler;
 let clients = [];
-const SSEventControl = (req, res, next) => {
-    exports.connect();
+export const SSEventControl = (req, res, next) => {
+    connect();
     const headers = { 'Content-Type': 'text/event-stream', Connection: 'keep-alive', 'Cache-Control': 'no-cache' };
     res.writeHead(200, headers);
     const clientId = Date.now();
@@ -84,4 +78,3 @@ const SSEventControl = (req, res, next) => {
         console.log('Disconnected: ' + clientId + ', Total SSE clients: ' + clients.length);
     });
 };
-exports.SSEventControl = SSEventControl;

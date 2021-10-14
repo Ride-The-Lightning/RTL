@@ -533,6 +533,7 @@ export class RTLEffects implements OnDestroy {
   );
 
   initializeNode(node: any, isInitialSetup: boolean) {
+    this.logger.info('Initializing node from RTL Effects.');
     const landingPage = isInitialSetup ? '' : 'HOME';
     let selNode = {};
     if (node.settings.fiatConversion && node.settings.currencyUnit) {
@@ -547,8 +548,8 @@ export class RTLEffects implements OnDestroy {
     this.store.dispatch(new LNDActions.ResetLNDStore(selNode));
     this.store.dispatch(new CLActions.ResetCLStore(selNode));
     this.store.dispatch(new ECLActions.ResetECLStore(selNode));
+    this.wsService.connectWebSocket(API_URL.replace(/^http/, 'ws') + environment.Web_SOCKET_API);
     if (this.sessionService.getItem('token')) {
-      this.wsService.connectWebSocket(API_URL.replace(/^http/, 'ws') + environment.Web_SOCKET_API);
       node.lnImplementation = node.lnImplementation.toUpperCase();
       this.dataService.setChildAPIUrl(node.lnImplementation);
       switch (node.lnImplementation) {
