@@ -1,14 +1,14 @@
 import { Router } from 'express';
-import infoCLRoutes from './getInfo';
-import feesCLRoutes from './fees';
-import balanceCLRoutes from './balance';
-import channelsCLRoutes from './channels';
-import invoicesCLRoutes from './invoices';
-import onChainCLRoutes from './onchain';
-import paymentsCLRoutes from './payments';
-import peersCLRoutes from './peers';
-import networkCLRoutes from './network';
-import messageCLRoutes from './message';
+import infoCLRoutes from './getInfo.js';
+import feesCLRoutes from './fees.js';
+import balanceCLRoutes from './balance.js';
+import channelsCLRoutes from './channels.js';
+import invoicesCLRoutes from './invoices.js';
+import onChainCLRoutes from './onchain.js';
+import paymentsCLRoutes from './payments.js';
+import peersCLRoutes from './peers.js';
+import networkCLRoutes from './network.js';
+import messageCLRoutes from './message.js';
 
 const router = Router();
 

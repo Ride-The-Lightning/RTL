@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../../utils/authCheck';
-import { genSeed, updateSelNodeOptions, getUTXOs, operateWallet, bumpFee, labelTransaction, leaseUTXO, releaseUTXO } from '../../controllers/lnd/wallet';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { genSeed, updateSelNodeOptions, getUTXOs, operateWallet, bumpFee, labelTransaction, leaseUTXO, releaseUTXO } from '../../controllers/lnd/wallet.js';
 
 const router = Router();
 

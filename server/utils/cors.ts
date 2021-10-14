@@ -1,5 +1,5 @@
 import { Application } from 'express';
-import { Logger, LoggerService } from './logger';
+import { Logger, LoggerService } from './logger.js';
 
 class CORS {
 

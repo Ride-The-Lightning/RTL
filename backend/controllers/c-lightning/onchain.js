@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUTXOs = exports.onChainWithdraw = exports.getNewAddress = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
-const getNewAddress = (req, res, next) => {
+const logger = Logger;
+const common = Common;
+export const getNewAddress = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'OnChain', msg: 'Generating New Address..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/newaddr?addrType=' + req.query.type;
@@ -19,8 +16,7 @@ const getNewAddress = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getNewAddress = getNewAddress;
-const onChainWithdraw = (req, res, next) => {
+export const onChainWithdraw = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'OnChain', msg: 'Withdrawing from On Chain..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/withdraw';
@@ -35,8 +31,7 @@ const onChainWithdraw = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.onChainWithdraw = onChainWithdraw;
-const getUTXOs = (req, res, next) => {
+export const getUTXOs = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'OnChain', msg: 'List Funds..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/listFunds';
@@ -51,4 +46,3 @@ const getUTXOs = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getUTXOs = getUTXOs;

@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.feeRates = exports.listChannel = exports.listNode = exports.getRoute = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
-const getRoute = (req, res, next) => {
+const logger = Logger;
+const common = Common;
+export const getRoute = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Network', msg: 'Getting Network Routes..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/network/getRoute/' + req.params.destPubkey + '/' + req.params.amount;
@@ -20,8 +17,7 @@ const getRoute = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getRoute = getRoute;
-const listNode = (req, res, next) => {
+export const listNode = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Network', msg: 'Node Lookup..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/network/listNode/' + req.params.id;
@@ -34,8 +30,7 @@ const listNode = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.listNode = listNode;
-const listChannel = (req, res, next) => {
+export const listChannel = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Network', msg: 'Channel Lookup..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/network/listChannel/' + req.params.channelShortId;
@@ -48,8 +43,7 @@ const listChannel = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.listChannel = listChannel;
-const feeRates = (req, res, next) => {
+export const feeRates = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Network', msg: 'Getting Network Fee Rates..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/network/feeRates/' + req.params.feeRateStyle;
@@ -61,4 +55,3 @@ const feeRates = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.feeRates = feeRates;

@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../../utils/authCheck';
-import { forwardingHistory } from '../../controllers/lnd/switch';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { forwardingHistory } from '../../controllers/lnd/switch.js';
 
 const router = Router();
 

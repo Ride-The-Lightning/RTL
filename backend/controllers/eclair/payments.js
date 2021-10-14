@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSentInfoFromPaymentRequest = exports.getSentPaymentsInformation = exports.queryPaymentRoute = exports.postPayment = exports.decodePayment = exports.getQueryNodes = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
-const getQueryNodes = (nodeIds) => {
+const logger = Logger;
+const common = Common;
+export const getQueryNodes = (nodeIds) => {
     options.url = common.getSelLNServerUrl() + '/nodes';
     options.form = { nodeIds: nodeIds };
     return request.post(options).then((nodes) => {
@@ -15,8 +12,7 @@ const getQueryNodes = (nodeIds) => {
         return nodes;
     }).catch((err) => []);
 };
-exports.getQueryNodes = getQueryNodes;
-const decodePayment = (req, res, next) => {
+export const decodePayment = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Payments', msg: 'Decoding Payment..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/parseinvoice';
@@ -33,8 +29,7 @@ const decodePayment = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.decodePayment = decodePayment;
-const postPayment = (req, res, next) => {
+export const postPayment = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Payments', msg: 'Paying Invoice..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/payinvoice';
@@ -49,8 +44,7 @@ const postPayment = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.postPayment = postPayment;
-const queryPaymentRoute = (req, res, next) => {
+export const queryPaymentRoute = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Payments', msg: 'Querying Payment Route..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/findroutetonode';
@@ -63,7 +57,7 @@ const queryPaymentRoute = (req, res, next) => {
         logger.log({ level: 'DEBUG', fileName: 'Payments', msg: 'Query Payment Route Received', data: body });
         if (body && body.length) {
             const queryRoutes = [];
-            return exports.getQueryNodes(body).then((hopsWithAlias) => {
+            return getQueryNodes(body).then((hopsWithAlias) => {
                 let foundPeer = null;
                 body.map((hop) => {
                     foundPeer = hopsWithAlias.find((hopWithAlias) => hop === hopWithAlias.nodeId);
@@ -84,13 +78,12 @@ const queryPaymentRoute = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.queryPaymentRoute = queryPaymentRoute;
-const getSentPaymentsInformation = (req, res, next) => {
+export const getSentPaymentsInformation = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Payments', msg: 'Getting Sent Payment Information..' });
     options = common.getOptions();
     if (req.body.payments) {
         const paymentsArr = req.body.payments.split(',');
-        return Promise.all(paymentsArr.map((payment) => exports.getSentInfoFromPaymentRequest(payment))).
+        return Promise.all(paymentsArr.map((payment) => getSentInfoFromPaymentRequest(payment))).
             then((values) => {
             logger.log({ level: 'DEBUG', fileName: 'Payments', msg: 'Payment Sent Informations', data: values });
             logger.log({ level: 'INFO', fileName: 'Payments', msg: 'Sent Payment Information Received' });
@@ -106,8 +99,7 @@ const getSentPaymentsInformation = (req, res, next) => {
         return res.status(200).json([]);
     }
 };
-exports.getSentPaymentsInformation = getSentPaymentsInformation;
-const getSentInfoFromPaymentRequest = (payment) => {
+export const getSentInfoFromPaymentRequest = (payment) => {
     options.url = common.getSelLNServerUrl() + '/getsentinfo';
     options.form = { paymentHash: payment };
     return request.post(options).then((body) => {
@@ -123,4 +115,3 @@ const getSentInfoFromPaymentRequest = (payment) => {
         return body;
     }).catch((err) => err);
 };
-exports.getSentInfoFromPaymentRequest = getSentInfoFromPaymentRequest;

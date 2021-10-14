@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../../utils/authCheck';
-import { listInvoices, getInvoice, addInvoice } from '../../controllers/lnd/invoices';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { listInvoices, getInvoice, addInvoice } from '../../controllers/lnd/invoices.js';
 
 const router = Router();
 

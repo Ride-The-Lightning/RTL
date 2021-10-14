@@ -1,19 +1,19 @@
 import { Router } from 'express';
-import infoRoutes from './getInfo';
-import channelsRoutes from './channels';
-import channelsBackupRoutes from './channelsBackup';
-import peersRoutes from './peers';
-import feesRoutes from './fees';
-import balanceRoutes from './balance';
-import walletRoutes from './wallet';
-import graphRoutes from './graph';
-import newAddressRoutes from './newAddress';
-import transactionsRoutes from './transactions';
-import payReqRoutes from './payReq';
-import paymentsRoutes from './payments';
-import invoiceRoutes from './invoices';
-import switchRoutes from './switch';
-import messageRoutes from './message';
+import infoRoutes from './getInfo.js';
+import channelsRoutes from './channels.js';
+import channelsBackupRoutes from './channelsBackup.js';
+import peersRoutes from './peers.js';
+import feesRoutes from './fees.js';
+import balanceRoutes from './balance.js';
+import walletRoutes from './wallet.js';
+import graphRoutes from './graph.js';
+import newAddressRoutes from './newAddress.js';
+import transactionsRoutes from './transactions.js';
+import payReqRoutes from './payReq.js';
+import paymentsRoutes from './payments.js';
+import invoiceRoutes from './invoices.js';
+import switchRoutes from './switch.js';
+import messageRoutes from './message.js';
 
 const router = Router();
 

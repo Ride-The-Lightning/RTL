@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getInfo = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
-const getInfo = (req, res, next) => {
+const logger = Logger;
+const common = Common;
+export const getInfo = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'GetInfo', msg: 'Getting LND Node Information..' });
     common.setOptions();
     options = common.getOptions();
@@ -47,4 +44,3 @@ const getInfo = (req, res, next) => {
         });
     }
 };
-exports.getInfo = getInfo;

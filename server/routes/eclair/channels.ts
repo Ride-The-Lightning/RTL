@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../../utils/authCheck';
-import { getChannels, getChannelStats, openChannel, updateChannelRelayFee, closeChannel } from '../../controllers/eclair/channels';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { getChannels, getChannelStats, openChannel, updateChannelRelayFee, closeChannel } from '../../controllers/eclair/channels.js';
 
 const router = Router();
 

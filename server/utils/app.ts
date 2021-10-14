@@ -1,26 +1,31 @@
-import * as express from 'express';
-import * as path from 'path';
-import * as cookieParser from 'cookie-parser';
-import * as bodyParser from 'body-parser';
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { Low, JSONFile } from 'lowdb';
 
-import CORS from './cors';
-import CSRF from './csrf';
+import CORS from './cors.js';
+import CSRF from './csrf.js';
 
-import sharedRoutes from '../routes/shared';
-import lndRoutes from '../routes/lnd';
-import clRoutes from '../routes/c-lightning';
-import eclRoutes from '../routes/eclair';
-import { Common, CommonService } from './common';
-import { Logger, LoggerService } from './logger';
-import { Config, ConfigService } from './config';
+import sharedRoutes from '../routes/shared/index.js';
+import lndRoutes from '../routes/lnd/index.js';
+import clRoutes from '../routes/c-lightning/index.js';
+import eclRoutes from '../routes/eclair/index.js';
+import { Common, CommonService } from './common.js';
+import { Logger, LoggerService } from './logger.js';
+import { Config, ConfigService } from './config.js';
 
-class ExpressApplication {
+type DBDataType = { posts: string[] };
+
+export class ExpressApplication {
 
   public app = express();
   public logger: LoggerService = Logger;
   public common: CommonService = Common;
   public config: ConfigService = Config;
   public baseHref = '/rtl';
+  public directoryName = dirname(fileURLToPath(import.meta.url));
 
   constructor() {
     this.logger.log({ level: 'DEBUG', fileName: 'App', msg: 'Starting Express Application.' });
@@ -43,8 +48,17 @@ class ExpressApplication {
     this.config.setServerConfiguration();
   }
 
-  public loadDatabase = () => {
-    this.logger.log({ level: 'DEBUG', fileName: 'App', msg: 'LOAD DATABASE: IN PROGRESS' });
+  public loadDatabase = async () => {
+    this.logger.log({ level: 'INFO', fileName: 'App', msg: 'LOAD DATABASE: IN PROGRESS' });
+    const adapter = new JSONFile<DBDataType>(join(this.directoryName, '../..', 'db', 'db.json'));
+    const db = new Low<DBDataType>(adapter);
+    await db.read();
+
+    db.data.posts.push('Hello World');
+    this.logger.log({ level: 'INFO', fileName: 'App', msg: 'Test Data:', data: db.data.posts });
+    db.data.posts.push('Next Post');
+    await db.write();
+    this.logger.log({ level: 'INFO', fileName: 'App', msg: 'Test Data After Write:', data: db.data.posts });
   }
 
   public setCORS = () => { CORS.mount(this.app); }
@@ -58,10 +72,10 @@ class ExpressApplication {
     this.app.use(this.baseHref + '/api/lnd', lndRoutes);
     this.app.use(this.baseHref + '/api/cl', clRoutes);
     this.app.use(this.baseHref + '/api/ecl', eclRoutes);
-    this.app.use(this.baseHref, express.static(path.join(__dirname, '../..', 'angular')));
+    this.app.use(this.baseHref, express.static(join(this.directoryName, '../..', 'angular')));
     this.app.use((req, res, next) => {
       res.cookie('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : '');
-      res.sendFile(path.join(__dirname, '../..', 'angular', 'index.html'));
+      res.sendFile(join(this.directoryName, '../..', 'angular', 'index.html'));
     });
     this.app.use((err, req, res, next) => this.handleApplicationErrors(err, res));
   }
@@ -93,4 +107,4 @@ class ExpressApplication {
 
 }
 
-export const App = new ExpressApplication();
+export default ExpressApplication;

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authenticateUser, verifyToken, resetPassword } from '../../controllers/shared/authenticate';
+import { authenticateUser, verifyToken, resetPassword } from '../../controllers/shared/authenticate.js';
 
 const router = Router();
 

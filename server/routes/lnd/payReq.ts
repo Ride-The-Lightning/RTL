@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../../utils/authCheck';
-import { decodePayment, decodePayments } from '../../controllers/lnd/payReq';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { decodePayment, decodePayments } from '../../controllers/lnd/payReq.js';
 
 const router = Router();
 

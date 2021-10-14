@@ -1,8 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = require("express");
-const authCheck_1 = require("../../utils/authCheck");
-const getInfo_1 = require("../../controllers/eclair/getInfo");
-const router = express_1.Router();
-router.get('/', authCheck_1.isAuthenticated, getInfo_1.getInfo);
-exports.default = router;
+import { Router } from 'express';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { getInfo } from '../../controllers/eclair/getInfo.js';
+const router = Router();
+router.get('/', isAuthenticated, getInfo);
+export default router;

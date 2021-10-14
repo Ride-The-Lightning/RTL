@@ -1,21 +1,20 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Config = exports.ConfigService = void 0;
-const os = require("os");
-const fs = require("fs");
-const path = require("path");
-const crypto = require("crypto");
-const ini = require("ini");
-const parseHocon = require("hocon-parser");
-const common_1 = require("./common");
-const logger_1 = require("./logger");
-class ConfigService {
+import * as os from 'os';
+import * as fs from 'fs';
+import { join, dirname, isAbsolute, resolve, sep } from 'path';
+import { fileURLToPath } from 'url';
+import * as crypto from 'crypto';
+import ini from 'ini';
+import parseHocon from 'hocon-parser';
+import { Common } from './common.js';
+import { Logger } from './logger.js';
+export class ConfigService {
     constructor() {
         this.platform = os.platform();
         this.hash = crypto.createHash('sha256');
         this.errMsg = '';
-        this.common = common_1.Common;
-        this.logger = logger_1.Logger;
+        this.directoryName = dirname(fileURLToPath(import.meta.url));
+        this.common = Common;
+        this.logger = Logger;
         this.setDefaultConfig = () => {
             const homeDir = os.userInfo().homedir;
             let macaroonPath = '';
@@ -86,7 +85,7 @@ class ConfigService {
         };
         this.updateLogByLevel = () => {
             let updateLogFlag = false;
-            this.common.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : path.join(__dirname, '../..');
+            this.common.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : join(this.directoryName, '../..');
             try {
                 const RTLConfFile = this.common.rtl_conf_file_path + this.common.path_separator + 'RTL-Config.json';
                 const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
@@ -263,8 +262,8 @@ class ConfigService {
                     }
                     else {
                         try {
-                            const dirname = path.dirname(log_file);
-                            this.createDirectory(dirname);
+                            const directoryName = dirname(log_file);
+                            this.createDirectory(directoryName);
                             const createStream = fs.createWriteStream(log_file);
                             createStream.end();
                         }
@@ -310,10 +309,10 @@ class ConfigService {
                 }
             }
         };
-        this.createDirectory = (dirname) => {
-            const initDir = path.isAbsolute(dirname) ? path.sep : '';
-            dirname.split(path.sep).reduce((parentDir, childDir) => {
-                const curDir = path.resolve(parentDir, childDir);
+        this.createDirectory = (directoryName) => {
+            const initDir = isAbsolute(directoryName) ? sep : '';
+            directoryName.split(sep).reduce((parentDir, childDir) => {
+                const curDir = resolve(parentDir, childDir);
                 try {
                     if (!fs.existsSync(curDir)) {
                         fs.mkdirSync(curDir);
@@ -322,7 +321,7 @@ class ConfigService {
                 catch (err) {
                     if (err.code !== 'EEXIST') {
                         if (err.code === 'ENOENT') {
-                            throw new Error(`ENOENT: No such file or directory, mkdir '${dirname}'. Ensure that channel backup path separator is '${(this.platform === 'win32') ? '\\\\' : '/'}'`);
+                            throw new Error(`ENOENT: No such file or directory, mkdir '${directoryName}'. Ensure that channel backup path separator is '${(this.platform === 'win32') ? '\\\\' : '/'}'`);
                         }
                         else {
                             throw err;
@@ -345,8 +344,8 @@ class ConfigService {
             }
             else {
                 try {
-                    const dirname = path.dirname(cookieFile);
-                    this.createDirectory(dirname);
+                    const directoryName = dirname(cookieFile);
+                    this.createDirectory(directoryName);
                     fs.writeFileSync(cookieFile, crypto.randomBytes(64).toString('hex'));
                     this.common.cookie = fs.readFileSync(cookieFile, 'utf-8');
                 }
@@ -557,7 +556,7 @@ class ConfigService {
         };
         this.setServerConfiguration = () => {
             try {
-                this.common.rtl_conf_file_path = (process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH : path.join(__dirname, '../..');
+                this.common.rtl_conf_file_path = (process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH : join(this.directoryName, '../..');
                 const confFileFullPath = this.common.rtl_conf_file_path + this.common.path_separator + 'RTL-Config.json';
                 if (!fs.existsSync(confFileFullPath)) {
                     this.upgradeConfig(confFileFullPath);
@@ -575,5 +574,4 @@ class ConfigService {
         };
     }
 }
-exports.ConfigService = ConfigService;
-exports.Config = new ConfigService();
+export const Config = new ConfigService();

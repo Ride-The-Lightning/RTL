@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.closeChannel = exports.updateChannelRelayFee = exports.openChannel = exports.getChannelStats = exports.getChannels = exports.simplifyAllChannels = exports.arrangeChannels = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
-const arrangeChannels = (simplifiedChannels) => {
+const logger = Logger;
+const common = Common;
+export const arrangeChannels = (simplifiedChannels) => {
     let channelTotal = 0;
     let totalLocalBalance = 0;
     let totalRemoteBalance = 0;
@@ -47,8 +44,7 @@ const arrangeChannels = (simplifiedChannels) => {
     logger.log({ level: 'DEBUG', fileName: 'Channels', msg: 'Inactive Channels', data: inactiveChannels });
     return ({ activeChannels: activeChannels, pendingChannels: pendingChannels, inactiveChannels: inactiveChannels, lightningBalances: lightningBalances, channelStatus: channelStatus });
 };
-exports.arrangeChannels = arrangeChannels;
-const simplifyAllChannels = (channels) => {
+export const simplifyAllChannels = (channels) => {
     let channelNodeIds = '';
     const simplifiedChannels = [];
     channels.forEach((channel) => {
@@ -84,8 +80,7 @@ const simplifyAllChannels = (channels) => {
         return simplifiedChannels;
     }).catch((err) => simplifiedChannels);
 };
-exports.simplifyAllChannels = simplifyAllChannels;
-const getChannels = (req, res, next) => {
+export const getChannels = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Channels', msg: 'List Channels..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/channels';
@@ -96,16 +91,16 @@ const getChannels = (req, res, next) => {
     }
     logger.log({ level: 'DEBUG', fileName: 'Channels', msg: 'Options', data: options });
     if (common.read_dummy_data) {
-        common.getDummyData('Channels').then((data) => { res.status(200).json(exports.arrangeChannels(data)); });
+        common.getDummyData('Channels').then((data) => { res.status(200).json(arrangeChannels(data)); });
     }
     else {
         request.post(options).then((body) => {
             logger.log({ level: 'DEBUG', fileName: 'Channels', msg: 'All Channels', data: body });
             if (body && body.length) {
-                return exports.simplifyAllChannels(body).then((simplifiedChannels) => {
+                return simplifyAllChannels(body).then((simplifiedChannels) => {
                     logger.log({ level: 'DEBUG', fileName: 'Channels', msg: 'Simplified Channels with Alias', data: simplifiedChannels });
                     logger.log({ level: 'INFO', fileName: 'Channels', msg: 'Channels List Received' });
-                    res.status(200).json(exports.arrangeChannels(simplifiedChannels));
+                    res.status(200).json(arrangeChannels(simplifiedChannels));
                 });
             }
             else {
@@ -119,8 +114,7 @@ const getChannels = (req, res, next) => {
         });
     }
 };
-exports.getChannels = getChannels;
-const getChannelStats = (req, res, next) => {
+export const getChannelStats = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Channels', msg: 'Getting Channel States..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/channelstats';
@@ -134,8 +128,7 @@ const getChannelStats = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getChannelStats = getChannelStats;
-const openChannel = (req, res, next) => {
+export const openChannel = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Channels', msg: 'Opening Channel..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/open';
@@ -150,8 +143,7 @@ const openChannel = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.openChannel = openChannel;
-const updateChannelRelayFee = (req, res, next) => {
+export const updateChannelRelayFee = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Channels', msg: 'Updating Channel Relay Fee..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/updaterelayfee';
@@ -166,8 +158,7 @@ const updateChannelRelayFee = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.updateChannelRelayFee = updateChannelRelayFee;
-const closeChannel = (req, res, next) => {
+export const closeChannel = (req, res, next) => {
     options = common.getOptions();
     if (req.query.force !== 'true') {
         logger.log({ level: 'INFO', fileName: 'Channels', msg: 'Closing Channel..' });
@@ -188,4 +179,3 @@ const closeChannel = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.closeChannel = closeChannel;

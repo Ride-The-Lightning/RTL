@@ -1,10 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = require("express");
-const authCheck_1 = require("../../utils/authCheck");
-const peers_1 = require("../../controllers/eclair/peers");
-const router = express_1.Router();
-router.get('/', authCheck_1.isAuthenticated, peers_1.getPeers);
-router.post('/', authCheck_1.isAuthenticated, peers_1.connectPeer);
-router.delete('/:nodeId', authCheck_1.isAuthenticated, peers_1.deletePeer);
-exports.default = router;
+import { Router } from 'express';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { getPeers, connectPeer, deletePeer } from '../../controllers/eclair/peers.js';
+const router = Router();
+router.get('/', isAuthenticated, getPeers);
+router.post('/', isAuthenticated, connectPeer);
+router.delete('/:nodeId', isAuthenticated, deletePeer);
+export default router;

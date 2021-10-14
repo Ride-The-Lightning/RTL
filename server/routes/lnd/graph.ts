@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../../utils/authCheck';
-import { getDescribeGraph, getGraphInfo, getAliasesForPubkeys, getGraphNode, getGraphEdge, getRemoteFeePolicy, getQueryRoutes } from '../../controllers/lnd/graph';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { getDescribeGraph, getGraphInfo, getAliasesForPubkeys, getGraphNode, getGraphEdge, getRemoteFeePolicy, getQueryRoutes } from '../../controllers/lnd/graph.js';
 
 const router = Router();
 

@@ -2,6 +2,7 @@
   "name": "rtl",
   "version": "0.12.0-beta",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --open",

@@ -1,5 +1,5 @@
-import * as jwt from 'jsonwebtoken';
-import { Common, CommonService } from './common';
+import jwt from 'jsonwebtoken';
+import { Common, CommonService } from './common.js';
 
 export const isAuthenticated = (req, res, next) => {
   const common: CommonService = Common;
@@ -13,5 +13,3 @@ export const isAuthenticated = (req, res, next) => {
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
   }
 };
-
-module.exports = { isAuthenticated };

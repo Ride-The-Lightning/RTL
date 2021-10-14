@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.postTransactions = exports.getTransactions = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
-const getTransactions = (req, res, next) => {
+const logger = Logger;
+const common = Common;
+export const getTransactions = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Transactions', msg: 'Getting Transactions..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/transactions';
@@ -23,8 +20,7 @@ const getTransactions = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getTransactions = getTransactions;
-const postTransactions = (req, res, next) => {
+export const postTransactions = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Transactions', msg: 'Sending Transaction..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/transactions';
@@ -47,4 +43,3 @@ const postTransactions = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.postTransactions = postTransactions;

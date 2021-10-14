@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../../utils/authCheck';
-import { listChannels, openChannel, setChannelFee, closeChannel, getLocalRemoteBalance, listForwards } from '../../controllers/c-lightning/channels';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { listChannels, openChannel, setChannelFee, closeChannel, getLocalRemoteBalance, listForwards } from '../../controllers/c-lightning/channels.js';
 
 const router = Router();
 

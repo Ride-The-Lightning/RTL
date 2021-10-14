@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import infoECLRoutes from './getInfo';
-import feesECLRoutes from './fees';
-import channelsECLRoutes from './channels';
-import onChainECLRoutes from './onchain';
-import peersECLRoutes from './peers';
-import invoicesECLRoutes from './invoices';
-import paymentsECLRoutes from './payments';
-import networkECLRoutes from './network';
+import infoECLRoutes from './getInfo.js';
+import feesECLRoutes from './fees.js';
+import channelsECLRoutes from './channels.js';
+import onChainECLRoutes from './onchain.js';
+import peersECLRoutes from './peers.js';
+import invoicesECLRoutes from './invoices.js';
+import paymentsECLRoutes from './payments.js';
+import networkECLRoutes from './network.js';
 
 const router = Router();
 

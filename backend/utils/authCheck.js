@@ -1,10 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.isAuthenticated = void 0;
-const jwt = require("jsonwebtoken");
-const common_1 = require("./common");
-const isAuthenticated = (req, res, next) => {
-    const common = common_1.Common;
+import jwt from 'jsonwebtoken';
+import { Common } from './common.js';
+export const isAuthenticated = (req, res, next) => {
+    const common = Common;
     try {
         const token = req.headers.authorization.split(' ')[1];
         jwt.verify(token, common.secret_key);
@@ -16,5 +13,3 @@ const isAuthenticated = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     }
 };
-exports.isAuthenticated = isAuthenticated;
-module.exports = { isAuthenticated: exports.isAuthenticated };

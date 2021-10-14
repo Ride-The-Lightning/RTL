@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../../utils/authCheck';
-import { loopInTerms, loopInQuote, loopInTermsAndQuotes, loopIn, loopOutTerms, loopOutQuote, loopOutTermsAndQuotes, loopOut, swaps, swap } from '../../controllers/shared/loop';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { loopInTerms, loopInQuote, loopInTermsAndQuotes, loopIn, loopOutTerms, loopOutQuote, loopOutTermsAndQuotes, loopOut, swaps, swap } from '../../controllers/shared/loop.js';
 
 const router = Router();
 

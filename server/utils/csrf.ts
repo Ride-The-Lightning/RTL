@@ -1,6 +1,6 @@
-import * as csurf from 'csurf';
+import csurf from 'csurf/index.js';
 import { Application } from 'express';
-import { Logger, LoggerService } from './logger';
+import { Logger, LoggerService } from './logger.js';
 
 class CSRF {
 

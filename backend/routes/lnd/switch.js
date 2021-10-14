@@ -1,8 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = require("express");
-const authCheck_1 = require("../../utils/authCheck");
-const switch_1 = require("../../controllers/lnd/switch");
-const router = express_1.Router();
-router.post('/', authCheck_1.isAuthenticated, switch_1.forwardingHistory);
-exports.default = router;
+import { Router } from 'express';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { forwardingHistory } from '../../controllers/lnd/switch.js';
+const router = Router();
+router.post('/', isAuthenticated, forwardingHistory);
+export default router;

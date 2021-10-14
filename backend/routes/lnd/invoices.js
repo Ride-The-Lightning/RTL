@@ -1,10 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = require("express");
-const authCheck_1 = require("../../utils/authCheck");
-const invoices_1 = require("../../controllers/lnd/invoices");
-const router = express_1.Router();
-router.get('/', authCheck_1.isAuthenticated, invoices_1.listInvoices);
-router.get('/:rHashStr', authCheck_1.isAuthenticated, invoices_1.getInvoice);
-router.post('/', authCheck_1.isAuthenticated, invoices_1.addInvoice);
-exports.default = router;
+import { Router } from 'express';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { listInvoices, getInvoice, addInvoice } from '../../controllers/lnd/invoices.js';
+const router = Router();
+router.get('/', isAuthenticated, listInvoices);
+router.get('/:rHashStr', isAuthenticated, getInvoice);
+router.post('/', isAuthenticated, addInvoice);
+export default router;

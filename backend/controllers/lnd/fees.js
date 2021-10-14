@@ -1,14 +1,11 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getFees = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
-const switch_1 = require("./switch");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
+import { getAllForwardingEvents } from './switch.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
-const getFees = (req, res, next) => {
+const logger = Logger;
+const common = Common;
+export const getFees = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Fees', msg: 'Getting Fees..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/fees';
@@ -20,7 +17,7 @@ const getFees = (req, res, next) => {
         const month_start_time = (Math.round(start_date.getTime() / 1000));
         const week_start_time = current_time - 604800;
         const day_start_time = current_time - 86400;
-        return switch_1.getAllForwardingEvents(month_start_time, current_time, 0, (history) => {
+        return getAllForwardingEvents(month_start_time, current_time, 0, (history) => {
             logger.log({ level: 'DEBUG', fileName: 'Fees', msg: 'Forwarding History Received', data: history });
             const daily_sum = history.forwarding_events.reduce((acc, curr) => ((curr.timestamp >= day_start_time) ? [(acc[0] + 1), (acc[1] + +curr.fee_msat)] : acc), [0, 0]);
             const weekly_sum = history.forwarding_events.reduce((acc, curr) => ((curr.timestamp >= week_start_time) ? [(acc[0] + 1), (acc[1] + +curr.fee_msat)] : acc), [0, 0]);
@@ -46,4 +43,3 @@ const getFees = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getFees = getFees;

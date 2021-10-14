@@ -1,10 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = require("express");
-const authCheck_1 = require("../../utils/authCheck");
-const invoices_1 = require("../../controllers/c-lightning/invoices");
-const router = express_1.Router();
-router.get('/', authCheck_1.isAuthenticated, invoices_1.listInvoices);
-router.post('/', authCheck_1.isAuthenticated, invoices_1.addInvoice);
-router.delete('/', authCheck_1.isAuthenticated, invoices_1.deleteExpiredInvoice);
-exports.default = router;
+import { Router } from 'express';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { listInvoices, addInvoice, deleteExpiredInvoice } from '../../controllers/c-lightning/invoices.js';
+const router = Router();
+router.get('/', isAuthenticated, listInvoices);
+router.post('/', isAuthenticated, addInvoice);
+router.delete('/', isAuthenticated, deleteExpiredInvoice);
+export default router;

@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../../utils/authCheck';
-import { signMessage, verifyMessage } from '../../controllers/lnd/message';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { signMessage, verifyMessage } from '../../controllers/lnd/message.js';
 
 const router = Router();
 

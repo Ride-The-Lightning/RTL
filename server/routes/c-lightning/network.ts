@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../../utils/authCheck';
-import { getRoute, listNode, listChannel, feeRates } from '../../controllers/c-lightning/network';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { getRoute, listNode, listChannel, feeRates } from '../../controllers/c-lightning/network.js';
 
 const router = Router();
 

@@ -1,10 +1,11 @@
 /* eslint-disable no-console */
 import * as fs from 'fs';
-import * as path from 'path';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import * as os from 'os';
 import * as crypto from 'crypto';
-import * as request from 'request-promise';
-import { CommonSelectedNode } from '../models/config.model';
+import request from 'request-promise';
+import { CommonSelectedNode } from '../models/config.model.js';
 
 export class CommonService {
 
@@ -40,7 +41,7 @@ export class CommonService {
     };
     if (this.selectedNode.swap_macaroon_path) {
       try {
-        swapOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(path.join(this.selectedNode.swap_macaroon_path, 'loop.macaroon')).toString('hex') };
+        swapOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(this.selectedNode.swap_macaroon_path, 'loop.macaroon')).toString('hex') };
       } catch (err) {
         console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Loop macaroon Error: ' + JSON.stringify(err));
       }
@@ -58,7 +59,7 @@ export class CommonService {
     };
     if (this.selectedNode.boltz_macaroon_path) {
       try {
-        boltzOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(path.join(this.selectedNode.boltz_macaroon_path, 'admin.macaroon')).toString('hex') };
+        boltzOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(this.selectedNode.boltz_macaroon_path, 'admin.macaroon')).toString('hex') };
       } catch (err) {
         console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Boltz macaroon Error: ' + JSON.stringify(err));
       }
@@ -90,7 +91,7 @@ export class CommonService {
       if (this.selectedNode && this.selectedNode.ln_implementation) {
         switch (this.selectedNode.ln_implementation.toUpperCase()) {
           case 'CLT':
-            this.selectedNode.options.headers = { macaroon: Buffer.from(fs.readFileSync(path.join(this.selectedNode.macaroon_path, 'access.macaroon'))).toString('base64') };
+            this.selectedNode.options.headers = { macaroon: Buffer.from(fs.readFileSync(join(this.selectedNode.macaroon_path, 'access.macaroon'))).toString('base64') };
             break;
 
           case 'ECL':
@@ -98,7 +99,7 @@ export class CommonService {
             break;
 
           default:
-            this.selectedNode.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(path.join(this.selectedNode.macaroon_path, 'admin.macaroon')).toString('hex') };
+            this.selectedNode.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(this.selectedNode.macaroon_path, 'admin.macaroon')).toString('hex') };
             break;
         }
       }
@@ -132,7 +133,7 @@ export class CommonService {
           if (node.ln_implementation) {
             switch (node.ln_implementation.toUpperCase()) {
               case 'CLT':
-                node.options.headers = { macaroon: Buffer.from(fs.readFileSync(path.join(node.macaroon_path, 'access.macaroon'))).toString('base64') };
+                node.options.headers = { macaroon: Buffer.from(fs.readFileSync(join(node.macaroon_path, 'access.macaroon'))).toString('base64') };
                 break;
 
               case 'ECL':
@@ -140,7 +141,7 @@ export class CommonService {
                 break;
 
               default:
-                node.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(path.join(node.macaroon_path, 'admin.macaroon')).toString('hex') };
+                node.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(node.macaroon_path, 'admin.macaroon')).toString('hex') };
                 break;
             }
           }
@@ -307,7 +308,7 @@ export class CommonService {
   }
 
   public replacePasswordWithHash = (multiPassHashed) => {
-    this.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : path.join(__dirname, '../..');
+    this.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : join(dirname(fileURLToPath(import.meta.url)), '../..');
     try {
       const RTLConfFile = this.rtl_conf_file_path + this.path_separator + 'RTL-Config.json';
       const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));

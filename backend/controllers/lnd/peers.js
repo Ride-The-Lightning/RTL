@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletePeer = exports.postPeer = exports.getPeers = exports.getAliasForPeers = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
-const getAliasForPeers = (peer) => {
+const logger = Logger;
+const common = Common;
+export const getAliasForPeers = (peer) => {
     options.url = common.getSelLNServerUrl() + '/v1/graph/node/' + peer.pub_key;
     return request(options).then((aliasBody) => {
         logger.log({ level: 'DEBUG', fileName: 'Peers', msg: 'Alias', data: aliasBody.node.alias });
@@ -18,15 +15,14 @@ const getAliasForPeers = (peer) => {
         return peer.pub_key;
     });
 };
-exports.getAliasForPeers = getAliasForPeers;
-const getPeers = (req, res, next) => {
+export const getPeers = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Peers', msg: 'Getting Peers..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/peers';
     request(options).then((body) => {
         logger.log({ level: 'DEBUG', fileName: 'Peers', msg: 'Peers Received', data: body });
         const peers = !body.peers ? [] : body.peers;
-        return Promise.all(peers.map((peer) => exports.getAliasForPeers(peer))).then((values) => {
+        return Promise.all(peers.map((peer) => getAliasForPeers(peer))).then((values) => {
             logger.log({ level: 'DEBUG', fileName: 'Peers', msg: 'Peers with Alias before Sort', data: body });
             if (body.peers) {
                 body.peers = common.sortDescByStrKey(body.peers, 'alias');
@@ -40,8 +36,7 @@ const getPeers = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.getPeers = getPeers;
-const postPeer = (req, res, next) => {
+export const postPeer = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Peers', msg: 'Connecting Peer..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/peers';
@@ -54,7 +49,7 @@ const postPeer = (req, res, next) => {
         options.url = common.getSelLNServerUrl() + '/v1/peers';
         request(options).then((body) => {
             const peers = (!body.peers) ? [] : body.peers;
-            return Promise.all(peers.map((peer) => exports.getAliasForPeers(peer))).then((values) => {
+            return Promise.all(peers.map((peer) => getAliasForPeers(peer))).then((values) => {
                 if (body.peers) {
                     body.peers = common.sortDescByStrKey(body.peers, 'alias');
                     logger.log({ level: 'DEBUG', fileName: 'Peers', msg: 'Peer with Alias', data: body });
@@ -77,8 +72,7 @@ const postPeer = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.postPeer = postPeer;
-const deletePeer = (req, res, next) => {
+export const deletePeer = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Peers', msg: 'Disconnecting Peer..' });
     options = common.getOptions();
     options.url = common.getSelLNServerUrl() + '/v1/peers/' + req.params.peerPubKey;
@@ -92,4 +86,3 @@ const deletePeer = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-exports.deletePeer = deletePeer;

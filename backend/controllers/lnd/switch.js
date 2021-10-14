@@ -1,16 +1,13 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllForwardingEvents = exports.forwardingHistory = void 0;
-const request = require("request-promise");
-const logger_1 = require("../../utils/logger");
-const common_1 = require("../../utils/common");
+import request from 'request-promise';
+import { Logger } from '../../utils/logger.js';
+import { Common } from '../../utils/common.js';
 let options = null;
-const logger = logger_1.Logger;
-const common = common_1.Common;
+const logger = Logger;
+const common = Common;
 let responseData = { forwarding_events: [], last_offset_index: 0 };
 const num_max_events = 100;
-const forwardingHistory = (req, res, next) => {
-    exports.getAllForwardingEvents(req.body.start_time, req.body.end_time, 0, (eventsResponse) => {
+export const forwardingHistory = (req, res, next) => {
+    getAllForwardingEvents(req.body.start_time, req.body.end_time, 0, (eventsResponse) => {
         if (eventsResponse.error) {
             res.status(eventsResponse.error.statusCode).json(eventsResponse);
         }
@@ -19,8 +16,7 @@ const forwardingHistory = (req, res, next) => {
         }
     });
 };
-exports.forwardingHistory = forwardingHistory;
-const getAllForwardingEvents = (start, end, offset, callback) => {
+export const getAllForwardingEvents = (start, end, offset, callback) => {
     logger.log({ level: 'INFO', fileName: 'Switch', msg: 'Getting Forwarding Events..' });
     if (offset === 0) {
         responseData = { forwarding_events: [], last_offset_index: 0 };
@@ -52,11 +48,10 @@ const getAllForwardingEvents = (start, end, offset, callback) => {
             return callback(responseData);
         }
         else {
-            return exports.getAllForwardingEvents(start, end, offset + num_max_events, callback);
+            return getAllForwardingEvents(start, end, offset + num_max_events, callback);
         }
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Switch', 'Get All Forwarding Events Error');
         return callback({ message: err.message, error: err.error, statusCode: err.statusCode });
     });
 };
-exports.getAllForwardingEvents = getAllForwardingEvents;

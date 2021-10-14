@@ -1,13 +1,11 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Common = exports.CommonService = void 0;
 /* eslint-disable no-console */
-const fs = require("fs");
-const path = require("path");
-const os = require("os");
-const crypto = require("crypto");
-const request = require("request-promise");
-class CommonService {
+import * as fs from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+import * as os from 'os';
+import * as crypto from 'crypto';
+import request from 'request-promise';
+export class CommonService {
     constructor() {
         this.nodes = [];
         this.selectedNode = {};
@@ -35,7 +33,7 @@ class CommonService {
             };
             if (this.selectedNode.swap_macaroon_path) {
                 try {
-                    swapOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(path.join(this.selectedNode.swap_macaroon_path, 'loop.macaroon')).toString('hex') };
+                    swapOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(this.selectedNode.swap_macaroon_path, 'loop.macaroon')).toString('hex') };
                 }
                 catch (err) {
                     console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Loop macaroon Error: ' + JSON.stringify(err));
@@ -53,7 +51,7 @@ class CommonService {
             };
             if (this.selectedNode.boltz_macaroon_path) {
                 try {
-                    boltzOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(path.join(this.selectedNode.boltz_macaroon_path, 'admin.macaroon')).toString('hex') };
+                    boltzOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(this.selectedNode.boltz_macaroon_path, 'admin.macaroon')).toString('hex') };
                 }
                 catch (err) {
                     console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Boltz macaroon Error: ' + JSON.stringify(err));
@@ -83,13 +81,13 @@ class CommonService {
                 if (this.selectedNode && this.selectedNode.ln_implementation) {
                     switch (this.selectedNode.ln_implementation.toUpperCase()) {
                         case 'CLT':
-                            this.selectedNode.options.headers = { macaroon: Buffer.from(fs.readFileSync(path.join(this.selectedNode.macaroon_path, 'access.macaroon'))).toString('base64') };
+                            this.selectedNode.options.headers = { macaroon: Buffer.from(fs.readFileSync(join(this.selectedNode.macaroon_path, 'access.macaroon'))).toString('base64') };
                             break;
                         case 'ECL':
                             this.selectedNode.options.headers = { authorization: 'Basic ' + Buffer.from(':' + this.selectedNode.ln_api_password).toString('base64') };
                             break;
                         default:
-                            this.selectedNode.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(path.join(this.selectedNode.macaroon_path, 'admin.macaroon')).toString('hex') };
+                            this.selectedNode.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(this.selectedNode.macaroon_path, 'admin.macaroon')).toString('hex') };
                             break;
                     }
                 }
@@ -125,13 +123,13 @@ class CommonService {
                         if (node.ln_implementation) {
                             switch (node.ln_implementation.toUpperCase()) {
                                 case 'CLT':
-                                    node.options.headers = { macaroon: Buffer.from(fs.readFileSync(path.join(node.macaroon_path, 'access.macaroon'))).toString('base64') };
+                                    node.options.headers = { macaroon: Buffer.from(fs.readFileSync(join(node.macaroon_path, 'access.macaroon'))).toString('base64') };
                                     break;
                                 case 'ECL':
                                     node.options.headers = { authorization: 'Basic ' + Buffer.from(':' + node.ln_api_password).toString('base64') };
                                     break;
                                 default:
-                                    node.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(path.join(node.macaroon_path, 'admin.macaroon')).toString('hex') };
+                                    node.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(node.macaroon_path, 'admin.macaroon')).toString('hex') };
                                     break;
                             }
                         }
@@ -289,7 +287,7 @@ class CommonService {
             }
         };
         this.replacePasswordWithHash = (multiPassHashed) => {
-            this.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : path.join(__dirname, '../..');
+            this.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : join(dirname(fileURLToPath(import.meta.url)), '../..');
             try {
                 const RTLConfFile = this.rtl_conf_file_path + this.path_separator + 'RTL-Config.json';
                 const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
@@ -421,5 +419,4 @@ class CommonService {
         this.path_separator = (this.platform === 'win32') ? '\\' : '/';
     }
 }
-exports.CommonService = CommonService;
-exports.Common = new CommonService();
+export const Common = new CommonService();

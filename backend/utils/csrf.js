@@ -1,11 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const csurf = require("csurf");
-const logger_1 = require("./logger");
+import csurf from 'csurf/index.js';
+import { Logger } from './logger.js';
 class CSRF {
     constructor() {
         this.csrfProtection = csurf({ cookie: true });
-        this.logger = logger_1.Logger;
+        this.logger = Logger;
     }
     mount(app) {
         this.logger.log({ level: 'DEBUG', fileName: 'CSRF', msg: 'Setting up CSRF.' });
@@ -16,4 +14,4 @@ class CSRF {
     }
     ;
 }
-exports.default = new CSRF;
+export default new CSRF;

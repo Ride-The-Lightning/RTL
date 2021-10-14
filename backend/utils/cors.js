@@ -1,9 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const logger_1 = require("./logger");
+import { Logger } from './logger.js';
 class CORS {
     constructor() {
-        this.logger = logger_1.Logger;
+        this.logger = Logger;
     }
     mount(app) {
         this.logger.log({ level: 'DEBUG', fileName: 'CORS', msg: 'Setting up CORS.' });
@@ -19,4 +17,4 @@ class CORS {
     }
     ;
 }
-exports.default = new CORS;
+export default new CORS;

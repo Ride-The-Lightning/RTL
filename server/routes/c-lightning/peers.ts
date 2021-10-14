@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../../utils/authCheck';
-import { getPeers, postPeer, deletePeer } from '../../controllers/c-lightning/peers';
+import { isAuthenticated } from '../../utils/authCheck.js';
+import { getPeers, postPeer, deletePeer } from '../../controllers/c-lightning/peers.js';
 
 const router = Router();
 
