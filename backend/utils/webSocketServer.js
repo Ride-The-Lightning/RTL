@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 import WebSocket from 'ws';
 import { Logger } from './logger.js';
 import { Common } from './common.js';
-import { verifyUser } from './authCheck.js';
+import { verifyWSUser } from './authCheck.js';
 class WebSocketServer {
     constructor() {
         this.logger = Logger;
@@ -10,7 +10,7 @@ class WebSocketServer {
         this.webSocketServer = null;
         this.mount = (httpServer) => {
             this.logger.log({ level: 'DEBUG', fileName: 'WebSocketServer', msg: 'Connecting Websocket Server.' });
-            this.webSocketServer = new WebSocket.Server({ noServer: true, path: this.common.baseHref + '/api/ws' });
+            this.webSocketServer = new WebSocket.Server({ noServer: true, path: this.common.baseHref + '/api/ws', verifyClient: (process.env.NODE_ENV === 'development') ? null : verifyWSUser });
             httpServer.on('upgrade', (request, socket, head) => {
                 if (request.headers['upgrade'] !== 'websocket') {
                     socket.end('HTTP/1.1 400 Bad Request');
@@ -19,8 +19,7 @@ class WebSocketServer {
                 const acceptKey = request.headers['sec-websocket-key'];
                 const hash = this.generateAcceptValue(acceptKey);
                 const responseHeaders = ['HTTP/1.1 101 Web Socket Protocol Handshake', 'Upgrade: WebSocket', 'Connection: Upgrade', 'Sec-WebSocket-Accept: ' + hash];
-                const protocol = request.headers['sec-websocket-protocol'];
-                const protocols = !protocol ? [] : protocol.split(',').map((s) => s.trim());
+                const protocols = !request.headers['sec-websocket-protocol'] ? [] : request.headers['sec-websocket-protocol'].split(',').map((s) => s.trim());
                 if (protocols.includes('json')) {
                     responseHeaders.push('Sec-WebSocket-Protocol: json');
                 }
@@ -33,17 +32,10 @@ class WebSocketServer {
         };
         this.mountEventsOnConnection = (websocket, request) => {
             websocket.clientId = Date.now();
-            // Request can be used in future for query and route params like below
-            // const [path, queryParams] = (request.url && typeof request.url === 'string') ? request.url.split('?') : ['', ''];
-            // this.logger.log({ level: 'INFO', fileName: 'WebSocketServer', msg: 'API Path: ' + path });
-            // this.logger.log({ level: 'INFO', fileName: 'WebSocketServer', msg: 'Query Parameters: ' + queryParams });
             this.logger.log({ level: 'INFO', fileName: 'WebSocketServer', msg: 'Connected: ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
             websocket.on('error', this.sendErrorToAllWSClients);
             websocket.on('message', this.sendEventsToAllWSClients);
-            websocket.on('close', () => {
-                this.logger.log({ level: 'INFO', fileName: 'WebSocketServer', msg: 'Disconnected: ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
-            });
-            verifyUser(request, (err) => this.sendErrorToClient(websocket, err));
+            websocket.on('close', () => { this.logger.log({ level: 'INFO', fileName: 'WebSocketServer', msg: 'Disconnected: ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size }); });
         };
         this.sendErrorToClient = (client, serverError) => {
             try {

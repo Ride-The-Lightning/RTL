@@ -549,7 +549,8 @@ export class RTLEffects implements OnDestroy {
     this.store.dispatch(new CLActions.ResetCLStore(selNode));
     this.store.dispatch(new ECLActions.ResetECLStore(selNode));
     if (this.sessionService.getItem('token')) {
-      this.wsService.connectWebSocket(API_URL.replace(/^http/, 'ws') + environment.Web_SOCKET_API);
+      const apiUrl = (environment.production && window.location.origin) ? (window.location.origin + '/rtl/api') : API_URL;
+      this.wsService.connectWebSocket(apiUrl.replace(/^http/, 'ws') + environment.Web_SOCKET_API);
       node.lnImplementation = node.lnImplementation.toUpperCase();
       this.dataService.setChildAPIUrl(node.lnImplementation);
       switch (node.lnImplementation) {
