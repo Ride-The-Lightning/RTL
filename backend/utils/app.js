@@ -1,10 +1,8 @@
-import { __awaiter } from "tslib";
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { Low, JSONFile } from 'lowdb';
 import CORS from './cors.js';
 import CSRF from './csrf.js';
 import sharedRoutes from '../routes/shared/index.js';
@@ -14,6 +12,7 @@ import eclRoutes from '../routes/eclair/index.js';
 import { Common } from './common.js';
 import { Logger } from './logger.js';
 import { Config } from './config.js';
+import dbInterface from './database.conf.js';
 export class ExpressApplication {
     constructor() {
         this.app = express();
@@ -26,17 +25,12 @@ export class ExpressApplication {
         this.loadConfiguration = () => {
             this.config.setServerConfiguration();
         };
-        this.loadDatabase = () => __awaiter(this, void 0, void 0, function* () {
-            this.logger.log({ level: 'INFO', fileName: 'App', msg: 'LOAD DATABASE: IN PROGRESS' });
-            const adapter = new JSONFile(join(this.directoryName, '../..', 'db', 'db.json'));
-            const db = new Low(adapter);
-            yield db.read();
-            db.data.posts.push('Hello World');
-            this.logger.log({ level: 'INFO', fileName: 'App', msg: 'Test Data:', data: db.data.posts });
-            db.data.posts.push('Next Post');
-            yield db.write();
-            this.logger.log({ level: 'INFO', fileName: 'App', msg: 'Test Data After Write:', data: db.data.posts });
-        });
+        this.loadDb = () => {
+            dbInterface.authenticate();
+            dbInterface.sync().then(() => {
+                this.logger.log({ level: 'DEBUG', fileName: 'App', msg: 'Database Connected' });
+            });
+        };
         this.setCORS = () => { CORS.mount(this.app); };
         this.setCSRF = () => { CSRF.mount(this.app); };
         this.setApplicationRoutes = () => {
@@ -82,10 +76,10 @@ export class ExpressApplication {
         this.app.use(bodyParser.json({ limit: '25mb' }));
         this.app.use(bodyParser.urlencoded({ extended: false, limit: '25mb' }));
         this.loadConfiguration();
-        this.loadDatabase();
         this.setCORS();
         this.setCSRF();
         this.setApplicationRoutes();
+        this.loadDb();
     }
 }
 export default ExpressApplication;

@@ -3,8 +3,6 @@ import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { Low, JSONFile } from 'lowdb';
-
 import CORS from './cors.js';
 import CSRF from './csrf.js';
 
@@ -15,8 +13,7 @@ import eclRoutes from '../routes/eclair/index.js';
 import { Common, CommonService } from './common.js';
 import { Logger, LoggerService } from './logger.js';
 import { Config, ConfigService } from './config.js';
-
-type DBDataType = { posts: string[] };
+import dbInterface from './database.conf.js';
 
 export class ExpressApplication {
 
@@ -36,10 +33,10 @@ export class ExpressApplication {
     this.app.use(bodyParser.urlencoded({ extended: false, limit: '25mb' }));
 
     this.loadConfiguration();
-    this.loadDatabase();
     this.setCORS();
     this.setCSRF();
     this.setApplicationRoutes();
+    this.loadDb();
   }
 
   public getApp = () => this.app;
@@ -48,17 +45,11 @@ export class ExpressApplication {
     this.config.setServerConfiguration();
   }
 
-  public loadDatabase = async () => {
-    this.logger.log({ level: 'INFO', fileName: 'App', msg: 'LOAD DATABASE: IN PROGRESS' });
-    const adapter = new JSONFile<DBDataType>(join(this.directoryName, '../..', 'db', 'db.json'));
-    const db = new Low<DBDataType>(adapter);
-    await db.read();
-
-    db.data.posts.push('Hello World');
-    this.logger.log({ level: 'INFO', fileName: 'App', msg: 'Test Data:', data: db.data.posts });
-    db.data.posts.push('Next Post');
-    await db.write();
-    this.logger.log({ level: 'INFO', fileName: 'App', msg: 'Test Data After Write:', data: db.data.posts });
+  private loadDb = () => {
+    dbInterface.authenticate();
+    dbInterface.sync().then(() => {
+      this.logger.log({ level: 'DEBUG', fileName: 'App', msg: 'Database Connected' });
+    })
   }
 
   public setCORS = () => { CORS.mount(this.app); }
