@@ -12,7 +12,7 @@ import eclRoutes from '../routes/eclair/index.js';
 import { Common } from './common.js';
 import { Logger } from './logger.js';
 import { Config } from './config.js';
-import dbInterface from './database.conf.js';
+import { database } from './database.init.js';
 export class ExpressApplication {
     constructor() {
         this.app = express();
@@ -26,8 +26,7 @@ export class ExpressApplication {
             this.config.setServerConfiguration();
         };
         this.loadDb = () => {
-            dbInterface.authenticate();
-            dbInterface.sync().then(() => {
+            database.sequelize.sync().then(() => {
                 this.logger.log({ level: 'DEBUG', fileName: 'App', msg: 'Database Connected' });
             });
         };
