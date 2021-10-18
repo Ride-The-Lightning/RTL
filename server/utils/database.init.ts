@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize';
 
-const sequelize = new Sequelize('BOLT12', '', '', {
+const sequelize = new Sequelize('RTLStore', '', '', {
 	storage: 'database.sqlite',
 	dialect: 'sqlite',
 	logging: true,
