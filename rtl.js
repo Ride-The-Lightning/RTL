@@ -1,13 +1,13 @@
 import http from 'http';
 import App from './backend/utils/app.js';
-import WSServer from './backend/utils/webSocketServer.js';
 import { Logger } from './backend/utils/logger.js';
 import { Common } from './backend/utils/common.js';
+import { WSServer } from './backend/utils/webSocketServer.js';
 
 const logger = Logger;
 const common = Common;
+const wsServer = WSServer;
 const app = new App();
-const wsServer = new WSServer();
 
 const onError = (error) => {
   if (error.syscall !== 'listen') { throw error; }

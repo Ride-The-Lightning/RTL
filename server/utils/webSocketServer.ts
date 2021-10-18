@@ -5,7 +5,7 @@ import { Logger, LoggerService } from './logger.js';
 import { Common, CommonService } from './common.js';
 import { verifyWSUser } from './authCheck.js';
 
-class WebSocketServer {
+export class WebSocketServer {
 
   public logger: LoggerService = Logger;
   public common: CommonService = Common;
@@ -77,4 +77,5 @@ class WebSocketServer {
 
 }
 
-export default WebSocketServer;
+export const WSServer = new WebSocketServer();
+

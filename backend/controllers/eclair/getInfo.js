@@ -1,9 +1,11 @@
 import request from 'request-promise';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
+import { ECLWSClient } from './webSocketClient.js';
 let options = null;
 const logger = Logger;
 const common = Common;
+const eclWsClient = ECLWSClient;
 export const getInfo = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'GetInfo', msg: 'Getting Eclair Node Information..' });
     common.setOptions();
@@ -26,6 +28,8 @@ export const getInfo = (req, res, next) => {
         }
         else {
             request.post(options).then((body) => {
+                logger.log({ level: 'INFO', fileName: 'GetInfo', msg: 'Connecting to the Eclair\'s Websocket Server.' });
+                eclWsClient.connect();
                 logger.log({ level: 'DEBUG', fileName: 'GetInfo', msg: 'Get Info Response', data: body });
                 body.lnImplementation = 'Eclair';
                 logger.log({ level: 'INFO', fileName: 'GetInfo', msg: 'Eclair Node Information Received' });

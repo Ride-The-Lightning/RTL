@@ -3,7 +3,7 @@ import WebSocket from 'ws';
 import { Logger } from './logger.js';
 import { Common } from './common.js';
 import { verifyWSUser } from './authCheck.js';
-class WebSocketServer {
+export class WebSocketServer {
     constructor() {
         this.logger = Logger;
         this.common = Common;
@@ -72,4 +72,4 @@ class WebSocketServer {
         this.generateAcceptValue = (acceptKey) => crypto.createHash('sha1').update(acceptKey + crypto.randomBytes(64).toString('hex')).digest('base64');
     }
 }
-export default WebSocketServer;
+export const WSServer = new WebSocketServer();

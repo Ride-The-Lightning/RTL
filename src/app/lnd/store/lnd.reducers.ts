@@ -1,5 +1,5 @@
 import { pipe } from 'rxjs';
-import { scan } from 'rxjs/operators';
+import { scan, map } from 'rxjs/operators';
 import { createFeatureSelector, createSelector, select } from '@ngrx/store';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { ApiCallsListLND } from '../../shared/models/apiCallsPayload';
@@ -320,6 +320,7 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
 
 export const getLNDState = createFeatureSelector<LNDState>('lnd');
 export const getInformation = createSelector(getLNDState, (state: LNDState) => state.information);
+export const takeLastGetInfo = (count: number) => pipe(select(getInformation), scan((acc, curr) => [curr, ...acc].filter((val, index) => index < count && val.hasOwnProperty('identity_pubkey')), [] as GetInfo[]));
 export const getForwardingHistory = createSelector(getLNDState, (state: LNDState) => state.forwardingHistory);
 export const getForwardingHistoryAPIStatus = createSelector(getLNDState, (state: LNDState) => state.apisCallStatus.GetForwardingHistory);
-export const takeLastGetInfo = (count: number) => pipe(select(getInformation), scan((acc, curr) => [curr, ...acc].filter((val, index) => index < count && val.hasOwnProperty('identity_pubkey')), [] as GetInfo[]));
+export const forwardingHistoryAndAPIStatus = createSelector(getLNDState, (state: LNDState) => ({ forwardingHistory: state.forwardingHistory, apisCallStatus: state.apisCallStatus.GetForwardingHistory }));

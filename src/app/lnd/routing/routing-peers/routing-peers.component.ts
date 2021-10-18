@@ -6,7 +6,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 
-import { ForwardingEvent, RoutingPeers } from '../../../shared/models/lndModels';
+import { ForwardingEvent, RoutingPeers, SwitchRes } from '../../../shared/models/lndModels';
 import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, getPaginatorLabel, PAGE_SIZE, PAGE_SIZE_OPTIONS, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -64,23 +64,23 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    combineLatest([this.store.select(fromLNDReducer.getForwardingHistory), this.store.select(fromLNDReducer.getForwardingHistoryAPIStatus)]).
-      pipe(takeUntil(this.unSubs[0])).subscribe(([forwardingHistory, apiCallStatus]) => {
+    this.store.select(fromLNDReducer.forwardingHistoryAndAPIStatus).pipe(takeUntil(this.unSubs[0])).
+      subscribe((fhSelector: {forwardingHistory: SwitchRes, apisCallStatus: ApiCallStatusPayload}) => {
         this.errorMessage = '';
-        this.apisCallStatus = apiCallStatus;
-        if (apiCallStatus?.status === APICallStatusEnum.ERROR) {
+        this.apisCallStatus = fhSelector.apisCallStatus;
+        if (fhSelector.apisCallStatus?.status === APICallStatusEnum.ERROR) {
           this.errorMessage = (typeof (this.apisCallStatus.message) === 'object') ? JSON.stringify(this.apisCallStatus.message) : this.apisCallStatus.message;
         }
-        if (forwardingHistory.forwarding_events) {
-          this.routingPeersData = forwardingHistory.forwarding_events;
+        if (fhSelector.forwardingHistory.forwarding_events) {
+          this.routingPeersData = fhSelector.forwardingHistory.forwarding_events;
         } else {
           this.routingPeersData = [];
         }
         if (this.routingPeersData.length > 0 && this.sortIn && this.paginatorIn && this.sortOut && this.paginatorOut) {
           this.loadRoutingPeersTable(this.routingPeersData);
         }
-        this.logger.info(apiCallStatus);
-        this.logger.info(forwardingHistory);
+        this.logger.info(fhSelector.apisCallStatus);
+        this.logger.info(fhSelector.forwardingHistory);
       });
   }
 

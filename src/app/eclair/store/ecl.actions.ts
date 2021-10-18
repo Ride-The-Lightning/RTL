@@ -54,6 +54,8 @@ export const UPDATE_INVOICE_ECL = 'UPDATE_INVOICE_ECL';
 export const PEER_LOOKUP_ECL = 'PEER_LOOKUP_ECL';
 export const INVOICE_LOOKUP_ECL = 'INVOICE_LOOKUP_ECL';
 export const SET_LOOKUP_ECL = 'SET_LOOKUP_ECL';
+export const UPDATE_CHANNEL_STATUS_WS_EVENT_ECL = 'UPDATE_CHANNEL_STATUS_WS_EVENT_ECL';
+export const UPDATE_PAYMENT_STATUS_WS_EVENT_ECL = 'UPDATE_PAYMENT_STATUS_WS_EVENT_ECL';
 
 export class UpdateAPICallStatus implements Action {
 
@@ -384,6 +386,20 @@ export class SetLookup implements Action {
 
 }
 
+export class UpdateChannelStatusWSEvent implements Action {
+
+  readonly type = UPDATE_CHANNEL_STATUS_WS_EVENT_ECL;
+  constructor(public event: any) {} // Payload = event type and other data
+
+}
+
+export class UpdatePaymentStatusWSEvent implements Action {
+
+  readonly type = UPDATE_PAYMENT_STATUS_WS_EVENT_ECL;
+  constructor(public event: any) {} // Payload = event type and other data
+
+}
+
 export type ECLActions = ResetECLStore | UpdateAPICallStatus | SetChildNodeSettings |
   FetchInfo | SetInfo | FetchFees | SetFees |
   FetchChannels | SetActiveChannels | SetPendingChannels | SetInactiveChannels |
@@ -394,4 +410,5 @@ export type ECLActions = ResetECLStore | UpdateAPICallStatus | SetChildNodeSetti
   SetLightningBalance | FetchPeers | SetPeers | PeerLookup | InvoiceLookup | SetLookup |
   SaveNewChannel | UpdateChannels | CloseChannel | RemoveChannel |
   FetchPayments | SetPayments | SendPayment | SendPaymentStatus |
-  FetchInvoices | SetInvoices | CreateInvoice | AddInvoice | UpdateInvoice;
+  FetchInvoices | SetInvoices | CreateInvoice | AddInvoice | UpdateInvoice |
+  UpdateChannelStatusWSEvent | UpdatePaymentStatusWSEvent;

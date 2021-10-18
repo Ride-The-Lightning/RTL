@@ -4,46 +4,6 @@ import { Common } from '../../utils/common.js';
 let options = null;
 const logger = Logger;
 const common = Common;
-export const arrangeChannels = (simplifiedChannels) => {
-    let channelTotal = 0;
-    let totalLocalBalance = 0;
-    let totalRemoteBalance = 0;
-    let lightningBalances = { localBalance: 0, remoteBalance: 0 };
-    const channelStatus = { active: { channels: 0, capacity: 0 }, inactive: { channels: 0, capacity: 0 }, pending: { channels: 0, capacity: 0 } };
-    let activeChannels = [];
-    const pendingChannels = [];
-    const inactiveChannels = [];
-    simplifiedChannels.forEach((channel, i) => {
-        if (channel.state === 'NORMAL') {
-            channelTotal = channel.toLocal + channel.toRemote;
-            totalLocalBalance = totalLocalBalance + channel.toLocal;
-            totalRemoteBalance = totalRemoteBalance + channel.toRemote;
-            channel.balancedness = (channelTotal === 0) ? 1 : (1 - Math.abs((channel.toLocal - channel.toRemote) / channelTotal)).toFixed(3);
-            activeChannels.push(channel);
-            channelStatus.active.channels = channelStatus.active.channels + 1;
-            channelStatus.active.capacity = channelStatus.active.capacity + channel.toLocal;
-        }
-        else if (channel.state.includes('WAIT') || channel.state.includes('CLOSING') || channel.state.includes('SYNCING')) {
-            channel.state = channel.state.replace(/_/g, ' ');
-            pendingChannels.push(channel);
-            channelStatus.pending.channels = channelStatus.pending.channels + 1;
-            channelStatus.pending.capacity = channelStatus.pending.capacity + channel.toLocal;
-        }
-        else {
-            channel.state = channel.state.replace(/_/g, ' ');
-            inactiveChannels.push(channel);
-            channelStatus.inactive.channels = channelStatus.inactive.channels + 1;
-            channelStatus.inactive.capacity = channelStatus.inactive.capacity + channel.toLocal;
-        }
-    });
-    lightningBalances = { localBalance: totalLocalBalance, remoteBalance: totalRemoteBalance };
-    activeChannels = common.sortDescByKey(activeChannels, 'balancedness');
-    logger.log({ level: 'DEBUG', fileName: 'Channels', msg: 'Lightning Balances', data: lightningBalances });
-    logger.log({ level: 'DEBUG', fileName: 'Channels', msg: 'Active Channels', data: activeChannels });
-    logger.log({ level: 'DEBUG', fileName: 'Channels', msg: 'Pending Channels', data: pendingChannels });
-    logger.log({ level: 'DEBUG', fileName: 'Channels', msg: 'Inactive Channels', data: inactiveChannels });
-    return ({ activeChannels: activeChannels, pendingChannels: pendingChannels, inactiveChannels: inactiveChannels, lightningBalances: lightningBalances, channelStatus: channelStatus });
-};
 export const simplifyAllChannels = (channels) => {
     let channelNodeIds = '';
     const simplifiedChannels = [];
@@ -91,7 +51,7 @@ export const getChannels = (req, res, next) => {
     }
     logger.log({ level: 'DEBUG', fileName: 'Channels', msg: 'Options', data: options });
     if (common.read_dummy_data) {
-        common.getDummyData('Channels').then((data) => { res.status(200).json(arrangeChannels(data)); });
+        common.getDummyData('Channels').then((data) => { res.status(200).json(data); });
     }
     else {
         request.post(options).then((body) => {
@@ -100,7 +60,7 @@ export const getChannels = (req, res, next) => {
                 return simplifyAllChannels(body).then((simplifiedChannels) => {
                     logger.log({ level: 'DEBUG', fileName: 'Channels', msg: 'Simplified Channels with Alias', data: simplifiedChannels });
                     logger.log({ level: 'INFO', fileName: 'Channels', msg: 'Channels List Received' });
-                    res.status(200).json(arrangeChannels(simplifiedChannels));
+                    res.status(200).json(simplifiedChannels);
                 });
             }
             else {

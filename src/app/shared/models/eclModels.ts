@@ -92,7 +92,7 @@ export interface PayRequest {
   amount?: number;
 }
 
-export interface GetChannelsRes {
+export interface ChannelsRearranged {
   activeChannels?: Channel[];
   pendingChannels?: Channel[];
   inactiveChannels?: Channel[];

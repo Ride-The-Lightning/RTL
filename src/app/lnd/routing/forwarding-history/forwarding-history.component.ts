@@ -7,7 +7,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { ForwardingEvent } from '../../../shared/models/lndModels';
+import { ForwardingEvent, SwitchRes } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -59,18 +59,18 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   }
 
   ngOnInit() {
-    combineLatest([this.store.select(fromLNDReducer.getForwardingHistory), this.store.select(fromLNDReducer.getForwardingHistoryAPIStatus)]).
-      pipe(takeUntil(this.unSubs[0])).subscribe(([forwardingHistory, apiCallStatus]) => {
+    this.store.select(fromLNDReducer.forwardingHistoryAndAPIStatus).pipe(takeUntil(this.unSubs[0])).
+      subscribe((fhSelector: {forwardingHistory: SwitchRes, apisCallStatus: ApiCallStatusPayload}) => {
         if (this.eventsData.length <= 0) {
           this.errorMessage = '';
-          this.apisCallStatus = apiCallStatus;
-          if (apiCallStatus?.status === APICallStatusEnum.ERROR) {
+          this.apisCallStatus = fhSelector.apisCallStatus;
+          if (fhSelector.apisCallStatus?.status === APICallStatusEnum.ERROR) {
             this.errorMessage = (typeof (this.apisCallStatus.message) === 'object') ? JSON.stringify(this.apisCallStatus.message) : this.apisCallStatus.message;
           }
-          this.forwardingHistoryData = (forwardingHistory?.forwarding_events) ? forwardingHistory.forwarding_events : [];
+          this.forwardingHistoryData = (fhSelector.forwardingHistory?.forwarding_events) ? fhSelector.forwardingHistory.forwarding_events : [];
           this.loadForwardingEventsTable(this.forwardingHistoryData);
-          this.logger.info(apiCallStatus);
-          this.logger.info(forwardingHistory);
+          this.logger.info(fhSelector.apisCallStatus);
+          this.logger.info(fhSelector.forwardingHistory);
         }
       });
   }
