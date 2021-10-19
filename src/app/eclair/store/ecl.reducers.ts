@@ -1,5 +1,5 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Channel, ChannelStats, Fees, OnChainBalance, LightningBalance, Peer, ChannelsStatus, Payments, Transaction, Invoice } from '../../shared/models/eclModels';
+import { GetInfo, Channel, ChannelStats, Fees, OnChainBalance, LightningBalance, Peer, ChannelsStatus, Payments, Transaction, Invoice, PaymentReceived } from '../../shared/models/eclModels';
 import { ApiCallsListECL } from '../../shared/models/apiCallsPayload';
 import { APICallStatusEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import * as ECLActions from './ecl.actions';
@@ -211,7 +211,20 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
       };
     case ECLActions.UPDATE_INVOICE_ECL:
       let modifiedInvoices = state.invoices;
-      modifiedInvoices = modifiedInvoices.map((invoice) => ((invoice.paymentHash === action.payload.paymentHash) ? action.payload : invoice));
+      modifiedInvoices = modifiedInvoices.map((invoice) => {
+        if (invoice.paymentHash === action.payload.paymentHash) {
+          if ((<PaymentReceived>action.payload).type) {
+            const updatedInvoice = invoice;
+            updatedInvoice.amountSettled = (<PaymentReceived>action.payload).parts[0].amount / 1000;
+            updatedInvoice.receivedAt = Math.round((<PaymentReceived>action.payload).parts[0].timestamp / 1000);
+            updatedInvoice.status = 'received';
+            return updatedInvoice;
+          } else {
+            return action.payload;
+          }
+        }
+        return invoice;
+      });
       return {
         ...state,
         invoices: modifiedInvoices

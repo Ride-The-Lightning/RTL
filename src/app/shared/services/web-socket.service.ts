@@ -9,7 +9,8 @@ import { SessionService } from './session.service';
 @Injectable()
 export class WebSocketClientService implements OnDestroy {
 
-  public wsMessage: BehaviorSubject<any> = new BehaviorSubject(null);
+  public wsMessages: BehaviorSubject<any> = new BehaviorSubject(null);
+  private prevMessage = '';
   private wsUrl = '';
   private socket: WebSocketSubject<any> | null;
   private RETRY_SECONDS = 5;
@@ -57,11 +58,14 @@ export class WebSocketClientService implements OnDestroy {
   private subscribeToMessages() {
     this.socket.pipe(takeUntil(this.unSubs[1])).subscribe({
       next: (msg) => {
-        if (typeof msg === 'string') { msg = JSON.parse(msg); }
+        msg = (typeof msg === 'string') ? JSON.parse(msg) : msg;
+        const msgStr = JSON.stringify(msg);
+        if (this.prevMessage === msgStr) { return; }
         if (msg.error) {
           this.handleError(msg.error);
         } else {
-          this.wsMessage.next(msg);
+          this.prevMessage = msgStr;
+          this.wsMessages.next(msg);
         }
       },
       error: (err) => this.handleError(err),
@@ -71,14 +75,14 @@ export class WebSocketClientService implements OnDestroy {
 
   private handleError(err) {
     this.logger.error(err);
-    this.wsMessage.error(err);
+    this.wsMessages.error(err);
     this.reconnectOnError();
   }
 
   ngOnDestroy() {
     this.closeConnection();
-    this.wsMessage.next(null);
-    this.wsMessage.complete();
+    this.wsMessages.next(null);
+    this.wsMessages.complete();
   }
 
 }

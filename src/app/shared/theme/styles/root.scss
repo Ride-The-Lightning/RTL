@@ -158,9 +158,9 @@ body {
 }
 
 .padding-gap-x-large {
-  padding: 0 ($gap*4) 0 ($gap*4) !important;
+  padding: 0 ($gap*2) 0 ($gap*2) !important;
   @include for_screensize(tab-land) {
-    padding: 0 ($gap*2) 0 ($gap*2) !important;
+    padding: 0 ($gap) 0 ($gap) !important;
   }
   @include for_screensize(tab-port) {
     padding: 0 $gap/2 0 $gap/2 !important;

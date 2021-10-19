@@ -2,7 +2,7 @@ import { Action } from '@ngrx/store';
 
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Channel, ChannelStats, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus, Payments, Route, Transaction, SendPaymentOnChain, Invoice } from '../../shared/models/eclModels';
+import { GetInfo, Channel, ChannelStats, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus, Payments, Route, Transaction, SendPaymentOnChain, Invoice, PaymentReceived } from '../../shared/models/eclModels';
 
 export const RESET_ECL_STORE = 'RESET_ECL_STORE';
 export const UPDATE_API_CALL_STATUS_ECL = 'UPDATE_API_CALL_STATUS_ECL';
@@ -54,8 +54,6 @@ export const UPDATE_INVOICE_ECL = 'UPDATE_INVOICE_ECL';
 export const PEER_LOOKUP_ECL = 'PEER_LOOKUP_ECL';
 export const INVOICE_LOOKUP_ECL = 'INVOICE_LOOKUP_ECL';
 export const SET_LOOKUP_ECL = 'SET_LOOKUP_ECL';
-export const UPDATE_CHANNEL_STATUS_WS_EVENT_ECL = 'UPDATE_CHANNEL_STATUS_WS_EVENT_ECL';
-export const UPDATE_PAYMENT_STATUS_WS_EVENT_ECL = 'UPDATE_PAYMENT_STATUS_WS_EVENT_ECL';
 
 export class UpdateAPICallStatus implements Action {
 
@@ -360,7 +358,7 @@ export class AddInvoice implements Action {
 export class UpdateInvoice implements Action {
 
   readonly type = UPDATE_INVOICE_ECL;
-  constructor(public payload: Invoice) {}
+  constructor(public payload: Invoice | PaymentReceived) {}
 
 }
 
@@ -386,20 +384,6 @@ export class SetLookup implements Action {
 
 }
 
-export class UpdateChannelStatusWSEvent implements Action {
-
-  readonly type = UPDATE_CHANNEL_STATUS_WS_EVENT_ECL;
-  constructor(public event: any) {} // Payload = event type and other data
-
-}
-
-export class UpdatePaymentStatusWSEvent implements Action {
-
-  readonly type = UPDATE_PAYMENT_STATUS_WS_EVENT_ECL;
-  constructor(public event: any) {} // Payload = event type and other data
-
-}
-
 export type ECLActions = ResetECLStore | UpdateAPICallStatus | SetChildNodeSettings |
   FetchInfo | SetInfo | FetchFees | SetFees |
   FetchChannels | SetActiveChannels | SetPendingChannels | SetInactiveChannels |
@@ -410,5 +394,4 @@ export type ECLActions = ResetECLStore | UpdateAPICallStatus | SetChildNodeSetti
   SetLightningBalance | FetchPeers | SetPeers | PeerLookup | InvoiceLookup | SetLookup |
   SaveNewChannel | UpdateChannels | CloseChannel | RemoveChannel |
   FetchPayments | SetPayments | SendPayment | SendPaymentStatus |
-  FetchInvoices | SetInvoices | CreateInvoice | AddInvoice | UpdateInvoice |
-  UpdateChannelStatusWSEvent | UpdatePaymentStatusWSEvent;
+  FetchInvoices | SetInvoices | CreateInvoice | AddInvoice | UpdateInvoice;

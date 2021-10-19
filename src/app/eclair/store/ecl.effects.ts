@@ -27,7 +27,9 @@ export class ECLEffects implements OnDestroy {
 
   CHILD_API_URL = API_URL + '/ecl';
   private flgInitialized = false;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  private flgReceivedPaymentUpdateFromWS = false;
+  private latestPaymentRes = '';
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(
     private actions: Actions,
@@ -54,6 +56,33 @@ export class ECLEffects implements OnDestroy {
           this.flgInitialized = true;
         }
       });
+    this.wsService.wsMessages.pipe(takeUntil(this.unSubs[1])).subscribe((newMessage) => {
+      let snackBarMsg = '';
+      if (newMessage) {
+        switch (newMessage.type) {
+          case WSEventTypeEnum.PAYMENT_SENT:
+            if (newMessage && newMessage.id && this.latestPaymentRes === newMessage.id) {
+              this.flgReceivedPaymentUpdateFromWS = true;
+              snackBarMsg = 'Payment Sent: ' + ((newMessage.paymentHash) ? ('with payment hash ' + newMessage.paymentHash) : JSON.stringify(newMessage));
+              this.handleSendPaymentStatus(snackBarMsg);
+            }
+            break;
+          case WSEventTypeEnum.PAYMENT_FAILED:
+            if (newMessage && newMessage.id && this.latestPaymentRes === newMessage.id) {
+              this.flgReceivedPaymentUpdateFromWS = true;
+              snackBarMsg = 'Payment Failed: ' + ((newMessage.failures && newMessage.failures.length && newMessage.failures.length > 0 && newMessage.failures[0].t) ? newMessage.failures[0].t : (newMessage.failures && newMessage.failures.length && newMessage.failures.length > 0 && newMessage.failures[0].e && newMessage.failures[0].e.failureMessage) ? newMessage.failures[0].e.failureMessage : JSON.stringify(newMessage));
+              this.handleSendPaymentStatus(snackBarMsg);
+            }
+            break;
+          case WSEventTypeEnum.PAYMENT_RECEIVED:
+            this.store.dispatch(new ECLActions.UpdateInvoice(newMessage));
+            break;
+          default:
+            this.logger.info('Received Event from WS: ' + JSON.stringify(newMessage));
+            break;
+        }
+      }
+    });
   }
 
   infoFetchECL = createEffect(() => this.actions.pipe(
@@ -416,21 +445,20 @@ export class ECLEffects implements OnDestroy {
 
   sendPayment = createEffect(() => this.actions.pipe(
     ofType(ECLActions.SEND_PAYMENT_ECL),
-    withLatestFrom(this.store.select('root')),
-    mergeMap(([action, store]: [ECLActions.SendPayment, any]) => {
+    mergeMap((action: ECLActions.SendPayment) => {
+      this.flgReceivedPaymentUpdateFromWS = false;
+      this.latestPaymentRes = '';
       this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEND_PAYMENT));
       this.store.dispatch(new ECLActions.UpdateAPICallStatus({ action: 'SendPayment', status: APICallStatusEnum.INITIATED }));
       return this.httpClient.post(this.CHILD_API_URL + environment.PAYMENTS_API, action.payload).
         pipe(
           map((sendRes: any) => {
             this.logger.info(sendRes);
+            this.latestPaymentRes = sendRes;
             setTimeout(() => {
-              this.store.dispatch(new ECLActions.UpdateAPICallStatus({ action: 'SendPayment', status: APICallStatusEnum.COMPLETED }));
-              this.store.dispatch(new ECLActions.SendPaymentStatus(sendRes));
-              this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.SEND_PAYMENT));
-              this.store.dispatch(new ECLActions.FetchChannels({ fetchPayments: true }));
-              this.store.dispatch(new ECLActions.FetchPayments());
-              this.store.dispatch(new RTLActions.OpenSnackBar('Payment Submitted!'));
+              if (!this.flgReceivedPaymentUpdateFromWS) {
+                this.handleSendPaymentStatus('Payment Submitted!');
+              }
             }, 3000);
             return { type: RTLActions.VOID };
           }),
@@ -503,7 +531,7 @@ export class ECLEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(new ECLActions.UpdateAPICallStatus({ action: 'CreateInvoice', status: APICallStatusEnum.COMPLETED }));
             this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.CREATE_INVOICE));
-            postRes.timestamp = new Date().getTime() / 1000;
+            postRes.timestamp = Math.round(new Date().getTime() / 1000);
             postRes.expiresAt = Math.round(postRes.timestamp + action.payload.expireIn);
             postRes.description = action.payload.description;
             postRes.status = 'unpaid';
@@ -609,56 +637,6 @@ export class ECLEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  initializeRemainingData(info: any, landingPage: string) {
-    this.sessionService.setItem('eclUnlocked', 'true');
-    const node_data = {
-      identity_pubkey: info.nodeId,
-      alias: info.alias,
-      testnet: info.network === 'testnet',
-      chains: info.publicAddresses,
-      uris: info.uris,
-      version: info.version,
-      numberOfPendingChannels: 0
-    };
-    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
-    this.store.dispatch(new RTLActions.SetNodeData(node_data));
-    this.store.dispatch(new ECLActions.FetchInvoices());
-    this.store.dispatch(new ECLActions.FetchChannels({ fetchPayments: true }));
-    this.store.dispatch(new ECLActions.FetchFees());
-    this.store.dispatch(new ECLActions.FetchOnchainBalance());
-    this.store.dispatch(new ECLActions.FetchPeers());
-    let newRoute = this.location.path();
-    if (newRoute.includes('/lnd/')) {
-      newRoute = newRoute.replace('/lnd/', '/ecl/');
-    } else if (newRoute.includes('/cl/')) {
-      newRoute = newRoute.replace('/cl/', '/ecl/');
-    }
-    if (newRoute.includes('/login') || newRoute.includes('/error') || newRoute === '' || landingPage === 'HOME' || newRoute.includes('?access-key=')) {
-      newRoute = '/ecl/home';
-    }
-    this.router.navigate([newRoute]);
-    this.wsService.wsMessage.pipe(takeUntil(this.unSubs[1])).subscribe((event) => {
-      switch (event.type) {
-        case WSEventTypeEnum.PAYMENT_RECEIVED:
-        case WSEventTypeEnum.PAYMENT_RELAYED:
-        case WSEventTypeEnum.PAYMENT_SENT:
-        case WSEventTypeEnum.PAYMENT_SETTLING_ONCHAIN:
-        case WSEventTypeEnum.PAYMENT_FAILED:
-          this.store.dispatch(new ECLActions.UpdatePaymentStatusWSEvent(event));
-          break;
-
-        case WSEventTypeEnum.CHANNEL_OPENED:
-        case WSEventTypeEnum.CHANNEL_STATE_CHANGED:
-        case WSEventTypeEnum.CHANNEL_CLOSED:
-          this.store.dispatch(new ECLActions.UpdateChannelStatusWSEvent(event));
-          break;
-
-        default:
-          break;
-      }
-    });
-  }
-
   setChannelsAndStatusAndBalances(channelsRes: Channel[]) {
     let channelTotal = 0;
     let totalLocalBalance = 0;
@@ -701,6 +679,44 @@ export class ECLEffects implements OnDestroy {
     this.store.dispatch(new ECLActions.SetInactiveChannels(inactiveChannels));
     this.store.dispatch(new ECLActions.SetLightningBalance(lightningBalances));
     this.store.dispatch(new ECLActions.SetChannelsStatus(channelStatus));
+  }
+
+  handleSendPaymentStatus = (msg: string) => {
+    this.store.dispatch(new ECLActions.UpdateAPICallStatus({ action: 'SendPayment', status: APICallStatusEnum.COMPLETED }));
+    this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.SEND_PAYMENT));
+    this.store.dispatch(new ECLActions.SendPaymentStatus(this.latestPaymentRes));
+    this.store.dispatch(new ECLActions.FetchChannels({ fetchPayments: true }));
+    this.store.dispatch(new RTLActions.OpenSnackBar(msg));
+  };
+
+  initializeRemainingData(info: any, landingPage: string) {
+    this.sessionService.setItem('eclUnlocked', 'true');
+    const node_data = {
+      identity_pubkey: info.nodeId,
+      alias: info.alias,
+      testnet: info.network === 'testnet',
+      chains: info.publicAddresses,
+      uris: info.uris,
+      version: info.version,
+      numberOfPendingChannels: 0
+    };
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
+    this.store.dispatch(new RTLActions.SetNodeData(node_data));
+    this.store.dispatch(new ECLActions.FetchInvoices());
+    this.store.dispatch(new ECLActions.FetchChannels({ fetchPayments: true }));
+    this.store.dispatch(new ECLActions.FetchFees());
+    this.store.dispatch(new ECLActions.FetchOnchainBalance());
+    this.store.dispatch(new ECLActions.FetchPeers());
+    let newRoute = this.location.path();
+    if (newRoute.includes('/lnd/')) {
+      newRoute = newRoute.replace('/lnd/', '/ecl/');
+    } else if (newRoute.includes('/cl/')) {
+      newRoute = newRoute.replace('/cl/', '/ecl/');
+    }
+    if (newRoute.includes('/login') || newRoute.includes('/error') || newRoute === '' || landingPage === 'HOME' || newRoute.includes('?access-key=')) {
+      newRoute = '/ecl/home';
+    }
+    this.router.navigate([newRoute]);
   }
 
   handleErrorWithoutAlert(actionName: string, uiMessage: string, genericErrorMessage: string, err: { status: number, error: any }) {
