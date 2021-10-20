@@ -4,13 +4,14 @@ import { takeUntil } from 'rxjs/operators';
 import { WebSocketSubject } from 'rxjs/webSocket';
 
 import { LoggerService } from '../../shared/services/logger.service';
+import { WSEventTypeEnum } from './consts-enums-functions';
 import { SessionService } from './session.service';
 
 @Injectable()
 export class WebSocketClientService implements OnDestroy {
 
   public wsMessages: BehaviorSubject<any> = new BehaviorSubject(null);
-  private prevMessage = '';
+  private prevMessage = {};
   private wsUrl = '';
   private socket: WebSocketSubject<any> | null;
   private RETRY_SECONDS = 5;
@@ -59,12 +60,13 @@ export class WebSocketClientService implements OnDestroy {
     this.socket.pipe(takeUntil(this.unSubs[1])).subscribe({
       next: (msg) => {
         msg = (typeof msg === 'string') ? JSON.parse(msg) : msg;
-        const msgStr = JSON.stringify(msg);
-        if (this.prevMessage === msgStr) { return; }
         if (msg.error) {
           this.handleError(msg.error);
         } else {
-          this.prevMessage = msgStr;
+          const msgStr = JSON.stringify(msg);
+          if (this.prevMessage.hasOwnProperty(msg.type) && this.prevMessage[msg.type] === msgStr) { return; }
+          this.prevMessage[msg.type] = msgStr;
+          this.logger.info('Next Message from WS:' + JSON.stringify(msg));
           this.wsMessages.next(msg);
         }
       },

@@ -51,10 +51,6 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
         this.totalBalance = rtlStore.onchainBalance.total;
         this.logger.info(rtlStore);
       });
-    // this.wsService.wsMessages.pipe(takeUntil(this.unSubs[2])).
-    //   subscribe((message) => {
-    //     this.logger.warn(message);
-    //   });
   }
 
   onOpenChannel() {

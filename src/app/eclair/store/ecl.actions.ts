@@ -2,7 +2,7 @@ import { Action } from '@ngrx/store';
 
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Channel, ChannelStats, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus, Payments, Route, Transaction, SendPaymentOnChain, Invoice, PaymentReceived, ChannelStateUpdate } from '../../shared/models/eclModels';
+import { GetInfo, Channel, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus, Payments, Route, Transaction, SendPaymentOnChain, Invoice, PaymentReceived, ChannelStateUpdate } from '../../shared/models/eclModels';
 
 export const RESET_ECL_STORE = 'RESET_ECL_STORE';
 export const UPDATE_API_CALL_STATUS_ECL = 'UPDATE_API_CALL_STATUS_ECL';
@@ -15,8 +15,6 @@ export const FETCH_CHANNELS_ECL = 'FETCH_CHANNELS_ECL';
 export const SET_ACTIVE_CHANNELS_ECL = 'SET_ACTIVE_CHANNELS_ECL';
 export const SET_PENDING_CHANNELS_ECL = 'SET_PENDING_CHANNELS_ECL';
 export const SET_INACTIVE_CHANNELS_ECL = 'SET_INACTIVE_CHANNELS_ECL';
-export const FETCH_CHANNEL_STATS_ECL = 'FETCH_CHANNEL_STATS_ECL';
-export const SET_CHANNEL_STATS_ECL = 'SET_CHANNEL_STATS_ECL';
 export const FETCH_ONCHAIN_BALANCE_ECL = 'FETCH_ONCHAIN_BALANCE_ECL';
 export const SET_ONCHAIN_BALANCE_ECL = 'SET_ONCHAIN_BALANCE_ECL';
 export const FETCH_LIGHTNING_BALANCE_ECL = 'FETCH_LIGHTNING_BALANCE_ECL';
@@ -129,19 +127,6 @@ export class SetInactiveChannels implements Action {
 
   readonly type = SET_INACTIVE_CHANNELS_ECL;
   constructor(public payload: Channel[]) {}
-
-}
-
-export class FetchChannelStats implements Action {
-
-  readonly type = FETCH_CHANNEL_STATS_ECL;
-
-}
-
-export class SetChannelStats implements Action {
-
-  readonly type = SET_CHANNEL_STATS_ECL;
-  constructor(public payload: ChannelStats[]) {}
 
 }
 
@@ -396,10 +381,9 @@ export type ECLActions = ResetECLStore | UpdateAPICallStatus | SetChildNodeSetti
   FetchInfo | SetInfo | FetchFees | SetFees |
   FetchChannels | SetActiveChannels | SetPendingChannels | SetInactiveChannels |
   FetchPeers | SetPeers | AddPeer | DisconnectPeer | SaveNewPeer | RemovePeer | NewlyAddedPeer |
-  SetChannelsStatus | FetchChannelStats | SetChannelStats |
   FetchOnchainBalance | SetOnchainBalance | GetNewAddress | SetNewAddress |
   SendOnchainFunds | SendOnchainFundsRes | FetchTransactions | SetTransactions |
   SetLightningBalance | FetchPeers | SetPeers | PeerLookup | InvoiceLookup | SetLookup |
-  SaveNewChannel | UpdateChannels | CloseChannel | RemoveChannel |
+  SaveNewChannel | UpdateChannels | CloseChannel | RemoveChannel | SetChannelsStatus |
   FetchPayments | SetPayments | SendPayment | SendPaymentStatus |
   FetchInvoices | SetInvoices | CreateInvoice | AddInvoice | UpdateInvoice | UpdateChannelState;

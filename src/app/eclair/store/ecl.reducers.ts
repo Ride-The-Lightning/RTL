@@ -1,5 +1,5 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Channel, ChannelStats, Fees, OnChainBalance, LightningBalance, Peer, ChannelsStatus, Payments, Transaction, Invoice, PaymentReceived } from '../../shared/models/eclModels';
+import { GetInfo, Channel, Fees, OnChainBalance, LightningBalance, Peer, ChannelsStatus, Payments, Transaction, Invoice, PaymentReceived } from '../../shared/models/eclModels';
 import { ApiCallsListECL } from '../../shared/models/apiCallsPayload';
 import { APICallStatusEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import * as ECLActions from './ecl.actions';
@@ -13,7 +13,6 @@ export interface ECLState {
   pendingChannels: Channel[];
   inactiveChannels: Channel[];
   channelsStatus: ChannelsStatus;
-  channelStats: ChannelStats[];
   onchainBalance: OnChainBalance;
   lightningBalance: LightningBalance;
   peers: Peer[];
@@ -40,7 +39,6 @@ export const initECLState: ECLState = {
   pendingChannels: [],
   inactiveChannels: [],
   channelsStatus: {},
-  channelStats: [],
   onchainBalance: { total: 0, confirmed: 0, unconfirmed: 0 },
   lightningBalance: { localBalance: -1, remoteBalance: -1 },
   peers: [],
@@ -108,11 +106,6 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
       return {
         ...state,
         channelsStatus: action.payload
-      };
-    case ECLActions.SET_CHANNEL_STATS_ECL:
-      return {
-        ...state,
-        channelStats: action.payload
       };
     case ECLActions.SET_ONCHAIN_BALANCE_ECL:
       return {
@@ -233,6 +226,7 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
       let modifiedPendingChannels = state.pendingChannels;
       modifiedPendingChannels = modifiedPendingChannels.map((pendingChannel) => {
         if (pendingChannel.channelId === action.payload.channelId && pendingChannel.nodeId === action.payload.remoteNodeId) {
+          action.payload.currentState = action.payload.currentState.replace(/_/g, ' ');
           pendingChannel.state = action.payload.currentState;
         }
         return pendingChannel;

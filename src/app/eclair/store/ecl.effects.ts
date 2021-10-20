@@ -12,7 +12,7 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { SessionService } from '../../shared/services/session.service';
 import { CommonService } from '../../shared/services/common.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
-import { GetInfo, OnChainBalance, ChannelStats, Peer, Audit, Transaction, Invoice, Channel } from '../../shared/models/eclModels';
+import { GetInfo, OnChainBalance, Peer, Audit, Transaction, Invoice, Channel, ChannelStateUpdate } from '../../shared/models/eclModels';
 import { APICallStatusEnum, UI_MESSAGES, WSEventTypeEnum } from '../../shared/services/consts-enums-functions';
 import { ECLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 
@@ -29,6 +29,7 @@ export class ECLEffects implements OnDestroy {
   private flgInitialized = false;
   private flgReceivedPaymentUpdateFromWS = false;
   private latestPaymentRes = '';
+  private rawChannelsList: Channel[] = [];
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(
@@ -80,20 +81,17 @@ export class ECLEffects implements OnDestroy {
             this.store.dispatch(new ECLActions.UpdateInvoice(newMessage));
             break;
           case WSEventTypeEnum.CHANNEL_STATE_CHANGED:
-            if (newMessage.previousState !== 'NORMAL' && newMessage.currentState !== 'NORMAL' && newMessage.currentState !== 'CLOSED') {
+            if ((<ChannelStateUpdate>newMessage).currentState === 'NORMAL' || (<ChannelStateUpdate>newMessage).currentState === 'CLOSED') {
+              this.rawChannelsList = this.rawChannelsList.map((channel) => {
+                if (channel.channelId === (<ChannelStateUpdate>newMessage).channelId && channel.nodeId === (<ChannelStateUpdate>newMessage).remoteNodeId) {
+                  channel.state = (<ChannelStateUpdate>newMessage).currentState;
+                }
+                return channel;
+              });
+              this.setChannelsAndStatusAndBalances();
+            } else {
               this.store.dispatch(new ECLActions.UpdateChannelState(newMessage));
             }
-            break;
-          case WSEventTypeEnum.CHANNEL_CLOSED:
-            const modifiedPendingChannels = eclStore.pendingChannels;
-            const foundPCIndex = modifiedPendingChannels.findIndex((pc) => pc.channelId === newMessage.channelId);
-            if (foundPCIndex >= 0) {
-              const modifiedStatus = eclStore.channelsStatus;
-              modifiedStatus.pending.channels = modifiedStatus.pending.channels - 1;
-              modifiedStatus.pending.capacity = modifiedStatus.pending.capacity - modifiedPendingChannels[foundPCIndex].toLocal;
-              this.store.dispatch(new ECLActions.SetPendingChannels(modifiedPendingChannels.splice(foundPCIndex, 1)));
-              this.store.dispatch(new ECLActions.SetChannelsStatus(modifiedStatus));
-            };
             break;
           default:
             this.logger.info('Received Event from WS: ' + JSON.stringify(newMessage));
@@ -186,7 +184,8 @@ export class ECLEffects implements OnDestroy {
         pipe(
           map((channelsRes: Channel[]) => {
             this.logger.info(channelsRes);
-            this.setChannelsAndStatusAndBalances(channelsRes);
+            this.rawChannelsList = channelsRes;
+            this.setChannelsAndStatusAndBalances();
             this.store.dispatch(new ECLActions.UpdateAPICallStatus({ action: 'FetchChannels', status: APICallStatusEnum.COMPLETED }));
             if (action.payload && action.payload.fetchPayments) {
               this.store.dispatch(new ECLActions.FetchPayments());
@@ -195,28 +194,6 @@ export class ECLEffects implements OnDestroy {
           }),
           catchError((err: any) => {
             this.handleErrorWithoutAlert('FetchChannels', UI_MESSAGES.NO_SPINNER, 'Fetching Channels Failed.', err);
-            return of({ type: RTLActions.VOID });
-          })
-        );
-    })
-  ));
-
-  channelStatsFetch = createEffect(() => this.actions.pipe(
-    ofType(ECLActions.FETCH_CHANNEL_STATS_ECL),
-    mergeMap((action: ECLActions.FetchChannelStats) => {
-      this.store.dispatch(new ECLActions.UpdateAPICallStatus({ action: 'FetchChannelStats', status: APICallStatusEnum.INITIATED }));
-      return this.httpClient.get<ChannelStats[]>(this.CHILD_API_URL + environment.CHANNELS_API + '/stats').
-        pipe(
-          map((channelStats: ChannelStats[]) => {
-            this.logger.info(channelStats);
-            this.store.dispatch(new ECLActions.UpdateAPICallStatus({ action: 'FetchChannelStats', status: APICallStatusEnum.COMPLETED }));
-            return {
-              type: ECLActions.SET_CHANNEL_STATS_ECL,
-              payload: (channelStats && channelStats.length > 0) ? channelStats : []
-            };
-          }),
-          catchError((err: any) => {
-            this.handleErrorWithoutAlert('FetchChannelStats', UI_MESSAGES.NO_SPINNER, 'Fetching Channel Stats Failed.', err);
             return of({ type: RTLActions.VOID });
           })
         );
@@ -655,7 +632,7 @@ export class ECLEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  setChannelsAndStatusAndBalances(channelsRes: Channel[]) {
+  setChannelsAndStatusAndBalances() {
     let channelTotal = 0;
     let totalLocalBalance = 0;
     let totalRemoteBalance = 0;
@@ -664,7 +641,7 @@ export class ECLEffects implements OnDestroy {
     const pendingChannels = [];
     const inactiveChannels = [];
     const channelStatus = { active: { channels: 0, capacity: 0 }, inactive: { channels: 0, capacity: 0 }, pending: { channels: 0, capacity: 0 } };
-    channelsRes.forEach((channel, i) => {
+    this.rawChannelsList.forEach((channel, i) => {
       if (channel.state === 'NORMAL') {
         channelTotal = channel.toLocal + channel.toRemote;
         totalLocalBalance = totalLocalBalance + channel.toLocal;

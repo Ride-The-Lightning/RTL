@@ -118,14 +118,6 @@ export interface Channel {
   balancedness?: number;
 }
 
-export interface ChannelStats {
-  channelId?: string;
-  avgPaymentAmount?: number;
-  paymentCount?: number;
-  relayFee?: number;
-  networkFee?: number;
-}
-
 export interface OnChainBalance {
   total?: number;
   confirmed?: number;
