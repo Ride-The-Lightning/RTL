@@ -19,7 +19,6 @@ export class ExpressApplication {
         this.logger = Logger;
         this.common = Common;
         this.config = Config;
-        this.baseHref = '/rtl';
         this.directoryName = dirname(fileURLToPath(import.meta.url));
         this.getApp = () => this.app;
         this.loadConfiguration = () => {
@@ -34,11 +33,11 @@ export class ExpressApplication {
         this.setCSRF = () => { CSRF.mount(this.app); };
         this.setApplicationRoutes = () => {
             this.logger.log({ level: 'DEBUG', fileName: 'App', msg: 'Setting up Application Routes.' });
-            this.app.use(this.baseHref + '/api', sharedRoutes);
-            this.app.use(this.baseHref + '/api/lnd', lndRoutes);
-            this.app.use(this.baseHref + '/api/cl', clRoutes);
-            this.app.use(this.baseHref + '/api/ecl', eclRoutes);
-            this.app.use(this.baseHref, express.static(join(this.directoryName, '../..', 'angular')));
+            this.app.use(this.common.baseHref + '/api', sharedRoutes);
+            this.app.use(this.common.baseHref + '/api/lnd', lndRoutes);
+            this.app.use(this.common.baseHref + '/api/cl', clRoutes);
+            this.app.use(this.common.baseHref + '/api/ecl', eclRoutes);
+            this.app.use(this.common.baseHref, express.static(join(this.directoryName, '../..', 'angular')));
             this.app.use((req, res, next) => {
                 res.cookie('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : '');
                 res.sendFile(join(this.directoryName, '../..', 'angular', 'index.html'));

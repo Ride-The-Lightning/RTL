@@ -28,7 +28,7 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
   public totalBalance = 0;
   public links = [{ link: 'open', name: 'Open' }, { link: 'pending', name: 'Pending' }, { link: 'inactive', name: 'Inactive' }];
   public activeLink = 0;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private router: Router) {}
 

@@ -4,11 +4,26 @@ import parseHocon from 'hocon-parser';
 import request from 'request-promise';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
+import { ECLWSClient } from '../eclair/webSocketClient.js';
 const options = { url: '' };
 const logger = Logger;
 const common = Common;
+const eclWsClient = ECLWSClient;
 export const updateSelectedNode = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Updating Selected Node..' });
+    switch (common.selectedNode.ln_implementation) {
+        case 'LND':
+            // lndWsClient.disconnect();
+            break;
+        case 'CLT':
+            // clWsClient.disconnect();
+            break;
+        case 'ECL':
+            eclWsClient.disconnect();
+            break;
+        default:
+            break;
+    }
     const selNodeIndex = req.body.selNodeIndex;
     common.selectedNode = common.findNode(selNodeIndex);
     const responseVal = common.selectedNode && common.selectedNode.ln_node ? common.selectedNode.ln_node : '';

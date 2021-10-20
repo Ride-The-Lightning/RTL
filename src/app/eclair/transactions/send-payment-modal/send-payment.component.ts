@@ -115,7 +115,7 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   }
 
   onPaymentRequestEntry(event: any) {
-    this.paymentRequest = event;
+    this.paymentRequest = event && typeof event === 'string' ? event.trim() : event;
     this.paymentError = '';
     this.paymentDecodedHint = '';
     this.zeroAmtInvoice = false;

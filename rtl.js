@@ -2,9 +2,11 @@ import http from 'http';
 import App from './backend/utils/app.js';
 import { Logger } from './backend/utils/logger.js';
 import { Common } from './backend/utils/common.js';
+import { WSServer } from './backend/utils/webSocketServer.js';
 
 const logger = Logger;
 const common = Common;
+const wsServer = WSServer;
 const app = new App();
 
 const onError = (error) => {
@@ -36,10 +38,12 @@ const onListening = () => {
   logger.log({ level: 'INFO', fileName: 'RTL', msg: 'Server is up and running, please open the UI at http://' + (common.host ? common.host : 'localhost') + ':' + common.port });
 };
 
-const server = http.createServer(app.getApp());
+let server = http.createServer(app.getApp());
 
 server.on('error', onError);
 server.on('listening', onListening);
+
+wsServer.mount(server);
 
 if (common.host) {
   server.listen(common.port, common.host);

@@ -1,5 +1,5 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Channel, ChannelStats, Fees, OnChainBalance, LightningBalance, Peer, ChannelsStatus, Payments, Transaction, Invoice } from '../../shared/models/eclModels';
+import { GetInfo, Channel, Fees, OnChainBalance, LightningBalance, Peer, ChannelsStatus, Payments, Transaction, Invoice, PaymentReceived } from '../../shared/models/eclModels';
 import { ApiCallsListECL } from '../../shared/models/apiCallsPayload';
 import { APICallStatusEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import * as ECLActions from './ecl.actions';
@@ -13,7 +13,6 @@ export interface ECLState {
   pendingChannels: Channel[];
   inactiveChannels: Channel[];
   channelsStatus: ChannelsStatus;
-  channelStats: ChannelStats[];
   onchainBalance: OnChainBalance;
   lightningBalance: LightningBalance;
   peers: Peer[];
@@ -40,7 +39,6 @@ export const initECLState: ECLState = {
   pendingChannels: [],
   inactiveChannels: [],
   channelsStatus: {},
-  channelStats: [],
   onchainBalance: { total: 0, confirmed: 0, unconfirmed: 0 },
   lightningBalance: { localBalance: -1, remoteBalance: -1 },
   peers: [],
@@ -51,6 +49,11 @@ export const initECLState: ECLState = {
 
 export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) {
   switch (action.type) {
+    case ECLActions.SET_CHILD_NODE_SETTINGS_ECL:
+      return {
+        ...state,
+        apiURL: action.payload
+      };
     case ECLActions.UPDATE_API_CALL_STATUS_ECL:
       const updatedApisCallStatus = state.apisCallStatus;
       updatedApisCallStatus[action.payload.action] = {
@@ -103,11 +106,6 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
       return {
         ...state,
         channelsStatus: action.payload
-      };
-    case ECLActions.SET_CHANNEL_STATS_ECL:
-      return {
-        ...state,
-        channelStats: action.payload
       };
     case ECLActions.SET_ONCHAIN_BALANCE_ECL:
       return {
@@ -206,10 +204,36 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
       };
     case ECLActions.UPDATE_INVOICE_ECL:
       let modifiedInvoices = state.invoices;
-      modifiedInvoices = modifiedInvoices.map((invoice) => ((invoice.paymentHash === action.payload.paymentHash) ? action.payload : invoice));
+      modifiedInvoices = modifiedInvoices.map((invoice) => {
+        if (invoice.paymentHash === action.payload.paymentHash) {
+          if (action.payload.hasOwnProperty('type')) {
+            const updatedInvoice = invoice;
+            updatedInvoice.amountSettled = ((<PaymentReceived>action.payload).parts && (<PaymentReceived>action.payload).parts.length && (<PaymentReceived>action.payload).parts.length > 0 && (<PaymentReceived>action.payload).parts[0].amount) ? (<PaymentReceived>action.payload).parts[0].amount / 1000 : 0;
+            updatedInvoice.receivedAt = ((<PaymentReceived>action.payload).parts && (<PaymentReceived>action.payload).parts.length && (<PaymentReceived>action.payload).parts.length > 0 && (<PaymentReceived>action.payload).parts[0].timestamp) ? Math.round((<PaymentReceived>action.payload).parts[0].timestamp / 1000) : 0;
+            updatedInvoice.status = 'received';
+            return updatedInvoice;
+          } else {
+            return action.payload;
+          }
+        }
+        return invoice;
+      });
       return {
         ...state,
         invoices: modifiedInvoices
+      };
+    case ECLActions.UPDATE_CHANNEL_STATE_ECL:
+      let modifiedPendingChannels = state.pendingChannels;
+      modifiedPendingChannels = modifiedPendingChannels.map((pendingChannel) => {
+        if (pendingChannel.channelId === action.payload.channelId && pendingChannel.nodeId === action.payload.remoteNodeId) {
+          action.payload.currentState = action.payload.currentState.replace(/_/g, ' ');
+          pendingChannel.state = action.payload.currentState;
+        }
+        return pendingChannel;
+      });
+      return {
+        ...state,
+        pendingChannels: modifiedPendingChannels
       };
     default:
       return state;

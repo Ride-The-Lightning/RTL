@@ -24,6 +24,7 @@ export class CommonService {
   public cookie = '';
   public read_dummy_data = false;
   public platform = '/';
+  public baseHref = '/rtl';
   private dummy_data_array_from_file = [];
   private MONTHS = [{ name: 'JAN', days: 31 }, { name: 'FEB', days: 28 }, { name: 'MAR', days: 31 }, { name: 'APR', days: 30 }, { name: 'MAY', days: 31 }, { name: 'JUN', days: 30 }, { name: 'JUL', days: 31 }, { name: 'AUG', days: 31 }, { name: 'SEP', days: 30 }, { name: 'OCT', days: 31 }, { name: 'NOV', days: 30 }, { name: 'DEC', days: 31 }];
 

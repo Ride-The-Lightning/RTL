@@ -21,7 +21,6 @@ export class ExpressApplication {
   public logger: LoggerService = Logger;
   public common: CommonService = Common;
   public config: ConfigService = Config;
-  public baseHref = '/rtl';
   public directoryName = dirname(fileURLToPath(import.meta.url));
 
   constructor() {
@@ -48,7 +47,7 @@ export class ExpressApplication {
   private loadDb = () => {
     database.sequelize.sync().then(() => {
       this.logger.log({ level: 'DEBUG', fileName: 'App', msg: 'Database Connected' });
-    })
+    });
   }
 
   public setCORS = () => { CORS.mount(this.app); }
@@ -58,11 +57,11 @@ export class ExpressApplication {
   public setApplicationRoutes = () => {
     this.logger.log({ level: 'DEBUG', fileName: 'App', msg: 'Setting up Application Routes.' });
 
-    this.app.use(this.baseHref + '/api', sharedRoutes);
-    this.app.use(this.baseHref + '/api/lnd', lndRoutes);
-    this.app.use(this.baseHref + '/api/cl', clRoutes);
-    this.app.use(this.baseHref + '/api/ecl', eclRoutes);
-    this.app.use(this.baseHref, express.static(join(this.directoryName, '../..', 'angular')));
+    this.app.use(this.common.baseHref + '/api', sharedRoutes);
+    this.app.use(this.common.baseHref + '/api/lnd', lndRoutes);
+    this.app.use(this.common.baseHref + '/api/cl', clRoutes);
+    this.app.use(this.common.baseHref + '/api/ecl', eclRoutes);
+    this.app.use(this.common.baseHref, express.static(join(this.directoryName, '../..', 'angular')));
     this.app.use((req, res, next) => {
       res.cookie('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : '');
       res.sendFile(join(this.directoryName, '../..', 'angular', 'index.html'));

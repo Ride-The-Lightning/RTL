@@ -5,16 +5,35 @@ import request from 'request-promise';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { AuthenticationConfiguration, NodeSettingsConfiguration } from '../../models/config.model.js';
+import { ECLWSClient, ECLWebSocketClient } from '../eclair/webSocketClient.js';
 
 const options = { url: '' };
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
+const eclWsClient: ECLWebSocketClient = ECLWSClient;
 
 export const updateSelectedNode = (req, res, next) => {
   logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Updating Selected Node..' });
+  switch (common.selectedNode.ln_implementation) {
+    case 'LND':
+      // lndWsClient.disconnect();
+      break;
+
+    case 'CLT':
+      // clWsClient.disconnect();
+      break;
+
+    case 'ECL':
+      eclWsClient.disconnect();
+      break;
+
+    default:
+      break;
+  }
   const selNodeIndex = req.body.selNodeIndex;
   common.selectedNode = common.findNode(selNodeIndex);
   const responseVal = common.selectedNode && common.selectedNode.ln_node ? common.selectedNode.ln_node : '';
+
   logger.log({ level: 'DEBUG', fileName: 'RTLConf', msg: 'Selected Node Updated To', data: responseVal });
   logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Selected Node Updated' });
   res.status(200).json({ status: 'Selected Node Updated To: ' + JSON.stringify(responseVal) + '!' });

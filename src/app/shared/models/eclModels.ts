@@ -92,6 +92,14 @@ export interface PayRequest {
   amount?: number;
 }
 
+export interface ChannelsRearranged {
+  activeChannels?: Channel[];
+  pendingChannels?: Channel[];
+  inactiveChannels?: Channel[];
+  lightningBalances?: LightningBalance;
+  channelStatus?: ChannelsStatus;
+}
+
 export interface Channel {
   alias?: string;
   nodeId?: string;
@@ -108,14 +116,6 @@ export interface Channel {
   feeRatePerKwRemote?: number;
   feeProportionalMillionths?: number;
   balancedness?: number;
-}
-
-export interface ChannelStats {
-  channelId?: string;
-  avgPaymentAmount?: number;
-  paymentCount?: number;
-  relayFee?: number;
-  networkFee?: number;
 }
 
 export interface OnChainBalance {
@@ -208,4 +208,12 @@ export interface RoutingPeers {
   events?: number;
   totalAmount?: number;
   totalFee?: number;
+}
+
+export interface ChannelStateUpdate {
+  channelId?: string;
+  currentState?: string;
+  previousState?: string;
+  remoteNodeId?: string;
+  type?: string;
 }

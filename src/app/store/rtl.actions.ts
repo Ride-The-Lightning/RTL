@@ -6,6 +6,7 @@ import { RTLConfiguration, Settings, ConfigSettingsNode, GetInfoRoot, SSO } from
 import { ServicesEnum } from '../shared/services/consts-enums-functions';
 
 export const VOID = 'VOID';
+export const SET_API_URL_ECL = 'SET_API_URL_ECL';
 export const UPDATE_SELECTED_NODE_OPTIONS = 'UPDATE_SELECTED_NODE_OPTIONS';
 export const UPDATE_API_CALL_STATUS_ROOT = 'UPDATE_API_CALL_STATUS_ROOT';
 export const RESET_ROOT_STORE = 'RESET_ROOT_STORE';
@@ -43,6 +44,13 @@ export const SHOW_FILE = 'SHOW_FILE';
 export class VoidAction implements Action {
 
   readonly type = VOID;
+
+}
+
+export class SetApiUrl implements Action {
+
+  readonly type = SET_API_URL_ECL;
+  constructor(public payload: string) {}
 
 }
 
@@ -260,7 +268,7 @@ export class ShowFile implements Action {
 
 }
 
-export type RTLActions = UpdateAPICallStatus | IsAuthorized | IsAuthorizedRes | Login | VerifyTwoFA |
+export type RTLActions = UpdateAPICallStatus | SetApiUrl | IsAuthorized | IsAuthorizedRes | Login | VerifyTwoFA |
   VoidAction | CloseAllDialogs | OpenSnackBar | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
   OpenAlert | CloseAlert | OpenConfirmation | CloseConfirmation | ShowPubkey | FetchConfig | ShowConfig |
   UpdateSelectedNodeOptions | ResetRootStore |

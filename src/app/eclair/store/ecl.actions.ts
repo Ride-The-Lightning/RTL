@@ -2,7 +2,7 @@ import { Action } from '@ngrx/store';
 
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Channel, ChannelStats, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus, Payments, Route, Transaction, SendPaymentOnChain, Invoice } from '../../shared/models/eclModels';
+import { GetInfo, Channel, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus, Payments, Route, Transaction, SendPaymentOnChain, Invoice, PaymentReceived, ChannelStateUpdate } from '../../shared/models/eclModels';
 
 export const RESET_ECL_STORE = 'RESET_ECL_STORE';
 export const UPDATE_API_CALL_STATUS_ECL = 'UPDATE_API_CALL_STATUS_ECL';
@@ -15,8 +15,6 @@ export const FETCH_CHANNELS_ECL = 'FETCH_CHANNELS_ECL';
 export const SET_ACTIVE_CHANNELS_ECL = 'SET_ACTIVE_CHANNELS_ECL';
 export const SET_PENDING_CHANNELS_ECL = 'SET_PENDING_CHANNELS_ECL';
 export const SET_INACTIVE_CHANNELS_ECL = 'SET_INACTIVE_CHANNELS_ECL';
-export const FETCH_CHANNEL_STATS_ECL = 'FETCH_CHANNEL_STATS_ECL';
-export const SET_CHANNEL_STATS_ECL = 'SET_CHANNEL_STATS_ECL';
 export const FETCH_ONCHAIN_BALANCE_ECL = 'FETCH_ONCHAIN_BALANCE_ECL';
 export const SET_ONCHAIN_BALANCE_ECL = 'SET_ONCHAIN_BALANCE_ECL';
 export const FETCH_LIGHTNING_BALANCE_ECL = 'FETCH_LIGHTNING_BALANCE_ECL';
@@ -54,6 +52,7 @@ export const UPDATE_INVOICE_ECL = 'UPDATE_INVOICE_ECL';
 export const PEER_LOOKUP_ECL = 'PEER_LOOKUP_ECL';
 export const INVOICE_LOOKUP_ECL = 'INVOICE_LOOKUP_ECL';
 export const SET_LOOKUP_ECL = 'SET_LOOKUP_ECL';
+export const UPDATE_CHANNEL_STATE_ECL = 'UPDATE_CHANNEL_STATE_ECL';
 
 export class UpdateAPICallStatus implements Action {
 
@@ -128,19 +127,6 @@ export class SetInactiveChannels implements Action {
 
   readonly type = SET_INACTIVE_CHANNELS_ECL;
   constructor(public payload: Channel[]) {}
-
-}
-
-export class FetchChannelStats implements Action {
-
-  readonly type = FETCH_CHANNEL_STATS_ECL;
-
-}
-
-export class SetChannelStats implements Action {
-
-  readonly type = SET_CHANNEL_STATS_ECL;
-  constructor(public payload: ChannelStats[]) {}
 
 }
 
@@ -358,7 +344,7 @@ export class AddInvoice implements Action {
 export class UpdateInvoice implements Action {
 
   readonly type = UPDATE_INVOICE_ECL;
-  constructor(public payload: Invoice) {}
+  constructor(public payload: Invoice | PaymentReceived) {}
 
 }
 
@@ -384,14 +370,20 @@ export class SetLookup implements Action {
 
 }
 
+export class UpdateChannelState implements Action {
+
+  readonly type = UPDATE_CHANNEL_STATE_ECL;
+  constructor(public payload: ChannelStateUpdate) {}
+
+}
+
 export type ECLActions = ResetECLStore | UpdateAPICallStatus | SetChildNodeSettings |
   FetchInfo | SetInfo | FetchFees | SetFees |
   FetchChannels | SetActiveChannels | SetPendingChannels | SetInactiveChannels |
   FetchPeers | SetPeers | AddPeer | DisconnectPeer | SaveNewPeer | RemovePeer | NewlyAddedPeer |
-  SetChannelsStatus | FetchChannelStats | SetChannelStats |
   FetchOnchainBalance | SetOnchainBalance | GetNewAddress | SetNewAddress |
   SendOnchainFunds | SendOnchainFundsRes | FetchTransactions | SetTransactions |
   SetLightningBalance | FetchPeers | SetPeers | PeerLookup | InvoiceLookup | SetLookup |
-  SaveNewChannel | UpdateChannels | CloseChannel | RemoveChannel |
+  SaveNewChannel | UpdateChannels | CloseChannel | RemoveChannel | SetChannelsStatus |
   FetchPayments | SetPayments | SendPayment | SendPaymentStatus |
-  FetchInvoices | SetInvoices | CreateInvoice | AddInvoice | UpdateInvoice;
+  FetchInvoices | SetInvoices | CreateInvoice | AddInvoice | UpdateInvoice | UpdateChannelState;
