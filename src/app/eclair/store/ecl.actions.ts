@@ -2,7 +2,7 @@ import { Action } from '@ngrx/store';
 
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Channel, ChannelStats, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus, Payments, Route, Transaction, SendPaymentOnChain, Invoice, PaymentReceived } from '../../shared/models/eclModels';
+import { GetInfo, Channel, ChannelStats, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus, Payments, Route, Transaction, SendPaymentOnChain, Invoice, PaymentReceived, ChannelStateUpdate } from '../../shared/models/eclModels';
 
 export const RESET_ECL_STORE = 'RESET_ECL_STORE';
 export const UPDATE_API_CALL_STATUS_ECL = 'UPDATE_API_CALL_STATUS_ECL';
@@ -54,6 +54,7 @@ export const UPDATE_INVOICE_ECL = 'UPDATE_INVOICE_ECL';
 export const PEER_LOOKUP_ECL = 'PEER_LOOKUP_ECL';
 export const INVOICE_LOOKUP_ECL = 'INVOICE_LOOKUP_ECL';
 export const SET_LOOKUP_ECL = 'SET_LOOKUP_ECL';
+export const UPDATE_CHANNEL_STATE_ECL = 'UPDATE_CHANNEL_STATE_ECL';
 
 export class UpdateAPICallStatus implements Action {
 
@@ -384,6 +385,13 @@ export class SetLookup implements Action {
 
 }
 
+export class UpdateChannelState implements Action {
+
+  readonly type = UPDATE_CHANNEL_STATE_ECL;
+  constructor(public payload: ChannelStateUpdate) {}
+
+}
+
 export type ECLActions = ResetECLStore | UpdateAPICallStatus | SetChildNodeSettings |
   FetchInfo | SetInfo | FetchFees | SetFees |
   FetchChannels | SetActiveChannels | SetPendingChannels | SetInactiveChannels |
@@ -394,4 +402,4 @@ export type ECLActions = ResetECLStore | UpdateAPICallStatus | SetChildNodeSetti
   SetLightningBalance | FetchPeers | SetPeers | PeerLookup | InvoiceLookup | SetLookup |
   SaveNewChannel | UpdateChannels | CloseChannel | RemoveChannel |
   FetchPayments | SetPayments | SendPayment | SendPaymentStatus |
-  FetchInvoices | SetInvoices | CreateInvoice | AddInvoice | UpdateInvoice;
+  FetchInvoices | SetInvoices | CreateInvoice | AddInvoice | UpdateInvoice | UpdateChannelState;

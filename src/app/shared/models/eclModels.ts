@@ -217,3 +217,11 @@ export interface RoutingPeers {
   totalAmount?: number;
   totalFee?: number;
 }
+
+export interface ChannelStateUpdate {
+  channelId?: string;
+  currentState?: string;
+  previousState?: string;
+  remoteNodeId?: string;
+  type?: string;
+}

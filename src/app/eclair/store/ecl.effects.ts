@@ -56,7 +56,9 @@ export class ECLEffects implements OnDestroy {
           this.flgInitialized = true;
         }
       });
-    this.wsService.wsMessages.pipe(takeUntil(this.unSubs[1])).subscribe((newMessage) => {
+    this.wsService.wsMessages.pipe(
+      takeUntil(this.unSubs[1]),
+      withLatestFrom(this.store.select('ecl'))).subscribe(([newMessage, eclStore]) => {
       let snackBarMsg = '';
       if (newMessage) {
         switch (newMessage.type) {
@@ -76,6 +78,22 @@ export class ECLEffects implements OnDestroy {
             break;
           case WSEventTypeEnum.PAYMENT_RECEIVED:
             this.store.dispatch(new ECLActions.UpdateInvoice(newMessage));
+            break;
+          case WSEventTypeEnum.CHANNEL_STATE_CHANGED:
+            if (newMessage.previousState !== 'NORMAL' && newMessage.currentState !== 'NORMAL' && newMessage.currentState !== 'CLOSED') {
+              this.store.dispatch(new ECLActions.UpdateChannelState(newMessage));
+            }
+            break;
+          case WSEventTypeEnum.CHANNEL_CLOSED:
+            const modifiedPendingChannels = eclStore.pendingChannels;
+            const foundPCIndex = modifiedPendingChannels.findIndex((pc) => pc.channelId === newMessage.channelId);
+            if (foundPCIndex >= 0) {
+              const modifiedStatus = eclStore.channelsStatus;
+              modifiedStatus.pending.channels = modifiedStatus.pending.channels - 1;
+              modifiedStatus.pending.capacity = modifiedStatus.pending.capacity - modifiedPendingChannels[foundPCIndex].toLocal;
+              this.store.dispatch(new ECLActions.SetPendingChannels(modifiedPendingChannels.splice(foundPCIndex, 1)));
+              this.store.dispatch(new ECLActions.SetChannelsStatus(modifiedStatus));
+            };
             break;
           default:
             this.logger.info('Received Event from WS: ' + JSON.stringify(newMessage));
@@ -674,6 +692,7 @@ export class ECLEffects implements OnDestroy {
     this.logger.info('Inactive Channels: ' + JSON.stringify(inactiveChannels));
     this.logger.info('Lightning Balances: ' + JSON.stringify(lightningBalances));
     this.logger.info('Channels Status: ' + JSON.stringify(channelStatus));
+    this.logger.info('Channel, status and balances: ' + JSON.stringify({ active: activeChannels, pending: pendingChannels, inactive: inactiveChannels, balances: lightningBalances, status: channelStatus }));
     this.store.dispatch(new ECLActions.SetActiveChannels(activeChannels));
     this.store.dispatch(new ECLActions.SetPendingChannels(pendingChannels));
     this.store.dispatch(new ECLActions.SetInactiveChannels(inactiveChannels));

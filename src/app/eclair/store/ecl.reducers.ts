@@ -213,10 +213,10 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
       let modifiedInvoices = state.invoices;
       modifiedInvoices = modifiedInvoices.map((invoice) => {
         if (invoice.paymentHash === action.payload.paymentHash) {
-          if ((<PaymentReceived>action.payload).type) {
+          if (action.payload.hasOwnProperty('type')) {
             const updatedInvoice = invoice;
-            updatedInvoice.amountSettled = (<PaymentReceived>action.payload).parts[0].amount / 1000;
-            updatedInvoice.receivedAt = Math.round((<PaymentReceived>action.payload).parts[0].timestamp / 1000);
+            updatedInvoice.amountSettled = ((<PaymentReceived>action.payload).parts && (<PaymentReceived>action.payload).parts.length && (<PaymentReceived>action.payload).parts.length > 0 && (<PaymentReceived>action.payload).parts[0].amount) ? (<PaymentReceived>action.payload).parts[0].amount / 1000 : 0;
+            updatedInvoice.receivedAt = ((<PaymentReceived>action.payload).parts && (<PaymentReceived>action.payload).parts.length && (<PaymentReceived>action.payload).parts.length > 0 && (<PaymentReceived>action.payload).parts[0].timestamp) ? Math.round((<PaymentReceived>action.payload).parts[0].timestamp / 1000) : 0;
             updatedInvoice.status = 'received';
             return updatedInvoice;
           } else {
@@ -228,6 +228,18 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
       return {
         ...state,
         invoices: modifiedInvoices
+      };
+    case ECLActions.UPDATE_CHANNEL_STATE_ECL:
+      let modifiedPendingChannels = state.pendingChannels;
+      modifiedPendingChannels = modifiedPendingChannels.map((pendingChannel) => {
+        if (pendingChannel.channelId === action.payload.channelId && pendingChannel.nodeId === action.payload.remoteNodeId) {
+          pendingChannel.state = action.payload.currentState;
+        }
+        return pendingChannel;
+      });
+      return {
+        ...state,
+        pendingChannels: modifiedPendingChannels
       };
     default:
       return state;
