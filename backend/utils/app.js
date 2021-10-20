@@ -25,7 +25,7 @@ export class ExpressApplication {
             this.config.setServerConfiguration();
         };
         this.loadDb = () => {
-            database.sequelize.sync().then(() => {
+            database.rtlSequelize.sync().then(() => {
                 this.logger.log({ level: 'DEBUG', fileName: 'App', msg: 'Database Connected' });
             });
         };

@@ -232,7 +232,7 @@ export class ConfigService {
                         this.common.nodes[idx].boltz_macaroon_path = '';
                     }
                     this.common.nodes[idx].bitcoind_config_path = process.env.BITCOIND_CONFIG_PATH ? process.env.BITCOIND_CONFIG_PATH : (node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
-                    this.common.nodes[idx].channel_backup_path = process.env.CHANNEL_BACKUP_PATH ? process.env.CHANNEL_BACKUP_PATH : (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : this.common.rtl_conf_file_path + this.common.path_separator + 'backend' + this.common.path_separator + 'channels-backup' + this.common.path_separator + 'node-' + node.index;
+                    this.common.nodes[idx].channel_backup_path = process.env.CHANNEL_BACKUP_PATH ? process.env.CHANNEL_BACKUP_PATH : (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : this.common.rtl_conf_file_path + this.common.path_separator + 'channels-backup' + this.common.path_separator + 'node-' + node.index;
                     try {
                         this.createDirectory(this.common.nodes[idx].channel_backup_path);
                         const exists = fs.existsSync(this.common.nodes[idx].channel_backup_path + this.common.path_separator + 'channel-all.bak');
@@ -254,7 +254,7 @@ export class ConfigService {
                     catch (err) {
                         this.logger.log({ level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while creating the backup directory: \n' + err });
                     }
-                    this.common.nodes[idx].log_file = this.common.rtl_conf_file_path + '/backend/logs/RTL-Node-' + node.index + '.log';
+                    this.common.nodes[idx].log_file = this.common.rtl_conf_file_path + '/logs/RTL-Node-' + node.index + '.log';
                     this.logger.log({ level: 'DEBUG', fileName: 'Config', msg: 'Node Information', data: this.common.nodes[idx] });
                     const log_file = this.common.nodes[idx].log_file;
                     if (fs.existsSync(log_file)) {

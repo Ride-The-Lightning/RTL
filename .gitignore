@@ -36,9 +36,9 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
-backend/channels-backup
-backend/logs
-server/cookies
+channels-backup
+logs
+cookies
 
 # System Files
 .DS_Store

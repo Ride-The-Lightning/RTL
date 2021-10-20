@@ -1,16 +1,14 @@
 import { Sequelize } from 'sequelize';
+import { offer } from '../models/offers.model.js';
 
-const sequelize = new Sequelize('RTLStore', '', '', {
-  storage: 'database.sqlite',
+const rtlSequelize = new Sequelize('RTLStore', '', '', {
+  storage: './database/db.sqlite',
   dialect: 'sqlite',
   logging: true
 });
 
-
-import { offer } from '../models/offers.model.js';
-
 export const database = {
   Sequelize,
-  sequelize,
-  offer: offer(sequelize, Sequelize)
+  rtlSequelize,
+  offer: offer(rtlSequelize, Sequelize)
 };
