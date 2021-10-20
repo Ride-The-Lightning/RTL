@@ -48,7 +48,6 @@ export const FEE_RATE_TYPES = [
   { feeRateId: 'customperkb', feeRateType: 'Custom (Sats/vB)' }
 ];
 
-
 export const NODE_SETTINGS = {
   themes: [
     { id: 'PURPLE', name: 'Diogo' },
@@ -59,6 +58,28 @@ export const NODE_SETTINGS = {
   ],
   modes: [{ id: 'DAY', name: 'Day' }, { id: 'NIGHT', name: 'Night' }]
 };
+
+export enum WSEventTypeEnum {
+  PAYMENT_RECEIVED = 'payment-received',
+  PAYMENT_RELAYED = 'payment-relayed',
+  PAYMENT_SENT = 'payment-sent',
+  PAYMENT_SETTLING_ONCHAIN = 'payment-settling-onchain',
+  PAYMENT_FAILED = 'payment-failed',
+  CHANNEL_OPENED = 'channel-opened',
+  CHANNEL_STATE_CHANGED = 'channel-state-changed',
+  CHANNEL_CLOSED = 'channel-closed'
+}
+
+export const WSEventsECL = [
+  { type: WSEventTypeEnum.PAYMENT_RECEIVED, name: 'Payment Received', description: 'A payment has been received' },
+  { type: WSEventTypeEnum.PAYMENT_RELAYED, name: 'Payment Relayed', description: 'A payment has been successfully relayed' },
+  { type: WSEventTypeEnum.PAYMENT_SENT, name: 'Payment Sent', description: 'A payment has been successfully sent' },
+  { type: WSEventTypeEnum.PAYMENT_SETTLING_ONCHAIN, name: 'Payment Settling Onchain', description: 'A payment was not fulfilled and its HTLC is being redeemed on-chain' },
+  { type: WSEventTypeEnum.PAYMENT_FAILED, name: 'Payment Failed', description: 'A payment failed' },
+  { type: WSEventTypeEnum.CHANNEL_OPENED, name: 'Channel Opened', description: 'A channel opening flow has started' },
+  { type: WSEventTypeEnum.CHANNEL_STATE_CHANGED, name: 'Channel State Changed', description: 'A channel state changed' },
+  { type: WSEventTypeEnum.CHANNEL_CLOSED, name: 'Channel Closed', description: 'A channel has been closed' }
+];
 
 export enum UserPersonaEnum {
   OPERATOR = 'OPERATOR',

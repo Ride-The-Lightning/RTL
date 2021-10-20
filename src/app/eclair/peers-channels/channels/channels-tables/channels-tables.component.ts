@@ -5,6 +5,7 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { ECLOpenChannelComponent } from '../open-channel-modal/open-channel.component';
+import { WebSocketClientService } from '../../../../shared/services/web-socket.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { GetInfo, Peer } from '../../../../shared/models/eclModels';
 import { SelNodeChild } from '../../../../shared/models/RTLconfig';
@@ -28,9 +29,9 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
   public totalBalance = 0;
   public links = [{ link: 'open', name: 'Open' }, { link: 'pending', name: 'Pending' }, { link: 'inactive', name: 'Inactive' }];
   public activeLink = 0;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private router: Router) {}
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private router: Router, private wsService: WebSocketClientService) {}
 
   ngOnInit() {
     this.activeLink = this.links.findIndex((link) => link.link === this.router.url.substring(this.router.url.lastIndexOf('/') + 1));

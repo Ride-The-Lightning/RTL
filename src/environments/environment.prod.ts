@@ -25,5 +25,6 @@ export const environment = {
   MESSAGE_API: '/message',
   LOOP_API: '/loop',
   BOLTZ_API: '/boltz',
+  Web_SOCKET_API: '/ws',
   VERSION: VERSION
 };

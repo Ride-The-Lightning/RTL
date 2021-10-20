@@ -1,4 +1,4 @@
-import { ActionReducerMap } from '@ngrx/store';
+import { createFeatureSelector, createSelector } from '@ngrx/store';
 
 import { ApiCallsListRoot } from '../shared/models/apiCallsPayload';
 import { APICallStatusEnum } from '../shared/services/consts-enums-functions';
@@ -10,6 +10,7 @@ import * as fromLND from '../lnd/store/lnd.reducers';
 import * as RTLActions from './rtl.actions';
 
 export interface RootState {
+  apiURL: string;
   apisCallStatus: ApiCallsListRoot;
   selNode: ConfigSettingsNode;
   appConfig: RTLConfiguration;
@@ -20,6 +21,7 @@ const initNodeSettings = { userPersona: 'OPERATOR', themeMode: 'DAY', themeColor
 const initNodeAuthentication = { configPath: '', swapMacaroonPath: '', boltzMacaroonPath: '' };
 
 export const initRootState: RootState = {
+  apiURL: '',
   apisCallStatus: { Login: { status: APICallStatusEnum.UN_INITIATED }, IsAuthorized: { status: APICallStatusEnum.UN_INITIATED } },
   selNode: { settings: initNodeSettings, authentication: initNodeAuthentication, lnImplementation: 'LND' },
   appConfig: {
@@ -80,9 +82,12 @@ export interface RTLState {
   ecl: fromECL.ECLState;
 }
 
-export const RTLReducer: ActionReducerMap<RTLState> = {
+export const RTLReducer = {
   root: RootReducer,
   lnd: fromLND.LNDReducer,
   cl: fromCL.CLReducer,
   ecl: fromECL.ECLReducer
 };
+
+export const getRTLState = createFeatureSelector<RTLState>('rtl');
+export const getApiUrl = createSelector(getRTLState, (state: RTLState) => state.root.apiURL);
