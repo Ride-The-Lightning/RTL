@@ -1,8 +1,10 @@
 import { __awaiter } from "tslib";
+import request from 'request-promise';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { database } from '../../utils/database.init.js';
 import { uuid } from 'uuidv4';
+let options = null;
 const logger = Logger;
 const common = Common;
 export const getOffers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -86,3 +88,32 @@ export const deleteOffer = (req, res, next) => __awaiter(void 0, void 0, void 0,
         return res.status(500).json({ message: err.message, error: err.error });
     }
 });
+export const decodePayment = (req, res, next) => {
+    logger.log({ level: 'INFO', fileName: 'Offer', msg: 'Decoding Payment..' });
+    options = common.getOptions();
+    options.url = common.getSelLNServerUrl() + '/v1/utility/decode/' + req.params.invoice;
+    request(options).then((body) => {
+        logger.log({ level: 'DEBUG', fileName: 'Offer', msg: 'Payment Decode Received', data: body });
+        logger.log({ level: 'INFO', fileName: 'Offer', msg: 'Payment Decoded' });
+        res.status(200).json(body);
+    }).catch((errRes) => {
+        const err = common.handleError(errRes, 'Offer', 'Decode Payment Error');
+        return res.status(err.statusCode).json({ message: err.message, error: err.error });
+    });
+};
+export const fetchInvoice = (req, res, next) => {
+    logger.log({ level: 'INFO', fileName: 'Offer', msg: 'Fetching Invoice..' });
+    options = common.getOptions();
+    options.url = common.getSelLNServerUrl() + '/v1/offers/fetchInvoice';
+    options.method = 'POST';
+    options.body = req.body;
+    console.log(options, "--------\n");
+    request(options).then((body) => {
+        logger.log({ level: 'DEBUG', fileName: 'Offer', msg: 'Invoice Received', data: body });
+        logger.log({ level: 'INFO', fileName: 'Offer', msg: 'Invoice Received' });
+        res.status(200).json(body);
+    }).catch((errRes) => {
+        const err = common.handleError(errRes, 'Offer', 'Fetch Invoice Error');
+        return res.status(err.statusCode).json({ message: err.message, error: err.error });
+    });
+};

@@ -8,11 +8,12 @@
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large" fxLayout="column" fxLayoutAlign="start stretch">
       <mat-radio-group *ngIf="isCompatibleVersion" class="my-1" color="primary" name="paymentType" [(ngModel)]="paymentType" (change)="onPaymentTypeChange()" fxFlex="100" fxLayoutAlign="start stretch">
-        <mat-radio-button fxFlex="25" tabindex="1" value="invoice" class="mr-2">Invoice Payment</mat-radio-button>
-        <mat-radio-button fxFlex="25" tabindex="2" value="keysend">Keysend Payment</mat-radio-button>
+        <mat-radio-button fxFlex="25" tabindex="1" value="invoice" class="mr-2">Invoice</mat-radio-button>
+        <mat-radio-button fxFlex="25" tabindex="2" value="keysend">Keysend</mat-radio-button>
+        <mat-radio-button fxFlex="25" tabindex="3" value="offer">Offer</mat-radio-button>
       </mat-radio-group>
       <form fxLayoutAlign="space-between stretch" fxLayout="column" #sendPaymentForm="ngForm">
-        <ng-container *ngTemplateOutlet="paymentType === 'keysend' ? keysendBlock : invoiceBlock"></ng-container>
+        <ng-container *ngTemplateOutlet="paymentType === 'keysend' ? keysendBlock : paymentType === 'offer' ? offerBlock : invoiceBlock"></ng-container>
         <div fxFlex="100" class="alert alert-danger mt-1" *ngIf="paymentError !== ''">
           <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
           <span *ngIf="paymentError !== ''">{{paymentError}}</span>
@@ -46,5 +47,12 @@
   <mat-form-field fxFlex="100">
     <input matInput placeholder="Amount (Sats)" name="keysendAmount" [(ngModel)]="keysendAmount" tabindex="6" required #keysendAmt="ngModel">
     <mat-error *ngIf="!keysendAmount">Keysend amount is required.</mat-error>
+  </mat-form-field>
+</ng-template>
+<ng-template #offerBlock>
+  <mat-form-field fxFlex="100">
+    <input autoFocus matInput placeholder="Offer String" [(ngModel)]="offerString" name="offerString" (ngModelChange)="onPaymentOfferEntry($event)" tabindex="5" required>
+    <mat-hint *ngIf="offerRequest && offerDecodedHint !== ''">{{offerDecodedHint}}</mat-hint>
+    <mat-error *ngIf="!offerString">Offer string required.</mat-error>
   </mat-form-field>
 </ng-template>

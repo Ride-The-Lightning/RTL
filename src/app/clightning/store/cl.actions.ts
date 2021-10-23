@@ -3,7 +3,7 @@ import { Action } from '@ngrx/store';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfo, Fees, Peer, Payment, PayRequest, QueryRoutes, Channel, FeeRates,
-  ForwardingEvent, Invoice, ListInvoices, OnChain, UTXO } from '../../shared/models/clModels';
+  ForwardingEvent, Invoice, ListInvoices, OnChain, UTXO, OfferRequest } from '../../shared/models/clModels';
 
 export const RESET_CL_STORE = 'RESET_CL_STORE';
 export const UPDATE_API_CALL_STATUS_CL = 'UPDATE_API_CALL_STATUS_CL';
@@ -38,7 +38,9 @@ export const REMOVE_CHANNEL_CL = 'REMOVE_CHANNEL_CL';
 export const FETCH_PAYMENTS_CL = 'FETCH_PAYMENTS_CL';
 export const SET_PAYMENTS_CL = 'SET_PAYMENTS_CL';
 export const DECODE_PAYMENT_CL = 'DECODE_PAYMENT_CL';
+export const DECODE_OFFER_PAYMENT_CL = 'DECODE_OFFER_PAYMENT_CL';
 export const SET_DECODED_PAYMENT_CL = 'SET_DECODED_PAYMENT_CL';
+export const SET_DECODED_OFFER_CL = 'SET_DECODED_OFFER_CL';
 export const SEND_PAYMENT_CL = 'SEND_PAYMENT_CL';
 export const SEND_PAYMENT_STATUS_CL = 'SEND_PAYMENT_STATUS_CL';
 export const GET_QUERY_ROUTES_CL = 'GET_QUERY_ROUTES_CL';
@@ -227,6 +229,20 @@ export class DecodePayment implements Action {
 
   readonly type = DECODE_PAYMENT_CL;
   constructor(public payload: {routeParam: string, fromDialog: boolean}) {} // Payload = routeParam
+
+}
+
+export class DecodeOffer implements Action {
+
+  readonly type = DECODE_OFFER_PAYMENT_CL;
+  constructor(public payload: {routeParam: string, fromDialog: boolean}) {}
+}
+
+
+export class SetDecodedOffer implements Action {
+
+  readonly type = SET_DECODED_OFFER_CL;
+  constructor(public payload: OfferRequest) {}
 
 }
 

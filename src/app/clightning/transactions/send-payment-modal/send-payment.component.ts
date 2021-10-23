@@ -9,7 +9,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
-import { PayRequest, Channel } from '../../../shared/models/clModels';
+import { PayRequest, Channel, OfferRequest } from '../../../shared/models/clModels';
 import { APICallStatusEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -35,12 +35,18 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: SelNodeChild = {};
   public paymentDecoded: PayRequest = {};
+  public offerDecoded: OfferRequest;
   public zeroAmtInvoice = false;
   public paymentAmount = null;
   public paymentType = 'invoice';
+  public offerError = '';
+  public offerDecodedHint = '';
   public pubkey = '';
+  public offerInvoice = '';
+  public offerString = '';
   public keysendAmount = null;
   public paymentRequest = '';
+  public offerRequest = '';
   public paymentDecodedHint = '';
   public selActiveChannel: Channel = {};
   public activeChannels = {};
@@ -164,6 +170,30 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
           } else {
             this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
           }
+        }
+      });
+    }
+  }
+
+  onPaymentOfferEntry(event: any) {
+    this.offerRequest = event;
+    this.offerDecodedHint = '';
+    if (this.offerRequest) {
+      this.store.dispatch(new CLActions.DecodeOffer({ routeParam: this.offerRequest, fromDialog: true }));
+      this.clEffects.setDecodedOfferCL.subscribe((decodedOffer) => {
+        this.offerDecoded = decodedOffer;
+        let msat = (this.offerDecoded.amount_msat).split('m')[0]
+        let msatoshi = parseInt(msat)
+        if (this.selNode.fiatConversion) {
+          this.commonService.convertCurrency(msatoshi ? msatoshi / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
+            pipe(takeUntil(this.unSubs[3])).
+            subscribe({ next: (data) => {
+              this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(msatoshi ? msatoshi / 1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.offerDecoded.description;
+            }, error: (error) => {
+              this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(msatoshi ? msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.offerDecoded.description + '. Unable to convert currency.';
+            } });
+        } else {
+          this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(msatoshi ? msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.offerDecoded.description;
         }
       });
     }
