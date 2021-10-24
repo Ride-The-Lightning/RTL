@@ -107,7 +107,6 @@ export const fetchInvoice = (req, res, next) => {
     options.url = common.getSelLNServerUrl() + '/v1/offers/fetchInvoice';
     options.method = 'POST';
     options.body = req.body;
-    console.log(options, "--------\n");
     request(options).then((body) => {
         logger.log({ level: 'DEBUG', fileName: 'Offer', msg: 'Invoice Received', data: body });
         logger.log({ level: 'INFO', fileName: 'Offer', msg: 'Invoice Received' });

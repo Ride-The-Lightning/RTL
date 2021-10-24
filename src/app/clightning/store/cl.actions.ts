@@ -3,7 +3,7 @@ import { Action } from '@ngrx/store';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfo, Fees, Peer, Payment, PayRequest, QueryRoutes, Channel, FeeRates,
-  ForwardingEvent, Invoice, ListInvoices, OnChain, UTXO, OfferRequest } from '../../shared/models/clModels';
+  ForwardingEvent, Invoice, ListInvoices, OnChain, UTXO, OfferRequest, FetchInvoice } from '../../shared/models/clModels';
 
 export const RESET_CL_STORE = 'RESET_CL_STORE';
 export const UPDATE_API_CALL_STATUS_CL = 'UPDATE_API_CALL_STATUS_CL';
@@ -24,6 +24,8 @@ export const FETCH_UTXOS_CL = 'FETCH_UTXOS_CL';
 export const SET_UTXOS_CL = 'SET_UTXOS_CL';
 export const FETCH_PEERS_CL = 'FETCH_PEERS_CL';
 export const SET_PEERS_CL = 'SET_PEERS_CL';
+export const FETCH_OFFER_INVOICE_CL = 'FETCH_OFFER_INVOICE_CL';
+export const SET_OFFER_INVOICE_CL = 'SET_OFFER_INVOICE_CL';
 export const SAVE_NEW_PEER_CL = 'SAVE_NEW_PEER_CL';
 export const NEWLY_ADDED_PEER_CL = 'NEWLY_ADDED_PEER_CL';
 export const ADD_PEER_CL = 'ADD_PEER_CL';
@@ -382,6 +384,19 @@ export class FetchInvoices implements Action {
   readonly type = FETCH_INVOICES_CL;
   constructor(public payload: {num_max_invoices?: number, index_offset?: number, reversed?: boolean}) {}
 
+}
+
+export class FetchOfferInvoice implements Action {
+
+  readonly type = FETCH_OFFER_INVOICE_CL;
+  constructor(public payload: {offer: string, quantity?: number, recurrence_counter?: string, recurrence_label?: string}) {}
+}
+
+
+export class SetOfferInvoice implements Action {
+
+  readonly type = SET_OFFER_INVOICE_CL;
+  constructor(public payload: FetchInvoice) {}
 }
 
 export class SetInvoices implements Action {

@@ -205,6 +205,28 @@ export interface OfferRequest {
   recurrence?: Recurrence;
 }
 
+interface Changes {
+  description_appended?: string;
+  description?: string;
+  vendor_removed?: string;
+  vendor?: string;
+  msat?: string;
+}
+
+interface NextPeriod {
+  counter: string;
+  starttime: string;
+  endtime: string;
+  paywindow_start: string;
+  paywindow_end: string;
+}
+
+export interface FetchInvoice {
+  invoice: string;
+  changes: Changes;
+  next_period?: NextPeriod;
+}
+
 export interface ForwardingEvent {
   payment_hash?: string;
   in_channel?: string;

@@ -96,6 +96,8 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
     }
     if (this.paymentType === 'keysend') {
       this.keysendPayment();
+    } else if(this.paymentType === 'offer') {
+      this.sendOfferPayment();
     } else {
       if (this.paymentDecoded.created_at) {
         this.sendPayment();
@@ -142,6 +144,17 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
     }
   }
 
+  sendOfferPayment() {
+    this.store.dispatch(new CLActions.FetchOfferInvoice({ offer: this.offerRequest }));
+    this.clEffects.setOfferInvoiceCL.subscribe((fetchedInvoice) => {
+      if(this.zeroAmtInvoice) {
+        this.store.dispatch(new CLActions.SendPayment({ uiMessage: UI_MESSAGES.SEND_PAYMENT, invoice: fetchedInvoice.invoice, amount: this.paymentAmount * 1000, fromDialog: true }));
+      } else {
+        this.store.dispatch(new CLActions.SendPayment({ uiMessage: UI_MESSAGES.SEND_PAYMENT, invoice: fetchedInvoice.invoice, fromDialog: true }));
+      }
+    })
+  }
+
   onPaymentRequestEntry(event: any) {
     this.paymentRequest = event;
     this.paymentError = '';
@@ -178,22 +191,29 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   onPaymentOfferEntry(event: any) {
     this.offerRequest = event;
     this.offerDecodedHint = '';
+    this.zeroAmtInvoice = false;
     if (this.offerRequest) {
       this.store.dispatch(new CLActions.DecodeOffer({ routeParam: this.offerRequest, fromDialog: true }));
       this.clEffects.setDecodedOfferCL.subscribe((decodedOffer) => {
         this.offerDecoded = decodedOffer;
-        let msat = (this.offerDecoded.amount_msat).split('m')[0]
+        let msat = (this.offerDecoded.amount_msat).split('m')[0];
         let msatoshi = parseInt(msat)
-        if (this.selNode.fiatConversion) {
-          this.commonService.convertCurrency(msatoshi ? msatoshi / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
-            pipe(takeUntil(this.unSubs[3])).
-            subscribe({ next: (data) => {
-              this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(msatoshi ? msatoshi / 1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.offerDecoded.description;
-            }, error: (error) => {
-              this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(msatoshi ? msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.offerDecoded.description + '. Unable to convert currency.';
-            } });
+        if(msatoshi) {
+          this.zeroAmtInvoice = false;
+          if (this.selNode.fiatConversion) {
+            this.commonService.convertCurrency(msatoshi ? msatoshi / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
+              pipe(takeUntil(this.unSubs[3])).
+              subscribe({ next: (data) => {
+                this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(msatoshi ? msatoshi / 1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.offerDecoded.description;
+              }, error: (error) => {
+                this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(msatoshi ? msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.offerDecoded.description + '. Unable to convert currency.';
+              } });
+          } else {
+            this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(msatoshi ? msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.offerDecoded.description;
+          }
         } else {
-          this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(msatoshi ? msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.offerDecoded.description;
+          this.zeroAmtInvoice = true;
+          this.offerDecodedHint = 'Zero Amount Invoice | Memo: ' + this.offerDecoded.description;
         }
       });
     }

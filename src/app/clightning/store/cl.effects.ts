@@ -444,17 +444,64 @@ export class CLEffects implements OnDestroy {
     })
   ));
 
+
+  setDecodedPaymentCL = createEffect(
+    () => this.actions.pipe(
+      ofType(CLActions.SET_DECODED_PAYMENT_CL),
+      map((action: CLActions.SetDecodedPayment) => {
+        this.logger.info(action.payload);
+        return action.payload;
+      })
+    ),
+    { dispatch: false }
+  );
+
+  fetchOfferInvoiceCL = createEffect(() => this.actions.pipe(
+    ofType(CLActions.FETCH_OFFER_INVOICE_CL),
+    mergeMap((action: CLActions.FetchOfferInvoice) => {
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.FETCH_INVOICE));
+      this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'FetchOfferInvoice', status: APICallStatusEnum.INITIATED }));
+      return this.httpClient.post(this.CHILD_API_URL + environment.FETCH_INVOICE_API, {offer: action.payload.offer, quantity: action.payload.quantity, recurrence_counter: action.payload.recurrence_counter, recurrence_label: action.payload.recurrence_label}).
+        pipe(
+          map((fetchedInvoice: any) => {
+            this.logger.info(fetchedInvoice);
+            this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'FetchOfferInvoice', status: APICallStatusEnum.COMPLETED }));
+            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.FETCH_INVOICE));
+            return {
+              type: CLActions.SET_OFFER_INVOICE_CL,
+              payload: fetchedInvoice ? fetchedInvoice : {}
+            };
+          }),
+          catchError((err: any) => {
+            this.handleErrorWithAlert('FetchOfferInvoice', UI_MESSAGES.FETCH_INVOICE, 'Invoice Fetch Failed', this.CHILD_API_URL + environment.FETCH_INVOICE_API + '/' + action.payload, err);
+            return of({ type: RTLActions.VOID });
+          })
+        );
+    })
+  ))
+
+  setOfferInvoiceCL = createEffect(
+    () => this.actions.pipe(
+    ofType(CLActions.SET_OFFER_INVOICE_CL), 
+    map((action: CLActions.SetOfferInvoice) => {
+      this.logger.info(action.payload);
+      return action.payload;
+    })
+  ),
+  { dispatch: false }
+  )
+
   decodeOfferPaymentCL = createEffect(() => this.actions.pipe(
     ofType(CLActions.DECODE_OFFER_PAYMENT_CL),
     mergeMap((action: CLActions.DecodeOffer) => {
-      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.DECODE_PAYMENT));
-      this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'DecodePayment', status: APICallStatusEnum.INITIATED }));
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.DECODE_OFFER));
+      this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'DecodeOffer', status: APICallStatusEnum.INITIATED }));
       return this.httpClient.get(this.CHILD_API_URL + environment.OFFER_API + '/' + action.payload.routeParam).
         pipe(
           map((decodedOffer) => {
             this.logger.info(decodedOffer);
-            this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'DecodePayment', status: APICallStatusEnum.COMPLETED }));
-            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.DECODE_PAYMENT));
+            this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'DecodeOffer', status: APICallStatusEnum.COMPLETED }));
+            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.DECODE_OFFER));
             return {
               type: CLActions.SET_DECODED_OFFER_CL,
               payload: decodedOffer ? decodedOffer : {}
@@ -462,9 +509,9 @@ export class CLEffects implements OnDestroy {
           }),
           catchError((err: any) => {
             if (action.payload.fromDialog) {
-              this.handleErrorWithoutAlert('DecodePayment', UI_MESSAGES.DECODE_PAYMENT, 'Decode Payment Failed.', err);
+              this.handleErrorWithoutAlert('DecodePayment', UI_MESSAGES.DECODE_OFFER, 'Decode Payment Failed.', err);
             } else {
-              this.handleErrorWithAlert('DecodePayment', UI_MESSAGES.DECODE_PAYMENT, 'Decode Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload, err);
+              this.handleErrorWithAlert('DecodePayment', UI_MESSAGES.DECODE_OFFER, 'Decode Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload, err);
             }
             return of({ type: RTLActions.VOID });
           })
@@ -476,17 +523,6 @@ export class CLEffects implements OnDestroy {
     () => this.actions.pipe(
       ofType(CLActions.SET_DECODED_OFFER_CL),
       map((action: CLActions.SetDecodedOffer) => {
-        this.logger.info(action.payload);
-        return action.payload;
-      })
-    ),
-    { dispatch: false }
-  );
-
-  setDecodedPaymentCL = createEffect(
-    () => this.actions.pipe(
-      ofType(CLActions.SET_DECODED_PAYMENT_CL),
-      map((action: CLActions.SetDecodedPayment) => {
         this.logger.info(action.payload);
         return action.payload;
       })
