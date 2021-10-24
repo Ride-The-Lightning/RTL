@@ -9,7 +9,7 @@ router.get('/:id', isAuthenticated, getOffer);
 router.post('/', isAuthenticated, saveOffer);
 router.put('/', isAuthenticated, updateOffer);
 router.delete('/:id', isAuthenticated, deleteOffer);
-router.get('/decode/:invoice', decodePayment);
-router.post('/fetchInvoice', fetchInvoice)
+router.get('/decode/:invoice', isAuthenticated, decodePayment);
+router.post('/fetchInvoice', isAuthenticated, fetchInvoice)
 
 export default router;
