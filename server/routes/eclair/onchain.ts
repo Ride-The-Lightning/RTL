@@ -1,4 +1,5 @@
-import { Router } from 'express';
+import exprs from 'express';
+const { Router } = exprs;
 import { isAuthenticated } from '../../utils/authCheck.js';
 import { getNewAddress, getBalance, getTransactions, sendFunds } from '../../controllers/eclair/onchain.js';
 

@@ -1,4 +1,5 @@
-import { Router } from 'express';
+import exprs from 'express';
+const { Router } = exprs;
 import { isAuthenticated } from '../../utils/authCheck.js';
 import { listChannels, openChannel, setChannelFee, closeChannel, getLocalRemoteBalance, listForwards } from '../../controllers/c-lightning/channels.js';
 const router = Router();

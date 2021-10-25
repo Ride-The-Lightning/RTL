@@ -1,4 +1,5 @@
-import { Router } from 'express';
+import exprs from 'express';
+const { Router } = exprs;
 import { isAuthenticated } from '../../utils/authCheck.js';
 import { getNodes } from '../../controllers/eclair/network.js';
 const router = Router();

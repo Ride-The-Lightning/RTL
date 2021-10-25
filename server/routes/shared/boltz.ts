@@ -1,4 +1,5 @@
-import { Router } from 'express';
+import exprs from 'express';
+const { Router } = exprs;
 import { isAuthenticated } from '../../utils/authCheck.js';
 import { getInfo, getServiceInfo, listSwaps, getSwapInfo, createSwap, createReverseSwap, createChannel, deposit } from '../../controllers/shared/boltz.js';
 

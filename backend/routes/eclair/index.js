@@ -1,4 +1,5 @@
-import { Router } from 'express';
+import exprs from 'express';
+const { Router } = exprs;
 import infoECLRoutes from './getInfo.js';
 import feesECLRoutes from './fees.js';
 import channelsECLRoutes from './channels.js';

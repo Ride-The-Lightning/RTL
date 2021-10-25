@@ -1,4 +1,5 @@
-import { Router } from 'express';
+import exprs from 'express';
+const { Router } = exprs;
 import { isAuthenticated } from '../../utils/authCheck.js';
 import { getOffer, getOffers, updateOffer, deleteOffer, saveOffer, decodePayment, fetchInvoice } from '../../controllers/c-lightning/offer.js';
 const router = Router();
