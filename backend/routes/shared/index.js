@@ -1,4 +1,5 @@
-import { Router } from 'express';
+import exprs from 'express';
+const { Router } = exprs;
 import authenticateRoutes from './authenticate.js';
 import boltzRoutes from './boltz.js';
 import loopRoutes from './loop.js';

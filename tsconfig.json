@@ -3,6 +3,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "outDir": "./backend",
+    "esModuleInterop": true,
     "allowJs": false,
     "forceConsistentCasingInFileNames": true,
     "strict": false,

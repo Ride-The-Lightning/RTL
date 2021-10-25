@@ -12,6 +12,7 @@
     "buildserver": "tsc --project tsconfig.json",
     "watchserver": "tsc --project tsconfig.json --watch",
     "server": "set NODE_ENV=development&&nodemon ./rtl.js",
+    "serverUbuntu": "NODE_ENV=development nodemon ./rtl.js",
     "test": "ng test --watch=true --code-coverage",
     "lint": "ng lint",
     "postinstall": "ngcc"
@@ -46,7 +47,6 @@
     "hocon-parser": "^1.0.1",
     "ini": "^2.0.0",
     "jsonwebtoken": "^8.5.1",
-    "lowdb": "3.0.0",
     "material-design-icons": "^3.0.1",
     "ngx-perfect-scrollbar": "^10.0.1",
     "otplib": "^12.0.1",
@@ -54,9 +54,13 @@
     "request-promise": "^4.2.6",
     "roboto-fontface": "^0.10.0",
     "rxjs": "^7.1.0",
+    "sequelize": "^6.7.0",
     "sha256": "^0.2.0",
+    "sqlite3": "^5.0.2",
     "tslib": "^2.0.0",
     "typescript": "~4.2.4",
+    "uuidv4": "^6.2.12",
+    "ws": "^7.4.6",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {

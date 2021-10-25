@@ -4,7 +4,6 @@ import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { Low, JSONFile } from 'lowdb';
 import CORS from './cors.js';
 import CSRF from './csrf.js';
 import sharedRoutes from '../routes/shared/index.js';
@@ -27,14 +26,6 @@ export class ExpressApplication {
         };
         this.loadDatabase = () => __awaiter(this, void 0, void 0, function* () {
             this.logger.log({ level: 'INFO', fileName: 'App', msg: 'LOAD DATABASE: IN PROGRESS' });
-            const adapter = new JSONFile(join(this.directoryName, '../..', 'db', 'db.json'));
-            const db = new Low(adapter);
-            // await db.read();
-            // db.data.posts.push('Hello World');
-            // this.logger.log({ level: 'INFO', fileName: 'App', msg: 'Test Data:', data: db.data.posts });
-            // db.data.posts.push('Next Post');
-            // await db.write();
-            // this.logger.log({ level: 'INFO', fileName: 'App', msg: 'Test Data After Write:', data: db.data.posts });
         });
         this.setCORS = () => { CORS.mount(this.app); };
         this.setCSRF = () => { CSRF.mount(this.app); };

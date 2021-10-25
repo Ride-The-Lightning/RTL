@@ -1,4 +1,5 @@
-import { Router } from 'express';
+import exprs from 'express';
+const { Router } = exprs;
 import { isAuthenticated } from '../../utils/authCheck.js';
 import { queryPaymentRoute, decodePayment, getSentPaymentsInformation, postPayment } from '../../controllers/eclair/payments.js';
 const router = Router();
