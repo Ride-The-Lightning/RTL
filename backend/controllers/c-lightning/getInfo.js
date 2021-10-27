@@ -1,9 +1,11 @@
 import request from 'request-promise';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
+import { CLWSClient } from './webSocketClient.js';
 let options = null;
 const logger = Logger;
 const common = Common;
+const clWsClient = CLWSClient;
 export const getInfo = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'GetInfo', msg: 'Getting CLightning Node Information..' });
     common.setOptions();
@@ -55,6 +57,7 @@ export const getInfo = (req, res, next) => {
                     });
                 }
                 logger.log({ level: 'INFO', fileName: 'GetInfo', msg: 'CLightning Node Information Received' });
+                clWsClient.connect();
                 res.status(200).json(body);
             }
         }).catch((errRes) => {

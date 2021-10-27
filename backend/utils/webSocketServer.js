@@ -8,6 +8,17 @@ export class WebSocketServer {
         this.logger = Logger;
         this.common = Common;
         this.webSocketServer = null;
+        this.pingInterval = setInterval(() => {
+            if (this.webSocketServer) {
+                this.webSocketServer.clients.forEach((client) => {
+                    if (client.isAlive === false) {
+                        return client.terminate();
+                    }
+                    client.isAlive = false;
+                    client.ping();
+                });
+            }
+        }, 1800000);
         this.mount = (httpServer) => {
             this.logger.log({ level: 'DEBUG', fileName: 'WebSocketServer', msg: 'Connecting Websocket Server.' });
             this.webSocketServer = new WebSocket.Server({ noServer: true, path: this.common.baseHref + '/api/ws', verifyClient: (process.env.NODE_ENV === 'development') ? null : verifyWSUser });
@@ -32,10 +43,15 @@ export class WebSocketServer {
         };
         this.mountEventsOnConnection = (websocket, request) => {
             websocket.clientId = Date.now();
+            websocket.isAlive = true;
             this.logger.log({ level: 'INFO', fileName: 'WebSocketServer', msg: 'Connected: ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
             websocket.on('error', this.sendErrorToAllWSClients);
             websocket.on('message', this.sendEventsToAllWSClients);
-            websocket.on('close', () => { this.logger.log({ level: 'INFO', fileName: 'WebSocketServer', msg: 'Disconnected: ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size }); });
+            websocket.on('pong', () => { websocket.isAlive = true; });
+            websocket.on('close', () => {
+                clearInterval(this.pingInterval);
+                this.logger.log({ level: 'INFO', fileName: 'WebSocketServer', msg: 'Disconnected: ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
+            });
         };
         this.sendErrorToClient = (client, serverError) => {
             try {

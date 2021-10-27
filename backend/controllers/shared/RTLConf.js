@@ -5,10 +5,12 @@ import request from 'request-promise';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { ECLWSClient } from '../eclair/webSocketClient.js';
+import { CLWSClient } from '../c-lightning/webSocketClient.js';
 const options = { url: '' };
 const logger = Logger;
 const common = Common;
 const eclWsClient = ECLWSClient;
+const clWsClient = CLWSClient;
 export const updateSelectedNode = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Updating Selected Node..' });
     switch (common.selectedNode.ln_implementation) {
@@ -16,7 +18,7 @@ export const updateSelectedNode = (req, res, next) => {
             // lndWsClient.disconnect();
             break;
         case 'CLT':
-            // clWsClient.disconnect();
+            clWsClient.disconnect();
             break;
         case 'ECL':
             eclWsClient.disconnect();
@@ -59,11 +61,13 @@ export const getRTLConfigInitial = (req, res, next) => {
                     settings.themeColor = (node.theme_color) ? node.theme_color : 'PURPLE';
                     settings.fiatConversion = (node.fiat_conversion) ? !!node.fiat_conversion : false;
                     settings.currencyUnit = node.currency_unit;
-                    nodesArr.push({ index: node.index,
+                    nodesArr.push({
+                        index: node.index,
                         lnNode: node.ln_node,
                         lnImplementation: node.ln_implementation,
                         settings: settings,
-                        authentication: {} });
+                        authentication: {}
+                    });
                 });
             }
             logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Initial RTL Configuration Received' });
@@ -109,11 +113,13 @@ export const getRTLConfig = (req, res, next) => {
                     settings.boltzServerUrl = node.boltz_server_url;
                     settings.channelBackupPath = node.channel_backup_path;
                     settings.currencyUnit = node.currency_unit;
-                    nodesArr.push({ index: node.index,
+                    nodesArr.push({
+                        index: node.index,
                         lnNode: node.ln_node,
                         lnImplementation: node.ln_implementation,
                         settings: settings,
-                        authentication: authentication });
+                        authentication: authentication
+                    });
                 });
             }
             logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'RTL Configuration Received' });
@@ -125,33 +131,31 @@ export const updateUISettings = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Updating UI Settings..' });
     const RTLConfFile = common.rtl_conf_file_path + common.path_separator + 'RTL-Config.json';
     const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
-    config.nodes.find((node) => {
-        if (node.index === common.selectedNode.index) {
-            node.Settings.userPersona = req.body.updatedSettings.userPersona;
-            node.Settings.themeMode = req.body.updatedSettings.themeMode;
-            node.Settings.themeColor = req.body.updatedSettings.themeColor;
-            node.Settings.fiatConversion = req.body.updatedSettings.fiatConversion;
-            if (req.body.updatedSettings.fiatConversion) {
-                node.Settings.currencyUnit = req.body.updatedSettings.currencyUnit ? req.body.updatedSettings.currencyUnit : 'USD';
-            }
-            else {
-                delete node.Settings.currencyUnit;
-            }
-            const selectedNode = common.findNode(common.selectedNode.index);
-            selectedNode.user_persona = req.body.updatedSettings.userPersona;
-            selectedNode.theme_mode = req.body.updatedSettings.themeMode;
-            selectedNode.theme_color = req.body.updatedSettings.themeColor;
-            selectedNode.fiat_conversion = req.body.updatedSettings.fiatConversion;
-            if (req.body.updatedSettings.fiatConversion) {
-                selectedNode.currency_unit = req.body.updatedSettings.currencyUnit ? req.body.updatedSettings.currencyUnit : 'USD';
-            }
-            else {
-                delete selectedNode.currency_unit;
-            }
-            common.replaceNode(common.selectedNode.index, selectedNode);
+    const node = config.nodes.find((node) => (node.index === common.selectedNode.index));
+    if (node && node.Settings) {
+        node.Settings.userPersona = req.body.updatedSettings.userPersona;
+        node.Settings.themeMode = req.body.updatedSettings.themeMode;
+        node.Settings.themeColor = req.body.updatedSettings.themeColor;
+        node.Settings.fiatConversion = req.body.updatedSettings.fiatConversion;
+        if (req.body.updatedSettings.fiatConversion) {
+            node.Settings.currencyUnit = req.body.updatedSettings.currencyUnit ? req.body.updatedSettings.currencyUnit : 'USD';
         }
-        return node;
-    });
+        else {
+            delete node.Settings.currencyUnit;
+        }
+        const selectedNode = common.findNode(common.selectedNode.index);
+        selectedNode.user_persona = req.body.updatedSettings.userPersona;
+        selectedNode.theme_mode = req.body.updatedSettings.themeMode;
+        selectedNode.theme_color = req.body.updatedSettings.themeColor;
+        selectedNode.fiat_conversion = req.body.updatedSettings.fiatConversion;
+        if (req.body.updatedSettings.fiatConversion) {
+            selectedNode.currency_unit = req.body.updatedSettings.currencyUnit ? req.body.updatedSettings.currencyUnit : 'USD';
+        }
+        else {
+            delete selectedNode.currency_unit;
+        }
+        common.replaceNode(common.selectedNode.index, selectedNode);
+    }
     try {
         fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
         logger.log({ level: 'DEBUG', fileName: 'RTLConf', msg: 'Updating Node Settings Succesful!' });

@@ -43,6 +43,7 @@ export class ECLWebSocketClient {
         this.onClientClose = (e) => {
             if (this.common.selectedNode.ln_implementation === 'ECL') {
                 this.logger.log({ level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Web socket disconnected, will reconnect again..' });
+                this.webSocketClient.close();
                 this.reconnet();
             }
         };
@@ -53,6 +54,7 @@ export class ECLWebSocketClient {
         this.onClientError = (err) => {
             this.logger.log({ level: 'ERROR', fileName: 'ECLWebSocket', msg: 'Web socket error', error: err });
             this.wsServer.sendErrorToAllWSClients(err);
+            this.webSocketClient.close();
             this.reconnet();
         };
         this.disconnect = () => {

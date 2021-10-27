@@ -1,16 +1,19 @@
 import request from 'request-promise';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
+import { CLWSClient, CLWebSocketClient } from './webSocketClient.js';
+
 let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
+const clWsClient: CLWebSocketClient = CLWSClient;
 
 export const getInfo = (req, res, next) => {
   logger.log({ level: 'INFO', fileName: 'GetInfo', msg: 'Getting CLightning Node Information..' });
   common.setOptions();
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/getinfo';
-  logger.log({ level: 'DEBUG', fileName:'GetInfo', msg: 'Selected Node', data: common.selectedNode.ln_node });
+  logger.log({ level: 'DEBUG', fileName: 'GetInfo', msg: 'Selected Node', data: common.selectedNode.ln_node });
   logger.log({ level: 'DEBUG', fileName: 'GetInfo', msg: 'Calling Info from C-Lightning server url', data: options.url });
   if (!options.headers || !options.headers.macaroon) {
     const errMsg = 'C-Lightning get info failed due to bad or missing macaroon!';
@@ -49,6 +52,7 @@ export const getInfo = (req, res, next) => {
           });
         }
         logger.log({ level: 'INFO', fileName: 'GetInfo', msg: 'CLightning Node Information Received' });
+        clWsClient.connect();
         res.status(200).json(body);
       }
     }).catch((errRes) => {

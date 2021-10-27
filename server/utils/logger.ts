@@ -13,13 +13,13 @@ export class LoggerService {
       case 'ERROR':
         if (selNode) {
           if (msgJSON.error) {
-            msgStr = msgStr + ': ' + (typeof msgJSON.error === 'object' ? JSON.stringify(msgJSON.error) : (typeof msgJSON.error === 'string') ? msgJSON.error : '');
+            msgStr = msgStr + ': ' + ((msgJSON.error.error && msgJSON.error.error.message && typeof msgJSON.error.error.message === 'string') ? msgJSON.error.error.message : typeof msgJSON.error === 'object' ? JSON.stringify(msgJSON.error) : (typeof msgJSON.error === 'string') ? msgJSON.error : '');
           } else {
             msgStr = msgStr + '.';
           }
           console.error(msgStr);
           if (selNode.log_file) {
-            fs.appendFile(selNode.log_file, msgStr, () => {});
+            fs.appendFile(selNode.log_file, msgStr, () => { });
           }
         }
         break;
@@ -33,7 +33,7 @@ export class LoggerService {
           }
           console.warn(msgStr);
           if (selNode.log_file) {
-            fs.appendFile(selNode.log_file, msgStr, () => {});
+            fs.appendFile(selNode.log_file, msgStr, () => { });
           }
         }
         break;
@@ -52,7 +52,7 @@ export class LoggerService {
           }
           console.log(msgStr);
           if (selNode.log_file) {
-            fs.appendFile(selNode.log_file, msgStr, () => {});
+            fs.appendFile(selNode.log_file, msgStr, () => { });
           }
         }
         break;

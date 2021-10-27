@@ -10,7 +10,7 @@ export class LoggerService {
                 case 'ERROR':
                     if (selNode) {
                         if (msgJSON.error) {
-                            msgStr = msgStr + ': ' + (typeof msgJSON.error === 'object' ? JSON.stringify(msgJSON.error) : (typeof msgJSON.error === 'string') ? msgJSON.error : '');
+                            msgStr = msgStr + ': ' + ((msgJSON.error.error && msgJSON.error.error.message && typeof msgJSON.error.error.message === 'string') ? msgJSON.error.error.message : typeof msgJSON.error === 'object' ? JSON.stringify(msgJSON.error) : (typeof msgJSON.error === 'string') ? msgJSON.error : '');
                         }
                         else {
                             msgStr = msgStr + '.';
