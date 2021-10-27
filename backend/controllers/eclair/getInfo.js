@@ -29,7 +29,6 @@ export const getInfo = (req, res, next) => {
         else {
             request.post(options).then((body) => {
                 logger.log({ level: 'INFO', fileName: 'GetInfo', msg: 'Connecting to the Eclair\'s Websocket Server.' });
-                eclWsClient.connect();
                 logger.log({ level: 'DEBUG', fileName: 'GetInfo', msg: 'Get Info Response', data: body });
                 body.lnImplementation = 'Eclair';
                 logger.log({ level: 'INFO', fileName: 'GetInfo', msg: 'Eclair Node Information Received' });

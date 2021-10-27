@@ -20,7 +20,7 @@ export class CLWebSocketClient {
     if (this.reconnectTimeOut) { return; }
     this.waitTime = (this.waitTime >= 16) ? 16 : (this.waitTime * 2);
     this.reconnectTimeOut = setTimeout(() => {
-      this.logger.log({ level: 'INFO', fileName: 'CLWebSocket', msg: 'Reconnecting to the CLightning\'s Websocket Server.' });
+      this.logger.log({ level: 'INFO', fileName: 'CLWebSocket', msg: 'Reconnecting to the CLightning\'s Websocket Server..' });
       this.connect();
       this.reconnectTimeOut = null;
     }, this.waitTime * 1000);
@@ -28,27 +28,29 @@ export class CLWebSocketClient {
 
   public connect = () => {
     try {
-      this.logger.log({ level: 'INFO', fileName: 'CLWebSocket', msg: 'Connecting to the CLightning\'s Websocket Server.' });
-      const WS_LINK = this.common.getSelLNServerUrl().replace(/^http/, 'ws') + '/v1/ws';
-      const mcrnHexEncoded = Buffer.from(fs.readFileSync(join(this.common.selectedNode.macaroon_path, 'access.macaroon'))).toString('hex');
-      this.webSocketClient = new WebSocket(WS_LINK, [mcrnHexEncoded, 'hex'], { rejectUnauthorized: false });
-      this.webSocketClient.onopen = this.onClientOpen;
-      this.webSocketClient.onclose = this.onClientClose;
-      this.webSocketClient.onmessage = this.onClientMessage;
-      this.webSocketClient.onerror = this.onClientError;
+      if (!this.webSocketClient || this.webSocketClient.readyState !== WebSocket.OPEN) {
+        this.logger.log({ level: 'INFO', fileName: 'CLWebSocket', msg: 'Connecting to the CLightning\'s Websocket Server..' });
+        const WS_LINK = this.common.getSelLNServerUrl().replace(/^http/, 'ws') + '/v1/ws';
+        const mcrnHexEncoded = Buffer.from(fs.readFileSync(join(this.common.selectedNode.macaroon_path, 'access.macaroon'))).toString('hex');
+        this.webSocketClient = new WebSocket(WS_LINK, [mcrnHexEncoded, 'hex'], { rejectUnauthorized: false });
+        this.webSocketClient.onopen = this.onClientOpen;
+        this.webSocketClient.onclose = this.onClientClose;
+        this.webSocketClient.onmessage = this.onClientMessage;
+        this.webSocketClient.onerror = this.onClientError;
+      }
     } catch (err) {
       throw new Error(err);
     }
   };
 
   public onClientOpen = () => {
-    this.logger.log({ level: 'INFO', fileName: 'CLWebSocket', msg: 'Connected to the CLightning\'s Websocket Server.' });
+    this.logger.log({ level: 'INFO', fileName: 'CLWebSocket', msg: 'Connected to the CLightning\'s Websocket Server..' });
     this.waitTime = 0.5;
   };
 
   public onClientClose = (e) => {
     if (this.common.selectedNode.ln_implementation === 'CLT') {
-      this.logger.log({ level: 'INFO', fileName: 'CLWebSocket', msg: 'Web socket disconnected, will reconnect again..' });
+      this.logger.log({ level: 'INFO', fileName: 'CLWebSocket', msg: 'Web socket disconnected, will reconnect again...' });
       this.webSocketClient.close();
       this.reconnet();
     }
@@ -71,8 +73,8 @@ export class CLWebSocketClient {
   };
 
   public disconnect = () => {
-    if (this.webSocketClient && this.webSocketClient.readyState === 1) {
-      this.logger.log({ level: 'INFO', fileName: 'CLWebSocket', msg: 'Disconnecting from the CLightning\'s Websocket Server.' });
+    if (this.webSocketClient && this.webSocketClient.readyState === WebSocket.OPEN) {
+      this.logger.log({ level: 'INFO', fileName: 'CLWebSocket', msg: 'Disconnecting from the CLightning\'s Websocket Server..' });
       this.webSocketClient.close();
     }
   };

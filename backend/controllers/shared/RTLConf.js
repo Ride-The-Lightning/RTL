@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import ini from 'ini';
 import parseHocon from 'hocon-parser';
 import request from 'request-promise';
+import { isValidJWT } from '../../utils/authCheck.js';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { ECLWSClient } from '../eclair/webSocketClient.js';
@@ -11,23 +12,31 @@ const logger = Logger;
 const common = Common;
 const eclWsClient = ECLWSClient;
 const clWsClient = CLWSClient;
-export const updateSelectedNode = (req, res, next) => {
-    logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Updating Selected Node..' });
-    switch (common.selectedNode.ln_implementation) {
+export const switchWebSocketClient = (updatedLNImplementation) => {
+    // lndWsClient.disconnect();
+    clWsClient.disconnect();
+    eclWsClient.disconnect();
+    switch (updatedLNImplementation) {
         case 'LND':
-            // lndWsClient.disconnect();
+            // lndWsClient.connect();
             break;
         case 'CLT':
-            clWsClient.disconnect();
+            clWsClient.connect();
             break;
         case 'ECL':
-            eclWsClient.disconnect();
+            eclWsClient.connect();
             break;
         default:
             break;
     }
+};
+export const updateSelectedNode = (req, res, next) => {
+    logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Updating Selected Node..' });
     const selNodeIndex = req.body.selNodeIndex;
     common.selectedNode = common.findNode(selNodeIndex);
+    if (!isValidJWT(req).error) {
+        switchWebSocketClient(common.selectedNode.ln_implementation);
+    }
     const responseVal = common.selectedNode && common.selectedNode.ln_node ? common.selectedNode.ln_node : '';
     logger.log({ level: 'DEBUG', fileName: 'RTLConf', msg: 'Selected Node Updated To', data: responseVal });
     logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Selected Node Updated' });

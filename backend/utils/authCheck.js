@@ -3,6 +3,17 @@ import csurf from 'csurf/index.js';
 import { Common } from './common.js';
 const common = Common;
 const csurfProtection = csurf({ cookie: true });
+export const isValidJWT = (req) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1];
+        return jwt.verify(token, common.secret_key);
+    }
+    catch (error) {
+        const errMsg = 'Invalid Token!';
+        const err = common.handleError({ statusCode: 401, message: 'Authentication Error', error: errMsg }, 'AuthCheck', errMsg);
+        return err;
+    }
+};
 export const isAuthenticated = (req, res, next) => {
     try {
         const token = req.headers.authorization.split(' ')[1];

@@ -52,7 +52,6 @@ export const getInfo = (req, res, next) => {
           });
         }
         logger.log({ level: 'INFO', fileName: 'GetInfo', msg: 'CLightning Node Information Received' });
-        clWsClient.connect();
         res.status(200).json(body);
       }
     }).catch((errRes) => {

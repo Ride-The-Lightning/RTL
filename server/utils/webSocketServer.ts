@@ -12,14 +12,14 @@ export class WebSocketServer {
   public webSocketServer = null;
 
   public pingInterval = setInterval(() => {
-    if (this.webSocketServer) {
+    if (this.webSocketServer.clients.size && this.webSocketServer.clients.size > 0) {
       this.webSocketServer.clients.forEach((client) => {
         if (client.isAlive === false) { return client.terminate(); }
         client.isAlive = false;
         client.ping();
       });
     }
-  }, 1800000);
+  }, 1800000); // Terminate broken connections every half an hour
 
   public mount = (httpServer: Application): Application => {
     this.logger.log({ level: 'DEBUG', fileName: 'WebSocketServer', msg: 'Connecting Websocket Server.' });
@@ -37,6 +37,7 @@ export class WebSocketServer {
       this.webSocketServer.handleUpgrade(request, socket, head, this.upgradeCallback);
     });
     this.webSocketServer.on('connection', this.mountEventsOnConnection);
+    this.webSocketServer.on('close', () => clearInterval(this.pingInterval));
   }
 
   public upgradeCallback = (websocket, request) => {
@@ -51,7 +52,6 @@ export class WebSocketServer {
     websocket.on('message', this.sendEventsToAllWSClients);
     websocket.on('pong', () => { websocket.isAlive = true; });
     websocket.on('close', () => {
-      clearInterval(this.pingInterval);
       this.logger.log({ level: 'INFO', fileName: 'WebSocketServer', msg: 'Disconnected: ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
     });
   };

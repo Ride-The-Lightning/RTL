@@ -25,14 +25,16 @@ export class ECLWebSocketClient {
 
   public connect = () => {
     try {
-      const UpdatedLNServerURL = this.common.getSelLNServerUrl().replace(/^http/, 'ws');
-      const firstSubStrIndex = (UpdatedLNServerURL.indexOf('//') + 2);
-      const WS_LINK = UpdatedLNServerURL.slice(0, firstSubStrIndex) + ':' + this.common.selectedNode.ln_api_password + '@' + UpdatedLNServerURL.slice(firstSubStrIndex) + '/ws';
-      this.webSocketClient = new WebSocket(WS_LINK);
-      this.webSocketClient.onopen = this.onClientOpen;
-      this.webSocketClient.onclose = this.onClientClose;
-      this.webSocketClient.onmessage = this.onClientMessage;
-      this.webSocketClient.onerror = this.onClientError;
+      if (!this.webSocketClient || this.webSocketClient.readyState !== WebSocket.OPEN) {
+        const UpdatedLNServerURL = this.common.getSelLNServerUrl().replace(/^http/, 'ws');
+        const firstSubStrIndex = (UpdatedLNServerURL.indexOf('//') + 2);
+        const WS_LINK = UpdatedLNServerURL.slice(0, firstSubStrIndex) + ':' + this.common.selectedNode.ln_api_password + '@' + UpdatedLNServerURL.slice(firstSubStrIndex) + '/ws';
+        this.webSocketClient = new WebSocket(WS_LINK);
+        this.webSocketClient.onopen = this.onClientOpen;
+        this.webSocketClient.onclose = this.onClientClose;
+        this.webSocketClient.onmessage = this.onClientMessage;
+        this.webSocketClient.onerror = this.onClientError;
+      }
     } catch (err) {
       throw new Error(err);
     }
@@ -64,7 +66,7 @@ export class ECLWebSocketClient {
   };
 
   public disconnect = () => {
-    if (this.webSocketClient && this.webSocketClient.readyState === 1) {
+    if (this.webSocketClient && this.webSocketClient.readyState === WebSocket.OPEN) {
       this.logger.log({ level: 'INFO', fileName: 'ECLWebSocket', msg: 'Disconnecting from the Eclair\'s Websocket Server.' });
       this.webSocketClient.close();
     }

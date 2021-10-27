@@ -14,7 +14,7 @@ export const getInfo = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/getinfo';
   options.form = {};
-  logger.log({ level: 'DEBUG', fileName:'GetInfo', msg: 'Selected Node', data: common.selectedNode.ln_node });
+  logger.log({ level: 'DEBUG', fileName: 'GetInfo', msg: 'Selected Node', data: common.selectedNode.ln_node });
   logger.log({ level: 'DEBUG', fileName: 'GetInfo', msg: 'Calling Info from Eclair server url', data: options.url });
   if (common.read_dummy_data) {
     common.getDummyData('GetInfo').then((data: any) => {
@@ -29,7 +29,6 @@ export const getInfo = (req, res, next) => {
     } else {
       request.post(options).then((body) => {
         logger.log({ level: 'INFO', fileName: 'GetInfo', msg: 'Connecting to the Eclair\'s Websocket Server.' });
-        eclWsClient.connect();
         logger.log({ level: 'DEBUG', fileName: 'GetInfo', msg: 'Get Info Response', data: body });
         body.lnImplementation = 'Eclair';
         logger.log({ level: 'INFO', fileName: 'GetInfo', msg: 'Eclair Node Information Received' });
