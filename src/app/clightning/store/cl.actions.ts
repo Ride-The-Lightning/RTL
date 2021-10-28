@@ -389,7 +389,7 @@ export class FetchInvoices implements Action {
 export class FetchOfferInvoice implements Action {
 
   readonly type = FETCH_OFFER_INVOICE_CL;
-  constructor(public payload: {offer: string, quantity?: number, recurrence_counter?: string, recurrence_label?: string}) {}
+  constructor(public payload: {offer: string, msatoshi?: string, quantity?: number, recurrence_counter?: string, recurrence_label?: string}) {}
 }
 
 
