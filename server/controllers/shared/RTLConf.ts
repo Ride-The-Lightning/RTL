@@ -2,49 +2,20 @@ import * as fs from 'fs';
 import ini from 'ini';
 import parseHocon from 'hocon-parser';
 import request from 'request-promise';
-import { isValidJWT } from '../../utils/authCheck.js';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { AuthenticationConfiguration, NodeSettingsConfiguration } from '../../models/config.model.js';
-import { ECLWSClient, ECLWebSocketClient } from '../eclair/webSocketClient.js';
-import { CLWSClient, CLWebSocketClient } from '../c-lightning/webSocketClient.js';
 
 const options = { url: '' };
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
-const eclWsClient: ECLWebSocketClient = ECLWSClient;
-const clWsClient: CLWebSocketClient = CLWSClient;
-
-export const switchWebSocketClient = (updatedLNImplementation) => {
-  // lndWsClient.disconnect();
-  clWsClient.disconnect();
-  eclWsClient.disconnect();
-  switch (updatedLNImplementation) {
-    case 'LND':
-      // lndWsClient.connect();
-      break;
-
-    case 'CLT':
-      clWsClient.connect();
-      break;
-
-    case 'ECL':
-      eclWsClient.connect();
-      break;
-
-    default:
-      break;
-  }
-};
 
 export const updateSelectedNode = (req, res, next) => {
   logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Updating Selected Node..' });
   const selNodeIndex = req.body.selNodeIndex;
-  common.selectedNode = common.findNode(selNodeIndex);
-  if (!isValidJWT(req).error) { switchWebSocketClient(common.selectedNode.ln_implementation); }
-  const responseVal = common.selectedNode && common.selectedNode.ln_node ? common.selectedNode.ln_node : '';
-  logger.log({ level: 'DEBUG', fileName: 'RTLConf', msg: 'Selected Node Updated To', data: responseVal });
-  logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Selected Node Updated' });
+  req.session.selectedNode = common.findNode(selNodeIndex);
+  const responseVal = !req.session.selectedNode.ln_node ? '' : req.session.selectedNode.ln_node;
+  logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Selected Node Updated To', data: responseVal });
   res.status(200).json({ status: 'Selected Node Updated To: ' + JSON.stringify(responseVal) + '!' });
 };
 
@@ -58,7 +29,7 @@ export const getRTLConfigInitial = (req, res, next) => {
         res.status(200).json({ defaultNodeIndex: 0, selectedNodeIndex: 0, sso: {}, nodes: [] });
       } else {
         const errMsg = 'Get Node Config Error';
-        const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg);
+        const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.error, error: err.error });
       }
     } else {
@@ -84,7 +55,7 @@ export const getRTLConfigInitial = (req, res, next) => {
         });
       }
       logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Initial RTL Configuration Received' });
-      res.status(200).json({ defaultNodeIndex: nodeConfData.defaultNodeIndex, selectedNodeIndex: common.selectedNode.index, sso: sso, enable2FA: enable2FA, nodes: nodesArr });
+      res.status(200).json({ defaultNodeIndex: nodeConfData.defaultNodeIndex, selectedNodeIndex: (req.session.selectedNode && req.session.selectedNode.index ? req.session.selectedNode.index : common.initSelectedNode.index), sso: sso, enable2FA: enable2FA, nodes: nodesArr });
     }
   });
 };
@@ -99,7 +70,7 @@ export const getRTLConfig = (req, res, next) => {
         res.status(200).json({ defaultNodeIndex: 0, selectedNodeIndex: 0, sso: {}, nodes: [] });
       } else {
         const errMsg = 'Get Node Config Error';
-        const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg);
+        const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req);
         return res.status(err.statusCode).json({ message: err.error, error: err.error });
       }
     } else {
@@ -135,7 +106,7 @@ export const getRTLConfig = (req, res, next) => {
         });
       }
       logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'RTL Configuration Received' });
-      res.status(200).json({ defaultNodeIndex: nodeConfData.defaultNodeIndex, selectedNodeIndex: common.selectedNode.index, sso: sso, enable2FA: enable2FA, nodes: nodesArr });
+      res.status(200).json({ defaultNodeIndex: nodeConfData.defaultNodeIndex, selectedNodeIndex: req.session.selectedNode.index, sso: sso, enable2FA: enable2FA, nodes: nodesArr });
     }
   });
 };
@@ -144,7 +115,7 @@ export const updateUISettings = (req, res, next) => {
   logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Updating UI Settings..' });
   const RTLConfFile = common.rtl_conf_file_path + common.path_separator + 'RTL-Config.json';
   const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
-  const node = config.nodes.find((node) => (node.index === common.selectedNode.index));
+  const node = config.nodes.find((node) => (node.index === req.session.selectedNode.index));
   if (node && node.Settings) {
     node.Settings.userPersona = req.body.updatedSettings.userPersona;
     node.Settings.themeMode = req.body.updatedSettings.themeMode;
@@ -155,7 +126,7 @@ export const updateUISettings = (req, res, next) => {
     } else {
       delete node.Settings.currencyUnit;
     }
-    const selectedNode = common.findNode(common.selectedNode.index);
+    const selectedNode = common.findNode(req.session.selectedNode.index);
     selectedNode.user_persona = req.body.updatedSettings.userPersona;
     selectedNode.theme_mode = req.body.updatedSettings.themeMode;
     selectedNode.theme_color = req.body.updatedSettings.themeColor;
@@ -165,7 +136,7 @@ export const updateUISettings = (req, res, next) => {
     } else {
       delete selectedNode.currency_unit;
     }
-    common.replaceNode(common.selectedNode.index, selectedNode);
+    common.replaceNode(req, selectedNode);
   }
   try {
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
@@ -174,7 +145,7 @@ export const updateUISettings = (req, res, next) => {
     res.status(201).json({ message: 'Node Settings Updated Successfully' });
   } catch (errRes) {
     const errMsg = 'Update Node Settings Error';
-    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg);
+    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req);
     return res.status(err.statusCode).json({ message: err.error, error: err.error });
   }
 };
@@ -193,7 +164,7 @@ export const update2FASettings = (req, res, next) => {
     res.status(201).json({ message: message });
   } catch (errRes) {
     const errMsg = 'Update 2FA Settings Error';
-    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg);
+    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req);
     return res.status(err.statusCode).json({ message: err.error, error: err.error });
   }
 };
@@ -210,7 +181,7 @@ export const updateDefaultNode = (req, res, next) => {
     res.status(201).json({ message: 'Default Node Updated Successfully' });
   } catch (errRes) {
     const errMsg = 'Update Default Node Error';
-    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg);
+    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req);
     return res.status(err.statusCode).json({ message: err.error, error: err.error });
   }
 };
@@ -221,10 +192,10 @@ export const getConfig = (req, res, next) => {
   let fileFormat = 'INI';
   switch (req.params.nodeType) {
     case 'ln':
-      confFile = common.selectedNode.config_path;
+      confFile = req.session.selectedNode.config_path;
       break;
     case 'bitcoind':
-      confFile = common.selectedNode.bitcoind_config_path;
+      confFile = req.session.selectedNode.bitcoind_config_path;
       break;
     case 'rtl':
       fileFormat = 'JSON';
@@ -238,7 +209,7 @@ export const getConfig = (req, res, next) => {
   fs.readFile(confFile, 'utf8', (errRes, data) => {
     if (errRes) {
       const errMsg = 'Reading Config Error';
-      const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg);
+      const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req);
       return res.status(err.statusCode).json({ message: err.error, error: err.error });
     } else {
       let jsonConfig = {};
@@ -247,7 +218,7 @@ export const getConfig = (req, res, next) => {
       } else {
         fileFormat = 'INI';
         jsonConfig = ini.parse(data);
-        if (common.selectedNode.ln_implementation === 'ECL' && !jsonConfig['eclair.api.password']) {
+        if (req.session.selectedNode.ln_implementation === 'ECL' && !jsonConfig['eclair.api.password']) {
           fileFormat = 'HOCON';
           jsonConfig = parseHocon(data);
         }
@@ -262,13 +233,13 @@ export const getConfig = (req, res, next) => {
 
 export const getFile = (req, res, next) => {
   logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Getting File..' });
-  const file = req.query.path ? req.query.path : (common.selectedNode.channel_backup_path + common.path_separator + 'channel-' + req.query.channel.replace(':', '-') + '.bak');
+  const file = req.query.path ? req.query.path : (req.session.selectedNode.channel_backup_path + common.path_separator + 'channel-' + req.query.channel.replace(':', '-') + '.bak');
   logger.log({ level: 'DEBUG', fileName: 'RTLConf', msg: '[Channel Point, File Path]', data: [req.query.channel, file] });
   fs.readFile(file, 'utf8', (errRes, data) => {
     if (errRes) {
       if (errRes.code && errRes.code === 'ENOENT') { errRes.code = 'File Not Found!'; }
       const errMsg = 'Reading File Error';
-      const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg);
+      const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req);
       return res.status(err.statusCode).json({ message: err.error, error: err.error });
     } else {
       logger.log({ level: 'DEBUG', fileName: 'RTLConf', msg: 'File Data', data: data });
@@ -286,7 +257,7 @@ export const getCurrencyRates = (req, res, next) => {
     res.status(200).json(JSON.parse(body));
   }).catch((errRes) => {
     const errMsg = 'Get Rates Error';
-    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg);
+    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req);
     return res.status(err.statusCode).json({ message: err.error, error: err.error });
   });
 };
@@ -304,7 +275,7 @@ export const updateSSO = (req, res, next) => {
     res.status(201).json({ message: 'SSO Updated Successfully' });
   } catch (errRes) {
     const errMsg = 'Update SSO Error';
-    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg);
+    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req);
     return res.status(err.statusCode).json({ message: err.error, error: err.error });
   }
 };
@@ -313,9 +284,9 @@ export const updateServiceSettings = (req, res, next) => {
   logger.log({ level: 'INFO', fileName: 'RTLConf', msg: 'Updating Service Settings..' });
   const RTLConfFile = common.rtl_conf_file_path + common.path_separator + 'RTL-Config.json';
   const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
-  const selectedNode = common.findNode(common.selectedNode.index);
+  const selectedNode = common.findNode(req.session.selectedNode.index);
   config.nodes.find((node) => {
-    if (node.index === common.selectedNode.index) {
+    if (node.index === req.session.selectedNode.index) {
       switch (req.body.service) {
         case 'LOOP':
           if (req.body.settings.enable) {
@@ -348,7 +319,7 @@ export const updateServiceSettings = (req, res, next) => {
         default:
           break;
       }
-      common.replaceNode(common.selectedNode.index, selectedNode);
+      common.replaceNode(req.session.selectedNode.index, selectedNode);
     }
     return node;
   });
@@ -359,7 +330,7 @@ export const updateServiceSettings = (req, res, next) => {
     res.status(201).json({ message: 'Service Settings Updated Successfully' });
   } catch (errRes) {
     const errMsg = 'Update Service Settings Error';
-    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg);
+    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req);
     return res.status(err.statusCode).json({ message: err.error, error: err.error });
   }
 };

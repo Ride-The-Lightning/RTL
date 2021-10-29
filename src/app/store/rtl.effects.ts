@@ -260,8 +260,7 @@ export class RTLEffects implements OnDestroy {
             type: RTLActions.OPEN_SNACK_BAR,
             payload: (!updateStatus.length) ? updateStatus.message + '.' : updateStatus[0].message + '.'
           };
-        }),
-        catchError((err) => {
+        }), catchError((err) => {
           this.handleErrorWithAlert('UpdateSettings', action.payload.uiMessage, 'Update Settings Failed!', environment.CONF_API, (!err.length) ? err : err[0]);
           return of({ type: RTLActions.VOID });
         }));
@@ -326,8 +325,7 @@ export class RTLEffects implements OnDestroy {
               type: RTLActions.SHOW_CONFIG,
               payload: configFile
             };
-          }),
-          catchError((err: any) => {
+          }), catchError((err: any) => {
             this.handleErrorWithAlert('fetchConfig', UI_MESSAGES.OPEN_CONFIG_FILE, 'Fetch Config Failed!', environment.CONF_API + '/config/' + action.payload, err);
             return of({ type: RTLActions.VOID });
           }));
@@ -358,8 +356,7 @@ export class RTLEffects implements OnDestroy {
             type: RTLActions.IS_AUTHORIZED_RES,
             payload: postRes
           };
-        }),
-        catchError((err) => {
+        }), catchError((err) => {
           this.handleErrorWithAlert('IsAuthorized', UI_MESSAGES.NO_SPINNER, 'Authorization Failed', environment.AUTHENTICATE_API, err);
           return of({
             type: RTLActions.IS_AUTHORIZED_RES,
@@ -446,8 +443,11 @@ export class RTLEffects implements OnDestroy {
         }
         this.sessionService.clearAll();
         this.store.dispatch(new RTLActions.SetNodeData({}));
-        this.logger.warn('LOGGED OUT');
-        return of();
+        return this.httpClient.get(environment.AUTHENTICATE_API + '/logout').
+          pipe(map((postRes: any) => {
+            this.logger.info(postRes);
+            this.logger.warn('LOGGED OUT');
+          }));
       })),
     { dispatch: false }
   );

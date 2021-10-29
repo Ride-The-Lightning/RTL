@@ -7,8 +7,8 @@ const common: CommonService = Common;
 
 export const getInvoice = (req, res, next) => {
   logger.log({ level: 'INFO', fileName: 'Invoice', msg: 'Getting Invoice Information..' });
-  options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/v1/invoice/' + req.params.rHashStr;
+  options = common.getOptions(req);
+  options.url = req.session.selectedNode.ln_server_url + '/v1/invoice/' + req.params.rHashStr;
   request(options).then((body) => {
     logger.log({ level: 'DEBUG', fileName: 'Invoice', msg: 'Invoice Info Received', data: body });
     logger.log({ level: 'INFO', fileName: 'Invoice', msg: 'Invoice Information Received' });
@@ -17,16 +17,16 @@ export const getInvoice = (req, res, next) => {
     body.description_hash = body.description_hash ? Buffer.from(body.description_hash, 'base64').toString('hex') : null;
     res.status(200).json(body);
   }).catch((errRes) => {
-    const err = common.handleError(errRes, 'Invoices', 'Get Invoice Error');
+    const err = common.handleError(errRes, 'Invoices', 'Get Invoice Error', req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
   });
 };
 
 export const listInvoices = (req, res, next) => {
   logger.log({ level: 'INFO', fileName: 'Invoice', msg: 'Getting List Invoices..' });
-  options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/v1/invoices?num_max_invoices=' + req.query.num_max_invoices + '&index_offset=' + req.query.index_offset +
-  '&reversed=' + req.query.reversed;
+  options = common.getOptions(req);
+  options.url = req.session.selectedNode.ln_server_url + '/v1/invoices?num_max_invoices=' + req.query.num_max_invoices + '&index_offset=' + req.query.index_offset +
+    '&reversed=' + req.query.reversed;
   request(options).then((body) => {
     logger.log({ level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received', data: body });
     if (body.invoices && body.invoices.length > 0) {
@@ -41,15 +41,15 @@ export const listInvoices = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Invoice', msg: 'Invoices List Received' });
     res.status(200).json(body);
   }).catch((errRes) => {
-    const err = common.handleError(errRes, 'Invoices', 'List Invoices Error');
+    const err = common.handleError(errRes, 'Invoices', 'List Invoices Error', req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
   });
 };
 
 export const addInvoice = (req, res, next) => {
   logger.log({ level: 'INFO', fileName: 'Invoice', msg: 'Adding Invoice..' });
-  options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/v1/invoices';
+  options = common.getOptions(req);
+  options.url = req.session.selectedNode.ln_server_url + '/v1/invoices';
   options.form = {
     memo: req.body.memo,
     private: req.body.private,
@@ -66,7 +66,7 @@ export const addInvoice = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Invoice', msg: 'Invoice Added' });
     res.status(201).json(body);
   }).catch((errRes) => {
-    const err = common.handleError(errRes, 'Invoices', 'Add Invoice Error');
+    const err = common.handleError(errRes, 'Invoices', 'Add Invoice Error', req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
   });
 };

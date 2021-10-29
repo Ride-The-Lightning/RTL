@@ -12,6 +12,7 @@ export class CLWebSocketClient {
         this.webSocketClient = null;
         this.reconnectTimeOut = null;
         this.waitTime = 0.5;
+        this.selectedNode = null;
         this.prevMessage = {};
         this.reconnet = () => {
             if (this.reconnectTimeOut) {
@@ -20,16 +21,19 @@ export class CLWebSocketClient {
             this.waitTime = (this.waitTime >= 16) ? 16 : (this.waitTime * 2);
             this.reconnectTimeOut = setTimeout(() => {
                 this.logger.log({ level: 'INFO', fileName: 'CLWebSocket', msg: 'Reconnecting to the CLightning\'s Websocket Server..' });
-                this.connect();
+                this.connect(this.selectedNode);
                 this.reconnectTimeOut = null;
             }, this.waitTime * 1000);
         };
-        this.connect = () => {
+        this.connect = (selectedNode) => {
             try {
                 if (!this.webSocketClient || this.webSocketClient.readyState !== WebSocket.OPEN) {
+                    if (!this.selectedNode) {
+                        this.selectedNode = selectedNode;
+                    }
                     this.logger.log({ level: 'INFO', fileName: 'CLWebSocket', msg: 'Connecting to the CLightning\'s Websocket Server..' });
-                    const WS_LINK = this.common.getSelLNServerUrl().replace(/^http/, 'ws') + '/v1/ws';
-                    const mcrnHexEncoded = Buffer.from(fs.readFileSync(join(this.common.selectedNode.macaroon_path, 'access.macaroon'))).toString('hex');
+                    const WS_LINK = (selectedNode.ln_server_url).replace(/^http/, 'ws') + '/v1/ws';
+                    const mcrnHexEncoded = Buffer.from(fs.readFileSync(join(selectedNode.macaroon_path, 'access.macaroon'))).toString('hex');
                     this.webSocketClient = new WebSocket(WS_LINK, [mcrnHexEncoded, 'hex'], { rejectUnauthorized: false });
                     this.webSocketClient.onopen = this.onClientOpen;
                     this.webSocketClient.onclose = this.onClientClose;
@@ -46,7 +50,7 @@ export class CLWebSocketClient {
             this.waitTime = 0.5;
         };
         this.onClientClose = (e) => {
-            if (this.common.selectedNode.ln_implementation === 'CLT') {
+            if (this.selectedNode && this.selectedNode.ln_implementation === 'CLT') {
                 this.logger.log({ level: 'INFO', fileName: 'CLWebSocket', msg: 'Web socket disconnected, will reconnect again...' });
                 this.webSocketClient.close();
                 this.reconnet();

@@ -5,17 +5,6 @@ import { Common, CommonService } from './common.js';
 const common: CommonService = Common;
 const csurfProtection = csurf({ cookie: true });
 
-export const isValidJWT = (req) => {
-  try {
-    const token = req.headers.authorization.split(' ')[1];
-    return jwt.verify(token, common.secret_key);
-  } catch (error) {
-    const errMsg = 'Invalid Token!';
-    const err = common.handleError({ statusCode: 401, message: 'Authentication Error', error: errMsg }, 'AuthCheck', errMsg);
-    return err;
-  }
-};
-
 export const isAuthenticated = (req, res, next) => {
   try {
     const token = req.headers.authorization.split(' ')[1];
@@ -23,7 +12,7 @@ export const isAuthenticated = (req, res, next) => {
     next();
   } catch (error) {
     const errMsg = 'Authentication Failed! Please Login First!';
-    const err = common.handleError({ statusCode: 401, message: 'Authentication Error', error: errMsg }, 'AuthCheck', errMsg);
+    const err = common.handleError({ statusCode: 401, message: 'Authentication Error', error: errMsg }, 'AuthCheck', errMsg, req);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
   }
 };

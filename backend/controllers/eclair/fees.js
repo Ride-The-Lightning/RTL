@@ -73,8 +73,8 @@ export const arrangePayments = (body) => {
 };
 export const getFees = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Fees', msg: 'Getting Fees..' });
-    options = common.getOptions();
-    options.url = common.getSelLNServerUrl() + '/audit';
+    options = common.getOptions(req);
+    options.url = req.session.selectedNode.ln_server_url + '/audit';
     const today = new Date(Date.now());
     const tillToday = (Math.round(today.getTime() / 1000)).toString();
     const fromLastMonth = (Math.round(new Date(today.getFullYear(), today.getMonth() - 1, today.getDate() + 1, 0, 0, 0).getTime() / 1000)).toString();
@@ -84,7 +84,7 @@ export const getFees = (req, res, next) => {
     };
     logger.log({ level: 'DEBUG', fileName: 'Fees', msg: 'Fee Audit Options', data: options.form });
     if (common.read_dummy_data) {
-        common.getDummyData('Fees').then((data) => { res.status(200).json(arrangeFees(data, Math.round((new Date().getTime())))); });
+        common.getDummyData('Fees', req.session.selectedNode.ln_implementation).then((data) => { res.status(200).json(arrangeFees(data, Math.round((new Date().getTime())))); });
     }
     else {
         request.post(options).then((body) => {
@@ -92,18 +92,18 @@ export const getFees = (req, res, next) => {
             logger.log({ level: 'INFO', fileName: 'Fees', msg: 'Fee Received' });
             res.status(200).json(arrangeFees(body, Math.round((new Date().getTime()))));
         }).catch((errRes) => {
-            const err = common.handleError(errRes, 'Fees', 'Get Fees Error');
+            const err = common.handleError(errRes, 'Fees', 'Get Fees Error', req.session.selectedNode);
             return res.status(err.statusCode).json({ message: err.message, error: err.error });
         });
     }
 };
 export const getPayments = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Fees', msg: 'Getting Payments..' });
-    options = common.getOptions();
-    options.url = common.getSelLNServerUrl() + '/audit';
+    options = common.getOptions(req);
+    options.url = req.session.selectedNode.ln_server_url + '/audit';
     options.form = null;
     if (common.read_dummy_data) {
-        common.getDummyData('Payments').then((data) => { res.status(200).json(arrangePayments(data)); });
+        common.getDummyData('Payments', req.session.selectedNode.ln_implementation).then((data) => { res.status(200).json(arrangePayments(data)); });
     }
     else {
         request.post(options).then((body) => {
@@ -112,7 +112,7 @@ export const getPayments = (req, res, next) => {
             res.status(200).json(arrangePayments(body));
         }).
             catch((errRes) => {
-            const err = common.handleError(errRes, 'Fees', 'Get Payments Error');
+            const err = common.handleError(errRes, 'Fees', 'Get Payments Error', req.session.selectedNode);
             return res.status(err.statusCode).json({ message: err.message, error: err.error });
         });
     }

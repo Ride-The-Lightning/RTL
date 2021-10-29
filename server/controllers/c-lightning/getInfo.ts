@@ -1,23 +1,22 @@
 import request from 'request-promise';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
-import { CLWSClient, CLWebSocketClient } from './webSocketClient.js';
 
 let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
-const clWsClient: CLWebSocketClient = CLWSClient;
 
 export const getInfo = (req, res, next) => {
+  common.logEnvVariables(req);
   logger.log({ level: 'INFO', fileName: 'GetInfo', msg: 'Getting CLightning Node Information..' });
-  common.setOptions();
-  options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/v1/getinfo';
-  logger.log({ level: 'DEBUG', fileName: 'GetInfo', msg: 'Selected Node', data: common.selectedNode.ln_node });
+  common.setOptions(req);
+  options = common.getOptions(req);
+  options.url = req.session.selectedNode.ln_server_url + '/v1/getinfo';
+  logger.log({ level: 'DEBUG', fileName: 'GetInfo', msg: 'Selected Node', data: req.session.selectedNode.ln_node });
   logger.log({ level: 'DEBUG', fileName: 'GetInfo', msg: 'Calling Info from C-Lightning server url', data: options.url });
   if (!options.headers || !options.headers.macaroon) {
     const errMsg = 'C-Lightning get info failed due to bad or missing macaroon!';
-    const err = common.handleError({ statusCode: 502, message: 'Bad Macaroon', error: errMsg }, 'GetInfo', errMsg);
+    const err = common.handleError({ statusCode: 502, message: 'Bad Macaroon', error: errMsg }, 'GetInfo', errMsg, req);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
   } else {
     request(options).then((body) => {
@@ -26,7 +25,7 @@ export const getInfo = (req, res, next) => {
       const search_idx = (!body) ? -1 : body_str.search('Not Found');
       if (!body || search_idx > -1 || body.error) {
         if (body && !body.error) { body.error = 'Error From Server!'; }
-        const err = common.handleError(body, 'GetInfo', 'Get Info Error');
+        const err = common.handleError(body, 'GetInfo', 'Get Info Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
       } else {
         body.lnImplementation = 'C-Lightning';
@@ -55,7 +54,7 @@ export const getInfo = (req, res, next) => {
         res.status(200).json(body);
       }
     }).catch((errRes) => {
-      const err = common.handleError(errRes, 'GetInfo', 'Get Info Error');
+      const err = common.handleError(errRes, 'GetInfo', 'Get Info Error', req.session.selectedNode);
       return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
   }

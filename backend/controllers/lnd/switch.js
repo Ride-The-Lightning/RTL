@@ -7,7 +7,7 @@ const common = Common;
 let responseData = { forwarding_events: [], last_offset_index: 0 };
 const num_max_events = 100;
 export const forwardingHistory = (req, res, next) => {
-    getAllForwardingEvents(req.body.start_time, req.body.end_time, 0, (eventsResponse) => {
+    getAllForwardingEvents(req, req.body.start_time, req.body.end_time, 0, (eventsResponse) => {
         if (eventsResponse.error) {
             res.status(eventsResponse.error.statusCode).json(eventsResponse);
         }
@@ -16,13 +16,13 @@ export const forwardingHistory = (req, res, next) => {
         }
     });
 };
-export const getAllForwardingEvents = (start, end, offset, callback) => {
+export const getAllForwardingEvents = (req, start, end, offset, callback) => {
     logger.log({ level: 'INFO', fileName: 'Switch', msg: 'Getting Forwarding Events..' });
     if (offset === 0) {
         responseData = { forwarding_events: [], last_offset_index: 0 };
     }
-    options = common.getOptions();
-    options.url = common.getSelLNServerUrl() + '/v1/switch';
+    options = common.getOptions(req);
+    options.url = req.session.selectedNode.ln_server_url + '/v1/switch';
     options.form = {};
     if (start) {
         options.form.start_time = start;
@@ -48,10 +48,10 @@ export const getAllForwardingEvents = (start, end, offset, callback) => {
             return callback(responseData);
         }
         else {
-            return getAllForwardingEvents(start, end, offset + num_max_events, callback);
+            return getAllForwardingEvents(req, start, end, offset + num_max_events, callback);
         }
     }).catch((errRes) => {
-        const err = common.handleError(errRes, 'Switch', 'Get All Forwarding Events Error');
+        const err = common.handleError(errRes, 'Switch', 'Get All Forwarding Events Error', req.session.selectedNode);
         return callback({ message: err.message, error: err.error, statusCode: err.statusCode });
     });
 };

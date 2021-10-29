@@ -1,5 +1,6 @@
 import { __awaiter } from "tslib";
 import express from 'express';
+import sessions from 'express-session';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import { join, dirname } from 'path';
@@ -13,6 +14,7 @@ import eclRoutes from '../routes/eclair/index.js';
 import { Common } from './common.js';
 import { Logger } from './logger.js';
 import { Config } from './config.js';
+const ONE_DAY = 1000 * 60 * 60 * 24;
 export class ExpressApplication {
     constructor() {
         this.app = express();
@@ -68,6 +70,7 @@ export class ExpressApplication {
         };
         this.logger.log({ level: 'DEBUG', fileName: 'App', msg: 'Starting Express Application.' });
         this.app.set('trust proxy', true);
+        this.app.use(sessions({ secret: this.common.secret_key, saveUninitialized: true, cookie: { maxAge: ONE_DAY }, resave: false }));
         this.app.use(cookieParser(this.common.secret_key));
         this.app.use(bodyParser.json({ limit: '25mb' }));
         this.app.use(bodyParser.urlencoded({ extended: false, limit: '25mb' }));

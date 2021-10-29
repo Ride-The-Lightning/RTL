@@ -4,8 +4,8 @@ import { Common } from '../../utils/common.js';
 let options = null;
 const logger = Logger;
 const common = Common;
-export const getFilteredNodes = (peersNodeIds) => {
-    options.url = common.getSelLNServerUrl() + '/nodes';
+export const getFilteredNodes = (lnServerUrl, peersNodeIds) => {
+    options.url = lnServerUrl + '/nodes';
     options.form = { nodeIds: peersNodeIds };
     return request.post(options).then((nodes) => {
         logger.log({ level: 'DEBUG', fileName: 'Peers', msg: 'Filtered Nodes', data: nodes });
@@ -14,11 +14,11 @@ export const getFilteredNodes = (peersNodeIds) => {
 };
 export const getPeers = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Peers', msg: 'Getting Peers..' });
-    options = common.getOptions();
-    options.url = common.getSelLNServerUrl() + '/peers';
+    options = common.getOptions(req);
+    options.url = req.session.selectedNode.ln_server_url + '/peers';
     options.form = {};
     if (common.read_dummy_data) {
-        common.getDummyData('Peers').then((data) => { res.status(200).json(data); });
+        common.getDummyData('Peers', req.session.selectedNode.ln_implementation).then((data) => { res.status(200).json(data); });
     }
     else {
         request.post(options).then((body) => {
@@ -27,7 +27,7 @@ export const getPeers = (req, res, next) => {
                 let peersNodeIds = '';
                 body.forEach((peer) => { peersNodeIds = peersNodeIds + ',' + peer.nodeId; });
                 peersNodeIds = peersNodeIds.substring(1);
-                return getFilteredNodes(peersNodeIds).then((peersWithAlias) => {
+                return getFilteredNodes(req.session.selectedNode.ln_server_url, peersNodeIds).then((peersWithAlias) => {
                     let foundPeer = null;
                     body.map((peer) => {
                         foundPeer = peersWithAlias.find((peerWithAlias) => peer.nodeId === peerWithAlias.nodeId);
@@ -46,15 +46,15 @@ export const getPeers = (req, res, next) => {
             }
         }).
             catch((errRes) => {
-            const err = common.handleError(errRes, 'Peers', 'List Peers Error');
+            const err = common.handleError(errRes, 'Peers', 'List Peers Error', req.session.selectedNode);
             return res.status(err.statusCode).json({ message: err.message, error: err.error });
         });
     }
 };
 export const connectPeer = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Peers', msg: 'Conneting Peer..' });
-    options = common.getOptions();
-    options.url = common.getSelLNServerUrl() + '/connect';
+    options = common.getOptions(req);
+    options.url = req.session.selectedNode.ln_server_url + '/connect';
     options.form = {};
     if (req.query) {
         options.form = req.query;
@@ -63,14 +63,14 @@ export const connectPeer = (req, res, next) => {
     request.post(options).then((body) => {
         logger.log({ level: 'DEBUG', fileName: 'Peers', msg: 'Add Peer Response', data: body });
         if (typeof body === 'string' && body.includes('already connected')) {
-            const err = common.handleError({ statusCode: 500, message: 'Connect Peer Error', error: body }, 'Peers', body);
+            const err = common.handleError({ statusCode: 500, message: 'Connect Peer Error', error: body }, 'Peers', body, req.session.selectedNode);
             return res.status(err.statusCode).json({ message: err.message, error: err.error });
         }
         else if (typeof body === 'string' && body.includes('connection failed')) {
-            const err = common.handleError({ statusCode: 500, message: 'Connect Peer Error', error: body }, 'Peers', body);
+            const err = common.handleError({ statusCode: 500, message: 'Connect Peer Error', error: body }, 'Peers', body, req.session.selectedNode);
             return res.status(err.statusCode).json({ message: err.message, error: err.error });
         }
-        options.url = common.getSelLNServerUrl() + '/peers';
+        options.url = req.session.selectedNode.ln_server_url + '/peers';
         options.form = {};
         request.post(options).then((body) => {
             logger.log({ level: 'DEBUG', fileName: 'Peers', msg: 'Peers Received', data: body });
@@ -78,7 +78,7 @@ export const connectPeer = (req, res, next) => {
                 let peersNodeIds = '';
                 body.forEach((peer) => { peersNodeIds = peersNodeIds + ',' + peer.nodeId; });
                 peersNodeIds = peersNodeIds.substring(1);
-                return getFilteredNodes(peersNodeIds).then((peersWithAlias) => {
+                return getFilteredNodes(req.session.selectedNode.ln_server_url, peersNodeIds).then((peersWithAlias) => {
                     let foundPeer = null;
                     body.map((peer) => {
                         foundPeer = peersWithAlias.find((peerWithAlias) => peer.nodeId === peerWithAlias.nodeId);
@@ -97,18 +97,18 @@ export const connectPeer = (req, res, next) => {
                 res.status(201).json([]);
             }
         }).catch((errRes) => {
-            const err = common.handleError(errRes, 'Peers', 'Connect Peer Error');
+            const err = common.handleError(errRes, 'Peers', 'Connect Peer Error', req.session.selectedNode);
             return res.status(err.statusCode).json({ message: err.message, error: err.error });
         });
     }).catch((errRes) => {
-        const err = common.handleError(errRes, 'Peers', 'Connect Peer Error');
+        const err = common.handleError(errRes, 'Peers', 'Connect Peer Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
 export const deletePeer = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Peers', msg: 'Disconneting Peer..' });
-    options = common.getOptions();
-    options.url = common.getSelLNServerUrl() + '/disconnect';
+    options = common.getOptions(req);
+    options.url = req.session.selectedNode.ln_server_url + '/disconnect';
     options.form = {};
     if (req.params.nodeId) {
         options.form = { nodeId: req.params.nodeId };
@@ -120,7 +120,7 @@ export const deletePeer = (req, res, next) => {
         logger.log({ level: 'INFO', fileName: 'Peers', msg: 'Peer Disconnected' });
         res.status(204).json(body);
     }).catch((errRes) => {
-        const err = common.handleError(errRes, 'Peers', 'Disconnect Peer Error');
+        const err = common.handleError(errRes, 'Peers', 'Disconnect Peer Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };

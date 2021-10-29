@@ -7,8 +7,8 @@ const common: CommonService = Common;
 
 export const getBalance = (req, res, next) => {
   logger.log({ level: 'INFO', fileName: 'Balance', msg: 'Getting Balance..' });
-  options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/v1/balance/' + (req.params.source).toLowerCase();
+  options = common.getOptions(req);
+  options.url = req.session.selectedNode.ln_server_url + '/v1/balance/' + (req.params.source).toLowerCase();
   options.qs = req.query;
   request(options).then((body) => {
     logger.log({ level: 'DEBUG', fileName: 'Balance', msg: '[Request params, Request Query, Balance Received]', data: [req.params, req.query, body] });
@@ -26,7 +26,7 @@ export const getBalance = (req, res, next) => {
       res.status(200).json(body);
     }
   }).catch((errRes) => {
-    const err = common.handleError(errRes, 'Balance', 'Get Balance Error');
+    const err = common.handleError(errRes, 'Balance', 'Get Balance Error', req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
   });
 };

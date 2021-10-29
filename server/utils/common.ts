@@ -5,12 +5,14 @@ import { fileURLToPath } from 'url';
 import * as os from 'os';
 import * as crypto from 'crypto';
 import request from 'request-promise';
+import { Logger, LoggerService } from './logger.js';
 import { CommonSelectedNode } from '../models/config.model.js';
 
 export class CommonService {
 
+  public logger: LoggerService = Logger;
   public nodes: CommonSelectedNode[] = [];
-  public selectedNode: CommonSelectedNode = {};
+  public initSelectedNode: CommonSelectedNode = null;
   public rtl_conf_file_path = '';
   public port = 3000;
   public host = null;
@@ -33,16 +35,16 @@ export class CommonService {
     this.path_separator = (this.platform === 'win32') ? '\\' : '/';
   }
 
-  public getSwapServerOptions = () => {
+  public getSwapServerOptions = (req) => {
     const swapOptions = {
-      url: this.selectedNode.swap_server_url,
+      url: req.session.selectedNode.swap_server_url,
       rejectUnauthorized: false,
       json: true,
       headers: { 'Grpc-Metadata-macaroon': '' }
     };
-    if (this.selectedNode.swap_macaroon_path) {
+    if (req.session.selectedNode.swap_macaroon_path) {
       try {
-        swapOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(this.selectedNode.swap_macaroon_path, 'loop.macaroon')).toString('hex') };
+        swapOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(req.session.selectedNode.swap_macaroon_path, 'loop.macaroon')).toString('hex') };
       } catch (err) {
         console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Loop macaroon Error: ' + JSON.stringify(err));
       }
@@ -51,16 +53,16 @@ export class CommonService {
     return swapOptions;
   };
 
-  public getBoltzServerOptions = () => {
+  public getBoltzServerOptions = (req) => {
     const boltzOptions = {
-      url: this.selectedNode.boltz_server_url,
+      url: req.session.selectedNode.boltz_server_url,
       rejectUnauthorized: false,
       json: true,
       headers: { 'Grpc-Metadata-macaroon': '' }
     };
-    if (this.selectedNode.boltz_macaroon_path) {
+    if (req.session.selectedNode.boltz_macaroon_path) {
       try {
-        boltzOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(this.selectedNode.boltz_macaroon_path, 'admin.macaroon')).toString('hex') };
+        boltzOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(req.session.selectedNode.boltz_macaroon_path, 'admin.macaroon')).toString('hex') };
       } catch (err) {
         console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Boltz macaroon Error: ' + JSON.stringify(err));
       }
@@ -69,47 +71,45 @@ export class CommonService {
     return boltzOptions;
   };
 
-  public getSelLNServerUrl = () => this.selectedNode.ln_server_url;
-
-  public getOptions = () => {
-    this.selectedNode.options.method = (this.selectedNode && this.selectedNode.ln_implementation && this.selectedNode.ln_implementation.toUpperCase() !== 'ECL') ? 'GET' : 'POST';
-    delete this.selectedNode.options.form;
-    this.selectedNode.options.qs = {};
-    return this.selectedNode.options;
+  public getOptions = (req) => {
+    req.session.selectedNode.options.method = (req.session.selectedNode && req.session.selectedNode.ln_implementation && req.session.selectedNode.ln_implementation.toUpperCase() !== 'ECL') ? 'GET' : 'POST';
+    delete req.session.selectedNode.options.form;
+    req.session.selectedNode.options.qs = {};
+    return req.session.selectedNode.options;
   };
 
-  public updateSelectedNodeOptions = () => {
-    if (!this.selectedNode) {
-      this.selectedNode = {};
+  public updateSelectedNodeOptions = (req) => {
+    if (!req.session.selectedNode.options) {
+      req.session.selectedNode.options = {};
     }
-    this.selectedNode.options = {
+    req.session.selectedNode.options = {
       url: '',
       rejectUnauthorized: false,
       json: true,
       form: null
     };
     try {
-      if (this.selectedNode && this.selectedNode.ln_implementation) {
-        switch (this.selectedNode.ln_implementation.toUpperCase()) {
+      if (req.session.selectedNode && req.session.selectedNode.ln_implementation) {
+        switch (req.session.selectedNode.ln_implementation.toUpperCase()) {
           case 'CLT':
-            this.selectedNode.options.headers = { macaroon: Buffer.from(fs.readFileSync(join(this.selectedNode.macaroon_path, 'access.macaroon'))).toString('base64') };
+            req.session.selectedNode.options.headers = { macaroon: Buffer.from(fs.readFileSync(join(req.session.selectedNode.macaroon_path, 'access.macaroon'))).toString('base64') };
             break;
 
           case 'ECL':
-            this.selectedNode.options.headers = { authorization: 'Basic ' + Buffer.from(':' + this.selectedNode.ln_api_password).toString('base64') };
+            req.session.selectedNode.options.headers = { authorization: 'Basic ' + Buffer.from(':' + req.session.selectedNode.ln_api_password).toString('base64') };
             break;
 
           default:
-            this.selectedNode.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(this.selectedNode.macaroon_path, 'admin.macaroon')).toString('hex') };
+            req.session.selectedNode.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(req.session.selectedNode.macaroon_path, 'admin.macaroon')).toString('hex') };
             break;
         }
       }
-      if (this.selectedNode) {
-        console.log('\r\n[' + new Date().toLocaleString() + '] INFO: Common => Updated Node Options: ' + JSON.stringify(this.selectedNode.options));
+      if (req.session.selectedNode) {
+        console.log('\r\n[' + new Date().toLocaleString() + '] INFO: Common => Updated Node Options: ' + JSON.stringify(req.session.selectedNode.options));
       }
       return { status: 200, message: 'Updated Successfully!' };
     } catch (err) {
-      this.selectedNode.options = {
+      req.session.selectedNode.options = {
         url: '',
         rejectUnauthorized: false,
         json: true,
@@ -120,7 +120,7 @@ export class CommonService {
     }
   };
 
-  public setOptions = () => {
+  public setOptions = (req) => {
     if (this.nodes[0].options && this.nodes[0].options.headers) { return; }
     if (this.nodes && this.nodes.length > 0) {
       this.nodes.forEach((node) => {
@@ -157,16 +157,16 @@ export class CommonService {
         }
         console.log('\r\n[' + new Date().toLocaleString() + '] INFO: Common => Set Node Options: ' + JSON.stringify(node.options));
       });
-      this.updateSelectedNodeOptions();
+      this.updateSelectedNodeOptions(req);
     }
   };
 
   public findNode = (selNodeIndex) => this.nodes.find((node) => node.index === selNodeIndex);
 
-  public replaceNode = (selNodeIndex, newNode) => {
-    const foundIndex = this.nodes.findIndex((node) => node.index === selNodeIndex);
+  public replaceNode = (req, newNode) => {
+    const foundIndex = this.nodes.findIndex((node) => node.index === req.session.selectedNode.index);
     this.nodes.splice(foundIndex, 1, newNode);
-    this.selectedNode = this.findNode(selNodeIndex);
+    req.session.selectedNode = this.findNode(req.session.selectedNode.index);
   };
 
   public convertTimestampToTime = (num) => {
@@ -218,9 +218,9 @@ export class CommonService {
     return array;
   };
 
-  public handleError = (errRes, fileName, errMsg) => {
+  public handleError = (errRes, fileName, errMsg, selectedNode: CommonSelectedNode) => {
     const err = JSON.parse(JSON.stringify(errRes));
-    switch (this.selectedNode && this.selectedNode.ln_implementation) {
+    switch (selectedNode.ln_implementation) {
       case 'LND':
         if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
           delete err.options.headers['Grpc-Metadata-macaroon'];
@@ -254,7 +254,7 @@ export class CommonService {
     }
     const msgStr = '\r\n[' + new Date().toLocaleString() + '] ERROR: ' + fileName + ' => ' + errMsg + ': ' + (typeof err === 'object' ? JSON.stringify(err) : (typeof err === 'string') ? err : 'Unknown Error');
     console.error(msgStr);
-    if (this.selectedNode && this.selectedNode.log_file) { fs.appendFile(this.selectedNode.log_file, msgStr, () => {}); }
+    if (selectedNode.log_file && selectedNode.log_file !== '') { fs.appendFile(selectedNode.log_file, msgStr, () => { }); }
     const newErrorObj = {
       statusCode: err.statusCode ? err.statusCode : err.status ? err.status : (err.error && err.error.code && err.error.code === 'ECONNREFUSED') ? 503 : 500,
       message: (err.error && err.error.message) ? err.error.message : err.message ? err.message : errMsg,
@@ -271,12 +271,12 @@ export class CommonService {
   };
 
   public getRequestIP = (req) => ((typeof req.headers['x-forwarded-for'] === 'string' && req.headers['x-forwarded-for'].split(',').shift()) ||
-      req.ip ||
-      req.connection.remoteAddress ||
-      req.socket.remoteAddress ||
-      (req.connection.socket ? req.connection.socket.remoteAddress : null));
+    req.ip ||
+    req.connection.remoteAddress ||
+    req.socket.remoteAddress ||
+    (req.connection.socket ? req.connection.socket.remoteAddress : null));
 
-  public getDummyData = (dataKey) => {
+  public getDummyData = (dataKey, lnImplementation) => {
     const dummyDataFile = this.rtl_conf_file_path + this.path_separator + 'ECLDummyData.log';
     return new Promise((resolve, reject) => {
       if (this.dummy_data_array_from_file.length === 0) {
@@ -289,11 +289,11 @@ export class CommonService {
             }
           } else {
             this.dummy_data_array_from_file = data.split('\n');
-            resolve(this.filterData(dataKey));
+            resolve(this.filterData(dataKey, lnImplementation));
           }
         });
       } else {
-        resolve(this.filterData(dataKey));
+        resolve(this.filterData(dataKey, lnImplementation));
       }
     });
   };
@@ -359,9 +359,25 @@ export class CommonService {
 
   public getMonthDays = (selMonth, selYear) => ((selMonth === 1 && selYear % 4 === 0) ? (this.MONTHS[selMonth].days + 1) : this.MONTHS[selMonth].days);
 
-  public filterData = (dataKey) => {
+  public logEnvVariables = (req) => {
+    if (req.session.selectedNode && req.session.selectedNode.index) {
+      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'PORT: ' + this.port });
+      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'HOST: ' + this.host });
+      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'SSO: ' + this.rtl_sso });
+      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + req.session.selectedNode.index });
+      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'INDEX: ' + req.session.selectedNode.index });
+      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN NODE: ' + req.session.selectedNode.ln_node });
+      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + req.session.selectedNode.ln_implementation });
+      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + req.session.selectedNode.fiat_conversion });
+      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + req.session.selectedNode.currency_unit });
+      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + req.session.selectedNode.ln_server_url });
+      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + this.logout_redirect_link + '\r\n' });
+    }
+  }
+
+  public filterData = (dataKey, lnImplementation) => {
     let search_string = '';
-    if (this.selectedNode.ln_implementation === 'ECL') {
+    if (lnImplementation === 'ECL') {
       switch (dataKey) {
         case 'GetInfo': search_string = 'INFO: GetInfo => Get Info Response: '; break;
         case 'Fees': search_string = 'INFO: Fees => Fee Response: '; break;
@@ -372,7 +388,7 @@ export class CommonService {
         case 'Channels': search_string = 'INFO: Channels => Simplified Channels with Alias: '; break;
         default: search_string = 'Random Line'; break;
       }
-    } else if (this.selectedNode.ln_implementation === 'CLT') {
+    } else if (lnImplementation === 'CLT') {
       switch (dataKey) {
         case 'GetInfo': search_string = 'DEBUG: GetInfo => Node Information. '; break;
         case 'Fees': search_string = 'DEBUG: Fees => Fee Received. '; break;

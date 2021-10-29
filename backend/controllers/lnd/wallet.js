@@ -7,28 +7,28 @@ const logger = Logger;
 const common = Common;
 export const genSeed = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Wallet', msg: 'Generating Seed..' });
-    options = common.getOptions();
+    options = common.getOptions(req);
     if (req.params.passphrase) {
-        options.url = common.getSelLNServerUrl() + '/v1/genseed?aezeed_passphrase=' + Buffer.from(atob(req.params.passphrase)).toString('base64');
+        options.url = req.session.selectedNode.ln_server_url + '/v1/genseed?aezeed_passphrase=' + Buffer.from(atob(req.params.passphrase)).toString('base64');
     }
     else {
-        options.url = common.getSelLNServerUrl() + '/v1/genseed';
+        options.url = req.session.selectedNode.ln_server_url + '/v1/genseed';
     }
     request(options).then((body) => {
         logger.log({ level: 'INFO', fileName: 'Wallet', msg: 'Seed Generated' });
         res.status(200).json(body);
     }).catch((errRes) => {
-        const err = common.handleError(errRes, 'Wallet', 'Gen Seed Error');
+        const err = common.handleError(errRes, 'Wallet', 'Gen Seed Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
 export const operateWallet = (req, res, next) => {
     let err_message = '';
-    options = common.getOptions();
+    options = common.getOptions(req);
     options.method = 'POST';
     if (!req.params.operation || req.params.operation === 'unlockwallet') {
         logger.log({ level: 'INFO', fileName: 'Wallet', msg: 'Unlocking Wallet..' });
-        options.url = common.getSelLNServerUrl() + '/v1/unlockwallet';
+        options.url = req.session.selectedNode.ln_server_url + '/v1/unlockwallet';
         options.form = JSON.stringify({
             wallet_password: Buffer.from(atob(req.body.wallet_password)).toString('base64')
         });
@@ -36,7 +36,7 @@ export const operateWallet = (req, res, next) => {
     }
     else {
         logger.log({ level: 'INFO', fileName: 'Wallet', msg: 'Initializing Wallet..' });
-        options.url = common.getSelLNServerUrl() + '/v1/initwallet';
+        options.url = req.session.selectedNode.ln_server_url + '/v1/initwallet';
         if (req.body.aezeed_passphrase && req.body.aezeed_passphrase !== '') {
             options.form = JSON.stringify({
                 wallet_password: Buffer.from(atob(req.body.wallet_password)).toString('base64'),
@@ -57,11 +57,11 @@ export const operateWallet = (req, res, next) => {
         const body_str = (!body) ? '' : JSON.stringify(body);
         const search_idx = (!body) ? -1 : body_str.search('Not Found');
         if (!body) {
-            const err = common.handleError({ statusCode: 500, message: 'Wallet Error', error: err_message }, 'Wallet', err_message);
+            const err = common.handleError({ statusCode: 500, message: 'Wallet Error', error: err_message }, 'Wallet', err_message, req.session.selectedNode);
             return res.status(err.statusCode).json({ message: err.error, error: err.error });
         }
         else if (search_idx > -1) {
-            const err = common.handleError({ statusCode: 500, message: 'Wallet Error', error: err_message }, 'Wallet', err_message);
+            const err = common.handleError({ statusCode: 500, message: 'Wallet Error', error: err_message }, 'Wallet', err_message, req.session.selectedNode);
             return res.status(err.statusCode).json({ message: err.error, error: err.error });
         }
         else if (body.error) {
@@ -70,7 +70,7 @@ export const operateWallet = (req, res, next) => {
             }
             else {
                 const errMsg = (body.error && typeof body.error === 'object') ? JSON.stringify(body.error) : (body.error && typeof body.error === 'string') ? body.error : err_message;
-                const err = common.handleError({ statusCode: 500, message: 'Wallet Error', error: errMsg }, 'Wallet', errMsg);
+                const err = common.handleError({ statusCode: 500, message: 'Wallet Error', error: errMsg }, 'Wallet', errMsg, req);
                 return res.status(err.statusCode).json({ message: err.error, error: err.error });
             }
         }
@@ -83,32 +83,32 @@ export const operateWallet = (req, res, next) => {
             res.status(201).json('Successful');
         }
         else {
-            const err = common.handleError(errRes, 'Wallet', err_message);
+            const err = common.handleError(errRes, 'Wallet', err_message, req.session.selectedNode);
             return res.status(err.statusCode).json({ message: err.message, error: err.error });
         }
     });
 };
 export const updateSelNodeOptions = (req, res, next) => {
-    const response = common.updateSelectedNodeOptions();
+    const response = common.updateSelectedNodeOptions(req);
     res.status(response.status).json({ updateMessage: response.message });
 };
 export const getUTXOs = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Wallet', msg: 'Getting UTXOs..' });
-    options = common.getOptions();
-    options.url = common.getSelLNServerUrl() + '/v2/wallet/utxos?max_confs=' + req.query.max_confs;
+    options = common.getOptions(req);
+    options.url = req.session.selectedNode.ln_server_url + '/v2/wallet/utxos?max_confs=' + req.query.max_confs;
     request.post(options).then((body) => {
         logger.log({ level: 'DEBUG', fileName: 'Wallet', msg: 'UTXO List Response', data: body });
         logger.log({ level: 'INFO', fileName: 'Wallet', msg: 'UTXOs Received' });
         res.status(200).json(body.utxos ? body.utxos : []);
     }).catch((errRes) => {
-        const err = common.handleError(errRes, 'Wallet', 'List UTXOs Error');
+        const err = common.handleError(errRes, 'Wallet', 'List UTXOs Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
 export const bumpFee = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Wallet', msg: 'Bumping Fee..' });
-    options = common.getOptions();
-    options.url = common.getSelLNServerUrl() + '/v2/wallet/bumpfee';
+    options = common.getOptions(req);
+    options.url = req.session.selectedNode.ln_server_url + '/v2/wallet/bumpfee';
     options.form = {};
     options.form.outpoint = {
         txid_str: req.body.txid,
@@ -126,14 +126,14 @@ export const bumpFee = (req, res, next) => {
         logger.log({ level: 'INFO', fileName: 'Wallet', msg: 'Fee Bumped' });
         res.status(200).json(body);
     }).catch((errRes) => {
-        const err = common.handleError(errRes, 'Wallet', 'Bump Fee Error');
+        const err = common.handleError(errRes, 'Wallet', 'Bump Fee Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
 export const labelTransaction = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Wallet', msg: 'Labelling Transaction..' });
-    options = common.getOptions();
-    options.url = common.getSelLNServerUrl() + '/v2/wallet/tx/label';
+    options = common.getOptions(req);
+    options.url = req.session.selectedNode.ln_server_url + '/v2/wallet/tx/label';
     options.form = {};
     options.form.txid = req.body.txid;
     options.form.label = req.body.label;
@@ -145,14 +145,14 @@ export const labelTransaction = (req, res, next) => {
         logger.log({ level: 'INFO', fileName: 'Wallet', msg: 'Transaction Labelled' });
         res.status(200).json(body);
     }).catch((errRes) => {
-        const err = common.handleError(errRes, 'Wallet', 'Label Transaction Error');
+        const err = common.handleError(errRes, 'Wallet', 'Label Transaction Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
 export const leaseUTXO = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Wallet', msg: 'Leasing UTXO..' });
-    options = common.getOptions();
-    options.url = common.getSelLNServerUrl() + '/v2/wallet/utxos/lease';
+    options = common.getOptions(req);
+    options.url = req.session.selectedNode.ln_server_url + '/v2/wallet/utxos/lease';
     options.form = {};
     options.form.id = req.body.txid;
     options.form.outpoint = {
@@ -166,14 +166,14 @@ export const leaseUTXO = (req, res, next) => {
         logger.log({ level: 'INFO', fileName: 'Wallet', msg: 'UTXO Leased' });
         res.status(200).json(body);
     }).catch((errRes) => {
-        const err = common.handleError(errRes, 'Wallet', 'Lease UTXO Error');
+        const err = common.handleError(errRes, 'Wallet', 'Lease UTXO Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
 export const releaseUTXO = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Wallet', msg: 'Releasing UTXO..' });
-    options = common.getOptions();
-    options.url = common.getSelLNServerUrl() + '/v2/wallet/utxos/release';
+    options = common.getOptions(req);
+    options.url = req.session.selectedNode.ln_server_url + '/v2/wallet/utxos/release';
     options.form = {};
     options.form.id = req.body.txid;
     options.form.outpoint = {
@@ -186,7 +186,7 @@ export const releaseUTXO = (req, res, next) => {
         logger.log({ level: 'INFO', fileName: 'Wallet', msg: 'UTXO Released' });
         res.status(200).json(body);
     }).catch((errRes) => {
-        const err = common.handleError(errRes, 'Wallet', 'Release UTXO Error');
+        const err = common.handleError(errRes, 'Wallet', 'Release UTXO Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };

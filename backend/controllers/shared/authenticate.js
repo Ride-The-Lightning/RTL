@@ -51,6 +51,7 @@ export const authenticateUser = (req, res, next) => {
             res.status(406).json({ message: 'SSO Authentication Error', error: 'Login with Password is not allowed with SSO.' });
         }
         else if (req.body.authenticateWith === 'PASSWORD' && common.cookie.trim().length >= 32 && crypto.timingSafeEqual(Buffer.from(crypto.createHash('sha256').update(common.cookie).digest('hex'), 'utf-8'), Buffer.from(req.body.authenticationValue, 'utf-8'))) {
+            req.session.selectedNode = common.initSelectedNode;
             common.refreshCookie(common.rtl_cookie_path);
             const token = jwt.sign({ user: 'SSO_USER' }, common.secret_key);
             logger.log({ level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated.' });
@@ -58,7 +59,7 @@ export const authenticateUser = (req, res, next) => {
         }
         else {
             const errMsg = 'SSO Authentication Failed! Access key too short or does not match.';
-            const err = common.handleError({ statusCode: 406, message: 'SSO Authentication Error', error: errMsg }, 'Authenticate', errMsg);
+            const err = common.handleError({ statusCode: 406, message: 'SSO Authentication Error', error: errMsg }, 'Authenticate', errMsg, req);
             return res.status(err.statusCode).json({ message: err.message, error: err.error });
         }
     }
@@ -76,6 +77,7 @@ export const authenticateUser = (req, res, next) => {
                     return res.status(401).json(handleMultipleFailedAttemptsError(failed, currentTime, 'Invalid 2FA Token!'));
                 }
             }
+            req.session.selectedNode = common.initSelectedNode;
             delete failedLoginAttempts[reqIP];
             const token = jwt.sign({ user: 'NODE_USER' }, common.secret_key);
             logger.log({ level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated' });
@@ -93,7 +95,7 @@ export const resetPassword = (req, res, next) => {
     logger.log({ level: 'INFO', fileName: 'Authenticate', msg: 'Resetting Password..' });
     if (+common.rtl_sso) {
         const errMsg = 'Password cannot be reset for SSO authentication';
-        const err = common.handleError({ statusCode: 401, message: 'Password Reset Error', error: errMsg }, 'Authenticate', errMsg);
+        const err = common.handleError({ statusCode: 401, message: 'Password Reset Error', error: errMsg }, 'Authenticate', errMsg, req);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     }
     else {
@@ -106,8 +108,13 @@ export const resetPassword = (req, res, next) => {
         }
         else {
             const errMsg = 'Incorrect Old Password';
-            const err = common.handleError({ statusCode: 401, message: 'Password Reset Error', error: errMsg }, 'Authenticate', errMsg);
+            const err = common.handleError({ statusCode: 401, message: 'Password Reset Error', error: errMsg }, 'Authenticate', errMsg, req);
             return res.status(err.statusCode).json({ message: err.message, error: err.error });
         }
     }
+};
+export const logoutUser = (req, res, next) => {
+    logger.log({ level: 'INFO', fileName: 'Authenticate', msg: 'Logging out..' });
+    req.session.destroy();
+    res.status(200).json({ loggedout: true });
 };

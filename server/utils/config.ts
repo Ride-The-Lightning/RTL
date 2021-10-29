@@ -17,7 +17,7 @@ export class ConfigService {
   private common: CommonService = Common;
   private logger: LoggerService = Logger;
 
-  constructor() {}
+  constructor() { }
 
   setDefaultConfig = () => {
     const homeDir = os.userInfo().homedir;
@@ -219,7 +219,7 @@ export class ConfigService {
           this.common.nodes[idx].boltz_macaroon_path = '';
         }
         this.common.nodes[idx].bitcoind_config_path = process.env.BITCOIND_CONFIG_PATH ? process.env.BITCOIND_CONFIG_PATH : (node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
-        this.common.nodes[idx].channel_backup_path = process.env.CHANNEL_BACKUP_PATH ? process.env.CHANNEL_BACKUP_PATH : (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : this.common.rtl_conf_file_path + this.common.path_separator + 'backend' + this.common.path_separator + 'channels-backup' + this.common.path_separator + 'node-' + node.index;
+        this.common.nodes[idx].channel_backup_path = process.env.CHANNEL_BACKUP_PATH ? process.env.CHANNEL_BACKUP_PATH : (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : this.common.rtl_conf_file_path + this.common.path_separator + 'channels-backup' + this.common.path_separator + 'node-' + node.index;
         try {
           this.createDirectory(this.common.nodes[idx].channel_backup_path);
           const exists = fs.existsSync(this.common.nodes[idx].channel_backup_path + this.common.path_separator + 'channel-all.bak');
@@ -238,7 +238,7 @@ export class ConfigService {
         } catch (err) {
           this.logger.log({ level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while creating the backup directory: \n' + err });
         }
-        this.common.nodes[idx].log_file = this.common.rtl_conf_file_path + '/backend/logs/RTL-Node-' + node.index + '.log';
+        this.common.nodes[idx].log_file = this.common.rtl_conf_file_path + '/logs/RTL-Node-' + node.index + '.log';
         this.logger.log({ level: 'DEBUG', fileName: 'Config', msg: 'Node Information', data: this.common.nodes[idx] });
         const log_file = this.common.nodes[idx].log_file;
         if (fs.existsSync(log_file)) {
@@ -332,27 +332,11 @@ export class ConfigService {
     }
   }
 
-  private logEnvVariables = () => {
-    if (this.common.selectedNode && this.common.selectedNode.index) {
-      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'PORT: ' + this.common.port });
-      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'HOST: ' + this.common.host });
-      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'SSO: ' + this.common.rtl_sso });
-      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + this.common.selectedNode.index });
-      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'INDEX: ' + this.common.selectedNode.index });
-      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN NODE: ' + this.common.selectedNode.ln_node });
-      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + this.common.selectedNode.ln_implementation });
-      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + this.common.selectedNode.fiat_conversion });
-      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + this.common.selectedNode.currency_unit });
-      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + this.common.selectedNode.ln_server_url });
-      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + this.common.logout_redirect_link + '\r\n' });
-    }
-  }
-
   private setSelectedNode = (config) => {
     if (config.defaultNodeIndex) {
-      this.common.selectedNode = this.common.findNode(config.defaultNodeIndex);
+      this.common.initSelectedNode = this.common.findNode(config.defaultNodeIndex);
     } else {
-      this.common.selectedNode = this.common.findNode(this.common.nodes[0].index);
+      this.common.initSelectedNode = this.common.findNode(this.common.nodes[0].index);
     }
   }
 
@@ -526,7 +510,6 @@ export class ConfigService {
       this.updateLogByLevel();
       this.validateNodeConfig(config);
       this.setSelectedNode(config);
-      this.logEnvVariables();
     } catch (err) {
       this.logger.log({ level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while configuring the node server: \n' + err });
       throw new Error(err);
