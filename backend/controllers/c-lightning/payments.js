@@ -50,15 +50,18 @@ function groupBy(payments) {
     }, []);
 }
 export const listPayments = (req, res, next) => {
-    logger.log({ level: 'INFO', fileName: 'Payments', msg: 'List Payments..' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'List Payments..' });
     options = common.getOptions(req);
+    if (options.error) {
+        return res.status(options.statusCode).json({ message: options.message, error: options.error });
+    }
     options.url = req.session.selectedNode.ln_server_url + '/v1/pay/listPayments';
     request(options).then((body) => {
-        logger.log({ level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body.payments });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body.payments });
         if (body && body.payments && body.payments.length > 0) {
             body.payments = common.sortDescByKey(body.payments, 'created_at');
         }
-        logger.log({ level: 'INFO', fileName: 'Payments', msg: 'List Payments Received' });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'List Payments Received' });
         res.status(200).json(groupBy(body.payments));
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Payments', 'List Payments Error', req.session.selectedNode);
@@ -66,12 +69,15 @@ export const listPayments = (req, res, next) => {
     });
 };
 export const decodePayment = (req, res, next) => {
-    logger.log({ level: 'INFO', fileName: 'Payments', msg: 'Decoding Payment..' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Decoding Payment..' });
     options = common.getOptions(req);
+    if (options.error) {
+        return res.status(options.statusCode).json({ message: options.message, error: options.error });
+    }
     options.url = req.session.selectedNode.ln_server_url + '/v1/pay/decodePay/' + req.params.invoice;
     request(options).then((body) => {
-        logger.log({ level: 'DEBUG', fileName: 'Payments', msg: 'Payment Decode Received', data: body });
-        logger.log({ level: 'INFO', fileName: 'Payments', msg: 'Payment Decoded' });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment Decode Received', data: body });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Decoded' });
         res.status(200).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Payments', 'Decode Payment Error', req.session.selectedNode);
@@ -80,18 +86,21 @@ export const decodePayment = (req, res, next) => {
 };
 export const postPayment = (req, res, next) => {
     options = common.getOptions(req);
+    if (options.error) {
+        return res.status(options.statusCode).json({ message: options.message, error: options.error });
+    }
     if (req.params.type === 'keysend') {
-        logger.log({ level: 'INFO', fileName: 'Payments', msg: 'Keysend Payment..' });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Keysend Payment..' });
         options.url = req.session.selectedNode.ln_server_url + '/v1/pay/keysend';
     }
     else {
-        logger.log({ level: 'INFO', fileName: 'Payments', msg: 'Send Payment..' });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Send Payment..' });
         options.url = req.session.selectedNode.ln_server_url + '/v1/pay';
     }
     options.body = req.body;
     request.post(options).then((body) => {
-        logger.log({ level: 'DEBUG', fileName: 'Payments', msg: 'Send Payment Response', data: body });
-        logger.log({ level: 'INFO', fileName: 'Payments', msg: 'Payment Sent' });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Send Payment Response', data: body });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent' });
         res.status(201).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Payments', 'Send Payment Error', req.session.selectedNode);

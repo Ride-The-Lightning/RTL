@@ -22,7 +22,7 @@ export const arrangeFees = (body, current_time) => {
         fees.monthly_fee = fees.monthly_fee + fee;
         fees.monthly_txs = fees.monthly_txs + 1;
     });
-    logger.log({ level: 'DEBUG', fileName: 'Fees', msg: 'Arranged Fee', data: fees });
+    logger.log({ selectedNode: null, level: 'DEBUG', fileName: 'Fees', msg: 'Arranged Fee', data: fees });
     return fees;
 };
 export const arrangePayments = (body) => {
@@ -68,12 +68,15 @@ export const arrangePayments = (body) => {
     payments.sent = common.sortDescByKey(payments.sent, 'firstPartTimestamp');
     payments.received = common.sortDescByKey(payments.received, 'firstPartTimestamp');
     payments.relayed = common.sortDescByKey(payments.relayed, 'timestamp');
-    logger.log({ level: 'DEBUG', fileName: 'Fees', msg: 'Arranged Payments', data: payments });
+    logger.log({ selectedNode: null, level: 'DEBUG', fileName: 'Fees', msg: 'Arranged Payments', data: payments });
     return payments;
 };
 export const getFees = (req, res, next) => {
-    logger.log({ level: 'INFO', fileName: 'Fees', msg: 'Getting Fees..' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Getting Fees..' });
     options = common.getOptions(req);
+    if (options.error) {
+        return res.status(options.statusCode).json({ message: options.message, error: options.error });
+    }
     options.url = req.session.selectedNode.ln_server_url + '/audit';
     const today = new Date(Date.now());
     const tillToday = (Math.round(today.getTime() / 1000)).toString();
@@ -82,14 +85,14 @@ export const getFees = (req, res, next) => {
         from: fromLastMonth,
         to: tillToday
     };
-    logger.log({ level: 'DEBUG', fileName: 'Fees', msg: 'Fee Audit Options', data: options.form });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Fees', msg: 'Fee Audit Options', data: options.form });
     if (common.read_dummy_data) {
         common.getDummyData('Fees', req.session.selectedNode.ln_implementation).then((data) => { res.status(200).json(arrangeFees(data, Math.round((new Date().getTime())))); });
     }
     else {
         request.post(options).then((body) => {
-            logger.log({ level: 'DEBUG', fileName: 'Fees', msg: 'Fee Response', data: body });
-            logger.log({ level: 'INFO', fileName: 'Fees', msg: 'Fee Received' });
+            logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Fees', msg: 'Fee Response', data: body });
+            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Fee Received' });
             res.status(200).json(arrangeFees(body, Math.round((new Date().getTime()))));
         }).catch((errRes) => {
             const err = common.handleError(errRes, 'Fees', 'Get Fees Error', req.session.selectedNode);
@@ -98,8 +101,11 @@ export const getFees = (req, res, next) => {
     }
 };
 export const getPayments = (req, res, next) => {
-    logger.log({ level: 'INFO', fileName: 'Fees', msg: 'Getting Payments..' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Getting Payments..' });
     options = common.getOptions(req);
+    if (options.error) {
+        return res.status(options.statusCode).json({ message: options.message, error: options.error });
+    }
     options.url = req.session.selectedNode.ln_server_url + '/audit';
     options.form = null;
     if (common.read_dummy_data) {
@@ -107,8 +113,8 @@ export const getPayments = (req, res, next) => {
     }
     else {
         request.post(options).then((body) => {
-            logger.log({ level: 'DEBUG', fileName: 'Fees', msg: 'Payments Response', data: body });
-            logger.log({ level: 'INFO', fileName: 'Fees', msg: 'Payments Received' });
+            logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Fees', msg: 'Payments Response', data: body });
+            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Payments Received' });
             res.status(200).json(arrangePayments(body));
         }).
             catch((errRes) => {

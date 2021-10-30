@@ -6,12 +6,13 @@ const logger: LoggerService = Logger;
 const common: CommonService = Common;
 
 export const getNewAddress = (req, res, next) => {
-  logger.log({ level: 'INFO', fileName: 'NewAddress', msg: 'Getting New Address..' });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'NewAddress', msg: 'Getting New Address..' });
   options = common.getOptions(req);
+  if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/newaddress?type=' + req.query.type;
   request(options).then((body) => {
-    logger.log({ level: 'DEBUG', fileName: 'NewAddress', msg: 'New Address Received', data: body });
-    logger.log({ level: 'INFO', fileName: 'NewAddress', msg: 'New Address Received' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'NewAddress', msg: 'New Address Received', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'NewAddress', msg: 'New Address Received' });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'NewAddress', 'New Address Error', req.session.selectedNode);

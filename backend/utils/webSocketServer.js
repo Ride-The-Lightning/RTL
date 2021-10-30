@@ -18,9 +18,9 @@ export class WebSocketServer {
                     client.ping();
                 });
             }
-        }, 1800000); // Terminate broken connections every half an hour
+        }, 1000 * 60 * 60); // Terminate broken connections every an hour
         this.mount = (httpServer) => {
-            this.logger.log({ level: 'DEBUG', fileName: 'WebSocketServer', msg: 'Connecting Websocket Server.' });
+            this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'DEBUG', fileName: 'WebSocketServer', msg: 'Connecting Websocket Server.' });
             this.webSocketServer = new WebSocket.Server({ noServer: true, path: this.common.baseHref + '/api/ws', verifyClient: (process.env.NODE_ENV === 'development') ? null : verifyWSUser });
             httpServer.on('upgrade', (request, socket, head) => {
                 if (request.headers['upgrade'] !== 'websocket') {
@@ -45,44 +45,44 @@ export class WebSocketServer {
         this.mountEventsOnConnection = (websocket, request) => {
             websocket.clientId = Date.now();
             websocket.isAlive = true;
-            this.logger.log({ level: 'INFO', fileName: 'WebSocketServer', msg: 'Connected: ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
+            this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Connected: ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
             websocket.on('error', this.sendErrorToAllWSClients);
             websocket.on('message', this.sendEventsToAllWSClients);
             websocket.on('pong', () => { websocket.isAlive = true; });
             websocket.on('close', () => {
-                this.logger.log({ level: 'INFO', fileName: 'WebSocketServer', msg: 'Disconnected: ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
+                this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Disconnected: ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
             });
         };
         this.sendErrorToClient = (client, serverError) => {
             try {
-                this.logger.log({ level: 'ERROR', fileName: 'WebSocketServer', msg: 'Sending error to client...: ' + JSON.stringify(serverError) });
+                this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Sending error to client...: ' + JSON.stringify(serverError) });
                 client.send(JSON.stringify({ error: serverError }));
                 client.close();
             }
             catch (err) {
-                this.logger.log({ level: 'ERROR', fileName: 'WebSocketServer', msg: 'Error while sending error: ' + JSON.stringify(err) });
+                this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Error while sending error: ' + JSON.stringify(err) });
             }
         };
         this.sendErrorToAllWSClients = (serverError) => {
             try {
                 this.webSocketServer.clients.forEach((client) => {
-                    this.logger.log({ level: 'ERROR', fileName: 'WebSocketServer', msg: 'Broadcasting error to clients...: ' + JSON.stringify(serverError) });
+                    this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Broadcasting error to clients...: ' + JSON.stringify(serverError) });
                     client.send(JSON.stringify({ error: serverError }));
                 });
             }
             catch (err) {
-                this.logger.log({ level: 'ERROR', fileName: 'WebSocketServer', msg: 'Error while broadcasting message: ' + JSON.stringify(err) });
+                this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Error while broadcasting message: ' + JSON.stringify(err) });
             }
         };
         this.sendEventsToAllWSClients = (newMessage) => {
             try {
                 this.webSocketServer.clients.forEach((client) => {
-                    this.logger.log({ level: 'INFO', fileName: 'WebSocketServer', msg: 'Broadcasting message to client...: ' + client.clientId });
+                    this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Broadcasting message to client...: ' + client.clientId });
                     client.send(newMessage);
                 });
             }
             catch (err) {
-                this.logger.log({ level: 'ERROR', fileName: 'WebSocketServer', msg: 'Error while broadcasting message: ' + JSON.stringify(err) });
+                this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Error while broadcasting message: ' + JSON.stringify(err) });
             }
         };
         this.generateAcceptValue = (acceptKey) => crypto.createHash('sha1').update(acceptKey + crypto.randomBytes(64).toString('hex')).digest('base64');

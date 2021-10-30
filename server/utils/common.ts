@@ -1,8 +1,7 @@
 /* eslint-disable no-console */
 import * as fs from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, isAbsolute, resolve, sep } from 'path';
 import { fileURLToPath } from 'url';
-import * as os from 'os';
 import * as crypto from 'crypto';
 import request from 'request-promise';
 import { Logger, LoggerService } from './logger.js';
@@ -16,24 +15,18 @@ export class CommonService {
   public rtl_conf_file_path = '';
   public port = 3000;
   public host = null;
-  public path_separator = '/';
   public rtl_pass = '';
-  public secret_key = crypto.randomBytes(64).toString('hex');
   public rtl_secret2fa = '';
   public rtl_sso = 0;
   public rtl_cookie_path = '';
   public logout_redirect_link = '';
-  public cookie = '';
+  public secret_key = crypto.randomBytes(64).toString('hex');
   public read_dummy_data = false;
-  public platform = '/';
   public baseHref = '/rtl';
   private dummy_data_array_from_file = [];
   private MONTHS = [{ name: 'JAN', days: 31 }, { name: 'FEB', days: 28 }, { name: 'MAR', days: 31 }, { name: 'APR', days: 30 }, { name: 'MAY', days: 31 }, { name: 'JUN', days: 30 }, { name: 'JUL', days: 31 }, { name: 'AUG', days: 31 }, { name: 'SEP', days: 30 }, { name: 'OCT', days: 31 }, { name: 'NOV', days: 30 }, { name: 'DEC', days: 31 }];
 
-  constructor() {
-    this.platform = os.platform();
-    this.path_separator = (this.platform === 'win32') ? '\\' : '/';
-  }
+  constructor() { }
 
   public getSwapServerOptions = (req) => {
     const swapOptions = {
@@ -72,15 +65,18 @@ export class CommonService {
   };
 
   public getOptions = (req) => {
-    req.session.selectedNode.options.method = (req.session.selectedNode && req.session.selectedNode.ln_implementation && req.session.selectedNode.ln_implementation.toUpperCase() !== 'ECL') ? 'GET' : 'POST';
-    delete req.session.selectedNode.options.form;
-    req.session.selectedNode.options.qs = {};
-    return req.session.selectedNode.options;
+    if (req.session.selectedNode && req.session.selectedNode.options) {
+      req.session.selectedNode.options.method = (req.session.selectedNode.ln_implementation && req.session.selectedNode.ln_implementation.toUpperCase() !== 'ECL') ? 'GET' : 'POST';
+      delete req.session.selectedNode.options.form;
+      req.session.selectedNode.options.qs = {};
+      return req.session.selectedNode.options;
+    }
+    return this.handleError({ statusCode: 401, message: 'Session expired after a day\'s inactivity.' }, 'Session Expired', 'Session Expiry Error', this.initSelectedNode);
   };
 
   public updateSelectedNodeOptions = (req) => {
-    if (!req.session.selectedNode.options) {
-      req.session.selectedNode.options = {};
+    if (!req.session.selectedNode) {
+      req.session.selectedNode = {};
     }
     req.session.selectedNode.options = {
       url: '',
@@ -220,6 +216,7 @@ export class CommonService {
 
   public handleError = (errRes, fileName, errMsg, selectedNode: CommonSelectedNode) => {
     const err = JSON.parse(JSON.stringify(errRes));
+    if (!selectedNode) { selectedNode = { ln_implementation: '' }; }
     switch (selectedNode.ln_implementation) {
       case 'LND':
         if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
@@ -277,7 +274,7 @@ export class CommonService {
     (req.connection.socket ? req.connection.socket.remoteAddress : null));
 
   public getDummyData = (dataKey, lnImplementation) => {
-    const dummyDataFile = this.rtl_conf_file_path + this.path_separator + 'ECLDummyData.log';
+    const dummyDataFile = this.rtl_conf_file_path + sep + 'ECLDummyData.log';
     return new Promise((resolve, reject) => {
       if (this.dummy_data_array_from_file.length === 0) {
         fs.readFile(dummyDataFile, 'utf8', (err, data) => {
@@ -298,20 +295,62 @@ export class CommonService {
     });
   };
 
-  public refreshCookie = (cookieFile) => {
+  public readCookie = () => {
+    const exists = fs.existsSync(this.rtl_cookie_path);
+    if (exists) {
+      try {
+        return fs.readFileSync(this.rtl_cookie_path, 'utf-8');
+      } catch (err) {
+        this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while reading cookie: \n' + err });
+        throw new Error(err);
+      }
+    } else {
+      try {
+        const directoryName = dirname(this.rtl_cookie_path);
+        this.createDirectory(directoryName);
+        fs.writeFileSync(this.rtl_cookie_path, crypto.randomBytes(64).toString('hex'));
+        return fs.readFileSync(this.rtl_cookie_path, 'utf-8');
+      } catch (err) {
+        this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while reading the cookie: \n' + err });
+        throw new Error(err);
+      }
+    }
+  }
+
+  public refreshCookie = () => {
     try {
-      fs.writeFileSync(cookieFile, crypto.randomBytes(64).toString('hex'));
-      this.cookie = fs.readFileSync(cookieFile, 'utf-8');
+      fs.writeFileSync(this.rtl_cookie_path, crypto.randomBytes(64).toString('hex'));
     } catch (err) {
       console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Something went wrong while refreshing cookie: \n' + err);
       throw new Error(err);
     }
   }
 
+  public createDirectory = (directoryName) => {
+    const initDir = isAbsolute(directoryName) ? sep : '';
+    directoryName.split(sep).reduce((parentDir, childDir) => {
+      const curDir = resolve(parentDir, childDir);
+      try {
+        if (!fs.existsSync(curDir)) {
+          fs.mkdirSync(curDir);
+        }
+      } catch (err) {
+        if (err.code !== 'EEXIST') {
+          if (err.code === 'ENOENT') {
+            throw new Error(`ENOENT: No such file or directory, mkdir '${directoryName}'. Ensure that channel backup path separator is '${sep}'`);
+          } else {
+            throw err;
+          }
+        }
+      }
+      return curDir;
+    }, initDir);
+  };
+
   public replacePasswordWithHash = (multiPassHashed) => {
     this.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : join(dirname(fileURLToPath(import.meta.url)), '../..');
     try {
-      const RTLConfFile = this.rtl_conf_file_path + this.path_separator + 'RTL-Config.json';
+      const RTLConfFile = this.rtl_conf_file_path + sep + 'RTL-Config.json';
       const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
       config.multiPassHashed = multiPassHashed;
       delete config.multiPass;
@@ -324,7 +363,7 @@ export class CommonService {
   }
 
   public getAllNodeAllChannelBackup = (node) => {
-    const channel_backup_file = node.channel_backup_path + this.path_separator + 'channel-all.bak';
+    const channel_backup_file = node.channel_backup_path + sep + 'channel-all.bak';
     const options = {
       url: node.ln_server_url + '/v1/channels/backup',
       rejectUnauthorized: false,
@@ -360,18 +399,20 @@ export class CommonService {
   public getMonthDays = (selMonth, selYear) => ((selMonth === 1 && selYear % 4 === 0) ? (this.MONTHS[selMonth].days + 1) : this.MONTHS[selMonth].days);
 
   public logEnvVariables = (req) => {
-    if (req.session.selectedNode && req.session.selectedNode.index) {
-      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'PORT: ' + this.port });
-      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'HOST: ' + this.host });
-      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'SSO: ' + this.rtl_sso });
-      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + req.session.selectedNode.index });
-      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'INDEX: ' + req.session.selectedNode.index });
-      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN NODE: ' + req.session.selectedNode.ln_node });
-      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + req.session.selectedNode.ln_implementation });
-      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + req.session.selectedNode.fiat_conversion });
-      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + req.session.selectedNode.currency_unit });
-      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + req.session.selectedNode.ln_server_url });
-      this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + this.logout_redirect_link + '\r\n' });
+    const selNode = <CommonSelectedNode>req.session.selectedNode;
+    if (selNode && selNode.index) {
+      if (fs.existsSync(selNode.log_file)) { fs.writeFile(selNode.log_file, '', () => { }); }
+      this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'PORT: ' + this.port });
+      this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'HOST: ' + this.host });
+      this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'SSO: ' + this.rtl_sso });
+      this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + selNode.index });
+      this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'INDEX: ' + selNode.index });
+      this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN NODE: ' + selNode.ln_node });
+      this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + selNode.ln_implementation });
+      this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + selNode.fiat_conversion });
+      this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + selNode.currency_unit });
+      this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + selNode.ln_server_url });
+      this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + this.logout_redirect_link + '\r\n' });
     }
   }
 

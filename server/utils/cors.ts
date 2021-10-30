@@ -6,7 +6,7 @@ class CORS {
   public logger: LoggerService = Logger;
 
   public mount(app: Application): Application {
-    this.logger.log({ level: 'DEBUG', fileName: 'CORS', msg: 'Setting up CORS.' });
+    this.logger.log({ selectedNode: null, level: 'DEBUG', fileName: 'CORS', msg: 'Setting up CORS.' });
     app.use((req, res, next) => {
       res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, filePath');
       res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');

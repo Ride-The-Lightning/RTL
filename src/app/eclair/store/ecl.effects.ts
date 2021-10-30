@@ -11,16 +11,16 @@ import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
 import { SessionService } from '../../shared/services/session.service';
 import { CommonService } from '../../shared/services/common.service';
+import { WebSocketClientService } from '../../shared/services/web-socket.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { GetInfo, OnChainBalance, Peer, Audit, Transaction, Invoice, Channel, ChannelStateUpdate } from '../../shared/models/eclModels';
-import { APICallStatusEnum, UI_MESSAGES, WSEventTypeEnum } from '../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, UI_MESSAGES, ECLWSEventTypeEnum } from '../../shared/services/consts-enums-functions';
 import { ECLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as fromECLReducer from './ecl.reducers';
 import * as ECLActions from './ecl.actions';
 import * as RTLActions from '../../store/rtl.actions';
-import { WebSocketClientService } from '../../shared/services/web-socket.service';
 
 @Injectable()
 export class ECLEffects implements OnDestroy {
@@ -48,57 +48,58 @@ export class ECLEffects implements OnDestroy {
       subscribe((rtlStore) => {
         if (
           ((rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) &&
-          (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
-          (rtlStore.apisCallStatus.FetchOnchainBalance.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchOnchainBalance.status === APICallStatusEnum.ERROR) &&
-          (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR)) &&
+            (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
+            (rtlStore.apisCallStatus.FetchOnchainBalance.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchOnchainBalance.status === APICallStatusEnum.ERROR) &&
+            (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR)) &&
           !this.flgInitialized
         ) {
           this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
           this.flgInitialized = true;
         }
       });
-    this.wsService.wsMessages.pipe(
+    this.wsService.eclWSMessages.pipe(
       takeUntil(this.unSubs[1]),
-      withLatestFrom(this.store.select('ecl'))).subscribe(([newMessage, eclStore]) => {
-      let snackBarMsg = '';
-      if (newMessage) {
-        switch (newMessage.type) {
-          case WSEventTypeEnum.PAYMENT_SENT:
-            if (newMessage && newMessage.id && this.latestPaymentRes === newMessage.id) {
-              this.flgReceivedPaymentUpdateFromWS = true;
-              snackBarMsg = 'Payment Sent: ' + ((newMessage.paymentHash) ? ('with payment hash ' + newMessage.paymentHash) : JSON.stringify(newMessage));
-              this.handleSendPaymentStatus(snackBarMsg);
-            }
-            break;
-          case WSEventTypeEnum.PAYMENT_FAILED:
-            if (newMessage && newMessage.id && this.latestPaymentRes === newMessage.id) {
-              this.flgReceivedPaymentUpdateFromWS = true;
-              snackBarMsg = 'Payment Failed: ' + ((newMessage.failures && newMessage.failures.length && newMessage.failures.length > 0 && newMessage.failures[0].t) ? newMessage.failures[0].t : (newMessage.failures && newMessage.failures.length && newMessage.failures.length > 0 && newMessage.failures[0].e && newMessage.failures[0].e.failureMessage) ? newMessage.failures[0].e.failureMessage : JSON.stringify(newMessage));
-              this.handleSendPaymentStatus(snackBarMsg);
-            }
-            break;
-          case WSEventTypeEnum.PAYMENT_RECEIVED:
-            this.store.dispatch(new ECLActions.UpdateInvoice(newMessage));
-            break;
-          case WSEventTypeEnum.CHANNEL_STATE_CHANGED:
-            if ((<ChannelStateUpdate>newMessage).currentState === 'NORMAL' || (<ChannelStateUpdate>newMessage).currentState === 'CLOSED') {
-              this.rawChannelsList = this.rawChannelsList.map((channel) => {
-                if (channel.channelId === (<ChannelStateUpdate>newMessage).channelId && channel.nodeId === (<ChannelStateUpdate>newMessage).remoteNodeId) {
-                  channel.state = (<ChannelStateUpdate>newMessage).currentState;
-                }
-                return channel;
-              });
-              this.setChannelsAndStatusAndBalances();
-            } else {
-              this.store.dispatch(new ECLActions.UpdateChannelState(newMessage));
-            }
-            break;
-          default:
-            this.logger.info('Received Event from WS: ' + JSON.stringify(newMessage));
-            break;
+      withLatestFrom(this.store.select('ecl'))).
+      subscribe(([newMessage, eclStore]) => {
+        let snackBarMsg = '';
+        if (newMessage) {
+          switch (newMessage.type) {
+            case ECLWSEventTypeEnum.PAYMENT_SENT:
+              if (newMessage && newMessage.id && this.latestPaymentRes === newMessage.id) {
+                this.flgReceivedPaymentUpdateFromWS = true;
+                snackBarMsg = 'Payment Sent: ' + ((newMessage.paymentHash) ? ('with payment hash ' + newMessage.paymentHash) : JSON.stringify(newMessage));
+                this.handleSendPaymentStatus(snackBarMsg);
+              }
+              break;
+            case ECLWSEventTypeEnum.PAYMENT_FAILED:
+              if (newMessage && newMessage.id && this.latestPaymentRes === newMessage.id) {
+                this.flgReceivedPaymentUpdateFromWS = true;
+                snackBarMsg = 'Payment Failed: ' + ((newMessage.failures && newMessage.failures.length && newMessage.failures.length > 0 && newMessage.failures[0].t) ? newMessage.failures[0].t : (newMessage.failures && newMessage.failures.length && newMessage.failures.length > 0 && newMessage.failures[0].e && newMessage.failures[0].e.failureMessage) ? newMessage.failures[0].e.failureMessage : JSON.stringify(newMessage));
+                this.handleSendPaymentStatus(snackBarMsg);
+              }
+              break;
+            case ECLWSEventTypeEnum.PAYMENT_RECEIVED:
+              this.store.dispatch(new ECLActions.UpdateInvoice(newMessage));
+              break;
+            case ECLWSEventTypeEnum.CHANNEL_STATE_CHANGED:
+              if ((<ChannelStateUpdate>newMessage).currentState === 'NORMAL' || (<ChannelStateUpdate>newMessage).currentState === 'CLOSED') {
+                this.rawChannelsList = this.rawChannelsList.map((channel) => {
+                  if (channel.channelId === (<ChannelStateUpdate>newMessage).channelId && channel.nodeId === (<ChannelStateUpdate>newMessage).remoteNodeId) {
+                    channel.state = (<ChannelStateUpdate>newMessage).currentState;
+                  }
+                  return channel;
+                });
+                this.setChannelsAndStatusAndBalances();
+              } else {
+                this.store.dispatch(new ECLActions.UpdateChannelState(newMessage));
+              }
+              break;
+            default:
+              this.logger.info('Received Event from WS: ' + JSON.stringify(newMessage));
+              break;
+          }
         }
-      }
-    });
+      });
   }
 
   infoFetchECL = createEffect(() => this.actions.pipe(

@@ -9,7 +9,7 @@ export class LoggerService {
     switch (msgJSON.level) {
       case 'ERROR':
         if (msgJSON.error) {
-          msgStr = msgStr + ': ' + ((msgJSON.error.error && msgJSON.error.error.message && typeof msgJSON.error.error.message === 'string') ? msgJSON.error.error.message : typeof msgJSON.error === 'object' ? JSON.stringify(msgJSON.error) : (typeof msgJSON.error === 'string') ? msgJSON.error : '');
+          msgStr = msgStr + ': ' + ((msgJSON.error.error && msgJSON.error.error.message && typeof msgJSON.error.error.message === 'string') ? msgJSON.error.error.message : (typeof msgJSON.error === 'object' && msgJSON.error.stack) ? JSON.stringify(msgJSON.error.stack) : (typeof msgJSON.error === 'object') ? JSON.stringify(msgJSON.error) : (typeof msgJSON.error === 'string') ? msgJSON.error : '');
         } else {
           msgStr = msgStr + '.';
         }
@@ -32,9 +32,10 @@ export class LoggerService {
         break;
 
       case 'DEBUG':
+      case 'INFO':
         if (!msgJSON.selectedNode) {
           console.log(prepMsgData(msgJSON, msgStr));
-        } else if (msgJSON.selectedNode && msgJSON.selectedNode.log_level === 'DEBUG') {
+        } else if (msgJSON.selectedNode && (msgJSON.selectedNode.log_level === 'DEBUG')) {
           if (typeof msgJSON.data !== 'string' && msgJSON.data && msgJSON.data.length && msgJSON.data.length > 0) {
             msgStr = msgJSON.data.reduce((accumulator, dataEle) => accumulator + (typeof dataEle === 'object' ? JSON.stringify(dataEle) : (typeof dataEle === 'string') ? dataEle : '') + ', ', msgStr + ': [');
             msgStr = msgStr.slice(0, -2) + ']';
@@ -46,10 +47,6 @@ export class LoggerService {
             fs.appendFile(msgJSON.selectedNode.log_file, msgStr, () => { });
           }
         }
-        break;
-
-      case 'INFO':
-        console.log(prepMsgData(msgJSON, msgStr));
         break;
 
       default:

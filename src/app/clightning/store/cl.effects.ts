@@ -11,10 +11,11 @@ import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 import { SessionService } from '../../shared/services/session.service';
+import { WebSocketClientService } from '../../shared/services/web-socket.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer, ForwardingEvent } from '../../shared/models/clModels';
-import { AlertTypeEnum, APICallStatusEnum, UI_MESSAGES } from '../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLWSEventTypeEnum } from '../../shared/services/consts-enums-functions';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as RTLActions from '../../store/rtl.actions';
@@ -26,7 +27,7 @@ export class CLEffects implements OnDestroy {
 
   CHILD_API_URL = API_URL + '/cl';
   private flgInitialized = false;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(
     private actions: Actions,
@@ -36,6 +37,7 @@ export class CLEffects implements OnDestroy {
     private commonService: CommonService,
     private logger: LoggerService,
     private router: Router,
+    private wsService: WebSocketClientService,
     private location: Location
   ) {
     this.store.select('cl').
@@ -43,14 +45,47 @@ export class CLEffects implements OnDestroy {
       subscribe((rtlStore) => {
         if (
           ((rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) &&
-          (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
-          (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) &&
-          (rtlStore.apisCallStatus.FetchBalance.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchBalance.status === APICallStatusEnum.ERROR) &&
-          (rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.ERROR)) &&
+            (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
+            (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) &&
+            (rtlStore.apisCallStatus.FetchBalance.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchBalance.status === APICallStatusEnum.ERROR) &&
+            (rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.ERROR)) &&
           !this.flgInitialized
         ) {
           this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
           this.flgInitialized = true;
+        }
+      });
+    this.wsService.clWSMessages.pipe(
+      takeUntil(this.unSubs[1]),
+      withLatestFrom(this.store.select('cl'))).
+      subscribe(([newMessage, clStore]) => {
+        // let snackBarMsg = '';
+        if (newMessage) {
+          switch (newMessage.type) {
+            case CLWSEventTypeEnum.INVOICE:
+              this.logger.warn(newMessage);
+              // if (newMessage && newMessage.id && this.latestPaymentRes === newMessage.id) {
+              //   this.flgReceivedPaymentUpdateFromWS = true;
+              //   snackBarMsg = 'Payment Sent: ' + ((newMessage.paymentHash) ? ('with payment hash ' + newMessage.paymentHash) : JSON.stringify(newMessage));
+              //   this.handleSendPaymentStatus(snackBarMsg);
+              // }
+              break;
+            case CLWSEventTypeEnum.SEND_PAYMENT:
+              this.logger.warn(newMessage);
+              // if (newMessage && newMessage.id && this.latestPaymentRes === newMessage.id) {
+              //   this.flgReceivedPaymentUpdateFromWS = true;
+              //   snackBarMsg = 'Payment Failed: ' + ((newMessage.failures && newMessage.failures.length && newMessage.failures.length > 0 && newMessage.failures[0].t) ? newMessage.failures[0].t : (newMessage.failures && newMessage.failures.length && newMessage.failures.length > 0 && newMessage.failures[0].e && newMessage.failures[0].e.failureMessage) ? newMessage.failures[0].e.failureMessage : JSON.stringify(newMessage));
+              //   this.handleSendPaymentStatus(snackBarMsg);
+              // }
+              break;
+            case CLWSEventTypeEnum.BLOCK_HEIGHT:
+              this.logger.warn(newMessage);
+              // this.store.dispatch(new ECLActions.UpdateInvoice(newMessage));
+              break;
+            default:
+              this.logger.info('Received Event from WS: ' + JSON.stringify(newMessage));
+              break;
+          }
         }
       });
   }
@@ -69,7 +104,7 @@ export class CLEffects implements OnDestroy {
           map((info) => {
             this.logger.info(info);
             if (info.chains && info.chains.length && info.chains[0] &&
-                (typeof info.chains[0] === 'object' && info.chains[0].hasOwnProperty('chain') && info.chains[0].chain.toLowerCase().indexOf('bitcoin') < 0)
+              (typeof info.chains[0] === 'object' && info.chains[0].hasOwnProperty('chain') && info.chains[0].chain.toLowerCase().indexOf('bitcoin') < 0)
             ) {
               this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.COMPLETED }));
               this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_NODE_INFO));
@@ -674,8 +709,7 @@ export class CLEffects implements OnDestroy {
           type: CLActions.SET_FAILED_FORWARDING_HISTORY_CL,
           payload: this.commonService.sortDescByKey([...ffhRes[0], ...ffhRes[1]], 'received_time')
         };
-      }),
-      catchError((err) => {
+      }), catchError((err) => {
         this.handleErrorWithAlert('GetFailedForwardingHistory', UI_MESSAGES.NO_SPINNER, 'Get Failed Forwarding History Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=failed', err);
         return of({ type: RTLActions.VOID });
       }));

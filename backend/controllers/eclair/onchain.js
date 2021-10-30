@@ -16,13 +16,16 @@ export const arrangeBalances = (body) => {
     return body;
 };
 export const getNewAddress = (req, res, next) => {
-    logger.log({ level: 'INFO', fileName: 'OnChain', msg: 'Generating New Address..' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'Generating New Address..' });
     options = common.getOptions(req);
+    if (options.error) {
+        return res.status(options.statusCode).json({ message: options.message, error: options.error });
+    }
     options.url = req.session.selectedNode.ln_server_url + '/getnewaddress';
     options.form = {};
     request.post(options).then((body) => {
-        logger.log({ level: 'DEBUG', fileName: 'Onchain', msg: 'New Address Generated', data: body });
-        logger.log({ level: 'INFO', fileName: 'OnChain', msg: 'New Address Generated' });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Onchain', msg: 'New Address Generated', data: body });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'New Address Generated' });
         res.status(200).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'OnChain', 'Get New Address Error', req.session.selectedNode);
@@ -30,8 +33,11 @@ export const getNewAddress = (req, res, next) => {
     });
 };
 export const getBalance = (req, res, next) => {
-    logger.log({ level: 'INFO', fileName: 'OnChain', msg: 'Getting On Chain Balance..' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'Getting On Chain Balance..' });
     options = common.getOptions(req);
+    if (options.error) {
+        return res.status(options.statusCode).json({ message: options.message, error: options.error });
+    }
     options.url = req.session.selectedNode.ln_server_url + '/onchainbalance';
     options.form = {};
     if (common.read_dummy_data) {
@@ -39,8 +45,8 @@ export const getBalance = (req, res, next) => {
     }
     else {
         request.post(options).then((body) => {
-            logger.log({ level: 'DEBUG', fileName: 'Onchain', msg: 'Balance Received', data: body });
-            logger.log({ level: 'INFO', fileName: 'OnChain', msg: 'On Chain Balance Received' });
+            logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Onchain', msg: 'Balance Received', data: body });
+            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'On Chain Balance Received' });
             res.status(200).json(arrangeBalances(body));
         }).
             catch((errRes) => {
@@ -50,20 +56,23 @@ export const getBalance = (req, res, next) => {
     }
 };
 export const getTransactions = (req, res, next) => {
-    logger.log({ level: 'INFO', fileName: 'OnChain', msg: 'Getting On Chain Transactions..' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'Getting On Chain Transactions..' });
     options = common.getOptions(req);
+    if (options.error) {
+        return res.status(options.statusCode).json({ message: options.message, error: options.error });
+    }
     options.url = req.session.selectedNode.ln_server_url + '/onchaintransactions';
     options.form = {
         count: req.query.count,
         skip: req.query.skip
     };
-    logger.log({ level: 'DEBUG', fileName: 'OnChain', msg: 'Getting On Chain Transactions Options', data: options.form });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'OnChain', msg: 'Getting On Chain Transactions Options', data: options.form });
     request.post(options).then((body) => {
-        logger.log({ level: 'DEBUG', fileName: 'OnChain', msg: 'Transaction Received', data: body });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'OnChain', msg: 'Transaction Received', data: body });
         if (body && body.length > 0) {
             body = common.sortDescByKey(body, 'timestamp');
         }
-        logger.log({ level: 'INFO', fileName: 'OnChain', msg: 'On Chain Transaction Received' });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'On Chain Transaction Received' });
         res.status(200).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'OnChain', 'Get Transactions Error', req.session.selectedNode);
@@ -71,18 +80,21 @@ export const getTransactions = (req, res, next) => {
     });
 };
 export const sendFunds = (req, res, next) => {
-    logger.log({ level: 'INFO', fileName: 'OnChain', msg: 'Sending On Chain Funds..' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'Sending On Chain Funds..' });
     options = common.getOptions(req);
+    if (options.error) {
+        return res.status(options.statusCode).json({ message: options.message, error: options.error });
+    }
     options.url = req.session.selectedNode.ln_server_url + '/sendonchain';
     options.form = {
         address: req.body.address,
         amountSatoshis: req.body.amount,
         confirmationTarget: req.body.blocks
     };
-    logger.log({ level: 'DEBUG', fileName: 'Onchain', msg: 'Send Funds Options', data: options.form });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Onchain', msg: 'Send Funds Options', data: options.form });
     request.post(options).then((body) => {
-        logger.log({ level: 'DEBUG', fileName: 'Onchain', msg: 'Send Funds Response', data: body });
-        logger.log({ level: 'INFO', fileName: 'OnChain', msg: 'On Chain Fund Sent' });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Onchain', msg: 'Send Funds Response', data: body });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'On Chain Fund Sent' });
         res.status(201).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'OnChain', 'Send Funds Error', req.session.selectedNode);

@@ -12,7 +12,7 @@ export const isAuthenticated = (req, res, next) => {
     next();
   } catch (error) {
     const errMsg = 'Authentication Failed! Please Login First!';
-    const err = common.handleError({ statusCode: 401, message: 'Authentication Error', error: errMsg }, 'AuthCheck', errMsg, req);
+    const err = common.handleError({ statusCode: 401, message: 'Authentication Error', error: errMsg }, 'AuthCheck', errMsg, req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
   }
 };

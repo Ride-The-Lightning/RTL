@@ -17,9 +17,13 @@ export const forwardingHistory = (req, res, next) => {
     });
 };
 export const getAllForwardingEvents = (req, start, end, offset, callback) => {
-    logger.log({ level: 'INFO', fileName: 'Switch', msg: 'Getting Forwarding Events..' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Switch', msg: 'Getting Forwarding Events..' });
     if (offset === 0) {
         responseData = { forwarding_events: [], last_offset_index: 0 };
+    }
+    if (!req.session.selectedNode) {
+        const err = common.handleError({ message: 'Session Expired after a day\'s inactivity.', statusCode: 401 }, 'Balance', 'Get Balance Error', req.session.selectedNode);
+        return callback({ message: err.message, error: err.error, statusCode: err.statusCode });
     }
     options = common.getOptions(req);
     options.url = req.session.selectedNode.ln_server_url + '/v1/switch';
@@ -33,10 +37,10 @@ export const getAllForwardingEvents = (req, start, end, offset, callback) => {
     options.form.num_max_events = num_max_events;
     options.form.index_offset = offset;
     options.form = JSON.stringify(options.form);
-    logger.log({ level: 'DEBUG', fileName: 'Switch', msg: 'Forwarding History Params', data: options.form });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Switch', msg: 'Forwarding History Params', data: options.form });
     return request.post(options).then((body) => {
-        logger.log({ level: 'DEBUG', fileName: 'Switch', msg: 'Forwarding History', data: body });
-        logger.log({ level: 'INFO', fileName: 'Switch', msg: 'Forwarding Events Received' });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Switch', msg: 'Forwarding History', data: body });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Switch', msg: 'Forwarding Events Received' });
         if (body.forwarding_events) {
             responseData.forwarding_events.push(...body.forwarding_events);
         }

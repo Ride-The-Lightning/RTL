@@ -18,7 +18,7 @@ export class ECLWebSocketClient {
             }
             this.waitTime = (this.waitTime >= 16) ? 16 : (this.waitTime * 2);
             this.reconnectTimeOut = setTimeout(() => {
-                this.logger.log({ level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Reconnecting to the Eclair\'s Websocket Server.' });
+                this.logger.log({ selectedNode: this.selectedNode, level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Reconnecting to the Eclair\'s Websocket Server.' });
                 this.connect(this.selectedNode);
                 this.reconnectTimeOut = null;
             }, this.waitTime * 1000);
@@ -44,19 +44,20 @@ export class ECLWebSocketClient {
             }
         };
         this.onClientOpen = () => {
-            this.logger.log({ level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Connected to the Eclair\'s Websocket Server.' });
+            this.logger.log({ selectedNode: this.selectedNode, level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Connected to the Eclair\'s Websocket Server.' });
             this.waitTime = 0.5;
         };
         this.onClientClose = (e) => {
             if (this.selectedNode.ln_implementation === 'ECL') {
-                this.logger.log({ level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Web socket disconnected, will reconnect again..' });
+                this.logger.log({ selectedNode: this.selectedNode, level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Web socket disconnected, will reconnect again..' });
                 this.webSocketClient.close();
                 this.reconnet();
             }
         };
         this.onClientMessage = (msg) => {
-            this.logger.log({ level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Received message from the server..', data: msg.data });
+            this.logger.log({ selectedNode: this.selectedNode, level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Received message from the server..', data: msg.data });
             msg = (typeof msg.data === 'string') ? JSON.parse(msg.data) : msg.data;
+            msg['source'] = 'ECL';
             const msgStr = JSON.stringify(msg);
             if (this.prevMessage.hasOwnProperty(msg.type) && this.prevMessage[msg.type] === msgStr) {
                 return;
@@ -65,14 +66,14 @@ export class ECLWebSocketClient {
             this.wsServer.sendEventsToAllWSClients(msgStr);
         };
         this.onClientError = (err) => {
-            this.logger.log({ level: 'ERROR', fileName: 'ECLWebSocket', msg: 'Web socket error', error: err });
+            this.logger.log({ selectedNode: this.selectedNode, level: 'ERROR', fileName: 'ECLWebSocket', msg: 'Web socket error', error: err });
             this.wsServer.sendErrorToAllWSClients(err);
             this.webSocketClient.close();
             this.reconnet();
         };
         this.disconnect = () => {
             if (this.webSocketClient && this.webSocketClient.readyState === WebSocket.OPEN) {
-                this.logger.log({ level: 'INFO', fileName: 'ECLWebSocket', msg: 'Disconnecting from the Eclair\'s Websocket Server.' });
+                this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'ECLWebSocket', msg: 'Disconnecting from the Eclair\'s Websocket Server.' });
                 this.webSocketClient.close();
             }
         };

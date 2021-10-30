@@ -6,12 +6,13 @@ const logger: LoggerService = Logger;
 const common: CommonService = Common;
 
 export const getBalance = (req, res, next) => {
-  logger.log({ level: 'INFO', fileName: 'Balance', msg: 'Getting Balance..' });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Balance', msg: 'Getting Balance..' });
   options = common.getOptions(req);
+  if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/balance/' + (req.params.source).toLowerCase();
   options.qs = req.query;
   request(options).then((body) => {
-    logger.log({ level: 'DEBUG', fileName: 'Balance', msg: '[Request params, Request Query, Balance Received]', data: [req.params, req.query, body] });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Balance', msg: '[Request params, Request Query, Balance Received]', data: [req.params, req.query, body] });
     if (body) {
       if (req.params.source === 'blockchain') {
         if (!body.total_balance) { body.total_balance = 0; }
@@ -22,7 +23,7 @@ export const getBalance = (req, res, next) => {
         if (!body.balance) { body.balance = 0; }
         if (!body.pending_open_balance) { body.pending_open_balance = 0; }
       }
-      logger.log({ level: 'INFO', fileName: 'Balance', msg: 'Balance Received' });
+      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Balance', msg: 'Balance Received' });
       res.status(200).json(body);
     }
   }).catch((errRes) => {

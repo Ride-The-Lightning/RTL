@@ -8,19 +8,20 @@ const common: CommonService = Common;
 export const getAliasFromPubkey = (lnServerUrl, pubkey) => {
   options.url = lnServerUrl + '/v1/graph/node/' + pubkey;
   return request(options).then((res) => {
-    logger.log({ level: 'DEBUG', fileName: 'Graph', msg: 'Alias', data: res.node.alias });
+    logger.log({ selectedNode: null, level: 'DEBUG', fileName: 'Graph', msg: 'Alias', data: res.node.alias });
     return res.node.alias;
   }).
     catch((err) => pubkey.substring(0, 17) + '...');
 };
 
 export const getDescribeGraph = (req, res, next) => {
-  logger.log({ level: 'INFO', fileName: 'Graph', msg: 'Getting Network Graph..' });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Getting Network Graph..' });
   options = common.getOptions(req);
+  if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/graph';
   request.get(options).then((body) => {
-    logger.log({ level: 'DEBUG', fileName: 'Graph', msg: 'Describe Graph Received', data: body });
-    logger.log({ level: 'INFO', fileName: 'Graph', msg: 'Network Graph Received' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Describe Graph Received', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Network Graph Received' });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Graph', 'Describe Graph Error', req.session.selectedNode);
@@ -29,12 +30,13 @@ export const getDescribeGraph = (req, res, next) => {
 };
 
 export const getGraphInfo = (req, res, next) => {
-  logger.log({ level: 'INFO', fileName: 'Graph', msg: 'Getting Graph Information..' });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Getting Graph Information..' });
   options = common.getOptions(req);
+  if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/graph/info';
   request.get(options).then((body) => {
-    logger.log({ level: 'DEBUG', fileName: 'Graph', msg: 'Network Information After Rounding and Conversion', data: body });
-    logger.log({ level: 'INFO', fileName: 'Graph', msg: 'Graph Information Received' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Network Information After Rounding and Conversion', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Graph Information Received' });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Graph', 'Graph Information Error', req.session.selectedNode);
@@ -43,12 +45,13 @@ export const getGraphInfo = (req, res, next) => {
 };
 
 export const getGraphNode = (req, res, next) => {
-  logger.log({ level: 'INFO', fileName: 'Graph', msg: 'Getting Graph Node Information..' });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Getting Graph Node Information..' });
   options = common.getOptions(req);
+  if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/graph/node/' + req.params.pubKey;
   request(options).then((body) => {
-    logger.log({ level: 'DEBUG', fileName: 'Graph', msg: 'Node Info Received', data: body });
-    logger.log({ level: 'INFO', fileName: 'Graph', msg: 'Graph Node Information Received' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Node Info Received', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Graph Node Information Received' });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Graph', 'Get Node Info Error', req.session.selectedNode);
@@ -57,12 +60,13 @@ export const getGraphNode = (req, res, next) => {
 };
 
 export const getGraphEdge = (req, res, next) => {
-  logger.log({ level: 'INFO', fileName: 'Graph', msg: 'Getting Graph Edge Information..' });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Getting Graph Edge Information..' });
   options = common.getOptions(req);
+  if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/graph/edge/' + req.params.chanid;
   request(options).then((body) => {
-    logger.log({ level: 'DEBUG', fileName: 'Graph', msg: 'Edge Info Received', data: body });
-    logger.log({ level: 'INFO', fileName: 'Graph', msg: 'Graph Edge Information Received' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Edge Info Received', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Graph Edge Information Received' });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Graph', 'Get Edge Info Error', req.session.selectedNode);
@@ -71,15 +75,16 @@ export const getGraphEdge = (req, res, next) => {
 };
 
 export const getQueryRoutes = (req, res, next) => {
-  logger.log({ level: 'INFO', fileName: 'Graph', msg: 'Getting Graph Routes..' });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Getting Graph Routes..' });
   options = common.getOptions(req);
+  if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/graph/routes/' + req.params.destPubkey + '/' + req.params.amount;
   if (req.query.outgoing_chan_id) {
     options.url = options.url + '?outgoing_chan_id=' + req.query.outgoing_chan_id;
   }
-  logger.log({ level: 'DEBUG', fileName: 'Graph', msg: 'Query Routes URL', data: options.url });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Query Routes URL', data: options.url });
   request(options).then((body) => {
-    logger.log({ level: 'DEBUG', fileName: 'Graph', msg: 'Query Routes Received', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Query Routes Received', data: body });
     if (body.routes && body.routes.length && body.routes.length > 0 && body.routes[0].hops && body.routes[0].hops.length && body.routes[0].hops.length > 0) {
       return Promise.all(body.routes[0].hops.map((hop) => getAliasFromPubkey(req.session.selectedNode.ln_server_url, hop.pub_key))).
         then((values) => {
@@ -88,8 +93,8 @@ export const getQueryRoutes = (req, res, next) => {
             hop.pubkey_alias = values[i];
             return hop;
           });
-          logger.log({ level: 'DEBUG', fileName: 'Graph', msg: 'Hops with Alias', data: body });
-          logger.log({ level: 'INFO', fileName: 'Graph', msg: 'Graph Routes Received' });
+          logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Hops with Alias', data: body });
+          logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Graph Routes Received' });
           res.status(200).json(body);
         }).
         catch((errRes) => {
@@ -97,7 +102,7 @@ export const getQueryRoutes = (req, res, next) => {
           return res.status(err.statusCode).json({ message: err.message, error: err.error });
         });
     } else {
-      logger.log({ level: 'INFO', fileName: 'Graph', msg: 'Graph Routes Received' });
+      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Graph Routes Received' });
       return res.status(200).json(body);
     }
   }).catch((errRes) => {
@@ -107,11 +112,12 @@ export const getQueryRoutes = (req, res, next) => {
 };
 
 export const getRemoteFeePolicy = (req, res, next) => {
-  logger.log({ level: 'INFO', fileName: 'Graph', msg: 'Getting Remote Fee Policy..' });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Getting Remote Fee Policy..' });
   options = common.getOptions(req);
+  if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/graph/edge/' + req.params.chanid;
   request(options).then((body) => {
-    logger.log({ level: 'DEBUG', fileName: 'Graph', msg: 'Edge Info Received', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Edge Info Received', data: body });
     let remoteNodeFee = {};
     if (body.node1_pub === req.params.localPubkey) {
       remoteNodeFee = {
@@ -126,7 +132,7 @@ export const getRemoteFeePolicy = (req, res, next) => {
         fee_rate_milli_msat: body.node1_policy.fee_rate_milli_msat
       };
     }
-    logger.log({ level: 'INFO', fileName: 'Graph', msg: 'Remote Fee Policy Received' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Remote Fee Policy Received' });
     res.status(200).json(remoteNodeFee);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Graph', 'Remote Fee Policy Error', req.session.selectedNode);
@@ -136,11 +142,12 @@ export const getRemoteFeePolicy = (req, res, next) => {
 
 export const getAliasesForPubkeys = (req, res, next) => {
   options = common.getOptions(req);
+  if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   if (req.query.pubkeys) {
     const pubkeyArr = req.query.pubkeys.split(',');
     return Promise.all(pubkeyArr.map((pubkey) => getAliasFromPubkey(req.session.selectedNode.ln_server_url, pubkey))).
       then((values) => {
-        logger.log({ level: 'DEBUG', fileName: 'Graph', msg: 'Node Alias', data: values });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Node Alias', data: values });
         res.status(200).json(values);
       }).
       catch((errRes) => {
