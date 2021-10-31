@@ -238,6 +238,7 @@ export class DecodeOffer implements Action {
 
   readonly type = DECODE_OFFER_PAYMENT_CL;
   constructor(public payload: {routeParam: string, fromDialog: boolean}) {}
+
 }
 
 
@@ -258,7 +259,7 @@ export class SetDecodedPayment implements Action {
 export class SendPayment implements Action {
 
   readonly type = SEND_PAYMENT_CL;
-  constructor(public payload: {uiMessage: string, fromDialog: boolean, invoice?: string, amount?: number, pubkey?: string}) {}
+  constructor(public payload: {uiMessage: string, fromDialog: boolean, invoice?: string, amount?: number, pubkey?: string, label?: string}) {}
 
 }
 
@@ -389,7 +390,8 @@ export class FetchInvoices implements Action {
 export class FetchOfferInvoice implements Action {
 
   readonly type = FETCH_OFFER_INVOICE_CL;
-  constructor(public payload: {offer: string, msatoshi?: string, quantity?: number, recurrence_counter?: string, recurrence_label?: string}) {}
+  constructor(public payload: {offer: string, msatoshi?: string, quantity?: number, recurrence_counter?: number, recurrence_start?: number, recurrence_label?: string}) {}
+
 }
 
 
@@ -397,6 +399,7 @@ export class SetOfferInvoice implements Action {
 
   readonly type = SET_OFFER_INVOICE_CL;
   constructor(public payload: FetchInvoice) {}
+
 }
 
 export class SetInvoices implements Action {

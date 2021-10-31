@@ -52,12 +52,20 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public paymentDecodedHint = '';
   public selActiveChannel: Channel = {};
   public activeChannels = {};
+  public panelOpenState = true;
   public feeLimit = null;
   public offerAmount = null;
+  public timeUnit = null;
+  public period = null;
+  public recurrenceCounterNeeded = false;
+  public recurrenceCounter = null;
+  public recurrenceLabel = '';
+  public recurrentPayment = false;
   public selFeeLimitType = FEE_LIMIT_TYPES[0];
   public feeLimitTypes = FEE_LIMIT_TYPES;
   public paymentError = '';
   public isCompatibleVersion = false;
+  public timeUnitConvertor: string[] = ['seconds', 'minutes', 'hours', 'days', 'weeks'];
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<CLLightningSendPaymentsComponent>, private store: Store<fromRTLReducer.RTLState>, private clEffects: CLEffects, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions) {}
@@ -148,16 +156,12 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   }
 
   sendOfferPayment() {
-    if (this.offerAmount) {
-      this.store.dispatch(new CLActions.FetchOfferInvoice({ offer: this.offerRequest, msatoshi: this.offerAmount + 'msats' }));
-    } else {
-      this.store.dispatch(new CLActions.FetchOfferInvoice({ offer: this.offerRequest }));
-    }
+    this.store.dispatch(new CLActions.FetchOfferInvoice({ offer: this.offerRequest, msatoshi: this.offerAmount + 'msats', recurrence_counter: this.recurrenceCounter, recurrence_label: this.recurrenceLabel }));
     this.clEffects.setOfferInvoiceCL.subscribe((fetchedInvoice) => {
       if (this.zeroAmtInvoice) {
-        this.store.dispatch(new CLActions.SendPayment({ uiMessage: UI_MESSAGES.SEND_PAYMENT, invoice: fetchedInvoice.invoice, amount: this.paymentAmount * 1000, fromDialog: true }));
+        this.store.dispatch(new CLActions.SendPayment({ label: this.recurrenceLabel, uiMessage: UI_MESSAGES.SEND_PAYMENT, invoice: fetchedInvoice.invoice, amount: this.paymentAmount * 1000, fromDialog: true }));
       } else {
-        this.store.dispatch(new CLActions.SendPayment({ uiMessage: UI_MESSAGES.SEND_PAYMENT, invoice: fetchedInvoice.invoice, fromDialog: true }));
+        this.store.dispatch(new CLActions.SendPayment({ label: this.recurrenceLabel, uiMessage: UI_MESSAGES.SEND_PAYMENT, invoice: fetchedInvoice.invoice, fromDialog: true }));
       }
     });
   }
@@ -203,6 +207,15 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.store.dispatch(new CLActions.DecodeOffer({ routeParam: this.offerRequest, fromDialog: true }));
       this.clEffects.setDecodedOfferCL.subscribe((decodedOffer) => {
         this.offerDecoded = decodedOffer;
+        if (this.offerDecoded.recurrence) {
+          this.panelOpenState = true;
+          this.recurrentPayment = true;
+          this.timeUnit = this.timeUnitConvertor[this.offerDecoded.recurrence.time_unit];
+          this.period = this.offerDecoded.recurrence.period;
+          this.recurrenceCounterNeeded = true;
+        } else {
+          this.recurrentPayment = false;
+        }
         if (this.offerDecoded.amount_msat) {
           this.noAmountOffer = false;
           const msat = (this.offerDecoded.amount_msat).split('m')[0];

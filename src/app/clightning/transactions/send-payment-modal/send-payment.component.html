@@ -60,4 +60,22 @@
     <mat-hint>It is a zero amount invoice, enter amount to be paid.</mat-hint>
     <mat-error *ngIf="!offerAmount">Payment amount is required.</mat-error>
   </mat-form-field>
+  <mat-expansion-panel *ngIf="recurrentPayment" (opened)="panelOpenState = true" (closed)="panelOpenState = false" [expanded]="panelOpenState">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Frequency
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    Repeats Every {{period}} {{timeUnit}}
+  </mat-expansion-panel>
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <mat-form-field class="flex-item" fxFlex="45" *ngIf="recurrenceCounterNeeded">
+      <input matInput placeholder="Recurrence Counter" name="counter" [(ngModel)]="recurrenceCounter" required>
+      <mat-error *ngIf="!recurrenceCounter">Recurrence Counter is required.</mat-error>
+    </mat-form-field>
+    <mat-form-field class="flex-item" fxFlex="45" *ngIf="recurrenceCounterNeeded">
+      <input matInput placeholder="Recurrence Label" name="label" [(ngModel)]="recurrenceLabel" required>
+      <mat-error *ngIf="!recurrenceLabel">Recurrence Label is required.</mat-error>
+    </mat-form-field>
+  </div>
 </ng-template>

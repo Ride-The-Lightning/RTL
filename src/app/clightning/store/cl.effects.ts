@@ -461,7 +461,7 @@ export class CLEffects implements OnDestroy {
     mergeMap((action: CLActions.FetchOfferInvoice) => {
       this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.FETCH_INVOICE));
       this.store.dispatch(new CLActions.UpdateAPICallStatus({ action: 'FetchOfferInvoice', status: APICallStatusEnum.INITIATED }));
-      return this.httpClient.post(this.CHILD_API_URL + environment.FETCH_INVOICE_API, {offer: action.payload.offer, msatoshi: action.payload.msatoshi, quantity: action.payload.quantity, recurrence_counter: action.payload.recurrence_counter, recurrence_label: action.payload.recurrence_label}).
+      return this.httpClient.post(this.CHILD_API_URL + environment.FETCH_INVOICE_API, { offer: action.payload.offer, msatoshi: action.payload.msatoshi, quantity: action.payload.quantity, recurrence_counter: action.payload.recurrence_counter, recurrence_start: action.payload.recurrence_start, recurrence_label: action.payload.recurrence_label }).
         pipe(
           map((fetchedInvoice: any) => {
             this.logger.info(fetchedInvoice);
@@ -482,13 +482,13 @@ export class CLEffects implements OnDestroy {
 
   setOfferInvoiceCL = createEffect(
     () => this.actions.pipe(
-    ofType(CLActions.SET_OFFER_INVOICE_CL), 
-    map((action: CLActions.SetOfferInvoice) => {
-      this.logger.info(action.payload);
-      return action.payload;
-    })
-  ),
-  { dispatch: false }
+      ofType(CLActions.SET_OFFER_INVOICE_CL),
+      map((action: CLActions.SetOfferInvoice) => {
+        this.logger.info(action.payload);
+        return action.payload;
+      })
+    ),
+    { dispatch: false }
   )
 
   decodeOfferPaymentCL = createEffect(() => this.actions.pipe(
