@@ -6,7 +6,7 @@ class CSRF {
         this.logger = Logger;
     }
     mount(app) {
-        this.logger.log({ level: 'DEBUG', fileName: 'CSRF', msg: 'Setting up CSRF.' });
+        this.logger.log({ selectedNode: null, level: 'DEBUG', fileName: 'CSRF', msg: 'Setting up CSRF.' });
         if (process.env.NODE_ENV !== 'development') {
             app.use((req, res, next) => this.csrfProtection(req, res, next));
         }

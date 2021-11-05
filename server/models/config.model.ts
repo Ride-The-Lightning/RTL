@@ -62,7 +62,8 @@ export class LogJSONObj {
     public msg?: string,
     public data?: string | any | any[],
     public error?: string | any,
-    public fileName?: string
+    public fileName?: string,
+    public selectedNode?: CommonSelectedNode
   ) { }
 
 }

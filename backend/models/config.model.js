@@ -47,11 +47,12 @@ export class NodeSettingsConfiguration {
     }
 }
 export class LogJSONObj {
-    constructor(level, msg, data, error, fileName) {
+    constructor(level, msg, data, error, fileName, selectedNode) {
         this.level = level;
         this.msg = msg;
         this.data = data;
         this.error = error;
         this.fileName = fileName;
+        this.selectedNode = selectedNode;
     }
 }

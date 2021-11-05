@@ -4,21 +4,20 @@ import { takeUntil } from 'rxjs/operators';
 import { WebSocketSubject } from 'rxjs/webSocket';
 
 import { LoggerService } from '../../shared/services/logger.service';
-import { WSEventTypeEnum } from './consts-enums-functions';
 import { SessionService } from './session.service';
 
 @Injectable()
 export class WebSocketClientService implements OnDestroy {
 
-  public wsMessages: BehaviorSubject<any> = new BehaviorSubject(null);
-  private prevMessage = {};
+  public clWSMessages: BehaviorSubject<any> = new BehaviorSubject(null);
+  public eclWSMessages: BehaviorSubject<any> = new BehaviorSubject(null);
   private wsUrl = '';
   private socket: WebSocketSubject<any> | null;
   private RETRY_SECONDS = 5;
   private RECONNECT_TIMEOUT = null;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private sessionService: SessionService) {}
+  constructor(private logger: LoggerService, private sessionService: SessionService) { }
 
   connectWebSocket(finalWSUrl: string) {
     this.wsUrl = finalWSUrl;
@@ -49,13 +48,6 @@ export class WebSocketClientService implements OnDestroy {
     }
   }
 
-  sendMessage(msg: any) {
-    if (this.socket) {
-      const payload = { token: 'token_from_session_service', message: msg };
-      this.socket.next(payload);
-    }
-  }
-
   private subscribeToMessages() {
     this.socket.pipe(takeUntil(this.unSubs[1])).subscribe({
       next: (msg) => {
@@ -63,11 +55,19 @@ export class WebSocketClientService implements OnDestroy {
         if (msg.error) {
           this.handleError(msg.error);
         } else {
-          const msgStr = JSON.stringify(msg);
-          if (this.prevMessage.hasOwnProperty(msg.type) && this.prevMessage[msg.type] === msgStr) { return; }
-          this.prevMessage[msg.type] = msgStr;
           this.logger.info('Next Message from WS:' + JSON.stringify(msg));
-          this.wsMessages.next(msg);
+          switch (msg.source) {
+            case 'LND':
+              break;
+            case 'CLT':
+              this.clWSMessages.next(msg);
+              break;
+            case 'ECL':
+              this.eclWSMessages.next(msg);
+              break;
+            default:
+              break;
+          }
         }
       },
       error: (err) => this.handleError(err),
@@ -77,14 +77,17 @@ export class WebSocketClientService implements OnDestroy {
 
   private handleError(err) {
     this.logger.error(err);
-    this.wsMessages.error(err);
+    this.clWSMessages.error(err);
+    this.eclWSMessages.error(err);
     this.reconnectOnError();
   }
 
   ngOnDestroy() {
     this.closeConnection();
-    this.wsMessages.next(null);
-    this.wsMessages.complete();
+    this.clWSMessages.next(null);
+    this.clWSMessages.complete();
+    this.eclWSMessages.next(null);
+    this.eclWSMessages.complete();
   }
 
 }

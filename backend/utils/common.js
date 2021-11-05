@@ -1,40 +1,38 @@
 /* eslint-disable no-console */
 import * as fs from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, isAbsolute, resolve, sep } from 'path';
 import { fileURLToPath } from 'url';
-import * as os from 'os';
 import * as crypto from 'crypto';
 import request from 'request-promise';
+import { Logger } from './logger.js';
 export class CommonService {
     constructor() {
+        this.logger = Logger;
         this.nodes = [];
-        this.selectedNode = {};
+        this.initSelectedNode = null;
         this.rtl_conf_file_path = '';
         this.port = 3000;
         this.host = null;
-        this.path_separator = '/';
         this.rtl_pass = '';
-        this.secret_key = crypto.randomBytes(64).toString('hex');
         this.rtl_secret2fa = '';
         this.rtl_sso = 0;
         this.rtl_cookie_path = '';
         this.logout_redirect_link = '';
-        this.cookie = '';
+        this.secret_key = crypto.randomBytes(64).toString('hex');
         this.read_dummy_data = false;
-        this.platform = '/';
         this.baseHref = '/rtl';
         this.dummy_data_array_from_file = [];
         this.MONTHS = [{ name: 'JAN', days: 31 }, { name: 'FEB', days: 28 }, { name: 'MAR', days: 31 }, { name: 'APR', days: 30 }, { name: 'MAY', days: 31 }, { name: 'JUN', days: 30 }, { name: 'JUL', days: 31 }, { name: 'AUG', days: 31 }, { name: 'SEP', days: 30 }, { name: 'OCT', days: 31 }, { name: 'NOV', days: 30 }, { name: 'DEC', days: 31 }];
-        this.getSwapServerOptions = () => {
+        this.getSwapServerOptions = (req) => {
             const swapOptions = {
-                url: this.selectedNode.swap_server_url,
+                url: req.session.selectedNode.swap_server_url,
                 rejectUnauthorized: false,
                 json: true,
                 headers: { 'Grpc-Metadata-macaroon': '' }
             };
-            if (this.selectedNode.swap_macaroon_path) {
+            if (req.session.selectedNode.swap_macaroon_path) {
                 try {
-                    swapOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(this.selectedNode.swap_macaroon_path, 'loop.macaroon')).toString('hex') };
+                    swapOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(req.session.selectedNode.swap_macaroon_path, 'loop.macaroon')).toString('hex') };
                 }
                 catch (err) {
                     console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Loop macaroon Error: ' + JSON.stringify(err));
@@ -43,16 +41,16 @@ export class CommonService {
             console.log('\r\n[' + new Date().toLocaleString() + '] INFO: Common => Swap Options: ' + JSON.stringify(swapOptions));
             return swapOptions;
         };
-        this.getBoltzServerOptions = () => {
+        this.getBoltzServerOptions = (req) => {
             const boltzOptions = {
-                url: this.selectedNode.boltz_server_url,
+                url: req.session.selectedNode.boltz_server_url,
                 rejectUnauthorized: false,
                 json: true,
                 headers: { 'Grpc-Metadata-macaroon': '' }
             };
-            if (this.selectedNode.boltz_macaroon_path) {
+            if (req.session.selectedNode.boltz_macaroon_path) {
                 try {
-                    boltzOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(this.selectedNode.boltz_macaroon_path, 'admin.macaroon')).toString('hex') };
+                    boltzOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(req.session.selectedNode.boltz_macaroon_path, 'admin.macaroon')).toString('hex') };
                 }
                 catch (err) {
                     console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Boltz macaroon Error: ' + JSON.stringify(err));
@@ -61,44 +59,46 @@ export class CommonService {
             console.log('\r\n[' + new Date().toLocaleString() + '] INFO: Common => Boltz Options: ' + JSON.stringify(boltzOptions));
             return boltzOptions;
         };
-        this.getSelLNServerUrl = () => this.selectedNode.ln_server_url;
-        this.getOptions = () => {
-            this.selectedNode.options.method = (this.selectedNode && this.selectedNode.ln_implementation && this.selectedNode.ln_implementation.toUpperCase() !== 'ECL') ? 'GET' : 'POST';
-            delete this.selectedNode.options.form;
-            this.selectedNode.options.qs = {};
-            return this.selectedNode.options;
-        };
-        this.updateSelectedNodeOptions = () => {
-            if (!this.selectedNode) {
-                this.selectedNode = {};
+        this.getOptions = (req) => {
+            if (req.session.selectedNode && req.session.selectedNode.options) {
+                req.session.selectedNode.options.method = (req.session.selectedNode.ln_implementation && req.session.selectedNode.ln_implementation.toUpperCase() !== 'ECL') ? 'GET' : 'POST';
+                delete req.session.selectedNode.options.form;
+                req.session.selectedNode.options.qs = {};
+                return req.session.selectedNode.options;
             }
-            this.selectedNode.options = {
+            return this.handleError({ statusCode: 401, message: 'Session expired after a day\'s inactivity.' }, 'Session Expired', 'Session Expiry Error', this.initSelectedNode);
+        };
+        this.updateSelectedNodeOptions = (req) => {
+            if (!req.session.selectedNode) {
+                req.session.selectedNode = {};
+            }
+            req.session.selectedNode.options = {
                 url: '',
                 rejectUnauthorized: false,
                 json: true,
                 form: null
             };
             try {
-                if (this.selectedNode && this.selectedNode.ln_implementation) {
-                    switch (this.selectedNode.ln_implementation.toUpperCase()) {
+                if (req.session.selectedNode && req.session.selectedNode.ln_implementation) {
+                    switch (req.session.selectedNode.ln_implementation.toUpperCase()) {
                         case 'CLT':
-                            this.selectedNode.options.headers = { macaroon: Buffer.from(fs.readFileSync(join(this.selectedNode.macaroon_path, 'access.macaroon'))).toString('base64') };
+                            req.session.selectedNode.options.headers = { macaroon: Buffer.from(fs.readFileSync(join(req.session.selectedNode.macaroon_path, 'access.macaroon'))).toString('base64') };
                             break;
                         case 'ECL':
-                            this.selectedNode.options.headers = { authorization: 'Basic ' + Buffer.from(':' + this.selectedNode.ln_api_password).toString('base64') };
+                            req.session.selectedNode.options.headers = { authorization: 'Basic ' + Buffer.from(':' + req.session.selectedNode.ln_api_password).toString('base64') };
                             break;
                         default:
-                            this.selectedNode.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(this.selectedNode.macaroon_path, 'admin.macaroon')).toString('hex') };
+                            req.session.selectedNode.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(req.session.selectedNode.macaroon_path, 'admin.macaroon')).toString('hex') };
                             break;
                     }
                 }
-                if (this.selectedNode) {
-                    console.log('\r\n[' + new Date().toLocaleString() + '] INFO: Common => Updated Node Options: ' + JSON.stringify(this.selectedNode.options));
+                if (req.session.selectedNode) {
+                    console.log('\r\n[' + new Date().toLocaleString() + '] INFO: Common => Updated Node Options: ' + JSON.stringify(req.session.selectedNode.options));
                 }
                 return { status: 200, message: 'Updated Successfully!' };
             }
             catch (err) {
-                this.selectedNode.options = {
+                req.session.selectedNode.options = {
                     url: '',
                     rejectUnauthorized: false,
                     json: true,
@@ -108,7 +108,7 @@ export class CommonService {
                 return { status: 502, message: err };
             }
         };
-        this.setOptions = () => {
+        this.setOptions = (req) => {
             if (this.nodes[0].options && this.nodes[0].options.headers) {
                 return;
             }
@@ -146,14 +146,14 @@ export class CommonService {
                     }
                     console.log('\r\n[' + new Date().toLocaleString() + '] INFO: Common => Set Node Options: ' + JSON.stringify(node.options));
                 });
-                this.updateSelectedNodeOptions();
+                this.updateSelectedNodeOptions(req);
             }
         };
         this.findNode = (selNodeIndex) => this.nodes.find((node) => node.index === selNodeIndex);
-        this.replaceNode = (selNodeIndex, newNode) => {
-            const foundIndex = this.nodes.findIndex((node) => node.index === selNodeIndex);
+        this.replaceNode = (req, newNode) => {
+            const foundIndex = this.nodes.findIndex((node) => node.index === req.session.selectedNode.index);
             this.nodes.splice(foundIndex, 1, newNode);
-            this.selectedNode = this.findNode(selNodeIndex);
+            req.session.selectedNode = this.findNode(req.session.selectedNode.index);
         };
         this.convertTimestampToTime = (num) => {
             const myDate = new Date(+num * 1000);
@@ -198,9 +198,12 @@ export class CommonService {
             array.unshift(newlyAddedRecord[0]);
             return array;
         };
-        this.handleError = (errRes, fileName, errMsg) => {
+        this.handleError = (errRes, fileName, errMsg, selectedNode) => {
             const err = JSON.parse(JSON.stringify(errRes));
-            switch (this.selectedNode && this.selectedNode.ln_implementation) {
+            if (!selectedNode) {
+                selectedNode = { ln_implementation: '' };
+            }
+            switch (selectedNode.ln_implementation) {
                 case 'LND':
                     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
                         delete err.options.headers['Grpc-Metadata-macaroon'];
@@ -233,8 +236,8 @@ export class CommonService {
             }
             const msgStr = '\r\n[' + new Date().toLocaleString() + '] ERROR: ' + fileName + ' => ' + errMsg + ': ' + (typeof err === 'object' ? JSON.stringify(err) : (typeof err === 'string') ? err : 'Unknown Error');
             console.error(msgStr);
-            if (this.selectedNode && this.selectedNode.log_file) {
-                fs.appendFile(this.selectedNode.log_file, msgStr, () => { });
+            if (selectedNode.log_file && selectedNode.log_file !== '') {
+                fs.appendFile(selectedNode.log_file, msgStr, () => { });
             }
             const newErrorObj = {
                 statusCode: err.statusCode ? err.statusCode : err.status ? err.status : (err.error && err.error.code && err.error.code === 'ECONNREFUSED') ? 503 : 500,
@@ -253,8 +256,8 @@ export class CommonService {
             req.connection.remoteAddress ||
             req.socket.remoteAddress ||
             (req.connection.socket ? req.connection.socket.remoteAddress : null));
-        this.getDummyData = (dataKey) => {
-            const dummyDataFile = this.rtl_conf_file_path + this.path_separator + 'ECLDummyData.log';
+        this.getDummyData = (dataKey, lnImplementation) => {
+            const dummyDataFile = this.rtl_conf_file_path + sep + 'ECLDummyData.log';
             return new Promise((resolve, reject) => {
                 if (this.dummy_data_array_from_file.length === 0) {
                     fs.readFile(dummyDataFile, 'utf8', (err, data) => {
@@ -268,29 +271,74 @@ export class CommonService {
                         }
                         else {
                             this.dummy_data_array_from_file = data.split('\n');
-                            resolve(this.filterData(dataKey));
+                            resolve(this.filterData(dataKey, lnImplementation));
                         }
                     });
                 }
                 else {
-                    resolve(this.filterData(dataKey));
+                    resolve(this.filterData(dataKey, lnImplementation));
                 }
             });
         };
-        this.refreshCookie = (cookieFile) => {
+        this.readCookie = () => {
+            const exists = fs.existsSync(this.rtl_cookie_path);
+            if (exists) {
+                try {
+                    return fs.readFileSync(this.rtl_cookie_path, 'utf-8');
+                }
+                catch (err) {
+                    this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while reading cookie: \n' + err });
+                    throw new Error(err);
+                }
+            }
+            else {
+                try {
+                    const directoryName = dirname(this.rtl_cookie_path);
+                    this.createDirectory(directoryName);
+                    fs.writeFileSync(this.rtl_cookie_path, crypto.randomBytes(64).toString('hex'));
+                    return fs.readFileSync(this.rtl_cookie_path, 'utf-8');
+                }
+                catch (err) {
+                    this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while reading the cookie: \n' + err });
+                    throw new Error(err);
+                }
+            }
+        };
+        this.refreshCookie = () => {
             try {
-                fs.writeFileSync(cookieFile, crypto.randomBytes(64).toString('hex'));
-                this.cookie = fs.readFileSync(cookieFile, 'utf-8');
+                fs.writeFileSync(this.rtl_cookie_path, crypto.randomBytes(64).toString('hex'));
             }
             catch (err) {
                 console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Something went wrong while refreshing cookie: \n' + err);
                 throw new Error(err);
             }
         };
+        this.createDirectory = (directoryName) => {
+            const initDir = isAbsolute(directoryName) ? sep : '';
+            directoryName.split(sep).reduce((parentDir, childDir) => {
+                const curDir = resolve(parentDir, childDir);
+                try {
+                    if (!fs.existsSync(curDir)) {
+                        fs.mkdirSync(curDir);
+                    }
+                }
+                catch (err) {
+                    if (err.code !== 'EEXIST') {
+                        if (err.code === 'ENOENT') {
+                            throw new Error(`ENOENT: No such file or directory, mkdir '${directoryName}'. Ensure that channel backup path separator is '${sep}'`);
+                        }
+                        else {
+                            throw err;
+                        }
+                    }
+                }
+                return curDir;
+            }, initDir);
+        };
         this.replacePasswordWithHash = (multiPassHashed) => {
             this.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : join(dirname(fileURLToPath(import.meta.url)), '../..');
             try {
-                const RTLConfFile = this.rtl_conf_file_path + this.path_separator + 'RTL-Config.json';
+                const RTLConfFile = this.rtl_conf_file_path + sep + 'RTL-Config.json';
                 const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
                 config.multiPassHashed = multiPassHashed;
                 delete config.multiPass;
@@ -303,7 +351,7 @@ export class CommonService {
             }
         };
         this.getAllNodeAllChannelBackup = (node) => {
-            const channel_backup_file = node.channel_backup_path + this.path_separator + 'channel-all.bak';
+            const channel_backup_file = node.channel_backup_path + sep + 'channel-all.bak';
             const options = {
                 url: node.ln_server_url + '/v1/channels/backup',
                 rejectUnauthorized: false,
@@ -339,9 +387,28 @@ export class CommonService {
             });
         };
         this.getMonthDays = (selMonth, selYear) => ((selMonth === 1 && selYear % 4 === 0) ? (this.MONTHS[selMonth].days + 1) : this.MONTHS[selMonth].days);
-        this.filterData = (dataKey) => {
+        this.logEnvVariables = (req) => {
+            const selNode = req.session.selectedNode;
+            if (selNode && selNode.index) {
+                if (fs.existsSync(selNode.log_file)) {
+                    fs.writeFile(selNode.log_file, '', () => { });
+                }
+                this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'PORT: ' + this.port });
+                this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'HOST: ' + this.host });
+                this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'SSO: ' + this.rtl_sso });
+                this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + selNode.index });
+                this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'INDEX: ' + selNode.index });
+                this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN NODE: ' + selNode.ln_node });
+                this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + selNode.ln_implementation });
+                this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + selNode.fiat_conversion });
+                this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + selNode.currency_unit });
+                this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + selNode.ln_server_url });
+                this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + this.logout_redirect_link + '\r\n' });
+            }
+        };
+        this.filterData = (dataKey, lnImplementation) => {
             let search_string = '';
-            if (this.selectedNode.ln_implementation === 'ECL') {
+            if (lnImplementation === 'ECL') {
                 switch (dataKey) {
                     case 'GetInfo':
                         search_string = 'INFO: GetInfo => Get Info Response: ';
@@ -369,7 +436,7 @@ export class CommonService {
                         break;
                 }
             }
-            else if (this.selectedNode.ln_implementation === 'CLT') {
+            else if (lnImplementation === 'CLT') {
                 switch (dataKey) {
                     case 'GetInfo':
                         search_string = 'DEBUG: GetInfo => Node Information. ';
@@ -416,8 +483,6 @@ export class CommonService {
             const dataStr = foundDataLine ? foundDataLine.substring((foundDataLine.indexOf(search_string)) + search_string.length) : '{}';
             return JSON.parse(dataStr);
         };
-        this.platform = os.platform();
-        this.path_separator = (this.platform === 'win32') ? '\\' : '/';
     }
 }
 export const Common = new CommonService();

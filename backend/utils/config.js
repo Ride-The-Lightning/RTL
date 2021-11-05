@@ -1,6 +1,6 @@
 import * as os from 'os';
 import * as fs from 'fs';
-import { join, dirname, isAbsolute, resolve, sep } from 'path';
+import { join, dirname, sep } from 'path';
 import { fileURLToPath } from 'url';
 import * as crypto from 'crypto';
 import ini from 'ini';
@@ -87,7 +87,7 @@ export class ConfigService {
             let updateLogFlag = false;
             this.common.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : join(this.directoryName, '../..');
             try {
-                const RTLConfFile = this.common.rtl_conf_file_path + this.common.path_separator + 'RTL-Config.json';
+                const RTLConfFile = this.common.rtl_conf_file_path + sep + 'RTL-Config.json';
                 const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
                 config.nodes.forEach((node) => {
                     if (node.Settings.hasOwnProperty('enableLogging')) {
@@ -232,30 +232,30 @@ export class ConfigService {
                         this.common.nodes[idx].boltz_macaroon_path = '';
                     }
                     this.common.nodes[idx].bitcoind_config_path = process.env.BITCOIND_CONFIG_PATH ? process.env.BITCOIND_CONFIG_PATH : (node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
-                    this.common.nodes[idx].channel_backup_path = process.env.CHANNEL_BACKUP_PATH ? process.env.CHANNEL_BACKUP_PATH : (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : this.common.rtl_conf_file_path + this.common.path_separator + 'backend' + this.common.path_separator + 'channels-backup' + this.common.path_separator + 'node-' + node.index;
+                    this.common.nodes[idx].channel_backup_path = process.env.CHANNEL_BACKUP_PATH ? process.env.CHANNEL_BACKUP_PATH : (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : this.common.rtl_conf_file_path + sep + 'channels-backup' + sep + 'node-' + node.index;
                     try {
-                        this.createDirectory(this.common.nodes[idx].channel_backup_path);
-                        const exists = fs.existsSync(this.common.nodes[idx].channel_backup_path + this.common.path_separator + 'channel-all.bak');
+                        this.common.createDirectory(this.common.nodes[idx].channel_backup_path);
+                        const exists = fs.existsSync(this.common.nodes[idx].channel_backup_path + sep + 'channel-all.bak');
                         if (!exists) {
                             try {
                                 if (this.common.nodes[idx].ln_implementation === 'LND') {
                                     this.common.getAllNodeAllChannelBackup(this.common.nodes[idx]);
                                 }
                                 else {
-                                    const createStream = fs.createWriteStream(this.common.nodes[idx].channel_backup_path + this.common.path_separator + 'channel-all.bak');
+                                    const createStream = fs.createWriteStream(this.common.nodes[idx].channel_backup_path + sep + 'channel-all.bak');
                                     createStream.end();
                                 }
                             }
                             catch (err) {
-                                this.logger.log({ level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while creating backup file: \n' + err });
+                                this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while creating backup file: \n' + err });
                             }
                         }
                     }
                     catch (err) {
-                        this.logger.log({ level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while creating the backup directory: \n' + err });
+                        this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while creating the backup directory: \n' + err });
                     }
-                    this.common.nodes[idx].log_file = this.common.rtl_conf_file_path + '/backend/logs/RTL-Node-' + node.index + '.log';
-                    this.logger.log({ level: 'DEBUG', fileName: 'Config', msg: 'Node Information', data: this.common.nodes[idx] });
+                    this.common.nodes[idx].log_file = this.common.rtl_conf_file_path + '/logs/RTL-Node-' + node.index + '.log';
+                    this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'DEBUG', fileName: 'Config', msg: 'Node Information', data: this.common.nodes[idx] });
                     const log_file = this.common.nodes[idx].log_file;
                     if (fs.existsSync(log_file)) {
                         fs.writeFile(log_file, '', () => { });
@@ -263,12 +263,12 @@ export class ConfigService {
                     else {
                         try {
                             const directoryName = dirname(log_file);
-                            this.createDirectory(directoryName);
+                            this.common.createDirectory(directoryName);
                             const createStream = fs.createWriteStream(log_file);
                             createStream.end();
                         }
                         catch (err) {
-                            this.logger.log({ level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while creating log file ' + log_file + ': \n' + err });
+                            this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while creating log file ' + log_file + ': \n' + err });
                         }
                     }
                 });
@@ -300,82 +300,16 @@ export class ConfigService {
             else if (config.SSO && config.SSO.logoutRedirectLink) {
                 this.common.logout_redirect_link = config.SSO.logoutRedirectLink;
             }
-            if (+this.common.rtl_sso) {
-                if (!this.common.rtl_cookie_path || this.common.rtl_cookie_path.trim() === '') {
-                    this.errMsg = 'Please set rtlCookiePath value for single sign on option!';
-                }
-                else {
-                    this.readCookie(this.common.rtl_cookie_path);
-                }
-            }
-        };
-        this.createDirectory = (directoryName) => {
-            const initDir = isAbsolute(directoryName) ? sep : '';
-            directoryName.split(sep).reduce((parentDir, childDir) => {
-                const curDir = resolve(parentDir, childDir);
-                try {
-                    if (!fs.existsSync(curDir)) {
-                        fs.mkdirSync(curDir);
-                    }
-                }
-                catch (err) {
-                    if (err.code !== 'EEXIST') {
-                        if (err.code === 'ENOENT') {
-                            throw new Error(`ENOENT: No such file or directory, mkdir '${directoryName}'. Ensure that channel backup path separator is '${(this.platform === 'win32') ? '\\\\' : '/'}'`);
-                        }
-                        else {
-                            throw err;
-                        }
-                    }
-                }
-                return curDir;
-            }, initDir);
-        };
-        this.readCookie = (cookieFile) => {
-            const exists = fs.existsSync(cookieFile);
-            if (exists) {
-                try {
-                    this.common.cookie = fs.readFileSync(cookieFile, 'utf-8');
-                }
-                catch (err) {
-                    this.logger.log({ level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while reading cookie: \n' + err });
-                    throw new Error(err);
-                }
-            }
-            else {
-                try {
-                    const directoryName = dirname(cookieFile);
-                    this.createDirectory(directoryName);
-                    fs.writeFileSync(cookieFile, crypto.randomBytes(64).toString('hex'));
-                    this.common.cookie = fs.readFileSync(cookieFile, 'utf-8');
-                }
-                catch (err) {
-                    this.logger.log({ level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while reading the cookie: \n' + err });
-                    throw new Error(err);
-                }
-            }
-        };
-        this.logEnvVariables = () => {
-            if (this.common.selectedNode && this.common.selectedNode.index) {
-                this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'PORT: ' + this.common.port });
-                this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'HOST: ' + this.common.host });
-                this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'SSO: ' + this.common.rtl_sso });
-                this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + this.common.selectedNode.index });
-                this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'INDEX: ' + this.common.selectedNode.index });
-                this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN NODE: ' + this.common.selectedNode.ln_node });
-                this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + this.common.selectedNode.ln_implementation });
-                this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + this.common.selectedNode.fiat_conversion });
-                this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + this.common.selectedNode.currency_unit });
-                this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + this.common.selectedNode.ln_server_url });
-                this.logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + this.common.logout_redirect_link + '\r\n' });
+            if (+this.common.rtl_sso && (!this.common.rtl_cookie_path || this.common.rtl_cookie_path.trim() === '')) {
+                this.errMsg = 'Please set rtlCookiePath value for single sign on option!';
             }
         };
         this.setSelectedNode = (config) => {
             if (config.defaultNodeIndex) {
-                this.common.selectedNode = this.common.findNode(config.defaultNodeIndex);
+                this.common.initSelectedNode = this.common.findNode(config.defaultNodeIndex);
             }
             else {
-                this.common.selectedNode = this.common.findNode(this.common.nodes[0].index);
+                this.common.initSelectedNode = this.common.findNode(this.common.nodes[0].index);
             }
         };
         this.modifyJsonMultiNodeConfig = (confFileFullPath) => {
@@ -532,32 +466,32 @@ export class ConfigService {
                 const singleNodeExists = fs.existsSync(singleNodeConfFile);
                 const multiNodeExists = fs.existsSync(multiNodeConfFile);
                 if ((singleNodeExists && multiNodeExists) || (!singleNodeExists && multiNodeExists)) {
-                    this.logger.log({ level: 'INFO', fileName: 'Config', msg: 'Start...config migration for file', data: multiNodeConfFile });
+                    this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'Config', msg: 'Start...config migration for file', data: multiNodeConfFile });
                     this.modifyJsonMultiNodeConfig(confFileFullPath);
-                    this.logger.log({ level: 'INFO', fileName: 'Config', msg: 'End...config migration' });
+                    this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'Config', msg: 'End...config migration' });
                 }
                 else if (singleNodeExists && !multiNodeExists) {
-                    this.logger.log({ level: 'INFO', fileName: 'Config', msg: 'Start...config migration for file ', data: singleNodeConfFile });
+                    this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'Config', msg: 'Start...config migration for file ', data: singleNodeConfFile });
                     this.modifyIniSingleNodeConfig(confFileFullPath);
-                    this.logger.log({ level: 'INFO', fileName: 'Config', msg: 'End...config migration' });
+                    this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'Config', msg: 'End...config migration' });
                 }
                 else if (!singleNodeExists && !multiNodeExists) {
                     if (!fs.existsSync(confFileFullPath)) {
-                        this.logger.log({ level: 'INFO', fileName: 'Config', msg: 'Start...config creation at ', data: confFileFullPath });
+                        this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'Config', msg: 'Start...config creation at ', data: confFileFullPath });
                         fs.writeFileSync(confFileFullPath, JSON.stringify(this.setDefaultConfig(), null, 2), 'utf-8');
-                        this.logger.log({ level: 'INFO', fileName: 'Config', msg: 'End...config creation' });
+                        this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'Config', msg: 'End...config creation' });
                     }
                 }
             }
             catch (err) {
-                this.logger.log({ level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while upgrading the RTL config file: \n' + err });
+                this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while upgrading the RTL config file: \n' + err });
                 throw new Error(err);
             }
         };
         this.setServerConfiguration = () => {
             try {
                 this.common.rtl_conf_file_path = (process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH : join(this.directoryName, '../..');
-                const confFileFullPath = this.common.rtl_conf_file_path + this.common.path_separator + 'RTL-Config.json';
+                const confFileFullPath = this.common.rtl_conf_file_path + sep + 'RTL-Config.json';
                 if (!fs.existsSync(confFileFullPath)) {
                     this.upgradeConfig(confFileFullPath);
                 }
@@ -565,10 +499,9 @@ export class ConfigService {
                 this.updateLogByLevel();
                 this.validateNodeConfig(config);
                 this.setSelectedNode(config);
-                this.logEnvVariables();
             }
             catch (err) {
-                this.logger.log({ level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while configuring the node server: \n' + err });
+                this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while configuring the node server: \n' + err });
                 throw new Error(err);
             }
         };

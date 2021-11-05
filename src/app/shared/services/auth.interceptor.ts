@@ -7,12 +7,13 @@ import { SessionService } from './session.service';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-  constructor(private sessionService: SessionService) {}
+  constructor(private sessionService: SessionService) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (this.sessionService.getItem('token')) {
       const cloned = req.clone({
-        headers: req.headers.set('Authorization', 'Bearer ' + this.sessionService.getItem('token'))
+        headers: req.headers.set('Authorization', 'Bearer ' + this.sessionService.getItem('token')),
+        withCredentials: true
       });
       return next.handle(cloned);
     } else {
