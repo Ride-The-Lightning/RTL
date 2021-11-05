@@ -59,28 +59,19 @@ export class CLEffects implements OnDestroy {
       takeUntil(this.unSubs[1]),
       withLatestFrom(this.store.select('cl'))).
       subscribe(([newMessage, clStore]) => {
-        // let snackBarMsg = '';
         if (newMessage) {
           switch (newMessage.type) {
             case CLWSEventTypeEnum.INVOICE:
-              this.logger.warn(newMessage);
-              // if (newMessage && newMessage.id && this.latestPaymentRes === newMessage.id) {
-              //   this.flgReceivedPaymentUpdateFromWS = true;
-              //   snackBarMsg = 'Payment Sent: ' + ((newMessage.paymentHash) ? ('with payment hash ' + newMessage.paymentHash) : JSON.stringify(newMessage));
-              //   this.handleSendPaymentStatus(snackBarMsg);
-              // }
+              this.logger.info(newMessage);
+              if (newMessage && newMessage.data && newMessage.data.label) {
+                this.store.dispatch(new CLActions.UpdateInvoice(newMessage.data));
+              }
               break;
             case CLWSEventTypeEnum.SEND_PAYMENT:
-              this.logger.warn(newMessage);
-              // if (newMessage && newMessage.id && this.latestPaymentRes === newMessage.id) {
-              //   this.flgReceivedPaymentUpdateFromWS = true;
-              //   snackBarMsg = 'Payment Failed: ' + ((newMessage.failures && newMessage.failures.length && newMessage.failures.length > 0 && newMessage.failures[0].t) ? newMessage.failures[0].t : (newMessage.failures && newMessage.failures.length && newMessage.failures.length > 0 && newMessage.failures[0].e && newMessage.failures[0].e.failureMessage) ? newMessage.failures[0].e.failureMessage : JSON.stringify(newMessage));
-              //   this.handleSendPaymentStatus(snackBarMsg);
-              // }
+              this.logger.info(newMessage);
               break;
             case CLWSEventTypeEnum.BLOCK_HEIGHT:
-              this.logger.warn(newMessage);
-              // this.store.dispatch(new ECLActions.UpdateInvoice(newMessage));
+              this.logger.info(newMessage);
               break;
             default:
               this.logger.info('Received Event from WS: ' + JSON.stringify(newMessage));
@@ -887,16 +878,6 @@ export class CLEffects implements OnDestroy {
     };
     this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
-    this.store.dispatch(new CLActions.FetchInvoices({ num_max_invoices: 1000000, index_offset: 0, reversed: true }));
-    this.store.dispatch(new CLActions.FetchFees());
-    this.store.dispatch(new CLActions.FetchChannels());
-    this.store.dispatch(new CLActions.FetchBalance());
-    this.store.dispatch(new CLActions.FetchLocalRemoteBalance());
-    this.store.dispatch(new CLActions.FetchFeeRates('perkw'));
-    this.store.dispatch(new CLActions.FetchFeeRates('perkb'));
-    this.store.dispatch(new CLActions.FetchPeers());
-    this.store.dispatch(new CLActions.FetchUTXOs());
-    this.store.dispatch(new CLActions.FetchPayments());
     let newRoute = this.location.path();
     if (newRoute.includes('/lnd/')) {
       newRoute = newRoute.replace('/lnd/', '/cl/');
@@ -907,6 +888,16 @@ export class CLEffects implements OnDestroy {
       newRoute = '/cl/home';
     }
     this.router.navigate([newRoute]);
+    this.store.dispatch(new CLActions.FetchInvoices({ num_max_invoices: 1000000, index_offset: 0, reversed: true }));
+    this.store.dispatch(new CLActions.FetchFees());
+    this.store.dispatch(new CLActions.FetchChannels());
+    this.store.dispatch(new CLActions.FetchBalance());
+    this.store.dispatch(new CLActions.FetchLocalRemoteBalance());
+    this.store.dispatch(new CLActions.FetchFeeRates('perkw'));
+    this.store.dispatch(new CLActions.FetchFeeRates('perkb'));
+    this.store.dispatch(new CLActions.FetchPeers());
+    this.store.dispatch(new CLActions.FetchUTXOs());
+    this.store.dispatch(new CLActions.FetchPayments());
   }
 
   handleErrorWithoutAlert(actionName: string, uiMessage: string, genericErrorMessage: string, err: { status: number, error: any }) {

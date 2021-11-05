@@ -46,10 +46,10 @@ export class LNDEffects implements OnDestroy {
       subscribe((rtlStore) => {
         if (
           ((rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) &&
-          (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
-          (rtlStore.apisCallStatus.FetchBalanceBlockchain.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchBalanceBlockchain.status === APICallStatusEnum.ERROR) &&
-          (rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.ERROR) &&
-          (rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.ERROR)) &&
+            (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
+            (rtlStore.apisCallStatus.FetchBalanceBlockchain.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchBalanceBlockchain.status === APICallStatusEnum.ERROR) &&
+            (rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.ERROR) &&
+            (rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.ERROR)) &&
           !this.flgInitialized
         ) {
           this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
@@ -639,8 +639,7 @@ export class LNDEffects implements OnDestroy {
             type: LNDActions.SET_PAYMENTS_LND,
             payload: res
           };
-        }),
-        catchError((err: any) => {
+        }), catchError((err: any) => {
           this.handleErrorWithoutAlert('FetchPayments', UI_MESSAGES.NO_SPINNER, 'Fetching Payments Failed.', err);
           return of({
             type: LNDActions.SET_PAYMENTS_LND,
@@ -1135,16 +1134,6 @@ export class LNDEffects implements OnDestroy {
     };
     this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
-    this.store.dispatch(new LNDActions.FetchFees()); // Fetches monthly forwarding history as well, to count total number of events
-    this.store.dispatch(new LNDActions.FetchBalance('Blockchain'));
-    this.store.dispatch(new LNDActions.FetchAllChannels());
-    this.store.dispatch(new LNDActions.FetchPendingChannels());
-    this.store.dispatch(new LNDActions.FetchClosedChannels());
-    this.store.dispatch(new LNDActions.FetchPeers());
-    this.store.dispatch(new LNDActions.FetchNetwork());
-    this.store.dispatch(new LNDActions.GetAllLightningTransactions());
-    this.store.dispatch(new LNDActions.FetchInvoices({ num_max_invoices: 10, reversed: true }));
-    this.store.dispatch(new LNDActions.FetchPayments({ max_payments: 10, reversed: true }));
     let newRoute = this.location.path();
     if (newRoute.includes('/cl/')) {
       newRoute = newRoute.replace('/cl/', '/lnd/');
@@ -1155,6 +1144,16 @@ export class LNDEffects implements OnDestroy {
       newRoute = '/lnd/home';
     }
     this.router.navigate([newRoute]);
+    this.store.dispatch(new LNDActions.FetchFees()); // Fetches monthly forwarding history as well, to count total number of events
+    this.store.dispatch(new LNDActions.FetchBalance('Blockchain'));
+    this.store.dispatch(new LNDActions.FetchAllChannels());
+    this.store.dispatch(new LNDActions.FetchPendingChannels());
+    this.store.dispatch(new LNDActions.FetchClosedChannels());
+    this.store.dispatch(new LNDActions.FetchPeers());
+    this.store.dispatch(new LNDActions.FetchNetwork());
+    this.store.dispatch(new LNDActions.GetAllLightningTransactions());
+    this.store.dispatch(new LNDActions.FetchInvoices({ num_max_invoices: 10, reversed: true }));
+    this.store.dispatch(new LNDActions.FetchPayments({ max_payments: 10, reversed: true }));
   }
 
   handleErrorWithoutAlert(actionName: string, uiMessage: string, genericErrorMessage: string, err: { status: number, error: any }) {

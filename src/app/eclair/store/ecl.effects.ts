@@ -699,11 +699,6 @@ export class ECLEffects implements OnDestroy {
     };
     this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
-    this.store.dispatch(new ECLActions.FetchInvoices());
-    this.store.dispatch(new ECLActions.FetchChannels({ fetchPayments: true }));
-    this.store.dispatch(new ECLActions.FetchFees());
-    this.store.dispatch(new ECLActions.FetchOnchainBalance());
-    this.store.dispatch(new ECLActions.FetchPeers());
     let newRoute = this.location.path();
     if (newRoute.includes('/lnd/')) {
       newRoute = newRoute.replace('/lnd/', '/ecl/');
@@ -714,6 +709,11 @@ export class ECLEffects implements OnDestroy {
       newRoute = '/ecl/home';
     }
     this.router.navigate([newRoute]);
+    this.store.dispatch(new ECLActions.FetchInvoices());
+    this.store.dispatch(new ECLActions.FetchChannels({ fetchPayments: true }));
+    this.store.dispatch(new ECLActions.FetchFees());
+    this.store.dispatch(new ECLActions.FetchOnchainBalance());
+    this.store.dispatch(new ECLActions.FetchPeers());
   }
 
   handleErrorWithoutAlert(actionName: string, uiMessage: string, genericErrorMessage: string, err: { status: number, error: any }) {
