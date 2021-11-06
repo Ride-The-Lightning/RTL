@@ -7,7 +7,7 @@ import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 import { HelpTopic, ConfigSettingsNode } from '../../models/RTLconfig';
 import { SessionService } from '../../services/session.service';
 
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-help',
@@ -23,7 +23,7 @@ export class HelpComponent implements OnInit, OnDestroy {
   public flgLoggedIn = false;
   private unSubs = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private sessionService: SessionService) {
+  constructor(private store: Store<RTLState>, private sessionService: SessionService) {
     this.helpTopics.push(new HelpTopic({
       question: 'Getting started',
       answer: 'Funding your node is the first step to get started.\n' +

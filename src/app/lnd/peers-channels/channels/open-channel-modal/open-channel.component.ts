@@ -12,7 +12,7 @@ import { OpenChannelAlert } from '../../../../shared/models/alertData';
 import { APICallStatusEnum, TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
 
 import * as LNDActions from '../../../store/lnd.actions';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { RTLState } from '../../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-open-channel',
@@ -43,7 +43,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   public transTypes = TRANS_TYPES;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<OpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private actions: Actions) { }
+  constructor(public dialogRef: MatDialogRef<OpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<RTLState>, private actions: Actions) { }
 
   ngOnInit() {
     this.information = this.data.message.information;

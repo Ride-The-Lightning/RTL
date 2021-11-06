@@ -21,7 +21,8 @@ import * as sha256 from 'sha256';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { isAuthorized, openSnackBar } from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-on-chain-send-modal',
@@ -67,7 +68,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   confirmFormGroup: FormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<OnChainSendModalComponent>, @Inject(MAT_DIALOG_DATA) public data: OnChainSendFunds, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private decimalPipe: DecimalPipe, private snackBar: MatSnackBar, private actions: Actions, private formBuilder: FormBuilder) { }
+  constructor(public dialogRef: MatDialogRef<OnChainSendModalComponent>, @Inject(MAT_DIALOG_DATA) public data: OnChainSendFunds, private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private decimalPipe: DecimalPipe, private snackBar: MatSnackBar, private actions: Actions, private formBuilder: FormBuilder) { }
 
   ngOnInit() {
     this.sweepAll = this.data.sweepAll;
@@ -107,9 +108,9 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
     this.actions.pipe(
       takeUntil(this.unSubs[2]),
       filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND)).
-      subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.SetChannelTransactionRes) => {
+      subscribe((action: any) => {
         if (action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND) {
-          this.store.dispatch(new RTLActions.OpenSnackBar(this.sweepAll ? 'All Funds Sent Successfully!' : 'Fund Sent Successfully!'));
+          this.store.dispatch(openSnackBar({ payload: (this.sweepAll ? 'All Funds Sent Successfully!' : 'Fund Sent Successfully!') }));
           this.dialogRef.close();
         }
         if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SetChannelTransaction') {
@@ -123,7 +124,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
       return true;
     }
     this.flgValidated = false;
-    this.store.dispatch(new RTLActions.IsAuthorized(sha256(this.passwordFormGroup.controls.password.value)));
+    this.store.dispatch(isAuthorized(sha256(this.passwordFormGroup.controls.password.value)));
     this.rtlEffects.isAuthorizedRes.pipe(take(1)).
       subscribe((authRes) => {
         if (authRes !== 'ERROR') {

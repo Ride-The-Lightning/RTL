@@ -5,7 +5,7 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faUsers, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import { RTLState } from '../../store/rtl.state';
 
 @Component({
   selector: 'rtl-ecl-connections',
@@ -23,7 +23,7 @@ export class ECLConnectionsComponent implements OnInit, OnDestroy {
   public activeLink = 0;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private router: Router) {}
+  constructor(private store: Store<RTLState>, private router: Router) { }
 
   ngOnInit() {
     this.activeLink = this.links.findIndex((link) => link.link === this.router.url.substring(this.router.url.lastIndexOf('/') + 1));

@@ -22,7 +22,8 @@ import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation'
 
 import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openAlert } from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-lightning-invoices',
@@ -67,7 +68,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private datePipe: DatePipe, private actions: Actions) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private datePipe: DatePipe, private actions: Actions) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -105,7 +106,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
         this.logger.info(rtlStore);
       });
     this.actions.pipe(takeUntil(this.unSubs[1]), filter((action) => (action.type === LNDActions.SET_LOOKUP_LND || action.type === LNDActions.UPDATE_API_CALL_STATUS_LND))).
-      subscribe((resLookup: LNDActions.SetLookup | LNDActions.UpdateAPICallStatus) => {
+      subscribe((resLookup: any) => {
         if (resLookup.type === LNDActions.SET_LOOKUP_LND) {
           if (this.invoicesData.length > 0 && this.sort && this.paginator && resLookup.payload) {
             this.updateInvoicesData(JSON.parse(JSON.stringify(resLookup.payload)));
@@ -134,11 +135,13 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   }
 
   onInvoiceClick(selInvoice: Invoice) {
-    this.store.dispatch(new RTLActions.OpenAlert({
-      data: {
-        invoice: selInvoice,
-        newlyAdded: false,
-        component: InvoiceInformationComponent
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          invoice: selInvoice,
+          newlyAdded: false,
+          component: InvoiceInformationComponent
+        }
       }
     }));
   }
@@ -220,10 +223,12 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   }
 
   openCreateInvoiceModal() {
-    this.store.dispatch(new RTLActions.OpenAlert({
-      data: {
-        pageSize: this.pageSize,
-        component: CreateInvoiceComponent
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          pageSize: this.pageSize,
+          component: CreateInvoiceComponent
+        }
       }
     }));
   }

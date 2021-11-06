@@ -15,9 +15,9 @@ import { CommonService } from '../../../../../shared/services/common.service';
 import { ECLChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as ECLActions from '../../../../store/ecl.actions';
-import * as RTLActions from '../../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 import { ApiCallsListECL } from '../../../../../shared/models/apiCallsPayload';
+import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
+import { RTLState } from '../../../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-ecl-channel-inactive-table',
@@ -29,8 +29,8 @@ import { ApiCallsListECL } from '../../../../../shared/models/apiCallsPayload';
 })
 export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faEye = faEye;
   public faEyeSlash = faEyeSlash
   public inactiveChannels: Channel[];
@@ -52,7 +52,7 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -97,13 +97,17 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
     const alertTitle = (forceClose) ? 'Force Close Channel' : 'Close Channel';
     const titleMessage = (forceClose) ? ('Force closing channel: ' + channelToClose.channelId) : ('Closing channel: ' + channelToClose.channelId);
     const yesBtnText = (forceClose) ? 'Force Close' : 'Close Channel';
-    this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-      type: AlertTypeEnum.CONFIRM,
-      alertTitle: alertTitle,
-      titleMessage: titleMessage,
-      noBtnText: 'Cancel',
-      yesBtnText: yesBtnText
-    } }));
+    this.store.dispatch(openConfirmation({
+      payload: {
+        data: {
+          type: AlertTypeEnum.CONFIRM,
+          alertTitle: alertTitle,
+          titleMessage: titleMessage,
+          noBtnText: 'Cancel',
+          yesBtnText: yesBtnText
+        }
+      }
+    }));
     this.rtlEffects.closeConfirm.
       pipe(takeUntil(this.unSubs[1])).
       subscribe((confirmRes) => {
@@ -118,11 +122,15 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
   }
 
   onChannelClick(selChannel: Channel, event: any) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      channel: selChannel,
-      channelsType: 'inactive',
-      component: ECLChannelInformationComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          channel: selChannel,
+          channelsType: 'inactive',
+          component: ECLChannelInformationComponent
+        }
+      }
+    }));
   }
 
   loadChannelsTable() {

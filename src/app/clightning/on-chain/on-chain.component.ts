@@ -8,7 +8,8 @@ import { faExchangeAlt, faChartPie } from '@fortawesome/free-solid-svg-icons';
 import { CLOnChainSendModalComponent } from './on-chain-send-modal/on-chain-send-modal.component';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import * as RTLActions from '../../store/rtl.actions';
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import { RTLState } from '../../store/rtl.state';
+import { openAlert } from '../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-cl-on-chain',
@@ -27,14 +28,14 @@ export class CLOnChainComponent implements OnInit, OnDestroy {
   public selectedTable = this.tables[0];
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private router: Router, private activatedRoute: ActivatedRoute) {}
+  constructor(private store: Store<RTLState>, private router: Router, private activatedRoute: ActivatedRoute) { }
 
   ngOnInit() {
     const linkFound = this.links.find((link) => this.router.url.includes(link.link));
     this.activeLink = linkFound ? linkFound.link : this.links[0].link;
     this.selectedTable = this.tables.find((table) => table.name === this.router.url.substring(this.router.url.lastIndexOf('/') + 1));
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe((value: ResolveEnd) => {
+      subscribe((value: any) => {
         const linkFound = this.links.find((link) => value.urlAfterRedirects.includes(link.link));
         this.activeLink = linkFound ? linkFound.link : this.links[0].link;
         this.selectedTable = this.tables.find((table) => table.name === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
@@ -48,10 +49,14 @@ export class CLOnChainComponent implements OnInit, OnDestroy {
   }
 
   openSendFundsModal(sweepAll: boolean) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      sweepAll: sweepAll,
-      component: CLOnChainSendModalComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          sweepAll: sweepAll,
+          component: CLOnChainSendModalComponent
+        }
+      }
+    }));
   }
 
   onSelectedTableIndexChanged(event: number) {

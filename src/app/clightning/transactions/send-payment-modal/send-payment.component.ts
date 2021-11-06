@@ -17,7 +17,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { CLEffects } from '../../store/cl.effects';
 import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-cl-lightning-send-payments',
@@ -51,7 +51,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public isCompatibleVersion = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLLightningSendPaymentsComponent>, private store: Store<fromRTLReducer.RTLState>, private clEffects: CLEffects, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions) {}
+  constructor(public dialogRef: MatDialogRef<CLLightningSendPaymentsComponent>, private store: Store<RTLState>, private clEffects: CLEffects, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions) { }
 
   ngOnInit() {
     this.store.select('cl').
@@ -60,8 +60,8 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
         this.selNode = rtlStore.nodeSettings;
         this.activeChannels = rtlStore.allChannels.filter((channel) => channel.state === 'CHANNELD_NORMAL' && channel.connected);
         this.isCompatibleVersion =
-        this.commonService.isVersionCompatible(rtlStore.information.version, '0.9.0') &&
-        this.commonService.isVersionCompatible(rtlStore.information.api_version, '0.4.0');
+          this.commonService.isVersionCompatible(rtlStore.information.version, '0.9.0') &&
+          this.commonService.isVersionCompatible(rtlStore.information.api_version, '0.4.0');
         this.logger.info(rtlStore);
       });
     this.actions.pipe(
@@ -84,7 +84,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       });
   }
 
-  onSendPayment(): boolean|void {
+  onSendPayment(): boolean | void {
     if ((this.paymentType === 'invoice' && !this.paymentRequest) || (this.paymentType === 'keysend' && (!this.pubkey || this.pubkey.trim() === '' || !this.keysendAmount || this.keysendAmount <= 0))) {
       return true;
     }
@@ -110,11 +110,13 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
             if (this.selNode.fiatConversion) {
               this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
                 pipe(takeUntil(this.unSubs[2])).
-                subscribe({ next: (data) => {
-                  this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
-                }, error: (error) => {
-                  this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
-                } });
+                subscribe({
+                  next: (data) => {
+                    this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
+                  }, error: (error) => {
+                    this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
+                  }
+                });
             } else {
               this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
             }
@@ -156,11 +158,13 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
           if (this.selNode.fiatConversion) {
             this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
               pipe(takeUntil(this.unSubs[3])).
-              subscribe({ next: (data) => {
-                this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
-              }, error: (error) => {
-                this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
-              } });
+              subscribe({
+                next: (data) => {
+                  this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
+                }, error: (error) => {
+                  this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
+                }
+              });
           } else {
             this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
           }

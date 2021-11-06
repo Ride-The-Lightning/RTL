@@ -8,7 +8,8 @@ import { OnChainGeneratedAddressComponent } from '../../../shared/components/dat
 import { CLEffects } from '../../store/cl.effects';
 import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openAlert } from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-cl-on-chain-receive',
@@ -21,7 +22,7 @@ export class CLOnChainReceiveComponent {
   public selectedAddressType = ADDRESS_TYPES[0];
   public newAddress = '';
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private clEffects: CLEffects) {}
+  constructor(private store: Store<RTLState>, private clEffects: CLEffects) { }
 
   onGenerateAddress() {
     this.store.dispatch(new CLActions.GetNewAddress(this.selectedAddressType));
@@ -29,12 +30,14 @@ export class CLOnChainReceiveComponent {
       pipe(take(1)).
       subscribe((newAddress) => {
         this.newAddress = newAddress;
-        this.store.dispatch(new RTLActions.OpenAlert({
-          width: '58%',
-          data: {
-            address: this.newAddress,
-            addressType: this.selectedAddressType.addressTp,
-            component: OnChainGeneratedAddressComponent
+        this.store.dispatch(openAlert({
+          payload: {
+            width: '58%',
+            data: {
+              address: this.newAddress,
+              addressType: this.selectedAddressType.addressTp,
+              component: OnChainGeneratedAddressComponent
+            }
           }
         }));
       });

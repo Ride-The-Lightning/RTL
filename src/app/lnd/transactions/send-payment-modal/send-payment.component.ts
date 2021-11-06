@@ -16,7 +16,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { DataService } from '../../../shared/services/data.service';
 
 import * as LNDActions from '../../store/lnd.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-lightning-send-payments',
@@ -44,7 +44,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   public paymentError = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<LightningSendPaymentsComponent>, private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions, private dataService: DataService) {}
+  constructor(public dialogRef: MatDialogRef<LightningSendPaymentsComponent>, private store: Store<RTLState>, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions, private dataService: DataService) { }
 
   ngOnInit() {
     this.store.select('lnd').
@@ -113,7 +113,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     }
   }
 
-  onSendPayment(): boolean|void {
+  onSendPayment(): boolean | void {
     if (this.selectedChannelCtrl.value && typeof this.selectedChannelCtrl.value === 'string') {
       this.onSelectedChannelChanged();
     }
@@ -155,47 +155,51 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.paymentReq.control.setErrors(null);
       this.zeroAmtInvoice = false;
       this.dataService.decodePayment(this.paymentRequest, true).
-        pipe(take(1)).subscribe({ next: (decodedPayment: PayRequest) => {
-          this.paymentDecoded = decodedPayment;
-          this.selectedChannelCtrl.setValue(null);
-          this.onAdvancedPanelToggle(true, true);
-          if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
-            this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
+        pipe(take(1)).subscribe({
+          next: (decodedPayment: PayRequest) => {
+            this.paymentDecoded = decodedPayment;
+            this.selectedChannelCtrl.setValue(null);
+            this.onAdvancedPanelToggle(true, true);
+            if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
+              this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
+            }
+            if (this.paymentDecoded.num_satoshis && this.paymentDecoded.num_satoshis !== '' && this.paymentDecoded.num_satoshis !== '0') {
+              this.filteredMinAmtActvChannels = this.filterChannels();
+              if (this.filteredMinAmtActvChannels.length && this.filteredMinAmtActvChannels.length > 0) {
+                this.selectedChannelCtrl.enable();
+              } else {
+                this.selectedChannelCtrl.disable();
+              }
+              this.zeroAmtInvoice = false;
+              if (this.selNode.fiatConversion) {
+                this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
+                  pipe(takeUntil(this.unSubs[4])).
+                  subscribe({
+                    next: (data) => {
+                      this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats (' + data.symbol + ' ' + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
+                    }, error: (error) => {
+                      this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None') + '. Unable to convert currency.';
+                    }
+                  });
+              } else {
+                this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
+              }
+            } else {
+              this.zeroAmtInvoice = true;
+              this.filteredMinAmtActvChannels = this.activeChannels;
+              if (this.filteredMinAmtActvChannels.length && this.filteredMinAmtActvChannels.length > 0) {
+                this.selectedChannelCtrl.enable();
+              } else {
+                this.selectedChannelCtrl.disable();
+              }
+              this.paymentDecodedHint = 'Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
+            }
+          }, error: (err) => {
+            this.logger.error(err);
+            this.paymentDecodedHint = 'ERROR: ' + err.message;
+            this.paymentReq.control.setErrors({ decodeError: true });
           }
-          if (this.paymentDecoded.num_satoshis && this.paymentDecoded.num_satoshis !== '' && this.paymentDecoded.num_satoshis !== '0') {
-            this.filteredMinAmtActvChannels = this.filterChannels();
-            if (this.filteredMinAmtActvChannels.length && this.filteredMinAmtActvChannels.length > 0) {
-              this.selectedChannelCtrl.enable();
-            } else {
-              this.selectedChannelCtrl.disable();
-            }
-            this.zeroAmtInvoice = false;
-            if (this.selNode.fiatConversion) {
-              this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
-                pipe(takeUntil(this.unSubs[4])).
-                subscribe({ next: (data) => {
-                  this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats (' + data.symbol + ' ' + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
-                }, error: (error) => {
-                  this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None') + '. Unable to convert currency.';
-                } });
-            } else {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
-            }
-          } else {
-            this.zeroAmtInvoice = true;
-            this.filteredMinAmtActvChannels = this.activeChannels;
-            if (this.filteredMinAmtActvChannels.length && this.filteredMinAmtActvChannels.length > 0) {
-              this.selectedChannelCtrl.enable();
-            } else {
-              this.selectedChannelCtrl.disable();
-            }
-            this.paymentDecodedHint = 'Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
-          }
-        }, error: (err) => {
-          this.logger.error(err);
-          this.paymentDecodedHint = 'ERROR: ' + err.message;
-          this.paymentReq.control.setErrors({ decodeError: true });
-        } });
+        });
     }
   }
 

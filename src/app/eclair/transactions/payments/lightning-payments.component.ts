@@ -23,7 +23,8 @@ import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-ecl-lightning-payments',
@@ -62,7 +63,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private dataService: DataService, private datePipe: DatePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private dataService: DataService, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -204,22 +205,24 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         [{ key: 'nodeId', value: this.paymentDecoded.nodeId, title: 'Payee', width: 100 }],
         [{ key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100 }],
         [{ key: 'timestamp', value: this.paymentDecoded.timestamp, title: 'Creation Date', width: 40, type: DataTypeEnum.DATE_TIME },
-          { key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 30, type: DataTypeEnum.NUMBER },
-          { key: 'minFinalCltvExpiry', value: this.paymentDecoded.minFinalCltvExpiry, title: 'CLTV Expiry', width: 30 }]
+        { key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 30, type: DataTypeEnum.NUMBER },
+        { key: 'minFinalCltvExpiry', value: this.paymentDecoded.minFinalCltvExpiry, title: 'CLTV Expiry', width: 30 }]
       ];
       const titleMsg = 'It is a zero amount invoice. Enter the amount (Sats) to pay.';
-      this.store.dispatch(new RTLActions.OpenConfirmation({
-        data: {
-          type: AlertTypeEnum.CONFIRM,
-          alertTitle: 'Enter Amount and Confirm Send Payment',
-          message: reorderedPaymentDecoded,
-          noBtnText: 'Cancel',
-          yesBtnText: 'Send Payment',
-          flgShowInput: true,
-          titleMessage: titleMsg,
-          getInputs: [
-            { placeholder: 'Amount (Sats)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: '', width: 30 }
-          ]
+      this.store.dispatch(openConfirmation({
+        payload: {
+          data: {
+            type: AlertTypeEnum.CONFIRM,
+            alertTitle: 'Enter Amount and Confirm Send Payment',
+            message: reorderedPaymentDecoded,
+            noBtnText: 'Cancel',
+            yesBtnText: 'Send Payment',
+            flgShowInput: true,
+            titleMessage: titleMsg,
+            getInputs: [
+              { placeholder: 'Amount (Sats)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: '', width: 30 }
+            ]
+          }
         }
       }));
       this.rtlEffects.closeConfirm.
@@ -237,17 +240,19 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         [{ key: 'nodeId', value: this.paymentDecoded.nodeId, title: 'Payee', width: 100 }],
         [{ key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100 }],
         [{ key: 'timestamp', value: this.paymentDecoded.timestamp, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME },
-          { key: 'amount', value: this.paymentDecoded.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
+        { key: 'amount', value: this.paymentDecoded.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
         [{ key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.NUMBER },
-          { key: 'minFinalCltvExpiry', value: this.paymentDecoded.minFinalCltvExpiry, title: 'CLTV Expiry', width: 50 }]
+        { key: 'minFinalCltvExpiry', value: this.paymentDecoded.minFinalCltvExpiry, title: 'CLTV Expiry', width: 50 }]
       ];
-      this.store.dispatch(new RTLActions.OpenConfirmation({
-        data: {
-          type: AlertTypeEnum.CONFIRM,
-          alertTitle: 'Confirm Send Payment',
-          noBtnText: 'Cancel',
-          yesBtnText: 'Send Payment',
-          message: reorderedPaymentDecoded
+      this.store.dispatch(openConfirmation({
+        payload: {
+          data: {
+            type: AlertTypeEnum.CONFIRM,
+            alertTitle: 'Confirm Send Payment',
+            noBtnText: 'Cancel',
+            yesBtnText: 'Send Payment',
+            message: reorderedPaymentDecoded
+          }
         }
       }));
       this.rtlEffects.closeConfirm.
@@ -290,9 +295,11 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   }
 
   openSendPaymentModal() {
-    this.store.dispatch(new RTLActions.OpenAlert({
-      data: {
-        component: ECLLightningSendPaymentsComponent
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          component: ECLLightningSendPaymentsComponent
+        }
       }
     }));
   }
@@ -324,11 +331,13 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   }
 
   showPaymentView(selPayment: PaymentSent, sentPaymentInfo?: any[]) {
-    this.store.dispatch(new RTLActions.OpenAlert({
-      data: {
-        sentPaymentInfo: sentPaymentInfo,
-        payment: selPayment,
-        component: ECLPaymentInformationComponent
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          sentPaymentInfo: sentPaymentInfo,
+          payment: selPayment,
+          component: ECLPaymentInformationComponent
+        }
       }
     }));
   }
@@ -355,18 +364,20 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       [{ key: 'paymentPreimage', value: selPayment.paymentPreimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'toChannelId', value: selPart.toChannelId, title: 'Channel', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'id', value: selPart.id, title: 'Part ID', width: 50, type: DataTypeEnum.STRING },
-        { key: 'timestamp', value: selPart.timestamp, title: 'Time', width: 50, type: DataTypeEnum.DATE_TIME }],
+      { key: 'timestamp', value: selPart.timestamp, title: 'Time', width: 50, type: DataTypeEnum.DATE_TIME }],
       [{ key: 'amount', value: selPart.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER },
-        { key: 'feesPaid', value: selPart.feesPaid, title: 'Fee (Sats)', width: 50, type: DataTypeEnum.NUMBER }]
+      { key: 'feesPaid', value: selPart.feesPaid, title: 'Fee (Sats)', width: 50, type: DataTypeEnum.NUMBER }]
     ];
     if (sentPaymentInfo.length > 0 && sentPaymentInfo[0].paymentRequest && sentPaymentInfo[0].paymentRequest.description && sentPaymentInfo[0].paymentRequest.description !== '') {
       reorderedPart.splice(3, 0, [{ key: 'description', value: sentPaymentInfo[0].paymentRequest.description, title: 'Description', width: 100, type: DataTypeEnum.STRING }]);
     }
-    this.store.dispatch(new RTLActions.OpenAlert({
-      data: {
-        type: AlertTypeEnum.INFORMATION,
-        alertTitle: 'Payment Part Information',
-        message: reorderedPart
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Payment Part Information',
+          message: reorderedPart
+        }
       }
     }));
   }

@@ -11,7 +11,7 @@ import { CommonService } from '../../shared/services/common.service';
 import { APICallStatusEnum, ScreenSizeEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import { ApiCallsListLND } from '../../shared/models/apiCallsPayload';
 
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import { RTLState } from '../../store/rtl.state';
 
 @Component({
   selector: 'rtl-network-info',
@@ -39,7 +39,7 @@ export class NetworkInfoComponent implements OnInit, OnDestroy {
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.networkCards = [

@@ -18,7 +18,8 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { fetchFile, openAlert } from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-channel-backup-table',
@@ -30,8 +31,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faInfoCircle = faInfoCircle;
   public faExclamationTriangle = faExclamationTriangle;
   public faArchive = faArchive;
@@ -50,7 +51,7 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private actions: Actions, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -70,7 +71,7 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
         }
         this.logger.info(rtlStore);
       });
-    this.actions.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === LNDActions.SET_ALL_CHANNELS_LND || action.type === RTLActions.SHOW_FILE)).subscribe((action: LNDActions.SetAllChannels | RTLActions.ShowFile) => {
+    this.actions.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === LNDActions.SET_ALL_CHANNELS_LND || action.type === RTLActions.SHOW_FILE)).subscribe((action: any) => {
       if (action.type === LNDActions.SET_ALL_CHANNELS_LND) {
         this.selectedChannel = null;
       }
@@ -97,15 +98,19 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
 
   onDownloadBackup(selChannel: Channel) {
     this.selectedChannel = selChannel;
-    this.store.dispatch(new RTLActions.FetchFile({ channelPoint: selChannel.channel_point ? selChannel.channel_point : 'all' }));
+    this.store.dispatch(fetchFile({ payload: { channelPoint: selChannel.channel_point ? selChannel.channel_point : 'all' } }));
   }
 
   onChannelClick(selChannel: Channel, event: any) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      channel: selChannel,
-      showCopy: false,
-      component: ChannelInformationComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          channel: selChannel,
+          showCopy: false,
+          component: ChannelInformationComponent
+        }
+      }
+    }));
   }
 
   applyFilter(selFilter: any) {
@@ -119,11 +124,11 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
     this.channels.paginator = this.paginator;
     this.channels.filterPredicate = (channel: Channel, fltr: string) => {
       const newChannel = ((channel.active) ? 'active' : 'inactive') + (channel.channel_point ? channel.channel_point.toLowerCase() : '') + (channel.chan_id ? channel.chan_id.toLowerCase() : '') +
-      (channel.remote_pubkey ? channel.remote_pubkey.toLowerCase() : '') + (channel.remote_alias ? channel.remote_alias.toLowerCase() : '') +
-      (channel.capacity ? channel.capacity : '') + (channel.local_balance ? channel.local_balance : '') +
-      (channel.remote_balance ? channel.remote_balance : '') + (channel.total_satoshis_sent ? channel.total_satoshis_sent : '') +
-      (channel.total_satoshis_received ? channel.total_satoshis_received : '') + (channel.commit_fee ? channel.commit_fee : '') +
-      (channel.private ? 'private' : 'public');
+        (channel.remote_pubkey ? channel.remote_pubkey.toLowerCase() : '') + (channel.remote_alias ? channel.remote_alias.toLowerCase() : '') +
+        (channel.capacity ? channel.capacity : '') + (channel.local_balance ? channel.local_balance : '') +
+        (channel.remote_balance ? channel.remote_balance : '') + (channel.total_satoshis_sent ? channel.total_satoshis_sent : '') +
+        (channel.total_satoshis_received ? channel.total_satoshis_received : '') + (channel.commit_fee ? channel.commit_fee : '') +
+        (channel.private ? 'private' : 'public');
       return newChannel.includes(fltr);
     };
   }

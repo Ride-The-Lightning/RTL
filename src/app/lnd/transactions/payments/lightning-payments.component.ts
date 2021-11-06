@@ -23,7 +23,8 @@ import { LNDEffects } from '../../store/lnd.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-lightning-payments',
@@ -66,7 +67,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private decimalPipe: DecimalPipe, private datePipe: DatePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private decimalPipe: DecimalPipe, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -157,22 +158,24 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         [{ key: 'destination', value: this.paymentDecoded.destination, title: 'Destination', width: 100 }],
         [{ key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100 }],
         [{ key: 'timestamp', value: this.paymentDecoded.timestamp, title: 'Creation Date', width: 40, type: DataTypeEnum.DATE_TIME },
-          { key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 30, type: DataTypeEnum.NUMBER },
-          { key: 'cltv_expiry', value: this.paymentDecoded.cltv_expiry, title: 'CLTV Expiry', width: 30 }]
+        { key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 30, type: DataTypeEnum.NUMBER },
+        { key: 'cltv_expiry', value: this.paymentDecoded.cltv_expiry, title: 'CLTV Expiry', width: 30 }]
       ];
       const titleMsg = 'It is a zero amount invoice. Enter the amount (Sats) to pay.';
-      this.store.dispatch(new RTLActions.OpenConfirmation({
-        data: {
-          type: AlertTypeEnum.CONFIRM,
-          alertTitle: 'Enter Amount and Confirm Send Payment',
-          titleMessage: titleMsg,
-          message: reorderedPaymentDecoded,
-          noBtnText: 'Cancel',
-          yesBtnText: 'Send Payment',
-          flgShowInput: true,
-          getInputs: [
-            { placeholder: 'Amount (Sats)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: '', width: 30 }
-          ]
+      this.store.dispatch(openConfirmation({
+        payload: {
+          data: {
+            type: AlertTypeEnum.CONFIRM,
+            alertTitle: 'Enter Amount and Confirm Send Payment',
+            titleMessage: titleMsg,
+            message: reorderedPaymentDecoded,
+            noBtnText: 'Cancel',
+            yesBtnText: 'Send Payment',
+            flgShowInput: true,
+            getInputs: [
+              { placeholder: 'Amount (Sats)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: '', width: 30 }
+            ]
+          }
         }
       }));
       this.rtlEffects.closeConfirm.
@@ -190,17 +193,19 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         [{ key: 'destination', value: this.paymentDecoded.destination, title: 'Destination', width: 100 }],
         [{ key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100 }],
         [{ key: 'timestamp', value: this.paymentDecoded.timestamp, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME },
-          { key: 'num_satoshis', value: this.paymentDecoded.num_satoshis, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
+        { key: 'num_satoshis', value: this.paymentDecoded.num_satoshis, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
         [{ key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.NUMBER },
-          { key: 'cltv_expiry', value: this.paymentDecoded.cltv_expiry, title: 'CLTV Expiry', width: 50 }]
+        { key: 'cltv_expiry', value: this.paymentDecoded.cltv_expiry, title: 'CLTV Expiry', width: 50 }]
       ];
-      this.store.dispatch(new RTLActions.OpenConfirmation({
-        data: {
-          type: AlertTypeEnum.CONFIRM,
-          alertTitle: 'Confirm Send Payment',
-          noBtnText: 'Cancel',
-          yesBtnText: 'Send Payment',
-          message: reorderedPaymentDecoded
+      this.store.dispatch(openConfirmation({
+        payload: {
+          data: {
+            type: AlertTypeEnum.CONFIRM,
+            alertTitle: 'Confirm Send Payment',
+            noBtnText: 'Cancel',
+            yesBtnText: 'Send Payment',
+            message: reorderedPaymentDecoded
+          }
         }
       }));
       this.rtlEffects.closeConfirm.
@@ -215,9 +220,11 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   }
 
   openSendPaymentModal() {
-    this.store.dispatch(new RTLActions.OpenAlert({
-      data: {
-        component: LightningSendPaymentsComponent
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          component: LightningSendPaymentsComponent
+        }
       }
     }));
   }
@@ -322,22 +329,24 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       [{ key: 'preimage', value: selHtlc.preimage, title: 'Preimage', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'payment_request', value: selPayment.payment_request, title: 'Payment Request', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'status', value: selHtlc.status, title: 'Status', width: 33, type: DataTypeEnum.STRING },
-        { key: 'attempt_time_ns', value: +selHtlc.attempt_time_ns / 1000000000, title: 'Attempt Time', width: 33, type: DataTypeEnum.DATE_TIME },
-        { key: 'resolve_time_ns', value: +selHtlc.resolve_time_ns / 1000000000, title: 'Resolve Time', width: 34, type: DataTypeEnum.DATE_TIME }],
+      { key: 'attempt_time_ns', value: +selHtlc.attempt_time_ns / 1000000000, title: 'Attempt Time', width: 33, type: DataTypeEnum.DATE_TIME },
+      { key: 'resolve_time_ns', value: +selHtlc.resolve_time_ns / 1000000000, title: 'Resolve Time', width: 34, type: DataTypeEnum.DATE_TIME }],
       [{ key: 'total_amt', value: selHtlc.route.total_amt, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.NUMBER },
-        { key: 'total_fees', value: selHtlc.route.total_fees, title: 'Fee (Sats)', width: 33, type: DataTypeEnum.NUMBER },
-        { key: 'total_time_lock', value: selHtlc.route.total_time_lock, title: 'Total Time Lock', width: 34, type: DataTypeEnum.NUMBER }],
+      { key: 'total_fees', value: selHtlc.route.total_fees, title: 'Fee (Sats)', width: 33, type: DataTypeEnum.NUMBER },
+      { key: 'total_time_lock', value: selHtlc.route.total_time_lock, title: 'Total Time Lock', width: 34, type: DataTypeEnum.NUMBER }],
       [{ key: 'hops', value: this.getHopDetails(selHtlc.route.hops), title: 'Hops', width: 100, type: DataTypeEnum.ARRAY }]
     ];
     if (decodedPayment && decodedPayment.description && decodedPayment.description !== '') {
       reorderedHTLC.splice(3, 0, [{ key: 'description', value: decodedPayment.description, title: 'Description', width: 100, type: DataTypeEnum.STRING }]);
     }
-    this.store.dispatch(new RTLActions.OpenAlert({
-      data: {
-        type: AlertTypeEnum.INFORMATION,
-        alertTitle: 'HTLC Information',
-        message: reorderedHTLC,
-        scrollable: selHtlc.route && selHtlc.route.hops && selHtlc.route.hops.length > 1
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'HTLC Information',
+          message: reorderedHTLC,
+          scrollable: selHtlc.route && selHtlc.route.hops && selHtlc.route.hops.length > 1
+        }
       }
     }));
   }
@@ -361,9 +370,9 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       [{ key: 'payment_preimage', value: selPayment.payment_preimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'payment_request', value: selPayment.payment_request, title: 'Payment Request', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'status', value: selPayment.status, title: 'Status', width: 50, type: DataTypeEnum.STRING },
-        { key: 'creation_date', value: selPayment.creation_date, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME }],
+      { key: 'creation_date', value: selPayment.creation_date, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME }],
       [{ key: 'value_msat', value: selPayment.value_msat, title: 'Value (mSats)', width: 50, type: DataTypeEnum.NUMBER },
-        { key: 'fee_msat', value: selPayment.fee_msat, title: 'Fee (mSats)', width: 50, type: DataTypeEnum.NUMBER }],
+      { key: 'fee_msat', value: selPayment.fee_msat, title: 'Fee (mSats)', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'path', value: pathAliases, title: 'Path', width: 100, type: DataTypeEnum.STRING }]
     ];
     if (selPayment.payment_request && selPayment.payment_request.trim() !== '') {
@@ -380,12 +389,14 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   }
 
   openPaymentAlert(data: any, shouldScroll: boolean) {
-    this.store.dispatch(new RTLActions.OpenAlert({
-      data: {
-        type: AlertTypeEnum.INFORMATION,
-        alertTitle: 'Payment Information',
-        message: data,
-        scrollable: shouldScroll
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Payment Information',
+          message: data,
+          scrollable: shouldScroll
+        }
       }
     }));
   }

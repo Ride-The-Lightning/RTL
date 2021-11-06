@@ -9,8 +9,8 @@ import { MatStepper } from '@angular/material/stepper';
 
 import { LNDEffects } from '../../store/lnd.effects';
 import * as LNDActions from '../../store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { updateSelectedNodeOptions } from '../../../store/rtl.actions';
 
 export const matchedPasswords: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
   const initWalletPassword = control.get('initWalletPassword');
@@ -44,7 +44,7 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
   warnRes = false;
   private unsubs = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private formBuilder: FormBuilder, private lndEffects: LNDEffects) {}
+  constructor(private store: Store<RTLState>, private formBuilder: FormBuilder, private lndEffects: LNDEffects) { }
 
   ngOnInit() {
     this.passwordFormGroup = this.formBuilder.group({
@@ -107,7 +107,7 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
       });
   }
 
-  onInitWallet(): boolean|void {
+  onInitWallet(): boolean | void {
     if (this.passwordFormGroup.invalid || this.cipherFormGroup.invalid || this.passphraseFormGroup.invalid) {
       return true;
     }
@@ -136,7 +136,7 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
 
   onGoToHome() {
     setTimeout(() => {
-      this.store.dispatch(new RTLActions.UpdateSelectedNodeOptions());
+      this.store.dispatch(updateSelectedNodeOptions());
       this.store.dispatch(new LNDActions.FetchInfo({ loadPage: 'HOME' }));
     }, 1000 * 1);
   }

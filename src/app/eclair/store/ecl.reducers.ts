@@ -1,51 +1,10 @@
-import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Channel, Fees, OnChainBalance, LightningBalance, Peer, ChannelsStatus, Payments, Transaction, Invoice, PaymentReceived } from '../../shared/models/eclModels';
-import { ApiCallsListECL } from '../../shared/models/apiCallsPayload';
-import { APICallStatusEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
+import { pipe } from 'rxjs';
+import { scan } from 'rxjs/operators';
+import { createFeatureSelector, createSelector, select } from '@ngrx/store';
+
+import { ECLState, initECLState } from './ecl.state';
 import * as ECLActions from './ecl.actions';
-
-export interface ECLState {
-  apisCallStatus: ApiCallsListECL;
-  nodeSettings: SelNodeChild;
-  information: GetInfo;
-  fees: Fees;
-  activeChannels: Channel[];
-  pendingChannels: Channel[];
-  inactiveChannels: Channel[];
-  channelsStatus: ChannelsStatus;
-  onchainBalance: OnChainBalance;
-  lightningBalance: LightningBalance;
-  peers: Peer[];
-  payments: Payments;
-  transactions: Transaction[];
-  invoices: Invoice[];
-}
-
-export const initECLState: ECLState = {
-  apisCallStatus: {
-    FetchInfo: { status: APICallStatusEnum.UN_INITIATED },
-    FetchFees: { status: APICallStatusEnum.UN_INITIATED },
-    FetchChannels: { status: APICallStatusEnum.UN_INITIATED },
-    FetchOnchainBalance: { status: APICallStatusEnum.UN_INITIATED },
-    FetchPeers: { status: APICallStatusEnum.UN_INITIATED },
-    FetchPayments: { status: APICallStatusEnum.UN_INITIATED },
-    FetchInvoices: { status: APICallStatusEnum.UN_INITIATED },
-    FetchTransactions: { status: APICallStatusEnum.UN_INITIATED }
-  },
-  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
-  information: {},
-  fees: {},
-  activeChannels: [],
-  pendingChannels: [],
-  inactiveChannels: [],
-  channelsStatus: {},
-  onchainBalance: { total: 0, confirmed: 0, unconfirmed: 0 },
-  lightningBalance: { localBalance: -1, remoteBalance: -1 },
-  peers: [],
-  payments: {},
-  transactions: [],
-  invoices: []
-};
+import { GetInfo, PaymentReceived } from '../../shared/models/eclModels';
 
 export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) {
   switch (action.type) {
@@ -239,3 +198,12 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
       return state;
   }
 }
+
+export const getECLState = createFeatureSelector<ECLState>('ecl');
+export const getInformation = createSelector(getECLState, (state: ECLState) => state.information);
+export const takeLastGetInfo = (count: number) => pipe(select(getInformation), scan((acc, curr) => [curr, ...acc].filter((val, index) => index < count && val.hasOwnProperty('identity_pubkey')), [] as GetInfo[]));
+export const getReceivedPayments = createSelector(getECLState, (state: ECLState) => state.payments.received);
+export const getSentPayments = createSelector(getECLState, (state: ECLState) => state.payments.sent);
+export const getRelayedPayments = createSelector(getECLState, (state: ECLState) => state.payments.relayed);
+export const getPaymentAPIStatus = createSelector(getECLState, (state: ECLState) => state.apisCallStatus.FetchPayments);
+export const relayedPaymentAndAPIStatus = createSelector(getECLState, (state: ECLState) => ({ relayed: state.payments.relayed, apisCallStatus: state.apisCallStatus.FetchPayments }));

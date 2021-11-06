@@ -8,12 +8,12 @@ import { CURRENCY_UNITS, UserPersonaEnum, ScreenSizeEnum, FIAT_CURRENCY_UNITS, N
 import { ConfigSettingsNode, Settings, RTLConfiguration, GetInfoRoot } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { CommonService } from '../../../services/common.service';
+import { RTLState } from '../../../../store/rtl.state';
+import { saveSettings, setSelelectedNode } from '../../../../store/rtl.actions';
 
 import * as ECLActions from '../../../../eclair/store/ecl.actions';
 import * as CLActions from '../../../../clightning/store/cl.actions';
 import * as LNDActions from '../../../../lnd/store/lnd.actions';
-import * as RTLActions from '../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-node-settings',
@@ -43,7 +43,7 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -96,7 +96,7 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
       return true;
     }
     this.logger.info(this.selNode.settings);
-    this.store.dispatch(new RTLActions.SaveSettings({ uiMessage: UI_MESSAGES.UPDATE_NODE_SETTINGS, settings: this.selNode.settings }));
+    this.store.dispatch(saveSettings({ payload: { uiMessage: UI_MESSAGES.UPDATE_NODE_SETTINGS, settings: this.selNode.settings } }));
     this.store.dispatch(new LNDActions.SetChildNodeSettings({
       userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
     }));
@@ -112,7 +112,7 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
     this.selNode.settings = this.previousSettings;
     this.selectedThemeMode = this.themeModes.find((themeMode) => themeMode.id === this.previousSettings.themeMode);
     this.selectedThemeColor = this.previousSettings.themeColor;
-    this.store.dispatch(new RTLActions.SetSelelectedNode({ uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: this.selNode, isInitialSetup: true }));
+    this.store.dispatch(setSelelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: this.selNode, isInitialSetup: true } }));
   }
 
   ngOnDestroy() {

@@ -14,7 +14,7 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import { LNDEffects } from '../../store/lnd.effects';
 import * as LNDActions from '../../store/lnd.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-channel-restore-table',
@@ -26,8 +26,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public selNode: SelNodeChild = {};
@@ -42,7 +42,7 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private lndEffects: LNDEffects, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private lndEffects: LNDEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
   }
 

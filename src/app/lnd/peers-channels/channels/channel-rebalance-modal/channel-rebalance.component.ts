@@ -15,7 +15,7 @@ import { Channel, QueryRoutes, ListInvoices } from '../../../../shared/models/ln
 import { FEE_LIMIT_TYPES, PAGE_SIZE, UI_MESSAGES } from '../../../../shared/services/consts-enums-functions';
 
 import * as LNDActions from '../../../store/lnd.actions';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { RTLState } from '../../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-channel-rebalance',
@@ -45,7 +45,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   statusFormGroup: FormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ChannelRebalanceComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelRebalanceAlert, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe) { }
+  constructor(public dialogRef: MatDialogRef<ChannelRebalanceComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelRebalanceAlert, private logger: LoggerService, private store: Store<RTLState>, private actions: Actions, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe) { }
 
   ngOnInit() {
     let x = '';
@@ -116,7 +116,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
       });
   }
 
-  onSelectFee(): boolean|void {
+  onSelectFee(): boolean | void {
     if (this.inputFormGroup.controls.selRebalancePeer.value && typeof this.inputFormGroup.controls.selRebalancePeer.value === 'string') {
       this.onSelectedPeerChanged();
     }
@@ -181,7 +181,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     }
   }
 
-  onRebalance(): boolean|void {
+  onRebalance(): boolean | void {
     if (!this.inputFormGroup.controls.rebalanceAmount.value || this.inputFormGroup.controls.rebalanceAmount.value <= 0 || this.inputFormGroup.controls.rebalanceAmount.value > +this.selChannel.local_balance || !this.feeFormGroup.controls.feeLimit.value || this.feeFormGroup.controls.feeLimit.value < 0 || !this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey) {
       return true;
     }

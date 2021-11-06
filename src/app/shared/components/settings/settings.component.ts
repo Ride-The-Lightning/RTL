@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { faUserCog } from '@fortawesome/free-solid-svg-icons';
 
 import { ConfigSettingsNode, RTLConfiguration } from '../../models/RTLconfig';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-settings',
@@ -23,7 +23,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   public activeLink = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private router: Router) { }
+  constructor(private store: Store<RTLState>, private router: Router) { }
 
   ngOnInit() {
     const linkFound = this.links.find((link) => this.router.url.includes(link.link));

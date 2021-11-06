@@ -15,7 +15,7 @@ import { ChannelsStatus, GetInfo, Fees, Channel } from '../../shared/models/lndM
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 
 import * as LNDActions from '../store/lnd.actions';
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import { RTLState } from '../../store/rtl.state';
 
 export interface Tile {
   id: string;
@@ -70,7 +70,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private commonService: CommonService, private router: Router) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private actions: Actions, private commonService: CommonService, private router: Router) {
     this.screenSize = this.commonService.getScreenSize();
     switch (this.screenSize) {
       case ScreenSizeEnum.XS:

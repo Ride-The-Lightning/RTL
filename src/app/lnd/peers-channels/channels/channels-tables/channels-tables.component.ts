@@ -9,7 +9,8 @@ import { Peer, GetInfo } from '../../../../shared/models/lndModels';
 import { LoggerService } from '../../../../shared/services/logger.service';
 
 import * as RTLActions from '../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { RTLState } from '../../../../store/rtl.state';
+import { openAlert } from '../../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-channels-tables',
@@ -29,12 +30,12 @@ export class ChannelsTablesComponent implements OnInit, OnDestroy {
   public activeLink = 0;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private router: Router) {}
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private router: Router) { }
 
   ngOnInit() {
     this.activeLink = this.links.findIndex((link) => link.link === this.router.url.substring(this.router.url.lastIndexOf('/') + 1));
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe((value: ResolveEnd) => {
+      subscribe((value: any) => {
         this.activeLink = this.links.findIndex((link) => link.link === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
       });
     this.store.select('lnd').
@@ -62,11 +63,15 @@ export class ChannelsTablesComponent implements OnInit, OnDestroy {
       information: this.information,
       balance: this.totalBalance
     };
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      alertTitle: 'Open Channel',
-      message: peerToAddChannelMessage,
-      component: OpenChannelComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          alertTitle: 'Open Channel',
+          message: peerToAddChannelMessage,
+          component: OpenChannelComponent
+        }
+      }
+    }));
   }
 
   onSelectedTabChange(event) {

@@ -20,6 +20,8 @@ import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as CLActions from '../../../../store/cl.actions';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
+import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
+import { RTLState } from '../../../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-cl-channel-open-table',
@@ -31,8 +33,8 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 })
 export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faEye = faEye;
   public faEyeSlash = faEyeSlash
   public totalBalance = 0;
@@ -54,7 +56,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -101,7 +103,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
     this.store.dispatch(new CLActions.ChannelLookup({ uiMessage: UI_MESSAGES.GET_REMOTE_POLICY, shortChannelID: selChannel.short_channel_id, showError: true }));
     this.clEffects.setLookupCL.
       pipe(take(1)).
-      subscribe((resLookup: ChannelEdge[]): boolean|void => {
+      subscribe((resLookup: ChannelEdge[]): boolean | void => {
         if (resLookup.length === 0) {
           return false;
         }
@@ -113,14 +115,18 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
         }
         const reorderedChannelPolicy = [
           [{ key: 'base_fee_millisatoshi', value: remoteNode.base_fee_millisatoshi, title: 'Base Fees (mSats)', width: 34, type: DataTypeEnum.NUMBER },
-            { key: 'fee_per_millionth', value: remoteNode.fee_per_millionth, title: 'Fee/Millionth', width: 33, type: DataTypeEnum.NUMBER },
-            { key: 'delay', value: remoteNode.delay, title: 'Delay', width: 33, type: DataTypeEnum.NUMBER }]
+          { key: 'fee_per_millionth', value: remoteNode.fee_per_millionth, title: 'Fee/Millionth', width: 33, type: DataTypeEnum.NUMBER },
+          { key: 'delay', value: remoteNode.delay, title: 'Delay', width: 33, type: DataTypeEnum.NUMBER }]
         ];
-        this.store.dispatch(new RTLActions.OpenAlert({ data: {
-          type: AlertTypeEnum.INFORMATION,
-          alertTitle: 'Remote Channel Policy',
-          message: reorderedChannelPolicy
-        } }));
+        this.store.dispatch(openAlert({
+          payload: {
+            data: {
+              type: AlertTypeEnum.INFORMATION,
+              alertTitle: 'Remote Channel Policy',
+              message: reorderedChannelPolicy
+            }
+          }
+        }));
       });
   }
 
@@ -130,19 +136,23 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
     }
     if (channelToUpdate === 'all') {
       const confirmationMsg = [];
-      this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-        type: AlertTypeEnum.CONFIRM,
-        alertTitle: 'Update Fee Policy',
-        noBtnText: 'Cancel',
-        yesBtnText: 'Update All',
-        message: confirmationMsg,
-        titleMessage: 'Update fee policy for all channels',
-        flgShowInput: true,
-        getInputs: [
-          { placeholder: 'Base Fee (mSats)', inputType: 'number', inputValue: 1000, width: 48 },
-          { placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: 1, min: 1, width: 48, hintFunction: this.percentHintFunction }
-        ]
-      } }));
+      this.store.dispatch(openConfirmation({
+        payload: {
+          data: {
+            type: AlertTypeEnum.CONFIRM,
+            alertTitle: 'Update Fee Policy',
+            noBtnText: 'Cancel',
+            yesBtnText: 'Update All',
+            message: confirmationMsg,
+            titleMessage: 'Update fee policy for all channels',
+            flgShowInput: true,
+            getInputs: [
+              { placeholder: 'Base Fee (mSats)', inputType: 'number', inputValue: 1000, width: 48 },
+              { placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: 1, min: 1, width: 48, hintFunction: this.percentHintFunction }
+            ]
+          }
+        }
+      }));
       this.rtlEffects.closeConfirm.
         pipe(takeUntil(this.unSubs[1])).
         subscribe((confirmRes) => {
@@ -168,19 +178,23 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
           this.logger.info(this.myChanPolicy);
           const titleMsg = 'Update fee policy for Channel: ' + channelToUpdate.channel_id;
           const confirmationMsg = [];
-          this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-            type: AlertTypeEnum.CONFIRM,
-            alertTitle: 'Update Fee Policy',
-            noBtnText: 'Cancel',
-            yesBtnText: 'Update',
-            message: confirmationMsg,
-            titleMessage: titleMsg,
-            flgShowInput: true,
-            getInputs: [
-              { placeholder: 'Base Fee (mSats)', inputType: 'number', inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, width: 48 },
-              { placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 48, hintFunction: this.percentHintFunction }
-            ]
-          } }));
+          this.store.dispatch(openConfirmation({
+            payload: {
+              data: {
+                type: AlertTypeEnum.CONFIRM,
+                alertTitle: 'Update Fee Policy',
+                noBtnText: 'Cancel',
+                yesBtnText: 'Update',
+                message: confirmationMsg,
+                titleMessage: titleMsg,
+                flgShowInput: true,
+                getInputs: [
+                  { placeholder: 'Base Fee (mSats)', inputType: 'number', inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, width: 48 },
+                  { placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 48, hintFunction: this.percentHintFunction }
+                ]
+              }
+            }
+          }));
         });
       this.rtlEffects.closeConfirm.
         pipe(takeUntil(this.unSubs[2])).
@@ -200,13 +214,17 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   onChannelClose(channelToClose: Channel) {
-    this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-      type: AlertTypeEnum.CONFIRM,
-      alertTitle: 'Close Channel',
-      titleMessage: 'Closing channel: ' + channelToClose.channel_id,
-      noBtnText: 'Cancel',
-      yesBtnText: 'Close Channel'
-    } }));
+    this.store.dispatch(openConfirmation({
+      payload: {
+        data: {
+          type: AlertTypeEnum.CONFIRM,
+          alertTitle: 'Close Channel',
+          titleMessage: 'Closing channel: ' + channelToClose.channel_id,
+          noBtnText: 'Cancel',
+          yesBtnText: 'Close Channel'
+        }
+      }
+    }));
     this.rtlEffects.closeConfirm.
       pipe(takeUntil(this.unSubs[3])).
       subscribe((confirmRes) => {
@@ -221,11 +239,15 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   onChannelClick(selChannel: Channel, event: any) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      channel: selChannel,
-      showCopy: true,
-      component: CLChannelInformationComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          channel: selChannel,
+          showCopy: true,
+          component: CLChannelInformationComponent
+        }
+      }
+    }));
   }
 
   loadChannelsTable(mychannels) {
@@ -233,11 +255,11 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
     this.channels = new MatTableDataSource<Channel>([...mychannels]);
     this.channels.filterPredicate = (channel: Channel, fltr: string) => {
       const newChannel = ((channel.connected) ? 'connected' : 'disconnected') + (channel.channel_id ? channel.channel_id.toLowerCase() : '') +
-      (channel.short_channel_id ? channel.short_channel_id.toLowerCase() : '') + (channel.id ? channel.id.toLowerCase() : '') + (channel.alias ? channel.alias.toLowerCase() : '') +
-      (channel.private ? 'private' : 'public') + (channel.state ? channel.state.toLowerCase() : '') +
-      (channel.funding_txid ? channel.funding_txid.toLowerCase() : '') + (channel.msatoshi_to_us ? channel.msatoshi_to_us : '') +
-      (channel.msatoshi_total ? channel.msatoshi_total : '') + (channel.their_channel_reserve_satoshis ? channel.their_channel_reserve_satoshis : '') +
-      (channel.our_channel_reserve_satoshis ? channel.our_channel_reserve_satoshis : '') + (channel.spendable_msatoshi ? channel.spendable_msatoshi : '');
+        (channel.short_channel_id ? channel.short_channel_id.toLowerCase() : '') + (channel.id ? channel.id.toLowerCase() : '') + (channel.alias ? channel.alias.toLowerCase() : '') +
+        (channel.private ? 'private' : 'public') + (channel.state ? channel.state.toLowerCase() : '') +
+        (channel.funding_txid ? channel.funding_txid.toLowerCase() : '') + (channel.msatoshi_to_us ? channel.msatoshi_to_us : '') +
+        (channel.msatoshi_total ? channel.msatoshi_total : '') + (channel.their_channel_reserve_satoshis ? channel.their_channel_reserve_satoshis : '') +
+        (channel.our_channel_reserve_satoshis ? channel.our_channel_reserve_satoshis : '') + (channel.spendable_msatoshi ? channel.spendable_msatoshi : '');
       return newChannel.includes(fltr);
     };
     this.channels.sort = this.sort;

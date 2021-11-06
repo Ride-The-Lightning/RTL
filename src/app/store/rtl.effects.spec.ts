@@ -33,7 +33,7 @@ import * as fromRTLReducer from './rtl.reducers';
 describe('RTL Root Effects', () => {
   let actions: ReplaySubject<any>;
   let effects: RTLEffects;
-  let mockStore: Store<fromRTLReducer.RTLState>;
+  let mockStore: Store<RTLState>;
   let snackBar: MatSnackBar;
   let container: any;
   let httpClient: HttpClient;

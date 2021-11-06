@@ -14,7 +14,7 @@ import { CLOpenChannelAlert } from '../../../../shared/models/alertData';
 import { APICallStatusEnum, FEE_RATE_TYPES, ScreenSizeEnum } from '../../../../shared/services/consts-enums-functions';
 
 import * as CLActions from '../../../store/cl.actions';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { RTLState } from '../../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-cl-open-channel',
@@ -52,7 +52,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private decimalPipe: DecimalPipe, private commonService: CommonService) {
+  constructor(public dialogRef: MatDialogRef<CLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOpenChannelAlert, private store: Store<RTLState>, private actions: Actions, private decimalPipe: DecimalPipe, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
   }
 

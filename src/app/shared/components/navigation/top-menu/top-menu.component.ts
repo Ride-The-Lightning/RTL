@@ -13,8 +13,9 @@ import { environment } from '../../../../../environments/environment';
 import { AlertTypeEnum } from '../../../services/consts-enums-functions';
 import { RTLEffects } from '../../../../store/rtl.effects';
 
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { RTLState } from '../../../../store/rtl.state';
 import * as RTLActions from '../../../../store/rtl.actions';
+import { logout, openConfirmation } from '../../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-top-menu',
@@ -37,7 +38,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
   public showLogout = false;
   private unSubs = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private sessionService: SessionService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions: Actions) {
+  constructor(private logger: LoggerService, private sessionService: SessionService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private actions: Actions) {
     this.version = environment.VERSION;
   }
 
@@ -79,9 +80,11 @@ export class TopMenuComponent implements OnInit, OnDestroy {
   }
 
   onClick() {
-    this.store.dispatch(new RTLActions.OpenConfirmation({
-      data: {
-        type: AlertTypeEnum.CONFIRM, alertTitle: 'Logout', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
+    this.store.dispatch(openConfirmation({
+      payload: {
+        data: {
+          type: AlertTypeEnum.CONFIRM, alertTitle: 'Logout', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
+        }
       }
     }));
     this.rtlEffects.closeConfirm.
@@ -89,7 +92,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
       subscribe((confirmRes) => {
         if (confirmRes) {
           this.showLogout = false;
-          this.store.dispatch(new RTLActions.Logout());
+          this.store.dispatch(logout());
         }
       });
   }

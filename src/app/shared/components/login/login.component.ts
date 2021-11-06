@@ -12,9 +12,10 @@ import { CommonService } from '../../services/common.service';
 import { LoggerService } from '../../services/logger.service';
 
 import { RTLEffects } from '../../../store/rtl.effects';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
 import * as RTLActions from '../../../store/rtl.actions';
 import { ApiCallsListRoot } from '../../models/apiCallsPayload';
+import { login, openAlert } from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-login',
@@ -38,7 +39,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) { }
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
@@ -67,20 +68,22 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
     this.loginErrorMessage = '';
     if (this.appConfig.enable2FA) {
-      this.store.dispatch(new RTLActions.OpenAlert({
-        maxWidth: '35rem', data: {
-          component: LoginTokenComponent
+      this.store.dispatch(openAlert({
+        payload: {
+          maxWidth: '35rem', data: {
+            component: LoginTokenComponent
+          }
         }
       }));
       this.rtlEffects.closeAlert.
         pipe(take(1)).
         subscribe((alertRes) => {
           if (alertRes) {
-            this.store.dispatch(new RTLActions.Login({ password: sha256(this.password), defaultPassword: PASSWORD_BLACKLIST.includes(this.password.toLowerCase()), twoFAToken: alertRes.twoFAToken }));
+            this.store.dispatch(login({ payload: { password: sha256(this.password), defaultPassword: PASSWORD_BLACKLIST.includes(this.password.toLowerCase()), twoFAToken: alertRes.twoFAToken } }));
           }
         });
     } else {
-      this.store.dispatch(new RTLActions.Login({ password: sha256(this.password), defaultPassword: PASSWORD_BLACKLIST.includes(this.password.toLowerCase()) }));
+      this.store.dispatch(login({ payload: { password: sha256(this.password), defaultPassword: PASSWORD_BLACKLIST.includes(this.password.toLowerCase()) } }));
     }
   }
 

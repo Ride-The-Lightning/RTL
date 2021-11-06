@@ -7,7 +7,8 @@ import { OnChainGeneratedAddressComponent } from '../../../shared/components/dat
 import { ECLEffects } from '../../store/ecl.effects';
 import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openAlert } from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-ecl-on-chain-receive',
@@ -18,19 +19,21 @@ export class ECLOnChainReceiveComponent {
 
   public newAddress = '';
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private eclEffects: ECLEffects) {}
+  constructor(private store: Store<RTLState>, private eclEffects: ECLEffects) { }
 
   onGenerateAddress() {
     this.store.dispatch(new ECLActions.GetNewAddress());
     this.eclEffects.setNewAddress.pipe(take(1)).
       subscribe((newAddress) => {
         this.newAddress = newAddress;
-        this.store.dispatch(new RTLActions.OpenAlert({
-          width: '58%',
-          data: {
-            address: this.newAddress,
-            addressType: '',
-            component: OnChainGeneratedAddressComponent
+        this.store.dispatch(openAlert({
+          payload: {
+            width: '58%',
+            data: {
+              address: this.newAddress,
+              addressType: '',
+              component: OnChainGeneratedAddressComponent
+            }
           }
         }));
       });

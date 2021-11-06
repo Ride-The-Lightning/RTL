@@ -21,7 +21,8 @@ import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation'
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-ecl-peers',
@@ -34,8 +35,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faUsers = faUsers;
   public newlyAddedPeer = '';
   public flgAnimate = true;
@@ -55,7 +56,7 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions: Actions, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private actions: Actions, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -90,11 +91,8 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
         }, 3000);
         this.logger.info(rtlStore);
       });
-    this.actions.
-      pipe(
-        takeUntil(this.unSubs[1]),
-        filter((action) => action.type === ECLActions.SET_PEERS_ECL)
-      ).subscribe((setPeers: ECLActions.SetPeers) => {
+    this.actions.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === ECLActions.SET_PEERS_ECL)).
+      subscribe((setPeers: any) => {
         this.peerAddress = null;
         this.flgAnimate = true;
       });
@@ -110,28 +108,36 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
     const reorderedPeer = [
       [{ key: 'nodeId', value: selPeer.nodeId, title: 'Public Key', width: 100 }],
       [{ key: 'address', value: selPeer.address, title: 'Address', width: 50 },
-        { key: 'alias', value: selPeer.alias, title: 'Alias', width: 50 }],
+      { key: 'alias', value: selPeer.alias, title: 'Alias', width: 50 }],
       [{ key: 'state', value: this.commonService.titleCase(selPeer.state), title: 'State', width: 50 },
-        { key: 'channels', value: selPeer.channels, title: 'Channels', width: 50 }]
+      { key: 'channels', value: selPeer.channels, title: 'Channels', width: 50 }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Peer Information',
-      showQRName: 'Public Key',
-      showQRField: selPeer.nodeId,
-      message: reorderedPeer
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Peer Information',
+          showQRName: 'Public Key',
+          showQRField: selPeer.nodeId,
+          message: reorderedPeer
+        }
+      }
+    }));
   }
 
   onConnectPeer(selPeer: Peer) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      message: {
-        peer: selPeer.nodeId ? selPeer : null,
-        information: this.information,
-        balance: this.availableBalance
-      },
-      component: ECLConnectPeerComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          message: {
+            peer: selPeer.nodeId ? selPeer : null,
+            information: this.information,
+            balance: this.availableBalance
+          },
+          component: ECLConnectPeerComponent
+        }
+      }
+    }));
   }
 
   onOpenChannel(peerToAddChannel: Peer) {
@@ -140,29 +146,41 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       information: this.information,
       balance: this.availableBalance
     };
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      alertTitle: 'Open Channel',
-      message: peerToAddChannelMessage,
-      newlyAdded: false,
-      component: ECLOpenChannelComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          alertTitle: 'Open Channel',
+          message: peerToAddChannelMessage,
+          newlyAdded: false,
+          component: ECLOpenChannelComponent
+        }
+      }
+    }));
   }
 
   onPeerDetach(peerToDetach: Peer) {
     if (peerToDetach.channels > 0) {
-      this.store.dispatch(new RTLActions.OpenAlert({ data: {
-        type: AlertTypeEnum.ERROR,
-        alertTitle: 'Disconnect Not Allowed',
-        titleMessage: 'Channel active with this peer.'
-      } }));
+      this.store.dispatch(openAlert({
+        payload: {
+          data: {
+            type: AlertTypeEnum.ERROR,
+            alertTitle: 'Disconnect Not Allowed',
+            titleMessage: 'Channel active with this peer.'
+          }
+        }
+      }));
     } else {
-      this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-        type: AlertTypeEnum.CONFIRM,
-        alertTitle: 'Disconnect Peer',
-        titleMessage: 'Disconnect peer: ' + ((peerToDetach.alias) ? peerToDetach.alias : peerToDetach.nodeId),
-        noBtnText: 'Cancel',
-        yesBtnText: 'Disconnect'
-      } }));
+      this.store.dispatch(openConfirmation({
+        payload: {
+          data: {
+            type: AlertTypeEnum.CONFIRM,
+            alertTitle: 'Disconnect Peer',
+            titleMessage: 'Disconnect peer: ' + ((peerToDetach.alias) ? peerToDetach.alias : peerToDetach.nodeId),
+            noBtnText: 'Cancel',
+            yesBtnText: 'Disconnect'
+          }
+        }
+      }));
     }
     this.rtlEffects.closeConfirm.
       pipe(takeUntil(this.unSubs[3])).

@@ -12,7 +12,7 @@ import { ChannelInformation } from '../../../../shared/models/alertData';
 import { APICallStatusEnum, TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
 
 import * as LNDActions from '../../../store/lnd.actions';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { RTLState } from '../../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-close-channel',
@@ -32,7 +32,7 @@ export class CloseChannelComponent implements OnInit, OnDestroy {
   public errorMsg = 'Please wait for pending HTLCs to settle before attempting channel closure.';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CloseChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelInformation, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private logger: LoggerService) {}
+  constructor(public dialogRef: MatDialogRef<CloseChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelInformation, private store: Store<RTLState>, private actions: Actions, private logger: LoggerService) { }
 
   ngOnInit() {
     this.channelToClose = this.data.channel;
@@ -52,7 +52,7 @@ export class CloseChannelComponent implements OnInit, OnDestroy {
       });
   }
 
-  onCloseChannel(): boolean|void {
+  onCloseChannel(): boolean | void {
     if ((this.selTransType === '1' && (!this.blocks || this.blocks === 0)) || (this.selTransType === '2' && (!this.fees || this.fees === 0))) {
       return true;
     }

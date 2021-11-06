@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { faExchangeAlt, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import { RTLState } from '../../store/rtl.state';
 
 @Component({
   selector: 'rtl-on-chain',
@@ -25,7 +25,7 @@ export class OnChainComponent implements OnInit, OnDestroy {
   public selectedTable = this.tables[0];
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private router: Router, private activatedRoute: ActivatedRoute) {}
+  constructor(private store: Store<RTLState>, private router: Router, private activatedRoute: ActivatedRoute) { }
 
   ngOnInit() {
     const linkFound = this.links.find((link) => this.router.url.includes(link.link));

@@ -8,7 +8,7 @@ import { faUsers, faChartPie } from '@fortawesome/free-solid-svg-icons';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { LoggerService } from '../../shared/services/logger.service';
 
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import { RTLState } from '../../store/rtl.state';
 
 @Component({
   selector: 'rtl-connections',
@@ -27,7 +27,7 @@ export class ConnectionsComponent implements OnInit, OnDestroy {
   public activeLink = 0;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private router: Router) {}
+  constructor(private store: Store<RTLState>, private logger: LoggerService, private router: Router) { }
 
   ngOnInit() {
     this.activeLink = this.links.findIndex((link) => link.link === this.router.url.substring(this.router.url.lastIndexOf('/') + 1));

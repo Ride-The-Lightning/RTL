@@ -16,6 +16,8 @@ import { CommonService } from '../../../../../shared/services/common.service';
 
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
+import { openAlert } from '../../../../../store/rtl.actions';
+import { RTLState } from '../../../../../store/rtl.state';
 
 
 @Component({
@@ -28,8 +30,8 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 })
 export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public pendingChannels: Channel[];
   public totalBalance = 0;
   public displayedColumns: any[] = [];
@@ -49,7 +51,7 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -95,11 +97,15 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
   }
 
   onChannelClick(selChannel: Channel, event: any) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      channel: selChannel,
-      channelsType: 'pending',
-      component: ECLChannelInformationComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          channel: selChannel,
+          channelsType: 'pending',
+          component: ECLChannelInformationComponent
+        }
+      }
+    }));
   }
 
   loadChannelsTable() {

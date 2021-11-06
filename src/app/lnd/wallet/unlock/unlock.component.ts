@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 
 import * as LNDActions from '../../store/lnd.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-unlock-wallet',
@@ -13,13 +13,13 @@ export class UnlockWalletComponent implements OnInit {
 
   walletPassword = '';
 
-  constructor(private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private store: Store<RTLState>) { }
 
   ngOnInit() {
     this.walletPassword = '';
   }
 
-  onUnlockWallet(): boolean|void {
+  onUnlockWallet(): boolean | void {
     if (!this.walletPassword) {
       return true;
     }

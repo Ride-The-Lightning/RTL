@@ -13,8 +13,8 @@ import { ApiCallsListLND } from '../../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 
-import * as RTLActions from '../../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../../store/rtl.reducers';
+import { openAlert } from '../../../../../store/rtl.actions';
+import { RTLState } from '../../../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-channel-active-htlcs-table',
@@ -26,8 +26,8 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 })
 export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public channels: any;
   public channelsJSONArr: Channel[] = [];
   public displayedColumns: any[] = [];
@@ -42,7 +42,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -82,23 +82,31 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
     const reorderedHTLC = [
       [{ key: 'remote_alias', value: selChannel.remote_alias, title: 'Alias', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'amount', value: selHtlc.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER },
-        { key: 'incoming', value: (selHtlc.incoming ? 'Yes' : 'No'), title: 'Incoming', width: 50, type: DataTypeEnum.STRING }],
+      { key: 'incoming', value: (selHtlc.incoming ? 'Yes' : 'No'), title: 'Incoming', width: 50, type: DataTypeEnum.STRING }],
       [{ key: 'expiration_height', value: selHtlc.expiration_height, title: 'Expiration Height', width: 50, type: DataTypeEnum.NUMBER },
-        { key: 'hash_lock', value: selHtlc.hash_lock, title: 'Hash Lock', width: 50, type: DataTypeEnum.STRING }]
+      { key: 'hash_lock', value: selHtlc.hash_lock, title: 'Hash Lock', width: 50, type: DataTypeEnum.STRING }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'HTLC Information',
-      message: reorderedHTLC
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'HTLC Information',
+          message: reorderedHTLC
+        }
+      }
+    }));
   }
 
   onChannelClick(selChannel: Channel, event: any) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      channel: selChannel,
-      showCopy: true,
-      component: ChannelInformationComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          channel: selChannel,
+          showCopy: true,
+          component: ChannelInformationComponent
+        }
+      }
+    }));
   }
 
   applyFilter(selFilter: any) {

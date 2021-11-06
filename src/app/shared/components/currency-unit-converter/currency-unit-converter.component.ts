@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS } from '../../services/consts-enums-functions';
 import { CommonService } from '../../services/common.service';
 
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-currency-unit-converter',
@@ -23,7 +23,7 @@ export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDest
   public conversionErrorMsg = '';
   private unSubs = [new Subject(), new Subject(), new Subject()];
 
-  constructor(public commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) { }
+  constructor(public commonService: CommonService, private store: Store<RTLState>) { }
 
   ngOnInit() {
     this.store.select('root').

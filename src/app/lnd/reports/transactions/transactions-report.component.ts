@@ -9,7 +9,7 @@ import { APICallStatusEnum, MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../
 import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
 
 
 @Component({
@@ -45,7 +45,7 @@ export class TransactionsReportComponent implements OnInit, AfterContentInit, On
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) { }
+  constructor(private commonService: CommonService, private store: Store<RTLState>) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();

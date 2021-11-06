@@ -16,14 +16,14 @@ import { FEE_LIMIT_TYPES, UI_MESSAGES } from '../../../shared/services/consts-en
 import { mockRTLStoreState } from '../../../shared/test-helpers/test-data';
 
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
 import * as LNDActions from '../../store/lnd.actions';
 
 describe('LightningSendPaymentsComponent', () => {
   let component: LightningSendPaymentsComponent;
   let fixture: ComponentFixture<LightningSendPaymentsComponent>;
   let commonService: CommonService;
-  let store: Store<fromRTLReducer.RTLState>;
+  let store: Store<RTLState>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({

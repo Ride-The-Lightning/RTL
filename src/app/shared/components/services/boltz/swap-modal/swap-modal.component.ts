@@ -18,6 +18,7 @@ import { LoggerService } from '../../../../services/logger.service';
 import { CommonService } from '../../../../services/common.service';
 
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
+import { RTLState } from '../../../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-boltz-swap-modal',
@@ -47,7 +48,7 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
   statusFormGroup: FormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<SwapModalComponent>, @Inject(MAT_DIALOG_DATA) public data: SwapAlert, private store: Store<fromRTLReducer.RTLState>, private boltzService: BoltzService, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe, private logger: LoggerService, private router: Router, private commonService: CommonService) { }
+  constructor(public dialogRef: MatDialogRef<SwapModalComponent>, @Inject(MAT_DIALOG_DATA) public data: SwapAlert, private store: Store<RTLState>, private boltzService: BoltzService, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe, private logger: LoggerService, private router: Router, private commonService: CommonService) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();

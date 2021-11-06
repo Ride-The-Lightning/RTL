@@ -9,7 +9,8 @@ import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTyp
 import { CommonService } from '../../services/common.service';
 
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openAlert } from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-transactions-report-table',
@@ -36,7 +37,7 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
 
-  constructor(private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe) {
+  constructor(private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
@@ -73,15 +74,17 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
     const reorderedTransactions = [
       [{ key: 'date', value: this.dataRange === SCROLL_RANGES[1] ? this.datePipe.transform(selTransaction.date, 'MMM/yyyy') : this.datePipe.transform(selTransaction.date, 'dd/MMM/yyyy'), title: 'Date', width: 100, type: DataTypeEnum.DATE }],
       [{ key: 'amount_paid', value: Math.round(selTransaction.amount_paid), title: 'Amount Paid (Sats)', width: 50, type: DataTypeEnum.NUMBER },
-        { key: 'num_payments', value: selTransaction.num_payments, title: '# Payments', width: 50, type: DataTypeEnum.NUMBER }],
+      { key: 'num_payments', value: selTransaction.num_payments, title: '# Payments', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'amount_received', value: Math.round(selTransaction.amount_received), title: 'Amount Received (Sats)', width: 50, type: DataTypeEnum.NUMBER },
-        { key: 'num_invoices', value: selTransaction.num_invoices, title: '# Invoices', width: 50, type: DataTypeEnum.NUMBER }]
+      { key: 'num_invoices', value: selTransaction.num_invoices, title: '# Invoices', width: 50, type: DataTypeEnum.NUMBER }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({
-      data: {
-        type: AlertTypeEnum.INFORMATION,
-        alertTitle: 'Transaction Summary',
-        message: reorderedTransactions
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Transaction Summary',
+          message: reorderedTransactions
+        }
       }
     }));
   }

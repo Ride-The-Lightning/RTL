@@ -13,7 +13,8 @@ import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/ser
 import { LNDEffects } from '../../store/lnd.effects';
 import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openAlert } from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-query-routes',
@@ -22,7 +23,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class QueryRoutesComponent implements OnInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   public destinationPubkey = '';
   public amount = null;
   public qrHops: any;
@@ -35,7 +36,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private lndEffects: LNDEffects, private commonService: CommonService) {
+  constructor(private store: Store<RTLState>, private lndEffects: LNDEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -69,7 +70,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
       });
   }
 
-  onQueryRoutes(): boolean|void {
+  onQueryRoutes(): boolean | void {
     if (!this.destinationPubkey || !this.amount) {
       return true;
     }
@@ -87,19 +88,23 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
   onHopClick(selHop: Hop, event: any) {
     const reorderedHop = [
       [{ key: 'hop_sequence', value: selHop.hop_sequence, title: 'Sequence', width: 33, type: DataTypeEnum.NUMBER },
-        { key: 'amt_to_forward', value: selHop.amt_to_forward, title: 'Amount To Forward (Sats)', width: 33, type: DataTypeEnum.NUMBER },
-        { key: 'fee_msat', value: selHop.fee_msat, title: 'Fee (mSats)', width: 34, type: DataTypeEnum.NUMBER }],
+      { key: 'amt_to_forward', value: selHop.amt_to_forward, title: 'Amount To Forward (Sats)', width: 33, type: DataTypeEnum.NUMBER },
+      { key: 'fee_msat', value: selHop.fee_msat, title: 'Fee (mSats)', width: 34, type: DataTypeEnum.NUMBER }],
       [{ key: 'chan_capacity', value: selHop.chan_capacity, title: 'Channel Capacity (Sats)', width: 50, type: DataTypeEnum.NUMBER },
-        { key: 'expiry', value: selHop.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.NUMBER }],
+      { key: 'expiry', value: selHop.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'pubkey_alias', value: selHop.pubkey_alias, title: 'Peer Alias', width: 50, type: DataTypeEnum.STRING },
-        { key: 'chan_id', value: selHop.chan_id, title: 'Channel ID', width: 50, type: DataTypeEnum.STRING }],
+      { key: 'chan_id', value: selHop.chan_id, title: 'Channel ID', width: 50, type: DataTypeEnum.STRING }],
       [{ key: 'pub_key', value: selHop.pub_key, title: 'Peer Pubkey', width: 100, type: DataTypeEnum.STRING }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Route Information',
-      message: reorderedHop
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Route Information',
+          message: reorderedHop
+        }
+      }
+    }));
   }
 
   ngOnDestroy() {

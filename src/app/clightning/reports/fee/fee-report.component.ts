@@ -10,7 +10,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-cl-fee-report',
@@ -43,7 +43,7 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
@@ -139,7 +139,7 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
     return feeReport;
   }
 
-  onSelectionChange(selectedValues: {selDate: Date, selScrollRange: string}) {
+  onSelectionChange(selectedValues: { selDate: Date, selScrollRange: string }) {
     const selMonth = selectedValues.selDate.getMonth();
     const selYear = selectedValues.selDate.getFullYear();
     this.reportPeriod = selectedValues.selScrollRange;

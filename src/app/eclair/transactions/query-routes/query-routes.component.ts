@@ -13,7 +13,8 @@ import { CommonService } from '../../../shared/services/common.service';
 import { ECLEffects } from '../../store/ecl.effects';
 import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openAlert } from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-ecl-query-routes',
@@ -22,7 +23,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild('queryRoutesForm', { static: true }) form: any;
   public nodeId = '';
   public amount = 0;
@@ -36,7 +37,7 @@ export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private eclEffects: ECLEffects, private commonService: CommonService) {
+  constructor(private store: Store<RTLState>, private eclEffects: ECLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -71,7 +72,7 @@ export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
       });
   }
 
-  onQueryRoutes(): boolean|void {
+  onQueryRoutes(): boolean | void {
     if (!this.nodeId || !this.amount) {
       return true;
     }
@@ -93,11 +94,15 @@ export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
       [{ key: 'alias', value: selHop.alias, title: 'Alias', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'nodeId', value: selHop.nodeId, title: 'Node ID', width: 100, type: DataTypeEnum.STRING }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Route Information',
-      message: reorderedHop
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Route Information',
+          message: reorderedHop
+        }
+      }
+    }));
   }
 
   ngOnDestroy() {

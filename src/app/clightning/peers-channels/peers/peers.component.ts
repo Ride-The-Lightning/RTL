@@ -21,7 +21,8 @@ import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation'
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-cl-peers',
@@ -34,8 +35,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faUsers = faUsers;
   public newlyAddedPeer = '';
   public flgAnimate = true;
@@ -55,7 +56,7 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions: Actions, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private actions: Actions, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -110,22 +111,30 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       [{ key: 'id', value: selPeer.id, title: 'Public Key', width: 100 }],
       [{ key: 'netaddr', value: selPeer.netaddr, title: 'Address', width: 100 }],
       [{ key: 'alias', value: selPeer.alias, title: 'Alias', width: 50 },
-        { key: 'connected', value: selPeer.connected ? 'True' : 'False', title: 'Connected', width: 50 }]
+      { key: 'connected', value: selPeer.connected ? 'True' : 'False', title: 'Connected', width: 50 }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Peer Information',
-      showQRName: 'Public Key',
-      showQRField: selPeer.id,
-      message: reorderedPeer
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Peer Information',
+          showQRName: 'Public Key',
+          showQRField: selPeer.id,
+          message: reorderedPeer
+        }
+      }
+    }));
   }
 
   onConnectPeer(selPeer: Peer) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      message: { peer: (selPeer.id ? selPeer : null), information: this.information, balance: this.availableBalance },
-      component: CLConnectPeerComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          message: { peer: (selPeer.id ? selPeer : null), information: this.information, balance: this.availableBalance },
+          component: CLConnectPeerComponent
+        }
+      }
+    }));
   }
 
   onOpenChannel(peerToAddChannel: Peer) {
@@ -134,23 +143,31 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       information: this.information,
       balance: this.availableBalance
     };
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      alertTitle: 'Open Channel',
-      message: peerToAddChannelMessage,
-      newlyAdded: false,
-      component: CLOpenChannelComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          alertTitle: 'Open Channel',
+          message: peerToAddChannelMessage,
+          newlyAdded: false,
+          component: CLOpenChannelComponent
+        }
+      }
+    }));
   }
 
   onPeerDetach(peerToDetach: Peer) {
     const msg = 'Disconnect peer: ' + ((peerToDetach.alias) ? peerToDetach.alias : peerToDetach.id);
-    this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-      type: AlertTypeEnum.CONFIRM,
-      alertTitle: 'Disconnect Peer',
-      titleMessage: msg,
-      noBtnText: 'Cancel',
-      yesBtnText: 'Disconnect'
-    } }));
+    this.store.dispatch(openConfirmation({
+      payload: {
+        data: {
+          type: AlertTypeEnum.CONFIRM,
+          alertTitle: 'Disconnect Peer',
+          titleMessage: msg,
+          noBtnText: 'Cancel',
+          yesBtnText: 'Disconnect'
+        }
+      }
+    }));
     this.rtlEffects.closeConfirm.
       pipe(takeUntil(this.unSubs[3])).
       subscribe((confirmRes) => {

@@ -23,7 +23,8 @@ import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation'
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-cl-lightning-invoices',
@@ -37,8 +38,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input() calledFrom = 'transactions'; // Transactions/home
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   faHistory = faHistory;
   public selNode: SelNodeChild = {};
   public newlyAddedInvoiceMemo = '';
@@ -65,7 +66,7 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private rtlEffects: RTLEffects, private datePipe: DatePipe, private actions: Actions) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private rtlEffects: RTLEffects, private datePipe: DatePipe, private actions: Actions) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -103,7 +104,7 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
         this.logger.info(rtlStore);
       });
     this.actions.pipe(takeUntil(this.unSubs[1]), filter((action) => (action.type === CLActions.SET_LOOKUP_CL || action.type === CLActions.UPDATE_API_CALL_STATUS_CL))).
-      subscribe((resLookup: CLActions.SetLookup | CLActions.UpdateAPICallStatus) => {
+      subscribe((resLookup: any) => {
         if (resLookup.type === CLActions.SET_LOOKUP_CL) {
           if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator && resLookup.payload) {
             this.updateInvoicesData(JSON.parse(JSON.stringify(resLookup.payload)));
@@ -120,10 +121,14 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
   }
 
   openCreateInvoiceModal() {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      pageSize: this.pageSize,
-      component: CLCreateInvoiceComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          pageSize: this.pageSize,
+          component: CLCreateInvoiceComponent
+        }
+      }
+    }));
   }
 
   onAddInvoice(form: any) {
@@ -141,8 +146,10 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
   }
 
   onDeleteExpiredInvoices() {
-    this.store.dispatch(new RTLActions.OpenConfirmation({
-      data: { type: 'CONFIRM', titleMessage: 'Delete Expired Invoices', noBtnText: 'Cancel', yesBtnText: 'Delete Invoices' }
+    this.store.dispatch(openConfirmation({
+      payload: {
+        data: { type: 'CONFIRM', titleMessage: 'Delete Expired Invoices', noBtnText: 'Cancel', yesBtnText: 'Delete Invoices' }
+      }
     }));
     this.rtlEffects.closeConfirm.
       pipe(takeUntil(this.unSubs[2])).
@@ -165,11 +172,15 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
       status: selInvoice.status,
       msatoshi_received: selInvoice.msatoshi_received
     };
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      invoice: reCreatedInvoice,
-      newlyAdded: false,
-      component: CLInvoiceInformationComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          invoice: reCreatedInvoice,
+          newlyAdded: false,
+          component: CLInvoiceInformationComponent
+        }
+      }
+    }));
   }
 
   resetData() {
@@ -189,11 +200,13 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
       this.invoiceValueHint = '';
       this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
         pipe(takeUntil(this.unSubs[3])).
-        subscribe({ next: (data) => {
-          this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
-        }, error: (err) => {
-          this.invoiceValueHint = 'Conversion Error: ' + err;
-        } });
+        subscribe({
+          next: (data) => {
+            this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
+          }, error: (err) => {
+            this.invoiceValueHint = 'Conversion Error: ' + err;
+          }
+        });
     }
   }
 

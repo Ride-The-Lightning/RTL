@@ -7,12 +7,12 @@ import { ServicesEnum, UI_MESSAGES } from '../../../../services/consts-enums-fun
 import { ConfigSettingsNode, RTLConfiguration } from '../../../../models/RTLconfig';
 import { LoggerService } from '../../../../services/logger.service';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { updateServiceSettings } from '../../../../../store/rtl.actions';
+import { RTLState } from '../../../../../store/rtl.state';
 
 import * as ECLActions from '../../../../../eclair/store/ecl.actions';
 import * as CLActions from '../../../../../clightning/store/cl.actions';
 import * as LNDActions from '../../../../../lnd/store/lnd.actions';
-import * as RTLActions from '../../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-loop-service-settings',
@@ -29,7 +29,7 @@ export class LoopServiceSettingsComponent implements OnInit, OnDestroy {
   public enableLoop = false;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) { }
+  constructor(private logger: LoggerService, private store: Store<RTLState>) { }
 
   ngOnInit() {
     this.store.select('root').
@@ -59,7 +59,7 @@ export class LoopServiceSettingsComponent implements OnInit, OnDestroy {
       return true;
     }
     this.logger.info(this.selNode);
-    this.store.dispatch(new RTLActions.UpdateServiceSettings({ uiMessage: UI_MESSAGES.UPDATE_LOOP_SETTINGS, service: ServicesEnum.LOOP, settings: { enable: this.enableLoop, serverUrl: this.selNode.settings.swapServerUrl, macaroonPath: this.selNode.authentication.swapMacaroonPath } }));
+    this.store.dispatch(updateServiceSettings({ payload: { uiMessage: UI_MESSAGES.UPDATE_LOOP_SETTINGS, service: ServicesEnum.LOOP, settings: { enable: this.enableLoop, serverUrl: this.selNode.settings.swapServerUrl, macaroonPath: this.selNode.authentication.swapMacaroonPath } } }));
     this.store.dispatch(new LNDActions.SetChildNodeSettings(
       { userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl }
     ));

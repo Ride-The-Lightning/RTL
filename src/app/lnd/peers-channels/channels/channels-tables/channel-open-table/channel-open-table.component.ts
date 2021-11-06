@@ -23,8 +23,8 @@ import { LoopModalComponent } from '../../../../../shared/components/services/lo
 import { LNDEffects } from '../../../../store/lnd.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as LNDActions from '../../../../store/lnd.actions';
-import * as RTLActions from '../../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../../store/rtl.reducers';
+import { RTLState } from '../../../../../store/rtl.state';
+import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-channel-open-table',
@@ -36,8 +36,8 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 })
 export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public timeUnit = 'mins:secs';
   public userPersonaEnum = UserPersonaEnum;
   public selNode: SelNodeChild = {};
@@ -63,7 +63,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private commonService: CommonService, private loopService: LoopService, private decimalPipe: DecimalPipe) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private lndEffects: LNDEffects, private commonService: CommonService, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private loopService: LoopService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -114,21 +114,25 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     this.store.dispatch(new LNDActions.ChannelLookup({ uiMessage: UI_MESSAGES.GET_REMOTE_POLICY, channelID: selChannel.chan_id.toString() + '/' + this.information.identity_pubkey }));
     this.lndEffects.setLookup.
       pipe(take(1)).
-      subscribe((resLookup): boolean|void => {
+      subscribe((resLookup): boolean | void => {
         if (!resLookup.fee_base_msat && !resLookup.fee_rate_milli_msat && !resLookup.time_lock_delta) {
           return false;
         }
         const reorderedChannelPolicy = [
           [{ key: 'fee_base_msat', value: resLookup.fee_base_msat, title: 'Base Fees (mSats)', width: 25, type: DataTypeEnum.NUMBER },
-            { key: 'fee_rate_milli_msat', value: resLookup.fee_rate_milli_msat, title: 'Fee Rate (milli mSats)', width: 25, type: DataTypeEnum.NUMBER },
-            { key: 'fee_rate_milli_msat', value: resLookup.fee_rate_milli_msat / 10000, title: 'Fee Rate (%)', width: 25, type: DataTypeEnum.NUMBER, digitsInfo: '1.0-8' },
-            { key: 'time_lock_delta', value: resLookup.time_lock_delta, title: 'Time Lock Delta', width: 25, type: DataTypeEnum.NUMBER }]
+          { key: 'fee_rate_milli_msat', value: resLookup.fee_rate_milli_msat, title: 'Fee Rate (milli mSats)', width: 25, type: DataTypeEnum.NUMBER },
+          { key: 'fee_rate_milli_msat', value: resLookup.fee_rate_milli_msat / 10000, title: 'Fee Rate (%)', width: 25, type: DataTypeEnum.NUMBER, digitsInfo: '1.0-8' },
+          { key: 'time_lock_delta', value: resLookup.time_lock_delta, title: 'Time Lock Delta', width: 25, type: DataTypeEnum.NUMBER }]
         ];
-        this.store.dispatch(new RTLActions.OpenAlert({ data: {
-          type: AlertTypeEnum.INFORMATION,
-          alertTitle: 'Remote Channel Policy',
-          message: reorderedChannelPolicy
-        } }));
+        this.store.dispatch(openAlert({
+          payload: {
+            data: {
+              type: AlertTypeEnum.INFORMATION,
+              alertTitle: 'Remote Channel Policy',
+              message: reorderedChannelPolicy
+            }
+          }
+        }));
       });
   }
 
@@ -137,29 +141,37 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
       channels: this.channelsData,
       selChannel: selChannel
     };
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      message: channelsToRebalanceMessage,
-      component: ChannelRebalanceComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          message: channelsToRebalanceMessage,
+          component: ChannelRebalanceComponent
+        }
+      }
+    }));
   }
 
   onChannelUpdate(channelToUpdate: any) {
     if (channelToUpdate === 'all') {
       const confirmationMsg = [];
-      this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-        type: AlertTypeEnum.CONFIRM,
-        alertTitle: 'Update Fee Policy',
-        noBtnText: 'Cancel',
-        yesBtnText: 'Update All Channels',
-        message: confirmationMsg,
-        titleMessage: 'Update fee policy for all channels',
-        flgShowInput: true,
-        getInputs: [
-          { placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 1000, width: 32 },
-          { placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 1, min: 1, width: 32, hintFunction: this.percentHintFunction },
-          { placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 40, width: 32 }
-        ]
-      } }));
+      this.store.dispatch(openConfirmation({
+        payload: {
+          data: {
+            type: AlertTypeEnum.CONFIRM,
+            alertTitle: 'Update Fee Policy',
+            noBtnText: 'Cancel',
+            yesBtnText: 'Update All Channels',
+            message: confirmationMsg,
+            titleMessage: 'Update fee policy for all channels',
+            flgShowInput: true,
+            getInputs: [
+              { placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 1000, width: 32 },
+              { placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 1, min: 1, width: 32, hintFunction: this.percentHintFunction },
+              { placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 40, width: 32 }
+            ]
+          }
+        }
+      }));
       this.rtlEffects.closeConfirm.
         pipe(takeUntil(this.unSubs[1])).
         subscribe((confirmRes) => {
@@ -186,20 +198,24 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
           this.logger.info(this.myChanPolicy);
           const titleMsg = 'Update fee policy for channel point: ' + channelToUpdate.channel_point;
           const confirmationMsg = [];
-          this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-            type: AlertTypeEnum.CONFIRM,
-            alertTitle: 'Update Fee Policy',
-            titleMessage: titleMsg,
-            noBtnText: 'Cancel',
-            yesBtnText: 'Update Channel',
-            message: confirmationMsg,
-            flgShowInput: true,
-            getInputs: [
-              { placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, width: 32 },
-              { placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 32, hintFunction: this.percentHintFunction },
-              { placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: this.myChanPolicy.time_lock_delta, width: 32 }
-            ]
-          } }));
+          this.store.dispatch(openConfirmation({
+            payload: {
+              data: {
+                type: AlertTypeEnum.CONFIRM,
+                alertTitle: 'Update Fee Policy',
+                titleMessage: titleMsg,
+                noBtnText: 'Cancel',
+                yesBtnText: 'Update Channel',
+                message: confirmationMsg,
+                flgShowInput: true,
+                getInputs: [
+                  { placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, width: 32 },
+                  { placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 32, hintFunction: this.percentHintFunction },
+                  { placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: this.myChanPolicy.time_lock_delta, width: 32 }
+                ]
+              }
+            }
+          }));
         });
       this.rtlEffects.closeConfirm.
         pipe(takeUntil(this.unSubs[2])).
@@ -219,10 +235,14 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     if (channelToClose.active) {
       this.store.dispatch(new LNDActions.FetchAllChannels()); // To get latest pending htlc status
     }
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: {
-      channel: channelToClose,
-      component: CloseChannelComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        width: '70%', data: {
+          channel: channelToClose,
+          component: CloseChannelComponent
+        }
+      }
+    }));
   }
 
   applyFilter() {
@@ -230,11 +250,15 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   onChannelClick(selChannel: Channel, event: any) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      channel: selChannel,
-      showCopy: true,
-      component: ChannelInformationComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          channel: selChannel,
+          showCopy: true,
+          component: ChannelInformationComponent
+        }
+      }
+    }));
   }
 
   loadChannelsTable(mychannels: Channel[]) {
@@ -242,11 +266,11 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     this.channels = new MatTableDataSource<Channel>([...mychannels]);
     this.channels.filterPredicate = (channel: Channel, fltr: string) => {
       const newChannel = ((channel.active) ? 'active' : 'inactive') + (channel.chan_id ? channel.chan_id.toLowerCase() : '') +
-      (channel.remote_pubkey ? channel.remote_pubkey.toLowerCase() : '') + (channel.remote_alias ? channel.remote_alias.toLowerCase() : '') +
-      (channel.capacity ? channel.capacity : '') + (channel.local_balance ? channel.local_balance : '') +
-      (channel.remote_balance ? channel.remote_balance : '') + (channel.total_satoshis_sent ? channel.total_satoshis_sent : '') +
-      (channel.total_satoshis_received ? channel.total_satoshis_received : '') + (channel.commit_fee ? channel.commit_fee : '') +
-      (channel.private ? 'private' : 'public');
+        (channel.remote_pubkey ? channel.remote_pubkey.toLowerCase() : '') + (channel.remote_alias ? channel.remote_alias.toLowerCase() : '') +
+        (channel.capacity ? channel.capacity : '') + (channel.local_balance ? channel.local_balance : '') +
+        (channel.remote_balance ? channel.remote_balance : '') + (channel.total_satoshis_sent ? channel.total_satoshis_sent : '') +
+        (channel.total_satoshis_received ? channel.total_satoshis_received : '') + (channel.commit_fee ? channel.commit_fee : '') +
+        (channel.private ? 'private' : 'public');
       return newChannel.includes(fltr);
     };
     this.channels.sort = this.sort;
@@ -309,13 +333,17 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     this.loopService.getLoopOutTermsAndQuotes(this.targetConf).
       pipe(takeUntil(this.unSubs[0])).
       subscribe((response) => {
-        this.store.dispatch(new RTLActions.OpenAlert({ minHeight: '56rem', data: {
-          channel: selChannel,
-          minQuote: response[0],
-          maxQuote: response[1],
-          direction: LoopTypeEnum.LOOP_OUT,
-          component: LoopModalComponent
-        } }));
+        this.store.dispatch(openAlert({
+          payload: {
+            minHeight: '56rem', data: {
+              channel: selChannel,
+              minQuote: response[0],
+              maxQuote: response[1],
+              direction: LoopTypeEnum.LOOP_OUT,
+              component: LoopModalComponent
+            }
+          }
+        }));
       });
   }
 

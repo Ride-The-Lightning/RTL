@@ -12,7 +12,7 @@ import { LookupNode } from '../../shared/models/eclModels';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import * as ECLActions from '../store/ecl.actions';
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import { RTLState } from '../../store/rtl.state';
 
 @Component({
   selector: 'rtl-ecl-lookups',
@@ -40,7 +40,7 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private actions: Actions) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -76,7 +76,7 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
     });
   }
 
-  onLookup(): boolean|void {
+  onLookup(): boolean | void {
     if (!this.lookupKeyCtrl.value) {
       this.lookupKeyCtrl.setErrors({ required: true });
       return true;
@@ -95,7 +95,7 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
           this.store.dispatch(new ECLActions.PeerLookup(this.lookupKeyCtrl.value.trim()));
           break;
         case 1:
-        // This.store.dispatch(new ECLActions.ChannelLookup({shortChannelID: this.lookupKey.trim(), showError: false}));
+          // This.store.dispatch(new ECLActions.ChannelLookup({shortChannelID: this.lookupKey.trim(), showError: false}));
           break;
         default:
           break;

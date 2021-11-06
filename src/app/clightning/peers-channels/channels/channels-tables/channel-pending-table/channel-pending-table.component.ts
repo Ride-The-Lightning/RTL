@@ -18,6 +18,8 @@ import * as RTLActions from '../../../../../store/rtl.actions';
 import * as CLActions from '../../../../store/cl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 import { CLBumpFeeComponent } from '../../bump-fee-modal/bump-fee.component';
+import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
+import { RTLState } from '../../../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-cl-channel-pending-table',
@@ -29,8 +31,8 @@ import { CLBumpFeeComponent } from '../../bump-fee-modal/bump-fee.component';
 })
 export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public isCompatibleVersion = false;
   public totalBalance = 0;
   public displayedColumns: any[] = [];
@@ -52,7 +54,7 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -104,28 +106,40 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
   }
 
   onBumpFee(selChannel: Channel) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      channel: selChannel,
-      component: CLBumpFeeComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          channel: selChannel,
+          component: CLBumpFeeComponent
+        }
+      }
+    }));
   }
 
   onChannelClick(selChannel: Channel, event: any) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      channel: selChannel,
-      showCopy: true,
-      component: CLChannelInformationComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          channel: selChannel,
+          showCopy: true,
+          component: CLChannelInformationComponent
+        }
+      }
+    }));
   }
 
   onChannelClose(channelToClose: Channel) {
-    this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-      type: AlertTypeEnum.CONFIRM,
-      alertTitle: 'Force Close Channel',
-      titleMessage: 'Force closing channel: ' + channelToClose.channel_id,
-      noBtnText: 'Cancel',
-      yesBtnText: 'Force Close'
-    } }));
+    this.store.dispatch(openConfirmation({
+      payload: {
+        data: {
+          type: AlertTypeEnum.CONFIRM,
+          alertTitle: 'Force Close Channel',
+          titleMessage: 'Force closing channel: ' + channelToClose.channel_id,
+          noBtnText: 'Cancel',
+          yesBtnText: 'Force Close'
+        }
+      }
+    }));
     this.rtlEffects.closeConfirm.
       pipe(takeUntil(this.unSubs[3])).
       subscribe((confirmRes) => {
@@ -140,11 +154,11 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
     this.channels = new MatTableDataSource<Channel>([...mychannels]);
     this.channels.filterPredicate = (channel: Channel, fltr: string) => {
       const newChannel = ((channel.connected) ? 'connected' : 'disconnected') + (channel.channel_id ? channel.channel_id.toLowerCase() : '') +
-      (channel.short_channel_id ? channel.short_channel_id.toLowerCase() : '') + (channel.id ? channel.id.toLowerCase() : '') + (channel.alias ? channel.alias.toLowerCase() : '') +
-      (channel.private ? 'private' : 'public') + ((channel.state && this.CLChannelPendingState[channel.state]) ? this.CLChannelPendingState[channel.state].toLowerCase() : '') +
-      (channel.funding_txid ? channel.funding_txid.toLowerCase() : '') + (channel.msatoshi_to_us ? channel.msatoshi_to_us : '') +
-      (channel.msatoshi_total ? channel.msatoshi_total : '') + (channel.their_channel_reserve_satoshis ? channel.their_channel_reserve_satoshis : '') +
-      (channel.our_channel_reserve_satoshis ? channel.our_channel_reserve_satoshis : '') + (channel.spendable_msatoshi ? channel.spendable_msatoshi : '');
+        (channel.short_channel_id ? channel.short_channel_id.toLowerCase() : '') + (channel.id ? channel.id.toLowerCase() : '') + (channel.alias ? channel.alias.toLowerCase() : '') +
+        (channel.private ? 'private' : 'public') + ((channel.state && this.CLChannelPendingState[channel.state]) ? this.CLChannelPendingState[channel.state].toLowerCase() : '') +
+        (channel.funding_txid ? channel.funding_txid.toLowerCase() : '') + (channel.msatoshi_to_us ? channel.msatoshi_to_us : '') +
+        (channel.msatoshi_total ? channel.msatoshi_total : '') + (channel.their_channel_reserve_satoshis ? channel.their_channel_reserve_satoshis : '') +
+        (channel.our_channel_reserve_satoshis ? channel.our_channel_reserve_satoshis : '') + (channel.spendable_msatoshi ? channel.spendable_msatoshi : '');
       return newChannel.includes(fltr);
     };
     this.channels.sort = this.sort;

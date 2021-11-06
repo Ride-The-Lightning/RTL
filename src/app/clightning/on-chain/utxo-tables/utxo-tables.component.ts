@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { UTXO } from '../../../shared/models/clModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-cl-utxo-tables',
@@ -23,7 +23,7 @@ export class CLUTXOTablesComponent implements OnInit, OnDestroy {
   public numDustUtxos = 0;
   private unSubs: Array<Subject<void>> = [new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private logger: LoggerService, private store: Store<RTLState>) { }
 
   ngOnInit() {
     this.store.select('cl').

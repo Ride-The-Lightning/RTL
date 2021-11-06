@@ -14,7 +14,8 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openAlert } from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-ecl-forwarding-history',
@@ -26,8 +27,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   @Input() eventsData = [];
   @Input() filterValue = '';
   public displayedColumns: any[] = [];
@@ -42,7 +43,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -100,21 +101,25 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
     const reorderedFHEvent = [
       [{ key: 'paymentHash', value: selFEvent.paymentHash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'timestamp', value: Math.round(selFEvent.timestamp / 1000), title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME },
-        { key: 'fee', value: (selFEvent.amountIn - selFEvent.amountOut), title: 'Fee Earned (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
+      { key: 'fee', value: (selFEvent.amountIn - selFEvent.amountOut), title: 'Fee Earned (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'amountIn', value: selFEvent.amountIn, title: 'Amount In (Sats)', width: 50, type: DataTypeEnum.NUMBER },
-        { key: 'amountOut', value: selFEvent.amountOut, title: 'Amount Out (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
+      { key: 'amountOut', value: selFEvent.amountOut, title: 'Amount Out (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'fromChannelAlias', value: selFEvent.fromChannelAlias, title: 'From Channel Alias', width: 50, type: DataTypeEnum.STRING },
-        { key: 'fromShortChannelId', value: selFEvent.fromShortChannelId, title: 'From Short Channel ID', width: 50, type: DataTypeEnum.STRING }],
+      { key: 'fromShortChannelId', value: selFEvent.fromShortChannelId, title: 'From Short Channel ID', width: 50, type: DataTypeEnum.STRING }],
       [{ key: 'fromChannelId', value: selFEvent.fromChannelId, title: 'From Channel Id', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'toChannelAlias', value: selFEvent.toChannelAlias, title: 'To Channel Alias', width: 50, type: DataTypeEnum.STRING },
-        { key: 'toShortChannelId', value: selFEvent.toShortChannelId, title: 'To Short Channel ID', width: 50, type: DataTypeEnum.STRING }],
+      { key: 'toShortChannelId', value: selFEvent.toShortChannelId, title: 'To Short Channel ID', width: 50, type: DataTypeEnum.STRING }],
       [{ key: 'toChannelId', value: selFEvent.toChannelId, title: 'To Channel Id', width: 100, type: DataTypeEnum.STRING }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Event Information',
-      message: reorderedFHEvent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Event Information',
+          message: reorderedFHEvent
+        }
+      }
+    }));
   }
 
   loadForwardingEventsTable(forwardingEvents: PaymentRelayed[]) {

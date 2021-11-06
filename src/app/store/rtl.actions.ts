@@ -1,4 +1,4 @@
-import { Action } from '@ngrx/store';
+import { createAction, props } from '@ngrx/store';
 
 import { DialogConfig } from '../shared/models/alertData';
 import { ApiCallStatusPayload } from '../shared/models/apiCallsPayload';
@@ -41,236 +41,69 @@ export const RESET_PASSWORD_RES = 'RESET_PASSWORD_RES';
 export const FETCH_FILE = 'FETCH_FILE';
 export const SHOW_FILE = 'SHOW_FILE';
 
-export class VoidAction implements Action {
 
-  readonly type = VOID;
+export const voidAction = createAction(VOID);
 
-}
+export const setApiUrl = createAction(SET_API_URL_ECL, props<{ payload: string }>());
 
-export class SetApiUrl implements Action {
+export const updateAPICallStatus = createAction(UPDATE_API_CALL_STATUS_ROOT, props<{ payload: ApiCallStatusPayload }>());
 
-  readonly type = SET_API_URL_ECL;
-  constructor(public payload: string) {}
+export const closeAllDialogs = createAction(CLOSE_ALL_DIALOGS);
 
-}
+export const openSnackBar = createAction(OPEN_SNACK_BAR, props<{ payload: string | { message: string, duration?: number, type?: string } }>());
 
-export class UpdateAPICallStatus implements Action {
+export const openSpinner = createAction(OPEN_SPINNER, props<{ payload: string }>());
 
-  readonly type = UPDATE_API_CALL_STATUS_ROOT;
-  constructor(public payload: ApiCallStatusPayload) { }
+export const closeSpinner = createAction(CLOSE_SPINNER, props<{ payload: string }>());
 
-}
+export const openAlert = createAction(OPEN_ALERT, props<{ payload: DialogConfig }>());
 
-export class CloseAllDialogs implements Action {
+export const closeAlert = createAction(CLOSE_ALERT, props<{ payload: any }>());
 
-  readonly type = CLOSE_ALL_DIALOGS;
+export const openConfirmation = createAction(OPEN_CONFIRMATION, props<{ payload: DialogConfig }>());
 
-}
+export const closeConfirmation = createAction(CLOSE_CONFIRMATION, props<{ payload: boolean }>());
 
-export class OpenSnackBar implements Action {
+export const showPubkey = createAction(SHOW_PUBKEY);
 
-  readonly type = OPEN_SNACK_BAR;
-  constructor(public payload: string | {message: string, duration?: number, type?: string}) {}
+export const fetchConfig = createAction(FETCH_CONFIG, props<{ payload: string }>());
 
-}
+export const showConfig = createAction(SHOW_CONFIG, props<{ payload: any }>());
 
-export class OpenSpinner implements Action {
+export const updateSelectedNodeOptions = createAction(UPDATE_SELECTED_NODE_OPTIONS);
 
-  readonly type = OPEN_SPINNER;
-  constructor(public payload: string) {}
+export const resetRootStore = createAction(RESET_ROOT_STORE, props<{ payload: ConfigSettingsNode }>());
 
-}
+export const fetchRTLConfig = createAction(FETCH_RTL_CONFIG);
 
-export class CloseSpinner implements Action {
+export const setRTLConfig = createAction(SET_RTL_CONFIG, props<{ payload: RTLConfiguration }>());
 
-  readonly type = CLOSE_SPINNER;
-  constructor(public payload: string) {}
+export const saveSettings = createAction(SAVE_SETTINGS, props<{ payload: { uiMessage: string, settings?: Settings, defaultNodeIndex?: number } }>());
 
-}
+export const twoFASaveSettings = createAction(TWO_FA_SAVE_SETTINGS, props<{ payload: { secret2fa: string } }>());
 
-export class OpenAlert implements Action {
+export const setSelelectedNode = createAction(SET_SELECTED_NODE, props<{ payload: { uiMessage: string, lnNode: ConfigSettingsNode, isInitialSetup: boolean } }>());
 
-  readonly type = OPEN_ALERT;
-  constructor(public payload: DialogConfig) {}
+export const updateServiceSettings = createAction(UPDATE_SERVICE_SETTINGS, props<{ payload: { uiMessage: string, service: ServicesEnum, settings: any } }>());
 
-}
+export const setNodeData = createAction(SET_NODE_DATA, props<{ payload: GetInfoRoot }>());
 
-export class CloseAlert implements Action {
+export const saveSSO = createAction(SAVE_SSO, props<{ payload: SSO }>());
 
-  readonly type = CLOSE_ALERT;
-  constructor(public payload: any) {}
+export const logout = createAction(LOGOUT);
 
-}
+export const resetPassword = createAction(RESET_PASSWORD, props<{ payload: { currPassword: string, newPassword: string } }>());
 
-export class OpenConfirmation implements Action {
+export const resetPasswordRes = createAction(RESET_PASSWORD_RES, props<{ payload: { token: string } }>());
 
-  readonly type = OPEN_CONFIRMATION;
-  constructor(public payload: DialogConfig) {}
+export const isAuthorized = createAction(IS_AUTHORIZED, props<{ payload: string }>());
 
-}
+export const isAuthorizedRes = createAction(IS_AUTHORIZED_RES, props<{ payload: any }>());
 
-export class CloseConfirmation implements Action {
+export const login = createAction(LOGIN, props<{ payload: { password: string, defaultPassword: boolean, twoFAToken?: string } }>());
 
-  readonly type = CLOSE_CONFIRMATION;
-  constructor(public payload: boolean) {}
+export const verifyTwoFA = createAction(VERIFY_TWO_FA, props<{ payload: { token: string, authResponse: any } }>());
 
-}
+export const fetchFile = createAction(FETCH_FILE, props<{ payload: { channelPoint: string, path?: string } }>());
 
-export class ShowPubkey implements Action {
-
-  readonly type = SHOW_PUBKEY;
-  constructor() {}
-
-}
-
-export class FetchConfig implements Action {
-
-  readonly type = FETCH_CONFIG;
-  constructor(public payload: string) {} // Payload = ln/bitcoin node
-
-}
-
-export class ShowConfig implements Action {
-
-  readonly type = SHOW_CONFIG;
-  constructor(public payload: any) {} // Payload = Config File
-
-}
-
-export class UpdateSelectedNodeOptions implements Action {
-
-  readonly type = UPDATE_SELECTED_NODE_OPTIONS;
-
-}
-
-export class ResetRootStore implements Action {
-
-  readonly type = RESET_ROOT_STORE;
-  constructor(public payload: ConfigSettingsNode) {}
-
-}
-
-export class FetchRTLConfig implements Action {
-
-  readonly type = FETCH_RTL_CONFIG;
-
-}
-
-export class SetRTLConfig implements Action {
-
-  readonly type = SET_RTL_CONFIG;
-  constructor(public payload: RTLConfiguration) {}
-
-}
-
-export class SaveSettings implements Action {
-
-  readonly type = SAVE_SETTINGS;
-  constructor(public payload: {uiMessage: string, settings?: Settings, defaultNodeIndex?: number}) {}
-
-}
-
-export class TwoFASaveSettings implements Action {
-
-  readonly type = TWO_FA_SAVE_SETTINGS;
-  constructor(public payload: {secret2fa: string}) {}
-
-}
-
-export class SetSelelectedNode implements Action {
-
-  readonly type = SET_SELECTED_NODE;
-  constructor(public payload: { uiMessage: string, lnNode: ConfigSettingsNode, isInitialSetup: boolean }) {}
-
-}
-
-export class UpdateServiceSettings implements Action {
-
-  readonly type = UPDATE_SERVICE_SETTINGS;
-  constructor(public payload: { uiMessage: string, service: ServicesEnum, settings: any }) {}
-
-}
-
-export class SetNodeData implements Action {
-
-  readonly type = SET_NODE_DATA;
-  constructor(public payload: GetInfoRoot) {}
-
-}
-
-export class SaveSSO implements Action {
-
-  readonly type = SAVE_SSO;
-  constructor(public payload: SSO) {}
-
-}
-
-export class Logout implements Action {
-
-  readonly type = LOGOUT;
-  constructor() {}
-
-}
-
-export class ResetPassword implements Action {
-
-  readonly type = RESET_PASSWORD;
-  constructor(public payload: {currPassword: string, newPassword: string}) {}
-
-}
-
-export class ResetPasswordRes implements Action {
-
-  readonly type = RESET_PASSWORD_RES;
-  constructor(public payload: {token: string}) {}
-
-}
-
-export class IsAuthorized implements Action {
-
-  readonly type = IS_AUTHORIZED;
-  constructor(public payload: string) {} // Payload = password
-
-}
-
-export class IsAuthorizedRes implements Action {
-
-  readonly type = IS_AUTHORIZED_RES;
-  constructor(public payload: any) {} // Payload = token/error
-
-}
-
-export class Login implements Action {
-
-  readonly type = LOGIN;
-  constructor(public payload: {password: string, defaultPassword: boolean, twoFAToken?: string}) {}
-
-}
-
-export class VerifyTwoFA implements Action {
-
-  readonly type = VERIFY_TWO_FA;
-  constructor(public payload: {token: string, authResponse: any}) {}
-
-}
-
-export class FetchFile implements Action {
-
-  readonly type = FETCH_FILE;
-  constructor(public payload: {channelPoint: string, path?: string}) {}
-
-}
-
-export class ShowFile implements Action {
-
-  readonly type = SHOW_FILE;
-  constructor(public payload: any) {}
-
-}
-
-export type RTLActions = UpdateAPICallStatus | SetApiUrl | IsAuthorized | IsAuthorizedRes | Login | VerifyTwoFA |
-  VoidAction | CloseAllDialogs | OpenSnackBar | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
-  OpenAlert | CloseAlert | OpenConfirmation | CloseConfirmation | ShowPubkey | FetchConfig | ShowConfig |
-  UpdateSelectedNodeOptions | ResetRootStore |
-  SetSelelectedNode | SetNodeData | SaveSSO | UpdateServiceSettings |
-  Logout | ResetPassword | ResetPasswordRes | FetchFile | ShowFile;
+export const showFile = createAction(SHOW_FILE, props<{ payload: any }>());

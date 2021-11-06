@@ -7,7 +7,8 @@ import { faCog } from '@fortawesome/free-solid-svg-icons';
 
 import { RTLEffects } from '../../../../store/rtl.effects';
 import * as RTLActions from '../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { RTLState } from '../../../../store/rtl.state';
+import { fetchConfig } from '../../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-bitcoin-config',
@@ -22,15 +23,15 @@ export class BitcoinConfigComponent implements OnInit, OnDestroy {
   public faCog = faCog;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private router: Router) { }
+  constructor(private store: Store<RTLState>, private rtlEffects: RTLEffects, private router: Router) { }
 
   ngOnInit() {
     this.selectedNodeType = (this.router.url.includes('bconfig')) ? 'bitcoind' : 'ln';
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe((value: ResolveEnd) => {
+      subscribe((value: any) => {
         this.selectedNodeType = (value.urlAfterRedirects.includes('bconfig')) ? 'bitcoind' : 'ln';
       });
-    this.store.dispatch(new RTLActions.FetchConfig(this.selectedNodeType));
+    this.store.dispatch(fetchConfig({ payload: this.selectedNodeType }));
     this.rtlEffects.showLnConfig.
       pipe(takeUntil(this.unSubs[1])).
       subscribe((config: any) => {

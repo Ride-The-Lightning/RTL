@@ -12,7 +12,7 @@ import { APICallStatusEnum } from '../../../../shared/services/consts-enums-func
 import { ECLOpenChannelAlert } from '../../../../shared/models/alertData';
 
 import * as ECLActions from '../../../store/ecl.actions';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { RTLState } from '../../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-ecl-open-channel',
@@ -39,7 +39,7 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
   public feeRate = null;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ECLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private actions: Actions) { }
+  constructor(public dialogRef: MatDialogRef<ECLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLOpenChannelAlert, private store: Store<RTLState>, private actions: Actions) { }
 
   ngOnInit() {
     this.information = this.data.message.information;

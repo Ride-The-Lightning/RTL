@@ -12,7 +12,7 @@ import { ApiCallsListECL } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-ecl-routing-peers',
@@ -26,8 +26,8 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
 
   @ViewChild('tableIn', { read: MatSort, static: false }) sortIn: MatSort;
   @ViewChild('tableOut', { read: MatSort, static: false }) sortOut: MatSort;
-  @ViewChild('paginatorIn', { static: false }) paginatorIn: MatPaginator|undefined;
-  @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator|undefined;
+  @ViewChild('paginatorIn', { static: false }) paginatorIn: MatPaginator | undefined;
+  @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator | undefined;
   public routingPeersData = [];
   public displayedColumns: any[] = [];
   public RoutingPeersIncoming: any;
@@ -42,7 +42,7 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;

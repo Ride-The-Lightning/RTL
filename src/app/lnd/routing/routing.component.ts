@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
 
 import * as LNDActions from '../store/lnd.actions';
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import { RTLState } from '../../store/rtl.state';
 
 @Component({
   selector: 'rtl-routing',
@@ -25,7 +25,7 @@ export class RoutingComponent implements OnInit, OnDestroy {
   public activeLink = this.links[0].link;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private router: Router) {}
+  constructor(private store: Store<RTLState>, private router: Router) { }
 
   ngOnInit() {
     this.onEventsFetch();

@@ -15,9 +15,9 @@ import { CommonService } from '../../../../../shared/services/common.service';
 import { ECLChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as ECLActions from '../../../../store/ecl.actions';
-import * as RTLActions from '../../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 import { ApiCallsListECL } from '../../../../../shared/models/apiCallsPayload';
+import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
+import { RTLState } from '../../../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-ecl-channel-open-table',
@@ -29,8 +29,8 @@ import { ApiCallsListECL } from '../../../../../shared/models/apiCallsPayload';
 })
 export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faEye = faEye;
   public faEyeSlash = faEyeSlash
   public activeChannels: Channel[];
@@ -52,7 +52,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -101,19 +101,23 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
     }
     const titleMsg = channelToUpdate === 'all' ? 'Update fee policy for selected/all channels' : 'Update fee policy for Channel: ' + channelToUpdate.channelId;
     const confirmationMsg = [];
-    this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-      type: AlertTypeEnum.CONFIRM,
-      alertTitle: 'Update Fee Policy',
-      noBtnText: 'Cancel',
-      yesBtnText: 'Update',
-      message: confirmationMsg,
-      titleMessage: titleMsg,
-      flgShowInput: true,
-      getInputs: [
-        { placeholder: 'Base Fee (mSats)', inputType: 'number', inputValue: channelToUpdate && channelToUpdate.feeBaseMsat ? channelToUpdate.feeBaseMsat : 1000, width: 48 },
-        { placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: channelToUpdate && channelToUpdate.feeProportionalMillionths ? channelToUpdate.feeProportionalMillionths : 100, min: 1, width: 48, hintFunction: this.percentHintFunction }
-      ]
-    } }));
+    this.store.dispatch(openConfirmation({
+      payload: {
+        data: {
+          type: AlertTypeEnum.CONFIRM,
+          alertTitle: 'Update Fee Policy',
+          noBtnText: 'Cancel',
+          yesBtnText: 'Update',
+          message: confirmationMsg,
+          titleMessage: titleMsg,
+          flgShowInput: true,
+          getInputs: [
+            { placeholder: 'Base Fee (mSats)', inputType: 'number', inputValue: channelToUpdate && channelToUpdate.feeBaseMsat ? channelToUpdate.feeBaseMsat : 1000, width: 48 },
+            { placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: channelToUpdate && channelToUpdate.feeProportionalMillionths ? channelToUpdate.feeProportionalMillionths : 100, min: 1, width: 48, hintFunction: this.percentHintFunction }
+          ]
+        }
+      }
+    }));
     this.rtlEffects.closeConfirm.
       pipe(takeUntil(this.unSubs[1])).
       subscribe((confirmRes) => {
@@ -145,13 +149,17 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
     const alertTitle = (forceClose) ? 'Force Close Channel' : 'Close Channel';
     const titleMessage = (forceClose) ? ('Force closing channel: ' + channelToClose.channelId) : ('Closing channel: ' + channelToClose.channelId);
     const yesBtnText = (forceClose) ? 'Force Close' : 'Close Channel';
-    this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-      type: AlertTypeEnum.CONFIRM,
-      alertTitle: alertTitle,
-      titleMessage: titleMessage,
-      noBtnText: 'Cancel',
-      yesBtnText: yesBtnText
-    } }));
+    this.store.dispatch(openConfirmation({
+      payload: {
+        data: {
+          type: AlertTypeEnum.CONFIRM,
+          alertTitle: alertTitle,
+          titleMessage: titleMessage,
+          noBtnText: 'Cancel',
+          yesBtnText: yesBtnText
+        }
+      }
+    }));
     this.rtlEffects.closeConfirm.
       pipe(takeUntil(this.unSubs[3])).
       subscribe((confirmRes) => {
@@ -166,11 +174,15 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   onChannelClick(selChannel: Channel, event: any) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      channel: selChannel,
-      channelsType: 'open',
-      component: ECLChannelInformationComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          channel: selChannel,
+          channelsType: 'open',
+          component: ECLChannelInformationComponent
+        }
+      }
+    }));
   }
 
   loadChannelsTable() {

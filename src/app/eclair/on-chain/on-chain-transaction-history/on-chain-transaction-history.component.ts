@@ -16,7 +16,8 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openAlert } from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-ecl-on-chain-transaction-history',
@@ -28,8 +29,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   faHistory = faHistory;
   public displayedColumns: any[] = [];
   public listTransactions: any;
@@ -43,7 +44,7 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
   public apiCallStatusEnum = APICallStatusEnum;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -86,16 +87,20 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
       [{ key: 'blockHash', value: selTransaction.blockHash, title: 'Block Hash', width: 100 }],
       [{ key: 'txid', value: selTransaction.txid, title: 'Transaction ID', width: 100 }],
       [{ key: 'timestamp', value: selTransaction.timestamp, title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME },
-        { key: 'confirmations', value: selTransaction.confirmations, title: 'Number of Confirmations', width: 50, type: DataTypeEnum.NUMBER }],
+      { key: 'confirmations', value: selTransaction.confirmations, title: 'Number of Confirmations', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'fees', value: selTransaction.fees, title: 'Fees (Sats)', width: 50, type: DataTypeEnum.NUMBER },
-        { key: 'amount', value: selTransaction.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
+      { key: 'amount', value: selTransaction.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'address', value: selTransaction.address, title: 'Address', width: 100, type: DataTypeEnum.STRING }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Transaction Information',
-      message: reorderedTransactions
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Transaction Information',
+          message: reorderedTransactions
+        }
+      }
+    }));
   }
 
   loadTransactionsTable(transactions: Transaction[]) {

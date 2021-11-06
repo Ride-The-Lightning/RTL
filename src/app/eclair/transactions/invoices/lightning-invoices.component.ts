@@ -22,7 +22,8 @@ import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation'
 
 import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openAlert } from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-ecl-lightning-invoices',
@@ -36,8 +37,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input() calledFrom = 'transactions'; // Transactions/home
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   faHistory = faHistory;
   public selNode: SelNodeChild = {};
   public newlyAddedInvoiceMemo = '';
@@ -62,7 +63,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private datePipe: DatePipe, private actions: Actions) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private datePipe: DatePipe, private actions: Actions) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -100,7 +101,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
         this.logger.info(rtlStore);
       });
     this.actions.pipe(takeUntil(this.unSubs[1]), filter((action) => (action.type === ECLActions.SET_LOOKUP_ECL || action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL))).
-      subscribe((resLookup: ECLActions.SetLookup | ECLActions.UpdateAPICallStatus) => {
+      subscribe((resLookup: any) => {
         if (resLookup.type === ECLActions.SET_LOOKUP_ECL) {
           if (this.invoiceJSONArr.length > 0 && this.sort && this.paginator && resLookup.payload) {
             this.updateInvoicesData(JSON.parse(JSON.stringify(resLookup.payload)));
@@ -117,13 +118,17 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   }
 
   openCreateInvoiceModal() {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      pageSize: this.pageSize,
-      component: ECLCreateInvoiceComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          pageSize: this.pageSize,
+          component: ECLCreateInvoiceComponent
+        }
+      }
+    }));
   }
 
-  onAddInvoice(form: any): boolean|void {
+  onAddInvoice(form: any): boolean | void {
     if (!this.description) {
       return true;
     }
@@ -142,11 +147,15 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   }
 
   onInvoiceClick(selInvoice: Invoice) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      invoice: selInvoice,
-      newlyAdded: false,
-      component: ECLInvoiceInformationComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          invoice: selInvoice,
+          newlyAdded: false,
+          component: ECLInvoiceInformationComponent
+        }
+      }
+    }));
   }
 
   onRefreshInvoice(selInvoice: Invoice) {
@@ -184,11 +193,13 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
       this.invoiceValueHint = '';
       this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
         pipe(takeUntil(this.unSubs[2])).
-        subscribe({ next: (data) => {
-          this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
-        }, error: (err) => {
-          this.invoiceValueHint = 'Conversion Error: ' + err;
-        } });
+        subscribe({
+          next: (data) => {
+            this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
+          }, error: (err) => {
+            this.invoiceValueHint = 'Conversion Error: ' + err;
+          }
+        });
     }
   }
 

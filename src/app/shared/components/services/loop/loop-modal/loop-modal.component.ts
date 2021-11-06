@@ -19,6 +19,7 @@ import { CommonService } from '../../../../services/common.service';
 import { Channel } from '../../../../models/lndModels';
 
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
+import { RTLState } from '../../../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-loop-modal',
@@ -55,7 +56,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   statusFormGroup: FormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<LoopModalComponent>, @Inject(MAT_DIALOG_DATA) public data: LoopAlert, private store: Store<fromRTLReducer.RTLState>, private loopService: LoopService, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe, private logger: LoggerService, private router: Router, private commonService: CommonService) { }
+  constructor(public dialogRef: MatDialogRef<LoopModalComponent>, @Inject(MAT_DIALOG_DATA) public data: LoopAlert, private store: Store<RTLState>, private loopService: LoopService, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe, private logger: LoggerService, private router: Router, private commonService: CommonService) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();

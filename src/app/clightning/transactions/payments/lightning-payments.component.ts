@@ -22,7 +22,8 @@ import { CLEffects } from '../../store/cl.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-cl-lightning-payments',
@@ -37,8 +38,8 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
 
   @Input() calledFrom = 'transactions'; // Transactions/home
   @ViewChild('sendPaymentForm', { static: false }) form;
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faHistory = faHistory;
   public newlyAddedPayment = '';
   public flgAnimate = true;
@@ -61,7 +62,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects, private decimalPipe: DecimalPipe, private titleCasePipe: TitleCasePipe, private datePipe: DatePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects, private decimalPipe: DecimalPipe, private titleCasePipe: TitleCasePipe, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -114,7 +115,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
     return payment.is_group;
   }
 
-  onSendPayment(): boolean|void {
+  onSendPayment(): boolean | void {
     if (!this.paymentRequest) {
       return true;
     }
@@ -147,22 +148,26 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
         [{ key: 'payee', value: this.paymentDecoded.payee, title: 'Payee', width: 100 }],
         [{ key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100 }],
         [{ key: 'created_at', value: this.paymentDecoded.created_at, title: 'Creation Date', width: 40, type: DataTypeEnum.DATE_TIME },
-          { key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 30, type: DataTypeEnum.NUMBER },
-          { key: 'min_finaltv_expiry', value: this.paymentDecoded.min_final_cltv_expiry, title: 'CLTV Expiry', width: 30 }]
+        { key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 30, type: DataTypeEnum.NUMBER },
+        { key: 'min_finaltv_expiry', value: this.paymentDecoded.min_final_cltv_expiry, title: 'CLTV Expiry', width: 30 }]
       ];
       const titleMsg = 'It is a zero amount invoice. Enter the amount (Sats) to pay.';
-      this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-        type: AlertTypeEnum.CONFIRM,
-        alertTitle: 'Enter Amount and Confirm Send Payment',
-        message: reorderedPaymentDecoded,
-        noBtnText: 'Cancel',
-        yesBtnText: 'Send Payment',
-        flgShowInput: true,
-        titleMessage: titleMsg,
-        getInputs: [
-          { placeholder: 'Amount (Sats)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: '', width: 30 }
-        ]
-      } }));
+      this.store.dispatch(openConfirmation({
+        payload: {
+          data: {
+            type: AlertTypeEnum.CONFIRM,
+            alertTitle: 'Enter Amount and Confirm Send Payment',
+            message: reorderedPaymentDecoded,
+            noBtnText: 'Cancel',
+            yesBtnText: 'Send Payment',
+            flgShowInput: true,
+            titleMessage: titleMsg,
+            getInputs: [
+              { placeholder: 'Amount (Sats)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: '', width: 30 }
+            ]
+          }
+        }
+      }));
       this.rtlEffects.closeConfirm.
         pipe(take(1)).
         subscribe((confirmRes) => {
@@ -178,17 +183,21 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
         [{ key: 'payee', value: this.paymentDecoded.payee, title: 'Payee', width: 100 }],
         [{ key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100 }],
         [{ key: 'created_at', value: this.paymentDecoded.created_at, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME },
-          { key: 'num_satoshis', value: this.paymentDecoded.msatoshi / 1000, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
+        { key: 'num_satoshis', value: this.paymentDecoded.msatoshi / 1000, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
         [{ key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.NUMBER },
-          { key: 'min_finaltv_expiry', value: this.paymentDecoded.min_final_cltv_expiry, title: 'CLTV Expiry', width: 50 }]
+        { key: 'min_finaltv_expiry', value: this.paymentDecoded.min_final_cltv_expiry, title: 'CLTV Expiry', width: 50 }]
       ];
-      this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-        type: AlertTypeEnum.CONFIRM,
-        alertTitle: 'Confirm Send Payment',
-        noBtnText: 'Cancel',
-        yesBtnText: 'Send Payment',
-        message: reorderedPaymentDecoded
-      } }));
+      this.store.dispatch(openConfirmation({
+        payload: {
+          data: {
+            type: AlertTypeEnum.CONFIRM,
+            alertTitle: 'Confirm Send Payment',
+            noBtnText: 'Cancel',
+            yesBtnText: 'Send Payment',
+            message: reorderedPaymentDecoded
+          }
+        }
+      }));
       this.rtlEffects.closeConfirm.
         pipe(take(1)).
         subscribe((confirmRes) => {
@@ -211,11 +220,13 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
           if (this.selNode.fiatConversion) {
             this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
               pipe(takeUntil(this.unSubs[1])).
-              subscribe({ next: (data) => {
-                this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
-              }, error: (error) => {
-                this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
-              } });
+              subscribe({
+                next: (data) => {
+                  this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
+                }, error: (error) => {
+                  this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
+                }
+              });
           } else {
             this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
           }
@@ -227,9 +238,13 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   }
 
   openSendPaymentModal() {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      component: CLLightningSendPaymentsComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          component: CLLightningSendPaymentsComponent
+        }
+      }
+    }));
   }
 
   resetData() {
@@ -243,26 +258,30 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
       [{ key: 'bolt11', value: selPayment.bolt11, title: 'Bolt 11', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'payment_preimage', value: selPayment.payment_preimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'id', value: selPayment.id, title: 'ID', width: 20, type: DataTypeEnum.STRING },
-        { key: 'destination', value: selPayment.destination, title: 'Destination', width: 80, type: DataTypeEnum.STRING }],
+      { key: 'destination', value: selPayment.destination, title: 'Destination', width: 80, type: DataTypeEnum.STRING }],
       [{ key: 'created_at', value: selPayment.created_at, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME },
-        { key: 'status', value: this.titleCasePipe.transform(selPayment.status), title: 'Status', width: 50, type: DataTypeEnum.STRING }],
+      { key: 'status', value: this.titleCasePipe.transform(selPayment.status), title: 'Status', width: 50, type: DataTypeEnum.STRING }],
       [{ key: 'msatoshi', value: selPayment.msatoshi, title: 'Amount (mSats)', width: 50, type: DataTypeEnum.NUMBER },
-        { key: 'msatoshi_sent', value: selPayment.msatoshi_sent, title: 'Amount Sent (mSats)', width: 50, type: DataTypeEnum.NUMBER }]
+      { key: 'msatoshi_sent', value: selPayment.msatoshi_sent, title: 'Amount Sent (mSats)', width: 50, type: DataTypeEnum.NUMBER }]
     ];
     if (selPayment.memo && selPayment.memo !== '') {
       reorderedPayment.splice(2, 0, [{ key: 'memo', value: selPayment.memo, title: 'Memo', width: 100, type: DataTypeEnum.STRING }]);
     }
     if (selPayment.hasOwnProperty('partid')) {
       reorderedPayment.unshift([{ key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 80, type: DataTypeEnum.STRING },
-        { key: 'partid', value: selPayment.partid, title: 'Part ID', width: 20, type: DataTypeEnum.STRING }]);
+      { key: 'partid', value: selPayment.partid, title: 'Part ID', width: 20, type: DataTypeEnum.STRING }]);
     } else {
       reorderedPayment.unshift([{ key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }]);
     }
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Payment Information',
-      message: reorderedPayment
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Payment Information',
+          message: reorderedPayment
+        }
+      }
+    }));
   }
 
   applyFilter(selFilter: any) {

@@ -14,7 +14,7 @@ import { ECLOpenChannelAlert } from '../../../shared/models/alertData';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import * as ECLActions from '../../store/ecl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-ecl-connect-peer',
@@ -41,7 +41,7 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
   statusFormGroup: FormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ECLConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private formBuilder: FormBuilder, private actions: Actions, private logger: LoggerService) {}
+  constructor(public dialogRef: MatDialogRef<ECLConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLOpenChannelAlert, private store: Store<RTLState>, private formBuilder: FormBuilder, private actions: Actions, private logger: LoggerService) { }
 
   ngOnInit() {
     this.totalBalance = this.data.message.balance;
@@ -82,7 +82,7 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
       });
   }
 
-  onConnectPeer(): boolean|void {
+  onConnectPeer(): boolean | void {
     if (!this.peerFormGroup.controls.peerAddress.value) {
       return true;
     }
@@ -90,7 +90,7 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
     this.store.dispatch(new ECLActions.SaveNewPeer({ id: this.peerFormGroup.controls.peerAddress.value }));
   }
 
-  onOpenChannel(): boolean|void {
+  onOpenChannel(): boolean | void {
     if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0)) {
       return true;
     }

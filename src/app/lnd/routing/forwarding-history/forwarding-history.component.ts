@@ -1,6 +1,6 @@
 import { Component, OnInit, OnChanges, ViewChild, Input, SimpleChanges, OnDestroy, AfterViewInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { combineLatest, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
@@ -12,10 +12,10 @@ import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTyp
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
+import { openAlert } from '../../../store/rtl.actions';
 
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
-import * as fromLNDReducer from '../../store/lnd.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { getForwardingHistoryAPIStatus } from '../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-forwarding-history',
@@ -27,8 +27,8 @@ import * as fromLNDReducer from '../../store/lnd.reducers';
 })
 export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   @Input() eventsData = [];
   @Input() filterValue = '';
   public forwardingHistoryData = [];
@@ -44,7 +44,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -59,8 +59,8 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   }
 
   ngOnInit() {
-    this.store.select(fromLNDReducer.forwardingHistoryAndAPIStatus).pipe(takeUntil(this.unSubs[0])).
-      subscribe((fhSelector: {forwardingHistory: SwitchRes, apisCallStatus: ApiCallStatusPayload}) => {
+    this.store.select(getForwardingHistoryAPIStatus).pipe(takeUntil(this.unSubs[0])).
+      subscribe((fhSelector: { forwardingHistory: SwitchRes, apisCallStatus: ApiCallStatusPayload }) => {
         if (this.eventsData.length <= 0) {
           this.errorMessage = '';
           this.apisCallStatus = fhSelector.apisCallStatus;
@@ -97,19 +97,23 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   onForwardingEventClick(selFEvent: ForwardingEvent, event: any) {
     const reorderedFHEvent = [
       [{ key: 'timestamp', value: selFEvent.timestamp, title: 'Timestamp', width: 25, type: DataTypeEnum.DATE_TIME },
-        { key: 'amt_in', value: selFEvent.amt_in, title: 'Inbound Amount (Sats)', width: 25, type: DataTypeEnum.NUMBER },
-        { key: 'amt_out', value: selFEvent.amt_out, title: 'Outbound Amount (Sats)', width: 25, type: DataTypeEnum.NUMBER },
-        { key: 'fee_msat', value: selFEvent.fee_msat, title: 'Fee (mSats)', width: 25, type: DataTypeEnum.NUMBER }],
+      { key: 'amt_in', value: selFEvent.amt_in, title: 'Inbound Amount (Sats)', width: 25, type: DataTypeEnum.NUMBER },
+      { key: 'amt_out', value: selFEvent.amt_out, title: 'Outbound Amount (Sats)', width: 25, type: DataTypeEnum.NUMBER },
+      { key: 'fee_msat', value: selFEvent.fee_msat, title: 'Fee (mSats)', width: 25, type: DataTypeEnum.NUMBER }],
       [{ key: 'alias_in', value: selFEvent.alias_in, title: 'Inbound Peer Alias', width: 25, type: DataTypeEnum.STRING },
-        { key: 'chan_id_in', value: selFEvent.chan_id_in, title: 'Inbound Channel ID', width: 25, type: DataTypeEnum.STRING },
-        { key: 'alias_out', value: selFEvent.alias_out, title: 'Outbound Peer Alias', width: 25, type: DataTypeEnum.STRING },
-        { key: 'chan_id_out', value: selFEvent.chan_id_out, title: 'Outbound Channel ID', width: 25, type: DataTypeEnum.STRING }]
+      { key: 'chan_id_in', value: selFEvent.chan_id_in, title: 'Inbound Channel ID', width: 25, type: DataTypeEnum.STRING },
+      { key: 'alias_out', value: selFEvent.alias_out, title: 'Outbound Peer Alias', width: 25, type: DataTypeEnum.STRING },
+      { key: 'chan_id_out', value: selFEvent.chan_id_out, title: 'Outbound Channel ID', width: 25, type: DataTypeEnum.STRING }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Event Information',
-      message: reorderedFHEvent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Event Information',
+          message: reorderedFHEvent
+        }
+      }
+    }));
   }
 
   loadForwardingEventsTable(forwardingEvents: ForwardingEvent[]) {

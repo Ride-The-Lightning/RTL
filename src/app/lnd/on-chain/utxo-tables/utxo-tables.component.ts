@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import * as LNDActions from '../../store/lnd.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-utxo-tables',
@@ -22,7 +22,7 @@ export class UTXOTablesComponent implements OnInit, OnDestroy {
   public numDustUtxos = 0;
   private unSubs: Array<Subject<void>> = [new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private logger: LoggerService, private store: Store<RTLState>) { }
 
   ngOnInit() {
     this.store.dispatch(new LNDActions.FetchTransactions());

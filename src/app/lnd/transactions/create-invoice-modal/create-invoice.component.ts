@@ -14,7 +14,7 @@ import { GetInfo } from '../../../shared/models/lndModels';
 import { CommonService } from '../../../shared/services/common.service';
 
 import * as LNDActions from '../../store/lnd.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-create-invoices',
@@ -41,7 +41,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
   public invoiceError = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CreateInvoiceComponent>, @Inject(MAT_DIALOG_DATA) public data: InvoiceInformation, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private actions: Actions) {}
+  constructor(public dialogRef: MatDialogRef<CreateInvoiceComponent>, @Inject(MAT_DIALOG_DATA) public data: InvoiceInformation, private store: Store<RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private actions: Actions) { }
 
   ngOnInit() {
     this.pageSize = this.data.pageSize;
@@ -91,11 +91,13 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
       this.invoiceValueHint = '';
       this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
         pipe(takeUntil(this.unSubs[2])).
-        subscribe({ next: (data) => {
-          this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
-        }, error: (err) => {
-          this.invoiceValueHint = 'Conversion Error: ' + err;
-        } });
+        subscribe({
+          next: (data) => {
+            this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
+          }, error: (err) => {
+            this.invoiceValueHint = 'Conversion Error: ' + err;
+          }
+        });
     }
   }
 

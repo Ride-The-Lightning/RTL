@@ -8,7 +8,7 @@ import { faExchangeAlt, faChartPie } from '@fortawesome/free-solid-svg-icons';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../shared/services/logger.service';
 
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import { RTLState } from '../../store/rtl.state';
 
 @Component({
   selector: 'rtl-cl-transactions',
@@ -25,7 +25,7 @@ export class CLTransactionsComponent implements OnInit, OnDestroy {
   public activeLink = this.links[0].link;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private router: Router) {}
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private router: Router) { }
 
   ngOnInit() {
     const linkFound = this.links.find((link) => this.router.url.includes(link.link));

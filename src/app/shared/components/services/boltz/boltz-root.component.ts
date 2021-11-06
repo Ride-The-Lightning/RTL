@@ -9,8 +9,9 @@ import { SwapModalComponent } from './swap-modal/swap-modal.component';
 import { ReverseSwap, Swap, ListSwaps } from '../../../models/boltzModels';
 import { BoltzService } from '../../../services/boltz.service';
 
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { RTLState } from '../../../../store/rtl.state';
 import * as RTLActions from '../../../../store/rtl.actions';
+import { openAlert } from '../../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-boltz-root',
@@ -29,7 +30,7 @@ export class BoltzRootComponent implements OnInit, OnDestroy {
   public activeTab = this.links[0];
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private router: Router, private store: Store<fromRTLReducer.RTLState>, private boltzService: BoltzService) { }
+  constructor(private router: Router, private store: Store<RTLState>, private boltzService: BoltzService) { }
 
   ngOnInit() {
     this.boltzService.listSwaps();
@@ -37,7 +38,7 @@ export class BoltzRootComponent implements OnInit, OnDestroy {
     this.activeTab = linkFound ? linkFound : this.links[0];
     this.selectedSwapType = linkFound && linkFound.link === 'swapin' ? SwapTypeEnum.SWAP_IN : SwapTypeEnum.SWAP_OUT;
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe((value: ResolveEnd) => {
+      subscribe((value: any) => {
         const linkFound = this.links.find((link) => value.urlAfterRedirects.includes(link.link));
         this.activeTab = linkFound ? linkFound : this.links[0];
         this.selectedSwapType = linkFound && linkFound.link === 'swapin' ? SwapTypeEnum.SWAP_IN : SwapTypeEnum.SWAP_OUT;
@@ -70,11 +71,13 @@ export class BoltzRootComponent implements OnInit, OnDestroy {
     this.boltzService.serviceInfo().
       pipe(takeUntil(this.unSubs[2])).
       subscribe((response) => {
-        this.store.dispatch(new RTLActions.OpenAlert({
-          data: {
-            serviceInfo: response,
-            direction: direction,
-            component: SwapModalComponent
+        this.store.dispatch(openAlert({
+          payload: {
+            data: {
+              serviceInfo: response,
+              direction: direction,
+              component: SwapModalComponent
+            }
           }
         }));
       });

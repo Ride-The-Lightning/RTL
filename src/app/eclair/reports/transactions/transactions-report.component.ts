@@ -8,7 +8,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-ecl-transactions-report',
@@ -40,7 +40,7 @@ export class ECLTransactionsReportComponent implements OnInit, AfterContentInit,
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private commonService: CommonService, private store: Store<RTLState>) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
@@ -147,7 +147,7 @@ export class ECLTransactionsReportComponent implements OnInit, AfterContentInit,
     }, []);
   }
 
-  onSelectionChange(selectedValues: {selDate: Date, selScrollRange: string}) {
+  onSelectionChange(selectedValues: { selDate: Date, selScrollRange: string }) {
     const selMonth = selectedValues.selDate.getMonth();
     const selYear = selectedValues.selDate.getFullYear();
     this.reportPeriod = selectedValues.selScrollRange;

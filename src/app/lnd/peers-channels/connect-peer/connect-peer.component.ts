@@ -15,7 +15,7 @@ import { APICallStatusEnum, TRANS_TYPES } from '../../../shared/services/consts-
 
 import { LNDEffects } from '../../store/lnd.effects';
 import * as LNDActions from '../../store/lnd.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-connect-peer',
@@ -43,7 +43,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   statusFormGroup: FormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private lndEffects: LNDEffects, private formBuilder: FormBuilder, private actions: Actions, private logger: LoggerService) {}
+  constructor(public dialogRef: MatDialogRef<ConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<RTLState>, private lndEffects: LNDEffects, private formBuilder: FormBuilder, private actions: Actions, private logger: LoggerService) { }
 
   ngOnInit() {
     this.totalBalance = this.data.message.balance;
@@ -96,7 +96,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       });
   }
 
-  onConnectPeer(): boolean|void {
+  onConnectPeer(): boolean | void {
     if (!this.peerFormGroup.controls.peerAddress.value) {
       return true;
     }
@@ -123,7 +123,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
     this.store.dispatch(new LNDActions.SaveNewPeer({ pubkey: pubkey, host: host, perm: false }));
   }
 
-  onOpenChannel(): boolean|void {
+  onOpenChannel(): boolean | void {
     if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) || (this.channelFormGroup.controls.selTransType.value === '1' && !this.channelFormGroup.controls.transTypeValue.value) || (this.channelFormGroup.controls.selTransType.value === '2' && !this.channelFormGroup.controls.transTypeValue.value)) {
       return true;
     }

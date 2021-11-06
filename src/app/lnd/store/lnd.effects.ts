@@ -16,9 +16,11 @@ import { GetInfo, Fees, Balance, NetworkInfo, GraphNode, Transaction, SwitchReq,
 import { InvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { AlertTypeEnum, APICallStatusEnum, FEE_LIMIT_TYPES, PAGE_SIZE, UI_MESSAGES } from '../../shared/services/consts-enums-functions';
+import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
+import { LNDState } from './lnd.state';
+import { RootState, RTLState } from '../../store/rtl.state';
 
 import * as RTLActions from '../../store/rtl.actions';
-import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as LNDActions from './lnd.actions';
 import * as fromLNDReducers from '../store/lnd.reducers';
 
@@ -33,7 +35,7 @@ export class LNDEffects implements OnDestroy {
   constructor(
     private actions: Actions,
     private httpClient: HttpClient,
-    private store: Store<fromRTLReducer.RTLState>,
+    private store: Store<RTLState>,
     private logger: LoggerService,
     private commonService: CommonService,
     private sessionService: SessionService,
@@ -52,7 +54,7 @@ export class LNDEffects implements OnDestroy {
             (rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.ERROR)) &&
           !this.flgInitialized
         ) {
-          this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.INITALIZE_NODE_DATA }));
           this.flgInitialized = true;
         }
       });
@@ -61,11 +63,11 @@ export class LNDEffects implements OnDestroy {
   infoFetch = createEffect(() => this.actions.pipe(
     ofType(LNDActions.FETCH_INFO_LND),
     withLatestFrom(this.store.select('root')),
-    mergeMap(([action, store]: [LNDActions.FetchInfo, fromRTLReducer.RootState]) => {
+    mergeMap(([action, store]: [LNDActions.FetchInfo, RootState]) => {
       this.flgInitialized = false;
-      this.store.dispatch(new RTLActions.SetApiUrl(this.CHILD_API_URL));
-      this.store.dispatch(new RTLActions.CloseAllDialogs());
-      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_NODE_INFO));
+      this.store.dispatch(setApiUrl({ payload: this.CHILD_API_URL }));
+      this.store.dispatch(closeAllDialogs());
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_NODE_INFO }));
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.INITIATED }));
       return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API).pipe(
         takeUntil(this.actions.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
@@ -77,18 +79,20 @@ export class LNDEffects implements OnDestroy {
           )
           ) {
             this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.COMPLETED }));
-            this.store.dispatch(new RTLActions.CloseAllDialogs()); // Multiple UI_MESSAGES.GET_NODE_INFO after unlock & UI_MESSAGES.WAIT_SYNC_NODE
-            this.store.dispatch(new RTLActions.OpenAlert({
-              data: {
-                type: AlertTypeEnum.ERROR,
-                alertTitle: 'Shitcoin Found',
-                titleMessage: 'Sorry Not Sorry, RTL is Bitcoin Only!'
+            this.store.dispatch(closeAllDialogs()); // Multiple UI_MESSAGES.GET_NODE_INFO after unlock & UI_MESSAGES.WAIT_SYNC_NODE
+            this.store.dispatch(openAlert({
+              payload: {
+                data: {
+                  type: AlertTypeEnum.ERROR,
+                  alertTitle: 'Shitcoin Found',
+                  titleMessage: 'Sorry Not Sorry, RTL is Bitcoin Only!'
+                }
               }
             }));
             return { type: RTLActions.LOGOUT };
           } else if (!info.identity_pubkey) {
             this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.COMPLETED }));
-            this.store.dispatch(new RTLActions.CloseAllDialogs()); // Multiple UI_MESSAGES.GET_NODE_INFO after unlock & UI_MESSAGES.WAIT_SYNC_NODE
+            this.store.dispatch(closeAllDialogs()); // Multiple UI_MESSAGES.GET_NODE_INFO after unlock & UI_MESSAGES.WAIT_SYNC_NODE
             this.sessionService.removeItem('lndUnlocked');
             this.logger.info('Redirecting to Unlock');
             this.router.navigate(['/lnd/wallet']);
@@ -100,7 +104,7 @@ export class LNDEffects implements OnDestroy {
             info.lnImplementation = 'LND';
             this.initializeRemainingData(info, action.payload.loadPage);
             this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'FetchInfo', status: APICallStatusEnum.COMPLETED }));
-            this.store.dispatch(new RTLActions.CloseAllDialogs()); // Multiple UI_MESSAGES.GET_NODE_INFO after unlock & UI_MESSAGES.WAIT_SYNC_NODE
+            this.store.dispatch(closeAllDialogs()); // Multiple UI_MESSAGES.GET_NODE_INFO after unlock & UI_MESSAGES.WAIT_SYNC_NODE
             return {
               type: LNDActions.SET_INFO_LND,
               payload: info ? info : {}
@@ -157,14 +161,14 @@ export class LNDEffects implements OnDestroy {
   saveNewPeer = createEffect(() => this.actions.pipe(
     ofType(LNDActions.SAVE_NEW_PEER_LND),
     withLatestFrom(this.store.select('lnd')),
-    mergeMap(([action, lndData]: [LNDActions.SaveNewPeer, fromLNDReducers.LNDState]) => {
-      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.CONNECT_PEER));
+    mergeMap(([action, lndData]: [LNDActions.SaveNewPeer, LNDState]) => {
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.CONNECT_PEER }));
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'SaveNewPeer', status: APICallStatusEnum.INITIATED }));
       return this.httpClient.post(this.CHILD_API_URL + environment.PEERS_API, { pubkey: action.payload.pubkey, host: action.payload.host, perm: action.payload.perm }).pipe(
         map((postRes: any) => {
           this.logger.info(postRes);
           this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'SaveNewPeer', status: APICallStatusEnum.COMPLETED }));
-          this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.CONNECT_PEER));
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.CONNECT_PEER }));
           this.store.dispatch(new LNDActions.SetPeers((postRes && postRes.length > 0) ? postRes : []));
           return {
             type: LNDActions.NEWLY_ADDED_PEER_LND,
@@ -182,12 +186,12 @@ export class LNDEffects implements OnDestroy {
   detachPeer = createEffect(() => this.actions.pipe(
     ofType(LNDActions.DETACH_PEER_LND),
     mergeMap((action: LNDActions.DetachPeer) => {
-      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.DISCONNECT_PEER));
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DISCONNECT_PEER }));
       return this.httpClient.delete(this.CHILD_API_URL + environment.PEERS_API + '/' + action.payload.pubkey).pipe(
         map((postRes: any) => {
           this.logger.info(postRes);
-          this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.DISCONNECT_PEER));
-          this.store.dispatch(new RTLActions.OpenSnackBar('Peer Disconnected Successfully.'));
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.DISCONNECT_PEER }));
+          this.store.dispatch(openSnackBar({ payload: 'Peer Disconnected Successfully.' }));
           return {
             type: LNDActions.REMOVE_PEER_LND,
             payload: { pubkey: action.payload.pubkey }
@@ -204,7 +208,7 @@ export class LNDEffects implements OnDestroy {
   saveNewInvoice = createEffect(() => this.actions.pipe(
     ofType(LNDActions.SAVE_NEW_INVOICE_LND),
     mergeMap((action: LNDActions.SaveNewInvoice) => {
-      this.store.dispatch(new RTLActions.OpenSpinner(action.payload.uiMessage));
+      this.store.dispatch(openSpinner({ payload: action.payload.uiMessage }));
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'SaveNewInvoice', status: APICallStatusEnum.INITIATED }));
       return this.httpClient.post(this.CHILD_API_URL + environment.INVOICES_API, {
         memo: action.payload.memo, amount: action.payload.invoiceValue, private: action.payload.private, expiry: action.payload.expiry
@@ -221,7 +225,7 @@ export class LNDEffects implements OnDestroy {
               postRes.cltv_expiry = '144';
               postRes.private = action.payload.private;
               postRes.creation_date = Math.round(new Date().getTime() / 1000).toString();
-              this.store.dispatch(new RTLActions.CloseSpinner(action.payload.uiMessage));
+              this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
               return {
                 type: RTLActions.OPEN_ALERT,
                 payload: {
@@ -250,7 +254,7 @@ export class LNDEffects implements OnDestroy {
   openNewChannel = createEffect(() => this.actions.pipe(
     ofType(LNDActions.SAVE_NEW_CHANNEL_LND),
     mergeMap((action: LNDActions.SaveNewChannel) => {
-      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.OPEN_CHANNEL));
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.OPEN_CHANNEL }));
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'SaveNewChannel', status: APICallStatusEnum.INITIATED }));
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API, {
         node_pubkey: action.payload.selectedPeerPubkey, local_funding_amount: action.payload.fundingAmount, private: action.payload.private,
@@ -259,7 +263,7 @@ export class LNDEffects implements OnDestroy {
         map((postRes: any) => {
           this.logger.info(postRes);
           this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'SaveNewChannel', status: APICallStatusEnum.COMPLETED }));
-          this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.OPEN_CHANNEL));
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.OPEN_CHANNEL }));
           this.store.dispatch(new LNDActions.FetchBalance('Blockchain'));
           this.store.dispatch(new LNDActions.FetchAllChannels());
           this.store.dispatch(new LNDActions.BackupChannels({ uiMessage: UI_MESSAGES.NO_SPINNER, channelPoint: 'ALL', showMessage: 'Channel Added Successfully!' }));
@@ -277,17 +281,17 @@ export class LNDEffects implements OnDestroy {
   updateChannel = createEffect(() => this.actions.pipe(
     ofType(LNDActions.UPDATE_CHANNELS_LND),
     mergeMap((action: LNDActions.UpdateChannels) => {
-      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.UPDATE_CHAN_POLICY));
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UPDATE_CHAN_POLICY }));
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API + '/chanPolicy',
         { baseFeeMsat: action.payload.baseFeeMsat, feeRate: action.payload.feeRate, timeLockDelta: action.payload.timeLockDelta, chanPoint: action.payload.chanPoint }
       ).pipe(
         map((postRes: any) => {
           this.logger.info(postRes);
-          this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.UPDATE_CHAN_POLICY));
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_CHAN_POLICY }));
           if (action.payload.chanPoint === 'all') {
-            this.store.dispatch(new RTLActions.OpenSnackBar('All Channels Updated Successfully.'));
+            this.store.dispatch(openSnackBar({ payload: 'All Channels Updated Successfully.' }));
           } else {
-            this.store.dispatch(new RTLActions.OpenSnackBar('Channel Updated Successfully!'));
+            this.store.dispatch(openSnackBar({ payload: 'Channel Updated Successfully!' }));
           }
           return {
             type: LNDActions.FETCH_ALL_CHANNELS_LND
@@ -303,7 +307,7 @@ export class LNDEffects implements OnDestroy {
   closeChannel = createEffect(() => this.actions.pipe(
     ofType(LNDActions.CLOSE_CHANNEL_LND),
     mergeMap((action: LNDActions.CloseChannel) => {
-      this.store.dispatch(new RTLActions.OpenSpinner(action.payload.forcibly ? UI_MESSAGES.FORCE_CLOSE_CHANNEL : UI_MESSAGES.CLOSE_CHANNEL));
+      this.store.dispatch(openSpinner({ payload: (action.payload.forcibly ? UI_MESSAGES.FORCE_CLOSE_CHANNEL : UI_MESSAGES.CLOSE_CHANNEL) }));
       let reqUrl = this.CHILD_API_URL + environment.CHANNELS_API + '/' + action.payload.channelPoint + '?force=' + action.payload.forcibly;
       if (action.payload.targetConf) {
         reqUrl = reqUrl + '&target_conf=' + action.payload.targetConf;
@@ -314,7 +318,7 @@ export class LNDEffects implements OnDestroy {
       return this.httpClient.delete(reqUrl).pipe(
         map((postRes: any) => {
           this.logger.info(postRes);
-          this.store.dispatch(new RTLActions.CloseSpinner(action.payload.forcibly ? UI_MESSAGES.FORCE_CLOSE_CHANNEL : UI_MESSAGES.CLOSE_CHANNEL));
+          this.store.dispatch(closeSpinner({ payload: action.payload.forcibly ? UI_MESSAGES.FORCE_CLOSE_CHANNEL : UI_MESSAGES.CLOSE_CHANNEL }));
           this.store.dispatch(new LNDActions.FetchAllChannels());
           this.store.dispatch(new LNDActions.FetchPendingChannels());
           this.store.dispatch(new LNDActions.BackupChannels({ uiMessage: UI_MESSAGES.NO_SPINNER, channelPoint: 'ALL', showMessage: postRes.message }));
@@ -330,15 +334,15 @@ export class LNDEffects implements OnDestroy {
 
   backupChannels = createEffect(() => this.actions.pipe(
     ofType(LNDActions.BACKUP_CHANNELS_LND),
-    mergeMap((action: LNDActions.BackupChannels) => {
-      this.store.dispatch(new RTLActions.OpenSpinner(action.payload.uiMessage));
+    mergeMap((action: any) => {
+      this.store.dispatch(openSpinner({ payload: action.payload.uiMessage }));
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'BackupChannels', status: APICallStatusEnum.INITIATED }));
       return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_BACKUP_API + '/' + action.payload.channelPoint).pipe(
         map((postRes: any) => {
           this.logger.info(postRes);
           this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'BackupChannels', status: APICallStatusEnum.COMPLETED }));
-          this.store.dispatch(new RTLActions.CloseSpinner(action.payload.uiMessage));
-          this.store.dispatch(new RTLActions.OpenSnackBar(action.payload.showMessage + ' ' + postRes.message));
+          this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
+          this.store.dispatch(openSnackBar({ payload: action.payload.showMessage + ' ' + postRes.message }));
           return {
             type: LNDActions.BACKUP_CHANNELS_RES_LND,
             payload: postRes.message
@@ -355,14 +359,14 @@ export class LNDEffects implements OnDestroy {
   verifyChannels = createEffect(() => this.actions.pipe(
     ofType(LNDActions.VERIFY_CHANNELS_LND),
     mergeMap((action: LNDActions.VerifyChannels) => {
-      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.VERIFY_CHANNEL));
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.VERIFY_CHANNEL }));
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'VerifyChannels', status: APICallStatusEnum.INITIATED }));
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_BACKUP_API + '/verify/' + action.payload.channelPoint, {}).pipe(
         map((postRes: any) => {
           this.logger.info(postRes);
           this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'VerifyChannels', status: APICallStatusEnum.COMPLETED }));
-          this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.VERIFY_CHANNEL));
-          this.store.dispatch(new RTLActions.OpenSnackBar(postRes.message));
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.VERIFY_CHANNEL }));
+          this.store.dispatch(openSnackBar(postRes.message));
           return {
             type: LNDActions.VERIFY_CHANNELS_RES_LND,
             payload: postRes.message
@@ -379,14 +383,14 @@ export class LNDEffects implements OnDestroy {
   restoreChannels = createEffect(() => this.actions.pipe(
     ofType(LNDActions.RESTORE_CHANNELS_LND),
     mergeMap((action: LNDActions.RestoreChannels) => {
-      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.RESTORE_CHANNEL));
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.RESTORE_CHANNEL }));
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'RestoreChannels', status: APICallStatusEnum.INITIATED }));
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_BACKUP_API + '/restore/' + action.payload.channelPoint, {}).pipe(
         map((postRes: any) => {
           this.logger.info(postRes);
           this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'RestoreChannels', status: APICallStatusEnum.COMPLETED }));
-          this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.RESTORE_CHANNEL));
-          this.store.dispatch(new RTLActions.OpenSnackBar(postRes.message));
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.RESTORE_CHANNEL }));
+          this.store.dispatch(openSnackBar(postRes.message));
           this.store.dispatch(new LNDActions.SetRestoreChannelsList(postRes.list));
           return {
             type: LNDActions.RESTORE_CHANNELS_RES_LND,
@@ -606,7 +610,7 @@ export class LNDEffects implements OnDestroy {
   utxosFetch = createEffect(() => this.actions.pipe(
     ofType(LNDActions.FETCH_UTXOS_LND),
     withLatestFrom(this.store.select('lnd')),
-    mergeMap(([action, lndData]: [LNDActions.FetchUTXOs, fromLNDReducers.LNDState]) => {
+    mergeMap(([action, lndData]: [LNDActions.FetchUTXOs, LNDState]) => {
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'FetchUTXOs', status: APICallStatusEnum.INITIATED }));
       return this.httpClient.get<UTXO[]>(this.CHILD_API_URL + environment.WALLET_API + '/getUTXOs?max_confs=' + (lndData.information && lndData.information.block_height ? lndData.information.block_height : 1000000000));
     }),
@@ -652,7 +656,7 @@ export class LNDEffects implements OnDestroy {
   sendPayment = createEffect(() => this.actions.pipe(
     ofType(LNDActions.SEND_PAYMENT_LND),
     mergeMap((action: LNDActions.SendPayment) => {
-      this.store.dispatch(new RTLActions.OpenSpinner(action.payload.uiMessage));
+      this.store.dispatch(openSpinner({ payload: action.payload.uiMessage }));
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'SendPayment', status: APICallStatusEnum.INITIATED }));
       const queryHeaders = {};
       queryHeaders['paymentReq'] = action.payload.paymentReq;
@@ -675,7 +679,7 @@ export class LNDEffects implements OnDestroy {
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', queryHeaders).pipe(
         map((sendRes: any) => {
           this.logger.info(sendRes);
-          this.store.dispatch(new RTLActions.CloseSpinner(action.payload.uiMessage));
+          this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
           this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'SendPayment', status: APICallStatusEnum.COMPLETED }));
           if (sendRes.payment_error) {
             if (action.payload.allowSelfPayment) {
@@ -693,7 +697,7 @@ export class LNDEffects implements OnDestroy {
               return { type: RTLActions.VOID };
             }
           } else {
-            this.store.dispatch(new RTLActions.CloseSpinner(action.payload.uiMessage));
+            this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
             this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'SendPayment', status: APICallStatusEnum.COMPLETED }));
             this.store.dispatch(new LNDActions.FetchAllChannels());
             this.store.dispatch(new LNDActions.FetchPayments({ max_payments: PAGE_SIZE, reversed: true }));
@@ -704,7 +708,7 @@ export class LNDEffects implements OnDestroy {
               if (sendRes.payment_route && sendRes.payment_route.total_fees_msat) {
                 msg = 'Payment sent successfully with the total fee ' + sendRes.payment_route.total_fees_msat + ' (mSats).';
               }
-              this.store.dispatch(new RTLActions.OpenSnackBar(msg));
+              this.store.dispatch(openSnackBar({ payload: msg }));
             }
             return {
               type: LNDActions.SEND_PAYMENT_STATUS_LND,
@@ -736,12 +740,12 @@ export class LNDEffects implements OnDestroy {
   graphNodeFetch = createEffect(() => this.actions.pipe(
     ofType(LNDActions.FETCH_GRAPH_NODE_LND),
     mergeMap((action: LNDActions.FetchGraphNode) => {
-      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_NODE_ADDRESS));
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_NODE_ADDRESS }));
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'FetchGraphNode', status: APICallStatusEnum.INITIATED }));
       return this.httpClient.get<GraphNode>(this.CHILD_API_URL + environment.NETWORK_API + '/node/' + action.payload.pubkey).pipe(
         map((graphNode: any) => {
           this.logger.info(graphNode);
-          this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_NODE_ADDRESS));
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_NODE_ADDRESS }));
           this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'FetchGraphNode', status: APICallStatusEnum.COMPLETED }));
           return {
             type: LNDActions.SET_GRAPH_NODE_LND,
@@ -769,11 +773,11 @@ export class LNDEffects implements OnDestroy {
     () => this.actions.pipe(
       ofType(LNDActions.GET_NEW_ADDRESS_LND),
       mergeMap((action: LNDActions.GetNewAddress) => {
-        this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GENERATE_NEW_ADDRESS));
+        this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GENERATE_NEW_ADDRESS }));
         return this.httpClient.get(this.CHILD_API_URL + environment.NEW_ADDRESS_API + '?type=' + action.payload.addressId).pipe(
           map((newAddress: any) => {
             this.logger.info(newAddress);
-            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GENERATE_NEW_ADDRESS));
+            this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GENERATE_NEW_ADDRESS }));
             return {
               type: LNDActions.SET_NEW_ADDRESS_LND,
               payload: (newAddress && newAddress.address) ? newAddress.address : {}
@@ -799,7 +803,7 @@ export class LNDEffects implements OnDestroy {
   SetChannelTransaction = createEffect(() => this.actions.pipe(
     ofType(LNDActions.SET_CHANNEL_TRANSACTION_LND),
     mergeMap((action: LNDActions.SetChannelTransaction) => {
-      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEND_FUNDS));
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.SEND_FUNDS }));
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'SetChannelTransaction', status: APICallStatusEnum.INITIATED }));
       return this.httpClient.post(
         this.CHILD_API_URL + environment.TRANSACTIONS_API,
@@ -808,7 +812,7 @@ export class LNDEffects implements OnDestroy {
         map((postRes: any) => {
           this.logger.info(postRes);
           this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'SetChannelTransaction', status: APICallStatusEnum.COMPLETED }));
-          this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.SEND_FUNDS));
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.SEND_FUNDS }));
           this.store.dispatch(new LNDActions.FetchTransactions());
           this.store.dispatch(new LNDActions.FetchBalance('Blockchain'));
           this.store.dispatch(new LNDActions.FetchAllChannels());
@@ -883,12 +887,12 @@ export class LNDEffects implements OnDestroy {
   genSeed = createEffect(() => this.actions.pipe(
     ofType(LNDActions.GEN_SEED_LND),
     mergeMap((action: LNDActions.GenSeed) => {
-      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GEN_SEED));
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GEN_SEED }));
       return this.httpClient.get(this.CHILD_API_URL + environment.WALLET_API + '/genseed/' + action.payload).pipe(
         map((postRes: any) => {
           this.logger.info('Generated GenSeed!');
           this.logger.info(postRes);
-          this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GEN_SEED));
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GEN_SEED }));
           return {
             type: LNDActions.GEN_SEED_RESPONSE_LND,
             payload: postRes.cipher_seed_mnemonic
@@ -904,7 +908,7 @@ export class LNDEffects implements OnDestroy {
 
   updateSelNodeOptions = createEffect(() => this.actions.pipe(
     ofType(RTLActions.UPDATE_SELECTED_NODE_OPTIONS),
-    mergeMap((action: RTLActions.UpdateSelectedNodeOptions) => this.httpClient.get(this.CHILD_API_URL + environment.WALLET_API + '/updateSelNodeOptions').pipe(
+    mergeMap((action: any) => this.httpClient.get(this.CHILD_API_URL + environment.WALLET_API + '/updateSelNodeOptions').pipe(
       map((postRes: any) => {
         this.logger.info('Update Sel Node Successfull');
         this.logger.info(postRes);
@@ -936,7 +940,7 @@ export class LNDEffects implements OnDestroy {
   initWallet = createEffect(() => this.actions.pipe(
     ofType(LNDActions.INIT_WALLET_LND),
     mergeMap((action: LNDActions.InitWallet) => {
-      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.INITIALIZE_WALLET));
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.INITIALIZE_WALLET }));
       return this.httpClient.post(
         this.CHILD_API_URL + environment.WALLET_API + '/wallet/initwallet',
         {
@@ -947,7 +951,7 @@ export class LNDEffects implements OnDestroy {
       ).pipe(
         map((postRes) => {
           this.logger.info(postRes);
-          this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.INITIALIZE_WALLET));
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.INITIALIZE_WALLET }));
           return {
             type: LNDActions.INIT_WALLET_RESPONSE_LND,
             payload: postRes
@@ -965,16 +969,16 @@ export class LNDEffects implements OnDestroy {
     () => this.actions.pipe(
       ofType(LNDActions.UNLOCK_WALLET_LND),
       mergeMap((action: LNDActions.UnlockWallet) => {
-        this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.UNLOCK_WALLET));
+        this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UNLOCK_WALLET }));
         return this.httpClient.post(this.CHILD_API_URL + environment.WALLET_API + '/wallet/unlockwallet', { wallet_password: action.payload.pwd }).pipe(
           map((postRes) => {
             this.logger.info(postRes);
             this.logger.info('Successfully Unlocked!');
             this.sessionService.setItem('lndUnlocked', 'true');
-            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.UNLOCK_WALLET));
-            this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.WAIT_SYNC_NODE));
+            this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UNLOCK_WALLET }));
+            this.store.dispatch(openSpinner({ payload: UI_MESSAGES.WAIT_SYNC_NODE }));
             setTimeout(() => {
-              this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.WAIT_SYNC_NODE));
+              this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.WAIT_SYNC_NODE }));
               this.store.dispatch(new LNDActions.FetchInfo({ loadPage: 'HOME' }));
             }, 5000);
             return { type: RTLActions.VOID };
@@ -991,12 +995,12 @@ export class LNDEffects implements OnDestroy {
   peerLookup = createEffect(() => this.actions.pipe(
     ofType(LNDActions.PEER_LOOKUP_LND),
     mergeMap((action: LNDActions.PeerLookup) => {
-      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEARCHING_NODE));
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.SEARCHING_NODE }));
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'Lookup', status: APICallStatusEnum.INITIATED }));
       return this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/node/' + action.payload).pipe(
         map((resPeer) => {
           this.logger.info(resPeer);
-          this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.SEARCHING_NODE));
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.SEARCHING_NODE }));
           this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'Lookup', status: APICallStatusEnum.COMPLETED }));
           return {
             type: LNDActions.SET_LOOKUP_LND,
@@ -1014,12 +1018,12 @@ export class LNDEffects implements OnDestroy {
   channelLookup = createEffect(() => this.actions.pipe(
     ofType(LNDActions.CHANNEL_LOOKUP_LND),
     mergeMap((action: LNDActions.ChannelLookup) => {
-      this.store.dispatch(new RTLActions.OpenSpinner(action.payload.uiMessage));
+      this.store.dispatch(openSpinner({ payload: action.payload.uiMessage }));
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'Lookup', status: APICallStatusEnum.INITIATED }));
       return this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/edge/' + action.payload.channelID).pipe(
         map((resChannel) => {
           this.logger.info(resChannel);
-          this.store.dispatch(new RTLActions.CloseSpinner(action.payload.uiMessage));
+          this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
           this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'Lookup', status: APICallStatusEnum.COMPLETED }));
           return {
             type: LNDActions.SET_LOOKUP_LND,
@@ -1038,12 +1042,12 @@ export class LNDEffects implements OnDestroy {
   invoiceLookup = createEffect(() => this.actions.pipe(
     ofType(LNDActions.INVOICE_LOOKUP_LND),
     mergeMap((action: LNDActions.InvoiceLookup) => {
-      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEARCHING_INVOICE));
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.SEARCHING_INVOICE }));
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'Lookup', status: APICallStatusEnum.INITIATED }));
       return this.httpClient.get(this.CHILD_API_URL + environment.INVOICES_API + '/' + action.payload).pipe(
         map((resInvoice) => {
           this.logger.info(resInvoice);
-          this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.SEARCHING_INVOICE));
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.SEARCHING_INVOICE }));
           this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: 'Lookup', status: APICallStatusEnum.COMPLETED }));
           this.store.dispatch(new LNDActions.UpdateInvoice(resInvoice));
           return {
@@ -1053,7 +1057,7 @@ export class LNDEffects implements OnDestroy {
         }),
         catchError((err: any) => {
           this.handleErrorWithoutAlert('Lookup', UI_MESSAGES.SEARCHING_INVOICE, 'Invoice Lookup Failed', err);
-          this.store.dispatch(new RTLActions.OpenSnackBar({ message: 'Invoice Refresh Failed.', type: 'ERROR' }));
+          this.store.dispatch(openSnackBar({ payload: { message: 'Invoice Refresh Failed.', type: 'ERROR' } }));
           return of({ type: RTLActions.VOID });
         })
       );
@@ -1132,8 +1136,8 @@ export class LNDEffects implements OnDestroy {
       uris: info.uris,
       version: (!info.version) ? '' : info.version.split(' ')[0]
     };
-    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
-    this.store.dispatch(new RTLActions.SetNodeData(node_data));
+    this.store.dispatch(openSpinner({ payload: UI_MESSAGES.INITALIZE_NODE_DATA }));
+    this.store.dispatch(setNodeData({ payload: node_data }));
     let newRoute = this.location.path();
     if (newRoute.includes('/cl/')) {
       newRoute = newRoute.replace('/cl/', '/lnd/');
@@ -1160,11 +1164,11 @@ export class LNDEffects implements OnDestroy {
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
-      this.store.dispatch(new RTLActions.CloseAllDialogs());
-      this.store.dispatch(new RTLActions.Logout());
-      this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
+      this.store.dispatch(closeAllDialogs());
+      this.store.dispatch(logout());
+      this.store.dispatch(openSnackBar({ payload: 'Authentication Failed. Redirecting to Login.' }));
     } else {
-      this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
+      this.store.dispatch(closeSpinner({ payload: uiMessage }));
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: this.commonService.extractErrorMessage(err, genericErrorMessage) }));
     }
   }
@@ -1173,18 +1177,20 @@ export class LNDEffects implements OnDestroy {
     this.logger.error(err);
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
-      this.store.dispatch(new RTLActions.CloseAllDialogs());
-      this.store.dispatch(new RTLActions.Logout());
-      this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
+      this.store.dispatch(closeAllDialogs());
+      this.store.dispatch(logout());
+      this.store.dispatch(openSnackBar({ payload: 'Authentication Failed. Redirecting to Login.' }));
     } else {
-      this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
+      this.store.dispatch(closeSpinner({ payload: uiMessage }));
       const errMsg = this.commonService.extractErrorMessage(err);
-      this.store.dispatch(new RTLActions.OpenAlert({
-        data: {
-          type: 'ERROR',
-          alertTitle: alertTitle,
-          message: { code: err.status, message: errMsg, URL: errURL },
-          component: ErrorMessageComponent
+      this.store.dispatch(openAlert({
+        payload: {
+          data: {
+            type: 'ERROR',
+            alertTitle: alertTitle,
+            message: { code: err.status, message: errMsg, URL: errURL },
+            component: ErrorMessageComponent
+          }
         }
       }));
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({ action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: errMsg, URL: errURL }));

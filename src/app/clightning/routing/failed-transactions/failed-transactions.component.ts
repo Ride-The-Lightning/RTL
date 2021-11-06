@@ -16,7 +16,8 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openAlert } from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-cl-failed-history',
@@ -28,8 +29,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public failedEvents: any;
   public errorMessage = '';
   public displayedColumns: any[] = [];
@@ -43,7 +44,7 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe, private router: Router) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe, private router: Router) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -87,15 +88,19 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
     const reorderedFHEvent = [
       [{ key: 'payment_hash', value: selFEvent.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'status', value: selFEvent.status === 'local_failed' ? 'Local Failed' : this.commonService.titleCase(selFEvent.status), title: 'Status', width: 50, type: DataTypeEnum.STRING },
-        { key: 'received_time', value: selFEvent.received_time, title: 'Received Time', width: 50, type: DataTypeEnum.DATE_TIME }],
+      { key: 'received_time', value: selFEvent.received_time, title: 'Received Time', width: 50, type: DataTypeEnum.DATE_TIME }],
       [{ key: 'in_channel', value: selFEvent.in_channel_alias, title: 'Inbound Channel', width: 50, type: DataTypeEnum.STRING },
-        { key: 'in_msatoshi', value: selFEvent.in_msatoshi, title: 'In (mSats)', width: 50, type: DataTypeEnum.NUMBER }]
+      { key: 'in_msatoshi', value: selFEvent.in_msatoshi, title: 'In (mSats)', width: 50, type: DataTypeEnum.NUMBER }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Event Information',
-      message: reorderedFHEvent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Event Information',
+          message: reorderedFHEvent
+        }
+      }
+    }));
   }
 
   loadFailedEventsTable(forwardingEvents: ForwardingEvent[]) {
@@ -105,10 +110,10 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
     this.failedForwardingEvents.paginator = this.paginator;
     this.failedForwardingEvents.filterPredicate = (event: ForwardingEvent, fltr: string) => {
       const newEvent = (event.status ? (event.status === 'local_failed') ? 'local failed' : event.status.toLowerCase() : '') +
-      (event.received_time ? this.datePipe.transform(new Date(event.received_time * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') +
-      (event.resolved_time ? this.datePipe.transform(new Date(event.resolved_time * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') +
-      (event.in_channel ? event.in_channel.toLowerCase() : '') + (event.out_channel ? event.out_channel.toLowerCase() : '') +
-      (event.in_msatoshi ? (event.in_msatoshi / 1000) : '') + (event.out_msatoshi ? (event.out_msatoshi / 1000) : '') + (event.fee ? event.fee : '');
+        (event.received_time ? this.datePipe.transform(new Date(event.received_time * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') +
+        (event.resolved_time ? this.datePipe.transform(new Date(event.resolved_time * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') +
+        (event.in_channel ? event.in_channel.toLowerCase() : '') + (event.out_channel ? event.out_channel.toLowerCase() : '') +
+        (event.in_msatoshi ? (event.in_msatoshi / 1000) : '') + (event.out_msatoshi ? (event.out_msatoshi / 1000) : '') + (event.fee ? event.fee : '');
       return newEvent.includes(fltr);
     };
     this.logger.info(this.failedForwardingEvents);

@@ -10,8 +10,9 @@ import { LoopModalComponent } from './loop-modal/loop-modal.component';
 import { LoopQuote, LoopSwapStatus } from '../../../models/loopModels';
 import { LoopService } from '../../../services/loop.service';
 
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { RTLState } from '../../../../store/rtl.state';
 import * as RTLActions from '../../../../store/rtl.actions';
+import { openAlert } from '../../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-loop',
@@ -34,7 +35,7 @@ export class LoopComponent implements OnInit, OnDestroy {
   public activeTab = this.links[0];
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private router: Router, private loopService: LoopService, private store: Store<fromRTLReducer.RTLState>) { }
+  constructor(private router: Router, private loopService: LoopService, private store: Store<RTLState>) { }
 
   ngOnInit() {
     this.loopService.listSwaps();
@@ -42,7 +43,7 @@ export class LoopComponent implements OnInit, OnDestroy {
     this.activeTab = linkFound ? linkFound : this.links[0];
     this.selectedSwapType = linkFound && linkFound.link === 'loopin' ? LoopTypeEnum.LOOP_IN : LoopTypeEnum.LOOP_OUT;
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe((value: ResolveEnd) => {
+      subscribe((value: any) => {
         const linkFound = this.links.find((link) => value.urlAfterRedirects.includes(link.link));
         this.activeTab = linkFound ? linkFound : this.links[0];
         this.selectedSwapType = linkFound && linkFound.link === 'loopin' ? LoopTypeEnum.LOOP_IN : LoopTypeEnum.LOOP_OUT;
@@ -71,12 +72,14 @@ export class LoopComponent implements OnInit, OnDestroy {
       this.loopService.getLoopInTermsAndQuotes(this.targetConf).
         pipe(takeUntil(this.unSubs[2])).
         subscribe((response) => {
-          this.store.dispatch(new RTLActions.OpenAlert({
-            data: {
-              minQuote: response[0],
-              maxQuote: response[1],
-              direction: direction,
-              component: LoopModalComponent
+          this.store.dispatch(openAlert({
+            payload: {
+              data: {
+                minQuote: response[0],
+                maxQuote: response[1],
+                direction: direction,
+                component: LoopModalComponent
+              }
             }
           }));
         });
@@ -84,12 +87,14 @@ export class LoopComponent implements OnInit, OnDestroy {
       this.loopService.getLoopOutTermsAndQuotes(this.targetConf).
         pipe(takeUntil(this.unSubs[3])).
         subscribe((response) => {
-          this.store.dispatch(new RTLActions.OpenAlert({
-            data: {
-              minQuote: response[0],
-              maxQuote: response[1],
-              direction: direction,
-              component: LoopModalComponent
+          this.store.dispatch(openAlert({
+            payload: {
+              data: {
+                minQuote: response[0],
+                maxQuote: response[1],
+                direction: direction,
+                component: LoopModalComponent
+              }
             }
           }));
         });

@@ -11,7 +11,7 @@ import { CommonService } from '../../shared/services/common.service';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import * as LNDActions from '../store/lnd.actions';
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import { RTLState } from '../../store/rtl.state';
 
 @Component({
   selector: 'rtl-lookups',
@@ -38,7 +38,7 @@ export class LookupsComponent implements OnInit, OnDestroy {
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private actions: Actions) {
     this.screenSize = this.commonService.getScreenSize();
   }
 

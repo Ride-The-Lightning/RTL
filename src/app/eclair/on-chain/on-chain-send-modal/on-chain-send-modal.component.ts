@@ -15,7 +15,8 @@ import { LoggerService } from '../../../shared/services/logger.service';
 
 import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openSnackBar } from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-ecl-on-chain-send-modal',
@@ -45,7 +46,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
   public amountError = 'Amount is Required.';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ECLOnChainSendModalComponent>, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions) { }
+  constructor(public dialogRef: MatDialogRef<ECLOnChainSendModalComponent>, private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions) { }
 
   ngOnInit() {
     this.store.select('root').
@@ -61,9 +62,9 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
       takeUntil(this.unSubs[1]),
       filter((action) => action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL || action.type === ECLActions.SEND_ONCHAIN_FUNDS_RES_ECL)
     ).
-      subscribe((action: ECLActions.UpdateAPICallStatus | ECLActions.SendOnchainFundsRes) => {
+      subscribe((action: any) => {
         if (action.type === ECLActions.SEND_ONCHAIN_FUNDS_RES_ECL) {
-          this.store.dispatch(new RTLActions.OpenSnackBar('Fund Sent Successfully!'));
+          this.store.dispatch(openSnackBar({ payload: 'Fund Sent Successfully!' }));
           this.dialogRef.close();
         }
         if (action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SendOnchainFunds') {

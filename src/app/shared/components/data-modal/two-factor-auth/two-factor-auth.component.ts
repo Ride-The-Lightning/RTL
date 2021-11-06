@@ -14,8 +14,9 @@ import { RTLConfiguration } from '../../../models/RTLconfig';
 import { AuthConfig } from '../../../models/alertData';
 
 import { RTLEffects } from '../../../../store/rtl.effects';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { RTLState } from '../../../../store/rtl.state';
 import * as RTLActions from '../../../../store/rtl.actions';
+import { isAuthorized, twoFASaveSettings } from '../../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-two-factor-auth',
@@ -51,7 +52,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
   disableFormGroup: FormGroup = this.formBuilder.group({});
   unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<TwoFactorAuthComponent>, @Inject(MAT_DIALOG_DATA) public data: AuthConfig, private store: Store<fromRTLReducer.RTLState>, private formBuilder: FormBuilder, private rtlEffects: RTLEffects, private snackBar: MatSnackBar) {}
+  constructor(public dialogRef: MatDialogRef<TwoFactorAuthComponent>, @Inject(MAT_DIALOG_DATA) public data: AuthConfig, private store: Store<RTLState>, private formBuilder: FormBuilder, private rtlEffects: RTLEffects, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.appConfig = this.data.appConfig;
@@ -67,12 +68,12 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
     return secret2fa;
   }
 
-  onAuthenticate(): boolean|void {
+  onAuthenticate(): boolean | void {
     if (!this.passwordFormGroup.controls.password.value) {
       return true;
     }
     this.flgValidated = false;
-    this.store.dispatch(new RTLActions.IsAuthorized(sha256(this.passwordFormGroup.controls.password.value)));
+    this.store.dispatch(isAuthorized(sha256(this.passwordFormGroup.controls.password.value)));
     this.rtlEffects.isAuthorizedRes.
       pipe(take(1)).
       subscribe((authRes) => {
@@ -90,9 +91,9 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
     this.snackBar.open('Secret code ' + this.secretFormGroup.controls.secret.value + ' copied.');
   }
 
-  onVerifyToken(): boolean|void {
+  onVerifyToken(): boolean | void {
     if (this.appConfig.enable2FA) {
-      this.store.dispatch(new RTLActions.TwoFASaveSettings({ secret2fa: '' }));
+      this.store.dispatch(twoFASaveSettings({ payload: { secret2fa: '' } }));
       this.generateSecret();
       this.isTokenValid = true;
     } else {
@@ -104,7 +105,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
         this.tokenFormGroup.controls.token.setErrors({ notValid: true });
         return true;
       }
-      this.store.dispatch(new RTLActions.TwoFASaveSettings({ secret2fa: this.secretFormGroup.controls.secret.value }));
+      this.store.dispatch(twoFASaveSettings({ payload: { secret2fa: this.secretFormGroup.controls.secret.value } }));
       this.tokenFormGroup.controls.token.setValue('');
     }
     this.flgValidated = true;

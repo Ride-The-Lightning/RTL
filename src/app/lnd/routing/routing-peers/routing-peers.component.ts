@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit } from '@angular/core';
-import { Subject, combineLatest } from 'rxjs';
+import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatSort } from '@angular/material/sort';
@@ -11,10 +11,9 @@ import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, getPaginatorLabel, PAGE
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
-
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
-import * as fromLNDReducer from '../../store/lnd.reducers';
+import { openAlert } from '../../../store/rtl.actions';
+import { RTLState } from '../../../store/rtl.state';
+import { getForwardingHistoryAPIStatus } from '../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-routing-peers',
@@ -28,8 +27,8 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('tableIn', { read: MatSort, static: false }) sortIn: MatSort;
   @ViewChild('tableOut', { read: MatSort, static: false }) sortOut: MatSort;
-  @ViewChild('paginatorIn', { static: false }) paginatorIn: MatPaginator|undefined;
-  @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator|undefined;
+  @ViewChild('paginatorIn', { static: false }) paginatorIn: MatPaginator | undefined;
+  @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator | undefined;
   public routingPeersData = [];
   public displayedColumns: any[] = [];
   public RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>([]);
@@ -46,7 +45,7 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -64,8 +63,8 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select(fromLNDReducer.forwardingHistoryAndAPIStatus).pipe(takeUntil(this.unSubs[0])).
-      subscribe((fhSelector: {forwardingHistory: SwitchRes, apisCallStatus: ApiCallStatusPayload}) => {
+    this.store.select(getForwardingHistoryAPIStatus).pipe(takeUntil(this.unSubs[0])).
+      subscribe((fhSelector: { forwardingHistory: SwitchRes, apisCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apisCallStatus = fhSelector.apisCallStatus;
         if (fhSelector.apisCallStatus?.status === APICallStatusEnum.ERROR) {
@@ -99,15 +98,19 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     const reorderedRoutingPeer = [
       [{ key: 'chan_id', value: selRPeer.chan_id, title: 'Channel ID', width: 50, type: DataTypeEnum.STRING },
-        { key: 'alias', value: selRPeer.alias, title: 'Peer Alias', width: 50, type: DataTypeEnum.STRING }],
+      { key: 'alias', value: selRPeer.alias, title: 'Peer Alias', width: 50, type: DataTypeEnum.STRING }],
       [{ key: 'events', value: selRPeer.events, title: 'Events', width: 50, type: DataTypeEnum.NUMBER },
-        { key: 'total_amount', value: selRPeer.total_amount, title: 'Total Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }]
+      { key: 'total_amount', value: selRPeer.total_amount, title: 'Total Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: alertTitle,
-      message: reorderedRoutingPeer
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: alertTitle,
+          message: reorderedRoutingPeer
+        }
+      }
+    }));
   }
 
   loadRoutingPeersTable(forwardingEvents: ForwardingEvent[]) {

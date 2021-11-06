@@ -18,7 +18,8 @@ import { ConnectPeerComponent } from '../connect-peer/connect-peer.component';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-peers',
@@ -30,8 +31,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public availableBalance = 0;
   public faUsers = faUsers;
   public displayedColumns: any[] = [];
@@ -48,7 +49,7 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -98,20 +99,28 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
       [{ key: 'sat_sent', value: selPeer.sat_sent, title: 'Satoshis Sent', width: 50, type: DataTypeEnum.NUMBER }, { key: 'sat_recv', value: selPeer.sat_recv, title: 'Satoshis Received', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'bytes_sent', value: selPeer.bytes_sent, title: 'Bytes Sent', width: 50, type: DataTypeEnum.NUMBER }, { key: 'bytes_recv', value: selPeer.bytes_recv, title: 'Bytes Received', width: 50, type: DataTypeEnum.NUMBER }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Peer Information',
-      showQRName: 'Public Key',
-      showQRField: selPeer.pub_key,
-      message: reorderedPeer
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Peer Information',
+          showQRName: 'Public Key',
+          showQRField: selPeer.pub_key,
+          message: reorderedPeer
+        }
+      }
+    }));
   }
 
   onConnectPeer() {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      message: { peer: null, information: this.information, balance: this.availableBalance },
-      component: ConnectPeerComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          message: { peer: null, information: this.information, balance: this.availableBalance },
+          component: ConnectPeerComponent
+        }
+      }
+    }));
   }
 
   onOpenChannel(peerToAddChannel: Peer) {
@@ -120,22 +129,30 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
       information: this.information,
       balance: this.availableBalance
     };
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      alertTitle: 'Open Channel',
-      message: peerToAddChannelMessage,
-      component: OpenChannelComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          alertTitle: 'Open Channel',
+          message: peerToAddChannelMessage,
+          component: OpenChannelComponent
+        }
+      }
+    }));
   }
 
   onPeerDetach(peerToDetach: Peer) {
     const msg = 'Disconnect peer: ' + ((peerToDetach.alias) ? peerToDetach.alias : peerToDetach.pub_key);
-    this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-      type: AlertTypeEnum.CONFIRM,
-      alertTitle: 'Disconnect Peer',
-      titleMessage: msg,
-      noBtnText: 'Cancel',
-      yesBtnText: 'Disconnect'
-    } }));
+    this.store.dispatch(openConfirmation({
+      payload: {
+        data: {
+          type: AlertTypeEnum.CONFIRM,
+          alertTitle: 'Disconnect Peer',
+          titleMessage: msg,
+          noBtnText: 'Cancel',
+          yesBtnText: 'Disconnect'
+        }
+      }
+    }));
     this.rtlEffects.closeConfirm.
       pipe(takeUntil(this.unSubs[3])).
       subscribe((confirmRes) => {
