@@ -17,7 +17,6 @@ import { BoltzService } from '../../../../services/boltz.service';
 import { LoggerService } from '../../../../services/logger.service';
 import { CommonService } from '../../../../services/common.service';
 
-import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 import { RTLState } from '../../../../../store/rtl.state';
 
 @Component({

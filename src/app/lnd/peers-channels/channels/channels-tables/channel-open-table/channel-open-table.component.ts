@@ -22,9 +22,9 @@ import { LoopModalComponent } from '../../../../../shared/components/services/lo
 
 import { LNDEffects } from '../../../../store/lnd.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
-import * as LNDActions from '../../../../store/lnd.actions';
 import { RTLState } from '../../../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
+import { channelLookup, fetchAllChannels, updateChannel } from '../../../../store/lnd.actions';
 
 @Component({
   selector: 'rtl-channel-open-table',
@@ -111,7 +111,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   onViewRemotePolicy(selChannel: Channel) {
-    this.store.dispatch(new LNDActions.ChannelLookup({ uiMessage: UI_MESSAGES.GET_REMOTE_POLICY, channelID: selChannel.chan_id.toString() + '/' + this.information.identity_pubkey }));
+    this.store.dispatch(channelLookup({ payload: { uiMessage: UI_MESSAGES.GET_REMOTE_POLICY, channelID: selChannel.chan_id.toString() + '/' + this.information.identity_pubkey } }));
     this.lndEffects.setLookup.
       pipe(take(1)).
       subscribe((resLookup): boolean | void => {
@@ -179,12 +179,12 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
             const base_fee = confirmRes[0].inputValue;
             const fee_rate = confirmRes[1].inputValue;
             const time_lock_delta = confirmRes[2].inputValue;
-            this.store.dispatch(new LNDActions.UpdateChannels({ baseFeeMsat: base_fee, feeRate: fee_rate, timeLockDelta: time_lock_delta, chanPoint: 'all' }));
+            this.store.dispatch(updateChannel({ payload: { baseFeeMsat: base_fee, feeRate: fee_rate, timeLockDelta: time_lock_delta, chanPoint: 'all' } }));
           }
         });
     } else {
       this.myChanPolicy = { fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0 };
-      this.store.dispatch(new LNDActions.ChannelLookup({ uiMessage: UI_MESSAGES.GET_CHAN_POLICY, channelID: channelToUpdate.chan_id.toString() }));
+      this.store.dispatch(channelLookup({ payload: { uiMessage: UI_MESSAGES.GET_CHAN_POLICY, channelID: channelToUpdate.chan_id.toString() } }));
       this.lndEffects.setLookup.
         pipe(take(1)).
         subscribe((resLookup) => {
@@ -224,7 +224,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
             const base_fee = confirmRes[0].inputValue;
             const fee_rate = confirmRes[1].inputValue;
             const time_lock_delta = confirmRes[2].inputValue;
-            this.store.dispatch(new LNDActions.UpdateChannels({ baseFeeMsat: base_fee, feeRate: fee_rate, timeLockDelta: time_lock_delta, chanPoint: channelToUpdate.channel_point }));
+            this.store.dispatch(updateChannel({ payload: { baseFeeMsat: base_fee, feeRate: fee_rate, timeLockDelta: time_lock_delta, chanPoint: channelToUpdate.channel_point } }));
           }
         });
     }
@@ -233,7 +233,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
 
   onChannelClose(channelToClose: Channel) {
     if (channelToClose.active) {
-      this.store.dispatch(new LNDActions.FetchAllChannels()); // To get latest pending htlc status
+      this.store.dispatch(fetchAllChannels()); // To get latest pending htlc status
     }
     this.store.dispatch(openAlert({
       payload: {

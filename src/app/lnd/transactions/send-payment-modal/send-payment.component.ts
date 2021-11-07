@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, NgModel } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
-import { take, takeUntil, filter, startWith, map, subscribeOn } from 'rxjs/operators';
+import { take, takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -10,13 +10,13 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { PayRequest, Channel } from '../../../shared/models/lndModels';
-import { APICallStatusEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES, LNDActions, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { DataService } from '../../../shared/services/data.service';
 
-import * as LNDActions from '../../store/lnd.actions';
 import { RTLState } from '../../../store/rtl.state';
+import { sendPayment } from '../../store/lnd.actions';
 
 @Component({
   selector: 'rtl-lightning-send-payments',
@@ -63,7 +63,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     this.actions.pipe(
       takeUntil(this.unSubs[1]),
       filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.SEND_PAYMENT_STATUS_LND)).
-      subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.SendPaymentStatus) => {
+      subscribe((action: any) => {
         if (action.type === LNDActions.SEND_PAYMENT_STATUS_LND) {
           this.dialogRef.close();
         }
@@ -134,10 +134,10 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     if (!this.paymentDecoded.num_satoshis || this.paymentDecoded.num_satoshis === '' || this.paymentDecoded.num_satoshis === '0') {
       this.zeroAmtInvoice = true;
       this.paymentDecoded.num_satoshis = this.paymentAmount;
-      this.store.dispatch(new LNDActions.SendPayment({ uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, paymentAmount: this.paymentAmount, outgoingChannel: this.selectedChannelCtrl.value, feeLimitType: { id: this.selFeeLimitType.id, name: this.selFeeLimitType.name }, feeLimit: this.feeLimit, fromDialog: true }));
+      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, paymentAmount: this.paymentAmount, outgoingChannel: this.selectedChannelCtrl.value, feeLimitType: { id: this.selFeeLimitType.id, name: this.selFeeLimitType.name }, feeLimit: this.feeLimit, fromDialog: true } }));
     } else {
       this.zeroAmtInvoice = false;
-      this.store.dispatch(new LNDActions.SendPayment({ uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, outgoingChannel: this.selectedChannelCtrl.value, feeLimitType: { id: this.selFeeLimitType.id, name: this.selFeeLimitType.name }, feeLimit: this.feeLimit, fromDialog: true }));
+      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, outgoingChannel: this.selectedChannelCtrl.value, feeLimitType: { id: this.selFeeLimitType.id, name: this.selFeeLimitType.name }, feeLimit: this.feeLimit, fromDialog: true } }));
     }
   }
 

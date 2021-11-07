@@ -6,7 +6,6 @@ import { Store } from '@ngrx/store';
 import { faCog } from '@fortawesome/free-solid-svg-icons';
 
 import { RTLEffects } from '../../../../store/rtl.effects';
-import * as RTLActions from '../../../../store/rtl.actions';
 import { RTLState } from '../../../../store/rtl.state';
 import { fetchConfig } from '../../../../store/rtl.actions';
 

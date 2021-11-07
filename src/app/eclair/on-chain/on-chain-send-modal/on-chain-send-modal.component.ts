@@ -9,14 +9,13 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild, GetInfoRoot, RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { GetInfo, OnChainBalance, SendPaymentOnChain } from '../../../shared/models/eclModels';
-import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
+import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, APICallStatusEnum, UI_MESSAGES, ECLActions } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
-import * as ECLActions from '../../store/ecl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
 import { openSnackBar } from '../../../store/rtl.actions';
+import { sendOnchainFunds } from '../../store/ecl.actions';
 
 @Component({
   selector: 'rtl-ecl-on-chain-send-modal',
@@ -85,7 +84,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
           next: (data) => {
             this.transaction.amount = parseInt(data[CurrencyUnitEnum.SATS]);
             this.selAmountUnit = CurrencyUnitEnum.SATS;
-            this.store.dispatch(new ECLActions.SendOnchainFunds(this.transaction));
+            this.store.dispatch(sendOnchainFunds({ payload: this.transaction }));
           }, error: (err) => {
             this.transaction.amount = null;
             this.selAmountUnit = CurrencyUnitEnum.SATS;
@@ -93,7 +92,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
           }
         });
     } else {
-      this.store.dispatch(new ECLActions.SendOnchainFunds(this.transaction));
+      this.store.dispatch(sendOnchainFunds({ payload: this.transaction }));
     }
   }
 

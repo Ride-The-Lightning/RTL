@@ -24,11 +24,6 @@ import { APICallStatusEnum, UI_MESSAGES } from '../shared/services/consts-enums-
 import { environment } from '../../environments/environment';
 
 import { RTLEffects } from './rtl.effects';
-import * as RTLActions from './rtl.actions';
-import * as LNDActions from '../lnd/store/lnd.actions';
-import * as ECLActions from '../eclair/store/ecl.actions';
-import * as CLActions from '../clightning/store/cl.actions';
-import * as fromRTLReducer from './rtl.reducers';
 
 describe('RTL Root Effects', () => {
   let actions: ReplaySubject<any>;

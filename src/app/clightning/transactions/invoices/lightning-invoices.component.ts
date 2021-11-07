@@ -9,7 +9,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
+import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES, CLActions } from '../../../shared/services/consts-enums-functions';
 import { ApiCallsListCL } from '../../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/clModels';
@@ -21,10 +21,9 @@ import { CLInvoiceInformationComponent } from '../invoice-information-modal/invo
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 
 import { RTLEffects } from '../../../store/rtl.effects';
-import * as CLActions from '../../store/cl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
+import { deleteExpiredInvoice, invoiceLookup, saveNewInvoice } from '../../store/cl.actions';
 
 @Component({
   selector: 'rtl-cl-lightning-invoices',
@@ -139,8 +138,10 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
     this.flgAnimate = true;
     this.newlyAddedInvoiceMemo = 'ulbl' + Math.random().toString(36).slice(2) + Date.now();
     this.newlyAddedInvoiceValue = this.invoiceValue;
-    this.store.dispatch(new CLActions.SaveNewInvoice({
-      label: this.newlyAddedInvoiceMemo, amount: this.invoiceValue * 1000, description: this.description, expiry: expiryInSecs, private: this.private
+    this.store.dispatch(saveNewInvoice({
+      payload: {
+        label: this.newlyAddedInvoiceMemo, amount: this.invoiceValue * 1000, description: this.description, expiry: expiryInSecs, private: this.private
+      }
     }));
     this.resetData();
   }
@@ -155,7 +156,7 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
       pipe(takeUntil(this.unSubs[2])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.store.dispatch(new CLActions.DeleteExpiredInvoice());
+          this.store.dispatch(deleteExpiredInvoice({ payload: null }));
         }
       });
   }
@@ -211,7 +212,7 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
   }
 
   onRefreshInvoice(selInvoice: Invoice) {
-    this.store.dispatch(new CLActions.InvoiceLookup(selInvoice.label));
+    this.store.dispatch(invoiceLookup({ payload: selInvoice.label }));
   }
 
   updateInvoicesData(newInvoice: Invoice) {

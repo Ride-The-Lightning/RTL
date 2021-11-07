@@ -9,10 +9,9 @@ import { LoggerService } from '../../../../services/logger.service';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { updateServiceSettings } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
-
-import * as ECLActions from '../../../../../eclair/store/ecl.actions';
-import * as CLActions from '../../../../../clightning/store/cl.actions';
-import * as LNDActions from '../../../../../lnd/store/lnd.actions';
+import { setChildNodeSettingsLND } from '../../../../../lnd/store/lnd.actions';
+import { setChildNodeSettingsCL } from '../../../../../clightning/store/cl.actions';
+import { setChildNodeSettingsECL } from '../../../../../eclair/store/ecl.actions';
 
 @Component({
   selector: 'rtl-boltz-service-settings',
@@ -72,14 +71,20 @@ export class BoltzServiceSettingsComponent implements OnInit, OnDestroy {
     this.selNode.settings.boltzServerUrl = this.serverUrl;
     this.selNode.authentication.boltzMacaroonPath = this.macaroonPath;
     this.store.dispatch(updateServiceSettings({ payload: { uiMessage: UI_MESSAGES.UPDATE_BOLTZ_SETTINGS, service: ServicesEnum.BOLTZ, settings: { enable: this.enableBoltz, serverUrl: this.serverUrl, macaroonPath: this.macaroonPath } } }));
-    this.store.dispatch(new LNDActions.SetChildNodeSettings({
-      userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl
+    this.store.dispatch(setChildNodeSettingsLND({
+      payload: {
+        userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl
+      }
     }));
-    this.store.dispatch(new CLActions.SetChildNodeSettings({
-      userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl
+    this.store.dispatch(setChildNodeSettingsCL({
+      payload: {
+        userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl
+      }
     }));
-    this.store.dispatch(new ECLActions.SetChildNodeSettings({
-      userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl
+    this.store.dispatch(setChildNodeSettingsECL({
+      payload: {
+        userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl
+      }
     }));
   }
 

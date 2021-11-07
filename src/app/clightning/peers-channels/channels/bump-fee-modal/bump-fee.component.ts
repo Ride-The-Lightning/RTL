@@ -10,13 +10,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { Channel } from '../../../../shared/models/clModels';
 import { CLChannelInformation } from '../../../../shared/models/alertData';
-import { ADDRESS_TYPES, APICallStatusEnum } from '../../../../shared/services/consts-enums-functions';
+import { ADDRESS_TYPES, APICallStatusEnum, CLActions } from '../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../shared/services/logger.service';
 
-import * as CLActions from '../../../store/cl.actions';
-import * as RTLActions from '../../../../store/rtl.actions';
 import { RTLState } from '../../../../store/rtl.state';
 import { openSnackBar } from '../../../../store/rtl.actions';
+import { getNewAddress, setChannelTransaction } from '../../../store/cl.actions';
 
 @Component({
   selector: 'rtl-cl-bump-fee',
@@ -53,14 +52,16 @@ export class CLBumpFeeComponent implements OnInit, OnDestroy {
       return true;
     }
     this.bumpFeeError = '';
-    this.store.dispatch(new CLActions.GetNewAddress(ADDRESS_TYPES[0]));
+    this.store.dispatch(getNewAddress({ payload: ADDRESS_TYPES[0] }));
     this.actions.pipe(filter((action) => action.type === CLActions.SET_NEW_ADDRESS_CL), take(1)).
       subscribe((action: any) => {
-        this.store.dispatch(new CLActions.SetChannelTransaction({
-          address: action.payload,
-          satoshis: 'all',
-          feeRate: this.fees,
-          utxos: [this.bumpFeeChannel.funding_txid + ':' + this.outputIndex.toString()]
+        this.store.dispatch(setChannelTransaction({
+          payload: {
+            address: action.payload,
+            satoshis: 'all',
+            feeRate: this.fees,
+            utxos: [this.bumpFeeChannel.funding_txid + ':' + this.outputIndex.toString()]
+          }
         }));
       });
     this.actions.pipe(filter((action) => action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL), take(1)).

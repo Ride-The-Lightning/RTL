@@ -217,3 +217,39 @@ export interface ChannelStateUpdate {
   remoteNodeId?: string;
   type?: string;
 }
+
+export interface SaveChannel {
+  nodeId: string;
+  amount: number;
+  private: boolean;
+  feeRate?: number;
+}
+
+export interface UpdateChannel {
+  baseFeeMsat: number;
+  feeRate: number;
+  channelId?: string;
+  channelIds?: string;
+}
+
+export interface CloseChannel {
+  channelId: string;
+  force: boolean;
+}
+
+export interface GetQueryRoutes {
+  nodeId: string;
+  amount: number;
+}
+
+export interface SendPayment {
+  fromDialog: boolean;
+  invoice: string;
+  amountMsat?: number;
+}
+
+export interface CreateInvoice {
+  description: string;
+  expireIn: number;
+  amountMsat?: number;
+}

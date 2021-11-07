@@ -5,8 +5,8 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
 
-import * as LNDActions from '../store/lnd.actions';
 import { RTLState } from '../../store/rtl.state';
+import { getForwardingHistory, setForwardingHistory } from '../store/lnd.actions';
 
 @Component({
   selector: 'rtl-routing',
@@ -32,23 +32,25 @@ export class RoutingComponent implements OnInit, OnDestroy {
     const linkFound = this.links.find((link) => this.router.url.includes(link.link));
     this.activeLink = linkFound ? linkFound.link : this.links[0].link;
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe((value: ResolveEnd) => {
+      subscribe((value: any) => {
         const linkFound = this.links.find((link) => value.urlAfterRedirects.includes(link.link));
         this.activeLink = linkFound ? linkFound.link : this.links[0].link;
       });
   }
 
   onEventsFetch() {
-    this.store.dispatch(new LNDActions.SetForwardingHistory({}));
+    this.store.dispatch(setForwardingHistory({ payload: null }));
     if (!this.endDate) {
       this.endDate = this.today;
     }
     if (!this.startDate) {
       this.startDate = new Date(this.endDate.getFullYear(), this.endDate.getMonth() - 1, this.endDate.getDate() + 1, 0, 0, 0);
     }
-    this.store.dispatch(new LNDActions.GetForwardingHistory({
-      end_time: Math.round(this.endDate.getTime() / 1000).toString(),
-      start_time: Math.round(this.startDate.getTime() / 1000).toString()
+    this.store.dispatch(getForwardingHistory({
+      payload: {
+        end_time: Math.round(this.endDate.getTime() / 1000).toString(),
+        start_time: Math.round(this.startDate.getTime() / 1000).toString()
+      }
     }));
   }
 
@@ -59,7 +61,7 @@ export class RoutingComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.resetData();
-    this.store.dispatch(new LNDActions.SetForwardingHistory({}));
+    this.store.dispatch(setForwardingHistory({ payload: null }));
     this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();

@@ -10,14 +10,13 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { PayRequest, Channel } from '../../../shared/models/clModels';
-import { APICallStatusEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, CLActions, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { CLEffects } from '../../store/cl.effects';
-import * as CLActions from '../../store/cl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
+import { decodePayment, sendPayment } from '../../store/cl.actions';
 
 @Component({
   selector: 'rtl-cl-lightning-send-payments',
@@ -67,7 +66,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
     this.actions.pipe(
       takeUntil(this.unSubs[1]),
       filter((action) => action.type === CLActions.UPDATE_API_CALL_STATUS_CL || action.type === CLActions.SEND_PAYMENT_STATUS_CL)).
-      subscribe((action: CLActions.UpdateAPICallStatus | CLActions.SendPaymentStatus) => {
+      subscribe((action: any) => {
         if (action.type === CLActions.SEND_PAYMENT_STATUS_CL) {
           this.dialogRef.close();
         }
@@ -98,7 +97,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
         this.paymentError = '';
         this.paymentDecodedHint = '';
         this.paymentReq.control.setErrors(null);
-        this.store.dispatch(new CLActions.DecodePayment({ routeParam: this.paymentRequest, fromDialog: true }));
+        this.store.dispatch(decodePayment({ payload: { routeParam: this.paymentRequest, fromDialog: true } }));
         this.clEffects.setDecodedPaymentCL.pipe(take(1)).subscribe((decodedPayment) => {
           this.paymentDecoded = decodedPayment;
           if (this.paymentDecoded.created_at && !this.paymentDecoded.msatoshi) {
@@ -127,14 +126,14 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   }
 
   keysendPayment() {
-    this.store.dispatch(new CLActions.SendPayment({ uiMessage: UI_MESSAGES.SEND_KEYSEND, pubkey: this.pubkey, amount: this.keysendAmount * 1000, fromDialog: true }));
+    this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_KEYSEND, pubkey: this.pubkey, amount: this.keysendAmount * 1000, fromDialog: true } }));
   }
 
   sendPayment() {
     if (this.zeroAmtInvoice) {
-      this.store.dispatch(new CLActions.SendPayment({ uiMessage: UI_MESSAGES.SEND_PAYMENT, invoice: this.paymentRequest, amount: this.paymentAmount * 1000, fromDialog: true }));
+      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, invoice: this.paymentRequest, amount: this.paymentAmount * 1000, fromDialog: true } }));
     } else {
-      this.store.dispatch(new CLActions.SendPayment({ uiMessage: UI_MESSAGES.SEND_PAYMENT, invoice: this.paymentRequest, fromDialog: true }));
+      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, invoice: this.paymentRequest, fromDialog: true } }));
     }
   }
 
@@ -146,7 +145,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
     if (this.paymentRequest && this.paymentRequest.length > 100) {
       this.paymentReq.control.setErrors(null);
       this.zeroAmtInvoice = false;
-      this.store.dispatch(new CLActions.DecodePayment({ routeParam: this.paymentRequest, fromDialog: true }));
+      this.store.dispatch(decodePayment({ payload: { routeParam: this.paymentRequest, fromDialog: true } }));
       this.clEffects.setDecodedPaymentCL.subscribe((decodedPayment) => {
         this.paymentDecoded = decodedPayment;
         if (this.paymentDecoded.created_at && !this.paymentDecoded.msatoshi) {

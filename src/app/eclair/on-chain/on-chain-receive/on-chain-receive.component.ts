@@ -5,10 +5,9 @@ import { Store } from '@ngrx/store';
 import { OnChainGeneratedAddressComponent } from '../../../shared/components/data-modal/on-chain-generated-address/on-chain-generated-address.component';
 
 import { ECLEffects } from '../../store/ecl.effects';
-import * as ECLActions from '../../store/ecl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
+import { getNewAddress } from '../../store/ecl.actions';
 
 @Component({
   selector: 'rtl-ecl-on-chain-receive',
@@ -22,7 +21,7 @@ export class ECLOnChainReceiveComponent {
   constructor(private store: Store<RTLState>, private eclEffects: ECLEffects) { }
 
   onGenerateAddress() {
-    this.store.dispatch(new ECLActions.GetNewAddress());
+    this.store.dispatch(getNewAddress());
     this.eclEffects.setNewAddress.pipe(take(1)).
       subscribe((newAddress) => {
         this.newAddress = newAddress;

@@ -10,11 +10,10 @@ import { LoggerService } from '../../../services/logger.service';
 import { SessionService } from '../../../services/session.service';
 import { GetInfoChain } from '../../../models/lndModels';
 import { environment } from '../../../../../environments/environment';
-import { AlertTypeEnum } from '../../../services/consts-enums-functions';
+import { AlertTypeEnum, RTLActions } from '../../../services/consts-enums-functions';
 import { RTLEffects } from '../../../../store/rtl.effects';
 
 import { RTLState } from '../../../../store/rtl.state';
-import * as RTLActions from '../../../../store/rtl.actions';
 import { logout, openConfirmation } from '../../../../store/rtl.actions';
 
 @Component({

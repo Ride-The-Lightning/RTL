@@ -9,21 +9,19 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatStepper } from '@angular/material/stepper';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import * as sha256 from 'sha256';
 
 import { SelNodeChild, GetInfoRoot, RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CLOnChainSendFunds } from '../../../shared/models/alertData';
 import { GetInfo, Balance, OnChain, UTXO } from '../../../shared/models/clModels';
-import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, FEE_RATE_TYPES, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, FEE_RATE_TYPES, APICallStatusEnum, CLActions } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { RTLEffects } from '../../../store/rtl.effects';
-
-import * as CLActions from '../../store/cl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
-import * as sha256 from 'sha256';
 import { isAuthorized, openSnackBar } from '../../../store/rtl.actions';
+import { setChannelTransaction } from '../../store/cl.actions';
 
 @Component({
   selector: 'rtl-cl-on-chain-send-modal',
@@ -178,7 +176,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
         }
       }
       delete this.transaction.utxos;
-      this.store.dispatch(new CLActions.SetChannelTransaction(this.transaction));
+      this.store.dispatch(setChannelTransaction({ payload: this.transaction }));
     } else {
       if (this.transaction.satoshis && this.transaction.satoshis !== 'all' && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
         this.commonService.convertCurrency(+this.transaction.satoshis, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion).
@@ -187,7 +185,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
             next: (data) => {
               this.transaction.satoshis = data[CurrencyUnitEnum.SATS];
               this.selAmountUnit = CurrencyUnitEnum.SATS;
-              this.store.dispatch(new CLActions.SetChannelTransaction(this.transaction));
+              this.store.dispatch(setChannelTransaction({ payload: this.transaction }));
             }, error: (err) => {
               this.transaction.satoshis = null;
               this.selAmountUnit = CurrencyUnitEnum.SATS;
@@ -195,7 +193,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
             }
           });
       } else {
-        this.store.dispatch(new CLActions.SetChannelTransaction(this.transaction));
+        this.store.dispatch(setChannelTransaction({ payload: this.transaction }));
       }
     }
   }

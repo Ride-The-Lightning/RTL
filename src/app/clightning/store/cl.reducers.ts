@@ -1,197 +1,191 @@
-import { initCLState } from './cl.state';
-import * as CLActions from '../store/cl.actions';
+import { createReducer, on } from '@ngrx/store';
 
-export function CLReducer(state = initCLState, action: CLActions.CLActions) {
-  switch (action.type) {
-    case CLActions.UPDATE_API_CALL_STATUS_CL:
-      const updatedApisCallStatus = state.apisCallStatus;
-      updatedApisCallStatus[action.payload.action] = {
-        status: action.payload.status,
-        statusCode: action.payload.statusCode,
-        message: action.payload.message,
-        URL: action.payload.URL,
-        filePath: action.payload.filePath
-      };
+import { initCLState } from './cl.state';
+import { addInvoice, addPeer, removeChannel, removePeer, resetCLStore, setBalance, setChannels, setChildNodeSettingsCL, setFailedForwardingHistory, setFeeRates, setFees, setForwardingHistory, setInfo, setInvoices, setLocalRemoteBalance, setPayments, setPeers, setUTXOs, updateAPICallStatus, updateInvoice } from './cl.actions';
+
+export const CLReducer = createReducer(initCLState,
+  on(updateAPICallStatus, (state, { payload }) => {
+    const updatedApisCallStatus = state.apisCallStatus;
+    updatedApisCallStatus[payload.action] = {
+      status: payload.status,
+      statusCode: payload.statusCode,
+      message: payload.message,
+      URL: payload.URL,
+      filePath: payload.filePath
+    };
+    return {
+      ...state,
+      apisCallStatus: updatedApisCallStatus
+    };
+  }),
+  on(setChildNodeSettingsCL, (state, { payload }) => ({
+    ...state,
+    nodeSettings: payload
+  })),
+  on(resetCLStore, (state, { payload }) => ({
+    ...initCLState,
+    nodeSettings: payload
+  })),
+  on(setInfo, (state, { payload }) => ({
+    ...state,
+    information: payload
+  })),
+  on(setFees, (state, { payload }) => ({
+    ...state,
+    fees: payload
+  })),
+  on(setFeeRates, (state, { payload }) => {
+    if (payload.perkb) {
       return {
         ...state,
-        apisCallStatus: updatedApisCallStatus
+        feeRatesPerKB: payload
       };
-    case CLActions.SET_CHILD_NODE_SETTINGS_CL:
+    } else if (payload.perkw) {
       return {
         ...state,
-        nodeSettings: action.payload
+        feeRatesPerKW: payload
       };
-    case CLActions.RESET_CL_STORE:
+    } else {
       return {
-        ...initCLState,
-        nodeSettings: action.payload
+        ...state
       };
-    case CLActions.SET_INFO_CL:
-      return {
-        ...state,
-        information: action.payload
-      };
-    case CLActions.SET_FEES_CL:
-      return {
-        ...state,
-        fees: action.payload
-      };
-    case CLActions.SET_FEE_RATES_CL:
-      if (action.payload.perkb) {
-        return {
-          ...state,
-          feeRatesPerKB: action.payload
-        };
-      } else if (action.payload.perkw) {
-        return {
-          ...state,
-          feeRatesPerKW: action.payload
-        };
-      } else {
-        return {
-          ...state
-        };
-      }
-    case CLActions.SET_BALANCE_CL:
-      return {
-        ...state,
-        balance: action.payload
-      };
-    case CLActions.SET_LOCAL_REMOTE_BALANCE_CL:
-      return {
-        ...state,
-        localRemoteBalance: action.payload
-      };
-    case CLActions.SET_PEERS_CL:
-      return {
-        ...state,
-        peers: action.payload
-      };
-    case CLActions.ADD_PEER_CL:
-      return {
-        ...state,
-        peers: [...state.peers, action.payload]
-      };
-    case CLActions.REMOVE_PEER_CL:
-      const modifiedPeers = [...state.peers];
-      const removePeerIdx = state.peers.findIndex((peer) => peer.id === action.payload.id);
-      if (removePeerIdx > -1) {
-        modifiedPeers.splice(removePeerIdx, 1);
-      }
-      return {
-        ...state,
-        peers: modifiedPeers
-      };
-    case CLActions.SET_CHANNELS_CL:
-      return {
-        ...state,
-        allChannels: action.payload
-      };
-    case CLActions.REMOVE_CHANNEL_CL:
-      const modifiedChannels = [...state.allChannels];
-      const removeChannelIdx = state.allChannels.findIndex((channel) => channel.channel_id === action.payload.channelId);
-      if (removeChannelIdx > -1) {
-        modifiedChannels.splice(removeChannelIdx, 1);
-      }
-      return {
-        ...state,
-        allChannels: modifiedChannels
-      };
-    case CLActions.SET_PAYMENTS_CL:
-      return {
-        ...state,
-        payments: action.payload
-      };
-    case CLActions.SET_FORWARDING_HISTORY_CL:
-      const modifiedFeeWithTxCount = state.fees;
-      if (action.payload && action.payload.length > 0) {
-        const storedChannels = [...state.allChannels];
-        action.payload.forEach((fhEvent, i) => {
-          if (storedChannels && storedChannels.length > 0) {
-            for (let idx = 0; idx < storedChannels.length; idx++) {
-              if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id === fhEvent.in_channel) {
-                fhEvent.in_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.in_channel;
-                if (fhEvent.out_channel_alias) { return; }
-              }
-              if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id.toString() === fhEvent.out_channel) {
-                fhEvent.out_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.out_channel;
-                if (fhEvent.in_channel_alias) { return; }
-              }
-              if (idx === storedChannels.length - 1) {
-                if (!fhEvent.in_channel_alias) { fhEvent.in_channel_alias = fhEvent.in_channel; }
-                if (!fhEvent.out_channel_alias) { fhEvent.out_channel_alias = fhEvent.out_channel; }
-              }
+    }
+  }),
+  on(setBalance, (state, { payload }) => ({
+    ...state,
+    balance: payload
+  })),
+  on(setLocalRemoteBalance, (state, { payload }) => ({
+    ...state,
+    localRemoteBalance: payload
+  })),
+  on(setPeers, (state, { payload }) => ({
+    ...state,
+    peers: payload
+  })),
+  on(addPeer, (state, { payload }) => ({
+    ...state,
+    peers: [...state.peers, payload]
+  })),
+  on(removePeer, (state, { payload }) => {
+    const modifiedPeers = [...state.peers];
+    const removePeerIdx = state.peers.findIndex((peer) => peer.id === payload.id);
+    if (removePeerIdx > -1) {
+      modifiedPeers.splice(removePeerIdx, 1);
+    }
+    return {
+      ...state,
+      peers: modifiedPeers
+    };
+  }),
+  on(setChannels, (state, { payload }) => ({
+    ...state,
+    allChannels: payload
+  })),
+  on(removeChannel, (state, { payload }) => {
+    const modifiedChannels = [...state.allChannels];
+    const removeChannelIdx = state.allChannels.findIndex((channel) => channel.channel_id === payload.channelId);
+    if (removeChannelIdx > -1) {
+      modifiedChannels.splice(removeChannelIdx, 1);
+    }
+    return {
+      ...state,
+      allChannels: modifiedChannels
+    };
+  }),
+  on(setPayments, (state, { payload }) => ({
+    ...state,
+    payments: payload
+  })),
+  on(setForwardingHistory, (state, { payload }) => {
+    const modifiedFeeWithTxCount = state.fees;
+    if (payload && payload.length > 0) {
+      const storedChannels = [...state.allChannels];
+      payload.forEach((fhEvent, i) => {
+        if (storedChannels && storedChannels.length > 0) {
+          for (let idx = 0; idx < storedChannels.length; idx++) {
+            if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id === fhEvent.in_channel) {
+              fhEvent.in_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.in_channel;
+              if (fhEvent.out_channel_alias) { return; }
             }
-          } else {
-            fhEvent.in_channel_alias = fhEvent.in_channel;
-            fhEvent.out_channel_alias = fhEvent.out_channel;
-          }
-        });
-        modifiedFeeWithTxCount.totalTxCount = action.payload.length;
-      } else {
-        action.payload = [];
-      }
-      return {
-        ...state,
-        fee: modifiedFeeWithTxCount,
-        forwardingHistory: action.payload
-      };
-    case CLActions.SET_FAILED_FORWARDING_HISTORY_CL:
-      if (action.payload && action.payload.length > 0) {
-        const storedChannels = [...state.allChannels];
-        action.payload.forEach((fhEvent, i) => {
-          if (storedChannels && storedChannels.length > 0) {
-            for (let idx = 0; idx < storedChannels.length; idx++) {
-              if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id === fhEvent.in_channel) {
-                fhEvent.in_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.in_channel;
-                if (fhEvent.out_channel_alias) { return; }
-              }
-              if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id.toString() === fhEvent.out_channel) {
-                fhEvent.out_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.out_channel;
-                if (fhEvent.in_channel_alias) { return; }
-              }
-              if (idx === storedChannels.length - 1) {
-                if (!fhEvent.in_channel_alias) { fhEvent.in_channel_alias = fhEvent.in_channel; }
-                if (!fhEvent.out_channel_alias) { fhEvent.out_channel_alias = fhEvent.out_channel; }
-              }
+            if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id.toString() === fhEvent.out_channel) {
+              fhEvent.out_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.out_channel;
+              if (fhEvent.in_channel_alias) { return; }
             }
-          } else {
-            fhEvent.in_channel_alias = fhEvent.in_channel;
-            fhEvent.out_channel_alias = fhEvent.out_channel;
+            if (idx === storedChannels.length - 1) {
+              if (!fhEvent.in_channel_alias) { fhEvent.in_channel_alias = fhEvent.in_channel; }
+              if (!fhEvent.out_channel_alias) { fhEvent.out_channel_alias = fhEvent.out_channel; }
+            }
           }
-        });
-      } else {
-        action.payload = [];
-      }
-      return {
-        ...state,
-        failedForwardingHistory: action.payload
-      };
-    case CLActions.ADD_INVOICE_CL:
-      const newInvoices = state.invoices;
-      newInvoices.invoices.unshift(action.payload);
-      return {
-        ...state,
-        invoices: newInvoices
-      };
-    case CLActions.SET_INVOICES_CL:
-      return {
-        ...state,
-        invoices: action.payload
-      };
-    case CLActions.UPDATE_INVOICE_CL:
-      const modifiedInvoices = state.invoices;
-      modifiedInvoices.invoices = modifiedInvoices.invoices.map((invoice) => ((invoice.label === action.payload.label) ? action.payload : invoice));
-      return {
-        ...state,
-        invoices: modifiedInvoices
-      };
-    case CLActions.SET_UTXOS_CL:
-      return {
-        ...state,
-        utxos: action.payload
-      };
-    default:
-      return state;
-  }
-}
+        } else {
+          fhEvent.in_channel_alias = fhEvent.in_channel;
+          fhEvent.out_channel_alias = fhEvent.out_channel;
+        }
+      });
+      modifiedFeeWithTxCount.totalTxCount = payload.length;
+    } else {
+      payload = [];
+    }
+    return {
+      ...state,
+      fee: modifiedFeeWithTxCount,
+      forwardingHistory: payload
+    };
+  }),
+  on(setFailedForwardingHistory, (state, { payload }) => {
+    if (payload && payload.length > 0) {
+      const storedChannels = [...state.allChannels];
+      payload.forEach((fhEvent, i) => {
+        if (storedChannels && storedChannels.length > 0) {
+          for (let idx = 0; idx < storedChannels.length; idx++) {
+            if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id === fhEvent.in_channel) {
+              fhEvent.in_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.in_channel;
+              if (fhEvent.out_channel_alias) { return; }
+            }
+            if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id.toString() === fhEvent.out_channel) {
+              fhEvent.out_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.out_channel;
+              if (fhEvent.in_channel_alias) { return; }
+            }
+            if (idx === storedChannels.length - 1) {
+              if (!fhEvent.in_channel_alias) { fhEvent.in_channel_alias = fhEvent.in_channel; }
+              if (!fhEvent.out_channel_alias) { fhEvent.out_channel_alias = fhEvent.out_channel; }
+            }
+          }
+        } else {
+          fhEvent.in_channel_alias = fhEvent.in_channel;
+          fhEvent.out_channel_alias = fhEvent.out_channel;
+        }
+      });
+    } else {
+      payload = [];
+    }
+    return {
+      ...state,
+      failedForwardingHistory: payload
+    };
+  }),
+  on(addInvoice, (state, { payload }) => {
+    const newInvoices = state.invoices;
+    newInvoices.invoices.unshift(payload);
+    return {
+      ...state,
+      invoices: newInvoices
+    };
+  }),
+  on(setInvoices, (state, { payload }) => ({
+    ...state,
+    invoices: payload
+  })),
+  on(updateInvoice, (state, { payload }) => {
+    const modifiedInvoices = state.invoices;
+    modifiedInvoices.invoices = modifiedInvoices.invoices.map((invoice) => ((invoice.label === payload.label) ? payload : invoice));
+    return {
+      ...state,
+      invoices: modifiedInvoices
+    };
+  }),
+  on(setUTXOs, (state, { payload }) => ({
+    ...state,
+    utxos: payload
+  }))
+);

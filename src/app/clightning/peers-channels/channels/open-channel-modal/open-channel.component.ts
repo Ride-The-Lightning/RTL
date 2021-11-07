@@ -11,10 +11,10 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { CommonService } from '../../../../shared/services/common.service';
 import { Peer, GetInfo, UTXO } from '../../../../shared/models/clModels';
 import { CLOpenChannelAlert } from '../../../../shared/models/alertData';
-import { APICallStatusEnum, FEE_RATE_TYPES, ScreenSizeEnum } from '../../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, CLActions, FEE_RATE_TYPES, ScreenSizeEnum } from '../../../../shared/services/consts-enums-functions';
 
-import * as CLActions from '../../../store/cl.actions';
 import { RTLState } from '../../../../store/rtl.state';
+import { saveNewChannel } from '../../../store/cl.actions';
 
 @Component({
   selector: 'rtl-cl-open-channel',
@@ -67,7 +67,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
     this.actions.pipe(
       takeUntil(this.unSubs[0]),
       filter((action) => action.type === CLActions.UPDATE_API_CALL_STATUS_CL || action.type === CLActions.FETCH_CHANNELS_CL)).
-      subscribe((action: CLActions.UpdateAPICallStatus | CLActions.FetchChannels) => {
+      subscribe((action: any) => {
         if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewChannel') {
           this.channelConnectionError = action.payload.message;
         }
@@ -184,7 +184,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
       newChannel['utxos'] = [];
       this.selUTXOs.forEach((utxo) => newChannel['utxos'].push(utxo.txid + ':' + utxo.output));
     }
-    this.store.dispatch(new CLActions.SaveNewChannel(newChannel));
+    this.store.dispatch(saveNewChannel({ payload: newChannel }));
   }
 
   ngOnDestroy() {

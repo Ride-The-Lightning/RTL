@@ -14,10 +14,10 @@ import { CommonService } from '../../../../../shared/services/common.service';
 
 import { ECLChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { RTLEffects } from '../../../../../store/rtl.effects';
-import * as ECLActions from '../../../../store/ecl.actions';
 import { ApiCallsListECL } from '../../../../../shared/models/apiCallsPayload';
 import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
+import { closeChannel } from '../../../../store/ecl.actions';
 
 @Component({
   selector: 'rtl-ecl-channel-inactive-table',
@@ -112,7 +112,7 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
       pipe(takeUntil(this.unSubs[1])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.store.dispatch(new ECLActions.CloseChannel({ channelId: channelToClose.channelId, force: forceClose }));
+          this.store.dispatch(closeChannel({ payload: { channelId: channelToClose.channelId, force: forceClose } }));
         }
       });
   }

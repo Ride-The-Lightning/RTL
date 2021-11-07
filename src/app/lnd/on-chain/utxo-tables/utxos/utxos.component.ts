@@ -17,7 +17,6 @@ import { DataService } from '../../../../shared/services/data.service';
 import { OnChainLabelModalComponent } from '../../on-chain-label-modal/on-chain-label-modal.component';
 
 import { RTLEffects } from '../../../../store/rtl.effects';
-import * as RTLActions from '../../../../store/rtl.actions';
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../../store/rtl.actions';
 

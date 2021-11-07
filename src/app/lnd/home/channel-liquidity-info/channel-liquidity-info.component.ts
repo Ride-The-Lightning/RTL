@@ -11,7 +11,6 @@ import { LoopService } from '../../../shared/services/loop.service';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { RTLState } from '../../../store/rtl.state';
-import * as RTLActions from '../../../store/rtl.actions';
 import { openAlert } from '../../../store/rtl.actions';
 
 @Component({

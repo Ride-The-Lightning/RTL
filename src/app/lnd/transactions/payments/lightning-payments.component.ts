@@ -21,10 +21,9 @@ import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation'
 
 import { LNDEffects } from '../../store/lnd.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
-import * as LNDActions from '../../store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
+import { fetchPayments, sendPayment } from '../../store/lnd.actions';
 
 @Component({
   selector: 'rtl-lightning-payments',
@@ -183,7 +182,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         subscribe((confirmRes) => {
           if (confirmRes) {
             this.paymentDecoded.num_satoshis = confirmRes[0].inputValue;
-            this.store.dispatch(new LNDActions.SendPayment({ uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, paymentAmount: confirmRes[0].inputValue, fromDialog: false }));
+            this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, paymentAmount: confirmRes[0].inputValue, fromDialog: false } }));
             this.resetData();
           }
         });
@@ -212,7 +211,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         pipe(take(1)).
         subscribe((confirmRes) => {
           if (confirmRes) {
-            this.store.dispatch(new LNDActions.SendPayment({ uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, fromDialog: false }));
+            this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, fromDialog: false } }));
             this.resetData();
           }
         });
@@ -278,7 +277,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       index_offset = 0;
       page_size = event.length - (event.pageIndex * event.pageSize);
     }
-    this.store.dispatch(new LNDActions.FetchPayments({ max_payments: page_size, index_offset: index_offset, reversed: reverse }));
+    this.store.dispatch(fetchPayments({ payload: { max_payments: page_size, index_offset: index_offset, reversed: reverse } }));
   }
 
   is_group(index: number, payment: Payment) {

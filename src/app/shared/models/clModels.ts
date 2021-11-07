@@ -278,3 +278,65 @@ export interface RoutingPeer {
   total_amount?: number;
   total_fee?: number;
 }
+
+export interface SaveChannel {
+  peerId: string;
+  satoshis: string;
+  announce?: boolean;
+  feeRate?: string;
+  minconf?: number;
+  utxos?: string[];
+}
+
+export interface GetNewAddress {
+  addressId?: string;
+  addressCode?: string;
+  addressTp?: string;
+  addressDetails?: string;
+}
+
+export interface DetachPeer {
+  id: string;
+  force: boolean;
+}
+
+export interface UpdateChannel {
+  channelId: string;
+  baseFeeMsat: number;
+  feeRate: number;
+}
+
+export interface CloseChannel {
+  channelId: string;
+  force: boolean;
+}
+
+export interface DecodePayment {
+  routeParam: string;
+  fromDialog: boolean;
+}
+
+export interface SendPayment {
+  uiMessage: string;
+  fromDialog: boolean;
+  invoice?: string;
+  amount?: number;
+  pubkey?: string;
+}
+
+export interface GetQueryRoutes {
+  destPubkey: string;
+  amount: number;
+}
+
+export interface ChannelLookup {
+  uiMessage: string;
+  shortChannelID: string;
+  showError: boolean;
+}
+
+export interface FetchInvoices {
+  num_max_invoices?: number;
+  index_offset?: number;
+  reversed?: boolean;
+}

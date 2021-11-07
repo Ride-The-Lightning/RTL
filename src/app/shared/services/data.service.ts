@@ -12,11 +12,10 @@ import { APICallStatusEnum, UI_MESSAGES } from './consts-enums-functions';
 import { SwitchReq } from '../models/lndModels';
 import { ErrorMessageComponent } from '../components/data-modal/error-message/error-message.component';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, updateAPICallStatus } from '../../store/rtl.actions';
+import { fetchTransactions, fetchUTXOs } from '../../lnd/store/lnd.actions';
 
 import { RTLState } from '../../store/rtl.state';
 import { LNDState } from '../../lnd/store/lnd.state';
-import * as RTLActions from '../../store/rtl.actions';
-import * as LNDActions from '../../lnd/store/lnd.actions';
 
 @Injectable()
 export class DataService implements OnDestroy {
@@ -185,8 +184,8 @@ export class DataService implements OnDestroy {
       subscribe({
         next: (res: any) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.LEASE_UTXO }));
-          this.store.dispatch(new LNDActions.FetchTransactions());
-          this.store.dispatch(new LNDActions.FetchUTXOs());
+          this.store.dispatch(fetchTransactions());
+          this.store.dispatch(fetchUTXOs());
           const expirationDate = new Date(res.expiration * 1000);
           const expiryDateInSeconds = Math.round(expirationDate.getTime()) - (expirationDate.getTimezoneOffset() * 60);
           this.snackBar.open('The UTXO has been leased till ' + new Date(expiryDateInSeconds).toString().

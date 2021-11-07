@@ -11,7 +11,6 @@ import { LoopQuote, LoopSwapStatus } from '../../../models/loopModels';
 import { LoopService } from '../../../services/loop.service';
 
 import { RTLState } from '../../../../store/rtl.state';
-import * as RTLActions from '../../../../store/rtl.actions';
 import { openAlert } from '../../../../store/rtl.actions';
 
 @Component({

@@ -14,12 +14,10 @@ import { CommonService } from '../../../../../shared/services/common.service';
 import { CLChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 
 import { RTLEffects } from '../../../../../store/rtl.effects';
-import * as RTLActions from '../../../../../store/rtl.actions';
-import * as CLActions from '../../../../store/cl.actions';
-import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 import { CLBumpFeeComponent } from '../../bump-fee-modal/bump-fee.component';
 import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
+import { closeChannel } from '../../../../store/cl.actions';
 
 @Component({
   selector: 'rtl-cl-channel-pending-table',
@@ -144,7 +142,7 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
       pipe(takeUntil(this.unSubs[3])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.store.dispatch(new CLActions.CloseChannel({ channelId: channelToClose.channel_id, force: true }));
+          this.store.dispatch(closeChannel({ payload: { channelId: channelToClose.channel_id, force: true } }));
         }
       });
   }

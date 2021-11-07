@@ -13,8 +13,8 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { LNDEffects } from '../../store/lnd.effects';
-import * as LNDActions from '../../store/lnd.actions';
 import { RTLState } from '../../../store/rtl.state';
+import { restoreChannels, restoreChannelsList } from '../../store/lnd.actions';
 
 @Component({
   selector: 'rtl-channel-restore-table',
@@ -47,7 +47,7 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngOnInit() {
-    this.store.dispatch(new LNDActions.RestoreChannelsList());
+    this.store.dispatch(restoreChannelsList());
     this.store.select('lnd').
       pipe(takeUntil(this.unSubs[0])).
       subscribe((rtlStore) => {
@@ -76,7 +76,7 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   onRestoreChannels(selChannel: Channel) {
-    this.store.dispatch(new LNDActions.RestoreChannels({ channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL' }));
+    this.store.dispatch(restoreChannels({ payload: { channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL' } }));
   }
 
   applyFilter(selFilter: any) {

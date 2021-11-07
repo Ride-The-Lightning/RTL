@@ -14,7 +14,6 @@ import { ApiCallsListLND } from '../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
 
-import * as RTLActions from '../../../../store/rtl.actions';
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert } from '../../../../store/rtl.actions';
 

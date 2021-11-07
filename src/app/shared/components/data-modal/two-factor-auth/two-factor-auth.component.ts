@@ -15,7 +15,6 @@ import { AuthConfig } from '../../../models/alertData';
 
 import { RTLEffects } from '../../../../store/rtl.effects';
 import { RTLState } from '../../../../store/rtl.state';
-import * as RTLActions from '../../../../store/rtl.actions';
 import { isAuthorized, twoFASaveSettings } from '../../../../store/rtl.actions';
 
 @Component({

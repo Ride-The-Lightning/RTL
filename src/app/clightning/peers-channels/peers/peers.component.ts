@@ -10,7 +10,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Peer, GetInfo } from '../../../shared/models/clModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum, APICallStatusEnum, CLActions } from '../../../shared/services/consts-enums-functions';
 import { ApiCallsListCL } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -19,10 +19,9 @@ import { CLOpenChannelComponent } from '../channels/open-channel-modal/open-chan
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 
 import { RTLEffects } from '../../../store/rtl.effects';
-import * as CLActions from '../../store/cl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
+import { detachPeer } from '../../store/cl.actions';
 
 @Component({
   selector: 'rtl-cl-peers',
@@ -94,7 +93,7 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       pipe(
         takeUntil(this.unSubs[1]),
         filter((action) => action.type === CLActions.SET_PEERS_CL)
-      ).subscribe((setPeers: CLActions.SetPeers) => {
+      ).subscribe((setPeers: any) => {
         this.peerAddress = null;
         this.flgAnimate = true;
       });
@@ -172,7 +171,7 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       pipe(takeUntil(this.unSubs[3])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.store.dispatch(new CLActions.DetachPeer({ id: peerToDetach.id, force: false }));
+          this.store.dispatch(detachPeer({ payload: { id: peerToDetach.id, force: false } }));
         }
       });
   }

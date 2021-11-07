@@ -12,13 +12,12 @@ import * as sha256 from 'sha256';
 import { LoggerService } from './shared/services/logger.service';
 import { CommonService } from './shared/services/common.service';
 import { SessionService } from './shared/services/session.service';
-import { AlertTypeEnum, ScreenSizeEnum } from './shared/services/consts-enums-functions';
+import { AlertTypeEnum, RTLActions, ScreenSizeEnum } from './shared/services/consts-enums-functions';
 import { RTLConfiguration, Settings, ConfigSettingsNode, GetInfoRoot } from './shared/models/RTLconfig';
 import { closeAllDialogs, fetchRTLConfig, login, logout, openAlert } from './store/rtl.actions';
 import { routeAnimation } from './shared/animation/route-animation';
 
 import { RTLState } from './store/rtl.state';
-import * as RTLActions from './store/rtl.actions';
 
 @Component({
   selector: 'rtl-app',

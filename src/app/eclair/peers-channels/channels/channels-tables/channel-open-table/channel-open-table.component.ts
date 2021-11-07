@@ -14,10 +14,10 @@ import { CommonService } from '../../../../../shared/services/common.service';
 
 import { ECLChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { RTLEffects } from '../../../../../store/rtl.effects';
-import * as ECLActions from '../../../../store/ecl.actions';
 import { ApiCallsListECL } from '../../../../../shared/models/apiCallsPayload';
 import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
+import { closeChannel, updateChannel } from '../../../../store/ecl.actions';
 
 @Component({
   selector: 'rtl-ecl-channel-open-table',
@@ -135,7 +135,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
           } else {
             updateRequestPayload = { baseFeeMsat: base_fee, feeRate: fee_rate, channelId: channelToUpdate.channelId };
           }
-          this.store.dispatch(new ECLActions.UpdateChannels(updateRequestPayload));
+          this.store.dispatch(updateChannel({ payload: updateRequestPayload }));
         }
       });
     this.applyFilter();
@@ -164,7 +164,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       pipe(takeUntil(this.unSubs[3])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.store.dispatch(new ECLActions.CloseChannel({ channelId: channelToClose.channelId, force: forceClose }));
+          this.store.dispatch(closeChannel({ payload: { channelId: channelToClose.channelId, force: forceClose } }));
         }
       });
   }

@@ -8,11 +8,11 @@ import { Actions } from '@ngrx/effects';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { Peer, GetInfo } from '../../../../shared/models/eclModels';
-import { APICallStatusEnum } from '../../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, ECLActions } from '../../../../shared/services/consts-enums-functions';
 import { ECLOpenChannelAlert } from '../../../../shared/models/alertData';
 
-import * as ECLActions from '../../../store/ecl.actions';
 import { RTLState } from '../../../../store/rtl.state';
+import { saveNewChannel } from '../../../store/ecl.actions';
 
 @Component({
   selector: 'rtl-ecl-open-channel',
@@ -50,7 +50,7 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
     this.actions.pipe(
       takeUntil(this.unSubs[0]),
       filter((action) => action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL || action.type === ECLActions.FETCH_CHANNELS_ECL)).
-      subscribe((action: ECLActions.UpdateAPICallStatus | ECLActions.FetchChannels) => {
+      subscribe((action: any) => {
         if (action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewChannel') {
           this.channelConnectionError = action.payload.message;
         }
@@ -122,8 +122,10 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
     if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0))) {
       return true;
     }
-    this.store.dispatch(new ECLActions.SaveNewChannel({
-      nodeId: ((!this.peer || !this.peer.nodeId) ? this.selectedPubkey : this.peer.nodeId), amount: this.fundingAmount, private: this.isPrivate, feeRate: this.feeRate
+    this.store.dispatch(saveNewChannel({
+      payload: {
+        nodeId: ((!this.peer || !this.peer.nodeId) ? this.selectedPubkey : this.peer.nodeId), amount: this.fundingAmount, private: this.isPrivate, feeRate: this.feeRate
+      }
     }));
   }
 

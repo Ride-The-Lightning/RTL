@@ -9,13 +9,12 @@ import * as sha256 from 'sha256';
 
 import { TwoFactorAuthComponent } from '../../data-modal/two-factor-auth/two-factor-auth.component';
 import { RTLConfiguration, ConfigSettingsNode } from '../../../models/RTLconfig';
-import { PASSWORD_BLACKLIST, UI_MESSAGES } from '../../../services/consts-enums-functions';
+import { PASSWORD_BLACKLIST, RTLActions, UI_MESSAGES } from '../../../services/consts-enums-functions';
 import { SessionService } from '../../../services/session.service';
 import { LoggerService } from '../../../services/logger.service';
 import { openAlert, resetPassword, setSelelectedNode } from '../../../../store/rtl.actions';
 
 import { RTLState } from '../../../../store/rtl.state';
-import * as RTLActions from '../../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-auth-settings',

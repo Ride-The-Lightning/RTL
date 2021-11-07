@@ -7,7 +7,6 @@ import { faExchangeAlt, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
 import { ECLOnChainSendModalComponent } from './on-chain-send-modal/on-chain-send-modal.component';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import * as RTLActions from '../../store/rtl.actions';
 import { RTLState } from '../../store/rtl.state';
 import { openAlert } from '../../store/rtl.actions';
 

@@ -12,10 +12,10 @@ import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { ChannelRebalanceAlert } from '../../../../shared/models/alertData';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { Channel, QueryRoutes, ListInvoices } from '../../../../shared/models/lndModels';
-import { FEE_LIMIT_TYPES, PAGE_SIZE, UI_MESSAGES } from '../../../../shared/services/consts-enums-functions';
+import { FEE_LIMIT_TYPES, LNDActions, PAGE_SIZE, UI_MESSAGES } from '../../../../shared/services/consts-enums-functions';
 
-import * as LNDActions from '../../../store/lnd.actions';
 import { RTLState } from '../../../../store/rtl.state';
+import { saveNewInvoice, sendPayment } from '../../../store/lnd.actions';
 
 @Component({
   selector: 'rtl-channel-rebalance',
@@ -84,7 +84,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     this.actions.pipe(
       takeUntil(this.unSubs[1]),
       filter((action) => action.type === LNDActions.SET_QUERY_ROUTES_LND || action.type === LNDActions.SEND_PAYMENT_STATUS_LND || action.type === LNDActions.NEWLY_SAVED_INVOICE_LND)).
-      subscribe((action: (LNDActions.SetQueryRoutes | LNDActions.SendPaymentStatus | LNDActions.NewlySavedInvoice)) => {
+      subscribe((action: any) => {
         if (action.type === LNDActions.SET_QUERY_ROUTES_LND) {
           this.queryRoute = action.payload;
         }
@@ -198,8 +198,10 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
       this.flgReusingInvoice = true;
       this.sendPayment(unsettledInvoice.payment_request);
     } else {
-      this.store.dispatch(new LNDActions.SaveNewInvoice({
-        uiMessage: UI_MESSAGES.NO_SPINNER, memo: 'Local-Rebalance-' + this.inputFormGroup.controls.rebalanceAmount.value + '-Sats', invoiceValue: this.inputFormGroup.controls.rebalanceAmount.value, private: false, expiry: 3600, pageSize: PAGE_SIZE, openModal: false
+      this.store.dispatch(saveNewInvoice({
+        payload: {
+          uiMessage: UI_MESSAGES.NO_SPINNER, memo: 'Local-Rebalance-' + this.inputFormGroup.controls.rebalanceAmount.value + '-Sats', invoiceValue: this.inputFormGroup.controls.rebalanceAmount.value, private: false, expiry: 3600, pageSize: PAGE_SIZE, openModal: false
+        }
       }));
     }
   }
@@ -211,7 +213,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   sendPayment(payReq: string) {
     this.flgInvoiceGenerated = true;
     this.paymentRequest = payReq;
-    this.store.dispatch(new LNDActions.SendPayment({ uiMessage: UI_MESSAGES.NO_SPINNER, paymentReq: payReq, outgoingChannel: this.selChannel, feeLimitType: this.feeFormGroup.controls.selFeeLimitType.value, feeLimit: this.feeFormGroup.controls.feeLimit.value, allowSelfPayment: true, lastHopPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, fromDialog: true }));
+    this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, paymentReq: payReq, outgoingChannel: this.selChannel, feeLimitType: this.feeFormGroup.controls.selFeeLimitType.value, feeLimit: this.feeFormGroup.controls.feeLimit.value, allowSelfPayment: true, lastHopPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, fromDialog: true } }));
   }
 
   filterActiveChannels() {

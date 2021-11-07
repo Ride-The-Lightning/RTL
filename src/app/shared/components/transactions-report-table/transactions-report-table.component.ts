@@ -8,7 +8,6 @@ import { MatTableDataSource } from '@angular/material/table';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, SCROLL_RANGES } from '../../services/consts-enums-functions';
 import { CommonService } from '../../services/common.service';
 
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
 

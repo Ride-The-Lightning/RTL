@@ -8,13 +8,12 @@ import { faSmile, faFrown } from '@fortawesome/free-regular-svg-icons';
 import { faAngleDoubleDown, faAngleDoubleUp, faChartPie, faBolt, faServer, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { UserPersonaEnum, ScreenSizeEnum, APICallStatusEnum } from '../../shared/services/consts-enums-functions';
+import { UserPersonaEnum, ScreenSizeEnum, APICallStatusEnum, CLActions } from '../../shared/services/consts-enums-functions';
 import { ChannelsStatus, GetInfo, Fees, Channel, Balance } from '../../shared/models/clModels';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 
-import * as CLActions from '../store/cl.actions';
 import { RTLState } from '../../store/rtl.state';
 
 @Component({

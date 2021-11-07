@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 
-import * as LNDActions from '../../store/lnd.actions';
 import { RTLState } from '../../../store/rtl.state';
+import { unlockWallet } from '../../store/lnd.actions';
 
 @Component({
   selector: 'rtl-unlock-wallet',
@@ -23,7 +23,7 @@ export class UnlockWalletComponent implements OnInit {
     if (!this.walletPassword) {
       return true;
     }
-    this.store.dispatch(new LNDActions.UnlockWallet({ pwd: window.btoa(this.walletPassword) }));
+    this.store.dispatch(unlockWallet({ payload: { pwd: window.btoa(this.walletPassword) } }));
   }
 
   resetData() {

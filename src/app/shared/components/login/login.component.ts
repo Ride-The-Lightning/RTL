@@ -13,7 +13,6 @@ import { LoggerService } from '../../services/logger.service';
 
 import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
-import * as RTLActions from '../../../store/rtl.actions';
 import { ApiCallsListRoot } from '../../models/apiCallsPayload';
 import { login, openAlert } from '../../../store/rtl.actions';
 

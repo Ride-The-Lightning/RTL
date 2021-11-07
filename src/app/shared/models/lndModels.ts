@@ -495,3 +495,114 @@ export interface PendingChannelsGroup {
   total_channels?: number;
   total_limbo_balance?: number;
 }
+
+export interface SavePeer {
+  pubkey: string;
+  host: string;
+  perm: boolean;
+}
+
+export interface SaveInvoice {
+  uiMessage: string;
+  memo: string;
+  invoiceValue: number;
+  private: boolean;
+  expiry: number;
+  pageSize: number;
+  openModal: boolean;
+}
+
+export interface SaveChannel {
+  selectedPeerPubkey: string;
+  fundingAmount: number;
+  private: boolean;
+  transType: string;
+  transTypeValue: string;
+  spendUnconfirmed: boolean;
+}
+
+export interface CloseChannel {
+  channelPoint: string;
+  forcibly: boolean;
+  targetConf?: number;
+  satPerByte?: number;
+}
+
+export interface FetchInvoices {
+  num_max_invoices?: number;
+  index_offset?: number;
+  reversed?: boolean;
+}
+
+export interface FetchPayments {
+  max_payments?: number;
+  index_offset?: number;
+  reversed?: boolean;
+}
+
+export interface SendPayment {
+  uiMessage: string;
+  fromDialog: boolean;
+  paymentReq: string;
+  paymentAmount?: number;
+  outgoingChannel?: Channel;
+  feeLimitType?: { id: string, name: string };
+  feeLimit?: number;
+  allowSelfPayment?: boolean;
+  lastHopPubkey?: string;
+}
+
+export interface GetNewAddress {
+  addressId?: string;
+  addressCode?: string;
+  addressTp?: string;
+  addressDetails?: string;
+}
+
+export interface GetQueryRoutes {
+  destPubkey: string;
+  amount: number;
+  outgoingChanId?: string;
+}
+
+export interface InitWallet {
+  pwd: string;
+  cipher?: Array<string>;
+  passphrase?: string;
+}
+
+export interface ChannelLookup {
+  uiMessage: string;
+  channelID: string;
+}
+
+export interface SetRestoreChannelsList {
+  all_restore_exists: boolean;
+  files: [];
+}
+
+export interface NewlyAddedPeer {
+  peer: Peer;
+  balance: number;
+}
+
+export interface SetBalance {
+  target: string;
+  balance: Balance;
+}
+
+export interface SetPendingChannels {
+  channels: PendingChannels;
+  pendingChannels: PendingChannelsGroup;
+}
+
+export interface BackupChannels {
+  uiMessage: string;
+  channelPoint: string;
+  showMessage: string;
+}
+
+export interface SetAllLightningTransactions {
+  paymentsAll: ListPayments;
+  invoicesAll: ListInvoices;
+}

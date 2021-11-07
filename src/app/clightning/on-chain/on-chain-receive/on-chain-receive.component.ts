@@ -6,10 +6,9 @@ import { ADDRESS_TYPES } from '../../../shared/services/consts-enums-functions';
 import { OnChainGeneratedAddressComponent } from '../../../shared/components/data-modal/on-chain-generated-address/on-chain-generated-address.component';
 
 import { CLEffects } from '../../store/cl.effects';
-import * as CLActions from '../../store/cl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
+import { getNewAddress } from '../../store/cl.actions';
 
 @Component({
   selector: 'rtl-cl-on-chain-receive',
@@ -25,7 +24,7 @@ export class CLOnChainReceiveComponent {
   constructor(private store: Store<RTLState>, private clEffects: CLEffects) { }
 
   onGenerateAddress() {
-    this.store.dispatch(new CLActions.GetNewAddress(this.selectedAddressType));
+    this.store.dispatch(getNewAddress({ payload: this.selectedAddressType }));
     this.clEffects.setNewAddressCL.
       pipe(take(1)).
       subscribe((newAddress) => {

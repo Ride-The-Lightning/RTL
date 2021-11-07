@@ -16,8 +16,9 @@ import { SessionService } from '../shared/services/session.service';
 import { CommonService } from '../shared/services/common.service';
 import { DataService } from '../shared/services/data.service';
 import { RTLConfiguration, Settings, ConfigSettingsNode } from '../shared/models/RTLconfig';
-import { ServicesEnum, APICallStatusEnum, AuthenticateWith, CURRENCY_UNITS, ScreenSizeEnum, UI_MESSAGES } from '../shared/services/consts-enums-functions';
+import { RTLActions, ServicesEnum, APICallStatusEnum, AuthenticateWith, CURRENCY_UNITS, ScreenSizeEnum, UI_MESSAGES } from '../shared/services/consts-enums-functions';
 import { DialogConfig } from '../shared/models/alertData';
+import { FetchFile, Login, OpenSnackBar, ResetPassword, SaveSettings, SetSelectedNode, UpdateServiceSetting, VerifyTwoFA } from '../shared/models/rtlModels';
 
 import { SpinnerDialogComponent } from '../shared/components/data-modal/spinner-dialog/spinner-dialog.component';
 import { AlertMessageComponent } from '../shared/components/data-modal/alert-message/alert-message.component';
@@ -27,11 +28,9 @@ import { ShowPubkeyComponent } from '../shared/components/data-modal/show-pubkey
 
 import { RootState, RTLState } from './rtl.state';
 import { resetRootStore, setNodeData, setSelelectedNode, updateAPICallStatus, closeSpinner, openAlert, openSpinner, openSnackBar, fetchRTLConfig, closeAllDialogs, logout } from './rtl.actions';
-
-import * as RTLActions from '../store/rtl.actions';
-import * as ECLActions from '../eclair/store/ecl.actions';
-import * as CLActions from '../clightning/store/cl.actions';
-import * as LNDActions from '../lnd/store/lnd.actions';
+import { fetchInfoLND, resetLNDStore } from '../lnd/store/lnd.actions';
+import { fetchInfoCL, resetCLStore } from '../clightning/store/cl.actions';
+import { fetchInfoECL, resetECLStore } from '../eclair/store/ecl.actions';
 
 @Injectable()
 export class RTLEffects implements OnDestroy {
@@ -68,7 +67,7 @@ export class RTLEffects implements OnDestroy {
   openSnackBar = createEffect(
     () => this.actions.pipe(
       ofType(RTLActions.OPEN_SNACK_BAR),
-      map((payload: string | { message: string, duration?: number, type?: string }) => {
+      map((payload: string | OpenSnackBar) => {
         if (typeof payload === 'string') {
           this.snackBar.open(payload);
         } else {
@@ -244,7 +243,7 @@ export class RTLEffects implements OnDestroy {
   settingSave = createEffect(
     () => this.actions.pipe(
       ofType(RTLActions.SAVE_SETTINGS),
-      mergeMap((payload: { uiMessage: string, settings?: Settings, defaultNodeIndex?: number }) => {
+      mergeMap((payload: SaveSettings) => {
         this.store.dispatch(openSpinner({ payload: payload.uiMessage }));
         this.store.dispatch(updateAPICallStatus({ payload: { action: 'UpdateSettings', status: APICallStatusEnum.INITIATED } }));
         let updateSettingReq = new Observable();
@@ -275,7 +274,7 @@ export class RTLEffects implements OnDestroy {
   updateServicesettings = createEffect(
     () => this.actions.pipe(
       ofType(RTLActions.UPDATE_SERVICE_SETTINGS),
-      mergeMap((payload: { uiMessage: string, service: ServicesEnum, settings: any }) => {
+      mergeMap((payload: UpdateServiceSetting) => {
         this.store.dispatch(openSpinner({ payload: payload.uiMessage }));
         this.store.dispatch(updateAPICallStatus({ payload: { action: 'UpdateServiceSettings', status: APICallStatusEnum.INITIATED } }));
         return this.httpClient.post(environment.CONF_API + '/updateServiceSettings', payload).pipe(
@@ -347,8 +346,7 @@ export class RTLEffects implements OnDestroy {
   isAuthorized = createEffect(
     () => this.actions.pipe(
       ofType(RTLActions.IS_AUTHORIZED),
-      withLatestFrom(this.store.select('root')),
-      mergeMap(([payload, store]: [string, any]) => {
+      mergeMap((payload: string) => {
         this.store.dispatch(updateAPICallStatus({ payload: { action: 'IsAuthorized', status: APICallStatusEnum.INITIATED } }));
         return this.httpClient.post(environment.AUTHENTICATE_API, {
           authenticateWith: (!payload || payload.trim() === '') ? AuthenticateWith.JWT : AuthenticateWith.PASSWORD,
@@ -382,10 +380,10 @@ export class RTLEffects implements OnDestroy {
     () => this.actions.pipe(
       ofType(RTLActions.LOGIN),
       withLatestFrom(this.store.select('root')),
-      mergeMap(([payload, rootStore]: [{ password: string, defaultPassword: boolean, twoFAToken?: string }, RootState]) => {
-        this.store.dispatch(new LNDActions.ResetLNDStore({}));
-        this.store.dispatch(new CLActions.ResetCLStore({}));
-        this.store.dispatch(new ECLActions.ResetECLStore({}));
+      mergeMap(([payload, rootStore]: [Login, RootState]) => {
+        this.store.dispatch(resetLNDStore({ payload: null }));
+        this.store.dispatch(resetCLStore({ payload: null }));
+        this.store.dispatch(resetECLStore({ payload: null }));
         this.store.dispatch(updateAPICallStatus({ payload: { action: 'Login', status: APICallStatusEnum.INITIATED } }));
         return this.httpClient.post(environment.AUTHENTICATE_API, {
           authenticateWith: (!payload.password) ? AuthenticateWith.JWT : AuthenticateWith.PASSWORD,
@@ -415,7 +413,7 @@ export class RTLEffects implements OnDestroy {
     () => this.actions.pipe(
       ofType(RTLActions.VERIFY_TWO_FA),
       withLatestFrom(this.store.select('root')),
-      mergeMap(([payload, rootStore]: [{ token: string, authResponse: any }, RootState]) => {
+      mergeMap(([payload, rootStore]: [VerifyTwoFA, RootState]) => {
         this.store.dispatch(openSpinner({ payload: UI_MESSAGES.VERIFY_TOKEN }));
         this.store.dispatch(updateAPICallStatus({ payload: { action: 'VerifyToken', status: APICallStatusEnum.INITIATED } }));
         return this.httpClient.post(environment.AUTHENTICATE_API + '/token', { authentication2FA: payload.token }).
@@ -460,8 +458,7 @@ export class RTLEffects implements OnDestroy {
   resetPassword = createEffect(
     () => this.actions.pipe(takeUntil(this.unSubs[1]),
       ofType(RTLActions.RESET_PASSWORD),
-      withLatestFrom(this.store.select('root')),
-      mergeMap(([payload, rootStore]: [{ currPassword: string, newPassword: string }, RootState]) => {
+      mergeMap((payload: ResetPassword) => {
         this.store.dispatch(updateAPICallStatus({ payload: { action: 'ResetPassword', status: APICallStatusEnum.INITIATED } }));
         return this.httpClient.post(environment.AUTHENTICATE_API + '/reset', { currPassword: payload.currPassword, newPassword: payload.newPassword }).pipe(
           takeUntil(this.unSubs[0]),
@@ -487,7 +484,7 @@ export class RTLEffects implements OnDestroy {
   setSelectedNode = createEffect(
     () => this.actions.pipe(
       ofType(RTLActions.SET_SELECTED_NODE),
-      mergeMap((payload: { uiMessage: string, lnNode: ConfigSettingsNode, isInitialSetup: boolean }) => {
+      mergeMap((payload: SetSelectedNode) => {
         this.store.dispatch(openSpinner({ payload: payload.uiMessage }));
         this.store.dispatch(updateAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.INITIATED } }));
         return this.httpClient.post(environment.CONF_API + '/updateSelNode', { selNodeIndex: payload.lnNode.index }).pipe(
@@ -509,7 +506,7 @@ export class RTLEffects implements OnDestroy {
   fetchFile = createEffect(
     () => this.actions.pipe(
       ofType(RTLActions.FETCH_FILE),
-      mergeMap((payload: { channelPoint: string, path?: string }) => {
+      mergeMap((payload: FetchFile) => {
         this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DOWNLOAD_BACKUP_FILE }));
         this.store.dispatch(updateAPICallStatus({ payload: { action: 'fetchFile', status: APICallStatusEnum.INITIATED } }));
         const query = '?channel=' + payload.channelPoint + (payload.path ? '&path=' + payload.path : '');
@@ -550,9 +547,9 @@ export class RTLEffects implements OnDestroy {
     this.sessionService.removeItem('clUnlocked');
     this.sessionService.removeItem('eclUnlocked');
     this.store.dispatch(resetRootStore(node));
-    this.store.dispatch(new LNDActions.ResetLNDStore(selNode));
-    this.store.dispatch(new CLActions.ResetCLStore(selNode));
-    this.store.dispatch(new ECLActions.ResetECLStore(selNode));
+    this.store.dispatch(resetLNDStore({ payload: selNode }));
+    this.store.dispatch(resetCLStore({ payload: selNode }));
+    this.store.dispatch(resetECLStore({ payload: selNode }));
     if (this.sessionService.getItem('token')) {
       const apiUrl = (environment.production && window.location.origin) ? (window.location.origin + '/rtl/api') : API_URL;
       this.wsService.connectWebSocket(apiUrl.replace(/^http/, 'ws') + environment.Web_SOCKET_API);
@@ -560,15 +557,15 @@ export class RTLEffects implements OnDestroy {
       this.dataService.setChildAPIUrl(node.lnImplementation);
       switch (node.lnImplementation) {
         case 'CLT':
-          this.store.dispatch(new CLActions.FetchInfo({ loadPage: landingPage }));
+          this.store.dispatch(fetchInfoCL({ payload: { loadPage: landingPage } }));
           break;
 
         case 'ECL':
-          this.store.dispatch(new ECLActions.FetchInfo({ loadPage: landingPage }));
+          this.store.dispatch(fetchInfoECL({ payload: { loadPage: landingPage } }));
           break;
 
         default:
-          this.store.dispatch(new LNDActions.FetchInfo({ loadPage: landingPage }));
+          this.store.dispatch(fetchInfoLND({ payload: { loadPage: landingPage } }));
           break;
       }
     }

@@ -10,14 +10,14 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { PayRequest, Channel } from '../../../shared/models/eclModels';
-import { APICallStatusEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ECLActions, FEE_LIMIT_TYPES } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { DataService } from '../../../shared/services/data.service';
 
 import { ECLEffects } from '../../store/ecl.effects';
-import * as ECLActions from '../../store/ecl.actions';
 import { RTLState } from '../../../store/rtl.state';
+import { sendPayment } from '../../store/ecl.actions';
 
 @Component({
   selector: 'rtl-ecl-lightning-send-payments',
@@ -55,7 +55,7 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
     this.actions.pipe(
       takeUntil(this.unSubs[1]),
       filter((action) => action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL || action.type === ECLActions.SEND_PAYMENT_STATUS_ECL)).
-      subscribe((action: ECLActions.UpdateAPICallStatus | ECLActions.SendPaymentStatus) => {
+      subscribe((action: any) => {
         if (action.type === ECLActions.SEND_PAYMENT_STATUS_ECL) {
           this.dialogRef.close();
         }
@@ -112,9 +112,9 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
 
   sendPayment() {
     if (this.zeroAmtInvoice) {
-      this.store.dispatch(new ECLActions.SendPayment({ invoice: this.paymentRequest, amountMsat: this.paymentAmount * 1000, fromDialog: true }));
+      this.store.dispatch(sendPayment({ payload: { invoice: this.paymentRequest, amountMsat: this.paymentAmount * 1000, fromDialog: true } }));
     } else {
-      this.store.dispatch(new ECLActions.SendPayment({ invoice: this.paymentRequest, fromDialog: true }));
+      this.store.dispatch(sendPayment({ payload: { invoice: this.paymentRequest, fromDialog: true } }));
     }
   }
 

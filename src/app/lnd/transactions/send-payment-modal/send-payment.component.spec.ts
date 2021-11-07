@@ -15,9 +15,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { FEE_LIMIT_TYPES, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { mockRTLStoreState } from '../../../shared/test-helpers/test-data';
 
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
-import * as LNDActions from '../../store/lnd.actions';
 
 describe('LightningSendPaymentsComponent', () => {
   let component: LightningSendPaymentsComponent;

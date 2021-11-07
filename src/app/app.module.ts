@@ -22,7 +22,7 @@ import { WebSocketClientService } from './shared/services/web-socket.service';
 import { CommonService } from './shared/services/common.service';
 import { BoltzService } from './shared/services/boltz.service';
 
-import { RootReducer, RTLReducer } from './store/rtl.reducers';
+import { RootReducer } from './store/rtl.reducers';
 import { RTLEffects } from './store/rtl.effects';
 import { LNDEffects } from './lnd/store/lnd.effects';
 import { CLEffects } from './clightning/store/cl.effects';
@@ -41,12 +41,6 @@ import { ECLReducer } from './eclair/store/ecl.reducers';
     HammerModule,
     UserIdleModule.forRoot({ idle: 3590, timeout: 10, ping: 12000 }), // One hour
     StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer }),
-    // StoreModule.forRoot(RTLReducer, {
-    //   runtimeChecks: {
-    //     strictStateImmutability: false,
-    //     strictActionImmutability: false
-    //   }
-    // }),
     EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects, ECLEffects]),
     !environment.production ? StoreDevtoolsModule.instrument() : []
   ],

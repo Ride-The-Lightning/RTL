@@ -10,7 +10,6 @@ import { ReverseSwap, Swap, ListSwaps } from '../../../models/boltzModels';
 import { BoltzService } from '../../../services/boltz.service';
 
 import { RTLState } from '../../../../store/rtl.state';
-import * as RTLActions from '../../../../store/rtl.actions';
 import { openAlert } from '../../../../store/rtl.actions';
 
 @Component({

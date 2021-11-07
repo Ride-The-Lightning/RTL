@@ -11,10 +11,9 @@ import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/ser
 import { CommonService } from '../../../shared/services/common.service';
 
 import { CLEffects } from '../../store/cl.effects';
-import * as CLActions from '../../store/cl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
+import { getQueryRoutes } from '../../store/cl.actions';
 
 @Component({
   selector: 'rtl-cl-query-routes',
@@ -77,7 +76,7 @@ export class CLQueryRoutesComponent implements OnInit, OnDestroy {
       return true;
     }
     this.flgLoading[0] = true;
-    this.store.dispatch(new CLActions.GetQueryRoutes({ destPubkey: this.destinationPubkey, amount: this.amount * 1000 }));
+    this.store.dispatch(getQueryRoutes({ payload: { destPubkey: this.destinationPubkey, amount: this.amount * 1000 } }));
   }
 
   resetData() {

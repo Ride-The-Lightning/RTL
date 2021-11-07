@@ -11,7 +11,6 @@ import { CommonService } from './common.service';
 import { LoggerService } from '../../shared/services/logger.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 
-import * as RTLActions from '../../store/rtl.actions';
 import { RTLState } from '../../store/rtl.state';
 import { closeSpinner, logout, openAlert, openSpinner } from '../../store/rtl.actions';
 

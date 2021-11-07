@@ -9,12 +9,12 @@ import { MatStepper } from '@angular/material/stepper';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { Peer } from '../../../shared/models/eclModels';
-import { APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, ECLActions } from '../../../shared/services/consts-enums-functions';
 import { ECLOpenChannelAlert } from '../../../shared/models/alertData';
 import { LoggerService } from '../../../shared/services/logger.service';
 
-import * as ECLActions from '../../store/ecl.actions';
 import { RTLState } from '../../../store/rtl.state';
+import { saveNewChannel, saveNewPeer } from '../../store/ecl.actions';
 
 @Component({
   selector: 'rtl-ecl-connect-peer',
@@ -61,7 +61,7 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
     this.actions.pipe(
       takeUntil(this.unSubs[1]),
       filter((action) => action.type === ECLActions.NEWLY_ADDED_PEER_ECL || action.type === ECLActions.FETCH_CHANNELS_ECL || action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL)).
-      subscribe((action: (ECLActions.NewlyAddedPeer | ECLActions.FetchChannels | ECLActions.UpdateAPICallStatus)) => {
+      subscribe((action: any) => {
         if (action.type === ECLActions.NEWLY_ADDED_PEER_ECL) {
           this.logger.info(action.payload);
           this.flgEditable = false;
@@ -87,7 +87,7 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
       return true;
     }
     this.peerConnectionError = '';
-    this.store.dispatch(new ECLActions.SaveNewPeer({ id: this.peerFormGroup.controls.peerAddress.value }));
+    this.store.dispatch(saveNewPeer({ payload: { id: this.peerFormGroup.controls.peerAddress.value } }));
   }
 
   onOpenChannel(): boolean | void {
@@ -95,8 +95,10 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
       return true;
     }
     this.channelConnectionError = '';
-    this.store.dispatch(new ECLActions.SaveNewChannel({
-      nodeId: this.newlyAddedPeer.nodeId, amount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value, feeRate: this.channelFormGroup.controls.feeRate.value
+    this.store.dispatch(saveNewChannel({
+      payload: {
+        nodeId: this.newlyAddedPeer.nodeId, amount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value, feeRate: this.channelFormGroup.controls.feeRate.value
+      }
     }));
   }
 

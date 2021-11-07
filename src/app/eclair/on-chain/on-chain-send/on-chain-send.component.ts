@@ -6,7 +6,6 @@ import { Store } from '@ngrx/store';
 
 import { ECLOnChainSendModalComponent } from '../on-chain-send-modal/on-chain-send-modal.component';
 
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
 

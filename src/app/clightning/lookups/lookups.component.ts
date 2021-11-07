@@ -5,12 +5,12 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
-import { APICallStatusEnum, ScreenSizeEnum, UI_MESSAGES } from '../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, CLActions, ScreenSizeEnum, UI_MESSAGES } from '../../shared/services/consts-enums-functions';
 import { CommonService } from '../../shared/services/common.service';
 import { LoggerService } from '../../shared/services/logger.service';
 
-import * as CLActions from '../store/cl.actions';
 import { RTLState } from '../../store/rtl.state';
+import { channelLookup, peerLookup } from '../store/cl.actions';
 
 @Component({
   selector: 'rtl-cl-lookups',
@@ -46,7 +46,7 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
       pipe(
         takeUntil(this.unSubs[0]),
         filter((action) => (action.type === CLActions.SET_LOOKUP_CL || action.type === CLActions.UPDATE_API_CALL_STATUS_CL))
-      ).subscribe((resLookup: CLActions.SetLookup | CLActions.UpdateAPICallStatus) => {
+      ).subscribe((resLookup: any) => {
         if (resLookup.type === CLActions.SET_LOOKUP_CL) {
           this.flgLoading[0] = true;
           switch (this.selectedFieldId) {
@@ -78,10 +78,10 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
     this.channelLookupValue = [];
     switch (this.selectedFieldId) {
       case 0:
-        this.store.dispatch(new CLActions.PeerLookup(this.lookupKey.trim()));
+        this.store.dispatch(peerLookup({ payload: this.lookupKey.trim() }));
         break;
       case 1:
-        this.store.dispatch(new CLActions.ChannelLookup({ uiMessage: UI_MESSAGES.SEARCHING_CHANNEL, shortChannelID: this.lookupKey.trim(), showError: false }));
+        this.store.dispatch(channelLookup({ payload: { uiMessage: UI_MESSAGES.SEARCHING_CHANNEL, shortChannelID: this.lookupKey.trim(), showError: false } }));
         break;
       default:
         break;

@@ -16,10 +16,9 @@ import { OpenChannelComponent } from '../channels/open-channel-modal/open-channe
 import { ConnectPeerComponent } from '../connect-peer/connect-peer.component';
 
 import { RTLEffects } from '../../../store/rtl.effects';
-import * as LNDActions from '../../store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
+import { detachPeer } from '../../store/lnd.actions';
 
 @Component({
   selector: 'rtl-peers',
@@ -157,7 +156,7 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
       pipe(takeUntil(this.unSubs[3])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.store.dispatch(new LNDActions.DetachPeer({ pubkey: peerToDetach.pub_key }));
+          this.store.dispatch(detachPeer({ payload: { pubkey: peerToDetach.pub_key } }));
         }
       });
   }

@@ -10,10 +10,9 @@ import { UTXO } from '../../../shared/models/lndModels';
 import { OnChainLabelUTXO } from '../../../shared/models/alertData';
 import { DataService } from '../../../shared/services/data.service';
 
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
-import * as LNDActions from '../../../lnd/store/lnd.actions';
 import { CommonService } from '../../../shared/services/common.service';
+import { fetchTransactions, fetchUTXOs } from '../../store/lnd.actions';
 
 @Component({
   selector: 'rtl-on-chain-lebel-modal',
@@ -45,8 +44,8 @@ export class OnChainLabelModalComponent implements OnInit, OnDestroy {
       pipe(takeUntil(this.unSubs[0])).
       subscribe({
         next: (res) => {
-          this.store.dispatch(new LNDActions.FetchTransactions());
-          this.store.dispatch(new LNDActions.FetchUTXOs());
+          this.store.dispatch(fetchTransactions());
+          this.store.dispatch(fetchUTXOs());
           this.snackBar.open('Successfully labelled the UTXO.');
           this.dialogRef.close();
         }, error: (err) => {

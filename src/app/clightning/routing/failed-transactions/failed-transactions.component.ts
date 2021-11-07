@@ -14,10 +14,9 @@ import { ApiCallsListCL } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
-import * as CLActions from '../../store/cl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
+import { getFailedForwardingHistory } from '../../store/cl.actions';
 
 @Component({
   selector: 'rtl-cl-failed-history',
@@ -61,7 +60,7 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
   ngOnInit() {
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     this.router.onSameUrlNavigation = 'reload';
-    this.store.dispatch(new CLActions.GetFailedForwardingHistory());
+    this.store.dispatch(getFailedForwardingHistory());
     this.store.select('cl').
       pipe(takeUntil(this.unSubs[0])).
       subscribe((rtlStore) => {

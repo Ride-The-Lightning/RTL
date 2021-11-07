@@ -9,10 +9,10 @@ import { faExclamationTriangle, faInfoCircle } from '@fortawesome/free-solid-svg
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { Channel } from '../../../../shared/models/lndModels';
 import { ChannelInformation } from '../../../../shared/models/alertData';
-import { APICallStatusEnum, TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, LNDActions, TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
 
-import * as LNDActions from '../../../store/lnd.actions';
 import { RTLState } from '../../../../store/rtl.state';
+import { closeChannel } from '../../../store/lnd.actions';
 
 @Component({
   selector: 'rtl-close-channel',
@@ -39,7 +39,7 @@ export class CloseChannelComponent implements OnInit, OnDestroy {
     this.actions.pipe(
       takeUntil(this.unSubs[0]),
       filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.SET_ALL_CHANNELS_LND)).
-      subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.SetAllChannels) => {
+      subscribe((action: any) => {
         if (action.type === LNDActions.SET_ALL_CHANNELS_LND) {
           const filteredChannel = action.payload.find((channel) => channel.chan_id === this.data.channel.chan_id);
           if (filteredChannel.pending_htlcs && filteredChannel.pending_htlcs.length && filteredChannel.pending_htlcs.length > 0) {
@@ -63,7 +63,7 @@ export class CloseChannelComponent implements OnInit, OnDestroy {
     if (this.fees) {
       closeChannelParams.satPerByte = this.fees;
     }
-    this.store.dispatch(new LNDActions.CloseChannel(closeChannelParams));
+    this.store.dispatch(closeChannel(closeChannelParams));
     this.dialogRef.close(false);
   }
 

@@ -126,7 +126,7 @@
         "func-names": "error",
         "id-match": "error",
         "implicit-arrow-linebreak": "error",
-        "indent": ["error", 2, { "SwitchCase": 1, "MemberExpression": 1 }],
+        "indent": ["error", 2, { "SwitchCase": 1, "MemberExpression": 1, "ArrayExpression": "off" }],
         "keyword-spacing": ["error", { "before": true, "after": true, "overrides": { "this": { "before": false }}}],
         "lines-around-comment": "error",
         "max-depth": "error",

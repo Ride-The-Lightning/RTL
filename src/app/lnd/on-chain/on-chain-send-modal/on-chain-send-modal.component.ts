@@ -13,16 +13,15 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { OnChainSendFunds } from '../../../shared/models/alertData';
 import { SelNodeChild, GetInfoRoot, RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { GetInfo, Balance, AddressType } from '../../../shared/models/lndModels';
-import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, LNDActions } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import * as sha256 from 'sha256';
 
 import { RTLEffects } from '../../../store/rtl.effects';
-import * as LNDActions from '../../store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
 import { isAuthorized, openSnackBar } from '../../../store/rtl.actions';
+import { setChannelTransaction } from '../../store/lnd.actions';
 
 @Component({
   selector: 'rtl-on-chain-send-modal',
@@ -170,7 +169,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
           next: (data) => {
             this.selAmountUnit = CurrencyUnitEnum.SATS;
             postTransaction.amount = +this.decimalPipe.transform(data[this.amountUnits[0]], this.currencyUnitFormats[this.amountUnits[0]]).replace(/,/g, '');
-            this.store.dispatch(new LNDActions.SetChannelTransaction(postTransaction));
+            this.store.dispatch(setChannelTransaction({ payload: postTransaction }));
           }, error: (err) => {
             this.transactionAmount = null;
             this.selAmountUnit = CurrencyUnitEnum.SATS;
@@ -178,7 +177,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
           }
         });
     } else {
-      this.store.dispatch(new LNDActions.SetChannelTransaction(postTransaction));
+      this.store.dispatch(setChannelTransaction({ payload: postTransaction }));
     }
   }
 

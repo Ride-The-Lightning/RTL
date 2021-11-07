@@ -21,10 +21,9 @@ import { ECLPaymentInformationComponent } from '../payment-information-modal/pay
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 
 import { RTLEffects } from '../../../store/rtl.effects';
-import * as ECLActions from '../../store/ecl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
+import { sendPayment } from '../../store/ecl.actions';
 
 @Component({
   selector: 'rtl-ecl-lightning-payments',
@@ -230,7 +229,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         subscribe((confirmRes) => {
           if (confirmRes) {
             this.paymentDecoded.amount = confirmRes[0].inputValue;
-            this.store.dispatch(new ECLActions.SendPayment({ invoice: this.paymentRequest, amountMsat: confirmRes[0].inputValue * 1000, fromDialog: false }));
+            this.store.dispatch(sendPayment({ payload: { invoice: this.paymentRequest, amountMsat: confirmRes[0].inputValue * 1000, fromDialog: false } }));
             this.resetData();
           }
         });
@@ -259,7 +258,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         pipe(take(1)).
         subscribe((confirmRes) => {
           if (confirmRes) {
-            this.store.dispatch(new ECLActions.SendPayment({ invoice: this.paymentRequest, fromDialog: false }));
+            this.store.dispatch(sendPayment({ payload: { invoice: this.paymentRequest, fromDialog: false } }));
             this.resetData();
           }
         });

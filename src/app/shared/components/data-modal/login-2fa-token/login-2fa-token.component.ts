@@ -4,7 +4,6 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { faUserClock } from '@fortawesome/free-solid-svg-icons';
 
 import { RTLState } from '../../../../store/rtl.state';
-import * as RTLActions from '../../../../store/rtl.actions';
 import { closeAlert } from '../../../../store/rtl.actions';
 
 @Component({

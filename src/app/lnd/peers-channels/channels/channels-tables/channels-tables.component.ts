@@ -8,7 +8,6 @@ import { OpenChannelComponent } from '../open-channel-modal/open-channel.compone
 import { Peer, GetInfo } from '../../../../shared/models/lndModels';
 import { LoggerService } from '../../../../shared/services/logger.service';
 
-import * as RTLActions from '../../../../store/rtl.actions';
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert } from '../../../../store/rtl.actions';
 

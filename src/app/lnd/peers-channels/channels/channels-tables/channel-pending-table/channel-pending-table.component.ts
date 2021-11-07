@@ -13,8 +13,6 @@ import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 import { BumpFeeComponent } from '../../bump-fee-modal/bump-fee.component';
 
-import * as RTLActions from '../../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 import { openAlert } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
 

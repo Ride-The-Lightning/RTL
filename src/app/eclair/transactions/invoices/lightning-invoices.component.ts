@@ -9,7 +9,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, ECLActions } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/eclModels';
 import { ApiCallsListECL } from '../../../shared/models/apiCallsPayload';
@@ -20,10 +20,9 @@ import { ECLCreateInvoiceComponent } from '../create-invoice-modal/create-invoic
 import { ECLInvoiceInformationComponent } from '../invoice-information-modal/invoice-information.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 
-import * as ECLActions from '../../store/ecl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
+import { createInvoice, invoiceLookup } from '../../store/ecl.actions';
 
 @Component({
   selector: 'rtl-ecl-lightning-invoices',
@@ -142,7 +141,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
     } else {
       invoicePayload = { description: this.description, expireIn: expiryInSecs };
     }
-    this.store.dispatch(new ECLActions.CreateInvoice(invoicePayload));
+    this.store.dispatch(createInvoice(invoicePayload));
     this.resetData();
   }
 
@@ -159,7 +158,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   }
 
   onRefreshInvoice(selInvoice: Invoice) {
-    this.store.dispatch(new ECLActions.InvoiceLookup(selInvoice.paymentHash));
+    this.store.dispatch(invoiceLookup({ payload: selInvoice.paymentHash }));
   }
 
   updateInvoicesData(newInvoice: Invoice) {

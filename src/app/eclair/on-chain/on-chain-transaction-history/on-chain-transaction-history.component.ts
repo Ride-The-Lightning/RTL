@@ -14,10 +14,9 @@ import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTyp
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
-import * as ECLActions from '../../store/ecl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
+import { fetchTransactions } from '../../store/ecl.actions';
 
 @Component({
   selector: 'rtl-ecl-on-chain-transaction-history',
@@ -62,7 +61,7 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
   }
 
   ngOnInit() {
-    this.store.dispatch(new ECLActions.FetchTransactions());
+    this.store.dispatch(fetchTransactions());
     this.store.select('ecl').
       pipe(takeUntil(this.unsub[0])).
       subscribe((rtlStore) => {

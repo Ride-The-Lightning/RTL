@@ -11,10 +11,9 @@ import { Route } from '../../../shared/models/eclModels';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { ECLEffects } from '../../store/ecl.effects';
-import * as ECLActions from '../../store/ecl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
+import { getQueryRoutes } from '../../store/ecl.actions';
 
 @Component({
   selector: 'rtl-ecl-query-routes',
@@ -78,7 +77,7 @@ export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
     }
     this.qrHops.data = [];
     this.flgLoading[0] = true;
-    this.store.dispatch(new ECLActions.GetQueryRoutes({ nodeId: this.nodeId, amount: this.amount * 1000 }));
+    this.store.dispatch(getQueryRoutes({ payload: { nodeId: this.nodeId, amount: this.amount * 1000 } }));
   }
 
   resetData() {

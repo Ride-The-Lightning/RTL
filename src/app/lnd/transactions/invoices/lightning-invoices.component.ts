@@ -9,7 +9,7 @@ import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/pag
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
+import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES, LNDActions } from '../../../shared/services/consts-enums-functions';
 import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/lndModels';
@@ -20,10 +20,9 @@ import { CreateInvoiceComponent } from '../create-invoice-modal/create-invoice.c
 import { InvoiceInformationComponent } from '../invoice-information-modal/invoice-information.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 
-import * as LNDActions from '../../store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
+import { fetchInvoices, invoiceLookup, saveNewInvoice } from '../../store/lnd.actions';
 
 @Component({
   selector: 'rtl-lightning-invoices',
@@ -128,8 +127,10 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
     this.flgAnimate = true;
     this.newlyAddedInvoiceMemo = this.memo;
     this.newlyAddedInvoiceValue = this.invoiceValue;
-    this.store.dispatch(new LNDActions.SaveNewInvoice({
-      uiMessage: UI_MESSAGES.ADD_INVOICE, memo: this.memo, invoiceValue: this.invoiceValue, private: this.private, expiry: expiryInSecs, pageSize: this.pageSize, openModal: true
+    this.store.dispatch(saveNewInvoice({
+      payload: {
+        uiMessage: UI_MESSAGES.ADD_INVOICE, memo: this.memo, invoiceValue: this.invoiceValue, private: this.private, expiry: expiryInSecs, pageSize: this.pageSize, openModal: true
+      }
     }));
     this.resetData();
   }
@@ -147,7 +148,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   }
 
   onRefreshInvoice(selInvoice: Invoice) {
-    this.store.dispatch(new LNDActions.InvoiceLookup(selInvoice.r_hash));
+    this.store.dispatch(invoiceLookup({ payload: selInvoice.r_hash }));
   }
 
   updateInvoicesData(newInvoice: Invoice) {
@@ -198,7 +199,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
       index_offset = 0;
       page_size = event.length - (event.pageIndex * event.pageSize);
     }
-    this.store.dispatch(new LNDActions.FetchInvoices({ num_max_invoices: event.pageSize, index_offset: index_offset, reversed: reverse }));
+    this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: event.pageSize, index_offset: index_offset, reversed: reverse } }));
   }
 
   onInvoiceValueChange() {

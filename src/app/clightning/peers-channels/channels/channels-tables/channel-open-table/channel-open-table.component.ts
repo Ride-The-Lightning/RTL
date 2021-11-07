@@ -17,11 +17,9 @@ import { CLChannelInformationComponent } from '../../channel-information-modal/c
 import { CLEffects } from '../../../../store/cl.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 
-import * as CLActions from '../../../../store/cl.actions';
-import * as RTLActions from '../../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
+import { channelLookup, closeChannel, updateChannel } from '../../../../store/cl.actions';
 
 @Component({
   selector: 'rtl-cl-channel-open-table',
@@ -100,7 +98,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   onViewRemotePolicy(selChannel: Channel) {
-    this.store.dispatch(new CLActions.ChannelLookup({ uiMessage: UI_MESSAGES.GET_REMOTE_POLICY, shortChannelID: selChannel.short_channel_id, showError: true }));
+    this.store.dispatch(channelLookup({ payload: { uiMessage: UI_MESSAGES.GET_REMOTE_POLICY, shortChannelID: selChannel.short_channel_id, showError: true } }));
     this.clEffects.setLookupCL.
       pipe(take(1)).
       subscribe((resLookup: ChannelEdge[]): boolean | void => {
@@ -159,12 +157,12 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
           if (confirmRes) {
             const base_fee = confirmRes[0].inputValue;
             const fee_rate = confirmRes[1].inputValue;
-            this.store.dispatch(new CLActions.UpdateChannels({ baseFeeMsat: base_fee, feeRate: fee_rate, channelId: 'all' }));
+            this.store.dispatch(updateChannel({ payload: { baseFeeMsat: base_fee, feeRate: fee_rate, channelId: 'all' } }));
           }
         });
     } else {
       this.myChanPolicy = { fee_base_msat: 0, fee_rate_milli_msat: 0 };
-      this.store.dispatch(new CLActions.ChannelLookup({ uiMessage: UI_MESSAGES.GET_CHAN_POLICY, shortChannelID: channelToUpdate.short_channel_id, showError: false }));
+      this.store.dispatch(channelLookup({ payload: { uiMessage: UI_MESSAGES.GET_CHAN_POLICY, shortChannelID: channelToUpdate.short_channel_id, showError: false } }));
       this.clEffects.setLookupCL.
         pipe(take(1)).
         subscribe((resLookup: ChannelEdge[]) => {
@@ -202,7 +200,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
           if (confirmRes) {
             const base_fee = confirmRes[0].inputValue;
             const fee_rate = confirmRes[1].inputValue;
-            this.store.dispatch(new CLActions.UpdateChannels({ baseFeeMsat: base_fee, feeRate: fee_rate, channelId: channelToUpdate.channel_id }));
+            this.store.dispatch(updateChannel({ payload: { baseFeeMsat: base_fee, feeRate: fee_rate, channelId: channelToUpdate.channel_id } }));
           }
         });
     }
@@ -229,7 +227,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
       pipe(takeUntil(this.unSubs[3])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.store.dispatch(new CLActions.CloseChannel({ channelId: channelToClose.channel_id, force: false }));
+          this.store.dispatch(closeChannel({ payload: { channelId: channelToClose.channel_id, force: false } }));
         }
       });
   }

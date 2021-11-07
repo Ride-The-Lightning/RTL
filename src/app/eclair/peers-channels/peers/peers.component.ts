@@ -10,7 +10,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Peer, GetInfo } from '../../../shared/models/eclModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum, APICallStatusEnum, ECLActions } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { ApiCallsListECL } from '../../../shared/models/apiCallsPayload';
@@ -19,10 +19,9 @@ import { ECLConnectPeerComponent } from '../connect-peer/connect-peer.component'
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 
 import { RTLEffects } from '../../../store/rtl.effects';
-import * as ECLActions from '../../store/ecl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
+import { disconnectPeer } from '../../store/ecl.actions';
 
 @Component({
   selector: 'rtl-ecl-peers',
@@ -186,7 +185,7 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       pipe(takeUntil(this.unSubs[3])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.store.dispatch(new ECLActions.DisconnectPeer({ nodeId: peerToDetach.nodeId }));
+          this.store.dispatch(disconnectPeer({ payload: { nodeId: peerToDetach.nodeId } }));
         }
       });
   }

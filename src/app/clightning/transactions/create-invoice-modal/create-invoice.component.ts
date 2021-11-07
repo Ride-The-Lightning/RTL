@@ -8,14 +8,13 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { InvoiceInformation } from '../../../shared/models/alertData';
-import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
+import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, UI_MESSAGES, CLActions } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo } from '../../../shared/models/clModels';
 import { CommonService } from '../../../shared/services/common.service';
 
-import * as CLActions from '../../store/cl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
+import { saveNewInvoice } from '../../store/cl.actions';
 
 @Component({
   selector: 'rtl-cl-create-invoices',
@@ -55,7 +54,7 @@ export class CLCreateInvoiceComponent implements OnInit, OnDestroy {
     this.actions.pipe(
       takeUntil(this.unSubs[1]),
       filter((action) => action.type === CLActions.UPDATE_API_CALL_STATUS_CL || action.type === CLActions.ADD_INVOICE_CL)).
-      subscribe((action: CLActions.UpdateAPICallStatus | CLActions.AddInvoice) => {
+      subscribe((action: any) => {
         if (action.type === CLActions.ADD_INVOICE_CL) {
           this.dialogRef.close();
         }
@@ -74,8 +73,10 @@ export class CLCreateInvoiceComponent implements OnInit, OnDestroy {
     if (this.selTimeUnit !== TimeUnitEnum.SECS) {
       expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
     }
-    this.store.dispatch(new CLActions.SaveNewInvoice({
-      label: ('ulbl' + Math.random().toString(36).slice(2) + Date.now()), amount: this.invoiceValue * 1000, description: this.description, expiry: expiryInSecs, private: this.private
+    this.store.dispatch(saveNewInvoice({
+      payload: {
+        label: ('ulbl' + Math.random().toString(36).slice(2) + Date.now()), amount: this.invoiceValue * 1000, description: this.description, expiry: expiryInSecs, private: this.private
+      }
     }));
   }
 

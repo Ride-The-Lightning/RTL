@@ -5,8 +5,8 @@ import { Store } from '@ngrx/store';
 
 import { LoggerService } from '../../../shared/services/logger.service';
 
-import * as LNDActions from '../../store/lnd.actions';
 import { RTLState } from '../../../store/rtl.state';
+import { fetchTransactions, fetchUTXOs } from '../../store/lnd.actions';
 
 @Component({
   selector: 'rtl-utxo-tables',
@@ -25,8 +25,8 @@ export class UTXOTablesComponent implements OnInit, OnDestroy {
   constructor(private logger: LoggerService, private store: Store<RTLState>) { }
 
   ngOnInit() {
-    this.store.dispatch(new LNDActions.FetchTransactions());
-    this.store.dispatch(new LNDActions.FetchUTXOs());
+    this.store.dispatch(fetchTransactions());
+    this.store.dispatch(fetchUTXOs());
     this.store.select('lnd').
       pipe(takeUntil(this.unSubs[0])).
       subscribe((rtlStore) => {

@@ -16,9 +16,8 @@ import { GetInfoChain } from '../../../models/lndModels';
 import { MenuChildNode, MENU_DATA } from '../../../models/navMenu';
 
 import { RTLEffects } from '../../../../store/rtl.effects';
-import * as RTLActions from '../../../../store/rtl.actions';
 import { RTLState } from '../../../../store/rtl.state';
-import { AlertTypeEnum, UI_MESSAGES, UserPersonaEnum } from '../../../services/consts-enums-functions';
+import { AlertTypeEnum, RTLActions, UI_MESSAGES, UserPersonaEnum } from '../../../services/consts-enums-functions';
 import { CommonService } from '../../../services/common.service';
 import { logout, openConfirmation, setSelelectedNode, showPubkey } from '../../../../store/rtl.actions';
 

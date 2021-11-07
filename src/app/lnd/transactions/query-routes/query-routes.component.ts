@@ -11,10 +11,9 @@ import { Hop } from '../../../shared/models/lndModels';
 import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 
 import { LNDEffects } from '../../store/lnd.effects';
-import * as LNDActions from '../../store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
+import { getQueryRoutes } from '../../store/lnd.actions';
 
 @Component({
   selector: 'rtl-query-routes',
@@ -76,7 +75,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
     }
     this.qrHops = new MatTableDataSource([]);
     this.flgLoading[0] = true;
-    this.store.dispatch(new LNDActions.GetQueryRoutes({ destPubkey: this.destinationPubkey, amount: this.amount }));
+    this.store.dispatch(getQueryRoutes({ payload: { destPubkey: this.destinationPubkey, amount: this.amount } }));
   }
 
   resetData() {

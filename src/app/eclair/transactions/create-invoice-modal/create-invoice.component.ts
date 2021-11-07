@@ -8,13 +8,13 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { ECLInvoiceInformation } from '../../../shared/models/alertData';
-import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, ECLActions } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo } from '../../../shared/models/eclModels';
 import { CommonService } from '../../../shared/services/common.service';
 
-import * as ECLActions from '../../store/ecl.actions';
 import { RTLState } from '../../../store/rtl.state';
+import { createInvoice } from '../../store/ecl.actions';
 
 @Component({
   selector: 'rtl-ecl-create-invoices',
@@ -54,7 +54,7 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
     this.actions.pipe(
       takeUntil(this.unSubs[1]),
       filter((action) => action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL || action.type === ECLActions.ADD_INVOICE_ECL)).
-      subscribe((action: ECLActions.UpdateAPICallStatus | ECLActions.AddInvoice) => {
+      subscribe((action: any) => {
         if (action.type === ECLActions.ADD_INVOICE_ECL) {
           this.dialogRef.close();
         }
@@ -79,7 +79,7 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
     } else {
       invoicePayload = { description: this.description, expireIn: expiryInSecs };
     }
-    this.store.dispatch(new ECLActions.CreateInvoice(invoicePayload));
+    this.store.dispatch(createInvoice(invoicePayload));
   }
 
   resetData() {

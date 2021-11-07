@@ -10,7 +10,6 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 import { GetInfo, Peer, UTXO } from '../../../../shared/models/clModels';
 import { SelNodeChild } from '../../../../shared/models/RTLconfig';
 
-import * as RTLActions from '../../../../store/rtl.actions';
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert } from '../../../../store/rtl.actions';
 

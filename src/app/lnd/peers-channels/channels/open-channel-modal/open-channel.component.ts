@@ -9,10 +9,10 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { Peer, GetInfo } from '../../../../shared/models/lndModels';
 import { OpenChannelAlert } from '../../../../shared/models/alertData';
-import { APICallStatusEnum, TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, LNDActions, TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
 
-import * as LNDActions from '../../../store/lnd.actions';
 import { RTLState } from '../../../../store/rtl.state';
+import { saveNewChannel } from '../../../store/lnd.actions';
 
 @Component({
   selector: 'rtl-open-channel',
@@ -54,7 +54,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.actions.pipe(
       takeUntil(this.unSubs[0]),
       filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.FETCH_ALL_CHANNELS_LND)).
-      subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.FetchAllChannels) => {
+      subscribe((action: any) => {
         if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewChannel') {
           this.channelConnectionError = action.payload.message;
         }
@@ -120,9 +120,11 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || ((this.selTransType === '1' || this.selTransType === '2') && !this.transTypeValue))) {
       return true;
     }
-    this.store.dispatch(new LNDActions.SaveNewChannel({
-      selectedPeerPubkey: ((!this.peer || !this.peer.pub_key) ? this.selectedPubkey : this.peer.pub_key), fundingAmount: this.fundingAmount, private: this.isPrivate,
-      transType: this.selTransType, transTypeValue: this.transTypeValue, spendUnconfirmed: this.spendUnconfirmed
+    this.store.dispatch(saveNewChannel({
+      payload: {
+        selectedPeerPubkey: ((!this.peer || !this.peer.pub_key) ? this.selectedPubkey : this.peer.pub_key), fundingAmount: this.fundingAmount, private: this.isPrivate,
+        transType: this.selTransType, transTypeValue: this.transTypeValue, spendUnconfirmed: this.spendUnconfirmed
+      }
     }));
   }
 
