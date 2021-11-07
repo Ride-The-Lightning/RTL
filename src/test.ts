@@ -9,8 +9,8 @@ getTestBed().initTestEnvironment(
   platformBrowserDynamicTesting()
 );
 
-const context = require.context('./', true, /\.spec\.ts$/);
+// const context = require.context('./', true, /\.spec\.ts$/);
 // const context = require.context('./app/lnd/transactions/send-payment-modal', true, /\.spec\.ts$/);
-// const context = require.context('./app/store', true, /\.spec\.ts$/);
+const context = require.context('./app/store', true, /\.spec\.ts$/);
 
 context.keys().map(context);

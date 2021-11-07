@@ -4,7 +4,10 @@ import { StoreModule } from '@ngrx/store';
 
 import { CommonService } from '../../../../shared/services/common.service';
 import { DataService } from '../../../../shared/services/data.service';
-import { RTLReducer } from '../../../../store/rtl.reducers';
+import { RootReducer } from '../../../../store/rtl.reducers';
+import { LNDReducer } from '../../../../lnd/store/lnd.reducers';
+import { CLReducer } from '../../../../clightning/store/cl.reducers';
+import { ECLReducer } from '../../../../eclair/store/ecl.reducers';
 import { CLOpenChannelComponent } from './open-channel.component';
 import { mockCLEffects, mockDataService, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../../shared/test-helpers/mock-services';
 import { EffectsModule } from '@ngrx/effects';
@@ -21,12 +24,7 @@ describe('CLOpenChannelComponent', () => {
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot(RTLReducer, {
-          runtimeChecks: {
-            strictStateImmutability: false,
-            strictActionImmutability: false
-          }
-        }),
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [

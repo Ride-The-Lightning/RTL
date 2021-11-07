@@ -6,7 +6,10 @@ import { DataService } from '../../../shared/services/data.service';
 import { SignComponent } from './sign.component';
 import { SharedModule } from '../../../shared/shared.module';
 import { StoreModule } from '@ngrx/store';
-import { RTLReducer } from '../../../store/rtl.reducers';
+import { RootReducer } from '../../../store/rtl.reducers';
+import { LNDReducer } from '../../../lnd/store/lnd.reducers';
+import { CLReducer } from '../../../clightning/store/cl.reducers';
+import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/mock-services';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -20,12 +23,7 @@ describe('SignComponent', () => {
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot(RTLReducer, {
-          runtimeChecks: {
-            strictStateImmutability: false,
-            strictActionImmutability: false
-          }
-        })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
       ],
       providers: [
         { provide: LoggerService, useClass: mockLoggerService },

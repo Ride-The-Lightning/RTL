@@ -3,7 +3,10 @@ import { of } from 'rxjs';
 import { Store, StoreModule } from '@ngrx/store';
 
 import { CommonService } from '../../../shared/services/common.service';
-import { RTLReducer } from '../../../store/rtl.reducers';
+import { RootReducer } from '../../../store/rtl.reducers';
+import { LNDReducer } from '../../../lnd/store/lnd.reducers';
+import { CLReducer } from '../../../clightning/store/cl.reducers';
+import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { LightningSendPaymentsComponent } from './send-payment.component';
 import { mockCLEffects, mockDataService, mockLoggerService, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/test-helpers/mock-services';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -16,6 +19,8 @@ import { FEE_LIMIT_TYPES, UI_MESSAGES } from '../../../shared/services/consts-en
 import { mockRTLStoreState } from '../../../shared/test-helpers/test-data';
 
 import { RTLState } from '../../../store/rtl.state';
+import { sendPayment } from '../../store/lnd.actions';
+import { SelNodeChild } from '../../../shared/models/RTLconfig';
 
 describe('LightningSendPaymentsComponent', () => {
   let component: LightningSendPaymentsComponent;
@@ -29,12 +34,7 @@ describe('LightningSendPaymentsComponent', () => {
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot(RTLReducer, {
-          runtimeChecks: {
-            strictStateImmutability: false,
-            strictActionImmutability: false
-          }
-        }),
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
@@ -82,7 +82,7 @@ describe('LightningSendPaymentsComponent', () => {
       uiMessage: UI_MESSAGES.SEND_PAYMENT, outgoingChannel: null, feeLimitType: { id: 'none', name: 'No Fee Limit' }, feeLimit: null, fromDialog: true,
       paymentReq: 'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3'
     };
-    expect(storeSpy.calls.all()[0].args[0]).toEqual(new LNDActions.SendPayment(expectedSendPaymentPayload));
+    expect(storeSpy.calls.all()[0].args[0]).toEqual(sendPayment({ payload: expectedSendPaymentPayload }));
     expect(storeSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -145,14 +145,15 @@ describe('LightningSendPaymentsComponent', () => {
   });
 
   it('should decode payment when pay request changed and fiat conversion is true', () => {
-    component.selNode.fiatConversion = true;
-    component.selNode.currencyUnits[2] = 'USD';
+    const updatedSelNode: SelNodeChild = JSON.parse(JSON.stringify(component.selNode));
+    updatedSelNode.fiatConversion = true;
+    updatedSelNode.currencyUnits[2] = 'USD';
+    Object.defineProperty(component, 'selNode', { value: updatedSelNode });
     component.onPaymentRequestEntry('lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3');
     expect(component.paymentDecodedHint).toEqual('Sending: 400 Sats (USD 0.13) | Memo: Testing ngrx Effects 4');
   });
 
   it('should decode payment when pay request changed and fiat conversion is false', () => {
-    component.selNode.fiatConversion = false;
     component.onPaymentRequestEntry('lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3');
     expect(component.paymentDecodedHint).toEqual('Sending: 400 Sats | Memo: Testing ngrx Effects 4');
   });

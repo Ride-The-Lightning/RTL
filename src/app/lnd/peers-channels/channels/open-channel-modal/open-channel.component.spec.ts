@@ -7,7 +7,10 @@ import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRT
 import { SharedModule } from '../../../../shared/shared.module';
 import { RTLEffects } from '../../../../store/rtl.effects';
 
-import { RTLReducer } from '../../../../store/rtl.reducers';
+import { RootReducer } from '../../../../store/rtl.reducers';
+import { LNDReducer } from '../../../../lnd/store/lnd.reducers';
+import { CLReducer } from '../../../../clightning/store/cl.reducers';
+import { ECLReducer } from '../../../../eclair/store/ecl.reducers';
 import { OpenChannelComponent } from './open-channel.component';
 
 describe('OpenChannelComponent', () => {
@@ -20,12 +23,7 @@ describe('OpenChannelComponent', () => {
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot(RTLReducer, {
-          runtimeChecks: {
-            strictStateImmutability: false,
-            strictActionImmutability: false
-          }
-        }),
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
