@@ -12,7 +12,7 @@ import { RTLConfiguration, ConfigSettingsNode } from '../../../models/RTLconfig'
 import { PASSWORD_BLACKLIST, RTLActions, UI_MESSAGES } from '../../../services/consts-enums-functions';
 import { SessionService } from '../../../services/session.service';
 import { LoggerService } from '../../../services/logger.service';
-import { openAlert, resetPassword, setSelelectedNode } from '../../../../store/rtl.actions';
+import { openAlert, resetPassword, setSelectedNode } from '../../../../store/rtl.actions';
 
 import { RTLState } from '../../../../store/rtl.state';
 
@@ -140,7 +140,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.initializeNodeData) {
-      this.store.dispatch(setSelelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: this.selNode, isInitialSetup: true } }));
+      this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: this.selNode, isInitialSetup: true } }));
     }
     this.unSubs.forEach((unsub) => {
       unsub.next();

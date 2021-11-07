@@ -3,7 +3,7 @@ import { UI_MESSAGES } from '../shared/services/consts-enums-functions';
 
 import { initRootState } from './rtl.state';
 import { RootReducer } from './rtl.reducers';
-import { setSelelectedNode } from './rtl.actions';
+import { setSelectedNode } from './rtl.actions';
 
 describe('RTL reducer', () => {
   describe('default action', () => {
@@ -15,7 +15,7 @@ describe('RTL reducer', () => {
 
   describe('Action SetSelectedNode', () => {
     it('should set selected node', () => {
-      const SetSelectedNodeAction = setSelelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: mockActionsData.setSelectedNode, isInitialSetup: false } });
+      const SetSelectedNodeAction = setSelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: mockActionsData.setSelectedNode, isInitialSetup: false } });
       const newState = RootReducer(initRootState, SetSelectedNodeAction);
 
       expect(newState.selNode.settings.themeMode).toBe('NIGHT');

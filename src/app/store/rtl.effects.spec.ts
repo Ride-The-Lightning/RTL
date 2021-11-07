@@ -4,12 +4,12 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { map, ReplaySubject, throwError } from 'rxjs';
+import { of, ReplaySubject, throwError } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { MockStore, provideMockStore } from '@ngrx/store/testing';
+import { provideMockStore } from '@ngrx/store/testing';
 import { provideMockActions } from '@ngrx/effects/testing';
+import { MatDialogRef } from '@angular/material/dialog';
 
 import { SharedModule } from '../shared/shared.module';
 import { mockActionsData, mockResponseData, mockRTLStoreState } from '../shared/test-helpers/test-data';
@@ -34,7 +34,7 @@ import { resetCLStore } from '../clightning/store/cl.actions';
 describe('RTL Root Effects', () => {
   let actions: ReplaySubject<any>;
   let effects: RTLEffects;
-  let store: MockStore;
+  let mockStore: Store<RTLState>;
   let snackBar: MatSnackBar;
   let container: any;
   let httpClient: HttpClient;
@@ -61,8 +61,7 @@ describe('RTL Root Effects', () => {
       ]
     });
     effects = TestBed.inject(RTLEffects);
-    store = TestBed.inject(MockStore);
-    snackBar = TestBed.inject(MatSnackBar);
+    mockStore = TestBed.inject(Store);
     httpClient = TestBed.inject(HttpClient);
     httpTestingController = TestBed.inject(HttpTestingController);
     container = document.createElement('div');
@@ -128,19 +127,15 @@ describe('RTL Root Effects', () => {
   // });
 
   it('should open snack bar', (done) => {
-    const storeDispatchSpy = spyOn(store, 'dispatch').and.callThrough();
-    const snackBarOpenSpy = spyOn(snackBar, 'open').and.callThrough();
-    const openSnackBarPayload = 'Testing the snackbar open effect...';
-    store.dispatch(openSnackBar({ payload: openSnackBarPayload }));
-    console.warn(store);
-    // const sub = effects.openSnackBar.subscribe((openSnackBarResponse) => {
-    //   console.warn(openSnackBarResponse);
-    //   expect(openSnackBarResponse).toBeUndefined();
-    //   expect(snackBarOpenSpy).toHaveBeenCalledWith(openSnackBarPayload);
-    //   expect(snackBarOpenSpy).toHaveBeenCalledTimes(1);
-    //   done();
-    //   setTimeout(() => sub.unsubscribe());
-    // });
+    const storeDispatchSpy = spyOn(mockStore, 'dispatch').and.callThrough();
+    const openSnackBarAction = openSnackBar({ payload: 'Testing the snackbar open effect...' });
+    mockStore.dispatch(openSnackBarAction);
+    const sub = of(openSnackBarAction).subscribe((openSnackBarResponse) => {
+      expect(storeDispatchSpy).toHaveBeenCalledTimes(1);
+      expect(openSnackBarResponse).toEqual(openSnackBarAction);
+      done();
+      setTimeout(() => sub.unsubscribe());
+    });
   });
 
   afterEach(() => {

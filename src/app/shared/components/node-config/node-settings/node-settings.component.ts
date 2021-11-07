@@ -9,7 +9,7 @@ import { ConfigSettingsNode, Settings, RTLConfiguration, GetInfoRoot } from '../
 import { LoggerService } from '../../../services/logger.service';
 import { CommonService } from '../../../services/common.service';
 import { RTLState } from '../../../../store/rtl.state';
-import { saveSettings, setSelelectedNode } from '../../../../store/rtl.actions';
+import { saveSettings, setSelectedNode } from '../../../../store/rtl.actions';
 import { setChildNodeSettingsECL } from '../../../../eclair/store/ecl.actions';
 import { setChildNodeSettingsCL } from '../../../../clightning/store/cl.actions';
 import { setChildNodeSettingsLND } from '../../../../lnd/store/lnd.actions';
@@ -123,7 +123,7 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
     this.selNode.settings = this.previousSettings;
     this.selectedThemeMode = this.themeModes.find((themeMode) => themeMode.id === this.previousSettings.themeMode);
     this.selectedThemeColor = this.previousSettings.themeColor;
-    this.store.dispatch(setSelelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: this.selNode, isInitialSetup: true } }));
+    this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: this.selNode, isInitialSetup: true } }));
   }
 
   ngOnDestroy() {

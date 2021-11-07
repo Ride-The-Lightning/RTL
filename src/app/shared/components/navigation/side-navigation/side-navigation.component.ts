@@ -19,7 +19,7 @@ import { RTLEffects } from '../../../../store/rtl.effects';
 import { RTLState } from '../../../../store/rtl.state';
 import { AlertTypeEnum, RTLActions, UI_MESSAGES, UserPersonaEnum } from '../../../services/consts-enums-functions';
 import { CommonService } from '../../../services/common.service';
-import { logout, openConfirmation, setSelelectedNode, showPubkey } from '../../../../store/rtl.actions';
+import { logout, openConfirmation, setSelectedNode, showPubkey } from '../../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-side-navigation',
@@ -192,7 +192,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
 
   onNodeSelectionChange(selNodeValue: ConfigSettingsNode) {
     this.selNode = selNodeValue;
-    this.store.dispatch(setSelelectedNode({ payload: { uiMessage: UI_MESSAGES.UPDATE_SELECTED_NODE, lnNode: selNodeValue, isInitialSetup: false } }));
+    this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.UPDATE_SELECTED_NODE, lnNode: selNodeValue, isInitialSetup: false } }));
     this.ChildNavClicked.emit('selectNode');
   }
 

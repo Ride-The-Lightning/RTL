@@ -27,7 +27,7 @@ import { ErrorMessageComponent } from '../shared/components/data-modal/error-mes
 import { ShowPubkeyComponent } from '../shared/components/data-modal/show-pubkey/show-pubkey.component';
 
 import { RootState, RTLState } from './rtl.state';
-import { resetRootStore, setNodeData, setSelelectedNode, updateAPICallStatus, closeSpinner, openAlert, openSpinner, openSnackBar, fetchRTLConfig, closeAllDialogs, logout } from './rtl.actions';
+import { resetRootStore, setNodeData, setSelectedNode, updateAPICallStatus, closeSpinner, openAlert, openSpinner, openSnackBar, fetchRTLConfig, closeAllDialogs, logout } from './rtl.actions';
 import { fetchInfoLND, resetLNDStore } from '../lnd/store/lnd.actions';
 import { fetchInfoCL, resetCLStore } from '../clightning/store/cl.actions';
 import { fetchInfoECL, resetECLStore } from '../eclair/store/ecl.actions';
@@ -223,7 +223,7 @@ export class RTLEffects implements OnDestroy {
           }
         });
         if (searchNode) {
-          this.store.dispatch(setSelelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: searchNode, isInitialSetup: true } }));
+          this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: searchNode, isInitialSetup: true } }));
           return {
             type: RTLActions.SET_RTL_CONFIG,
             payload: rtlConfig

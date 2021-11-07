@@ -46,7 +46,7 @@ export const saveSettings = createAction(RTLActions.SAVE_SETTINGS, props<{ paylo
 
 export const twoFASaveSettings = createAction(RTLActions.TWO_FA_SAVE_SETTINGS, props<{ payload: { secret2fa: string } }>());
 
-export const setSelelectedNode = createAction(RTLActions.SET_SELECTED_NODE, props<{ payload: SetSelectedNode }>());
+export const setSelectedNode = createAction(RTLActions.SET_SELECTED_NODE, props<{ payload: SetSelectedNode }>());
 
 export const updateServiceSettings = createAction(RTLActions.UPDATE_SERVICE_SETTINGS, props<{ payload: UpdateServiceSetting }>());
 

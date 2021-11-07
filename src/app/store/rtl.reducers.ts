@@ -1,7 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import { initRootState } from './rtl.state';
 
-import { resetRootStore, setNodeData, setRTLConfig, setSelelectedNode, updateAPICallStatus } from './rtl.actions';
+import { resetRootStore, setNodeData, setRTLConfig, setSelectedNode, updateAPICallStatus } from './rtl.actions';
 
 export const RootReducer = createReducer(initRootState,
   on(updateAPICallStatus, (state, { payload }) => {
@@ -23,7 +23,7 @@ export const RootReducer = createReducer(initRootState,
     appConfig: state.appConfig,
     selNode: payload
   })),
-  on(setSelelectedNode, (state, { payload }) => ({
+  on(setSelectedNode, (state, { payload }) => ({
     ...state,
     selNode: payload.lnNode
   })),
