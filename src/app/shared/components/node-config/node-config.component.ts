@@ -5,8 +5,9 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faTools } from '@fortawesome/free-solid-svg-icons';
 
-import { ConfigSettingsNode, RTLConfiguration } from '../../models/RTLconfig';
+import { ConfigSettingsNode } from '../../models/RTLconfig';
 import { RTLState } from '../../../store/rtl.state';
+import { rootSelectedNode } from '../../../store/rtl.selector';
 
 @Component({
   selector: 'rtl-node-config',
@@ -18,7 +19,6 @@ export class NodeConfigComponent implements OnInit, OnDestroy {
   public faTools = faTools;
   public showLnConfig = false;
   public selNode: ConfigSettingsNode;
-  public appConfig: RTLConfiguration;
   public lnImplementationStr = '';
   public links = [{ link: 'node', name: 'Node' }, { link: 'services', name: 'Services' }, { link: 'lnconfig', name: this.lnImplementationStr }];
   public activeLink = '';
@@ -30,33 +30,31 @@ export class NodeConfigComponent implements OnInit, OnDestroy {
     const linkFound = this.links.find((link) => this.router.url.includes(link.link));
     this.activeLink = linkFound ? linkFound.link : this.links[0].link;
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe((value: ResolveEnd) => {
+      subscribe((value: any) => {
         const linkFound = this.links.find((link) => value.urlAfterRedirects.includes(link.link));
         this.activeLink = linkFound ? linkFound.link : this.links[0].link;
       });
-    this.store.select('root').pipe(takeUntil(this.unSubs[1])).
-      subscribe((rtlStore) => {
-        this.showLnConfig = false;
-        this.appConfig = rtlStore.appConfig;
-        this.selNode = rtlStore.selNode;
-        switch (this.selNode.lnImplementation.toUpperCase()) {
-          case 'CLT':
-            this.lnImplementationStr = 'C-Lightning Config';
-            break;
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).subscribe((selNode) => {
+      this.showLnConfig = false;
+      this.selNode = selNode;
+      switch (this.selNode.lnImplementation.toUpperCase()) {
+        case 'CLT':
+          this.lnImplementationStr = 'C-Lightning Config';
+          break;
 
-          case 'ECL':
-            this.lnImplementationStr = 'Eclair Config';
-            break;
+        case 'ECL':
+          this.lnImplementationStr = 'Eclair Config';
+          break;
 
-          default:
-            this.lnImplementationStr = 'LND Config';
-            break;
-        }
-        if (this.selNode.authentication && this.selNode.authentication.configPath && this.selNode.authentication.configPath.trim() !== '') {
-          this.links[2].name = this.lnImplementationStr;
-          this.showLnConfig = true;
-        }
-      });
+        default:
+          this.lnImplementationStr = 'LND Config';
+          break;
+      }
+      if (this.selNode.authentication && this.selNode.authentication.configPath && this.selNode.authentication.configPath.trim() !== '') {
+        this.links[2].name = this.lnImplementationStr;
+        this.showLnConfig = true;
+      }
+    });
   }
 
   ngOnDestroy() {

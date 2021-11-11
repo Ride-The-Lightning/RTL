@@ -1,11 +1,11 @@
 import { createReducer, on } from '@ngrx/store';
 import { initRootState } from './rtl.state';
 
-import { resetRootStore, setNodeData, setRTLConfig, setSelectedNode, updateAPICallStatus } from './rtl.actions';
+import { resetRootStore, setNodeData, setRTLConfig, setSelectedNode, updateRootAPICallStatus } from './rtl.actions';
 
 export const RootReducer = createReducer(initRootState,
-  on(updateAPICallStatus, (state, { payload }) => {
-    const updatedApisCallStatus = state.apisCallStatus;
+  on(updateRootAPICallStatus, (state, { payload }) => {
+    const updatedApisCallStatus = JSON.parse(JSON.stringify(state.apisCallStatus));
     updatedApisCallStatus[payload.action] = {
       status: payload.status,
       statusCode: payload.statusCode,

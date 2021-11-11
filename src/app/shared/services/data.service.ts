@@ -11,7 +11,7 @@ import { environment, API_URL } from '../../../environments/environment';
 import { APICallStatusEnum, UI_MESSAGES } from './consts-enums-functions';
 import { SwitchReq } from '../models/lndModels';
 import { ErrorMessageComponent } from '../components/data-modal/error-message/error-message.component';
-import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, updateAPICallStatus } from '../../store/rtl.actions';
+import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, updateRootAPICallStatus } from '../../store/rtl.actions';
 import { fetchTransactions, fetchUTXOs } from '../../lnd/store/lnd.actions';
 
 import { RTLState } from '../../store/rtl.state';
@@ -272,7 +272,7 @@ export class DataService implements OnDestroy {
       this.store.dispatch(openSnackBar({ payload: 'Authentication Failed. Redirecting to Login.' }));
     } else {
       this.store.dispatch(closeSpinner({ payload: uiMessage }));
-      this.store.dispatch(updateAPICallStatus({ payload: { action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: this.extractErrorMessage(err) } }));
+      this.store.dispatch(updateRootAPICallStatus({ payload: { action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: this.extractErrorMessage(err) } }));
     }
   }
 
@@ -296,7 +296,7 @@ export class DataService implements OnDestroy {
           }
         }
       }));
-      this.store.dispatch(updateAPICallStatus({ payload: { action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: errMsg, URL: errURL } }));
+      this.store.dispatch(updateRootAPICallStatus({ payload: { action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: errMsg, URL: errURL } }));
     }
   }
 

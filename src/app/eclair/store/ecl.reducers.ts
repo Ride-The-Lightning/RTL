@@ -1,12 +1,12 @@
 import { createReducer, on } from '@ngrx/store';
 
 import { initECLState } from './ecl.state';
-import { addInvoice, removeChannel, removePeer, resetECLStore, setActiveChannels, setChannelsStatus, setChildNodeSettingsECL, setFees, setInactiveChannels, setInfo, setInvoices, setLightningBalance, setOnchainBalance, setPayments, setPeers, setPendingChannels, setTransactions, updateAPICallStatus, updateChannelState, updateInvoice } from './ecl.actions';
+import { addInvoice, removeChannel, removePeer, resetECLStore, setActiveChannels, setChannelsStatus, setChildNodeSettingsECL, setFees, setInactiveChannels, setInfo, setInvoices, setLightningBalance, setOnchainBalance, setPayments, setPeers, setPendingChannels, setTransactions, updateECLAPICallStatus, updateChannelState, updateInvoice } from './ecl.actions';
 import { PaymentReceived } from '../../shared/models/eclModels';
 
 export const ECLReducer = createReducer(initECLState,
-  on(updateAPICallStatus, (state, { payload }) => {
-    const updatedApisCallStatus = state.apisCallStatus;
+  on(updateECLAPICallStatus, (state, { payload }) => {
+    const updatedApisCallStatus = JSON.parse(JSON.stringify(state.apisCallStatus));
     updatedApisCallStatus[payload.action] = {
       status: payload.status,
       statusCode: payload.statusCode,

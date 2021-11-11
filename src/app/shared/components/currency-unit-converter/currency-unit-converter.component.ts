@@ -7,6 +7,7 @@ import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS } from '../../services/consts-e
 import { CommonService } from '../../services/common.service';
 
 import { RTLState } from '../../../store/rtl.state';
+import { rootSelectedNode } from '../../../store/rtl.selector';
 
 @Component({
   selector: 'rtl-currency-unit-converter',
@@ -26,18 +27,16 @@ export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDest
   constructor(public commonService: CommonService, private store: Store<RTLState>) { }
 
   ngOnInit() {
-    this.store.select('root').
-      pipe(first()).
-      subscribe((rtlStore) => {
-        this.fiatConversion = rtlStore.selNode.settings.fiatConversion;
-        this.currencyUnits = rtlStore.selNode.settings.currencyUnits;
-        if (!this.fiatConversion) {
-          this.currencyUnits.splice(2, 1);
-        }
-        if (this.currencyUnits.length > 1 && this.values[0] && this.values[0].dataValue >= 0) {
-          this.getCurrencyValues(this.values);
-        }
-      });
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((selNode) => {
+      this.fiatConversion = selNode.settings.fiatConversion;
+      this.currencyUnits = selNode.settings.currencyUnits;
+      if (!this.fiatConversion) {
+        this.currencyUnits.splice(2, 1);
+      }
+      if (this.currencyUnits.length > 1 && this.values[0] && this.values[0].dataValue >= 0) {
+        this.getCurrencyValues(this.values);
+      }
+    });
   }
 
   ngOnChanges() {

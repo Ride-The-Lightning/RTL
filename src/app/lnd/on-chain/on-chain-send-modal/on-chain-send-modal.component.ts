@@ -11,7 +11,7 @@ import { MatStepper } from '@angular/material/stepper';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { OnChainSendFunds } from '../../../shared/models/alertData';
-import { SelNodeChild, GetInfoRoot, RTLConfiguration } from '../../../shared/models/RTLconfig';
+import { SelNodeChild, RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { GetInfo, Balance, AddressType } from '../../../shared/models/lndModels';
 import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, LNDActions } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
@@ -22,6 +22,7 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { isAuthorized, openSnackBar } from '../../../store/rtl.actions';
 import { setChannelTransaction } from '../../store/lnd.actions';
+import { rootAppConfig, rootSelectedNode } from '../../../store/rtl.selector';
 
 @Component({
   selector: 'rtl-on-chain-send-modal',
@@ -37,7 +38,6 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   public sweepAll = false;
   public selNode: SelNodeChild = {};
   public appConfig: RTLConfiguration;
-  public nodeData: GetInfoRoot;
   public addressTypes = [];
   public selectedAddress: AddressType = {};
   public blockchainBalance: Balance = {};
@@ -65,7 +65,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   passwordFormGroup: FormGroup;
   sendFundFormGroup: FormGroup;
   confirmFormGroup: FormGroup;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<OnChainSendModalComponent>, @Inject(MAT_DIALOG_DATA) public data: OnChainSendFunds, private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private decimalPipe: DecimalPipe, private snackBar: MatSnackBar, private actions: Actions, private formBuilder: FormBuilder) { }
 
@@ -95,17 +95,16 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
         this.sendFundFormGroup.controls.transactionFees.setValue(null);
       }
     });
-    this.store.select('root').
-      pipe(takeUntil(this.unSubs[1])).
-      subscribe((rootStore) => {
-        this.fiatConversion = rootStore.selNode.settings.fiatConversion;
-        this.amountUnits = rootStore.selNode.settings.currencyUnits;
-        this.appConfig = rootStore.appConfig;
-        this.nodeData = rootStore.nodeData;
-        this.logger.info(rootStore);
-      });
+    this.store.select(rootAppConfig).pipe(takeUntil(this.unSubs[1])).subscribe((appConfig) => {
+      this.appConfig = appConfig;
+    });
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[2])).subscribe((selNode) => {
+      this.fiatConversion = selNode.settings.fiatConversion;
+      this.amountUnits = selNode.settings.currencyUnits;
+      this.logger.info(selNode);
+    });
     this.actions.pipe(
-      takeUntil(this.unSubs[2]),
+      takeUntil(this.unSubs[3]),
       filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND)).
       subscribe((action: any) => {
         if (action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND) {
@@ -164,7 +163,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
     }
     if (this.transactionAmount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
       this.commonService.convertCurrency(this.transactionAmount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion).
-        pipe(takeUntil(this.unSubs[3])).
+        pipe(takeUntil(this.unSubs[4])).
         subscribe({
           next: (data) => {
             this.selAmountUnit = CurrencyUnitEnum.SATS;
@@ -242,7 +241,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
     if (this.transactionAmount && this.selAmountUnit !== event.value) {
       const amount = this.transactionAmount ? this.transactionAmount : 0;
       this.commonService.convertCurrency(amount, prevSelectedUnit, currSelectedUnit, this.amountUnits[2], this.fiatConversion).
-        pipe(takeUntil(this.unSubs[3])).
+        pipe(takeUntil(this.unSubs[5])).
         subscribe({
           next: (data) => {
             this.selAmountUnit = event.value;

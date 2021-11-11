@@ -5,7 +5,7 @@ import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfo, Channel, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus, Payments, Route, Transaction, SendPaymentOnChain, Invoice, PaymentReceived, ChannelStateUpdate, SaveChannel, UpdateChannel, CloseChannel, GetQueryRoutes, CreateInvoice, SendPayment } from '../../shared/models/eclModels';
 
-export const updateAPICallStatus = createAction(ECLActions.UPDATE_API_CALL_STATUS_ECL, props<{ payload: ApiCallStatusPayload }>());
+export const updateECLAPICallStatus = createAction(ECLActions.UPDATE_API_CALL_STATUS_ECL, props<{ payload: ApiCallStatusPayload }>());
 
 export const resetECLStore = createAction(ECLActions.RESET_ECL_STORE, props<{ payload: SelNodeChild }>());
 

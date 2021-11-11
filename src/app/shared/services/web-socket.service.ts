@@ -20,9 +20,9 @@ export class WebSocketClientService implements OnDestroy {
   constructor(private logger: LoggerService, private sessionService: SessionService) { }
 
   connectWebSocket(finalWSUrl: string) {
-    this.wsUrl = finalWSUrl;
-    this.logger.info('Websocket Url: ' + this.wsUrl);
     if (!this.socket || this.socket.closed) {
+      this.wsUrl = finalWSUrl;
+      this.logger.info('Websocket Url: ' + this.wsUrl);
       this.socket = new WebSocketSubject({
         url: finalWSUrl,
         protocol: [this.sessionService.getItem('token')]
@@ -32,7 +32,7 @@ export class WebSocketClientService implements OnDestroy {
   }
 
   reconnectOnError() {
-    if (this.RECONNECT_TIMEOUT) { return; }
+    if (this.RECONNECT_TIMEOUT || (this.socket && !this.socket.closed)) { return; }
     this.RETRY_SECONDS = (this.RETRY_SECONDS >= 160) ? 160 : (this.RETRY_SECONDS * 2);
     this.RECONNECT_TIMEOUT = setTimeout(() => {
       this.logger.info('Reconnecting Web Socket.');

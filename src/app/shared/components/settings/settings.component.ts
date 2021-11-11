@@ -7,6 +7,7 @@ import { faUserCog } from '@fortawesome/free-solid-svg-icons';
 
 import { ConfigSettingsNode, RTLConfiguration } from '../../models/RTLconfig';
 import { RTLState } from '../../../store/rtl.state';
+import { rootSelectedNode, rootAppConfig } from '../../../store/rtl.selector';
 
 @Component({
   selector: 'rtl-settings',
@@ -29,19 +30,20 @@ export class SettingsComponent implements OnInit, OnDestroy {
     const linkFound = this.links.find((link) => this.router.url.includes(link.link));
     this.activeLink = linkFound ? linkFound.link : this.links[0].link;
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe((value: ResolveEnd) => {
+      subscribe((value: any) => {
         const linkFound = this.links.find((link) => value.urlAfterRedirects.includes(link.link));
         this.activeLink = linkFound ? linkFound.link : this.links[0].link;
       });
-    this.store.select('root').pipe(takeUntil(this.unSubs[1])).
-      subscribe((rtlStore) => {
-        this.showBitcoind = false;
-        this.appConfig = rtlStore.appConfig;
-        this.selNode = rtlStore.selNode;
-        if (this.selNode.settings && this.selNode.settings.bitcoindConfigPath && this.selNode.settings.bitcoindConfigPath.trim() !== '') {
-          this.showBitcoind = true;
-        }
-      });
+    this.store.select(rootAppConfig).pipe(takeUntil(this.unSubs[1])).subscribe((appConfig) => {
+      this.appConfig = appConfig;
+    });
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[2])).subscribe((selNode) => {
+      this.showBitcoind = false;
+      this.selNode = selNode;
+      if (this.selNode.settings && this.selNode.settings.bitcoindConfigPath && this.selNode.settings.bitcoindConfigPath.trim() !== '') {
+        this.showBitcoind = true;
+      }
+    });
   }
 
   ngOnDestroy() {

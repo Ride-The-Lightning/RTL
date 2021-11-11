@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faMoneyBillAlt, faPaintBrush, faInfoCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-import { CURRENCY_UNITS, UserPersonaEnum, ScreenSizeEnum, FIAT_CURRENCY_UNITS, NODE_SETTINGS, UI_MESSAGES } from '../../../services/consts-enums-functions';
+import { CURRENCY_UNITS, UserPersonaEnum, ScreenSizeEnum, FIAT_CURRENCY_UNITS, NODE_SETTINGS, UI_MESSAGES, RTLActions } from '../../../services/consts-enums-functions';
 import { ConfigSettingsNode, Settings, RTLConfiguration, GetInfoRoot } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { CommonService } from '../../../services/common.service';
@@ -13,6 +13,8 @@ import { saveSettings, setSelectedNode } from '../../../../store/rtl.actions';
 import { setChildNodeSettingsECL } from '../../../../eclair/store/ecl.actions';
 import { setChildNodeSettingsCL } from '../../../../clightning/store/cl.actions';
 import { setChildNodeSettingsLND } from '../../../../lnd/store/lnd.actions';
+import { rootSelectedNode } from '../../../../store/rtl.selector';
+import { SetSelectedNode } from '../../../models/rtlModels';
 
 @Component({
   selector: 'rtl-node-settings',
@@ -26,7 +28,6 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
   public faPaintBrush = faPaintBrush;
   public faInfoCircle = faInfoCircle;
   public selNode: ConfigSettingsNode;
-  public information: GetInfoRoot = {};
   public userPersonas = [UserPersonaEnum.OPERATOR, UserPersonaEnum.MERCHANT];
   public currencyUnits = FIAT_CURRENCY_UNITS;
   public themeModes = NODE_SETTINGS.modes;
@@ -36,7 +37,6 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
   public currencyUnit = 'BTC';
   public smallerCurrencyUnit = 'Sats';
   public showSettingOption = true;
-  public appConfig: RTLConfiguration;
   public previousSettings: Settings;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
@@ -47,20 +47,16 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('root').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        this.appConfig = rtlStore.appConfig;
-        this.selNode = rtlStore.selNode;
-        this.selectedThemeMode = this.themeModes.find((themeMode) => this.selNode.settings.themeMode === themeMode.id);
-        this.selectedThemeColor = this.selNode.settings.themeColor;
-        this.information = rtlStore.nodeData;
-        if (!this.selNode.settings.fiatConversion) {
-          this.selNode.settings.currencyUnit = null;
-        }
-        this.previousSettings = JSON.parse(JSON.stringify(this.selNode.settings));
-        this.logger.info(rtlStore);
-      });
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((selNode) => {
+      this.selNode = selNode;
+      this.selectedThemeMode = this.themeModes.find((themeMode) => this.selNode.settings.themeMode === themeMode.id);
+      this.selectedThemeColor = this.selNode.settings.themeColor;
+      if (!this.selNode.settings.fiatConversion) {
+        this.selNode.settings.currencyUnit = null;
+      }
+      this.previousSettings = JSON.parse(JSON.stringify(this.selNode.settings));
+      this.logger.info(selNode);
+    });
   }
 
   onCurrencyChange(event: any) {

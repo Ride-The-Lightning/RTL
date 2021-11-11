@@ -12,6 +12,7 @@ import { RTLState } from '../../../../../store/rtl.state';
 import { setChildNodeSettingsLND } from '../../../../../lnd/store/lnd.actions';
 import { setChildNodeSettingsCL } from '../../../../../clightning/store/cl.actions';
 import { setChildNodeSettingsECL } from '../../../../../eclair/store/ecl.actions';
+import { rootSelectedNode } from '../../../../../store/rtl.selector';
 
 @Component({
   selector: 'rtl-loop-service-settings',
@@ -22,7 +23,6 @@ export class LoopServiceSettingsComponent implements OnInit, OnDestroy {
 
   @ViewChild('form', { static: true }) form: any;
   public faInfoCircle = faInfoCircle;
-  public appConfig: RTLConfiguration;
   public selNode: ConfigSettingsNode;
   public previousSelNode: ConfigSettingsNode;
   public enableLoop = false;
@@ -31,14 +31,13 @@ export class LoopServiceSettingsComponent implements OnInit, OnDestroy {
   constructor(private logger: LoggerService, private store: Store<RTLState>) { }
 
   ngOnInit() {
-    this.store.select('root').
+    this.store.select(rootSelectedNode).
       pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        this.appConfig = rtlStore.appConfig;
-        this.selNode = rtlStore.selNode;
-        this.enableLoop = rtlStore.selNode.settings.swapServerUrl && rtlStore.selNode.settings.swapServerUrl.trim() !== '';
+      subscribe((selNode) => {
+        this.selNode = selNode;
+        this.enableLoop = selNode.settings.swapServerUrl && selNode.settings.swapServerUrl.trim() !== '';
         this.previousSelNode = JSON.parse(JSON.stringify(this.selNode));
-        this.logger.info(rtlStore);
+        this.logger.info(selNode);
       });
   }
 

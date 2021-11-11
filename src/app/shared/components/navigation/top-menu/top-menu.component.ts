@@ -15,6 +15,7 @@ import { RTLEffects } from '../../../../store/rtl.effects';
 
 import { RTLState } from '../../../../store/rtl.state';
 import { logout, openConfirmation } from '../../../../store/rtl.actions';
+import { rootNodeData } from '../../../../store/rtl.selector';
 
 @Component({
   selector: 'rtl-top-menu',
@@ -24,7 +25,6 @@ import { logout, openConfirmation } from '../../../../store/rtl.actions';
 })
 export class TopMenuComponent implements OnInit, OnDestroy {
 
-  public selNode: ConfigSettingsNode;
   public faUserCog = faUserCog;
   public faCodeBranch = faCodeBranch;
   public faCog = faCog;
@@ -42,11 +42,10 @@ export class TopMenuComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('root').
+    this.store.select(rootNodeData).
       pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        this.selNode = rtlStore.selNode;
-        this.information = rtlStore.nodeData;
+      subscribe((nodeData) => {
+        this.information = nodeData;
         this.flgLoading = !(this.information.identity_pubkey);
         if (this.information.identity_pubkey) {
           if (this.information.chains && typeof this.information.chains[0] === 'string') {
@@ -61,7 +60,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
           this.informationChain.chain = '';
           this.informationChain.network = '';
         }
-        this.logger.info(rtlStore);
+        this.logger.info(nodeData);
       });
     this.sessionService.watchSession().
       pipe(takeUntil(this.unSubs[1])).

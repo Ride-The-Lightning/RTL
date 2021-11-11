@@ -20,6 +20,7 @@ import { RTLState } from '../../../../store/rtl.state';
 import { AlertTypeEnum, RTLActions, UI_MESSAGES, UserPersonaEnum } from '../../../services/consts-enums-functions';
 import { CommonService } from '../../../services/common.service';
 import { logout, openConfirmation, setSelectedNode, showPubkey } from '../../../../store/rtl.actions';
+import { rootAppConfig, rootNodeData, rootSelectedNode } from '../../../../store/rtl.selector';
 
 @Component({
   selector: 'rtl-side-navigation',
@@ -46,7 +47,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   public smallScreen = false;
   public childRootRoute = '';
   public userPersonaEnum = UserPersonaEnum;
-  private unSubs = [new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
   treeControlNested = new NestedTreeControl<MenuChildNode>((node) => node.children);
   treeControlLogout = new NestedTreeControl<MenuChildNode>((node) => node.children);
   treeControlShowData = new NestedTreeControl<MenuChildNode>((node) => node.children);
@@ -68,44 +69,48 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     const token = this.sessionService.getItem('token');
     this.showLogout = !!token;
     this.flgLoading = !!token;
-    this.store.select('root').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        this.appConfig = rtlStore.appConfig;
-        this.selNode = rtlStore.selNode;
-        this.settings = this.selNode.settings;
-        this.information = rtlStore.nodeData;
-        if (this.information.identity_pubkey) {
-          if (this.information.chains && typeof this.information.chains[0] === 'string') {
-            this.informationChain.chain = this.information.chains[0].toString();
-            this.informationChain.network = (this.information.testnet) ? 'Testnet' : 'Mainnet';
-          } else if (typeof this.information.chains[0] === 'object' && this.information.chains[0].hasOwnProperty('chain')) {
-            const getInfoChain = <GetInfoChain>this.information.chains[0];
-            this.informationChain.chain = getInfoChain.chain;
-            this.informationChain.network = getInfoChain.network;
-          }
-        } else {
-          this.informationChain.chain = '';
-          this.informationChain.network = '';
+    this.store.select(rootAppConfig).pipe(takeUntil(this.unSubs[0])).subscribe((appConfig) => {
+      this.appConfig = appConfig;
+    });
+    this.store.select(rootNodeData).pipe(takeUntil(this.unSubs[1])).subscribe((nodeData) => {
+      this.information = nodeData;
+      if (this.information.identity_pubkey) {
+        if (this.information.chains && typeof this.information.chains[0] === 'string') {
+          this.informationChain.chain = this.information.chains[0].toString();
+          this.informationChain.network = (this.information.testnet) ? 'Testnet' : 'Mainnet';
+        } else if (typeof this.information.chains[0] === 'object' && this.information.chains[0].hasOwnProperty('chain')) {
+          const getInfoChain = <GetInfoChain>this.information.chains[0];
+          this.informationChain.chain = getInfoChain.chain;
+          this.informationChain.network = getInfoChain.network;
         }
+      } else {
+        this.informationChain.chain = '';
+        this.informationChain.network = '';
+      }
 
-        this.flgLoading = !(this.information.identity_pubkey);
-        if (window.innerWidth <= 414) {
-          this.smallScreen = true;
-        }
+      this.flgLoading = !(this.information.identity_pubkey);
+      if (window.innerWidth <= 414) {
+        this.smallScreen = true;
+      }
+    });
+    this.store.select(rootSelectedNode).
+      pipe(takeUntil(this.unSubs[2])).
+      subscribe((selNode) => {
+        this.selNode = selNode;
+        this.settings = this.selNode.settings;
         if (this.selNode && this.selNode.lnImplementation) {
           this.filterSideMenuNodes();
         }
-        this.logger.info(rtlStore);
+        this.logger.info(selNode);
       });
     this.sessionService.watchSession().
-      pipe(takeUntil(this.unSubs[1])).
+      pipe(takeUntil(this.unSubs[3])).
       subscribe((session) => {
         this.showLogout = !!session.token;
         this.flgLoading = !!session.token;
       });
     this.actions.pipe(
-      takeUntil(this.unSubs[2]),
+      takeUntil(this.unSubs[4]),
       filter((action) => action.type === RTLActions.LOGOUT)).
       subscribe((action: any) => {
         this.showLogout = false;
@@ -124,7 +129,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
         }
       }));
       this.rtlEffects.closeConfirm.
-        pipe(takeUntil(this.unSubs[3])).
+        pipe(takeUntil(this.unSubs[5])).
         subscribe((confirmRes) => {
           if (confirmRes) {
             this.showLogout = false;

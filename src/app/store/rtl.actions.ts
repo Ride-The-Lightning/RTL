@@ -10,7 +10,7 @@ export const voidAction = createAction(RTLActions.VOID);
 
 export const setApiUrl = createAction(RTLActions.SET_API_URL_ECL, props<{ payload: string }>());
 
-export const updateAPICallStatus = createAction(RTLActions.UPDATE_API_CALL_STATUS_ROOT, props<{ payload: ApiCallStatusPayload }>());
+export const updateRootAPICallStatus = createAction(RTLActions.UPDATE_API_CALL_STATUS_ROOT, props<{ payload: ApiCallStatusPayload }>());
 
 export const closeAllDialogs = createAction(RTLActions.CLOSE_ALL_DIALOGS);
 

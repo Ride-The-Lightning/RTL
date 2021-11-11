@@ -1,14 +1,14 @@
 import { createReducer, on } from '@ngrx/store';
 
 import { initLNDState } from './lnd.state';
-import { addInvoice, removeChannel, removePeer, resetLNDStore, setAllChannels, setAllLightningTransactions, setBalance, setChildNodeSettingsLND, setClosedChannels, setFees, setForwardingHistory, setInfo, setInvoices, setNetwork, setPayments, setPeers, setPendingChannels, setTotalInvoices, setTransactions, setUTXOs, updateAPICallStatus, updateInvoice } from './lnd.actions';
+import { addInvoice, removeChannel, removePeer, resetLNDStore, setAllChannels, setAllLightningTransactions, setBalance, setChildNodeSettingsLND, setClosedChannels, setFees, setForwardingHistory, setInfo, setInvoices, setNetwork, setPayments, setPeers, setPendingChannels, setTotalInvoices, setTransactions, setUTXOs, updateLNDAPICallStatus, updateInvoice } from './lnd.actions';
 
 let flgTransactionsSet = false;
 let flgUTXOsSet = false;
 
 export const LNDReducer = createReducer(initLNDState,
-  on(updateAPICallStatus, (state, { payload }) => {
-    const updatedApisCallStatus = state.apisCallStatus;
+  on(updateLNDAPICallStatus, (state, { payload }) => {
+    const updatedApisCallStatus = JSON.parse(JSON.stringify(state.apisCallStatus));
     updatedApisCallStatus[payload.action] = {
       status: payload.status,
       statusCode: payload.statusCode,

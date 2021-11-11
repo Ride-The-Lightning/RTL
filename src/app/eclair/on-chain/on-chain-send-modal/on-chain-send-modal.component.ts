@@ -16,6 +16,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { RTLState } from '../../../store/rtl.state';
 import { openSnackBar } from '../../../store/rtl.actions';
 import { sendOnchainFunds } from '../../store/ecl.actions';
+import { rootSelectedNode } from '../../../store/rtl.selector';
 
 @Component({
   selector: 'rtl-ecl-on-chain-send-modal',
@@ -27,8 +28,6 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
   @ViewChild('form', { static: true }) form: any;
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: SelNodeChild = {};
-  public appConfig: RTLConfiguration;
-  public nodeData: GetInfoRoot;
   public addressTypes = [];
   public selectedAddress = ADDRESS_TYPES[1];
   public blockchainBalance: OnChainBalance = {};
@@ -48,15 +47,11 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
   constructor(public dialogRef: MatDialogRef<ECLOnChainSendModalComponent>, private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions) { }
 
   ngOnInit() {
-    this.store.select('root').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rootStore) => {
-        this.fiatConversion = rootStore.selNode.settings.fiatConversion;
-        this.amountUnits = rootStore.selNode.settings.currencyUnits;
-        this.appConfig = rootStore.appConfig;
-        this.nodeData = rootStore.nodeData;
-        this.logger.info(rootStore);
-      });
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((selNode) => {
+      this.fiatConversion = selNode.settings.fiatConversion;
+      this.amountUnits = selNode.settings.currencyUnits;
+      this.logger.info(selNode);
+    });
     this.actions.pipe(
       takeUntil(this.unSubs[1]),
       filter((action) => action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL || action.type === ECLActions.SEND_ONCHAIN_FUNDS_RES_ECL)

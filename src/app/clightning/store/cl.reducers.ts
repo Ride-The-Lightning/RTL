@@ -1,11 +1,11 @@
 import { createReducer, on } from '@ngrx/store';
 
 import { initCLState } from './cl.state';
-import { addInvoice, addPeer, removeChannel, removePeer, resetCLStore, setBalance, setChannels, setChildNodeSettingsCL, setFailedForwardingHistory, setFeeRates, setFees, setForwardingHistory, setInfo, setInvoices, setLocalRemoteBalance, setPayments, setPeers, setUTXOs, updateAPICallStatus, updateInvoice } from './cl.actions';
+import { addInvoice, addPeer, removeChannel, removePeer, resetCLStore, setBalance, setChannels, setChildNodeSettingsCL, setFailedForwardingHistory, setFeeRates, setFees, setForwardingHistory, setInfo, setInvoices, setLocalRemoteBalance, setPayments, setPeers, setUTXOs, updateCLAPICallStatus, updateInvoice } from './cl.actions';
 
 export const CLReducer = createReducer(initCLState,
-  on(updateAPICallStatus, (state, { payload }) => {
-    const updatedApisCallStatus = state.apisCallStatus;
+  on(updateCLAPICallStatus, (state, { payload }) => {
+    const updatedApisCallStatus = JSON.parse(JSON.stringify(state.apisCallStatus));
     updatedApisCallStatus[payload.action] = {
       status: payload.status,
       statusCode: payload.statusCode,

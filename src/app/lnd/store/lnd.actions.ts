@@ -10,7 +10,7 @@ import {
 }
   from '../../shared/models/lndModels';
 
-export const updateAPICallStatus = createAction(LNDActions.UPDATE_API_CALL_STATUS_LND, props<{ payload: ApiCallStatusPayload }>());
+export const updateLNDAPICallStatus = createAction(LNDActions.UPDATE_API_CALL_STATUS_LND, props<{ payload: ApiCallStatusPayload }>());
 
 export const resetLNDStore = createAction(LNDActions.RESET_LND_STORE, props<{ payload: SelNodeChild }>());
 

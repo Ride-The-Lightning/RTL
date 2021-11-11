@@ -68,7 +68,7 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
         this.errorMessage = '';
         this.apisCallStatus = rtlStore.apisCallStatus;
         if (rtlStore.apisCallStatus.FetchTransactions.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchPayments.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPayments.message) : this.apisCallStatus.FetchPayments.message;
+          this.errorMessage = (typeof (this.apisCallStatus.FetchTransactions.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchTransactions.message) : this.apisCallStatus.FetchTransactions.message;
         }
         if (rtlStore.transactions) {
           this.loadTransactionsTable(rtlStore.transactions);

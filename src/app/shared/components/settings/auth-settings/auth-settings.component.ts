@@ -15,6 +15,8 @@ import { LoggerService } from '../../../services/logger.service';
 import { openAlert, resetPassword, setSelectedNode } from '../../../../store/rtl.actions';
 
 import { RTLState } from '../../../../store/rtl.state';
+import { rootAppConfig, rootSelectedNode } from '../../../../store/rtl.selector';
+import { SetSelectedNode } from '../../../models/rtlModels';
 
 @Component({
   selector: 'rtl-auth-settings',
@@ -42,13 +44,12 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initializeNodeData = this.sessionService.getItem('defaultPassword') === 'true';
-    this.store.select('root').
-      pipe(takeUntil(this.unSubs[1])).
-      subscribe((rtlStore) => {
-        this.appConfig = rtlStore.appConfig;
-        this.selNode = rtlStore.selNode;
-        this.logger.info(rtlStore);
-      });
+    this.store.select(rootAppConfig).pipe(takeUntil(this.unSubs[0])).subscribe((appConfig) => {
+      this.appConfig = appConfig;
+    });
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).subscribe((selNode) => {
+      this.selNode = selNode;
+    });
     this.actions.pipe(
       takeUntil(this.unSubs[2]),
       filter((action) => action.type === RTLActions.RESET_PASSWORD_RES)).
