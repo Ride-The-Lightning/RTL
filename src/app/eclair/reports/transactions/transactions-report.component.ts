@@ -1,14 +1,16 @@
 import { Component, OnInit, OnDestroy, HostListener, AfterContentInit } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, combineLatestWith, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { PaymentSent, Invoice } from '../../../shared/models/eclModels';
+import { PaymentSent, Invoice, Payments } from '../../../shared/models/eclModels';
 import { CommonService } from '../../../shared/services/common.service';
 import { MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
 import { RTLState } from '../../../store/rtl.state';
+import { invoices, payments } from '../../store/ecl.selector';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-ecl-transactions-report',
@@ -45,11 +47,11 @@ export class ECLTransactionsReportComponent implements OnInit, AfterContentInit,
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select('ecl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        this.payments = rtlStore.payments.sent ? rtlStore.payments.sent : [];
-        this.invoices = rtlStore.invoices ? rtlStore.invoices : [];
+    this.store.select(payments).pipe(takeUntil(this.unSubs[0]),
+      withLatestFrom(this.store.select(invoices))).
+      subscribe(([selPayments, selInvoices]: [{ payments: Payments, apiCallStatus: ApiCallStatusPayload }, { invoices: Invoice[], apiCallStatus: ApiCallStatusPayload }]) => {
+        this.payments = selPayments.payments.sent ? selPayments.payments.sent : [];
+        this.invoices = selInvoices.invoices ? selInvoices.invoices : [];
         if (this.payments.length > 0 || this.invoices.length > 0) {
           this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
           this.transactionsNonZeroReportData = this.prepareTableData();

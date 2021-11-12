@@ -77,12 +77,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     this.store.dispatch(fetchRTLConfig());
     this.accessKey = this.readAccessKey();
-    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).subscribe((selNode) => { this.settings = selNode.settings; });
-    this.store.select(rootAppConfig).pipe(takeUntil(this.unSubs[2])).subscribe((appConfig) => { this.appConfig = appConfig; });
-    this.store.select(rootNodeData).pipe(takeUntil(this.unSubs[3])).subscribe((nodeData) => {
-      this.information = nodeData;
-      this.flgLoading[0] = !(this.information.identity_pubkey);
-      this.logger.info(this.information);
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).subscribe((selNode) => {
+      this.settings = selNode.settings;
       if (!this.sessionService.getItem('token')) {
         this.flgLoggedIn = false;
         this.flgLoading[0] = false;
@@ -90,6 +86,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.flgLoggedIn = true;
         this.userIdle.startWatching();
       }
+    });
+    this.store.select(rootAppConfig).pipe(takeUntil(this.unSubs[2])).subscribe((appConfig) => { this.appConfig = appConfig; });
+    this.store.select(rootNodeData).pipe(takeUntil(this.unSubs[3])).subscribe((nodeData) => {
+      this.information = nodeData;
+      this.flgLoading[0] = !(this.information.identity_pubkey);
+      this.logger.info(this.information);
     });
     if (this.sessionService.getItem('defaultPassword') === 'true') {
       this.flgSideNavOpened = false;

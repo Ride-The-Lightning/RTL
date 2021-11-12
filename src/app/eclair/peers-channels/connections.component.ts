@@ -6,6 +6,9 @@ import { Store } from '@ngrx/store';
 import { faUsers, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
 import { RTLState } from '../../store/rtl.state';
+import { allChannelsInfo, onchainBalance, peers } from '../store/ecl.selector';
+import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
+import { Channel, ChannelsStatus, LightningBalance, OnChainBalance, Peer } from '../../shared/models/eclModels';
 
 @Component({
   selector: 'rtl-ecl-connections',
@@ -31,12 +34,19 @@ export class ECLConnectionsComponent implements OnInit, OnDestroy {
       subscribe((value: any) => {
         this.activeLink = this.links.findIndex((link) => link.link === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
       });
-    this.store.select('ecl').
+    this.store.select(peers).
       pipe(takeUntil(this.unSubs[1])).
-      subscribe((rtlStore) => {
-        this.activePeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
-        this.activeChannels = rtlStore.channelsStatus && rtlStore.channelsStatus.active && rtlStore.channelsStatus.active.channels ? rtlStore.channelsStatus.active.channels : 0;
-        this.balances = [{ title: 'Total Balance', dataValue: rtlStore.onchainBalance.total || 0 }, { title: 'Confirmed', dataValue: rtlStore.onchainBalance.confirmed }, { title: 'Unconfirmed', dataValue: rtlStore.onchainBalance.unconfirmed }];
+      subscribe((selectedPeers: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.activePeers = (selectedPeers.peers && selectedPeers.peers.length) ? selectedPeers.peers.length : 0;
+      });
+    this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[2])).
+      subscribe((selAllChannels: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload }) => {
+        this.activeChannels = selAllChannels.channelsStatus && selAllChannels.channelsStatus.active && selAllChannels.channelsStatus.active.channels ? selAllChannels.channelsStatus.active.channels : 0;
+      });
+    this.store.select(onchainBalance).
+      pipe(takeUntil(this.unSubs[3])).
+      subscribe((selectedOCBal: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.balances = [{ title: 'Total Balance', dataValue: selectedOCBal.onchainBalance.total || 0 }, { title: 'Confirmed', dataValue: selectedOCBal.onchainBalance.confirmed }, { title: 'Unconfirmed', dataValue: selectedOCBal.onchainBalance.unconfirmed }];
       });
   }
 

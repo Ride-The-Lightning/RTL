@@ -15,6 +15,7 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import { RTLState } from '../../../store/rtl.state';
 import { createInvoice } from '../../store/ecl.actions';
+import { eclNodeInformation, eclNodeSettings } from '../../store/ecl.selector';
 
 @Component({
   selector: 'rtl-ecl-create-invoices',
@@ -45,14 +46,16 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageSize = this.data.pageSize;
-    this.store.select('ecl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        this.selNode = rtlStore.nodeSettings;
-        this.information = rtlStore.information;
+    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeSettings: SelNodeChild) => {
+        this.selNode = nodeSettings;
+      });
+    this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[1])).
+      subscribe((nodeInfo: GetInfo) => {
+        this.information = nodeInfo;
       });
     this.actions.pipe(
-      takeUntil(this.unSubs[1]),
+      takeUntil(this.unSubs[2]),
       filter((action) => action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL || action.type === ECLActions.ADD_INVOICE_ECL)).
       subscribe((action: any) => {
         if (action.type === ECLActions.ADD_INVOICE_ECL) {
@@ -96,7 +99,7 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
     if (this.selNode.fiatConversion && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
       this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
-        pipe(takeUntil(this.unSubs[2])).
+        pipe(takeUntil(this.unSubs[3])).
         subscribe({
           next: (data) => {
             this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;

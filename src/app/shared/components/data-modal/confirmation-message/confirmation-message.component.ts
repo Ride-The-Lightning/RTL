@@ -53,7 +53,7 @@ export class ConfirmationMessageComponent implements OnInit {
     if (dialogRes && this.getInputs && this.getInputs.some((input) => !input.inputValue)) {
       return true;
     }
-    this.store.dispatch(closeConfirmation(dialogRes));
+    this.store.dispatch(closeConfirmation({ payload: dialogRes }));
   }
 
 }

@@ -8,9 +8,9 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { GetInfo, PayRequest, PaymentSent, PaymentSentPart } from '../../../shared/models/eclModels';
+import { GetInfo, PayRequest, PaymentSent, PaymentSentPart, Payments } from '../../../shared/models/eclModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
-import { ApiCallsListECL } from '../../../shared/models/apiCallsPayload';
+import { ApiCallsListECL, ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
@@ -24,6 +24,7 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 import { sendPayment } from '../../store/ecl.actions';
+import { eclNodeInformation, eclNodeSettings, payments } from '../../store/ecl.selector';
 
 @Component({
   selector: 'rtl-ecl-lightning-payments',
@@ -58,9 +59,9 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListECL = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private dataService: DataService, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
@@ -84,31 +85,22 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngOnInit() {
-    this.store.select('ecl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeSettings: SelNodeChild) => {
+        this.selNode = nodeSettings;
+      });
+    this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[1])).
+      subscribe((nodeInfo: GetInfo) => {
+        this.information = nodeInfo;
+      });
+    this.store.select(payments).pipe(takeUntil(this.unSubs[2])).
+      subscribe((selPayments: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchPayments.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPayments.message) : this.apisCallStatus.FetchPayments.message;
+        this.apiCallStatus = selPayments.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.information = rtlStore.information;
-        this.selNode = rtlStore.nodeSettings;
-        if (rtlStore.payments.sent) {
-          rtlStore.payments.sent.map((sentPayment) => {
-            const peerFound = rtlStore.peers.find((peer) => peer.nodeId === sentPayment.recipientNodeId);
-            sentPayment.recipientNodeAlias = peerFound ? peerFound.alias : sentPayment.recipientNodeId;
-            if (sentPayment.parts) {
-              sentPayment.parts.map((part) => {
-                const channelFound = rtlStore.activeChannels.find((channel) => channel.channelId === part.toChannelId);
-                part.toChannelAlias = channelFound ? channelFound.alias : part.toChannelId;
-                return sentPayment.parts;
-              });
-            }
-            return rtlStore.payments.sent;
-          });
-        }
-        this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.sent && rtlStore.payments.sent.length > 0) ? rtlStore.payments.sent : [];
+        this.paymentJSONArr = (selPayments.payments && selPayments.payments.sent && selPayments.payments.sent.length > 0) ? selPayments.payments.sent : [];
         // FOR MPP TESTING START
         // If (this.paymentJSONArr.length > 0) {
         //   This.paymentJSONArr[3].parts.push({
@@ -133,7 +125,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         setTimeout(() => {
           this.flgAnimate = false;
         }, 3000);
-        this.logger.info(rtlStore);
+        this.logger.info(selPayments);
       });
   }
 
@@ -275,7 +267,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           if (this.paymentDecoded.amount) {
             if (this.selNode.fiatConversion) {
               this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
-                pipe(takeUntil(this.unSubs[1])).
+                pipe(takeUntil(this.unSubs[3])).
                 subscribe({
                   next: (data) => {
                     this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
@@ -395,7 +387,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         return paymentReqs;
       }, '');
       this.dataService.decodePayments(paymentRequests).
-        pipe(takeUntil(this.unSubs[2])).
+        pipe(takeUntil(this.unSubs[4])).
         subscribe((decodedPayments: any[][]) => {
           decodedPayments.forEach((decodedPayment, idx) => {
             if (decodedPayment.length > 0 && decodedPayment[0].paymentRequest && decodedPayment[0].paymentRequest.description && decodedPayment[0].paymentRequest.description !== '') {

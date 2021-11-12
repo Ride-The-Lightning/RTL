@@ -122,10 +122,10 @@ export class RTLEffects implements OnDestroy {
     () => this.actions.pipe(
       ofType(RTLActions.OPEN_ALERT),
       map((action: { type: string, payload: DialogConfig }) => {
-        const updatedPayload = JSON.parse(JSON.stringify(action.payload));
+        const updatedPayload = { ...action.payload };
         updatedPayload.width = this.alertWidth;
-        if (updatedPayload.data.component) {
-          this.dialogRef = this.dialog.open(updatedPayload.data.component, updatedPayload);
+        if (action.payload.data.component) {
+          this.dialogRef = this.dialog.open(action.payload.data.component, updatedPayload);
         } else {
           this.dialogRef = this.dialog.open(AlertMessageComponent, updatedPayload);
         }
@@ -149,8 +149,9 @@ export class RTLEffects implements OnDestroy {
     () => this.actions.pipe(
       ofType(RTLActions.OPEN_CONFIRMATION),
       map((action: { type: string, payload: DialogConfig }) => {
-        action.payload.width = this.confirmWidth;
-        this.dialogRef = this.dialog.open(ConfirmationMessageComponent, action.payload);
+        const updatedPayload = { ...action.payload };
+        updatedPayload.width = this.confirmWidth;
+        this.dialogRef = this.dialog.open(ConfirmationMessageComponent, updatedPayload);
       })),
     { dispatch: false }
   );
@@ -446,7 +447,7 @@ export class RTLEffects implements OnDestroy {
           this.router.navigate(['./login']);
         }
         this.sessionService.clearAll();
-        this.store.dispatch(setNodeData({ payload: null }));
+        this.store.dispatch(setNodeData({ payload: {} }));
         return this.httpClient.get(environment.AUTHENTICATE_API + '/logout').
           pipe(map((postRes: any) => {
             this.logger.info(postRes);

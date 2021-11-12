@@ -9,6 +9,9 @@ import { ECLOnChainSendModalComponent } from './on-chain-send-modal/on-chain-sen
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { RTLState } from '../../store/rtl.state';
 import { openAlert } from '../../store/rtl.actions';
+import { eclNodeSettings, onchainBalance } from '../store/ecl.selector';
+import { OnChainBalance } from '../../shared/models/eclModels';
+import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-ecl-on-chain',
@@ -35,11 +38,15 @@ export class ECLOnChainComponent implements OnInit, OnDestroy {
         const linkFound = this.links.find((link) => value.urlAfterRedirects.includes(link.link));
         this.activeLink = linkFound ? linkFound.link : this.links[0].link;
       });
-    this.store.select('ecl').
+    this.store.select(eclNodeSettings).
       pipe(takeUntil(this.unSubs[1])).
-      subscribe((rtlStore) => {
-        this.selNode = rtlStore.nodeSettings;
-        this.balances = [{ title: 'Total Balance', dataValue: rtlStore.onchainBalance.total || 0 }, { title: 'Confirmed', dataValue: rtlStore.onchainBalance.confirmed }, { title: 'Unconfirmed', dataValue: rtlStore.onchainBalance.unconfirmed }];
+      subscribe((nodeSettings) => {
+        this.selNode = nodeSettings;
+      });
+    this.store.select(onchainBalance).
+      pipe(takeUntil(this.unSubs[2])).
+      subscribe((selectedOCBal: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.balances = [{ title: 'Total Balance', dataValue: selectedOCBal.onchainBalance.total || 0 }, { title: 'Confirmed', dataValue: selectedOCBal.onchainBalance.confirmed }, { title: 'Unconfirmed', dataValue: selectedOCBal.onchainBalance.unconfirmed }];
       });
   }
 

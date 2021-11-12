@@ -10,7 +10,7 @@
   </div>
   <div fxLayout="row" fxLayoutAlign="start start">
     <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container">
-      <mat-progress-bar *ngIf="apisCallStatus?.FetchTransactions.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+      <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table fxFlex="100" [dataSource]="listTransactions" matSort
         [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="timestamp">
@@ -52,9 +52,9 @@
         </ng-container>
         <ng-container matColumnDef="no_transaction">
           <td mat-footer-cell *matFooterCellDef colspan="4">
-            <p *ngIf="(!listTransactions?.data || listTransactions?.data?.length<1) && apisCallStatus?.FetchTransactions.status === apiCallStatusEnum.COMPLETED">No transaction available.</p>
-            <p *ngIf="(!listTransactions?.data || listTransactions?.data?.length<1) && apisCallStatus?.FetchTransactions.status === apiCallStatusEnum.INITIATED">Getting transactions...</p>
-            <p *ngIf="(!listTransactions?.data || listTransactions?.data?.length<1) && apisCallStatus?.FetchTransactions.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+            <p *ngIf="(!listTransactions?.data || listTransactions?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No transaction available.</p>
+            <p *ngIf="(!listTransactions?.data || listTransactions?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting transactions...</p>
+            <p *ngIf="(!listTransactions?.data || listTransactions?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
           </td>
         </ng-container>
         <tr mat-footer-row *matFooterRowDef="['no_transaction']" [ngClass]="{'display-none': listTransactions?.data && listTransactions?.data?.length>0}"></tr>

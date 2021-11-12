@@ -9,11 +9,11 @@ import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Peer, GetInfo } from '../../../shared/models/eclModels';
+import { Peer, GetInfo, OnChainBalance } from '../../../shared/models/eclModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum, APICallStatusEnum, ECLActions } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
-import { ApiCallsListECL } from '../../../shared/models/apiCallsPayload';
+import { ApiCallsListECL, ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { ECLOpenChannelComponent } from '../channels/open-channel-modal/open-channel.component';
 import { ECLConnectPeerComponent } from '../connect-peer/connect-peer.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
@@ -22,6 +22,7 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 import { disconnectPeer } from '../../store/ecl.actions';
+import { eclNodeInformation, onchainBalance, peers } from '../../store/ecl.selector';
 
 @Component({
   selector: 'rtl-ecl-peers',
@@ -51,9 +52,9 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListECL = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private actions: Actions, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
@@ -73,24 +74,29 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('ecl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeInfo: GetInfo) => {
+        this.information = nodeInfo;
+      });
+    this.store.select(peers).pipe(takeUntil(this.unSubs[1])).
+      subscribe((selPeers: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchPeers.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchPeers.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPeers.message) : this.apisCallStatus.FetchPeers.message;
+        this.apiCallStatus = selPeers.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.information = rtlStore.information;
-        this.availableBalance = rtlStore.onchainBalance.total || 0;
-        this.peersData = rtlStore.peers;
+        this.peersData = selPeers.peers;
         this.loadPeersTable(this.peersData);
         setTimeout(() => {
           this.flgAnimate = false;
         }, 3000);
-        this.logger.info(rtlStore);
+        this.logger.info(selPeers);
       });
-    this.actions.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === ECLActions.SET_PEERS_ECL)).
+    this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[2])).
+      subscribe((selOCBal: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.availableBalance = selOCBal.onchainBalance.total || 0;
+      });
+    this.actions.pipe(takeUntil(this.unSubs[3]), filter((action) => action.type === ECLActions.SET_PEERS_ECL)).
       subscribe((setPeers: any) => {
         this.peerAddress = null;
         this.flgAnimate = true;
@@ -182,7 +188,7 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       }));
     }
     this.rtlEffects.closeConfirm.
-      pipe(takeUntil(this.unSubs[3])).
+      pipe(takeUntil(this.unSubs[4])).
       subscribe((confirmRes) => {
         if (confirmRes) {
           this.store.dispatch(disconnectPeer({ payload: { nodeId: peerToDetach.nodeId } }));

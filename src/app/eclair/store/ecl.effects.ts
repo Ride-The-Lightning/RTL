@@ -20,6 +20,7 @@ import { ECLInvoiceInformationComponent } from '../transactions/invoice-informat
 
 import { RTLState } from '../../store/rtl.state';
 import { fetchChannels, fetchFees, fetchInvoices, fetchOnchainBalance, fetchPayments, fetchPeers, sendPaymentStatus, setActiveChannels, setChannelsStatus, setInactiveChannels, setLightningBalance, setPeers, setPendingChannels, setQueryRoutes, updateECLAPICallStatus, updateChannelState, updateInvoice } from './ecl.actions';
+import { allAPIsCallStatus } from './ecl.selector';
 
 @Injectable()
 export class ECLEffects implements OnDestroy {
@@ -42,20 +43,18 @@ export class ECLEffects implements OnDestroy {
     private wsService: WebSocketClientService,
     private location: Location
   ) {
-    this.store.select('ecl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        if (
-          ((rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) &&
-            (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
-            (rtlStore.apisCallStatus.FetchOnchainBalance.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchOnchainBalance.status === APICallStatusEnum.ERROR) &&
-            (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR)) &&
-          !this.flgInitialized
-        ) {
-          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.INITALIZE_NODE_DATA }));
-          this.flgInitialized = true;
-        }
-      });
+    this.store.select(allAPIsCallStatus).pipe(takeUntil(this.unSubs[0])).subscribe((allApisCallStatus) => {
+      if (
+        ((allApisCallStatus.FetchInfo.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) &&
+          (allApisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
+          (allApisCallStatus.FetchOnchainBalance.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchOnchainBalance.status === APICallStatusEnum.ERROR) &&
+          (allApisCallStatus.FetchChannels.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR)) &&
+        !this.flgInitialized
+      ) {
+        this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.INITALIZE_NODE_DATA }));
+        this.flgInitialized = true;
+      }
+    });
     this.wsService.eclWSMessages.pipe(
       takeUntil(this.unSubs[1])).
       subscribe((newMessage) => {

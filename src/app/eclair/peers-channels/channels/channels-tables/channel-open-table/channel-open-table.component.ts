@@ -7,17 +7,18 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Channel, GetInfo } from '../../../../../shared/models/eclModels';
+import { Channel, ChannelsStatus, GetInfo, LightningBalance, OnChainBalance, Peer } from '../../../../../shared/models/eclModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum, APICallStatusEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 
 import { ECLChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { RTLEffects } from '../../../../../store/rtl.effects';
-import { ApiCallsListECL } from '../../../../../shared/models/apiCallsPayload';
+import { ApiCallsListECL, ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
 import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
 import { closeChannel, updateChannel } from '../../../../store/ecl.actions';
+import { allChannelsInfo, eclNodeInformation, onchainBalance, peers } from '../../../../store/ecl.selector';
 
 @Component({
   selector: 'rtl-ecl-channel-open-table',
@@ -48,7 +49,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListECL = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -70,22 +71,30 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngOnInit() {
-    this.store.select('ecl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[0])).
+      subscribe((selAllChannels: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchChannels.message) : this.apisCallStatus.FetchChannels.message;
+        this.apiCallStatus = selAllChannels.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.information = rtlStore.information;
-        this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
-        this.totalBalance = rtlStore.onchainBalance.total;
-        this.activeChannels = rtlStore.activeChannels;
+        this.activeChannels = selAllChannels.activeChannels;
         if (this.activeChannels.length > 0 && this.sort && this.paginator) {
           this.loadChannelsTable();
         }
-        this.logger.info(rtlStore);
+        this.logger.info(selAllChannels);
+      });
+    this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[1])).
+      subscribe((nodeInfo: GetInfo) => {
+        this.information = nodeInfo;
+      });
+    this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
+      subscribe((selPeers: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.numPeers = (selPeers.peers && selPeers.peers.length) ? selPeers.peers.length : 0;
+      });
+    this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[3])).
+      subscribe((selOCBal: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.totalBalance = selOCBal.onchainBalance.total;
       });
   }
 
@@ -119,7 +128,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       }
     }));
     this.rtlEffects.closeConfirm.
-      pipe(takeUntil(this.unSubs[1])).
+      pipe(takeUntil(this.unSubs[4])).
       subscribe((confirmRes) => {
         if (confirmRes) {
           const base_fee = confirmRes[0].inputValue;
@@ -161,7 +170,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       }
     }));
     this.rtlEffects.closeConfirm.
-      pipe(takeUntil(this.unSubs[3])).
+      pipe(takeUntil(this.unSubs[5])).
       subscribe((confirmRes) => {
         if (confirmRes) {
           this.store.dispatch(closeChannel({ payload: { channelId: channelToClose.channelId, force: forceClose } }));

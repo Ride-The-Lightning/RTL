@@ -1,15 +1,15 @@
-import { createFeatureSelector, createSelector, select } from '@ngrx/store';
-import { pipe } from 'rxjs';
-import { scan } from 'rxjs/operators';
-
-import { GetInfo } from '../../shared/models/eclModels';
+import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { ECLState } from './ecl.state';
 
-export const getECLState = createFeatureSelector<ECLState>('ecl');
-export const getInformation = createSelector(getECLState, (state: ECLState) => state.information);
-export const takeLastGetInfo = (count: number) => pipe(select(getInformation), scan((acc, curr) => [curr, ...acc].filter((val, index) => index < count && val.hasOwnProperty('identity_pubkey')), [] as GetInfo[]));
-export const getReceivedPayments = createSelector(getECLState, (state: ECLState) => state.payments.received);
-export const getSentPayments = createSelector(getECLState, (state: ECLState) => state.payments.sent);
-export const getRelayedPayments = createSelector(getECLState, (state: ECLState) => state.payments.relayed);
-export const getPaymentAPIStatus = createSelector(getECLState, (state: ECLState) => state.apisCallStatus.FetchPayments);
-export const relayedPaymentAndAPIStatus = createSelector(getECLState, (state: ECLState) => ({ relayed: state.payments.relayed, apisCallStatus: state.apisCallStatus.FetchPayments }));
+export const eclState = createFeatureSelector<ECLState>('ecl');
+export const eclNodeSettings = createSelector(eclState, (state: ECLState) => state.nodeSettings);
+export const eclNodeInformation = createSelector(eclState, (state: ECLState) => state.information);
+export const apiCallStatusNodeInfo = createSelector(eclState, (state: ECLState) => state.apisCallStatus.FetchInfo);
+export const allAPIsCallStatus = createSelector(eclState, (state: ECLState) => state.apisCallStatus);
+export const payments = createSelector(eclState, (state: ECLState) => ({ payments: state.payments, apiCallStatus: state.apisCallStatus.FetchPayments }));
+export const fees = createSelector(eclState, (state: ECLState) => ({ fees: state.fees, apiCallStatus: state.apisCallStatus.FetchFees }));
+export const allChannelsInfo = createSelector(eclState, (state: ECLState) => ({ activeChannels: state.activeChannels, pendingChannels: state.pendingChannels, inactiveChannels: state.inactiveChannels, lightningBalance: state.lightningBalance, channelsStatus: state.channelsStatus, apiCallStatus: state.apisCallStatus.FetchChannels }));
+export const onchainBalance = createSelector(eclState, (state: ECLState) => ({ onchainBalance: state.onchainBalance, apiCallStatus: state.apisCallStatus.FetchOnchainBalance }));
+export const peers = createSelector(eclState, (state: ECLState) => ({ peers: state.peers, apiCallStatus: state.apisCallStatus.FetchPeers }));
+export const transactions = createSelector(eclState, (state: ECLState) => ({ transactions: state.transactions, apiCallStatus: state.apisCallStatus.FetchTransactions }));
+export const invoices = createSelector(eclState, (state: ECLState) => ({ invoices: state.invoices, apiCallStatus: state.apisCallStatus.FetchInvoices }));

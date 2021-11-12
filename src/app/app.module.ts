@@ -40,7 +40,14 @@ import { ECLReducer } from './eclair/store/ecl.reducers';
     LayoutModule,
     HammerModule,
     UserIdleModule.forRoot({ idle: 3590, timeout: 10, ping: 12000 }), // One hour
-    StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer }),
+    StoreModule.forRoot(
+      { root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer },
+      {
+        runtimeChecks: {
+          strictStateImmutability: false,
+          strictActionImmutability: false
+        }
+      }),
     EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects, ECLEffects]),
     !environment.production ? StoreDevtoolsModule.instrument() : []
   ],

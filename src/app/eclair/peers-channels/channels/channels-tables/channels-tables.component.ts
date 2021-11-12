@@ -6,11 +6,13 @@ import { Store } from '@ngrx/store';
 
 import { ECLOpenChannelComponent } from '../open-channel-modal/open-channel.component';
 import { LoggerService } from '../../../../shared/services/logger.service';
-import { GetInfo, Peer } from '../../../../shared/models/eclModels';
+import { Channel, ChannelsStatus, GetInfo, LightningBalance, OnChainBalance, Peer } from '../../../../shared/models/eclModels';
 import { SelNodeChild } from '../../../../shared/models/RTLconfig';
 
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert } from '../../../../store/rtl.actions';
+import { allChannelsInfo, eclNodeInformation, eclNodeSettings, onchainBalance, peers } from '../../../store/ecl.selector';
+import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-ecl-channels-tables',
@@ -28,7 +30,7 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
   public totalBalance = 0;
   public links = [{ link: 'open', name: 'Open' }, { link: 'pending', name: 'Pending' }, { link: 'inactive', name: 'Inactive' }];
   public activeLink = 0;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private router: Router) { }
 
@@ -38,17 +40,28 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
       subscribe((value: any) => {
         this.activeLink = this.links.findIndex((link) => link.link === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
       });
-    this.store.select('ecl').
-      pipe(takeUntil(this.unSubs[1])).
-      subscribe((rtlStore) => {
-        this.numOfOpenChannels = (rtlStore.channelsStatus && rtlStore.channelsStatus.active && rtlStore.channelsStatus.active.channels) ? rtlStore.channelsStatus.active.channels : 0;
-        this.numOfPendingChannels = (rtlStore.channelsStatus && rtlStore.channelsStatus.pending && rtlStore.channelsStatus.pending.channels) ? rtlStore.channelsStatus.pending.channels : 0;
-        this.numOfInactiveChannels = (rtlStore.channelsStatus && rtlStore.channelsStatus.inactive && rtlStore.channelsStatus.inactive.channels) ? rtlStore.channelsStatus.inactive.channels : 0;
-        this.selNode = rtlStore.nodeSettings;
-        this.information = rtlStore.information;
-        this.peers = rtlStore.peers;
-        this.totalBalance = rtlStore.onchainBalance.total;
-        this.logger.info(rtlStore);
+    this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[1])).
+      subscribe((selAllChannels: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload }) => {
+        this.numOfOpenChannels = (selAllChannels.channelsStatus && selAllChannels.channelsStatus.active && selAllChannels.channelsStatus.active.channels) ? selAllChannels.channelsStatus.active.channels : 0;
+        this.numOfPendingChannels = (selAllChannels.channelsStatus && selAllChannels.channelsStatus.pending && selAllChannels.channelsStatus.pending.channels) ? selAllChannels.channelsStatus.pending.channels : 0;
+        this.numOfInactiveChannels = (selAllChannels.channelsStatus && selAllChannels.channelsStatus.inactive && selAllChannels.channelsStatus.inactive.channels) ? selAllChannels.channelsStatus.inactive.channels : 0;
+        this.logger.info(selAllChannels);
+      });
+    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[2])).
+      subscribe((nodeSettings: SelNodeChild) => {
+        this.selNode = nodeSettings;
+      });
+    this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[3])).
+      subscribe((nodeInfo: GetInfo) => {
+        this.information = nodeInfo;
+      });
+    this.store.select(peers).pipe(takeUntil(this.unSubs[4])).
+      subscribe((selPeers: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.peers = selPeers.peers;
+      });
+    this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[5])).
+      subscribe((selOCBal: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.totalBalance = selOCBal.onchainBalance.total;
       });
   }
 

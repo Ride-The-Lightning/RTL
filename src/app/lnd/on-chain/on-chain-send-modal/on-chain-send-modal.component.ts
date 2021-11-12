@@ -122,7 +122,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
       return true;
     }
     this.flgValidated = false;
-    this.store.dispatch(isAuthorized(sha256(this.passwordFormGroup.controls.password.value)));
+    this.store.dispatch(isAuthorized({ payload: sha256(this.passwordFormGroup.controls.password.value).toString() }));
     this.rtlEffects.isAuthorizedRes.pipe(take(1)).
       subscribe((authRes) => {
         if (authRes !== 'ERROR') {

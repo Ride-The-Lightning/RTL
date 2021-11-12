@@ -3,13 +3,15 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { PaymentRelayed } from '../../../shared/models/eclModels';
+import { PaymentRelayed, Payments } from '../../../shared/models/eclModels';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
 import { RTLState } from '../../../store/rtl.state';
+import { payments } from '../../store/ecl.selector';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-ecl-fee-report',
@@ -44,12 +46,11 @@ export class ECLFeeReportComponent implements OnInit, AfterContentInit, OnDestro
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select('ecl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        this.events = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
+    this.store.select(payments).pipe(takeUntil(this.unSubs[0])).
+      subscribe((selPayments: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
+        this.events = selPayments.payments && selPayments.payments.relayed ? selPayments.payments.relayed : [];
         this.filterForwardingEvents(this.startDate, this.endDate);
-        this.logger.info(rtlStore);
+        this.logger.info(selPayments);
       });
   }
 

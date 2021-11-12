@@ -24,7 +24,7 @@
       </mat-form-field>
     </div>
     <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
-      <mat-progress-bar *ngIf="apisCallStatus?.FetchPayments.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+      <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table fxFlex="100" [dataSource]="payments" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="firstPartTimestamp">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Date/Time</th>
@@ -65,9 +65,9 @@
         </ng-container>
         <ng-container matColumnDef="no_payment">
           <td mat-footer-cell *matFooterCellDef colspan="4">
-            <p *ngIf="(!payments?.data || payments?.data?.length<1) && apisCallStatus?.FetchPayments.status === apiCallStatusEnum.COMPLETED">No payment available.</p>
-            <p *ngIf="(!payments?.data || payments?.data?.length<1) && apisCallStatus?.FetchPayments.status === apiCallStatusEnum.INITIATED">Getting payments...</p>
-            <p *ngIf="(!payments?.data || payments?.data?.length<1) && apisCallStatus?.FetchPayments.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+            <p *ngIf="(!payments?.data || payments?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No payment available.</p>
+            <p *ngIf="(!payments?.data || payments?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting payments...</p>
+            <p *ngIf="(!payments?.data || payments?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
           </td>
         </ng-container>
 

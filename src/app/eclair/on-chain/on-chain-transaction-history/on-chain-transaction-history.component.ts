@@ -9,7 +9,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { Transaction } from '../../../shared/models/eclModels';
-import { ApiCallsListECL } from '../../../shared/models/apiCallsPayload';
+import { ApiCallsListECL, ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -17,6 +17,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
 import { fetchTransactions } from '../../store/ecl.actions';
+import { transactions } from '../../store/ecl.selector';
 
 @Component({
   selector: 'rtl-ecl-on-chain-transaction-history',
@@ -39,7 +40,7 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListECL = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -62,18 +63,18 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
 
   ngOnInit() {
     this.store.dispatch(fetchTransactions());
-    this.store.select('ecl').
+    this.store.select(transactions).
       pipe(takeUntil(this.unsub[0])).
-      subscribe((rtlStore) => {
+      subscribe((selectedTransactions: { transactions: Transaction[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchTransactions.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchTransactions.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchTransactions.message) : this.apisCallStatus.FetchTransactions.message;
+        this.apiCallStatus = selectedTransactions.apiCallStatus;
+        if (selectedTransactions.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        if (rtlStore.transactions) {
-          this.loadTransactionsTable(rtlStore.transactions);
+        if (selectedTransactions.transactions) {
+          this.loadTransactionsTable(selectedTransactions.transactions);
         }
-        this.logger.info(rtlStore);
+        this.logger.info(selectedTransactions);
       });
   }
 

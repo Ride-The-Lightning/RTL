@@ -7,14 +7,15 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { PaymentRelayed } from '../../../shared/models/eclModels';
+import { PaymentRelayed, Payments } from '../../../shared/models/eclModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
-import { ApiCallsListECL } from '../../../shared/models/apiCallsPayload';
+import { ApiCallsListECL, ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
+import { payments } from '../../store/ecl.selector';
 
 @Component({
   selector: 'rtl-ecl-forwarding-history',
@@ -38,7 +39,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListECL = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -60,16 +61,15 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   }
 
   ngOnInit() {
-    this.store.select('ecl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore: any) => {
+    this.store.select(payments).pipe(takeUntil(this.unSubs[0])).
+      subscribe((selPayments: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
         if (this.eventsData.length <= 0) {
           this.errorMessage = '';
-          this.apisCallStatus = rtlStore.apisCallStatus;
-          if (rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.ERROR) {
-            this.errorMessage = (typeof (this.apisCallStatus.FetchPayments.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPayments.message) : this.apisCallStatus.FetchPayments.message;
+          this.apiCallStatus = selPayments.apiCallStatus;
+          if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+            this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
           }
-          this.eventsData = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
+          this.eventsData = selPayments.payments && selPayments.payments.relayed ? selPayments.payments.relayed : [];
           if (this.eventsData.length > 0 && this.sort && this.paginator) {
             this.loadForwardingEventsTable(this.eventsData);
           }

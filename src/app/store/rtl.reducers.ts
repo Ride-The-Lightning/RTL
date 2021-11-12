@@ -5,7 +5,7 @@ import { resetRootStore, setNodeData, setRTLConfig, setSelectedNode, updateRootA
 
 export const RootReducer = createReducer(initRootState,
   on(updateRootAPICallStatus, (state, { payload }) => {
-    const updatedApisCallStatus = JSON.parse(JSON.stringify(state.apisCallStatus));
+    const updatedApisCallStatus = { ...state.apisCallStatus };
     updatedApisCallStatus[payload.action] = {
       status: payload.status,
       statusCode: payload.statusCode,

@@ -13,7 +13,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { openAlert } from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
-import { getForwardingHistoryAPIStatus } from '../../store/lnd.selector';
+import { forwardingHistory } from '../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-routing-peers',
@@ -63,11 +63,11 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select(getForwardingHistoryAPIStatus).pipe(takeUntil(this.unSubs[0])).
-      subscribe((fhSelector: { forwardingHistory: SwitchRes, apisCallStatus: ApiCallStatusPayload }) => {
+    this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[0])).
+      subscribe((fhSelector: { forwardingHistory: SwitchRes, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = fhSelector.apisCallStatus;
-        if (fhSelector.apisCallStatus?.status === APICallStatusEnum.ERROR) {
+        this.apisCallStatus = fhSelector.apiCallStatus;
+        if (fhSelector.apiCallStatus?.status === APICallStatusEnum.ERROR) {
           this.errorMessage = (typeof (this.apisCallStatus.message) === 'object') ? JSON.stringify(this.apisCallStatus.message) : this.apisCallStatus.message;
         }
         if (fhSelector.forwardingHistory.forwarding_events) {
@@ -78,7 +78,7 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.routingPeersData.length > 0 && this.sortIn && this.paginatorIn && this.sortOut && this.paginatorOut) {
           this.loadRoutingPeersTable(this.routingPeersData);
         }
-        this.logger.info(fhSelector.apisCallStatus);
+        this.logger.info(fhSelector.apiCallStatus);
         this.logger.info(fhSelector.forwardingHistory);
       });
   }

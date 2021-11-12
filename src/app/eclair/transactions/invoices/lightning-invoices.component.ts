@@ -12,7 +12,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, ECLActions } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/eclModels';
-import { ApiCallsListECL } from '../../../shared/models/apiCallsPayload';
+import { ApiCallsListECL, ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
@@ -23,6 +23,7 @@ import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation'
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
 import { createInvoice, invoiceLookup } from '../../store/ecl.actions';
+import { eclNodeInformation, eclNodeSettings, invoices } from '../../store/ecl.selector';
 
 @Component({
   selector: 'rtl-ecl-lightning-invoices',
@@ -58,7 +59,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListECL = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -80,26 +81,31 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngOnInit() {
-    this.store.select('ecl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeSettings: SelNodeChild) => {
+        this.selNode = nodeSettings;
+      });
+    this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[1])).
+      subscribe((nodeInfo: GetInfo) => {
+        this.information = nodeInfo;
+      });
+    this.store.select(invoices).pipe(takeUntil(this.unSubs[2])).
+      subscribe((selInvoices: { invoices: Invoice[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchInvoices.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchInvoices.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchInvoices.message) : this.apisCallStatus.FetchInvoices.message;
+        this.apiCallStatus = selInvoices.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.selNode = rtlStore.nodeSettings;
-        this.information = rtlStore.information;
-        this.invoiceJSONArr = (rtlStore.invoices && rtlStore.invoices.length > 0) ? rtlStore.invoices : [];
+        this.invoiceJSONArr = (selInvoices.invoices && selInvoices.invoices.length > 0) ? selInvoices.invoices : [];
         if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator) {
           this.loadInvoicesTable(this.invoiceJSONArr);
         }
         setTimeout(() => {
           this.flgAnimate = false;
         }, 5000);
-        this.logger.info(rtlStore);
+        this.logger.info(selInvoices);
       });
-    this.actions.pipe(takeUntil(this.unSubs[1]), filter((action) => (action.type === ECLActions.SET_LOOKUP_ECL || action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL))).
+    this.actions.pipe(takeUntil(this.unSubs[3]), filter((action) => (action.type === ECLActions.SET_LOOKUP_ECL || action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL))).
       subscribe((resLookup: any) => {
         if (resLookup.type === ECLActions.SET_LOOKUP_ECL) {
           if (this.invoiceJSONArr.length > 0 && this.sort && this.paginator && resLookup.payload) {
@@ -191,7 +197,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
     if (this.selNode.fiatConversion && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
       this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
-        pipe(takeUntil(this.unSubs[2])).
+        pipe(takeUntil(this.unSubs[4])).
         subscribe({
           next: (data) => {
             this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;

@@ -10,7 +10,7 @@ import { DataService } from '../../../shared/services/data.service';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
 import { RTLState } from '../../../store/rtl.state';
-import { getInformation } from '../../store/lnd.selector';
+import { lndNodeInformation } from '../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-fee-report',
@@ -44,7 +44,7 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select(getInformation).pipe(takeUntil(this.unSubs[0])).subscribe((info) => {
+    this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[0])).subscribe((info) => {
       if (info.identity_pubkey) {
         this.fetchEvents(this.startDate, this.endDate);
       }

@@ -20,8 +20,10 @@ export class ECLWebSocketClient {
     if (this.reconnectTimeOut) { return; }
     this.waitTime = (this.waitTime >= 16) ? 16 : (this.waitTime * 2);
     this.reconnectTimeOut = setTimeout(() => {
-      this.logger.log({ selectedNode: this.selectedNode, level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Reconnecting to the Eclair\'s Websocket Server.' });
-      this.connect(this.selectedNode);
+      if (this.selectedNode) {
+        this.logger.log({ selectedNode: this.selectedNode, level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Reconnecting to the Eclair\'s Websocket Server.' });
+        this.connect(this.selectedNode);
+      }
       this.reconnectTimeOut = null;
     }, this.waitTime * 1000);
   };
@@ -29,15 +31,17 @@ export class ECLWebSocketClient {
   public connect = (selectedNode: CommonSelectedNode) => {
     try {
       if (!this.webSocketClient || this.webSocketClient.readyState !== WebSocket.OPEN) {
-        if (!this.selectedNode) { this.selectedNode = selectedNode; }
-        const UpdatedLNServerURL = (selectedNode.ln_server_url).replace(/^http/, 'ws');
-        const firstSubStrIndex = (UpdatedLNServerURL.indexOf('//') + 2);
-        const WS_LINK = UpdatedLNServerURL.slice(0, firstSubStrIndex) + ':' + this.selectedNode.ln_api_password + '@' + UpdatedLNServerURL.slice(firstSubStrIndex) + '/ws';
-        this.webSocketClient = new WebSocket(WS_LINK);
-        this.webSocketClient.onopen = this.onClientOpen;
-        this.webSocketClient.onclose = this.onClientClose;
-        this.webSocketClient.onmessage = this.onClientMessage;
-        this.webSocketClient.onerror = this.onClientError;
+        this.selectedNode = selectedNode;
+        if (this.selectedNode && this.selectedNode.ln_server_url) {
+          const UpdatedLNServerURL = (this.selectedNode.ln_server_url).replace(/^http/, 'ws');
+          const firstSubStrIndex = (UpdatedLNServerURL.indexOf('//') + 2);
+          const WS_LINK = UpdatedLNServerURL.slice(0, firstSubStrIndex) + ':' + this.selectedNode.ln_api_password + '@' + UpdatedLNServerURL.slice(firstSubStrIndex) + '/ws';
+          this.webSocketClient = new WebSocket(WS_LINK);
+          this.webSocketClient.onopen = this.onClientOpen;
+          this.webSocketClient.onclose = this.onClientClose;
+          this.webSocketClient.onmessage = this.onClientMessage;
+          this.webSocketClient.onerror = this.onClientError;
+        }
       }
     } catch (err) {
       throw new Error(err);
@@ -79,6 +83,7 @@ export class ECLWebSocketClient {
       this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'ECLWebSocket', msg: 'Disconnecting from the Eclair\'s Websocket Server.' });
       this.webSocketClient.close();
     }
+    this.selectedNode = null;
   };
 
 }

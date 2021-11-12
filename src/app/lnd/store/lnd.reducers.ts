@@ -8,7 +8,7 @@ let flgUTXOsSet = false;
 
 export const LNDReducer = createReducer(initLNDState,
   on(updateLNDAPICallStatus, (state, { payload }) => {
-    const updatedApisCallStatus = JSON.parse(JSON.stringify(state.apisCallStatus));
+    const updatedApisCallStatus = { ...state.apisCallStatus };
     updatedApisCallStatus[payload.action] = {
       status: payload.status,
       statusCode: payload.statusCode,
@@ -158,7 +158,7 @@ export const LNDReducer = createReducer(initLNDState,
       const modifiedUTXOs = [...state.utxos];
       modifiedUTXOs.forEach((utxo) => {
         const foundTransaction = payload.find((transaction) => transaction.tx_hash === utxo.outpoint.txid_str);
-        utxo.label = foundTransaction && foundTransaction.label ? foundTransaction.label : '';
+        return { ...utxo, label: foundTransaction && foundTransaction.label ? foundTransaction.label : '' };
       });
       return {
         ...state,
@@ -194,9 +194,10 @@ export const LNDReducer = createReducer(initLNDState,
     allLightningTransactions: payload
   })),
   on(setForwardingHistory, (state, { payload }) => {
-    if (payload.forwarding_events) {
+    const updatedPayload = !payload.forwarding_events ? {} : { ...payload };
+    if (updatedPayload.forwarding_events) {
       const storedChannels = [...state.allChannels, ...state.closedChannels];
-      payload.forwarding_events.forEach((fhEvent) => {
+      updatedPayload.forwarding_events.forEach((fhEvent) => {
         if (storedChannels && storedChannels.length > 0) {
           for (let idx = 0; idx < storedChannels.length; idx++) {
             if (storedChannels[idx].chan_id.toString() === fhEvent.chan_id_in) {
@@ -225,12 +226,10 @@ export const LNDReducer = createReducer(initLNDState,
           fhEvent.alias_out = fhEvent.chan_id_out;
         }
       });
-    } else {
-      payload = {};
     }
     return {
       ...state,
-      forwardingHistory: payload
+      forwardingHistory: updatedPayload
     };
   })
 );

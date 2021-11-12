@@ -6,7 +6,7 @@ import { PaymentReceived } from '../../shared/models/eclModels';
 
 export const ECLReducer = createReducer(initECLState,
   on(updateECLAPICallStatus, (state, { payload }) => {
-    const updatedApisCallStatus = JSON.parse(JSON.stringify(state.apisCallStatus));
+    const updatedApisCallStatus = { ...state.apisCallStatus };
     updatedApisCallStatus[payload.action] = {
       status: payload.status,
       statusCode: payload.statusCode,
@@ -86,6 +86,21 @@ export const ECLReducer = createReducer(initECLState,
     };
   }),
   on(setPayments, (state, { payload }) => {
+    if (payload && payload.sent) {
+      const storedChannels = [...state.activeChannels, ...state.pendingChannels, ...state.inactiveChannels];
+      payload.sent.map((sentPayment) => {
+        const peerFound = state.peers.find((peer) => peer.nodeId === sentPayment.recipientNodeId);
+        sentPayment.recipientNodeAlias = peerFound ? peerFound.alias : sentPayment.recipientNodeId;
+        if (sentPayment.parts) {
+          sentPayment.parts.map((part) => {
+            const channelFound = storedChannels.find((channel) => channel.channelId === part.toChannelId);
+            part.toChannelAlias = channelFound ? channelFound.alias : part.toChannelId;
+            return sentPayment.parts;
+          });
+        }
+        return payload.sent;
+      });
+    }
     if (payload && payload.relayed) {
       const storedChannels = [...state.activeChannels, ...state.pendingChannels, ...state.inactiveChannels];
       payload.relayed.forEach((rlEvent) => {
@@ -150,7 +165,7 @@ export const ECLReducer = createReducer(initECLState,
     modifiedInvoices = modifiedInvoices.map((invoice) => {
       if (invoice.paymentHash === payload.paymentHash) {
         if (payload.hasOwnProperty('type')) {
-          const updatedInvoice = invoice;
+          const updatedInvoice = { ...invoice };
           updatedInvoice.amountSettled = ((<PaymentReceived>payload).parts && (<PaymentReceived>payload).parts.length && (<PaymentReceived>payload).parts.length > 0 && (<PaymentReceived>payload).parts[0].amount) ? (<PaymentReceived>payload).parts[0].amount / 1000 : 0;
           updatedInvoice.receivedAt = ((<PaymentReceived>payload).parts && (<PaymentReceived>payload).parts.length && (<PaymentReceived>payload).parts.length > 0 && (<PaymentReceived>payload).parts[0].timestamp) ? Math.round((<PaymentReceived>payload).parts[0].timestamp / 1000) : 0;
           updatedInvoice.status = 'received';

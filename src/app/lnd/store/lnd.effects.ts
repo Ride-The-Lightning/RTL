@@ -865,7 +865,7 @@ export class LNDEffects implements OnDestroy {
           };
         }),
         catchError((err: any) => {
-          this.store.dispatch(setQueryRoutes({ payload: null }));
+          this.store.dispatch(setQueryRoutes({ payload: { routes: [] } }));
           this.handleErrorWithAlert('GetQueryRoutes', UI_MESSAGES.NO_SPINNER, 'Get Query Routes Failed', this.CHILD_API_URL + environment.NETWORK_API, err);
           return of({ type: RTLActions.VOID });
         })
@@ -1028,7 +1028,7 @@ export class LNDEffects implements OnDestroy {
         }),
         catchError((err: any) => {
           this.handleErrorWithAlert('Lookup', action.payload.uiMessage, 'Channel Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/edge/' + action.payload.channelID, err);
-          this.store.dispatch(setLookup({ payload: null }));
+          this.store.dispatch(setLookup({ payload: {} }));
           return of({ type: RTLActions.VOID });
         })
       );

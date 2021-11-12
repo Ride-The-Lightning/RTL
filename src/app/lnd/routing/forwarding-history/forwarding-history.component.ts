@@ -15,7 +15,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { openAlert } from '../../../store/rtl.actions';
 
 import { RTLState } from '../../../store/rtl.state';
-import { getForwardingHistoryAPIStatus } from '../../store/lnd.selector';
+import { forwardingHistory } from '../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-forwarding-history',
@@ -59,17 +59,17 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   }
 
   ngOnInit() {
-    this.store.select(getForwardingHistoryAPIStatus).pipe(takeUntil(this.unSubs[0])).
-      subscribe((fhSelector: { forwardingHistory: SwitchRes, apisCallStatus: ApiCallStatusPayload }) => {
+    this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[0])).
+      subscribe((fhSelector: { forwardingHistory: SwitchRes, apiCallStatus: ApiCallStatusPayload }) => {
         if (this.eventsData.length <= 0) {
           this.errorMessage = '';
-          this.apisCallStatus = fhSelector.apisCallStatus;
-          if (fhSelector.apisCallStatus?.status === APICallStatusEnum.ERROR) {
+          this.apisCallStatus = fhSelector.apiCallStatus;
+          if (fhSelector.apiCallStatus?.status === APICallStatusEnum.ERROR) {
             this.errorMessage = (typeof (this.apisCallStatus.message) === 'object') ? JSON.stringify(this.apisCallStatus.message) : this.apisCallStatus.message;
           }
           this.forwardingHistoryData = (fhSelector.forwardingHistory?.forwarding_events) ? fhSelector.forwardingHistory.forwarding_events : [];
           this.loadForwardingEventsTable(this.forwardingHistoryData);
-          this.logger.info(fhSelector.apisCallStatus);
+          this.logger.info(fhSelector.apiCallStatus);
           this.logger.info(fhSelector.forwardingHistory);
         }
       });

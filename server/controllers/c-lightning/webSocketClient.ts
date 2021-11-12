@@ -22,8 +22,10 @@ export class CLWebSocketClient {
     if (this.reconnectTimeOut) { return; }
     this.waitTime = (this.waitTime >= 16) ? 16 : (this.waitTime * 2);
     this.reconnectTimeOut = setTimeout(() => {
-      this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Reconnecting to the CLightning\'s Websocket Server..' });
-      this.connect(this.selectedNode);
+      if (this.selectedNode) {
+        this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Reconnecting to the CLightning\'s Websocket Server..' });
+        this.connect(this.selectedNode);
+      }
       this.reconnectTimeOut = null;
     }, this.waitTime * 1000);
   };
@@ -31,15 +33,17 @@ export class CLWebSocketClient {
   public connect = (selectedNode: CommonSelectedNode) => {
     try {
       if (!this.webSocketClient || this.webSocketClient.readyState !== WebSocket.OPEN) {
-        if (!this.selectedNode) { this.selectedNode = selectedNode; }
-        this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Connecting to the CLightning\'s Websocket Server..' });
-        const WS_LINK = (selectedNode.ln_server_url).replace(/^http/, 'ws') + '/v1/ws';
-        const mcrnHexEncoded = Buffer.from(fs.readFileSync(join(selectedNode.macaroon_path, 'access.macaroon'))).toString('hex');
-        this.webSocketClient = new WebSocket(WS_LINK, [mcrnHexEncoded, 'hex'], { rejectUnauthorized: false });
-        this.webSocketClient.onopen = this.onClientOpen;
-        this.webSocketClient.onclose = this.onClientClose;
-        this.webSocketClient.onmessage = this.onClientMessage;
-        this.webSocketClient.onerror = this.onClientError;
+        this.selectedNode = selectedNode;
+        if (this.selectedNode && this.selectedNode.ln_server_url) {
+          this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Connecting to the CLightning\'s Websocket Server..' });
+          const WS_LINK = (this.selectedNode.ln_server_url).replace(/^http/, 'ws') + '/v1/ws';
+          const mcrnHexEncoded = Buffer.from(fs.readFileSync(join(this.selectedNode.macaroon_path, 'access.macaroon'))).toString('hex');
+          this.webSocketClient = new WebSocket(WS_LINK, [mcrnHexEncoded, 'hex'], { rejectUnauthorized: false });
+          this.webSocketClient.onopen = this.onClientOpen;
+          this.webSocketClient.onclose = this.onClientClose;
+          this.webSocketClient.onmessage = this.onClientMessage;
+          this.webSocketClient.onerror = this.onClientError;
+        }
       }
     } catch (err) {
       throw new Error(err);
@@ -81,6 +85,7 @@ export class CLWebSocketClient {
       this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Disconnecting from the CLightning\'s Websocket Server..' });
       this.webSocketClient.close();
     }
+    this.selectedNode = null;
   };
 
 }

@@ -39,7 +39,7 @@ export class RoutingComponent implements OnInit, OnDestroy {
   }
 
   onEventsFetch() {
-    this.store.dispatch(setForwardingHistory({ payload: null }));
+    this.store.dispatch(setForwardingHistory({ payload: { forwarding_events: [] } }));
     if (!this.endDate) {
       this.endDate = this.today;
     }
@@ -61,7 +61,7 @@ export class RoutingComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.resetData();
-    this.store.dispatch(setForwardingHistory({ payload: null }));
+    this.store.dispatch(setForwardingHistory({ payload: { forwarding_events: [] } }));
     this.unSubs.forEach((completeSub) => {
       completeSub.next(null);
       completeSub.complete();

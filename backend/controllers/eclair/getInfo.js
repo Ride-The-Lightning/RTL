@@ -2,10 +2,14 @@ import request from 'request-promise';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { ECLWSClient } from './webSocketClient.js';
+import { CLWSClient } from '../c-lightning/webSocketClient.js';
+// import { LNDWSClient, LNDWebSocketClient } from '../lnd/webSocketClient.js';
 let options = null;
 const logger = Logger;
 const common = Common;
 const eclWsClient = ECLWSClient;
+const clWsClient = CLWSClient;
+// const lndWsClient: LNDWebSocketClient = LNDWSClient;
 export const getInfo = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Getting Eclair Node Information..' });
     common.logEnvVariables(req);
@@ -15,6 +19,8 @@ export const getInfo = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     eclWsClient.connect(req.session.selectedNode);
+    clWsClient.disconnect();
+    // lndWsClient.disconnect();
     options.url = req.session.selectedNode.ln_server_url + '/getinfo';
     options.form = {};
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'GetInfo', msg: 'Selected Node', data: req.session.selectedNode.ln_node });
