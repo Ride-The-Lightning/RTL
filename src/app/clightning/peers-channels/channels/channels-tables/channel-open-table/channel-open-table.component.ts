@@ -7,9 +7,9 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Channel, GetInfo, ChannelEdge } from '../../../../../shared/models/clModels';
+import { Channel, GetInfo, ChannelEdge, Balance } from '../../../../../shared/models/clModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, FEE_RATE_TYPES, APICallStatusEnum, UI_MESSAGES } from '../../../../../shared/services/consts-enums-functions';
-import { ApiCallsListCL } from '../../../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 
@@ -20,6 +20,7 @@ import { RTLEffects } from '../../../../../store/rtl.effects';
 import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
 import { channelLookup, closeChannel, updateChannel } from '../../../../store/cl.actions';
+import { channels, nodeInfoAndBalanceAndNumPeers } from '../../../../store/cl.selector';
 
 @Component({
   selector: 'rtl-cl-channel-open-table',
@@ -50,7 +51,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListCL = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -72,22 +73,25 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   ngOnInit() {
-    this.store.select('cl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(nodeInfoAndBalanceAndNumPeers).pipe(takeUntil(this.unSubs[0])).
+      subscribe((infoBalNumpeersSelector: { information: GetInfo, balance: Balance, numPeers: number }) => {
+        this.information = infoBalNumpeersSelector.information;
+        this.numPeers = infoBalNumpeersSelector.numPeers;
+        this.totalBalance = infoBalNumpeersSelector.balance.totalBalance;
+        this.logger.info(infoBalNumpeersSelector);
+      });
+    this.store.select(channels).pipe(takeUntil(this.unSubs[1])).
+      subscribe((channelsSeletor: { channels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchChannels.message) : this.apisCallStatus.FetchChannels.message;
+        this.apiCallStatus = channelsSeletor.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.information = rtlStore.information;
-        this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
-        this.totalBalance = rtlStore.balance.totalBalance;
-        this.channelsData = rtlStore.allChannels.filter((channel) => channel.state === 'CHANNELD_NORMAL' && channel.connected);
+        this.channelsData = channelsSeletor.channels.filter((channel) => channel.state === 'CHANNELD_NORMAL' && channel.connected);
         if (this.channelsData.length > 0) {
           this.loadChannelsTable(this.channelsData);
         }
-        this.logger.info(rtlStore);
+        this.logger.info(channelsSeletor);
       });
   }
 

@@ -10,7 +10,7 @@ import { MatTableDataSource } from '@angular/material/table';
 
 import { GetInfo, PayRequest, PaymentSent, PaymentSentPart, Payments } from '../../../shared/models/eclModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
-import { ApiCallsListECL, ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';

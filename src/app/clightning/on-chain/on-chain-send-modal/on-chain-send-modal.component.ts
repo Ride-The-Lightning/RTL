@@ -23,6 +23,8 @@ import { RTLState } from '../../../store/rtl.state';
 import { isAuthorized, openSnackBar } from '../../../store/rtl.actions';
 import { setChannelTransaction } from '../../store/cl.actions';
 import { rootAppConfig, rootSelectedNode } from '../../../store/rtl.selector';
+import { clNodeInformation, utxos } from '../../store/cl.selector';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-cl-on-chain-send-modal',
@@ -68,7 +70,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
   passwordFormGroup: FormGroup;
   sendFundFormGroup: FormGroup;
   confirmFormGroup: FormGroup;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<CLOnChainSendModalComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOnChainSendFunds, private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions, private formBuilder: FormBuilder, private rtlEffects: RTLEffects, private snackBar: MatSnackBar) { }
 
@@ -107,18 +109,20 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
         this.amountUnits = selNode.settings.currencyUnits;
         this.appConfig = appConfig;
       });
-    this.store.select('cl').
-      pipe(takeUntil(this.unSubs[2])).
-      subscribe((rtlStore) => {
-        this.information = rtlStore.information;
+    this.store.select(clNodeInformation).pipe(takeUntil(this.unSubs[2])).
+      subscribe((nodeInfo: GetInfo) => {
+        this.information = nodeInfo;
         this.isCompatibleVersion =
           this.commonService.isVersionCompatible(this.information.version, '0.9.0') &&
           this.commonService.isVersionCompatible(this.information.api_version, '0.4.0');
-        this.utxos = this.commonService.sortAscByKey(rtlStore.utxos.filter((utxo) => utxo.status === 'confirmed'), 'value');
-        this.logger.info(rtlStore);
+      });
+    this.store.select(utxos).pipe(takeUntil(this.unSubs[3])).
+      subscribe((utxosSeletor: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.utxos = this.commonService.sortAscByKey(utxosSeletor.utxos.filter((utxo) => utxo.status === 'confirmed'), 'value');
+        this.logger.info(utxosSeletor);
       });
     this.actions.pipe(
-      takeUntil(this.unSubs[3]),
+      takeUntil(this.unSubs[4]),
       filter((action) => action.type === CLActions.UPDATE_API_CALL_STATUS_CL || action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL)).
       subscribe((action: any) => {
         if (action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL) {
@@ -181,7 +185,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
     } else {
       if (this.transaction.satoshis && this.transaction.satoshis !== 'all' && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
         this.commonService.convertCurrency(+this.transaction.satoshis, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion).
-          pipe(takeUntil(this.unSubs[4])).
+          pipe(takeUntil(this.unSubs[5])).
           subscribe({
             next: (data) => {
               this.transaction.satoshis = data[CurrencyUnitEnum.SATS];
@@ -283,7 +287,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
     let currSelectedUnit = event.value === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : event.value;
     if (this.transaction.satoshis && this.selAmountUnit !== event.value) {
       this.commonService.convertCurrency(+this.transaction.satoshis, prevSelectedUnit, currSelectedUnit, this.amountUnits[2], this.fiatConversion).
-        pipe(takeUntil(this.unSubs[5])).
+        pipe(takeUntil(this.unSubs[6])).
         subscribe({
           next: (data) => {
             this.selAmountUnit = event.value;

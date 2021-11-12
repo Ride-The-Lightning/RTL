@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ResolveEnd } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { takeUntil, filter, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faExchangeAlt, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
@@ -9,6 +9,10 @@ import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { RTLState } from '../../store/rtl.state';
+import { clNodeSettings, localRemoteBalance } from '../store/cl.selector';
+import { LocalRemoteBalance } from '../../shared/models/clModels';
+import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
+import { SelNodeChild } from '../../shared/models/RTLconfig';
 
 @Component({
   selector: 'rtl-cl-transactions',
@@ -35,16 +39,16 @@ export class CLTransactionsComponent implements OnInit, OnDestroy {
         const linkFound = this.links.find((link) => value.urlAfterRedirects.includes(link.link));
         this.activeLink = linkFound ? linkFound.link : this.links[0].link;
       });
-    this.store.select('cl').
-      pipe(takeUntil(this.unSubs[1])).
-      subscribe((rtlStore) => {
-        this.currencyUnits = rtlStore.nodeSettings.currencyUnits;
-        if (rtlStore.nodeSettings.userPersona === UserPersonaEnum.OPERATOR) {
-          this.balances = [{ title: 'Local Capacity', dataValue: rtlStore.localRemoteBalance.localBalance, tooltip: 'Amount you can send' }, { title: 'Remote Capacity', dataValue: rtlStore.localRemoteBalance.remoteBalance, tooltip: 'Amount you can receive' }];
+    this.store.select(localRemoteBalance).pipe(takeUntil(this.unSubs[1]),
+      withLatestFrom(this.store.select(clNodeSettings))).
+      subscribe(([lrBalSeletor, nodeSettings]: [{ localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }, SelNodeChild]) => {
+        this.currencyUnits = nodeSettings.currencyUnits;
+        if (nodeSettings.userPersona === UserPersonaEnum.OPERATOR) {
+          this.balances = [{ title: 'Local Capacity', dataValue: lrBalSeletor.localRemoteBalance.localBalance, tooltip: 'Amount you can send' }, { title: 'Remote Capacity', dataValue: lrBalSeletor.localRemoteBalance.remoteBalance, tooltip: 'Amount you can receive' }];
         } else {
-          this.balances = [{ title: 'Outbound Capacity', dataValue: rtlStore.localRemoteBalance.localBalance, tooltip: 'Amount you can send' }, { title: 'Inbound Capacity', dataValue: rtlStore.localRemoteBalance.remoteBalance, tooltip: 'Amount you can receive' }];
+          this.balances = [{ title: 'Outbound Capacity', dataValue: lrBalSeletor.localRemoteBalance.localBalance, tooltip: 'Amount you can send' }, { title: 'Inbound Capacity', dataValue: lrBalSeletor.localRemoteBalance.remoteBalance, tooltip: 'Amount you can receive' }];
         }
-        this.logger.info(rtlStore);
+        this.logger.info(lrBalSeletor);
       });
   }
 

@@ -9,6 +9,9 @@ import { CLOnChainSendModalComponent } from './on-chain-send-modal/on-chain-send
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { RTLState } from '../../store/rtl.state';
 import { openAlert } from '../../store/rtl.actions';
+import { balance, clNodeSettings } from '../store/cl.selector';
+import { Balance } from '../../shared/models/clModels';
+import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-cl-on-chain',
@@ -39,11 +42,13 @@ export class CLOnChainComponent implements OnInit, OnDestroy {
         this.activeLink = linkFound ? linkFound.link : this.links[0].link;
         this.selectedTable = this.tables.find((table) => table.name === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
       });
-    this.store.select('cl').
-      pipe(takeUntil(this.unSubs[1])).
-      subscribe((rtlStore) => {
-        this.selNode = rtlStore.nodeSettings;
-        this.balances = [{ title: 'Total Balance', dataValue: rtlStore.balance.totalBalance || 0 }, { title: 'Confirmed', dataValue: rtlStore.balance.confBalance }, { title: 'Unconfirmed', dataValue: rtlStore.balance.unconfBalance }];
+    this.store.select(clNodeSettings).pipe(takeUntil(this.unSubs[1])).
+      subscribe((nodeSettings: SelNodeChild) => {
+        this.selNode = nodeSettings;
+      });
+    this.store.select(balance).pipe(takeUntil(this.unSubs[2])).
+      subscribe((balanceSeletor: { balance: Balance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.balances = [{ title: 'Total Balance', dataValue: balanceSeletor.balance.totalBalance || 0 }, { title: 'Confirmed', dataValue: balanceSeletor.balance.confBalance }, { title: 'Unconfirmed', dataValue: balanceSeletor.balance.unconfBalance }];
       });
   }
 

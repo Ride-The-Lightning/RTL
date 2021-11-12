@@ -14,7 +14,7 @@ import { CommonService } from '../../../../../shared/services/common.service';
 
 import { ECLChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { RTLEffects } from '../../../../../store/rtl.effects';
-import { ApiCallsListECL, ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
 import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
 import { closeChannel, updateChannel } from '../../../../store/ecl.actions';

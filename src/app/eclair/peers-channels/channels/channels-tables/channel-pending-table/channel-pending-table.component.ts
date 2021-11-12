@@ -9,7 +9,7 @@ import { MatTableDataSource } from '@angular/material/table';
 
 import { Channel, ChannelsStatus, GetInfo, LightningBalance, OnChainBalance, Peer } from '../../../../../shared/models/eclModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, APICallStatusEnum } from '../../../../../shared/services/consts-enums-functions';
-import { ApiCallsListECL, ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
 import { ECLChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';

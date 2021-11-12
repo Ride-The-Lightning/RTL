@@ -19,8 +19,8 @@ import { AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLWSEventTypeEnum, CLAct
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 
 import { RTLState } from '../../store/rtl.state';
-import { CLState } from './cl.state';
 import { fetchBalance, fetchChannels, fetchFeeRates, fetchFees, fetchInvoices, fetchLocalRemoteBalance, fetchPayments, fetchPeers, fetchUTXOs, getForwardingHistory, setDecodedPayment, setFailedForwardingHistory, setLookup, setPeers, setQueryRoutes, updateCLAPICallStatus, updateInvoice } from './cl.actions';
+import { allAPIsCallStatus, clNodeInformation } from './cl.selector';
 
 @Injectable()
 export class CLEffects implements OnDestroy {
@@ -40,21 +40,19 @@ export class CLEffects implements OnDestroy {
     private wsService: WebSocketClientService,
     private location: Location
   ) {
-    this.store.select('cl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        if (
-          ((rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) &&
-            (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
-            (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) &&
-            (rtlStore.apisCallStatus.FetchBalance.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchBalance.status === APICallStatusEnum.ERROR) &&
-            (rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.ERROR)) &&
-          !this.flgInitialized
-        ) {
-          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.INITALIZE_NODE_DATA }));
-          this.flgInitialized = true;
-        }
-      });
+    this.store.select(allAPIsCallStatus).pipe(takeUntil(this.unSubs[0])).subscribe((allApisCallStatus) => {
+      if (
+        ((allApisCallStatus.FetchInfo.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) &&
+          (allApisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
+          (allApisCallStatus.FetchChannels.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) &&
+          (allApisCallStatus.FetchBalance.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchBalance.status === APICallStatusEnum.ERROR) &&
+          (allApisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.ERROR)) &&
+        !this.flgInitialized
+      ) {
+        this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.INITALIZE_NODE_DATA }));
+        this.flgInitialized = true;
+      }
+    });
     this.wsService.clWSMessages.pipe(
       takeUntil(this.unSubs[1])).
       subscribe((newMessage) => {
@@ -641,15 +639,15 @@ export class CLEffects implements OnDestroy {
 
   fetchForwardingHistoryCL = createEffect(() => this.actions.pipe(
     ofType(CLActions.GET_FORWARDING_HISTORY_CL),
-    withLatestFrom(this.store.select('cl')),
-    mergeMap(([action, clStore]: [{ type: string, payload: { status: string } }, CLState]) => {
+    withLatestFrom(this.store.select(clNodeInformation)),
+    mergeMap(([action, nodeInfo]: [{ type: string, payload: { status: string } }, GetInfo]) => {
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'GetForwardingHistory', status: APICallStatusEnum.INITIATED } }));
       return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=' + action.payload.status).
         pipe(
           map((fhRes: any) => {
             this.logger.info(fhRes);
             this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'GetForwardingHistory', status: APICallStatusEnum.COMPLETED } }));
-            const isNewerVersion = (clStore.information.api_version) ? this.commonService.isVersionCompatible(clStore.information.api_version, '0.5.0') : false;
+            const isNewerVersion = (nodeInfo.api_version) ? this.commonService.isVersionCompatible(nodeInfo.api_version, '0.5.0') : false;
             if (!isNewerVersion) {
               const filteredFailedEvents = [];
               const filteredSuccesfulEvents = [];
@@ -678,11 +676,11 @@ export class CLEffects implements OnDestroy {
 
   fetchFailedForwardingHistoryCL = createEffect(() => this.actions.pipe(
     ofType(CLActions.GET_FAILED_FORWARDING_HISTORY_CL),
-    withLatestFrom(this.store.select('cl')),
-    mergeMap(([action, clStore]: [{ type: string, payload: any }, CLState]) => {
+    withLatestFrom(this.store.select(clNodeInformation)),
+    mergeMap(([action, nodeInfo]: [{ type: string, payload: any }, GetInfo]) => {
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'GetFailedForwardingHistory', status: APICallStatusEnum.INITIATED } }));
       // For backwards compatibility < 0.5.0 START
-      const isNewerVersion = (clStore.information.api_version) ? this.commonService.isVersionCompatible(clStore.information.api_version, '0.5.0') : false;
+      const isNewerVersion = (nodeInfo.api_version) ? this.commonService.isVersionCompatible(nodeInfo.api_version, '0.5.0') : false;
       if (!isNewerVersion) {
         this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'GetFailedForwardingHistory', status: APICallStatusEnum.COMPLETED } }));
         return of({ type: RTLActions.VOID });

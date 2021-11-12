@@ -9,7 +9,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { Transaction } from '../../../shared/models/eclModels';
-import { ApiCallsListECL, ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';

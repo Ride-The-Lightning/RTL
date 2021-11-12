@@ -1,14 +1,16 @@
 import { Component, OnInit, OnDestroy, HostListener, AfterContentInit } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { Payment, Invoice } from '../../../shared/models/clModels';
+import { Payment, Invoice, ListInvoices } from '../../../shared/models/clModels';
 import { CommonService } from '../../../shared/services/common.service';
 import { MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
 import { RTLState } from '../../../store/rtl.state';
+import { payments, listInvoices } from '../../store/cl.selector';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-cl-transactions-report',
@@ -45,11 +47,11 @@ export class CLTransactionsReportComponent implements OnInit, AfterContentInit, 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select('cl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        this.payments = rtlStore.payments;
-        this.invoices = rtlStore.invoices.invoices;
+    this.store.select(payments).pipe(takeUntil(this.unSubs[0]),
+      withLatestFrom(this.store.select(listInvoices))).
+      subscribe(([paymentsSelector, invoicesSelector]: [{ payments: Payment[], apiCallStatus: ApiCallStatusPayload }, { listInvoices: ListInvoices, apiCallStatus: ApiCallStatusPayload }]) => {
+        this.payments = paymentsSelector.payments;
+        this.invoices = invoicesSelector.listInvoices.invoices;
         this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
         this.transactionsNonZeroReportData = this.prepareTableData();
       });

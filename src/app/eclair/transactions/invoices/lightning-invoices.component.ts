@@ -12,7 +12,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, ECLActions } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/eclModels';
-import { ApiCallsListECL, ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 

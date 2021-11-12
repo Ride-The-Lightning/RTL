@@ -10,13 +10,14 @@ import { MatTableDataSource } from '@angular/material/table';
 
 import { ForwardingEvent } from '../../../shared/models/clModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
-import { ApiCallsListCL } from '../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
 import { getFailedForwardingHistory } from '../../store/cl.actions';
+import { failedForwardingHistory } from '../../store/cl.selector';
 
 @Component({
   selector: 'rtl-cl-failed-history',
@@ -39,7 +40,7 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
-  public apisCallStatus: ApiCallsListCL = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -61,19 +62,18 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     this.router.onSameUrlNavigation = 'reload';
     this.store.dispatch(getFailedForwardingHistory());
-    this.store.select('cl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(failedForwardingHistory).pipe(takeUntil(this.unSubs[0])).
+      subscribe((ffhSeletor: { failedForwardingHistory: ForwardingEvent[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (this.apisCallStatus.GetFailedForwardingHistory.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.GetFailedForwardingHistory.message) === 'object') ? JSON.stringify(this.apisCallStatus.GetFailedForwardingHistory.message) : this.apisCallStatus.GetFailedForwardingHistory.message;
+        this.apiCallStatus = ffhSeletor.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.failedEvents = (rtlStore.failedForwardingHistory) ? rtlStore.failedForwardingHistory : [];
+        this.failedEvents = (ffhSeletor.failedForwardingHistory) ? ffhSeletor.failedForwardingHistory : [];
         if (this.failedEvents.length > 0 && this.sort && this.paginator) {
           this.loadFailedEventsTable(this.failedEvents);
         }
-        this.logger.info(rtlStore);
+        this.logger.info(ffhSeletor);
       });
   }
 

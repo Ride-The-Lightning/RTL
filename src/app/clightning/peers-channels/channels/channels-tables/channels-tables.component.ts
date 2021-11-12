@@ -7,11 +7,13 @@ import { Store } from '@ngrx/store';
 import { CLOpenChannelComponent } from '../open-channel-modal/open-channel.component';
 import { CommonService } from '../../../../shared/services/common.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
-import { GetInfo, Peer, UTXO } from '../../../../shared/models/clModels';
+import { Balance, Channel, GetInfo, Peer, UTXO } from '../../../../shared/models/clModels';
 import { SelNodeChild } from '../../../../shared/models/RTLconfig';
 
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert } from '../../../../store/rtl.actions';
+import { channels, nodeInfoAndBalanceAndNumPeers, nodeInfoAndNodeSettingsAndBalance, peers, utxos } from '../../../store/cl.selector';
+import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-cl-channels-tables',
@@ -29,7 +31,7 @@ export class CLChannelsTablesComponent implements OnInit, OnDestroy {
   public totalBalance = 0;
   public links = [{ link: 'open', name: 'Open' }, { link: 'pending', name: 'Pending/Inactive' }];
   public activeLink = 0;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private router: Router) { }
 
@@ -39,13 +41,27 @@ export class CLChannelsTablesComponent implements OnInit, OnDestroy {
       subscribe((value: any) => {
         this.activeLink = this.links.findIndex((link) => link.link === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
       });
-    this.store.select('cl').
-      pipe(takeUntil(this.unSubs[1])).
-      subscribe((rtlStore) => {
-        if (rtlStore.allChannels && rtlStore.allChannels.length) {
+    this.store.select(nodeInfoAndNodeSettingsAndBalance).pipe(takeUntil(this.unSubs[1])).
+      subscribe((infoSettingsBalSelector: { information: GetInfo, nodeSettings: SelNodeChild, balance: Balance }) => {
+        this.selNode = infoSettingsBalSelector.nodeSettings;
+        this.information = infoSettingsBalSelector.information;
+        this.totalBalance = infoSettingsBalSelector.balance.totalBalance;
+        this.logger.info(infoSettingsBalSelector);
+      });
+    this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
+      subscribe((peersSeletor: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.peers = peersSeletor.peers;
+      });
+    this.store.select(utxos).pipe(takeUntil(this.unSubs[3])).
+      subscribe((utxosSeletor: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.utxos = this.commonService.sortAscByKey(utxosSeletor.utxos.filter((utxo) => utxo.status === 'confirmed'), 'value');
+      });
+    this.store.select(channels).pipe(takeUntil(this.unSubs[4])).
+      subscribe((channelsSeletor: { channels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
+        if (channelsSeletor.channels && channelsSeletor.channels.length) {
           this.openChannels = 0;
           this.pendingChannels = 0;
-          rtlStore.allChannels.forEach((channel) => {
+          channelsSeletor.channels.forEach((channel) => {
             if (channel.state === 'CHANNELD_NORMAL' && channel.connected) {
               this.openChannels++;
             } else {
@@ -56,12 +72,7 @@ export class CLChannelsTablesComponent implements OnInit, OnDestroy {
           this.openChannels = 0;
           this.pendingChannels = 0;
         }
-        this.selNode = rtlStore.nodeSettings;
-        this.information = rtlStore.information;
-        this.peers = rtlStore.peers;
-        this.utxos = this.commonService.sortAscByKey(rtlStore.utxos.filter((utxo) => utxo.status === 'confirmed'), 'value');
-        this.totalBalance = rtlStore.balance.totalBalance;
-        this.logger.info(rtlStore);
+        this.logger.info(channelsSeletor);
       });
   }
 

@@ -8,12 +8,13 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { UTXO } from '../../../../shared/models/clModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../../shared/services/consts-enums-functions';
-import { ApiCallsListCL } from '../../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
 
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert } from '../../../../store/rtl.actions';
+import { utxos } from '../../../store/cl.selector';
 
 @Component({
   selector: 'rtl-cl-on-chain-utxos',
@@ -38,7 +39,7 @@ export class CLOnChainUtxosComponent implements OnInit, OnChanges, AfterViewInit
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListCL = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
@@ -60,15 +61,14 @@ export class CLOnChainUtxosComponent implements OnInit, OnChanges, AfterViewInit
   }
 
   ngOnInit() {
-    this.store.select('cl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(utxos).pipe(takeUntil(this.unSubs[0])).
+      subscribe((utxosSeletor: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchUTXOs.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchUTXOs.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchUTXOs.message) : this.apisCallStatus.FetchUTXOs.message;
+        this.apiCallStatus = utxosSeletor.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.logger.info(rtlStore);
+        this.logger.info(utxosSeletor);
       });
   }
 

@@ -10,7 +10,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { GetInfo, Payment, PayRequest } from '../../../shared/models/clModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
-import { ApiCallsListCL } from '../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
@@ -23,6 +23,7 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 import { decodePayment, sendPayment } from '../../store/cl.actions';
+import { clNodeInformation, clNodeSettings, payments } from '../../store/cl.selector';
 
 @Component({
   selector: 'rtl-cl-lightning-payments',
@@ -57,7 +58,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListCL = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -83,24 +84,27 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngOnInit() {
-    this.store.select('cl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(clNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => {
+      this.selNode = nodeSettings;
+    });
+    this.store.select(clNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => {
+      this.information = nodeInfo;
+    });
+    this.store.select(payments).pipe(takeUntil(this.unSubs[2])).
+      subscribe((paymentsSeletor: { payments: Payment[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchPayments.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPayments.message) : this.apisCallStatus.FetchPayments.message;
+        this.apiCallStatus = paymentsSeletor.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.information = rtlStore.information;
-        this.selNode = rtlStore.nodeSettings;
-        this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
+        this.paymentJSONArr = (paymentsSeletor.payments && paymentsSeletor.payments.length > 0) ? paymentsSeletor.payments : [];
         if (this.paymentJSONArr.length > 0) {
           this.loadPaymentsTable(this.paymentJSONArr);
         }
         setTimeout(() => {
           this.flgAnimate = false;
         }, 3000);
-        this.logger.info(rtlStore);
+        this.logger.info(paymentsSeletor);
       });
   }
 
@@ -218,7 +222,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
         if (this.paymentDecoded.msatoshi) {
           if (this.selNode.fiatConversion) {
             this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
-              pipe(takeUntil(this.unSubs[1])).
+              pipe(takeUntil(this.unSubs[3])).
               subscribe({
                 next: (data) => {
                   this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;

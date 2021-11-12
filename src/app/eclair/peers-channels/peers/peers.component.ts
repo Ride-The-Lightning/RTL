@@ -13,7 +13,7 @@ import { Peer, GetInfo, OnChainBalance } from '../../../shared/models/eclModels'
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum, APICallStatusEnum, ECLActions } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
-import { ApiCallsListECL, ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { ECLOpenChannelComponent } from '../channels/open-channel-modal/open-channel.component';
 import { ECLConnectPeerComponent } from '../connect-peer/connect-peer.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';

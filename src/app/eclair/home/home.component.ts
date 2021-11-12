@@ -10,7 +10,7 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 import { UserPersonaEnum, ScreenSizeEnum, APICallStatusEnum } from '../../shared/services/consts-enums-functions';
 import { GetInfo, Channel, Fees, OnChainBalance, ChannelsStatus, LightningBalance } from '../../shared/models/eclModels';
-import { ApiCallsListECL, ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 
 import { RTLState } from '../../store/rtl.state';

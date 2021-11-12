@@ -9,9 +9,9 @@ import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Peer, GetInfo } from '../../../shared/models/clModels';
+import { Peer, GetInfo, Balance } from '../../../shared/models/clModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum, APICallStatusEnum, CLActions } from '../../../shared/services/consts-enums-functions';
-import { ApiCallsListCL } from '../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { CLConnectPeerComponent } from '../connect-peer/connect-peer.component';
@@ -22,6 +22,7 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 import { detachPeer } from '../../store/cl.actions';
+import { nodeInfoAndBalance, peers } from '../../store/cl.selector';
 
 @Component({
   selector: 'rtl-cl-peers',
@@ -51,7 +52,7 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListCL = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -73,25 +74,27 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('cl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(nodeInfoAndBalance).pipe(takeUntil(this.unSubs[0])).
+      subscribe((infoBalSelector: { information: GetInfo, balance: Balance }) => {
+        this.information = infoBalSelector.information;
+        this.availableBalance = infoBalSelector.balance.totalBalance || 0;
+      });
+    this.store.select(peers).pipe(takeUntil(this.unSubs[1])).
+      subscribe((peersSeletor: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchPeers.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchPeers.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPeers.message) : this.apisCallStatus.FetchPeers.message;
+        this.apiCallStatus = peersSeletor.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.information = rtlStore.information;
-        this.availableBalance = rtlStore.balance.totalBalance || 0;
-        this.peersData = rtlStore.peers ? rtlStore.peers : [];
+        this.peersData = peersSeletor.peers ? peersSeletor.peers : [];
         if (this.peersData.length > 0) {
           this.loadPeersTable(this.peersData);
         }
-        this.logger.info(rtlStore);
+        this.logger.info(peersSeletor);
       });
     this.actions.
       pipe(
-        takeUntil(this.unSubs[1]),
+        takeUntil(this.unSubs[2]),
         filter((action) => action.type === CLActions.SET_PEERS_CL)
       ).subscribe((setPeers: any) => {
         this.peerAddress = null;

@@ -8,6 +8,9 @@ import { faUsers, faChartPie } from '@fortawesome/free-solid-svg-icons';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { RTLState } from '../../store/rtl.state';
+import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
+import { balance, clNodeInformation, peers } from '../store/cl.selector';
+import { Balance, GetInfo, Peer } from '../../shared/models/clModels';
 
 @Component({
   selector: 'rtl-cl-connections',
@@ -30,16 +33,21 @@ export class CLConnectionsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.activeLink = this.links.findIndex((link) => link.link === this.router.url.substring(this.router.url.lastIndexOf('/') + 1));
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe((value: ResolveEnd) => {
+      subscribe((value: any) => {
         this.activeLink = this.links.findIndex((link) => link.link === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
       });
-    this.store.select('cl').
-      pipe(takeUntil(this.unSubs[1])).
-      subscribe((rtlStore) => {
-        this.activePeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
-        this.activeChannels = rtlStore.information.num_active_channels;
-        this.balances = [{ title: 'Total Balance', dataValue: rtlStore.balance.totalBalance || 0 }, { title: 'Confirmed', dataValue: rtlStore.balance.confBalance }, { title: 'Unconfirmed', dataValue: rtlStore.balance.unconfBalance }];
-        this.logger.info(rtlStore);
+    this.store.select(clNodeInformation).pipe(takeUntil(this.unSubs[1])).
+      subscribe((nodeInfo: GetInfo) => {
+        this.activeChannels = nodeInfo.num_active_channels;
+      });
+    this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
+      subscribe((peersSeletor: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.activePeers = (peersSeletor.peers && peersSeletor.peers.length) ? peersSeletor.peers.length : 0;
+        this.logger.info(peersSeletor);
+      });
+    this.store.select(balance).pipe(takeUntil(this.unSubs[3])).
+      subscribe((balanceSeletor: { balance: Balance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.balances = [{ title: 'Total Balance', dataValue: balanceSeletor.balance.totalBalance || 0 }, { title: 'Confirmed', dataValue: balanceSeletor.balance.confBalance }, { title: 'Unconfirmed', dataValue: balanceSeletor.balance.unconfBalance }];
       });
   }
 
