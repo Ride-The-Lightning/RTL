@@ -11,11 +11,13 @@ import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { ChannelRebalanceAlert } from '../../../../shared/models/alertData';
 import { LoggerService } from '../../../../shared/services/logger.service';
-import { Channel, QueryRoutes, ListInvoices } from '../../../../shared/models/lndModels';
-import { FEE_LIMIT_TYPES, LNDActions, PAGE_SIZE, UI_MESSAGES } from '../../../../shared/services/consts-enums-functions';
+import { Channel, QueryRoutes, ListInvoices, Invoice } from '../../../../shared/models/lndModels';
+import { APICallStatusEnum, FEE_LIMIT_TYPES, LNDActions, PAGE_SIZE, UI_MESSAGES } from '../../../../shared/services/consts-enums-functions';
 
 import { RTLState } from '../../../../store/rtl.state';
 import { saveNewInvoice, sendPayment } from '../../../store/lnd.actions';
+import { invoices } from '../../../store/lnd.selector';
+import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-channel-rebalance',
@@ -75,11 +77,10 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
       hiddenFeeLimit: ['', [Validators.required]]
     });
     this.statusFormGroup = this.formBuilder.group({});
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        this.invoices = rtlStore.invoices;
-        this.logger.info(rtlStore);
+    this.store.select(invoices).pipe(takeUntil(this.unSubs[0])).
+      subscribe((invoicesSelector: { listInvoices: ListInvoices, apiCallStatus: ApiCallStatusPayload }) => {
+        this.invoices = invoicesSelector.listInvoices;
+        this.logger.info(invoicesSelector);
       });
     this.actions.pipe(
       takeUntil(this.unSubs[1]),

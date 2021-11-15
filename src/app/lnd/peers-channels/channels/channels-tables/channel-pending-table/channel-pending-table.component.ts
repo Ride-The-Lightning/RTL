@@ -7,7 +7,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Channel, GetInfo, PendingChannels, PendingOpenChannel } from '../../../../../shared/models/lndModels';
 import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, ScreenSizeEnum } from '../../../../../shared/services/consts-enums-functions';
-import { ApiCallsListLND } from '../../../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
@@ -15,6 +15,7 @@ import { BumpFeeComponent } from '../../bump-fee-modal/bump-fee.component';
 
 import { openAlert } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
+import { lndNodeInformation, lndNodeSettings, pendingChannels } from '../../../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-channel-pending-table',
@@ -43,9 +44,9 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
@@ -68,17 +69,16 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngOnInit() {
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => { this.selNode = nodeSettings; });
+    this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => { this.information = nodeInfo; });
+    this.store.select(pendingChannels).pipe(takeUntil(this.unSubs[0])).
+      subscribe((pendingChannelsSelector: { pendingChannels: PendingChannels, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchPendingChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPendingChannels.message) : this.apisCallStatus.FetchPendingChannels.message;
+        this.apiCallStatus = pendingChannelsSelector.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.selNode = rtlStore.nodeSettings;
-        this.information = rtlStore.information;
-        this.pendingChannels = rtlStore.pendingChannels;
+        this.pendingChannels = pendingChannelsSelector.pendingChannels;
         if (this.pendingChannels.pending_open_channels && this.pendingChannels.pending_open_channels.length && this.pendingChannels.pending_open_channels.length > 0) {
           this.loadOpenChannelsTable(this.pendingChannels.pending_open_channels);
         }
@@ -91,7 +91,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
         if (this.pendingChannels.waiting_close_channels && this.pendingChannels.waiting_close_channels.length && this.pendingChannels.waiting_close_channels.length > 0) {
           this.loadWaitClosingChannelsTable(this.pendingChannels.waiting_close_channels);
         }
-        this.logger.info(rtlStore);
+        this.logger.info(pendingChannelsSelector);
       });
   }
 

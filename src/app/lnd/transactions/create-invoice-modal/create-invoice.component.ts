@@ -15,6 +15,7 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import { RTLState } from '../../../store/rtl.state';
 import { saveNewInvoice } from '../../store/lnd.actions';
+import { lndNodeInformation, lndNodeSettings } from '../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-create-invoices',
@@ -45,18 +46,12 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageSize = this.data.pageSize;
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        this.selNode = rtlStore.nodeSettings;
-        this.information = rtlStore.information;
-      });
-    this.actions.pipe(
-      takeUntil(this.unSubs[1]),
-      filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.FETCH_INVOICES_LND)
-    ). // NEWLY_SAVED_INVOICE
-      subscribe((action: any) => { // NewlySavedInvoice
-        if (action.type === LNDActions.FETCH_INVOICES_LND) { // NEWLY_SAVED_INVOICE && openModal: false at line 73
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => { this.selNode = nodeSettings; });
+    this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => { this.information = nodeInfo; });
+    this.actions.pipe(takeUntil(this.unSubs[2]),
+      filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.FETCH_INVOICES_LND)).
+      subscribe((action: any) => {
+        if (action.type === LNDActions.FETCH_INVOICES_LND) {
           this.dialogRef.close();
         }
         if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewInvoice') {
@@ -92,7 +87,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
     if (this.selNode.fiatConversion && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
       this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
-        pipe(takeUntil(this.unSubs[2])).
+        pipe(takeUntil(this.unSubs[3])).
         subscribe({
           next: (data) => {
             this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;

@@ -10,7 +10,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { UTXO } from '../../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, WALLET_ADDRESS_TYPE, APICallStatusEnum } from '../../../../shared/services/consts-enums-functions';
-import { ApiCallsListLND } from '../../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
 import { DataService } from '../../../../shared/services/data.service';
@@ -19,6 +19,7 @@ import { OnChainLabelModalComponent } from '../../on-chain-label-modal/on-chain-
 import { RTLEffects } from '../../../../store/rtl.effects';
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../../store/rtl.actions';
+import { utxos } from '../../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-on-chain-utxos',
@@ -44,7 +45,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -66,19 +67,18 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(utxos).pipe(takeUntil(this.unSubs[0])).
+      subscribe((utxosSelector: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchUTXOs.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchUTXOs.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchUTXOs.message) : this.apisCallStatus.FetchUTXOs.message;
+        this.apiCallStatus = utxosSelector.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        if (rtlStore.utxos && rtlStore.utxos.length > 0) {
-          this.utxos = (this.isDustUTXO) ? rtlStore.utxos.filter((utxo) => +utxo.amount_sat < 1000) : rtlStore.utxos;
+        if (utxosSelector.utxos && utxosSelector.utxos.length > 0) {
+          this.utxos = (this.isDustUTXO) ? utxosSelector.utxos.filter((utxo) => +utxo.amount_sat < 1000) : utxosSelector.utxos;
           this.loadUTXOsTable(this.utxos);
         }
-        this.logger.info(rtlStore);
+        this.logger.info(utxosSelector);
       });
   }
 

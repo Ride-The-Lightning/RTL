@@ -5,11 +5,13 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { OpenChannelComponent } from '../open-channel-modal/open-channel.component';
-import { Peer, GetInfo } from '../../../../shared/models/lndModels';
+import { Peer, GetInfo, Channel, ChannelsSummary, LightningBalance, PendingChannelsSummary, PendingChannels, ClosedChannel, BlockchainBalance } from '../../../../shared/models/lndModels';
 import { LoggerService } from '../../../../shared/services/logger.service';
 
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert } from '../../../../store/rtl.actions';
+import { blockchainBalance, channels, closedChannels, lndNodeInformation, peers, pendingChannels } from '../../../store/lnd.selector';
+import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-channels-tables',
@@ -27,7 +29,7 @@ export class ChannelsTablesComponent implements OnInit, OnDestroy {
   public totalBalance = 0;
   public links = [{ link: 'open', name: 'Open' }, { link: 'pending', name: 'Pending' }, { link: 'closed', name: 'Closed' }, { link: 'activehtlcs', name: 'Active HTLCs' }];
   public activeLink = 0;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private router: Router) { }
 
@@ -37,22 +39,34 @@ export class ChannelsTablesComponent implements OnInit, OnDestroy {
       subscribe((value: any) => {
         this.activeLink = this.links.findIndex((link) => link.link === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
       });
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[1])).
-      subscribe((rtlStore) => {
-        this.numOpenChannels = (rtlStore.allChannels && rtlStore.allChannels.length) ? rtlStore.allChannels.length : 0;
-        this.numPendingChannels = (rtlStore.numberOfPendingChannels.total_channels) ? rtlStore.numberOfPendingChannels.total_channels : 0;
-        this.numClosedChannels = (rtlStore.closedChannels && rtlStore.closedChannels.length) ? rtlStore.closedChannels.length : 0;
-        this.numActiveHTLCs = rtlStore.allChannels.reduce((totalHTLCs, channel) => totalHTLCs + (channel.pending_htlcs && channel.pending_htlcs.length > 0 ? channel.pending_htlcs.length : 0), 0);
-        this.information = rtlStore.information;
-        this.totalBalance = +rtlStore.blockchainBalance.total_balance;
-        this.peers = rtlStore.peers;
+    this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => { this.information = nodeInfo; });
+    this.store.select(channels).pipe(takeUntil(this.unSubs[2])).
+      subscribe((channelsSelector: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.numOpenChannels = (channelsSelector.channels && channelsSelector.channels.length) ? channelsSelector.channels.length : 0;
+        this.numActiveHTLCs = channelsSelector.channels.reduce((totalHTLCs, channel) => totalHTLCs + (channel.pending_htlcs && channel.pending_htlcs.length > 0 ? channel.pending_htlcs.length : 0), 0);
+        this.logger.info(channelsSelector);
+      });
+    this.store.select(pendingChannels).pipe(takeUntil(this.unSubs[3])).
+      subscribe((pendingChannelsSelector: { pendingChannels: PendingChannels, pendingChannelsSummary: PendingChannelsSummary, apiCallStatus: ApiCallStatusPayload }) => {
+        this.numPendingChannels = (pendingChannelsSelector.pendingChannelsSummary.total_channels) ? pendingChannelsSelector.pendingChannelsSummary.total_channels : 0;
+      });
+    this.store.select(closedChannels).pipe(takeUntil(this.unSubs[4])).
+      subscribe((closedChannelsSelector: { closedChannels: ClosedChannel[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.numClosedChannels = (closedChannelsSelector.closedChannels && closedChannelsSelector.closedChannels.length) ? closedChannelsSelector.closedChannels.length : 0;
+      });
+    this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[5])).
+      subscribe((bcBalanceSelector: { blockchainBalance: BlockchainBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.totalBalance = +bcBalanceSelector.blockchainBalance.total_balance;
+      });
+    this.store.select(peers).pipe(takeUntil(this.unSubs[6])).
+      subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.peers = peersSelector.peers;
         this.peers.forEach((peer) => {
           if (!peer.alias || peer.alias === '') {
             peer.alias = peer.pub_key.substring(0, 15) + '...';
           }
         });
-        this.logger.info(rtlStore);
+        this.logger.info(peersSelector);
       });
   }
 

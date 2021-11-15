@@ -10,12 +10,13 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Transaction } from '../../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../../shared/services/consts-enums-functions';
-import { ApiCallsListLND } from '../../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
 
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert } from '../../../../store/rtl.actions';
+import { transactions } from '../../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-on-chain-transaction-history',
@@ -39,7 +40,7 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -61,19 +62,18 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
   }
 
   ngOnInit() {
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(transactions).pipe(takeUntil(this.unSubs[0])).
+      subscribe((transactionsSelector: { transactions: Transaction[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchTransactions.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchTransactions.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchTransactions.message) : this.apisCallStatus.FetchTransactions.message;
+        this.apiCallStatus = transactionsSelector.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        if (rtlStore.transactions && rtlStore.transactions.length > 0) {
-          this.transactions = rtlStore.transactions;
+        if (transactionsSelector.transactions && transactionsSelector.transactions.length > 0) {
+          this.transactions = transactionsSelector.transactions;
           this.loadTransactionsTable(this.transactions);
         }
-        this.logger.info(rtlStore);
+        this.logger.info(transactionsSelector);
       });
   }
 

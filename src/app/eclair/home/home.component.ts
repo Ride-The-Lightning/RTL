@@ -14,7 +14,7 @@ import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 
 import { RTLState } from '../../store/rtl.state';
-import { allChannelsInfo, apiCallStatusNodeInfo, eclNodeInformation, eclNodeSettings, fees, onchainBalance } from '../store/ecl.selector';
+import { allChannelsInfo, nodeInfoStatus, eclNodeInformation, eclNodeSettings, fees, onchainBalance } from '../store/ecl.selector';
 
 @Component({
   selector: 'rtl-ecl-home',
@@ -113,19 +113,16 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
       subscribe((nodeSettings) => {
         this.selNode = nodeSettings;
       });
-    this.store.select(apiCallStatusNodeInfo).pipe(takeUntil(this.unSubs[1])).
-      subscribe((nodeInfoCallStatus: ApiCallStatusPayload) => {
+    this.store.select(nodeInfoStatus).pipe(takeUntil(this.unSubs[1])).
+      subscribe((selNodeInfoStatus: { information: GetInfo, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessages[0] = '';
-        this.apiCallStatusNodeInfo = nodeInfoCallStatus;
+        this.apiCallStatusNodeInfo = selNodeInfoStatus.apiCallStatus;
         if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {
           this.errorMessages[0] = (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message;
         }
+        this.information = selNodeInfoStatus.information;
       });
-    this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[2])).
-      subscribe((nodeInfo) => {
-        this.information = nodeInfo;
-      });
-    this.store.select(fees).pipe(takeUntil(this.unSubs[3])).
+    this.store.select(fees).pipe(takeUntil(this.unSubs[2])).
       subscribe((selFees: { fees: Fees, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessages[1] = '';
         this.apiCallStatusFees = selFees.apiCallStatus;
@@ -134,7 +131,7 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
         }
         this.fees = selFees.fees;
       });
-    this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[4]),
+    this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[3]),
       withLatestFrom(this.store.select(onchainBalance))).
       subscribe(([selAllChannels, selOCBal]: [{ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload }, { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }]) => {
         this.errorMessages[2] = '';

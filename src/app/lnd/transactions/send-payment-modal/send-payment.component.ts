@@ -17,6 +17,7 @@ import { DataService } from '../../../shared/services/data.service';
 
 import { RTLState } from '../../../store/rtl.state';
 import { sendPayment } from '../../store/lnd.actions';
+import { channels, lndNodeSettings } from '../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-lightning-send-payments',
@@ -47,11 +48,10 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   constructor(public dialogRef: MatDialogRef<LightningSendPaymentsComponent>, private store: Store<RTLState>, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions, private dataService: DataService) { }
 
   ngOnInit() {
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => { this.selNode = nodeSettings; });
+    this.store.select(channels).pipe(takeUntil(this.unSubs[1])).
       subscribe((rtlStore) => {
-        this.selNode = rtlStore.nodeSettings;
-        this.activeChannels = rtlStore.allChannels.filter((channel) => channel.active);
+        this.activeChannels = rtlStore.channels.filter((channel) => channel.active);
         this.filteredMinAmtActvChannels = this.activeChannels;
         if (this.filteredMinAmtActvChannels.length && this.filteredMinAmtActvChannels.length > 0) {
           this.selectedChannelCtrl.enable();
@@ -61,7 +61,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
         this.logger.info(rtlStore);
       });
     this.actions.pipe(
-      takeUntil(this.unSubs[1]),
+      takeUntil(this.unSubs[2]),
       filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.SEND_PAYMENT_STATUS_LND)).
       subscribe((action: any) => {
         if (action.type === LNDActions.SEND_PAYMENT_STATUS_LND) {
@@ -79,7 +79,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
       y = c2.remote_alias ? c2.remote_alias.toLowerCase() : c2.chan_id ? c2.chan_id.toLowerCase() : '';
       return ((x < y) ? -1 : ((x > y) ? 1 : 0));
     });
-    this.selectedChannelCtrl.valueChanges.pipe(takeUntil(this.unSubs[2])).
+    this.selectedChannelCtrl.valueChanges.pipe(takeUntil(this.unSubs[3])).
       subscribe((channel) => {
         if (typeof channel === 'string') {
           this.filteredMinAmtActvChannels = this.filterChannels();

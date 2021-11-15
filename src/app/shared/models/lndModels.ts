@@ -1,5 +1,5 @@
 export interface ChannelStatus {
-  channels?: number;
+  num_channels?: number;
   capacity?: number;
 }
 
@@ -16,12 +16,16 @@ export interface AddressType {
   addressDetails?: string;
 }
 
-export interface Balance {
-  balance?: number;
-  pending_open_balance?: number;
+export interface LightningBalance {
+  local?: number;
+  remote?: number;
+}
+
+export interface BlockchainBalance {
   total_balance?: number;
   confirmed_balance?: number;
   unconfirmed_balance?: number;
+  account_balance?: any;
 }
 
 export interface ChannelFeeReport {
@@ -36,6 +40,17 @@ export interface ChannelHTLC {
   amount?: string;
   hash_lock?: string;
   expiration_height?: number;
+}
+
+export interface ChannelsSummary {
+  active?: {
+    num_channels?: number;
+    capacity?: number;
+  };
+  inactive?: {
+    num_channels?: number;
+    capacity?: number;
+  };
 }
 
 export interface Channel {
@@ -340,6 +355,7 @@ export interface Invoice {
 
 export interface ListInvoices {
   invoices?: Invoice[];
+  total_invoices?: number;
   last_index_offset?: string;
   first_index_offset?: string;
 }
@@ -487,7 +503,7 @@ export interface PendingChannelsData {
   limbo_balance: number;
 }
 
-export interface PendingChannelsGroup {
+export interface PendingChannelsSummary {
   open?: PendingChannelsData;
   closing?: PendingChannelsData;
   force_closing?: PendingChannelsData;
@@ -586,14 +602,9 @@ export interface NewlyAddedPeer {
   balance: number;
 }
 
-export interface SetBalance {
-  target: string;
-  balance: Balance;
-}
-
 export interface SetPendingChannels {
-  channels: PendingChannels;
-  pendingChannels: PendingChannelsGroup;
+  pendingChannels: PendingChannels;
+  pendingChannelsSummary: PendingChannelsSummary;
 }
 
 export interface BackupChannels {
@@ -603,6 +614,6 @@ export interface BackupChannels {
 }
 
 export interface SetAllLightningTransactions {
-  paymentsAll: ListPayments;
-  invoicesAll: ListInvoices;
+  listPaymentsAll: ListPayments;
+  listInvoicesAll: ListInvoices;
 }

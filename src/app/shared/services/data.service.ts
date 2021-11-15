@@ -9,13 +9,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { LoggerService } from '../../shared/services/logger.service';
 import { environment, API_URL } from '../../../environments/environment';
 import { APICallStatusEnum, UI_MESSAGES } from './consts-enums-functions';
-import { SwitchReq } from '../models/lndModels';
+import { Channel, ClosedChannel, PendingChannels, SwitchReq } from '../models/lndModels';
 import { ErrorMessageComponent } from '../components/data-modal/error-message/error-message.component';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, updateRootAPICallStatus } from '../../store/rtl.actions';
 import { fetchTransactions, fetchUTXOs } from '../../lnd/store/lnd.actions';
 
 import { RTLState } from '../../store/rtl.state';
 import { LNDState } from '../../lnd/store/lnd.state';
+import { allChannels } from '../../lnd/store/lnd.selector';
 
 @Injectable()
 export class DataService implements OnDestroy {
@@ -205,10 +206,10 @@ export class DataService implements OnDestroy {
     this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_FEE_REPORT }));
     return this.httpClient.post(this.childAPIUrl + environment.SWITCH_API, queryHeaders).pipe(
       takeUntil(this.unSubs[7]),
-      withLatestFrom(this.store.select('lnd')),
-      mergeMap(([res, lndData]: [any, LNDState]) => {
+      withLatestFrom(this.store.select(allChannels)),
+      mergeMap(([res, allChannelsSelector]: [any, { channels: Channel[], pendingChannels: PendingChannels, closedChannels: ClosedChannel[] }]) => {
         if (res.forwarding_events) {
-          const storedChannels = [...lndData.allChannels, ...lndData.closedChannels];
+          const storedChannels = [...allChannelsSelector.channels, ...allChannelsSelector.closedChannels];
           res.forwarding_events.forEach((event) => {
             if (storedChannels && storedChannels.length > 0) {
               for (let idx = 0; idx < storedChannels.length; idx++) {

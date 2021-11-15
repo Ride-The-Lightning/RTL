@@ -8,13 +8,13 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { GetInfo, Payment, PayRequest, PaymentHTLC, Peer, Hop } from '../../../shared/models/lndModels';
+import { GetInfo, Payment, PayRequest, PaymentHTLC, Peer, Hop, ListPayments, ListInvoices } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
 
-import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { LightningSendPaymentsComponent } from '../send-payment-modal/send-payment.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
@@ -24,6 +24,7 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 import { fetchPayments, sendPayment } from '../../store/lnd.actions';
+import { allLightningTransactions, lndNodeInformation, lndNodeSettings, payments, peers } from '../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-lightning-payments',
@@ -62,9 +63,9 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private decimalPipe: DecimalPipe, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
@@ -88,21 +89,26 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   }
 
   ngOnInit() {
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => { this.selNode = nodeSettings; });
+    this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => { this.information = nodeInfo; });
+    this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
+      subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.peers = peersSelector.peers;
+      });
+    this.store.select(allLightningTransactions).pipe(takeUntil(this.unSubs[3])).
+      subscribe((allLTSelector: { allLightningTransactions: { listPaymentsAll: ListPayments, listInvoicesAll: ListInvoices }, apiCallStatus: ApiCallStatusPayload }) => {
+        this.totalPayments = allLTSelector.allLightningTransactions.listPaymentsAll && allLTSelector.allLightningTransactions.listPaymentsAll.payments && allLTSelector.allLightningTransactions.listPaymentsAll.payments.length ? allLTSelector.allLightningTransactions.listPaymentsAll.payments.length : 0;
+      });
+    this.store.select(payments).pipe(takeUntil(this.unSubs[4])).
+      subscribe((paymentsSelector: { listPayments: ListPayments, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchPayments.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPayments.message) : this.apisCallStatus.FetchPayments.message;
+        this.apiCallStatus = paymentsSelector.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.information = rtlStore.information;
-        this.selNode = rtlStore.nodeSettings;
-        this.peers = rtlStore.peers;
-        this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.payments && rtlStore.payments.payments.length > 0) ? rtlStore.payments.payments : [];
-        this.totalPayments = rtlStore.allLightningTransactions.paymentsAll && rtlStore.allLightningTransactions.paymentsAll.payments && rtlStore.allLightningTransactions.paymentsAll.payments.length ? rtlStore.allLightningTransactions.paymentsAll.payments.length : 0;
-        this.firstOffset = +rtlStore.payments.first_index_offset;
-        this.lastOffset = +rtlStore.payments.last_index_offset;
+        this.paymentJSONArr = (paymentsSelector.listPayments && paymentsSelector.listPayments.payments && paymentsSelector.listPayments.payments.length > 0) ? paymentsSelector.listPayments.payments : [];
+        this.firstOffset = +paymentsSelector.listPayments.first_index_offset;
+        this.lastOffset = +paymentsSelector.listPayments.last_index_offset;
         if (this.paymentJSONArr && this.paymentJSONArr.length > 0 && this.sort && this.paginator) {
           this.loadPaymentsTable(this.paymentJSONArr);
         } else if (this.paymentJSONArr && this.paymentJSONArr.length === 0) {
@@ -111,7 +117,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         setTimeout(() => {
           this.flgAnimate = false;
         }, 3000);
-        this.logger.info(rtlStore);
+        this.logger.info(paymentsSelector);
       });
   }
 
@@ -241,7 +247,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
           if (this.paymentDecoded.num_satoshis) {
             if (this.selNode.fiatConversion) {
               this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
-                pipe(takeUntil(this.unSubs[2])).
+                pipe(takeUntil(this.unSubs[5])).
                 subscribe({
                   next: (data) => {
                     this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis ? this.paymentDecoded.num_satoshis : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
@@ -298,7 +304,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         accumulator.push('<pre>Channel: ' + peerFound.alias.padEnd(20) + '&Tab;&Tab;&Tab;Amount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward) + '</pre>');
       } else {
         self.dataService.getAliasesFromPubkeys(currentHop.pub_key, false).
-          pipe(takeUntil(self.unSubs[1])).
+          pipe(takeUntil(self.unSubs[6])).
           subscribe((res: any) => {
             accumulator.push('<pre>Channel: ' + (res.node && res.node.alias ? res.node.alias.padEnd(20) : (currentHop.pub_key.substring(0, 17) + '...')) + '&Tab;&Tab;&Tab;Amount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward) + '</pre>');
           });
@@ -354,7 +360,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
     if (selPayment.htlcs && selPayment.htlcs[0] && selPayment.htlcs[0].route && selPayment.htlcs[0].route.hops && selPayment.htlcs[0].route.hops.length > 0) {
       const nodePubkeys = selPayment.htlcs[0].route.hops.reduce((pubkeys, hop) => (pubkeys === '' ? hop.pub_key : pubkeys + ',' + hop.pub_key), '');
       this.dataService.getAliasesFromPubkeys(nodePubkeys, true).
-        pipe(takeUntil(this.unSubs[3])).
+        pipe(takeUntil(this.unSubs[7])).
         subscribe((nodes: any) => {
           this.showPaymentView(selPayment, nodes.reduce((pathAliases, node) => (pathAliases === '' ? node : pathAliases + '\n' + node), ''));
         });
@@ -432,7 +438,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         return paymentReqs;
       }, '');
       this.dataService.decodePayments(paymentRequests).
-        pipe(takeUntil(this.unSubs[4])).
+        pipe(takeUntil(this.unSubs[8])).
         subscribe((decodedPayments: PayRequest[]) => {
           let increament = 0;
           decodedPayments.forEach((decodedPayment, idx) => {

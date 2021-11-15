@@ -6,7 +6,6 @@ import { Actions } from '@ngrx/effects';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 import { APICallStatusEnum, LNDActions, ScreenSizeEnum, UI_MESSAGES } from '../../shared/services/consts-enums-functions';
-import { ApiCallsListLND } from '../../shared/models/apiCallsPayload';
 import { CommonService } from '../../shared/services/common.service';
 import { LoggerService } from '../../shared/services/logger.service';
 
@@ -34,7 +33,6 @@ export class LookupsComponent implements OnInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListLND = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject()];
 

@@ -10,9 +10,9 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES, LNDActions } from '../../../shared/services/consts-enums-functions';
-import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
-import { GetInfo, Invoice } from '../../../shared/models/lndModels';
+import { GetInfo, Invoice, ListInvoices } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
@@ -23,6 +23,7 @@ import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation'
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
 import { fetchInvoices, invoiceLookup, saveNewInvoice } from '../../store/lnd.actions';
+import { invoices, lndNodeInformation, lndNodeSettings } from '../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-lightning-invoices',
@@ -55,15 +56,15 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   public flgSticky = false;
   public private = false;
   public expiryStep = 100;
-  public totalInvoices = 100;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   private firstOffset = -1;
   private lastOffset = -1;
+  public totalInvoices = 100;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -85,26 +86,25 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   }
 
   ngOnInit() {
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => { this.selNode = nodeSettings; });
+    this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => { this.information = nodeInfo; });
+    this.store.select(invoices).pipe(takeUntil(this.unSubs[2])).
+      subscribe((invoicesSelector: { listInvoices: ListInvoices, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchInvoices.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchInvoices.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchInvoices.message) : this.apisCallStatus.FetchInvoices.message;
+        this.apiCallStatus = invoicesSelector.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.selNode = rtlStore.nodeSettings;
-        this.information = rtlStore.information;
-        this.totalInvoices = rtlStore.totalInvoices;
-        this.firstOffset = +rtlStore.invoices.first_index_offset;
-        this.lastOffset = +rtlStore.invoices.last_index_offset;
-        this.invoicesData = rtlStore.invoices.invoices ? rtlStore.invoices.invoices : [];
+        this.totalInvoices = invoicesSelector.listInvoices.total_invoices;
+        this.firstOffset = +invoicesSelector.listInvoices.first_index_offset;
+        this.lastOffset = +invoicesSelector.listInvoices.last_index_offset;
+        this.invoicesData = invoicesSelector.listInvoices.invoices ? invoicesSelector.listInvoices.invoices : [];
         if (this.invoicesData.length > 0 && this.sort && this.paginator) {
           this.loadInvoicesTable(this.invoicesData);
         }
-        this.logger.info(rtlStore);
+        this.logger.info(invoicesSelector);
       });
-    this.actions.pipe(takeUntil(this.unSubs[1]), filter((action) => (action.type === LNDActions.SET_LOOKUP_LND || action.type === LNDActions.UPDATE_API_CALL_STATUS_LND))).
+    this.actions.pipe(takeUntil(this.unSubs[3]), filter((action) => (action.type === LNDActions.SET_LOOKUP_LND || action.type === LNDActions.UPDATE_API_CALL_STATUS_LND))).
       subscribe((resLookup: any) => {
         if (resLookup.type === LNDActions.SET_LOOKUP_LND) {
           if (this.invoicesData.length > 0 && this.sort && this.paginator && resLookup.payload) {
@@ -206,7 +206,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
     if (this.selNode.fiatConversion && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
       this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
-        pipe(takeUntil(this.unSubs[2])).
+        pipe(takeUntil(this.unSubs[4])).
         subscribe({
           next: (data) => {
             this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;

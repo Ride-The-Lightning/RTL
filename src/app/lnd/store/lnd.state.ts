@@ -1,7 +1,7 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { ApiCallsListLND } from '../../shared/models/apiCallsPayload';
 import { APICallStatusEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
-import { GetInfo, Peer, Fees, NetworkInfo, Balance, Channel, ListInvoices, PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup, UTXO, ListPayments } from '../../shared/models/lndModels';
+import { GetInfo, Peer, Fees, NetworkInfo, BlockchainBalance, Channel, ListInvoices, PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsSummary, UTXO, ListPayments, LightningBalance, ChannelsSummary } from '../../shared/models/lndModels';
 
 export interface LNDState {
   apisCallStatus: ApiCallsListLND;
@@ -10,23 +10,18 @@ export interface LNDState {
   peers: Peer[];
   fees: Fees;
   networkInfo: NetworkInfo;
-  blockchainBalance: Balance;
-  allChannels: Channel[];
+  blockchainBalance: BlockchainBalance;
+  lightningBalance: LightningBalance;
+  channels: Channel[];
+  channelsSummary: ChannelsSummary;
   closedChannels: ClosedChannel[];
   pendingChannels: PendingChannels;
-  numberOfActiveChannels: number;
-  numberOfInactiveChannels: number;
-  numberOfPendingChannels: PendingChannelsGroup;
-  totalCapacityActive: number;
-  totalCapacityInactive: number;
-  totalLocalBalance: number;
-  totalRemoteBalance: number;
-  totalInvoices: number;
+  pendingChannelsSummary: PendingChannelsSummary;
   transactions: Transaction[];
   utxos: UTXO[];
-  payments: ListPayments;
-  invoices: ListInvoices;
-  allLightningTransactions: { paymentsAll: ListPayments, invoicesAll: ListInvoices };
+  listPayments: ListPayments;
+  listInvoices: ListInvoices;
+  allLightningTransactions: { listPaymentsAll: ListPayments, listInvoicesAll: ListInvoices };
   forwardingHistory: SwitchRes;
 }
 
@@ -53,21 +48,16 @@ export const initLNDState: LNDState = {
   fees: {},
   networkInfo: {},
   blockchainBalance: { total_balance: -1 },
-  allChannels: [],
+  lightningBalance: { local: -1, remote: -1 },
+  channels: [],
+  channelsSummary: { active: { num_channels: 0, capacity: 0 }, inactive: { num_channels: 0, capacity: 0 } },
   closedChannels: [],
   pendingChannels: {},
-  numberOfActiveChannels: 0,
-  numberOfInactiveChannels: 0,
-  numberOfPendingChannels: { open: { num_channels: 0, limbo_balance: 0 }, closing: { num_channels: 0, limbo_balance: 0 }, force_closing: { num_channels: 0, limbo_balance: 0 }, waiting_close: { num_channels: 0, limbo_balance: 0 }, total_channels: 0, total_limbo_balance: 0 },
-  totalCapacityActive: 0,
-  totalCapacityInactive: 0,
-  totalLocalBalance: -1,
-  totalRemoteBalance: -1,
-  totalInvoices: -1,
+  pendingChannelsSummary: { open: { num_channels: 0, limbo_balance: 0 }, closing: { num_channels: 0, limbo_balance: 0 }, force_closing: { num_channels: 0, limbo_balance: 0 }, waiting_close: { num_channels: 0, limbo_balance: 0 }, total_channels: 0, total_limbo_balance: 0 },
   transactions: [],
   utxos: [],
-  payments: { payments: [] },
-  invoices: { invoices: [] },
-  allLightningTransactions: { paymentsAll: null, invoicesAll: null },
+  listPayments: { payments: [] },
+  listInvoices: { invoices: [] },
+  allLightningTransactions: { listPaymentsAll: null, listInvoicesAll: null },
   forwardingHistory: {}
 };

@@ -12,7 +12,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { OnChainSendFunds } from '../../../shared/models/alertData';
 import { SelNodeChild, RTLConfiguration } from '../../../shared/models/RTLconfig';
-import { GetInfo, Balance, AddressType } from '../../../shared/models/lndModels';
+import { GetInfo, AddressType, BlockchainBalance } from '../../../shared/models/lndModels';
 import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, LNDActions } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -40,7 +40,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   public appConfig: RTLConfiguration;
   public addressTypes = [];
   public selectedAddress: AddressType = {};
-  public blockchainBalance: Balance = {};
+  public blockchainBalance: BlockchainBalance = {};
   public information: GetInfo = {};
   public newAddress = '';
   public transactionAddress = '';

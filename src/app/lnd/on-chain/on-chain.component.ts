@@ -7,6 +7,9 @@ import { faExchangeAlt, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { RTLState } from '../../store/rtl.state';
+import { blockchainBalance, lndNodeSettings } from '../store/lnd.selector';
+import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
+import { BlockchainBalance } from '../../shared/models/lndModels';
 
 @Component({
   selector: 'rtl-on-chain',
@@ -37,11 +40,13 @@ export class OnChainComponent implements OnInit, OnDestroy {
         this.activeLink = linkFound ? linkFound.link : this.links[0].link;
         this.selectedTable = this.tables.find((table) => table.name === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
       });
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[1])).
-      subscribe((rtlStore) => {
-        this.selNode = rtlStore.nodeSettings;
-        this.balances = [{ title: 'Total Balance', dataValue: rtlStore.blockchainBalance.total_balance || 0 }, { title: 'Confirmed', dataValue: rtlStore.blockchainBalance.confirmed_balance }, { title: 'Unconfirmed', dataValue: rtlStore.blockchainBalance.unconfirmed_balance }];
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[1])).
+      subscribe((nodeSettings: SelNodeChild) => {
+        this.selNode = nodeSettings;
+      });
+    this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[2])).
+      subscribe((bcBalanceSelector: { blockchainBalance: BlockchainBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.balances = [{ title: 'Total Balance', dataValue: bcBalanceSelector.blockchainBalance.total_balance || 0 }, { title: 'Confirmed', dataValue: bcBalanceSelector.blockchainBalance.confirmed_balance }, { title: 'Unconfirmed', dataValue: bcBalanceSelector.blockchainBalance.unconfirmed_balance }];
       });
   }
 

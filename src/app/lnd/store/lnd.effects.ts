@@ -12,15 +12,16 @@ import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 import { SessionService } from '../../shared/services/session.service';
-import { GetInfo, Fees, Balance, NetworkInfo, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsGroup, UTXO, ListPayments, SavePeer, SaveInvoice, SaveChannel, CloseChannel, FetchInvoices, FetchPayments, SendPayment, LightningNode, GetNewAddress, ChannelsTransaction, GetQueryRoutes, QueryRoutes, InitWallet, ChannelLookup, SetRestoreChannelsList } from '../../shared/models/lndModels';
+import { GetInfo, Fees, BlockchainBalance, NetworkInfo, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsSummary, UTXO, ListPayments, SavePeer, SaveInvoice, SaveChannel, CloseChannel, FetchInvoices, FetchPayments, SendPayment, LightningNode, GetNewAddress, ChannelsTransaction, GetQueryRoutes, QueryRoutes, InitWallet, ChannelLookup, SetRestoreChannelsList } from '../../shared/models/lndModels';
 import { InvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { RTLActions, LNDActions, AlertTypeEnum, APICallStatusEnum, FEE_LIMIT_TYPES, PAGE_SIZE, UI_MESSAGES } from '../../shared/services/consts-enums-functions';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
-import { LNDState } from './lnd.state';
 import { RTLState } from '../../store/rtl.state';
 
-import { backupChannels, fetchAllChannels, fetchBalance, fetchClosedChannels, fetchFees, fetchInfoLND, fetchInvoices, fetchNetwork, fetchPayments, fetchPeers, fetchPendingChannels, fetchTransactions, getAllLightningTransactions, setForwardingHistory, setLookup, setPeers, setQueryRoutes, setRestoreChannelsList, setTotalInvoices, updateLNDAPICallStatus, updateInvoice } from './lnd.actions';
+import { backupChannels, fetchAllChannels, fetchBalanceBlockchain, fetchClosedChannels, fetchFees, fetchInfoLND, fetchInvoices, fetchNetwork, fetchPayments, fetchPeers, fetchPendingChannels, fetchTransactions, getAllLightningTransactions, setForwardingHistory, setLookup, setPeers, setQueryRoutes, setRestoreChannelsList, updateLNDAPICallStatus, updateInvoice } from './lnd.actions';
+import { allAPIsCallStatus, lndNodeInformation } from './lnd.selector';
+import { ApiCallsListLND } from '../../shared/models/apiCallsPayload';
 
 @Injectable()
 export class LNDEffects implements OnDestroy {
@@ -41,15 +42,14 @@ export class LNDEffects implements OnDestroy {
     private router: Router,
     private location: Location
   ) {
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(allAPIsCallStatus).pipe(takeUntil(this.unSubs[0])).
+      subscribe((allApisCallStatus: ApiCallsListLND) => {
         if (
-          ((rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) &&
-            (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
-            (rtlStore.apisCallStatus.FetchBalanceBlockchain.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchBalanceBlockchain.status === APICallStatusEnum.ERROR) &&
-            (rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.ERROR) &&
-            (rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.ERROR)) &&
+          ((allApisCallStatus.FetchInfo.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) &&
+            (allApisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
+            (allApisCallStatus.FetchBalanceBlockchain.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchBalanceBlockchain.status === APICallStatusEnum.ERROR) &&
+            (allApisCallStatus.FetchAllChannels.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchAllChannels.status === APICallStatusEnum.ERROR) &&
+            (allApisCallStatus.FetchPendingChannels.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchPendingChannels.status === APICallStatusEnum.ERROR)) &&
           !this.flgInitialized
         ) {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.INITALIZE_NODE_DATA }));
@@ -260,7 +260,7 @@ export class LNDEffects implements OnDestroy {
           this.logger.info(postRes);
           this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'SaveNewChannel', status: APICallStatusEnum.COMPLETED } }));
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.OPEN_CHANNEL }));
-          this.store.dispatch(fetchBalance({ payload: 'Blockchain' }));
+          this.store.dispatch(fetchBalanceBlockchain());
           this.store.dispatch(fetchAllChannels());
           this.store.dispatch(backupChannels({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, channelPoint: 'ALL', showMessage: 'Channel Added Successfully!' } }));
           return {
@@ -424,24 +424,23 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
-  balanceFetch = createEffect(() => this.actions.pipe(
-    ofType(LNDActions.FETCH_BALANCE_LND),
-    mergeMap((action: { type: string, payload: string }) => {
-      this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchBalance' + action.payload, status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<Balance>(this.CHILD_API_URL + environment.BALANCE_API + '/' + action.payload).pipe(
-        map((res: any) => {
-          this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchBalance' + action.payload, status: APICallStatusEnum.COMPLETED } }));
-          this.logger.info(res);
-          const emptyRes = (action.payload === 'channels') ? { balance: '' } : { total_balance: '' };
-          return {
-            type: LNDActions.SET_BALANCE_LND,
-            payload: res ? { target: action.payload, balance: res } : { target: action.payload, balance: emptyRes }
-          };
-        }),
-        catchError((err: any) => {
-          this.handleErrorWithoutAlert('FetchBalance' + action.payload, UI_MESSAGES.NO_SPINNER, 'Fetching' + this.commonService.titleCase(action.payload) + ' Balance Failed.', err);
-          return of({ type: RTLActions.VOID });
-        }));
+  balanceBlockchainFetch = createEffect(() => this.actions.pipe(
+    ofType(LNDActions.FETCH_BLOCKCHAIN_BALANCE_LND),
+    mergeMap(() => {
+      this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchBalance', status: APICallStatusEnum.INITIATED } }));
+      return this.httpClient.get<BlockchainBalance>(this.CHILD_API_URL + environment.BALANCE_API);
+    }),
+    map((res: any) => {
+      this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchBalance', status: APICallStatusEnum.COMPLETED } }));
+      this.logger.info(res);
+      return {
+        type: LNDActions.SET_BLOCKCHAIN_BALANCE_LND,
+        payload: res ? res : { total_balance: '' }
+      };
+    }),
+    catchError((err: any) => {
+      this.handleErrorWithoutAlert('FetchBalance', UI_MESSAGES.NO_SPINNER, 'Fetching Blockchain Balance Failed.', err);
+      return of({ type: RTLActions.VOID });
     }))
   );
 
@@ -490,44 +489,44 @@ export class LNDEffects implements OnDestroy {
     mergeMap(() => {
       this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchPendingChannels', status: APICallStatusEnum.INITIATED } }));
       return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/pending').pipe(
-        map((channels: any) => {
-          this.logger.info(channels);
+        map((pendingChannels: any) => {
+          this.logger.info(pendingChannels);
           this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchPendingChannels', status: APICallStatusEnum.COMPLETED } }));
-          const pendingChannels: PendingChannelsGroup = { open: { num_channels: 0, limbo_balance: 0 }, closing: { num_channels: 0, limbo_balance: 0 }, force_closing: { num_channels: 0, limbo_balance: 0 }, waiting_close: { num_channels: 0, limbo_balance: 0 }, total_channels: 0, total_limbo_balance: 0 };
-          if (channels) {
-            pendingChannels.total_limbo_balance = channels.total_limbo_balance;
-            if (channels.pending_closing_channels) {
-              pendingChannels.closing.num_channels = channels.pending_closing_channels.length;
-              pendingChannels.total_channels = pendingChannels.total_channels + channels.pending_closing_channels.length;
-              channels.pending_closing_channels.forEach((closingChannel) => {
-                pendingChannels.closing.limbo_balance = +pendingChannels.closing.limbo_balance + (closingChannel.channel.local_balance ? +closingChannel.channel.local_balance : 0);
+          const pendingChannelsSummary: PendingChannelsSummary = { open: { num_channels: 0, limbo_balance: 0 }, closing: { num_channels: 0, limbo_balance: 0 }, force_closing: { num_channels: 0, limbo_balance: 0 }, waiting_close: { num_channels: 0, limbo_balance: 0 }, total_channels: 0, total_limbo_balance: 0 };
+          if (pendingChannels) {
+            pendingChannelsSummary.total_limbo_balance = pendingChannels.total_limbo_balance;
+            if (pendingChannels.pending_closing_channels) {
+              pendingChannelsSummary.closing.num_channels = pendingChannels.pending_closing_channels.length;
+              pendingChannelsSummary.total_channels = pendingChannelsSummary.total_channels + pendingChannels.pending_closing_channels.length;
+              pendingChannels.pending_closing_channels.forEach((closingChannel) => {
+                pendingChannelsSummary.closing.limbo_balance = +pendingChannelsSummary.closing.limbo_balance + (closingChannel.channel.local_balance ? +closingChannel.channel.local_balance : 0);
               });
             }
-            if (channels.pending_force_closing_channels) {
-              pendingChannels.force_closing.num_channels = channels.pending_force_closing_channels.length;
-              pendingChannels.total_channels = pendingChannels.total_channels + channels.pending_force_closing_channels.length;
-              channels.pending_force_closing_channels.forEach((closingChannel) => {
-                pendingChannels.force_closing.limbo_balance = +pendingChannels.force_closing.limbo_balance + (closingChannel.channel.local_balance ? +closingChannel.channel.local_balance : 0);
+            if (pendingChannels.pending_force_closing_channels) {
+              pendingChannelsSummary.force_closing.num_channels = pendingChannels.pending_force_closing_channels.length;
+              pendingChannelsSummary.total_channels = pendingChannelsSummary.total_channels + pendingChannels.pending_force_closing_channels.length;
+              pendingChannels.pending_force_closing_channels.forEach((closingChannel) => {
+                pendingChannelsSummary.force_closing.limbo_balance = +pendingChannelsSummary.force_closing.limbo_balance + (closingChannel.channel.local_balance ? +closingChannel.channel.local_balance : 0);
               });
             }
-            if (channels.pending_open_channels) {
-              pendingChannels.open.num_channels = channels.pending_open_channels.length;
-              pendingChannels.total_channels = pendingChannels.total_channels + channels.pending_open_channels.length;
-              channels.pending_open_channels.forEach((openingChannel) => {
-                pendingChannels.open.limbo_balance = +pendingChannels.open.limbo_balance + (openingChannel.channel.local_balance ? +openingChannel.channel.local_balance : 0);
+            if (pendingChannels.pending_open_channels) {
+              pendingChannelsSummary.open.num_channels = pendingChannels.pending_open_channels.length;
+              pendingChannelsSummary.total_channels = pendingChannelsSummary.total_channels + pendingChannels.pending_open_channels.length;
+              pendingChannels.pending_open_channels.forEach((openingChannel) => {
+                pendingChannelsSummary.open.limbo_balance = +pendingChannelsSummary.open.limbo_balance + (openingChannel.channel.local_balance ? +openingChannel.channel.local_balance : 0);
               });
             }
-            if (channels.waiting_close_channels) {
-              pendingChannels.waiting_close.num_channels = channels.waiting_close_channels.length;
-              pendingChannels.total_channels = pendingChannels.total_channels + channels.waiting_close_channels.length;
-              channels.waiting_close_channels.forEach((closingChannel) => {
-                pendingChannels.waiting_close.limbo_balance = +pendingChannels.waiting_close.limbo_balance + (closingChannel.channel.local_balance ? +closingChannel.channel.local_balance : 0);
+            if (pendingChannels.waiting_close_channels) {
+              pendingChannelsSummary.waiting_close.num_channels = pendingChannels.waiting_close_channels.length;
+              pendingChannelsSummary.total_channels = pendingChannelsSummary.total_channels + pendingChannels.waiting_close_channels.length;
+              pendingChannels.waiting_close_channels.forEach((closingChannel) => {
+                pendingChannelsSummary.waiting_close.limbo_balance = +pendingChannelsSummary.waiting_close.limbo_balance + (closingChannel.channel.local_balance ? +closingChannel.channel.local_balance : 0);
               });
             }
           }
           return {
             type: LNDActions.SET_PENDING_CHANNELS_LND,
-            payload: channels ? { channels: channels, pendingChannels: pendingChannels } : { channels: {}, pendingChannels: pendingChannels }
+            payload: pendingChannels ? { pendingChannels: pendingChannels, pendingChannelsSummary: pendingChannelsSummary } : { pendingChannels: {}, pendingChannelsSummary: pendingChannelsSummary }
           };
         }),
         catchError((err: any) => {
@@ -569,7 +568,7 @@ export class LNDEffects implements OnDestroy {
           this.logger.info(res);
           this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchInvoices', status: APICallStatusEnum.COMPLETED } }));
           if (action.payload.reversed && !action.payload.index_offset) {
-            this.store.dispatch(setTotalInvoices({ payload: +res.last_index_offset }));
+            res['total_invoices'] = +res.last_index_offset;
           }
           return {
             type: LNDActions.SET_INVOICES_LND,
@@ -605,10 +604,10 @@ export class LNDEffects implements OnDestroy {
 
   utxosFetch = createEffect(() => this.actions.pipe(
     ofType(LNDActions.FETCH_UTXOS_LND),
-    withLatestFrom(this.store.select('lnd')),
-    mergeMap(([action, lndData]: [{ type: string, payload: any }, LNDState]) => {
+    withLatestFrom(this.store.select(lndNodeInformation)),
+    mergeMap(([action, nodeInfo]: [{ type: string, payload: any }, GetInfo]) => {
       this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchUTXOs', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<UTXO[]>(this.CHILD_API_URL + environment.WALLET_API + '/getUTXOs?max_confs=' + (lndData.information && lndData.information.block_height ? lndData.information.block_height : 1000000000));
+      return this.httpClient.get<UTXO[]>(this.CHILD_API_URL + environment.WALLET_API + '/getUTXOs?max_confs=' + (nodeInfo && nodeInfo.block_height ? nodeInfo.block_height : 1000000000));
     }),
     map((utxos) => {
       this.logger.info(utxos);
@@ -810,7 +809,7 @@ export class LNDEffects implements OnDestroy {
           this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'SetChannelTransaction', status: APICallStatusEnum.COMPLETED } }));
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.SEND_FUNDS }));
           this.store.dispatch(fetchTransactions());
-          this.store.dispatch(fetchBalance({ payload: 'Blockchain' }));
+          this.store.dispatch(fetchBalanceBlockchain());
           this.store.dispatch(fetchAllChannels());
           return {
             type: LNDActions.SET_CHANNEL_TRANSACTION_RES_LND,
@@ -1145,7 +1144,7 @@ export class LNDEffects implements OnDestroy {
     }
     this.router.navigate([newRoute]);
     this.store.dispatch(fetchFees()); // Fetches monthly forwarding history as well, to count total number of events
-    this.store.dispatch(fetchBalance({ payload: 'Blockchain' }));
+    this.store.dispatch(fetchBalanceBlockchain());
     this.store.dispatch(fetchAllChannels());
     this.store.dispatch(fetchPendingChannels());
     this.store.dispatch(fetchClosedChannels());

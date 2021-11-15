@@ -9,12 +9,13 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ClosedChannel } from '../../../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CHANNEL_CLOSURE_TYPE, APICallStatusEnum } from '../../../../../shared/services/consts-enums-functions';
-import { ApiCallsListLND } from '../../../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 
 import { openAlert } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
+import { closedChannels } from '../../../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-channel-closed-table',
@@ -39,7 +40,7 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -58,19 +59,18 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   ngOnInit() {
-    this.store.select('lnd').
-      pipe(takeUntil(this.unsub[0])).
-      subscribe((rtlStore) => {
+    this.store.select(closedChannels).pipe(takeUntil(this.unsub[0])).
+      subscribe((closedChannelsSelector: { closedChannels: ClosedChannel[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchClosedChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchClosedChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchClosedChannels.message) : this.apisCallStatus.FetchClosedChannels.message;
+        this.apiCallStatus = closedChannelsSelector.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.closedChannelsData = rtlStore.closedChannels;
+        this.closedChannelsData = closedChannelsSelector.closedChannels;
         if (this.closedChannelsData.length > 0) {
           this.loadClosedChannelsTable(this.closedChannelsData);
         }
-        this.logger.info(rtlStore);
+        this.logger.info(closedChannelsSelector);
       });
   }
 

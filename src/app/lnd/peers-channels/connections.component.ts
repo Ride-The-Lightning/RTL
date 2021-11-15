@@ -9,6 +9,9 @@ import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { RTLState } from '../../store/rtl.state';
+import { blockchainBalance, channels, lndNodeSettings, peers } from '../store/lnd.selector';
+import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
+import { BlockchainBalance, Channel, ChannelsSummary, LightningBalance, Peer } from '../../shared/models/lndModels';
 
 @Component({
   selector: 'rtl-connections',
@@ -25,7 +28,7 @@ export class ConnectionsComponent implements OnInit, OnDestroy {
   public balances = [{ title: 'Total Balance', dataValue: 0 }, { title: 'Confirmed', dataValue: 0 }, { title: 'Unconfirmed', dataValue: 0 }];
   public links = [{ link: 'channels', name: 'Channels' }, { link: 'peers', name: 'Peers' }];
   public activeLink = 0;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private store: Store<RTLState>, private logger: LoggerService, private router: Router) { }
 
@@ -35,14 +38,21 @@ export class ConnectionsComponent implements OnInit, OnDestroy {
       subscribe((value: any) => {
         this.activeLink = this.links.findIndex((link) => link.link === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
       });
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[1])).
-      subscribe((rtlStore) => {
-        this.selNode = rtlStore.nodeSettings;
-        this.activePeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
-        this.activeChannels = rtlStore.numberOfActiveChannels;
-        this.balances = [{ title: 'Total Balance', dataValue: rtlStore.blockchainBalance.total_balance || 0 }, { title: 'Confirmed', dataValue: rtlStore.blockchainBalance.confirmed_balance }, { title: 'Unconfirmed', dataValue: rtlStore.blockchainBalance.unconfirmed_balance }];
-        this.logger.info(rtlStore);
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[1])).subscribe((nodeSettings: SelNodeChild) => { this.selNode = nodeSettings; });
+    this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
+      subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.activePeers = (peersSelector.peers && peersSelector.peers.length) ? peersSelector.peers.length : 0;
+        this.logger.info(peersSelector);
+      });
+    this.store.select(channels).pipe(takeUntil(this.unSubs[3])).
+      subscribe((channelsSelector: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.activeChannels = channelsSelector.channelsSummary.active.num_channels;
+        this.logger.info(channelsSelector);
+      });
+    this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[4])).
+      subscribe((bcBalanceSelector: { blockchainBalance: BlockchainBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.balances = [{ title: 'Total Balance', dataValue: bcBalanceSelector.blockchainBalance.total_balance || 0 }, { title: 'Confirmed', dataValue: bcBalanceSelector.blockchainBalance.confirmed_balance }, { title: 'Unconfirmed', dataValue: bcBalanceSelector.blockchainBalance.unconfirmed_balance }];
+        this.logger.info(bcBalanceSelector);
       });
   }
 

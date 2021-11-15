@@ -4,7 +4,7 @@ import { ECLState } from './ecl.state';
 export const eclState = createFeatureSelector<ECLState>('ecl');
 export const eclNodeSettings = createSelector(eclState, (state: ECLState) => state.nodeSettings);
 export const eclNodeInformation = createSelector(eclState, (state: ECLState) => state.information);
-export const apiCallStatusNodeInfo = createSelector(eclState, (state: ECLState) => state.apisCallStatus.FetchInfo);
+export const nodeInfoStatus = createSelector(eclState, (state: ECLState) => ({ information: state.information, apiCallStatus: state.apisCallStatus.FetchInfo }));
 export const allAPIsCallStatus = createSelector(eclState, (state: ECLState) => state.apisCallStatus);
 export const payments = createSelector(eclState, (state: ECLState) => ({ payments: state.payments, apiCallStatus: state.apisCallStatus.FetchPayments }));
 export const fees = createSelector(eclState, (state: ECLState) => ({ fees: state.fees, apiCallStatus: state.apisCallStatus.FetchFees }));

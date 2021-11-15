@@ -15,6 +15,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LNDEffects } from '../../store/lnd.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { restoreChannels, restoreChannelsList } from '../../store/lnd.actions';
+import { lndNodeSettings } from '../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-channel-restore-table',
@@ -48,14 +49,8 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
 
   ngOnInit() {
     this.store.dispatch(restoreChannelsList());
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        this.selNode = rtlStore.nodeSettings;
-        this.logger.info(rtlStore);
-      });
-    this.lndEffects.setRestoreChannelList.
-      pipe(takeUntil(this.unSubs[0])).
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => { this.selNode = nodeSettings; });
+    this.lndEffects.setRestoreChannelList.pipe(takeUntil(this.unSubs[1])).
       subscribe((resRCList) => {
         this.allRestoreExists = resRCList.all_restore_exists;
         this.channelsData = resRCList.files;

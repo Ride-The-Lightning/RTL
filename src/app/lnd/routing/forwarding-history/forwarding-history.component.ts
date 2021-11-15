@@ -40,7 +40,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallStatusPayload = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -63,9 +63,9 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
       subscribe((fhSelector: { forwardingHistory: SwitchRes, apiCallStatus: ApiCallStatusPayload }) => {
         if (this.eventsData.length <= 0) {
           this.errorMessage = '';
-          this.apisCallStatus = fhSelector.apiCallStatus;
+          this.apiCallStatus = fhSelector.apiCallStatus;
           if (fhSelector.apiCallStatus?.status === APICallStatusEnum.ERROR) {
-            this.errorMessage = (typeof (this.apisCallStatus.message) === 'object') ? JSON.stringify(this.apisCallStatus.message) : this.apisCallStatus.message;
+            this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
           }
           this.forwardingHistoryData = (fhSelector.forwardingHistory?.forwarding_events) ? fhSelector.forwardingHistory.forwarding_events : [];
           this.loadForwardingEventsTable(this.forwardingHistoryData);

@@ -10,15 +10,16 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
-import { Channel } from '../../../shared/models/lndModels';
+import { Channel, ChannelsSummary, LightningBalance } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES, LNDActions, RTLActions } from '../../../shared/services/consts-enums-functions';
-import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { RTLState } from '../../../store/rtl.state';
 import { fetchFile, openAlert } from '../../../store/rtl.actions';
 import { backupChannels, verifyChannel } from '../../store/lnd.actions';
+import { channels, lndNodeSettings } from '../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-channel-backup-table',
@@ -46,7 +47,7 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -55,22 +56,21 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   ngOnInit() {
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => { this.selNode = nodeSettings; });
+    this.store.select(channels).pipe(takeUntil(this.unSubs[1])).
+      subscribe((channelsSeletor: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchAllChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchAllChannels.message) : this.apisCallStatus.FetchAllChannels.message;
+        this.apiCallStatus = channelsSeletor.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.selNode = rtlStore.nodeSettings;
-        this.channelsData = rtlStore.allChannels;
+        this.channelsData = channelsSeletor.channels;
         if (this.channelsData.length > 0) {
           this.loadBackupTable(this.channelsData);
         }
-        this.logger.info(rtlStore);
+        this.logger.info(channelsSeletor);
       });
-    this.actions.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === LNDActions.SET_ALL_CHANNELS_LND || action.type === RTLActions.SHOW_FILE)).subscribe((action: any) => {
+    this.actions.pipe(takeUntil(this.unSubs[2]), filter((action) => action.type === LNDActions.SET_ALL_CHANNELS_LND || action.type === RTLActions.SHOW_FILE)).subscribe((action: any) => {
       if (action.type === LNDActions.SET_ALL_CHANNELS_LND) {
         this.selectedChannel = null;
       }

@@ -5,13 +5,14 @@ import { Store } from '@ngrx/store';
 import { faProjectDiagram, faBolt, faServer, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../shared/services/logger.service';
-import { GetInfo, NetworkInfo, Fees, ChannelsStatus } from '../../shared/models/lndModels';
+import { GetInfo, NetworkInfo, Fees, ChannelsStatus, PendingChannels, PendingChannelsSummary, Channel, ChannelsSummary, LightningBalance } from '../../shared/models/lndModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { CommonService } from '../../shared/services/common.service';
 import { APICallStatusEnum, ScreenSizeEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
-import { ApiCallsListLND } from '../../shared/models/apiCallsPayload';
+import { ApiCallsListLND, ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 
 import { RTLState } from '../../store/rtl.state';
+import { channels, fees, networkInfo, nodeInfoAndNodeSettingsAndAPIStatus, pendingChannels } from '../store/lnd.selector';
 
 @Component({
   selector: 'rtl-network-info',
@@ -35,9 +36,13 @@ export class NetworkInfoComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   public userPersonaEnum = UserPersonaEnum;
   public errorMessages = ['', '', '', '', ''];
-  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatusNodeInfo: ApiCallStatusPayload = null;
+  public apiCallStatusNetwork: ApiCallStatusPayload = null;
+  public apiCallStatusFees: ApiCallStatusPayload = null;
+  public apiCallStatusChannels: ApiCallStatusPayload = null;
+  public apiCallStatusPendingChannels: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
@@ -67,41 +72,57 @@ export class NetworkInfoComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        this.errorMessages = ['', '', '', '', ''];
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[0] = (typeof (this.apisCallStatus.FetchInfo.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchInfo.message) : this.apisCallStatus.FetchInfo.message;
+    this.store.select(nodeInfoAndNodeSettingsAndAPIStatus).pipe(takeUntil(this.unSubs[0])).
+      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: SelNodeChild, apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessages[0] = '';
+        this.apiCallStatusNodeInfo = infoSettingsStatusSelector.apiCallStatus;
+        if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[0] = (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message;
         }
-        if (rtlStore.apisCallStatus.FetchNetwork.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[1] = (typeof (this.apisCallStatus.FetchNetwork.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchNetwork.message) : this.apisCallStatus.FetchNetwork.message;
+        this.selNode = infoSettingsStatusSelector.nodeSettings;
+        this.information = infoSettingsStatusSelector.information;
+      });
+    this.store.select(networkInfo).pipe(takeUntil(this.unSubs[1])).
+      subscribe((networkInfoSelector: { networkInfo: NetworkInfo, apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessages[1] = '';
+        this.apiCallStatusFees = networkInfoSelector.apiCallStatus;
+        if (this.apiCallStatusFees.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[1] = (typeof (this.apiCallStatusFees.message) === 'object') ? JSON.stringify(this.apiCallStatusFees.message) : this.apiCallStatusFees.message;
         }
-        if (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[2] = (typeof (this.apisCallStatus.FetchFees.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchFees.message) : this.apisCallStatus.FetchFees.message;
+        this.networkInfo = networkInfoSelector.networkInfo;
+      });
+    this.store.select(fees).pipe(takeUntil(this.unSubs[2])).
+      subscribe((feesSelector: { fees: Fees, apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessages[2] = '';
+        this.apiCallStatusFees = feesSelector.apiCallStatus;
+        if (this.apiCallStatusFees.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[2] = (typeof (this.apiCallStatusFees.message) === 'object') ? JSON.stringify(this.apiCallStatusFees.message) : this.apiCallStatusFees.message;
         }
-        if (rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[3] = (typeof (this.apisCallStatus.FetchAllChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchAllChannels.message) : this.apisCallStatus.FetchAllChannels.message;
+        this.fees = feesSelector.fees;
+      });
+    this.store.select(pendingChannels).pipe(takeUntil(this.unSubs[3])).
+      subscribe((pendingChannelsSelector: { pendingChannels: PendingChannels, pendingChannelsSummary: PendingChannelsSummary, apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessages[4] = '';
+        this.apiCallStatusPendingChannels = pendingChannelsSelector.apiCallStatus;
+        if (this.apiCallStatusPendingChannels.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[4] = (typeof (this.apiCallStatusPendingChannels.message) === 'object') ? JSON.stringify(this.apiCallStatusPendingChannels.message) : this.apiCallStatusPendingChannels.message;
         }
-        if (rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[4] = (typeof (this.apisCallStatus.FetchPendingChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPendingChannels.message) : this.apisCallStatus.FetchPendingChannels.message;
-        }
-
-        this.selNode = rtlStore.nodeSettings;
-        this.information = rtlStore.information;
-        this.networkInfo = rtlStore.networkInfo;
-        this.fees = rtlStore.fees;
-        this.channelsStatus = {
-          active: { channels: rtlStore.numberOfActiveChannels, capacity: rtlStore.totalCapacityActive },
-          inactive: { channels: rtlStore.numberOfInactiveChannels, capacity: rtlStore.totalCapacityInactive },
-          pending: { channels: rtlStore.numberOfPendingChannels.open.num_channels, capacity: rtlStore.numberOfPendingChannels.open.limbo_balance },
-          closing: {
-            channels: rtlStore.numberOfPendingChannels.closing.num_channels + rtlStore.numberOfPendingChannels.force_closing.num_channels + rtlStore.numberOfPendingChannels.waiting_close.num_channels,
-            capacity: rtlStore.numberOfPendingChannels.total_limbo_balance
-          }
+        this.channelsStatus.pending = { num_channels: pendingChannelsSelector.pendingChannelsSummary.open.num_channels, capacity: pendingChannelsSelector.pendingChannelsSummary.open.limbo_balance };
+        this.channelsStatus.closing = {
+          num_channels: pendingChannelsSelector.pendingChannelsSummary.closing.num_channels + pendingChannelsSelector.pendingChannelsSummary.force_closing.num_channels + pendingChannelsSelector.pendingChannelsSummary.waiting_close.num_channels,
+          capacity: pendingChannelsSelector.pendingChannelsSummary.total_limbo_balance
         };
-        this.logger.info(rtlStore);
+      });
+    this.store.select(channels).pipe(takeUntil(this.unSubs[4])).
+      subscribe((channelsSelector: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessages[3] = '';
+        this.apiCallStatusChannels = channelsSelector.apiCallStatus;
+        if (this.apiCallStatusChannels.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[3] = (typeof (this.apiCallStatusChannels.message) === 'object') ? JSON.stringify(this.apiCallStatusChannels.message) : this.apiCallStatusChannels.message;
+        }
+        this.channelsStatus.active = channelsSelector.channelsSummary.active;
+        this.channelsStatus.inactive = channelsSelector.channelsSummary.inactive;
+        this.logger.info(channelsSelector);
       });
   }
 

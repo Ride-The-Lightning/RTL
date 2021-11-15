@@ -4,11 +4,9 @@ import { LNDActions } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import {
-  GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices,
-  ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq,
-  SwitchRes, QueryRoutes, PendingChannelsGroup, LightningNode, UTXO, ListPayments, SavePeer, SaveInvoice, SaveChannel, CloseChannel, FetchInvoices, FetchPayments, SendPayment, GetNewAddress, GetQueryRoutes, InitWallet, ChannelLookup, SetRestoreChannelsList, NewlyAddedPeer, SetBalance, SetPendingChannels, BackupChannels, SetAllLightningTransactions
-}
-  from '../../shared/models/lndModels';
+  GetInfo, Peer, NetworkInfo, Fees, Channel, Invoice, ListInvoices, ChannelsTransaction, ClosedChannel, Transaction, SwitchReq,
+  SwitchRes, QueryRoutes, LightningNode, UTXO, ListPayments, SavePeer, SaveInvoice, SaveChannel, CloseChannel, FetchInvoices, FetchPayments, SendPayment, GetNewAddress, GetQueryRoutes, InitWallet, ChannelLookup, SetRestoreChannelsList, NewlyAddedPeer, BlockchainBalance, SetPendingChannels, BackupChannels, SetAllLightningTransactions
+} from '../../shared/models/lndModels';
 
 export const updateLNDAPICallStatus = createAction(LNDActions.UPDATE_API_CALL_STATUS_LND, props<{ payload: ApiCallStatusPayload }>());
 
@@ -42,9 +40,9 @@ export const fetchFees = createAction(LNDActions.FETCH_FEES_LND);
 
 export const setFees = createAction(LNDActions.SET_FEES_LND, props<{ payload: Fees }>());
 
-export const fetchBalance = createAction(LNDActions.FETCH_BALANCE_LND, props<{ payload: string }>());
+export const fetchBalanceBlockchain = createAction(LNDActions.FETCH_BLOCKCHAIN_BALANCE_LND);
 
-export const setBalance = createAction(LNDActions.SET_BALANCE_LND, props<{ payload: SetBalance }>());
+export const setBalanceBlockchain = createAction(LNDActions.SET_BLOCKCHAIN_BALANCE_LND, props<{ payload: BlockchainBalance }>());
 
 export const fetchNetwork = createAction(LNDActions.FETCH_NETWORK_LND);
 
@@ -91,8 +89,6 @@ export const fetchInvoices = createAction(LNDActions.FETCH_INVOICES_LND, props<{
 export const setInvoices = createAction(LNDActions.SET_INVOICES_LND, props<{ payload: ListInvoices }>());
 
 export const updateInvoice = createAction(LNDActions.UPDATE_INVOICE_LND, props<{ payload: Invoice }>());
-
-export const setTotalInvoices = createAction(LNDActions.SET_TOTAL_INVOICES_LND, props<{ payload: number }>());
 
 export const fetchTransactions = createAction(LNDActions.FETCH_TRANSACTIONS_LND);
 

@@ -10,9 +10,9 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 import { ChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
-import { Channel, GetInfo } from '../../../../../shared/models/lndModels';
+import { BlockchainBalance, Channel, ChannelsSummary, GetInfo, LightningBalance, Peer } from '../../../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum, LoopTypeEnum, APICallStatusEnum, UI_MESSAGES } from '../../../../../shared/services/consts-enums-functions';
-import { ApiCallsListLND } from '../../../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { LoopService } from '../../../../../shared/services/loop.service';
 import { CommonService } from '../../../../../shared/services/common.service';
@@ -25,6 +25,7 @@ import { RTLEffects } from '../../../../../store/rtl.effects';
 import { RTLState } from '../../../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
 import { channelLookup, fetchAllChannels, updateChannel } from '../../../../store/lnd.actions';
+import { blockchainBalance, channels, lndNodeInformation, lndNodeSettings, peers } from '../../../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-channel-open-table',
@@ -59,9 +60,9 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   public faEyeSlash = faEyeSlash
   private targetConf = 6;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private lndEffects: LNDEffects, private commonService: CommonService, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private loopService: LoopService) {
     this.screenSize = this.commonService.getScreenSize();
@@ -81,26 +82,37 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   ngOnInit() {
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchAllChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchAllChannels.message) : this.apisCallStatus.FetchAllChannels.message;
-        }
-        this.selNode = rtlStore.nodeSettings;
-        this.information = rtlStore.information;
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeSettings) => {
+        this.selNode = nodeSettings;
+      });
+    this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[1])).
+      subscribe((nodeInfo: GetInfo) => {
+        this.information = nodeInfo;
         if (this.information && this.information.version) {
           this.versionsArr = this.information.version.split('.');
         }
-        this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
-        this.totalBalance = +rtlStore.blockchainBalance.total_balance;
-        this.channelsData = this.calculateUptime(rtlStore.allChannels);
+      });
+    this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
+      subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.numPeers = (peersSelector.peers && peersSelector.peers.length) ? peersSelector.peers.length : 0;
+      });
+    this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[3])).
+      subscribe((bcBalanceSelector: { blockchainBalance: BlockchainBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.totalBalance = +bcBalanceSelector.blockchainBalance.total_balance;
+      });
+    this.store.select(channels).pipe(takeUntil(this.unSubs[4])).
+      subscribe((channelsSelector: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessage = '';
+        this.apiCallStatus = channelsSelector.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+        }
+        this.channelsData = this.calculateUptime(channelsSelector.channels);
         if (this.channelsData.length > 0) {
           this.loadChannelsTable(this.channelsData);
         }
-        this.logger.info(rtlStore);
+        this.logger.info(channelsSelector);
       });
   }
 
@@ -173,7 +185,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
         }
       }));
       this.rtlEffects.closeConfirm.
-        pipe(takeUntil(this.unSubs[1])).
+        pipe(takeUntil(this.unSubs[5])).
         subscribe((confirmRes) => {
           if (confirmRes) {
             const base_fee = confirmRes[0].inputValue;
@@ -218,7 +230,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
           }));
         });
       this.rtlEffects.closeConfirm.
-        pipe(takeUntil(this.unSubs[2])).
+        pipe(takeUntil(this.unSubs[6])).
         subscribe((confirmRes) => {
           if (confirmRes) {
             const base_fee = confirmRes[0].inputValue;
@@ -331,7 +343,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
 
   onLoopOut(selChannel: Channel) {
     this.loopService.getLoopOutTermsAndQuotes(this.targetConf).
-      pipe(takeUntil(this.unSubs[0])).
+      pipe(takeUntil(this.unSubs[7])).
       subscribe((response) => {
         this.store.dispatch(openAlert({
           payload: {

@@ -1,7 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 
 import { initLNDState } from './lnd.state';
-import { addInvoice, removeChannel, removePeer, resetLNDStore, setAllChannels, setAllLightningTransactions, setBalance, setChildNodeSettingsLND, setClosedChannels, setFees, setForwardingHistory, setInfo, setInvoices, setNetwork, setPayments, setPeers, setPendingChannels, setTotalInvoices, setTransactions, setUTXOs, updateLNDAPICallStatus, updateInvoice } from './lnd.actions';
+import { addInvoice, removeChannel, removePeer, resetLNDStore, setAllChannels, setAllLightningTransactions, setBalanceBlockchain, setChildNodeSettingsLND, setClosedChannels, setFees, setForwardingHistory, setInfo, setInvoices, setNetwork, setPayments, setPeers, setPendingChannels, setTransactions, setUTXOs, updateLNDAPICallStatus, updateInvoice } from './lnd.actions';
 
 let flgTransactionsSet = false;
 let flgUTXOsSet = false;
@@ -49,7 +49,7 @@ export const LNDReducer = createReducer(initLNDState,
     };
   }),
   on(addInvoice, (state, { payload }) => {
-    const newInvoices = state.invoices;
+    const newInvoices = state.listInvoices;
     newInvoices.invoices.unshift(payload);
     return {
       ...state,
@@ -57,7 +57,7 @@ export const LNDReducer = createReducer(initLNDState,
     };
   }),
   on(updateInvoice, (state, { payload }) => {
-    const modifiedInvoices = state.invoices;
+    const modifiedInvoices = state.listInvoices;
     modifiedInvoices.invoices = modifiedInvoices.invoices.map((invoice) => ((invoice.r_hash === payload.r_hash) ? payload : invoice));
     return {
       ...state,
@@ -74,8 +74,8 @@ export const LNDReducer = createReducer(initLNDState,
   })),
   on(setPendingChannels, (state, { payload }) => ({
     ...state,
-    pendingChannels: payload.channels,
-    numberOfPendingChannels: payload.pendingChannels
+    pendingChannels: payload.pendingChannels,
+    pendingChannelsSummary: payload.pendingChannelsSummary
   })),
   on(setAllChannels, (state, { payload }) => {
     let localBal = 0;
@@ -111,17 +111,13 @@ export const LNDReducer = createReducer(initLNDState,
     return {
       ...state,
       allChannels: payload,
-      numberOfActiveChannels: activeChannels,
-      numberOfInactiveChannels: inactiveChannels,
-      totalCapacityActive: totalCapacityActive,
-      totalCapacityInactive: totalCapacityInactive,
-      totalLocalBalance: localBal,
-      totalRemoteBalance: remoteBal
+      channelsSummary: { active: { num_channels: activeChannels, capacity: totalCapacityActive }, inactive: { num_channels: inactiveChannels, capacity: totalCapacityInactive } },
+      lightningBalance: { local: localBal, remote: remoteBal }
     };
   }),
   on(removeChannel, (state, { payload }) => {
-    const modifiedChannels = [...state.allChannels];
-    const removeChannelIdx = state.allChannels.findIndex((channel) => channel.channel_point === payload.channelPoint);
+    const modifiedChannels = [...state.channels];
+    const removeChannelIdx = state.channels.findIndex((channel) => channel.channel_point === payload.channelPoint);
     if (removeChannelIdx > -1) {
       modifiedChannels.splice(removeChannelIdx, 1);
     }
@@ -130,16 +126,10 @@ export const LNDReducer = createReducer(initLNDState,
       allChannels: modifiedChannels
     };
   }),
-  on(setBalance, (state, { payload }) => {
-    if (payload.target === 'Blockchain') {
-      return {
-        ...state,
-        blockchainBalance: payload.balance
-      };
-    } else {
-      return { ...state };
-    }
-  }),
+  on(setBalanceBlockchain, (state, { payload }) => ({
+    ...state,
+    blockchainBalance: payload
+  })),
   on(setNetwork, (state, { payload }) => ({
     ...state,
     networkInfo: payload
@@ -147,10 +137,6 @@ export const LNDReducer = createReducer(initLNDState,
   on(setInvoices, (state, { payload }) => ({
     ...state,
     invoices: payload
-  })),
-  on(setTotalInvoices, (state, { payload }) => ({
-    ...state,
-    totalInvoices: payload
   })),
   on(setTransactions, (state, { payload }) => {
     flgTransactionsSet = true;
@@ -196,7 +182,7 @@ export const LNDReducer = createReducer(initLNDState,
   on(setForwardingHistory, (state, { payload }) => {
     const updatedPayload = !payload.forwarding_events ? {} : { ...payload };
     if (updatedPayload.forwarding_events) {
-      const storedChannels = [...state.allChannels, ...state.closedChannels];
+      const storedChannels = [...state.channels, ...state.closedChannels];
       updatedPayload.forwarding_events.forEach((fhEvent) => {
         if (storedChannels && storedChannels.length > 0) {
           for (let idx = 0; idx < storedChannels.length; idx++) {

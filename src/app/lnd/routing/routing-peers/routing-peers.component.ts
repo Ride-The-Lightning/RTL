@@ -41,7 +41,7 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public errorMessage = '';
   public filterIn = '';
   public filterOut = '';
-  public apisCallStatus: ApiCallStatusPayload = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -66,9 +66,9 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[0])).
       subscribe((fhSelector: { forwardingHistory: SwitchRes, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = fhSelector.apiCallStatus;
+        this.apiCallStatus = fhSelector.apiCallStatus;
         if (fhSelector.apiCallStatus?.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.message) === 'object') ? JSON.stringify(this.apisCallStatus.message) : this.apisCallStatus.message;
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         if (fhSelector.forwardingHistory.forwarding_events) {
           this.routingPeersData = fhSelector.forwardingHistory.forwarding_events;

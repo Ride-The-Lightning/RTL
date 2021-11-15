@@ -21,6 +21,7 @@ import { ECLInvoiceInformationComponent } from '../transactions/invoice-informat
 import { RTLState } from '../../store/rtl.state';
 import { fetchChannels, fetchFees, fetchInvoices, fetchOnchainBalance, fetchPayments, fetchPeers, sendPaymentStatus, setActiveChannels, setChannelsStatus, setInactiveChannels, setLightningBalance, setPeers, setPendingChannels, setQueryRoutes, updateECLAPICallStatus, updateChannelState, updateInvoice } from './ecl.actions';
 import { allAPIsCallStatus } from './ecl.selector';
+import { ApiCallsListECL } from '../../shared/models/apiCallsPayload';
 
 @Injectable()
 export class ECLEffects implements OnDestroy {
@@ -43,7 +44,7 @@ export class ECLEffects implements OnDestroy {
     private wsService: WebSocketClientService,
     private location: Location
   ) {
-    this.store.select(allAPIsCallStatus).pipe(takeUntil(this.unSubs[0])).subscribe((allApisCallStatus) => {
+    this.store.select(allAPIsCallStatus).pipe(takeUntil(this.unSubs[0])).subscribe((allApisCallStatus: ApiCallsListECL) => {
       if (
         ((allApisCallStatus.FetchInfo.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) &&
           (allApisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&

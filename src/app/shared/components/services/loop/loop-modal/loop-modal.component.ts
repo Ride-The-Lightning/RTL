@@ -16,9 +16,11 @@ import { LoopAlert } from '../../../../models/alertData';
 import { LoopService } from '../../../../services/loop.service';
 import { LoggerService } from '../../../../services/logger.service';
 import { CommonService } from '../../../../services/common.service';
-import { Channel } from '../../../../models/lndModels';
+import { Channel, ChannelsSummary, LightningBalance } from '../../../../models/lndModels';
 
 import { RTLState } from '../../../../../store/rtl.state';
+import { channels } from '../../../../../lnd/store/lnd.selector';
+import { ApiCallStatusPayload } from '../../../../models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-loop-modal',
@@ -78,10 +80,9 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     this.statusFormGroup = this.formBuilder.group({});
     this.onFormValueChanges();
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[6])).
-      subscribe((rtlStore) => {
-        this.localBalanceToCompare = (this.channel) ? +this.channel.local_balance : +rtlStore.totalLocalBalance;
+    this.store.select(channels).pipe(takeUntil(this.unSubs[6])).
+      subscribe((channelsSelector: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.localBalanceToCompare = (this.channel) ? +this.channel.local_balance : +channelsSelector.lightningBalance.local;
       });
   }
 
