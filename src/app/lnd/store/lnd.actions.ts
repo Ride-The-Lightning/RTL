@@ -48,9 +48,9 @@ export const fetchNetwork = createAction(LNDActions.FETCH_NETWORK_LND);
 
 export const setNetwork = createAction(LNDActions.SET_NETWORK_LND, props<{ payload: NetworkInfo }>());
 
-export const fetchAllChannels = createAction(LNDActions.FETCH_ALL_CHANNELS_LND);
+export const fetchChannels = createAction(LNDActions.FETCH_CHANNELS_LND);
 
-export const setAllChannels = createAction(LNDActions.SET_ALL_CHANNELS_LND, props<{ payload: Channel[] }>());
+export const setChannels = createAction(LNDActions.SET_CHANNELS_LND, props<{ payload: Channel[] }>());
 
 export const fetchPendingChannels = createAction(LNDActions.FETCH_PENDING_CHANNELS_LND);
 

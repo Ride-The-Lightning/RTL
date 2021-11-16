@@ -85,9 +85,9 @@ export class NetworkInfoComponent implements OnInit, OnDestroy {
     this.store.select(networkInfo).pipe(takeUntil(this.unSubs[1])).
       subscribe((networkInfoSelector: { networkInfo: NetworkInfo, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessages[1] = '';
-        this.apiCallStatusFees = networkInfoSelector.apiCallStatus;
-        if (this.apiCallStatusFees.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[1] = (typeof (this.apiCallStatusFees.message) === 'object') ? JSON.stringify(this.apiCallStatusFees.message) : this.apiCallStatusFees.message;
+        this.apiCallStatusNetwork = networkInfoSelector.apiCallStatus;
+        if (this.apiCallStatusNetwork.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[1] = (typeof (this.apiCallStatusNetwork.message) === 'object') ? JSON.stringify(this.apiCallStatusNetwork.message) : this.apiCallStatusNetwork.message;
         }
         this.networkInfo = networkInfoSelector.networkInfo;
       });

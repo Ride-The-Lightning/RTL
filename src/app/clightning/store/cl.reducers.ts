@@ -5,8 +5,8 @@ import { addInvoice, addPeer, removeChannel, removePeer, resetCLStore, setBalanc
 
 export const CLReducer = createReducer(initCLState,
   on(updateCLAPICallStatus, (state, { payload }) => {
-    const updatedapiCallStatus = { ...state.apiCallStatus };
-    updatedapiCallStatus[payload.action] = {
+    const updatedApisCallStatus = JSON.parse(JSON.stringify(state.apisCallStatus));
+    updatedApisCallStatus[payload.action] = {
       status: payload.status,
       statusCode: payload.statusCode,
       message: payload.message,
@@ -15,7 +15,7 @@ export const CLReducer = createReducer(initCLState,
     };
     return {
       ...state,
-      apiCallStatus: updatedapiCallStatus
+      apisCallStatus: updatedApisCallStatus
     };
   }),
   on(setChildNodeSettingsCL, (state, { payload }) => ({

@@ -38,11 +38,11 @@ export class CloseChannelComponent implements OnInit, OnDestroy {
     this.channelToClose = this.data.channel;
     this.actions.pipe(
       takeUntil(this.unSubs[0]),
-      filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.SET_ALL_CHANNELS_LND)).
+      filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.SET_CHANNELS_LND)).
       subscribe((action: any) => {
-        if (action.type === LNDActions.SET_ALL_CHANNELS_LND) {
+        if (action.type === LNDActions.SET_CHANNELS_LND) {
           const filteredChannel = action.payload.find((channel) => channel.chan_id === this.data.channel.chan_id);
-          if (filteredChannel.pending_htlcs && filteredChannel.pending_htlcs.length && filteredChannel.pending_htlcs.length > 0) {
+          if (filteredChannel && filteredChannel.pending_htlcs && filteredChannel.pending_htlcs.length && filteredChannel.pending_htlcs.length > 0) {
             this.flgPendingHtlcs = true;
           }
         }
@@ -63,7 +63,7 @@ export class CloseChannelComponent implements OnInit, OnDestroy {
     if (this.fees) {
       closeChannelParams.satPerByte = this.fees;
     }
-    this.store.dispatch(closeChannel(closeChannelParams));
+    this.store.dispatch(closeChannel({ payload: closeChannelParams }));
     this.dialogRef.close(false);
   }
 

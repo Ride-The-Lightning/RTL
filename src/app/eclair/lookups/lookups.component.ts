@@ -92,10 +92,10 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
       this.channelLookupValue = [];
       switch (this.selectedFieldId) {
         case 0:
-          this.store.dispatch(peerLookup(this.lookupKeyCtrl.value.trim()));
+          this.store.dispatch(peerLookup({ payload: this.lookupKeyCtrl.value.trim() }));
           break;
         case 1:
-          // this.store.dispatch(channelLookup({shortChannelID: this.lookupKey.trim(), showError: false}));
+          // this.store.dispatch(channelLookup({ payload: {shortChannelID: this.lookupKey.trim(), showError: false} }));
           break;
         default:
           break;

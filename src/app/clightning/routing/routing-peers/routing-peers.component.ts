@@ -88,6 +88,7 @@ export class CLRoutingPeersComponent implements OnInit, OnChanges, AfterViewInit
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.eventsData) {
+      this.apiCallStatus = { status: APICallStatusEnum.COMPLETED, action: 'GetForwardingHistory' };
       this.eventsData = changes.eventsData.currentValue;
       this.successfulEvents = this.eventsData;
       if (!changes.eventsData.firstChange) {

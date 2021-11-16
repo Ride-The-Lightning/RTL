@@ -25,7 +25,7 @@ export const setFeeRates = createAction(CLActions.SET_FEE_RATES_CL, props<{ payl
 
 export const fetchBalance = createAction(CLActions.FETCH_BALANCE_CL);
 
-export const setBalance = createAction(CLActions.SET_BALANCE_CL, props<{ payload: {} }>());
+export const setBalance = createAction(CLActions.SET_BALANCE_CL, props<{ payload: any }>());
 
 export const fetchLocalRemoteBalance = createAction(CLActions.FETCH_LOCAL_REMOTE_BALANCE_CL);
 

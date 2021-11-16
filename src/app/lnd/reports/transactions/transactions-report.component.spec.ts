@@ -8,10 +8,11 @@ import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { TransactionsReportComponent } from './transactions-report.component';
-import { mockDataService } from '../../../shared/test-helpers/mock-services';
+import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/mock-services';
 import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../shared/services/data.service';
+import { LoggerService } from '../../../shared/services/logger.service';
 
 describe('TransactionsReportComponent', () => {
   let component: TransactionsReportComponent;
@@ -27,6 +28,7 @@ describe('TransactionsReportComponent', () => {
       ],
       providers: [
         CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
     }).

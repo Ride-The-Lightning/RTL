@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { Payment, Invoice, ListInvoices, ListPayments } from '../../../shared/models/lndModels';
 import { CommonService } from '../../../shared/services/common.service';
+import { LoggerService } from '../../../shared/services/logger.service';
 import { APICallStatusEnum, MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
@@ -46,7 +47,7 @@ export class TransactionsReportComponent implements OnInit, AfterContentInit, On
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private commonService: CommonService, private store: Store<RTLState>) { }
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
@@ -64,6 +65,7 @@ export class TransactionsReportComponent implements OnInit, AfterContentInit, On
           this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
           this.transactionsNonZeroReportData = this.prepareTableData();
         }
+        this.logger.info(allLTSelector);
       });
   }
 

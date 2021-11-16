@@ -122,8 +122,10 @@ export class RTLEffects implements OnDestroy {
     () => this.actions.pipe(
       ofType(RTLActions.OPEN_ALERT),
       map((action: { type: string, payload: DialogConfig }) => {
-        const updatedPayload = { ...action.payload };
-        updatedPayload.width = this.alertWidth;
+        const updatedPayload = JSON.parse(JSON.stringify(action.payload));
+        if (!updatedPayload.width) {
+          updatedPayload.width = this.alertWidth;
+        }
         if (action.payload.data.component) {
           this.dialogRef = this.dialog.open(action.payload.data.component, updatedPayload);
         } else {
@@ -149,8 +151,10 @@ export class RTLEffects implements OnDestroy {
     () => this.actions.pipe(
       ofType(RTLActions.OPEN_CONFIRMATION),
       map((action: { type: string, payload: DialogConfig }) => {
-        const updatedPayload = { ...action.payload };
-        updatedPayload.width = this.confirmWidth;
+        const updatedPayload = JSON.parse(JSON.stringify(action.payload));
+        if (!updatedPayload.width) {
+          updatedPayload.width = this.confirmWidth;
+        }
         this.dialogRef = this.dialog.open(ConfirmationMessageComponent, updatedPayload);
       })),
     { dispatch: false }
@@ -180,7 +184,7 @@ export class RTLEffects implements OnDestroy {
         } else {
           this.store.dispatch(openAlert({
             payload: {
-              width: '70%', data: {
+              data: {
                 information: nodeData,
                 component: ShowPubkeyComponent
               }
@@ -510,11 +514,11 @@ export class RTLEffects implements OnDestroy {
       ofType(RTLActions.FETCH_FILE),
       mergeMap((action: { type: string, payload: FetchFile }) => {
         this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DOWNLOAD_BACKUP_FILE }));
-        this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'fetchFile', status: APICallStatusEnum.INITIATED } }));
+        this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'FetchFile', status: APICallStatusEnum.INITIATED } }));
         const query = '?channel=' + action.payload.channelPoint + (action.payload.path ? '&path=' + action.payload.path : '');
         return this.httpClient.get(environment.CONF_API + '/file' + query).pipe(
           map((fetchedFile: any) => {
-            this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'fetchFile', status: APICallStatusEnum.COMPLETED } }));
+            this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'FetchFile', status: APICallStatusEnum.COMPLETED } }));
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.DOWNLOAD_BACKUP_FILE }));
             return {
               type: RTLActions.SHOW_FILE,

@@ -86,6 +86,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.eventsData) {
+      this.apiCallStatus = { status: APICallStatusEnum.COMPLETED, action: 'FetchPayments' };
       this.eventsData = changes.eventsData.currentValue;
       if (!changes.eventsData.firstChange) {
         this.loadForwardingEventsTable(this.eventsData);

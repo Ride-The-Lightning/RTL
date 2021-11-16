@@ -70,8 +70,8 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
         }
         this.logger.info(channelsSeletor);
       });
-    this.actions.pipe(takeUntil(this.unSubs[2]), filter((action) => action.type === LNDActions.SET_ALL_CHANNELS_LND || action.type === RTLActions.SHOW_FILE)).subscribe((action: any) => {
-      if (action.type === LNDActions.SET_ALL_CHANNELS_LND) {
+    this.actions.pipe(takeUntil(this.unSubs[2]), filter((action) => action.type === LNDActions.SET_CHANNELS_LND || action.type === RTLActions.SHOW_FILE)).subscribe((action: any) => {
+      if (action.type === LNDActions.SET_CHANNELS_LND) {
         this.selectedChannel = null;
       }
       if (action.type === RTLActions.SHOW_FILE) {

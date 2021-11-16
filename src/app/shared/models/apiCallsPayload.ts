@@ -12,6 +12,15 @@ export interface ApiCallStatusPayload {
 export interface ApiCallsListRoot {
   Login: any;
   IsAuthorized: any;
+  FetchRTLConfig?: any;
+  UpdateSettings?: any;
+  UpdateServiceSettings?: any;
+  Update2FASettings?: any;
+  fetchConfig?: any;
+  VerifyToken?: any;
+  ResetPassword?: any;
+  UpdateSelNode?: any;
+  FetchFile?: any;
 }
 
 export interface ApiCallsListLND {

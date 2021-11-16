@@ -1,14 +1,14 @@
 import { createReducer, on } from '@ngrx/store';
 
 import { initLNDState } from './lnd.state';
-import { addInvoice, removeChannel, removePeer, resetLNDStore, setAllChannels, setAllLightningTransactions, setBalanceBlockchain, setChildNodeSettingsLND, setClosedChannels, setFees, setForwardingHistory, setInfo, setInvoices, setNetwork, setPayments, setPeers, setPendingChannels, setTransactions, setUTXOs, updateLNDAPICallStatus, updateInvoice } from './lnd.actions';
+import { addInvoice, removeChannel, removePeer, resetLNDStore, setChannels, setAllLightningTransactions, setBalanceBlockchain, setChildNodeSettingsLND, setClosedChannels, setFees, setForwardingHistory, setInfo, setInvoices, setNetwork, setPayments, setPeers, setPendingChannels, setTransactions, setUTXOs, updateLNDAPICallStatus, updateInvoice } from './lnd.actions';
 
 let flgTransactionsSet = false;
 let flgUTXOsSet = false;
 
 export const LNDReducer = createReducer(initLNDState,
   on(updateLNDAPICallStatus, (state, { payload }) => {
-    const updatedApisCallStatus = { ...state.apisCallStatus };
+    const updatedApisCallStatus = JSON.parse(JSON.stringify(state.apisCallStatus));
     updatedApisCallStatus[payload.action] = {
       status: payload.status,
       statusCode: payload.statusCode,
@@ -49,19 +49,19 @@ export const LNDReducer = createReducer(initLNDState,
     };
   }),
   on(addInvoice, (state, { payload }) => {
-    const newInvoices = state.listInvoices;
-    newInvoices.invoices.unshift(payload);
+    const newListInvoices = state.listInvoices;
+    newListInvoices.invoices.unshift(payload);
     return {
       ...state,
-      invoices: newInvoices
+      listInvoices: newListInvoices
     };
   }),
   on(updateInvoice, (state, { payload }) => {
-    const modifiedInvoices = state.listInvoices;
-    modifiedInvoices.invoices = modifiedInvoices.invoices.map((invoice) => ((invoice.r_hash === payload.r_hash) ? payload : invoice));
+    const modifiedListInvoices = state.listInvoices;
+    modifiedListInvoices.invoices = modifiedListInvoices.invoices.map((invoice) => ((invoice.r_hash === payload.r_hash) ? payload : invoice));
     return {
       ...state,
-      invoices: modifiedInvoices
+      listInvoices: modifiedListInvoices
     };
   }),
   on(setFees, (state, { payload }) => ({
@@ -77,7 +77,7 @@ export const LNDReducer = createReducer(initLNDState,
     pendingChannels: payload.pendingChannels,
     pendingChannelsSummary: payload.pendingChannelsSummary
   })),
-  on(setAllChannels, (state, { payload }) => {
+  on(setChannels, (state, { payload }) => {
     let localBal = 0;
     let remoteBal = 0;
     let activeChannels = 0;
@@ -110,7 +110,7 @@ export const LNDReducer = createReducer(initLNDState,
     }
     return {
       ...state,
-      allChannels: payload,
+      channels: payload,
       channelsSummary: { active: { num_channels: activeChannels, capacity: totalCapacityActive }, inactive: { num_channels: inactiveChannels, capacity: totalCapacityInactive } },
       lightningBalance: { local: localBal, remote: remoteBal }
     };
@@ -136,7 +136,7 @@ export const LNDReducer = createReducer(initLNDState,
   })),
   on(setInvoices, (state, { payload }) => ({
     ...state,
-    invoices: payload
+    listInvoices: payload
   })),
   on(setTransactions, (state, { payload }) => {
     flgTransactionsSet = true;
@@ -144,7 +144,7 @@ export const LNDReducer = createReducer(initLNDState,
       const modifiedUTXOs = [...state.utxos];
       modifiedUTXOs.forEach((utxo) => {
         const foundTransaction = payload.find((transaction) => transaction.tx_hash === utxo.outpoint.txid_str);
-        return { ...utxo, label: foundTransaction && foundTransaction.label ? foundTransaction.label : '' };
+        utxo.label = foundTransaction && foundTransaction.label ? foundTransaction.label : '';
       });
       return {
         ...state,
@@ -173,14 +173,14 @@ export const LNDReducer = createReducer(initLNDState,
   }),
   on(setPayments, (state, { payload }) => ({
     ...state,
-    payments: payload
+    listPayments: payload
   })),
   on(setAllLightningTransactions, (state, { payload }) => ({
     ...state,
     allLightningTransactions: payload
   })),
   on(setForwardingHistory, (state, { payload }) => {
-    const updatedPayload = !payload.forwarding_events ? {} : { ...payload };
+    const updatedPayload = !payload.forwarding_events ? {} : JSON.parse(JSON.stringify(payload));
     if (updatedPayload.forwarding_events) {
       const storedChannels = [...state.channels, ...state.closedChannels];
       updatedPayload.forwarding_events.forEach((fhEvent) => {

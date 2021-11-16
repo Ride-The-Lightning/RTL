@@ -77,7 +77,7 @@ export class ECLEffects implements OnDestroy {
               }
               break;
             case ECLWSEventTypeEnum.PAYMENT_RECEIVED:
-              this.store.dispatch(updateInvoice(newMessage));
+              this.store.dispatch(updateInvoice({ payload: newMessage }));
               break;
             case ECLWSEventTypeEnum.CHANNEL_STATE_CHANGED:
               if ((<ChannelStateUpdate>newMessage).currentState === 'NORMAL' || (<ChannelStateUpdate>newMessage).currentState === 'CLOSED') {
@@ -89,7 +89,7 @@ export class ECLEffects implements OnDestroy {
                 });
                 this.setChannelsAndStatusAndBalances();
               } else {
-                this.store.dispatch(updateChannelState(newMessage));
+                this.store.dispatch(updateChannelState({ payload: newMessage }));
               }
               break;
             default:

@@ -24,7 +24,7 @@ import { LNDEffects } from '../../../../store/lnd.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import { RTLState } from '../../../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
-import { channelLookup, fetchAllChannels, updateChannel } from '../../../../store/lnd.actions';
+import { channelLookup, fetchChannels, updateChannel } from '../../../../store/lnd.actions';
 import { blockchainBalance, channels, lndNodeInformation, lndNodeSettings, peers } from '../../../../store/lnd.selector';
 
 @Component({
@@ -245,11 +245,11 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
 
   onChannelClose(channelToClose: Channel) {
     if (channelToClose.active) {
-      this.store.dispatch(fetchAllChannels()); // To get latest pending htlc status
+      this.store.dispatch(fetchChannels()); // To get latest pending htlc status
     }
     this.store.dispatch(openAlert({
       payload: {
-        width: '70%', data: {
+        data: {
           channel: channelToClose,
           component: CloseChannelComponent
         }

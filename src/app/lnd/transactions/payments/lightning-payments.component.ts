@@ -111,8 +111,6 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         this.lastOffset = +paymentsSelector.listPayments.last_index_offset;
         if (this.paymentJSONArr && this.paymentJSONArr.length > 0 && this.sort && this.paginator) {
           this.loadPaymentsTable(this.paymentJSONArr);
-        } else if (this.paymentJSONArr && this.paymentJSONArr.length === 0) {
-          this.payments = new MatTableDataSource([]);
         }
         setTimeout(() => {
           this.flgAnimate = false;

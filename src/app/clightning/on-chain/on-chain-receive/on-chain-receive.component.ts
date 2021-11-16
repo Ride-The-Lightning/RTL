@@ -31,7 +31,6 @@ export class CLOnChainReceiveComponent {
         this.newAddress = newAddress;
         this.store.dispatch(openAlert({
           payload: {
-            width: '58%',
             data: {
               address: this.newAddress,
               addressType: this.selectedAddressType.addressTp,

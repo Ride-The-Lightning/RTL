@@ -145,7 +145,7 @@ describe('LightningSendPaymentsComponent', () => {
   });
 
   it('should decode payment when pay request changed and fiat conversion is true', () => {
-    const updatedSelNode: SelNodeChild = { ...component.selNode };
+    const updatedSelNode: SelNodeChild = JSON.parse(JSON.stringify(component.selNode));
     updatedSelNode.fiatConversion = true;
     updatedSelNode.currencyUnits[2] = 'USD';
     Object.defineProperty(component, 'selNode', { value: updatedSelNode });

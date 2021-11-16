@@ -147,7 +147,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
     } else {
       invoicePayload = { description: this.description, expireIn: expiryInSecs };
     }
-    this.store.dispatch(createInvoice(invoicePayload));
+    this.store.dispatch(createInvoice({ payload: invoicePayload }));
     this.resetData();
   }
 

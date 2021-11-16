@@ -611,7 +611,7 @@ export class CLEffects implements OnDestroy {
             this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'Lookup', status: APICallStatusEnum.COMPLETED } }));
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.SEARCHING_INVOICE }));
             if (resInvoice.invoices && resInvoice.invoices.length && resInvoice.invoices.length > 0) {
-              this.store.dispatch(updateInvoice(resInvoice.invoices[0]));
+              this.store.dispatch(updateInvoice({ payload: resInvoice.invoices[0] }));
             }
             return {
               type: CLActions.SET_LOOKUP_CL,

@@ -83,6 +83,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.eventsData) {
+      this.apiCallStatus = { status: APICallStatusEnum.COMPLETED, action: 'GetForwardingHistory' };
       this.eventsData = changes.eventsData.currentValue;
       this.forwardingHistoryData = this.eventsData;
       if (!changes.eventsData.firstChange) {

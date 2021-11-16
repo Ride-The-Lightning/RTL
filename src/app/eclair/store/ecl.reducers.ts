@@ -6,7 +6,7 @@ import { PaymentReceived } from '../../shared/models/eclModels';
 
 export const ECLReducer = createReducer(initECLState,
   on(updateECLAPICallStatus, (state, { payload }) => {
-    const updatedApisCallStatus = { ...state.apisCallStatus };
+    const updatedApisCallStatus = JSON.parse(JSON.stringify(state.apisCallStatus));
     updatedApisCallStatus[payload.action] = {
       status: payload.status,
       statusCode: payload.statusCode,
@@ -165,7 +165,7 @@ export const ECLReducer = createReducer(initECLState,
     modifiedInvoices = modifiedInvoices.map((invoice) => {
       if (invoice.paymentHash === payload.paymentHash) {
         if (payload.hasOwnProperty('type')) {
-          const updatedInvoice = { ...invoice };
+          const updatedInvoice = JSON.parse(JSON.stringify(invoice));
           updatedInvoice.amountSettled = ((<PaymentReceived>payload).parts && (<PaymentReceived>payload).parts.length && (<PaymentReceived>payload).parts.length > 0 && (<PaymentReceived>payload).parts[0].amount) ? (<PaymentReceived>payload).parts[0].amount / 1000 : 0;
           updatedInvoice.receivedAt = ((<PaymentReceived>payload).parts && (<PaymentReceived>payload).parts.length && (<PaymentReceived>payload).parts.length > 0 && (<PaymentReceived>payload).parts[0].timestamp) ? Math.round((<PaymentReceived>payload).parts[0].timestamp / 1000) : 0;
           updatedInvoice.status = 'received';

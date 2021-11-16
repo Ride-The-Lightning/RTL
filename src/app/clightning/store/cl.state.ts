@@ -4,7 +4,7 @@ import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, Fee
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 
 export interface CLState {
-  apiCallStatus: ApiCallsListCL;
+  apisCallStatus: ApiCallsListCL;
   nodeSettings: SelNodeChild;
   information: GetInfo;
   fees: Fees;
@@ -22,7 +22,7 @@ export interface CLState {
 }
 
 export const initCLState: CLState = {
-  apiCallStatus: {
+  apisCallStatus: {
     FetchInfo: { status: APICallStatusEnum.UN_INITIATED },
     FetchInvoices: { status: APICallStatusEnum.UN_INITIATED },
     FetchFees: { status: APICallStatusEnum.UN_INITIATED },

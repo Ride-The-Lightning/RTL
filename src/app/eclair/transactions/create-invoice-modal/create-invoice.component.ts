@@ -82,7 +82,7 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
     } else {
       invoicePayload = { description: this.description, expireIn: expiryInSecs };
     }
-    this.store.dispatch(createInvoice(invoicePayload));
+    this.store.dispatch(createInvoice({ payload: invoicePayload }));
   }
 
   resetData() {
