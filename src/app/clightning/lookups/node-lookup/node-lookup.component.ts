@@ -4,6 +4,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { LookupNode } from '../../../shared/models/clModels';
+import { NODE_FEATURES_CLT } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 @Component({
@@ -13,8 +14,9 @@ import { LoggerService } from '../../../shared/services/logger.service';
 })
 export class CLNodeLookupComponent implements OnInit {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @Input() lookupResult: LookupNode;
+  public featureDescriptions: string[] = [];
   public addresses: any;
   public displayedColumns = ['type', 'address', 'port', 'actions'];
 
@@ -25,6 +27,13 @@ export class CLNodeLookupComponent implements OnInit {
     this.addresses.data = this.lookupResult && this.lookupResult.addresses ? this.lookupResult.addresses : [];
     this.addresses.sort = this.sort;
     this.addresses.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+    if (this.lookupResult.features && this.lookupResult.features.trim() !== '') {
+      NODE_FEATURES_CLT.forEach((feature) => {
+        if (!!(parseInt(this.lookupResult.features, 16) & ((1 << feature.range.min) | (1 << feature.range.max)))) {
+          this.featureDescriptions.push(feature.description);
+        }
+      });
+    }
   }
 
   onCopyNodeURI(payload: string) {

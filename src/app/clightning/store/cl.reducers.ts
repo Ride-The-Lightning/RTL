@@ -2,6 +2,8 @@ import { createReducer, on } from '@ngrx/store';
 
 import { initCLState } from './cl.state';
 import { addInvoice, addPeer, removeChannel, removePeer, resetCLStore, setBalance, setChannels, setChildNodeSettingsCL, setFailedForwardingHistory, setFeeRates, setFees, setForwardingHistory, setInfo, setInvoices, setLocalRemoteBalance, setPayments, setPeers, setUTXOs, updateCLAPICallStatus, updateInvoice } from './cl.actions';
+import { Channel } from '../../shared/models/clModels';
+import { state } from '@angular/animations';
 
 export const CLReducer = createReducer(initCLState,
   on(updateCLAPICallStatus, (state, { payload }) => {
@@ -80,17 +82,21 @@ export const CLReducer = createReducer(initCLState,
   }),
   on(setChannels, (state, { payload }) => ({
     ...state,
-    allChannels: payload
+    activeChannels: payload.activeChannels,
+    pendingChannels: payload.pendingChannels,
+    inactiveChannels: payload.inactiveChannels
   })),
   on(removeChannel, (state, { payload }) => {
-    const modifiedChannels = [...state.allChannels];
-    const removeChannelIdx = state.allChannels.findIndex((channel) => channel.channel_id === payload.channelId);
-    if (removeChannelIdx > -1) {
-      modifiedChannels.splice(removeChannelIdx, 1);
-    }
+    const modifiedPeers = [...state.peers];
+    modifiedPeers.forEach((peer) => {
+      if (peer.id === payload.id) {
+        peer.connected = false;
+        delete peer.netaddr;
+      }
+    });
     return {
       ...state,
-      allChannels: modifiedChannels
+      peers: modifiedPeers
     };
   }),
   on(setPayments, (state, { payload }) => ({
@@ -99,33 +105,9 @@ export const CLReducer = createReducer(initCLState,
   })),
   on(setForwardingHistory, (state, { payload }) => {
     const modifiedFeeWithTxCount = state.fees;
-    if (payload && payload.length > 0) {
-      const storedChannels = [...state.allChannels];
-      payload.forEach((fhEvent, i) => {
-        if (storedChannels && storedChannels.length > 0) {
-          for (let idx = 0; idx < storedChannels.length; idx++) {
-            if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id === fhEvent.in_channel) {
-              fhEvent.in_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.in_channel;
-              if (fhEvent.out_channel_alias) { return; }
-            }
-            if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id.toString() === fhEvent.out_channel) {
-              fhEvent.out_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.out_channel;
-              if (fhEvent.in_channel_alias) { return; }
-            }
-            if (idx === storedChannels.length - 1) {
-              if (!fhEvent.in_channel_alias) { fhEvent.in_channel_alias = fhEvent.in_channel; }
-              if (!fhEvent.out_channel_alias) { fhEvent.out_channel_alias = fhEvent.out_channel; }
-            }
-          }
-        } else {
-          fhEvent.in_channel_alias = fhEvent.in_channel;
-          fhEvent.out_channel_alias = fhEvent.out_channel;
-        }
-      });
-      modifiedFeeWithTxCount.totalTxCount = payload.length;
-    } else {
-      payload = [];
-    }
+    const storedChannels = [...state.activeChannels, ...state.pendingChannels, ...state.inactiveChannels];
+    payload = mapAliases(payload, storedChannels);
+    modifiedFeeWithTxCount.totalTxCount = payload.length;
     return {
       ...state,
       fee: modifiedFeeWithTxCount,
@@ -133,32 +115,8 @@ export const CLReducer = createReducer(initCLState,
     };
   }),
   on(setFailedForwardingHistory, (state, { payload }) => {
-    if (payload && payload.length > 0) {
-      const storedChannels = [...state.allChannels];
-      payload.forEach((fhEvent, i) => {
-        if (storedChannels && storedChannels.length > 0) {
-          for (let idx = 0; idx < storedChannels.length; idx++) {
-            if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id === fhEvent.in_channel) {
-              fhEvent.in_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.in_channel;
-              if (fhEvent.out_channel_alias) { return; }
-            }
-            if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id.toString() === fhEvent.out_channel) {
-              fhEvent.out_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.out_channel;
-              if (fhEvent.in_channel_alias) { return; }
-            }
-            if (idx === storedChannels.length - 1) {
-              if (!fhEvent.in_channel_alias) { fhEvent.in_channel_alias = fhEvent.in_channel; }
-              if (!fhEvent.out_channel_alias) { fhEvent.out_channel_alias = fhEvent.out_channel; }
-            }
-          }
-        } else {
-          fhEvent.in_channel_alias = fhEvent.in_channel;
-          fhEvent.out_channel_alias = fhEvent.out_channel;
-        }
-      });
-    } else {
-      payload = [];
-    }
+    const storedChannels = [...state.activeChannels, ...state.pendingChannels, ...state.inactiveChannels];
+    payload = mapAliases(payload, storedChannels);
     return {
       ...state,
       failedForwardingHistory: payload
@@ -189,3 +147,32 @@ export const CLReducer = createReducer(initCLState,
     utxos: payload
   }))
 );
+
+const mapAliases = (payload: any, storedChannels: Channel[]) => {
+  if (payload && payload.length > 0) {
+    payload.forEach((fhEvent, i) => {
+      if (storedChannels && storedChannels.length > 0) {
+        for (let idx = 0; idx < storedChannels.length; idx++) {
+          if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id === fhEvent.in_channel) {
+            fhEvent.in_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.in_channel;
+            if (fhEvent.out_channel_alias) { return; }
+          }
+          if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id.toString() === fhEvent.out_channel) {
+            fhEvent.out_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.out_channel;
+            if (fhEvent.in_channel_alias) { return; }
+          }
+          if (idx === storedChannels.length - 1) {
+            if (!fhEvent.in_channel_alias) { fhEvent.in_channel_alias = fhEvent.in_channel; }
+            if (!fhEvent.out_channel_alias) { fhEvent.out_channel_alias = fhEvent.out_channel; }
+          }
+        }
+      } else {
+        fhEvent.in_channel_alias = fhEvent.in_channel;
+        fhEvent.out_channel_alias = fhEvent.out_channel;
+      }
+    });
+  } else {
+    payload = [];
+  }
+  return payload;
+};

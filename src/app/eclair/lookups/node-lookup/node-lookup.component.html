@@ -1,4 +1,15 @@
 <div fxLayout="column" *ngIf="lookupResult" class="mt-1">
+  <mat-divider [inset]="true" class="my-1"></mat-divider>        
+  <div fxLayout="row">
+    <div fxFlex="50">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Alias</h4>
+      <span class="foreground-secondary-text">{{lookupResult?.alias}}<span class="ml-2" [ngStyle]="{'background-color': lookupResult?.rgbColor}">{{lookupResult?.rgbColor ? lookupResult?.rgbColor : ''}}</span></span>
+    </div>
+    <div fxFlex="50">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Date/Time</h4>
+      <span class="foreground-secondary-text">{{(lookupResult?.timestamp * 1000) | date:'dd/MMM/YYYY HH:mm'}}</span>
+    </div>
+  </div>
   <mat-divider [inset]="true" class="mb-1"></mat-divider>        
   <div fxLayout="row">
     <div fxFlex="100">
@@ -13,15 +24,11 @@
       <span class="foreground-secondary-text">{{lookupResult?.signature}}</span>
     </div>
   </div>
-  <mat-divider [inset]="true" class="my-1"></mat-divider>        
+  <mat-divider [inset]="true" class="mb-1"></mat-divider>        
   <div fxLayout="row">
-    <div fxFlex="50">
-      <h4 fxLayoutAlign="start" class="font-bold-500">Alias</h4>
-      <span class="foreground-secondary-text">{{lookupResult?.alias}}<span class="ml-2" [ngStyle]="{'background-color': lookupResult?.rgbColor}">{{lookupResult?.rgbColor ? lookupResult?.rgbColor : ''}}</span></span>
-    </div>
-    <div fxFlex="50">
-      <h4 fxLayoutAlign="start" class="font-bold-500">Date/Time</h4>
-      <span class="foreground-secondary-text">{{(lookupResult?.timestamp * 1000) | date:'dd/MMM/YYYY HH:mm'}}</span>
+    <div fxFlex="100">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Features</h4>
+      <span class="foreground-secondary-text w-100" *ngFor="let activeFeature of lookupResult?.features.activated | keyvalue"><div>{{nodeFeaturesEnum[activeFeature.key] || activeFeature.key}}: {{activeFeature.value | titlecase}}</div></span>
     </div>
   </div>
   <div fxLayout="column" class="mt-2">

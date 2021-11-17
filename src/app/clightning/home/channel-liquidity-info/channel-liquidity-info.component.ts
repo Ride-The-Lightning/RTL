@@ -14,12 +14,12 @@ export class CLChannelLiquidityInfoComponent implements OnInit {
 
   @Input() direction: string;
   @Input() totalLiquidity: number;
-  @Input() allChannels: Channel[];
+  @Input() activeChannels: Channel[];
   @Input() errorMessage: string;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
 
-  constructor(private router: Router, private commonService: CommonService) {}
+  constructor(private router: Router, private commonService: CommonService) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();

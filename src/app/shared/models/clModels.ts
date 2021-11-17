@@ -9,10 +9,9 @@ export interface ChannelStatus {
 }
 
 export interface ChannelsStatus {
-  active?: ChannelStatus;
-  inactive?: ChannelStatus;
-  pending?: ChannelStatus;
-  closing?: ChannelStatus;
+  active: ChannelStatus;
+  inactive: ChannelStatus;
+  pending: ChannelStatus;
 }
 
 export interface Address {
@@ -307,6 +306,7 @@ export interface UpdateChannel {
 }
 
 export interface CloseChannel {
+  id: string;
   channelId: string;
   force: boolean;
 }

@@ -13,12 +13,12 @@ export class CLChannelCapacityInfoComponent {
 
   public faBalanceScale = faBalanceScale;
   public faDumbbell = faDumbbell;
-  @Input() channelBalances: {localBalance: number, remoteBalance: number, balancedness: number};
-  @Input() allChannels: Channel[];
+  @Input() channelBalances: { localBalance: number, remoteBalance: number, balancedness: number };
+  @Input() activeChannels: Channel[];
   @Input() sortBy = 'Balance Score';
   @Input() errorMessage: string;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   goToChannels() {
     this.router.navigateByUrl('/cl/connections');

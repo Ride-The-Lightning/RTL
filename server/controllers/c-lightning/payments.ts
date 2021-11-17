@@ -26,18 +26,17 @@ function summaryReducer(accumulator, mpp) {
 }
 
 function groupBy(payments) {
-  let temp = [];
   const paymentsInGroups = payments.reduce(paymentReducer, {});
   const paymentsGrpArray = Object.keys(paymentsInGroups).map((key) => ((paymentsInGroups[key].length && paymentsInGroups[key].length > 1) ? common.sortDescByKey(paymentsInGroups[key], 'partid') : paymentsInGroups[key]));
   return paymentsGrpArray.reduce((acc, curr) => {
+    let temp: any = {};
     if (curr.length && curr.length === 1) {
-      temp = JSON.parse(JSON.stringify(curr));
-      temp[0].is_group = false;
-      temp[0].is_expanded = false;
-      temp[0].total_parts = 1;
-      delete temp[0].partid;
+      temp = JSON.parse(JSON.stringify(curr[0]));
+      temp.is_group = false;
+      temp.is_expanded = false;
+      temp.total_parts = 1;
+      delete temp.partid;
     } else {
-      let temp = {};
       const paySummary = curr.reduce(summaryReducer, { msatoshi: 0, msatoshi_sent: 0, status: (curr[0] && curr[0].status) ? curr[0].status : 'failed' });
       temp = {
         is_group: true, is_expanded: false, total_parts: (curr.length ? curr.length : 0), status: paySummary.status, payment_hash: curr[0].payment_hash,

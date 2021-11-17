@@ -64,8 +64,8 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
         this.commonService.isVersionCompatible(nodeInfo.api_version, '0.4.0');
     });
     this.store.select(channels).pipe(takeUntil(this.unSubs[2])).
-      subscribe((channelsSeletor: { channels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.activeChannels = channelsSeletor.channels.filter((channel) => channel.state === 'CHANNELD_NORMAL' && channel.connected);
+      subscribe((channelsSeletor: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.activeChannels = channelsSeletor.activeChannels;
         this.logger.info(channelsSeletor);
       });
     this.actions.pipe(

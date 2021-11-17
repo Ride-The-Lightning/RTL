@@ -82,13 +82,13 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
         this.logger.info(infoBalNumpeersSelector);
       });
     this.store.select(channels).pipe(takeUntil(this.unSubs[1])).
-      subscribe((channelsSeletor: { channels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
+      subscribe((channelsSeletor: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = channelsSeletor.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.channelsData = channelsSeletor.channels.filter((channel) => !(channel.state === 'CHANNELD_NORMAL' && channel.connected));
+        this.channelsData = [...channelsSeletor.pendingChannels, ...channelsSeletor.inactiveChannels];
         this.channelsData = this.channelsData.sort((a, b) => ((this.CLChannelPendingState[a.state] >= this.CLChannelPendingState[b.state]) ? 1 : -1));
         if (this.channelsData && this.channelsData.length > 0) {
           this.loadChannelsTable(this.channelsData);
@@ -146,7 +146,7 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
       pipe(takeUntil(this.unSubs[2])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.store.dispatch(closeChannel({ payload: { channelId: channelToClose.channel_id, force: true } }));
+          this.store.dispatch(closeChannel({ payload: { id: channelToClose.id, channelId: channelToClose.channel_id, force: true } }));
         }
       });
   }

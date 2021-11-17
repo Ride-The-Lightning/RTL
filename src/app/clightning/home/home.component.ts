@@ -39,9 +39,9 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   public information: GetInfo = {};
   public totalBalance: Balance = {};
   public balances = { onchain: -1, lightning: -1, total: 0 };
-  public allChannels: Channel[] = [];
-  public channelsStatus: ChannelsStatus = {};
-  public allChannelsCapacity: Channel[] = [];
+  public activeChannels: Channel[] = [];
+  public channelsStatus: ChannelsStatus = { active: {}, pending: {}, inactive: {} };
+  public activeChannelsCapacity: Channel[] = [];
   public allInboundChannels: Channel[] = [];
   public allOutboundChannels: Channel[] = [];
   public totalInboundLiquidity = 0;
@@ -117,7 +117,7 @@ export class CLHomeComponent implements OnInit, OnDestroy {
         this.errorMessages[0] = '';
         this.errorMessages[5] = '';
         this.apiCallStatusNodeInfo = infoSettingsStatusSelector.apisCallStatus[0];
-        this.apiCallStatusFHistory = infoSettingsStatusSelector.apisCallStatus[3];
+        this.apiCallStatusFHistory = infoSettingsStatusSelector.apisCallStatus[1];
         if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {
           this.errorMessages[0] = (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message;
         }
@@ -126,11 +126,6 @@ export class CLHomeComponent implements OnInit, OnDestroy {
         }
         this.selNode = infoSettingsStatusSelector.nodeSettings;
         this.information = infoSettingsStatusSelector.information;
-        this.channelsStatus = {
-          active: { channels: infoSettingsStatusSelector.information.num_active_channels, capacity: 0 },
-          pending: { channels: infoSettingsStatusSelector.information.num_pending_channels, capacity: 0 },
-          inactive: { channels: infoSettingsStatusSelector.information.num_inactive_channels, capacity: 0 }
-        };
       });
     this.store.select(fees).pipe(takeUntil(this.unSubs[1])).
       subscribe((feesSeletor: { fees: Fees, apiCallStatus: ApiCallStatusPayload }) => {
@@ -143,7 +138,7 @@ export class CLHomeComponent implements OnInit, OnDestroy {
         this.logger.info(feesSeletor);
       });
     this.store.select(channels).pipe(takeUntil(this.unSubs[2])).
-      subscribe((channelsSeletor: { channels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
+      subscribe((channelsSeletor: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessages[4] = '';
         this.apiCallStatusChannels = channelsSeletor.apiCallStatus;
         if (this.apiCallStatusChannels.status === APICallStatusEnum.ERROR) {
@@ -151,14 +146,17 @@ export class CLHomeComponent implements OnInit, OnDestroy {
         }
         this.totalInboundLiquidity = 0;
         this.totalOutboundLiquidity = 0;
-        this.allChannels = channelsSeletor.channels.filter((channel) => channel.state === 'CHANNELD_NORMAL' && channel.connected);
-        this.allChannelsCapacity = this.allChannels.length > 0 ? JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'balancedness'))) : [];
-        this.allInboundChannels = this.allChannels.length > 0 ? JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter((channel) => channel.msatoshi_to_them > 0), 'msatoshi_to_them'))) : [];
-        this.allOutboundChannels = this.allChannels.length > 0 ? JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter((channel) => channel.msatoshi_to_us > 0), 'msatoshi_to_us'))) : [];
-        this.allChannels.forEach((channel) => {
+        this.activeChannels = channelsSeletor.activeChannels;
+        this.activeChannelsCapacity = this.activeChannels.length > 0 ? JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels, 'balancedness'))) : [];
+        this.allInboundChannels = this.activeChannels.length > 0 ? JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels.filter((channel) => channel.msatoshi_to_them > 0), 'msatoshi_to_them'))) : [];
+        this.allOutboundChannels = this.activeChannels.length > 0 ? JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels.filter((channel) => channel.msatoshi_to_us > 0), 'msatoshi_to_us'))) : [];
+        this.activeChannels.forEach((channel) => {
           this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil(channel.msatoshi_to_them / 1000);
           this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor(channel.msatoshi_to_us / 1000);
         });
+        this.channelsStatus.active.channels = channelsSeletor.activeChannels.length || 0;
+        this.channelsStatus.pending.channels = channelsSeletor.pendingChannels.length || 0;
+        this.channelsStatus.inactive.channels = channelsSeletor.inactiveChannels.length || 0;
         this.logger.info(channelsSeletor);
       });
     this.store.select(balance).pipe(takeUntil(this.unSubs[3]),
@@ -184,11 +182,9 @@ export class CLHomeComponent implements OnInit, OnDestroy {
         const remote = (lrBalanceSeletor.localRemoteBalance.remoteBalance) ? +lrBalanceSeletor.localRemoteBalance.remoteBalance : 0;
         const total = local + remote;
         this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: +(1 - Math.abs((local - remote) / total)).toFixed(3) };
-        this.channelsStatus = {
-          active: { capacity: lrBalanceSeletor.localRemoteBalance.localBalance || 0 },
-          pending: { capacity: lrBalanceSeletor.localRemoteBalance.pendingBalance || 0 },
-          inactive: { capacity: lrBalanceSeletor.localRemoteBalance.inactiveBalance || 0 }
-        };
+        this.channelsStatus.active.capacity = lrBalanceSeletor.localRemoteBalance.localBalance || 0;
+        this.channelsStatus.pending.capacity = lrBalanceSeletor.localRemoteBalance.pendingBalance || 0;
+        this.channelsStatus.inactive.capacity = lrBalanceSeletor.localRemoteBalance.inactiveBalance || 0;
         this.logger.info(balanceSeletor);
         this.logger.info(lrBalanceSeletor);
       });
@@ -201,14 +197,14 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   onsortChannelsBy() {
     if (this.sortField === 'Balance Score') {
       this.sortField = 'Capacity';
-      this.allChannelsCapacity = this.allChannels.sort((a, b) => {
+      this.activeChannelsCapacity = this.activeChannels.sort((a, b) => {
         const x = +a.msatoshi_to_us + +a.msatoshi_to_them;
         const y = +b.msatoshi_to_them + +b.msatoshi_to_them;
         return ((x > y) ? -1 : ((x < y) ? 1 : 0));
       });
     } else {
       this.sortField = 'Balance Score';
-      this.allChannelsCapacity = this.allChannels.length > 0 ? JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'balancedness'))) : [];
+      this.activeChannelsCapacity = this.activeChannels.length > 0 ? JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels, 'balancedness'))) : [];
     }
   }
 

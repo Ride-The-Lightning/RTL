@@ -501,3 +501,50 @@ export enum ECLActions {
   SET_LOOKUP_ECL = 'SET_LOOKUP_ECL',
   UPDATE_CHANNEL_STATE_ECL = 'UPDATE_CHANNEL_STATE_ECL'
 };
+
+export const NODE_FEATURES_CLT = [
+  { range: { min: 0, max: 1 }, description: 'Requires or supports extra channel re-establish fields' },
+  { range: { min: 4, max: 5 }, description: 'Commits to a shutdown script pubkey when opening channel' },
+  { range: { min: 6, max: 7 }, description: 'More sophisticated gossip control' },
+  { range: { min: 8, max: 9 }, description: 'Requires/supports variable-length routing onion payloads' },
+  { range: { min: 10, max: 11 }, description: 'Gossip queries can include additional information' },
+  { range: { min: 12, max: 13 }, description: 'Static key for remote output' },
+  { range: { min: 14, max: 15 }, description: 'Node supports payment secret field' },
+  { range: { min: 16, max: 17 }, description: 'Node can receive basic multi-part payments' },
+  { range: { min: 18, max: 19 }, description: 'Node can create large channels' },
+  { range: { min: 20, max: 21 }, description: 'Anchor outputs' },
+  { range: { min: 22, max: 23 }, description: 'Anchor commitment type with zero fee HTLC transactions' },
+  { range: { min: 26, max: 27 }, description: 'Future segwit versions allowed in shutdown' }
+];
+
+export enum NodeFeaturesECL {
+  gossip_queries_ex = 'Gossip queries including additional information',
+  option_anchor_outputs = 'Anchor outputs',
+  option_data_loss_protect = 'Extra channel re-establish fields',
+  var_onion_optin = 'Variable-length routing onion payloads',
+  option_static_remotekey = 'Static key for remote output',
+  option_support_large_channel = 'Create large channels',
+  option_anchors_zero_fee_htlc_tx = 'Anchor commitment type with zero fee HTLC transactions',
+  payment_secret = 'Payment secret field',
+  option_shutdown_anysegwit = 'Future segwit versions allowed in shutdown',
+  basic_mpp = 'Basic multi-part payments',
+  gossip_queries = 'More sophisticated gossip control',
+  option_upfront_shutdown_script = 'Shutdown script pubkey when opening channel',
+  anchors_zero_fee_htlc_tx = 'Anchor commitment type with zero fee HTLC transactions',
+  amp = 'AMP'
+};
+
+export enum NodeFeaturesLND {
+  'data-loss-protect' = 'Extra channel re-establish fields',
+  'upfront-shutdown-script' = 'Shutdown script pubkey when opening channel',
+  'gossip-queries' = 'More sophisticated gossip control',
+  'tlv-onion' = 'Variable-length routing onion payloads',
+  'ext-gossip-queries' = 'Gossip queries can include additional information',
+  'static-remote-key' = 'Static key for remote output',
+  'payment-addr' = 'Payment secret field',
+  'multi-path-payments' = 'Basic multi-part payments',
+  'wumbo-channels' = 'Wumbo Channels',
+  'anchors' = 'Anchor outputs',
+  'anchors-zero-fee-htlc-tx' = 'Anchor commitment type with zero fee HTLC transactions',
+  'amp' = 'AMP'
+};

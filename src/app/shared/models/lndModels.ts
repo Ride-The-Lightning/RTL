@@ -162,6 +162,7 @@ export interface LightningNode {
   alias?: string;
   addresses?: NodeAddress[];
   color?: string;
+  features?: any;
 }
 
 export interface RoutingPolicy {
@@ -263,6 +264,7 @@ export interface GetInfo {
 
 export interface GraphNode {
   node?: LightningNode;
+  channels: any[];
   num_channels?: number;
   total_capacity?: string;
 }
@@ -360,14 +362,6 @@ export interface ListInvoices {
   first_index_offset?: string;
 }
 
-export interface LightningNode {
-  last_update?: number;
-  pub_key?: string;
-  alias?: string;
-  addresses?: NodeAddress[];
-  color?: string;
-}
-
 export interface NetworkInfo {
   num_nodes?: number;
   max_channel_size?: string;
@@ -378,11 +372,6 @@ export interface NetworkInfo {
   total_network_capacity?: string;
   avg_out_degree?: number;
   min_channel_size?: string;
-}
-
-export interface NodeAddress {
-  network?: string;
-  address?: string;
 }
 
 export interface Payment {

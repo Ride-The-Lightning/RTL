@@ -13,7 +13,7 @@ export const feeRatesPerKB = createSelector(clState, (state: CLState) => ({ feeR
 export const feeRatesPerKW = createSelector(clState, (state: CLState) => ({ feeRatesPerKW: state.feeRatesPerKW, apiCallStatus: state.apisCallStatus.FetchFeeRatesperkw }));
 export const listInvoices = createSelector(clState, (state: CLState) => ({ listInvoices: state.invoices, apiCallStatus: state.apisCallStatus.FetchInvoices }));
 export const utxos = createSelector(clState, (state: CLState) => ({ utxos: state.utxos, apiCallStatus: state.apisCallStatus.FetchUTXOs }));
-export const channels = createSelector(clState, (state: CLState) => ({ channels: state.allChannels, apiCallStatus: state.apisCallStatus.FetchChannels }));
+export const channels = createSelector(clState, (state: CLState) => ({ activeChannels: state.activeChannels, pendingChannels: state.pendingChannels, inactiveChannels: state.inactiveChannels, apiCallStatus: state.apisCallStatus.FetchChannels }));
 export const balance = createSelector(clState, (state: CLState) => ({ balance: state.balance, apiCallStatus: state.apisCallStatus.FetchBalance }));
 export const localRemoteBalance = createSelector(clState, (state: CLState) => ({ localRemoteBalance: state.localRemoteBalance, apiCallStatus: state.apisCallStatus.FetchLocalRemoteBalance }));
 export const forwardingHistory = createSelector(clState, (state: CLState) => ({ forwardingHistory: state.forwardingHistory, apiCallStatus: state.apisCallStatus.GetForwardingHistory }));
@@ -21,4 +21,4 @@ export const failedForwardingHistory = createSelector(clState, (state: CLState) 
 export const nodeInfoAndNodeSettingsAndBalance = createSelector(clState, (state: CLState) => ({ information: state.information, nodeSettings: state.nodeSettings, balance: state.balance }));
 export const nodeInfoAndBalanceAndNumPeers = createSelector(clState, (state: CLState) => ({ information: state.information, balance: state.balance, numPeers: state.peers.length }));
 export const nodeInfoAndBalance = createSelector(clState, (state: CLState) => ({ information: state.information, balance: state.balance }));
-export const nodeInfoAndNodeSettingsAndAPIsStatus = createSelector(clState, (state: CLState) => ({ information: state.information, nodeSettings: state.nodeSettings, apisCallStatus: [state.apisCallStatus.FetchInfo, state.apisCallStatus.FetchLocalRemoteBalance, state.apisCallStatus.FetchChannels, state.apisCallStatus.GetForwardingHistory] }));
+export const nodeInfoAndNodeSettingsAndAPIsStatus = createSelector(clState, (state: CLState) => ({ information: state.information, nodeSettings: state.nodeSettings, apisCallStatus: [state.apisCallStatus.FetchInfo, state.apisCallStatus.GetForwardingHistory] }));

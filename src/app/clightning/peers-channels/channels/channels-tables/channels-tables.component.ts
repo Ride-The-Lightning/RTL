@@ -12,7 +12,7 @@ import { SelNodeChild } from '../../../../shared/models/RTLconfig';
 
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert } from '../../../../store/rtl.actions';
-import { channels, nodeInfoAndBalanceAndNumPeers, nodeInfoAndNodeSettingsAndBalance, peers, utxos } from '../../../store/cl.selector';
+import { channels, nodeInfoAndNodeSettingsAndBalance, peers, utxos } from '../../../store/cl.selector';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 
 @Component({
@@ -57,21 +57,9 @@ export class CLChannelsTablesComponent implements OnInit, OnDestroy {
         this.utxos = this.commonService.sortAscByKey(utxosSeletor.utxos.filter((utxo) => utxo.status === 'confirmed'), 'value');
       });
     this.store.select(channels).pipe(takeUntil(this.unSubs[4])).
-      subscribe((channelsSeletor: { channels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
-        if (channelsSeletor.channels && channelsSeletor.channels.length) {
-          this.openChannels = 0;
-          this.pendingChannels = 0;
-          channelsSeletor.channels.forEach((channel) => {
-            if (channel.state === 'CHANNELD_NORMAL' && channel.connected) {
-              this.openChannels++;
-            } else {
-              this.pendingChannels++;
-            }
-          });
-        } else {
-          this.openChannels = 0;
-          this.pendingChannels = 0;
-        }
+      subscribe((channelsSeletor: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.openChannels = channelsSeletor.activeChannels.length || 0;
+        this.pendingChannels = (channelsSeletor.pendingChannels.length + channelsSeletor.inactiveChannels.length) || 0;
         this.logger.info(channelsSeletor);
       });
   }

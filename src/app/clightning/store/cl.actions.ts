@@ -67,7 +67,7 @@ export const setQueryRoutes = createAction(CLActions.SET_QUERY_ROUTES_CL, props<
 
 export const fetchChannels = createAction(CLActions.FETCH_CHANNELS_CL);
 
-export const setChannels = createAction(CLActions.SET_CHANNELS_CL, props<{ payload: Channel[] }>());
+export const setChannels = createAction(CLActions.SET_CHANNELS_CL, props<{ payload: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[] } }>());
 
 export const updateChannel = createAction(CLActions.UPDATE_CHANNEL_CL, props<{ payload: UpdateChannel }>());
 
@@ -75,7 +75,7 @@ export const saveNewChannel = createAction(CLActions.SAVE_NEW_CHANNEL_CL, props<
 
 export const closeChannel = createAction(CLActions.CLOSE_CHANNEL_CL, props<{ payload: CloseChannel }>());
 
-export const removeChannel = createAction(CLActions.REMOVE_CHANNEL_CL, props<{ payload: { channelId: string } }>());
+export const removeChannel = createAction(CLActions.REMOVE_CHANNEL_CL, props<{ payload: CloseChannel }>());
 
 export const peerLookup = createAction(CLActions.PEER_LOOKUP_CL, props<{ payload: string }>());
 

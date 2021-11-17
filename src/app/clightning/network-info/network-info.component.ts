@@ -1,18 +1,18 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faBolt, faServer, faNetworkWired, faLink } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Fees, ChannelsStatus, FeeRates, ForwardingEvent } from '../../shared/models/clModels';
+import { GetInfo, Fees, ChannelsStatus, FeeRates, ForwardingEvent, LocalRemoteBalance, Channel } from '../../shared/models/clModels';
 import { APICallStatusEnum, ScreenSizeEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 
 import { RTLState } from '../../store/rtl.state';
-import { feeRatesPerKB, feeRatesPerKW, fees, forwardingHistory, nodeInfoAndNodeSettingsAndAPIsStatus } from '../store/cl.selector';
+import { channels, feeRatesPerKB, feeRatesPerKW, fees, forwardingHistory, localRemoteBalance, nodeInfoAndNodeSettingsAndAPIsStatus } from '../store/cl.selector';
 
 @Component({
   selector: 'rtl-cl-network-info',
@@ -28,7 +28,7 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
   public selNode: SelNodeChild = {};
   public information: GetInfo = {};
   public fees: Fees;
-  public channelsStatus: ChannelsStatus = {};
+  public channelsStatus: ChannelsStatus = { active: {}, pending: {}, inactive: {} };
   public feeRatesPerKB: FeeRates = {};
   public feeRatesPerKW: FeeRates = {};
   public nodeCardsOperator = [];
@@ -84,30 +84,35 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
     this.store.select(nodeInfoAndNodeSettingsAndAPIsStatus).pipe(takeUntil(this.unSubs[0])).
       subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: SelNodeChild, apisCallStatus: ApiCallStatusPayload[] }) => {
         this.errorMessages[0] = '';
-        this.errorMessages[2] = '';
-        this.errorMessages[3] = '';
         this.apiCallStatusNodeInfo = infoSettingsStatusSelector.apisCallStatus[0];
-        this.apiCallStatusLRBal = infoSettingsStatusSelector.apisCallStatus[1];
-        this.apiCallStatusChannels = infoSettingsStatusSelector.apisCallStatus[2];
         if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {
           this.errorMessages[0] = (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message;
         }
+        this.selNode = infoSettingsStatusSelector.nodeSettings;
+        this.information = infoSettingsStatusSelector.information;
+        this.logger.info(infoSettingsStatusSelector);
+      });
+    this.store.select(channels).pipe(takeUntil(this.unSubs[1]),
+      withLatestFrom(this.store.select(localRemoteBalance))).
+      subscribe(([channelsSeletor, lrBalanceSeletor]: [{ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }, { localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }]) => {
+        this.errorMessages[2] = '';
+        this.errorMessages[3] = '';
+        this.apiCallStatusLRBal = channelsSeletor.apiCallStatus;
+        this.apiCallStatusChannels = lrBalanceSeletor.apiCallStatus;
         if (this.apiCallStatusLRBal.status === APICallStatusEnum.ERROR) {
           this.errorMessages[2] = (typeof (this.apiCallStatusLRBal.message) === 'object') ? JSON.stringify(this.apiCallStatusLRBal.message) : this.apiCallStatusLRBal.message;
         }
         if (this.apiCallStatusChannels.status === APICallStatusEnum.ERROR) {
           this.errorMessages[3] = (typeof (this.apiCallStatusChannels.message) === 'object') ? JSON.stringify(this.apiCallStatusChannels.message) : this.apiCallStatusChannels.message;
         }
-        this.selNode = infoSettingsStatusSelector.nodeSettings;
-        this.information = infoSettingsStatusSelector.information;
-        this.channelsStatus = {
-          active: { channels: this.information.num_active_channels, capacity: 0 },
-          inactive: { channels: this.information.num_inactive_channels, capacity: 0 },
-          pending: { channels: this.information.num_pending_channels, capacity: 0 }
-        };
-        this.logger.info(infoSettingsStatusSelector);
+        this.channelsStatus.active.channels = channelsSeletor.activeChannels.length || 0;
+        this.channelsStatus.pending.channels = channelsSeletor.pendingChannels.length || 0;
+        this.channelsStatus.inactive.channels = channelsSeletor.inactiveChannels.length || 0;
+        this.channelsStatus.active.capacity = lrBalanceSeletor.localRemoteBalance.localBalance || 0;
+        this.channelsStatus.pending.capacity = lrBalanceSeletor.localRemoteBalance.pendingBalance || 0;
+        this.channelsStatus.inactive.capacity = lrBalanceSeletor.localRemoteBalance.inactiveBalance || 0;
       });
-    this.store.select(fees).pipe(takeUntil(this.unSubs[1])).
+    this.store.select(fees).pipe(takeUntil(this.unSubs[2])).
       subscribe((feesSeletor: { fees: Fees, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessages[1] = '';
         this.apiCallStatusFees = feesSeletor.apiCallStatus;
@@ -116,7 +121,7 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
         }
         this.fees = feesSeletor.fees;
       });
-    this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[2])).
+    this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[3])).
       subscribe((fhSeletor: { forwardingHistory: ForwardingEvent[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessages[4] = '';
         this.apiCallStatusFHistory = fhSeletor.apiCallStatus;
@@ -127,7 +132,7 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
           this.fees.totalTxCount = fhSeletor.forwardingHistory.length;
         }
       });
-    this.store.select(feeRatesPerKB).pipe(takeUntil(this.unSubs[3])).
+    this.store.select(feeRatesPerKB).pipe(takeUntil(this.unSubs[4])).
       subscribe((frbSeletor: { feeRatesPerKB: FeeRates, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessages[5] = '';
         this.apiCallStatusPerKB = frbSeletor.apiCallStatus;
@@ -136,7 +141,7 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
         }
         this.feeRatesPerKB = frbSeletor.feeRatesPerKB;
       });
-    this.store.select(feeRatesPerKW).pipe(takeUntil(this.unSubs[4])).
+    this.store.select(feeRatesPerKW).pipe(takeUntil(this.unSubs[5])).
       subscribe((frwSeletor: { feeRatesPerKW: FeeRates, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessages[6] = '';
         this.apiCallStatusPerKW = frwSeletor.apiCallStatus;

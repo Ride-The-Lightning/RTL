@@ -13,7 +13,9 @@ export interface CLState {
   balance: Balance;
   localRemoteBalance: LocalRemoteBalance;
   peers: Peer[];
-  allChannels: Channel[];
+  activeChannels: Channel[];
+  pendingChannels: Channel[];
+  inactiveChannels: Channel[];
   payments: Payment[];
   forwardingHistory: ForwardingEvent[];
   failedForwardingHistory: ForwardingEvent[];
@@ -45,7 +47,9 @@ export const initCLState: CLState = {
   balance: {},
   localRemoteBalance: { localBalance: -1, remoteBalance: -1 },
   peers: [],
-  allChannels: [],
+  activeChannels: [],
+  pendingChannels: [],
+  inactiveChannels: [],
   payments: [],
   forwardingHistory: [],
   failedForwardingHistory: [],

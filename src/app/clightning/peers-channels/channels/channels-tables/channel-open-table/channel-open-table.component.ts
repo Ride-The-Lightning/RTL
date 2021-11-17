@@ -81,13 +81,13 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
         this.logger.info(infoBalNumpeersSelector);
       });
     this.store.select(channels).pipe(takeUntil(this.unSubs[1])).
-      subscribe((channelsSeletor: { channels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
+      subscribe((channelsSeletor: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = channelsSeletor.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.channelsData = channelsSeletor.channels.filter((channel) => channel.state === 'CHANNELD_NORMAL' && channel.connected);
+        this.channelsData = channelsSeletor.activeChannels;
         if (this.channelsData.length > 0) {
           this.loadChannelsTable(this.channelsData);
         }
@@ -231,7 +231,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
       pipe(takeUntil(this.unSubs[3])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.store.dispatch(closeChannel({ payload: { channelId: channelToClose.channel_id, force: false } }));
+          this.store.dispatch(closeChannel({ payload: { id: channelToClose.id, channelId: channelToClose.channel_id, force: false } }));
         }
       });
   }

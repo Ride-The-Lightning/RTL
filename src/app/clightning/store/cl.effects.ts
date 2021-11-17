@@ -14,7 +14,7 @@ import { SessionService } from '../../shared/services/session.service';
 import { WebSocketClientService } from '../../shared/services/web-socket.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer, ForwardingEvent, OnChain, QueryRoutes, PayRequest, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, DecodePayment, SendPayment, GetQueryRoutes, ChannelLookup, FetchInvoices } from '../../shared/models/clModels';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer, ForwardingEvent, OnChain, QueryRoutes, PayRequest, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, DecodePayment, SendPayment, GetQueryRoutes, ChannelLookup, FetchInvoices, Channel } from '../../shared/models/clModels';
 import { AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLWSEventTypeEnum, CLActions, RTLActions } from '../../shared/services/consts-enums-functions';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 
@@ -319,15 +319,27 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.FETCH_CHANNELS_CL),
     mergeMap(() => {
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchChannels', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listChannels');
+      return this.httpClient.get<Channel[]>(this.CHILD_API_URL + environment.CHANNELS_API + '/listChannels');
     }),
-    map((channels: any) => {
+    map((channels: Channel[]) => {
       this.logger.info(channels);
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchChannels', status: APICallStatusEnum.COMPLETED } }));
       this.store.dispatch(getForwardingHistory({ payload: { status: 'settled' } }));
+      const sortedChannels = { activeChannels: [], pendingChannels: [], inactiveChannels: [] };
+      channels.forEach((channel) => {
+        if (channel.state === 'CHANNELD_NORMAL') {
+          if (channel.connected) {
+            sortedChannels.activeChannels.push(channel);
+          } else {
+            sortedChannels.inactiveChannels.push(channel);
+          }
+        } else {
+          sortedChannels.pendingChannels.push(channel);
+        }
+      });
       return {
         type: CLActions.SET_CHANNELS_CL,
-        payload: (channels && channels.length > 0) ? channels : []
+        payload: sortedChannels
       };
     }),
     catchError((err: any) => {
@@ -406,10 +418,11 @@ export class CLEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(closeSpinner({ payload: action.payload.force ? UI_MESSAGES.FORCE_CLOSE_CHANNEL : UI_MESSAGES.CLOSE_CHANNEL }));
             this.store.dispatch(fetchChannels());
+            this.store.dispatch(fetchLocalRemoteBalance());
             this.store.dispatch(openSnackBar({ payload: 'Channel Closed Successfully!' }));
             return {
               type: CLActions.REMOVE_CHANNEL_CL,
-              payload: { channelId: action.payload.channelId }
+              payload: action.payload
             };
           }),
           catchError((err: any) => {
