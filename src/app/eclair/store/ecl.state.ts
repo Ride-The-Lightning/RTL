@@ -1,5 +1,5 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Channel, Fees, OnChainBalance, LightningBalance, Peer, ChannelsStatus, Payments, Transaction, Invoice, PaymentReceived } from '../../shared/models/eclModels';
+import { GetInfo, Channel, Fees, OnChainBalance, LightningBalance, Peer, ChannelsStatus, Payments, Transaction, Invoice } from '../../shared/models/eclModels';
 import { ApiCallsListECL } from '../../shared/models/apiCallsPayload';
 import { APICallStatusEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 
@@ -37,7 +37,12 @@ export const initECLState: ECLState = {
   activeChannels: [],
   pendingChannels: [],
   inactiveChannels: [],
-  channelsStatus: {},
+  channelsStatus: {
+    active: { channels: 0, capacity: 0 },
+    inactive: { channels: 0, capacity: 0 },
+    pending: { channels: 0, capacity: 0 },
+    closing: { channels: 0, capacity: 0 }
+  },
   onchainBalance: { total: 0, confirmed: 0, unconfirmed: 0 },
   lightningBalance: { localBalance: -1, remoteBalance: -1 },
   peers: [],

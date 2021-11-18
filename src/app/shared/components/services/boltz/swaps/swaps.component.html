@@ -5,7 +5,7 @@
       <span class="page-title">{{swapCaption}} History</span>
     </div>
     <mat-form-field fxFlex="30">
-      <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
+      <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" placeholder="Filter">
     </mat-form-field>
   </div>
   <div fxLayout="row" fxLayoutAlign="start center" class="w-100">

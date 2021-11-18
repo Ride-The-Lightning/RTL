@@ -9,7 +9,7 @@
         <span class="page-title">Connected Peers</span>
       </div>
       <mat-form-field fxFlex="30" fxLayoutAlign="start end">
-        <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
+        <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" placeholder="Filter">
       </mat-form-field>
     </div>
     <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">

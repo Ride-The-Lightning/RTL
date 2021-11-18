@@ -14,7 +14,6 @@ import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
-import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { CLLightningSendPaymentsComponent } from '../send-payment-modal/send-payment.component';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 
@@ -29,7 +28,6 @@ import { clNodeInformation, clNodeSettings, payments } from '../../store/cl.sele
   selector: 'rtl-cl-lightning-payments',
   templateUrl: './lightning-payments.component.html',
   styleUrls: ['./lightning-payments.component.scss'],
-  animations: [newlyAddedRowAnimation],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Payments') }
   ]
@@ -42,7 +40,6 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faHistory = faHistory;
   public newlyAddedPayment = '';
-  public flgAnimate = true;
   public selNode: SelNodeChild = {};
   public information: GetInfo = {};
   public payments: any;
@@ -58,6 +55,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
+  public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
@@ -97,13 +95,10 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.paymentJSONArr = (paymentsSeletor.payments && paymentsSeletor.payments.length > 0) ? paymentsSeletor.payments : [];
+        this.paymentJSONArr = paymentsSeletor.payments || [];
         if (this.paymentJSONArr.length > 0) {
           this.loadPaymentsTable(this.paymentJSONArr);
         }
-        setTimeout(() => {
-          this.flgAnimate = false;
-        }, 3000);
         this.logger.info(paymentsSeletor);
       });
   }
@@ -143,7 +138,6 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   }
 
   sendPayment() {
-    this.flgAnimate = true;
     this.newlyAddedPayment = this.paymentDecoded.payment_hash;
     if (!this.paymentDecoded.msatoshi || this.paymentDecoded.msatoshi === 0) {
       const reorderedPaymentDecoded = [
@@ -287,8 +281,10 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
     }));
   }
 
-  applyFilter(selFilter: any) {
-    this.payments.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    if (this.selFilter !== '') {
+      this.payments.filter = this.selFilter.trim().toLowerCase();
+    }
   }
 
   loadPaymentsTable(payments: Payment[]) {
@@ -302,6 +298,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
       return newRowData.includes(fltr);
     };
     this.payments.paginator = this.paginator;
+    this.applyFilter();
   }
 
   onDownloadCSV() {

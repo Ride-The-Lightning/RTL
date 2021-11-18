@@ -47,6 +47,7 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
+  public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
@@ -112,8 +113,10 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
     }));
   }
 
-  applyFilter(selFilter: any) {
-    this.channels.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    if (this.selFilter !== '') {
+      this.channels.filter = this.selFilter.trim().toLowerCase();
+    }
   }
 
   loadBackupTable(channels: any[]) {
@@ -130,6 +133,7 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
         (channel.private ? 'private' : 'public');
       return newChannel.includes(fltr);
     };
+    this.applyFilter();
   }
 
   ngOnDestroy() {

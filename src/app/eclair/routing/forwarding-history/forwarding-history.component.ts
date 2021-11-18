@@ -39,7 +39,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apiCallStatus: ApiCallStatusPayload = null;
+  public apiCallStatus: ApiCallStatusPayload = { status: APICallStatusEnum.COMPLETED };
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -62,18 +62,21 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
 
   ngOnInit() {
     this.store.select(payments).pipe(takeUntil(this.unSubs[0])).
-      subscribe((selPayments: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
-        if (this.eventsData.length <= 0) {
+      subscribe((paymentsSelector: Payments | ApiCallStatusPayload) => {
+        if (this.eventsData.length === 0) {
           this.errorMessage = '';
-          this.apiCallStatus = selPayments.apiCallStatus;
-          if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-            this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+          if (paymentsSelector.hasOwnProperty('relayed')) {
+            this.eventsData = (<Payments>paymentsSelector).relayed || [];
+            if (this.eventsData.length > 0 && this.sort && this.paginator) {
+              this.loadForwardingEventsTable(this.eventsData);
+            }
+            this.logger.info(this.eventsData);
+          } else {
+            this.apiCallStatus = <ApiCallStatusPayload>paymentsSelector;
+            if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+              this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+            }
           }
-          this.eventsData = selPayments.payments && selPayments.payments.relayed ? selPayments.payments.relayed : [];
-          if (this.eventsData.length > 0 && this.sort && this.paginator) {
-            this.loadForwardingEventsTable(this.eventsData);
-          }
-          this.logger.info(this.eventsData);
         }
       });
   }
@@ -139,6 +142,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
       return newRowData.includes(fltr);
     };
     this.forwardingHistoryEvents.paginator = this.paginator;
+    this.applyFilter();
     this.logger.info(this.forwardingHistoryEvents);
   }
 

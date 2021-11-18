@@ -51,8 +51,8 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
         this.selNode = nodeSettings;
       });
     this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[1])).
-      subscribe((nodeInfo: GetInfo) => {
-        this.information = nodeInfo;
+      subscribe((nodeInfo: any) => {
+        this.information = <GetInfo>nodeInfo;
       });
     this.actions.pipe(
       takeUntil(this.unSubs[2]),

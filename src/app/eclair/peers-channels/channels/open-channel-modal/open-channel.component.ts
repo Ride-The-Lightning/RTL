@@ -45,8 +45,8 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
     this.information = this.data.message.information;
     this.totalBalance = this.data.message.balance;
     this.alertTitle = this.data.alertTitle;
-    this.peer = this.data.message.peer ? this.data.message.peer : null;
-    this.peers = this.data.message.peers && this.data.message.peers.length ? this.data.message.peers : [];
+    this.peer = this.data.message.peer || null;
+    this.peers = this.data.message.peers || [];
     this.actions.pipe(
       takeUntil(this.unSubs[0]),
       filter((action) => action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL || action.type === ECLActions.FETCH_CHANNELS_ECL)).

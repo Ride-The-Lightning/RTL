@@ -18,7 +18,6 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import { CreateInvoiceComponent } from '../create-invoice-modal/create-invoice.component';
 import { InvoiceInformationComponent } from '../invoice-information-modal/invoice-information.component';
-import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
@@ -29,7 +28,6 @@ import { invoices, lndNodeInformation, lndNodeSettings } from '../../store/lnd.s
   selector: 'rtl-lightning-invoices',
   templateUrl: './lightning-invoices.component.html',
   styleUrls: ['./lightning-invoices.component.scss'],
-  animations: [newlyAddedRowAnimation],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Invoices') }
   ]
@@ -43,7 +41,6 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   public selNode: SelNodeChild = {};
   public newlyAddedInvoiceMemo = null;
   public newlyAddedInvoiceValue = null;
-  public flgAnimate = true;
   public memo = '';
   public expiry: number;
   public invoiceValue: number;
@@ -54,6 +51,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   public invoices: any;
   public information: GetInfo = {};
   public flgSticky = false;
+  public selFilter = '';
   public private = false;
   public expiryStep = 100;
   public pageSize = PAGE_SIZE;
@@ -98,7 +96,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
         this.totalInvoices = invoicesSelector.listInvoices.total_invoices;
         this.firstOffset = +invoicesSelector.listInvoices.first_index_offset;
         this.lastOffset = +invoicesSelector.listInvoices.last_index_offset;
-        this.invoicesData = invoicesSelector.listInvoices.invoices ? invoicesSelector.listInvoices.invoices : [];
+        this.invoicesData = invoicesSelector.listInvoices.invoices || [];
         if (this.invoicesData.length > 0 && this.sort && this.paginator) {
           this.loadInvoicesTable(this.invoicesData);
         }
@@ -124,7 +122,6 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
 
   onAddInvoice(form: any) {
     const expiryInSecs = (this.expiry ? this.expiry : 3600);
-    this.flgAnimate = true;
     this.newlyAddedInvoiceMemo = this.memo;
     this.newlyAddedInvoiceValue = this.invoiceValue;
     this.store.dispatch(saveNewInvoice({
@@ -163,9 +160,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
       const newInvoice = ((invoice.creation_date) ? this.datePipe.transform(new Date(invoice.creation_date * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + ((invoice.settle_date) ? this.datePipe.transform(new Date(invoice.settle_date * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(invoice).toLowerCase();
       return newInvoice.includes(fltr);
     };
-    setTimeout(() => {
-      this.flgAnimate = false;
-    }, 5000);
+    this.applyFilter();
     this.logger.info(this.invoices);
   }
 
@@ -177,8 +172,10 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
     this.invoiceValueHint = '';
   }
 
-  applyFilter(selFilter: any) {
-    this.invoices.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    if (this.selFilter !== '') {
+      this.invoices.filter = this.selFilter.trim().toLowerCase();
+    }
   }
 
   onPageChange(event: PageEvent) {

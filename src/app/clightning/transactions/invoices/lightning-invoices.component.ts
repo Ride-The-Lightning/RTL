@@ -18,7 +18,6 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import { CLCreateInvoiceComponent } from '../create-invoice-modal/create-invoice.component';
 import { CLInvoiceInformationComponent } from '../invoice-information-modal/invoice-information.component';
-import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 
 import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
@@ -30,7 +29,6 @@ import { clNodeInformation, clNodeSettings, listInvoices } from '../../store/cl.
   selector: 'rtl-cl-lightning-invoices',
   templateUrl: './lightning-invoices.component.html',
   styleUrls: ['./lightning-invoices.component.scss'],
-  animations: [newlyAddedRowAnimation],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Invoices') }
   ]
@@ -44,7 +42,6 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
   public selNode: SelNodeChild = {};
   public newlyAddedInvoiceMemo = '';
   public newlyAddedInvoiceValue = 0;
-  public flgAnimate = true;
   public description = '';
   public expiry: number;
   public invoiceValue: number = null;
@@ -62,6 +59,7 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
+  public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
@@ -97,13 +95,10 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.invoiceJSONArr = (invoicesSeletor.listInvoices.invoices && invoicesSeletor.listInvoices.invoices.length > 0) ? invoicesSeletor.listInvoices.invoices : [];
+        this.invoiceJSONArr = invoicesSeletor.listInvoices.invoices || [];
         if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator) {
           this.loadInvoicesTable(this.invoiceJSONArr);
         }
-        setTimeout(() => {
-          this.flgAnimate = false;
-        }, 5000);
         this.logger.info(invoicesSeletor);
       });
     this.actions.pipe(takeUntil(this.unSubs[3]), filter((action) => (action.type === CLActions.SET_LOOKUP_CL || action.type === CLActions.UPDATE_API_CALL_STATUS_CL))).
@@ -139,7 +134,6 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
       this.invoiceValue = 0;
     }
     const expiryInSecs = (this.expiry ? this.expiry : 3600);
-    this.flgAnimate = true;
     this.newlyAddedInvoiceMemo = 'ulbl' + Math.random().toString(36).slice(2) + Date.now();
     this.newlyAddedInvoiceValue = this.invoiceValue;
     this.store.dispatch(saveNewInvoice({
@@ -196,8 +190,10 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
     this.invoiceValueHint = '';
   }
 
-  applyFilter(selFilter: any) {
-    this.invoices.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    if (this.selFilter !== '') {
+      this.invoices.filter = this.selFilter.trim().toLowerCase();
+    }
   }
 
   onInvoiceValueChange() {
@@ -232,6 +228,7 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
       return newRowData.includes(fltr);
     };
     this.invoices.paginator = this.paginator;
+    this.applyFilter();
   }
 
   onDownloadCSV() {

@@ -40,6 +40,7 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
+  public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
@@ -83,8 +84,10 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
     }
   }
 
-  applyFilter(selFilter: any) {
-    this.listTransactions.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    if (this.selFilter !== '') {
+      this.listTransactions.filter = this.selFilter.trim().toLowerCase();
+    }
   }
 
   onTransactionClick(selTransaction: Transaction) {
@@ -120,6 +123,7 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
       return newRowData.includes(fltr);
     };
     this.listTransactions.paginator = this.paginator;
+    this.applyFilter();
     this.logger.info(this.listTransactions);
   }
 

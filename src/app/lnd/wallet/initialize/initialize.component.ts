@@ -19,7 +19,7 @@ export function matchedPasswords(control: FormGroup): ValidationErrors | null {
 }
 
 export function cipherSeedLength(control: FormGroup): ValidationErrors | null {
-  const cipherArr = control.value ? control.value.toString().trim().split(',') : [];
+  const cipherArr = control.value.toString().trim().split(',') || [];
   return cipherArr && cipherArr.length !== 24 ? { invalidCipher: true } : null;
 }
 

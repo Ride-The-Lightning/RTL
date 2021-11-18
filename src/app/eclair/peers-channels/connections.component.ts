@@ -34,19 +34,24 @@ export class ECLConnectionsComponent implements OnInit, OnDestroy {
       subscribe((value: any) => {
         this.activeLink = this.links.findIndex((link) => link.link === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
       });
-    this.store.select(peers).
-      pipe(takeUntil(this.unSubs[1])).
-      subscribe((selectedPeers: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.activePeers = (selectedPeers.peers && selectedPeers.peers.length) ? selectedPeers.peers.length : 0;
+    this.store.select(peers).pipe(takeUntil(this.unSubs[1])).
+      subscribe((peersSelector: Peer[] | ApiCallStatusPayload) => {
+        if (Array.isArray(peersSelector)) {
+          this.activePeers = (<Peer[]>peersSelector).length || 0;
+        }
       });
     this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[2])).
-      subscribe((selAllChannels: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload }) => {
-        this.activeChannels = selAllChannels.channelsStatus && selAllChannels.channelsStatus.active && selAllChannels.channelsStatus.active.channels ? selAllChannels.channelsStatus.active.channels : 0;
+      subscribe((allChannelsSelector: ({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus } | ApiCallStatusPayload)) => {
+        if (allChannelsSelector.hasOwnProperty('channelsStatus')) {
+          this.activeChannels = (<any>allChannelsSelector).channelsStatus.active.channels || 0;
+        }
       });
     this.store.select(onchainBalance).
       pipe(takeUntil(this.unSubs[3])).
-      subscribe((selectedOCBal: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.balances = [{ title: 'Total Balance', dataValue: selectedOCBal.onchainBalance.total || 0 }, { title: 'Confirmed', dataValue: selectedOCBal.onchainBalance.confirmed }, { title: 'Unconfirmed', dataValue: selectedOCBal.onchainBalance.unconfirmed }];
+      subscribe((oCBalanceSelector: OnChainBalance | ApiCallStatusPayload) => {
+        if (oCBalanceSelector.hasOwnProperty('total')) {
+          this.balances = [{ title: 'Total Balance', dataValue: (<OnChainBalance>oCBalanceSelector).total || 0 }, { title: 'Confirmed', dataValue: (<OnChainBalance>oCBalanceSelector).confirmed }, { title: 'Unconfirmed', dataValue: (<OnChainBalance>oCBalanceSelector).unconfirmed }];
+        }
       });
   }
 

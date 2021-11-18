@@ -54,7 +54,7 @@ export class ECLWebSocketClient {
   };
 
   public onClientClose = (e) => {
-    if (this.selectedNode.ln_implementation === 'ECL') {
+    if (this.selectedNode && this.selectedNode.ln_implementation === 'ECL') {
       this.logger.log({ selectedNode: this.selectedNode, level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Web socket disconnected, will reconnect again..' });
       this.webSocketClient.close();
       this.reconnet();

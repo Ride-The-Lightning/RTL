@@ -36,6 +36,7 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
   public displayedColumns: any[] = [];
   public failedForwardingEvents: any;
   public flgSticky = false;
+  public selFilter = '';
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -69,7 +70,7 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.failedEvents = (ffhSeletor.failedForwardingHistory) ? ffhSeletor.failedForwardingHistory : [];
+        this.failedEvents = ffhSeletor.failedForwardingHistory || [];
         if (this.failedEvents.length > 0 && this.sort && this.paginator) {
           this.loadFailedEventsTable(this.failedEvents);
         }
@@ -115,6 +116,7 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
         (event.in_msatoshi ? (event.in_msatoshi / 1000) : '') + (event.out_msatoshi ? (event.out_msatoshi / 1000) : '') + (event.fee ? event.fee : '');
       return newEvent.includes(fltr);
     };
+    this.applyFilter();
     this.logger.info(this.failedForwardingEvents);
   }
 
@@ -124,8 +126,10 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
     }
   }
 
-  applyFilter(selFilter: any) {
-    this.failedForwardingEvents.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    if (this.selFilter !== '') {
+      this.failedForwardingEvents.filter = this.selFilter.trim().toLowerCase();
+    }
   }
 
   ngOnDestroy() {

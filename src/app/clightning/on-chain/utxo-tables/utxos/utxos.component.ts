@@ -39,6 +39,7 @@ export class CLOnChainUtxosComponent implements OnInit, OnChanges, AfterViewInit
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
+  public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
@@ -84,8 +85,10 @@ export class CLOnChainUtxosComponent implements OnInit, OnChanges, AfterViewInit
     }
   }
 
-  applyFilter(selFilter: any) {
-    this.listUTXOs.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    if (this.selFilter !== '') {
+      this.listUTXOs.filter = this.selFilter.trim().toLowerCase();
+    }
   }
 
   onUTXOClick(selUtxo: UTXO, event: any) {
@@ -114,6 +117,7 @@ export class CLOnChainUtxosComponent implements OnInit, OnChanges, AfterViewInit
     this.listUTXOs.sort = this.sort;
     this.listUTXOs.filterPredicate = (utxo: UTXO, fltr: string) => JSON.stringify(utxo).toLowerCase().includes(fltr);
     this.listUTXOs.paginator = this.paginator;
+    this.applyFilter();
     this.logger.info(this.listUTXOs);
   }
 

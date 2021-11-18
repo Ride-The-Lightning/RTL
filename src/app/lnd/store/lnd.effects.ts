@@ -144,7 +144,7 @@ export class LNDEffects implements OnDestroy {
           this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchPeers', status: APICallStatusEnum.COMPLETED } }));
           return {
             type: LNDActions.SET_PEERS_LND,
-            payload: peers ? peers : []
+            payload: peers || []
           };
         }),
         catchError((err: any) => {
@@ -165,7 +165,7 @@ export class LNDEffects implements OnDestroy {
           this.logger.info(postRes);
           this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'SaveNewPeer', status: APICallStatusEnum.COMPLETED } }));
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.CONNECT_PEER }));
-          this.store.dispatch(setPeers({ payload: ((postRes && postRes.length > 0) ? postRes : []) }));
+          this.store.dispatch(setPeers({ payload: (postRes || []) }));
           return {
             type: LNDActions.NEWLY_ADDED_PEER_LND,
             payload: { peer: postRes[0] }
@@ -474,7 +474,7 @@ export class LNDEffects implements OnDestroy {
           this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchChannels', status: APICallStatusEnum.COMPLETED } }));
           return {
             type: LNDActions.SET_CHANNELS_LND,
-            payload: (channels && channels.channels && channels.channels.length > 0) ? channels.channels : []
+            payload: channels.channels || []
           };
         }),
         catchError((err: any) => {
@@ -546,7 +546,7 @@ export class LNDEffects implements OnDestroy {
           this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchClosedChannels', status: APICallStatusEnum.COMPLETED } }));
           return {
             type: LNDActions.SET_CLOSED_CHANNELS_LND,
-            payload: (channels && channels.channels && channels.channels.length > 0) ? channels.channels : []
+            payload: channels.channels || []
           };
         }),
         catchError((err: any) => {
@@ -593,7 +593,7 @@ export class LNDEffects implements OnDestroy {
       this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchTransactions', status: APICallStatusEnum.COMPLETED } }));
       return {
         type: LNDActions.SET_TRANSACTIONS_LND,
-        payload: (transactions && transactions.length > 0) ? transactions : []
+        payload: transactions || []
       };
     }),
     catchError((err: any) => {
@@ -614,7 +614,7 @@ export class LNDEffects implements OnDestroy {
       this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchUTXOs', status: APICallStatusEnum.COMPLETED } }));
       return {
         type: LNDActions.SET_UTXOS_LND,
-        payload: (utxos && utxos.length > 0) ? utxos : []
+        payload: utxos || []
       };
     }),
     catchError((err: any) => {

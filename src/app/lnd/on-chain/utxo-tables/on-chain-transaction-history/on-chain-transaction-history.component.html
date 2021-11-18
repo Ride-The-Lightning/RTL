@@ -1,7 +1,7 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="padding-gap-x-large">
   <div fxLayout="column" fxLayout.gt-xs="row wrap" fxLayoutAlign.gt-xs="end stretch" fxLayoutAlign="start stretch" class="page-sub-title-container">
     <mat-form-field fxFlex="30">
-      <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
+      <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" placeholder="Filter">
     </mat-form-field>
   </div>
   <div fxLayout="row" fxLayoutAlign="start start">

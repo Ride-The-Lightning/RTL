@@ -270,10 +270,6 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
     this.logger.info(this.pendingWaitClosingChannels);
   }
 
-  applyFilter(selFilter: string) {
-    this.selectedFilter = selFilter.trim().toLowerCase();
-  }
-
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
       completeSub.next(null);

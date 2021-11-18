@@ -16,7 +16,6 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { CLConnectPeerComponent } from '../connect-peer/connect-peer.component';
 import { CLOpenChannelComponent } from '../channels/open-channel-modal/open-channel.component';
-import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 
 import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
@@ -28,7 +27,6 @@ import { nodeInfoAndBalance, peers } from '../../store/cl.selector';
   selector: 'rtl-cl-peers',
   templateUrl: './peers.component.html',
   styleUrls: ['./peers.component.scss'],
-  animations: [newlyAddedRowAnimation],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') }
   ]
@@ -39,7 +37,6 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faUsers = faUsers;
   public newlyAddedPeer = '';
-  public flgAnimate = true;
   public displayedColumns: any[] = [];
   public peerAddress = '';
   public peersData: Peer[] = [];
@@ -52,6 +49,7 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
+  public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
@@ -86,7 +84,7 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.peersData = peersSeletor.peers ? peersSeletor.peers : [];
+        this.peersData = peersSeletor.peers || [];
         if (this.peersData.length > 0) {
           this.loadPeersTable(this.peersData);
         }
@@ -98,7 +96,6 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
         filter((action) => action.type === CLActions.SET_PEERS_CL)
       ).subscribe((setPeers: any) => {
         this.peerAddress = null;
-        this.flgAnimate = true;
       });
   }
 
@@ -179,8 +176,10 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  applyFilter(selFilter: any) {
-    this.peers.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    if (this.selFilter !== '') {
+      this.peers.filter = this.selFilter.trim().toLowerCase();
+    }
   }
 
   loadPeersTable(peersArr: Peer[]) {
@@ -201,6 +200,7 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.peers.sort = this.sort;
     this.peers.filterPredicate = (peer: Peer, fltr: string) => JSON.stringify(peer).toLowerCase().includes(fltr);
     this.peers.paginator = this.paginator;
+    this.applyFilter();
   }
 
   onDownloadCSV() {

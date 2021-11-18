@@ -44,7 +44,7 @@
       </mat-tree-node>
     </mat-tree>
   </div>
-  <div fxLayout="column" fxFlex="10" fxLayoutAlign="end stretch" class="w-100">
+  <div fxLayout="column" fxLayoutAlign="end stretch" class="w-100">
     <mat-tree [dataSource]="navMenusLogout" [treeControl]="treeControlLogout" *ngIf="showLogout">
       <mat-tree-node *matTreeNodeDef="let node" (click)="onClick(node)">
         <span *ngIf="node.iconType === 'SVG'" class="mr-2"><ng-container [ngTemplateOutlet]="node.icon"></ng-container></span>

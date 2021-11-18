@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, HostListener, AfterContentInit } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil, combineLatestWith, withLatestFrom } from 'rxjs/operators';
+import { takeUntil, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { PaymentSent, Invoice, Payments } from '../../../shared/models/eclModels';
@@ -49,9 +49,13 @@ export class ECLTransactionsReportComponent implements OnInit, AfterContentInit,
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
     this.store.select(payments).pipe(takeUntil(this.unSubs[0]),
       withLatestFrom(this.store.select(invoices))).
-      subscribe(([selPayments, selInvoices]: [{ payments: Payments, apiCallStatus: ApiCallStatusPayload }, { invoices: Invoice[], apiCallStatus: ApiCallStatusPayload }]) => {
-        this.payments = selPayments.payments.sent ? selPayments.payments.sent : [];
-        this.invoices = selInvoices.invoices ? selInvoices.invoices : [];
+      subscribe(([paymentsSelector, invoicesSelector]: [(Payments | ApiCallStatusPayload), (Invoice[] | ApiCallStatusPayload)]) => {
+        if (paymentsSelector.hasOwnProperty('sent')) {
+          this.payments = (<Payments>paymentsSelector).sent || [];
+        }
+        if (Array.isArray(invoicesSelector)) {
+          this.invoices = <Invoice[]>invoicesSelector || [];
+        }
         if (this.payments.length > 0 || this.invoices.length > 0) {
           this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
           this.transactionsNonZeroReportData = this.prepareTableData();

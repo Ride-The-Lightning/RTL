@@ -62,8 +62,8 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
     this.totalBalance = this.data.message.balance;
     this.utxos = this.data.message.utxos;
     this.alertTitle = this.data.alertTitle;
-    this.peer = this.data.message.peer ? this.data.message.peer : null;
-    this.peers = this.data.message.peers && this.data.message.peers.length ? this.data.message.peers : [];
+    this.peer = this.data.message.peer || null;
+    this.peers = this.data.message.peers || [];
     this.actions.pipe(
       takeUntil(this.unSubs[0]),
       filter((action) => action.type === CLActions.UPDATE_API_CALL_STATUS_CL || action.type === CLActions.FETCH_CHANNELS_CL)).

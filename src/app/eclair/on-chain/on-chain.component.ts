@@ -38,15 +38,15 @@ export class ECLOnChainComponent implements OnInit, OnDestroy {
         const linkFound = this.links.find((link) => value.urlAfterRedirects.includes(link.link));
         this.activeLink = linkFound ? linkFound.link : this.links[0].link;
       });
-    this.store.select(eclNodeSettings).
-      pipe(takeUntil(this.unSubs[1])).
+    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[1])).
       subscribe((nodeSettings) => {
         this.selNode = nodeSettings;
       });
-    this.store.select(onchainBalance).
-      pipe(takeUntil(this.unSubs[2])).
-      subscribe((selectedOCBal: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.balances = [{ title: 'Total Balance', dataValue: selectedOCBal.onchainBalance.total || 0 }, { title: 'Confirmed', dataValue: selectedOCBal.onchainBalance.confirmed }, { title: 'Unconfirmed', dataValue: selectedOCBal.onchainBalance.unconfirmed }];
+    this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[2])).
+      subscribe((oCBalanceSelector: OnChainBalance | ApiCallStatusPayload) => {
+        if (oCBalanceSelector.hasOwnProperty('total')) {
+          this.balances = [{ title: 'Total Balance', dataValue: (<OnChainBalance>oCBalanceSelector).total || 0 }, { title: 'Confirmed', dataValue: (<OnChainBalance>oCBalanceSelector).confirmed }, { title: 'Unconfirmed', dataValue: (<OnChainBalance>oCBalanceSelector).unconfirmed }];
+        }
       });
   }
 

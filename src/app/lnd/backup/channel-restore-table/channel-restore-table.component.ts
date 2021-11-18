@@ -39,6 +39,7 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
   public allRestoreExists = false;
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: channels
   public flgSticky = false;
+  public selFilter = '';
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
@@ -74,8 +75,10 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
     this.store.dispatch(restoreChannels({ payload: { channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL' } }));
   }
 
-  applyFilter(selFilter: any) {
-    this.channels.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    if (this.selFilter !== '') {
+      this.channels.filter = this.selFilter.trim().toLowerCase();
+    }
   }
 
   loadRestoreTable(channels: any[]) {
@@ -84,6 +87,7 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
     this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.channels.filterPredicate = (channel: Channel, fltr: string) => JSON.stringify(channel).toLowerCase().includes(fltr);
     this.channels.paginator = this.paginator;
+    this.applyFilter();
   }
 
   ngOnDestroy() {

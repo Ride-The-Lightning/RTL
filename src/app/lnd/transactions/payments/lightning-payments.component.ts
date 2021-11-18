@@ -17,7 +17,6 @@ import { DataService } from '../../../shared/services/data.service';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { LightningSendPaymentsComponent } from '../send-payment-modal/send-payment.component';
-import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 
 import { LNDEffects } from '../../store/lnd.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
@@ -30,7 +29,6 @@ import { allLightningTransactions, lndNodeInformation, lndNodeSettings, payments
   selector: 'rtl-lightning-payments',
   templateUrl: './lightning-payments.component.html',
   styleUrls: ['./lightning-payments.component.scss'],
-  animations: [newlyAddedRowAnimation],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Payments') }
   ]
@@ -43,7 +41,6 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faHistory = faHistory;
   public newlyAddedPayment = '';
-  public flgAnimate = true;
   public selNode: SelNodeChild = {};
   public information: GetInfo = {};
   public peers: Peer[] = [];
@@ -58,6 +55,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   public flgSticky = false;
   private firstOffset = -1;
   private lastOffset = -1;
+  public selFilter = '';
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -106,15 +104,12 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.paymentJSONArr = (paymentsSelector.listPayments && paymentsSelector.listPayments.payments && paymentsSelector.listPayments.payments.length > 0) ? paymentsSelector.listPayments.payments : [];
+        this.paymentJSONArr = paymentsSelector.listPayments.payments || [];
         this.firstOffset = +paymentsSelector.listPayments.first_index_offset;
         this.lastOffset = +paymentsSelector.listPayments.last_index_offset;
         if (this.paymentJSONArr && this.paymentJSONArr.length > 0 && this.sort && this.paginator) {
           this.loadPaymentsTable(this.paymentJSONArr);
         }
-        setTimeout(() => {
-          this.flgAnimate = false;
-        }, 3000);
         this.logger.info(paymentsSelector);
       });
   }
@@ -150,7 +145,6 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   }
 
   sendPayment() {
-    this.flgAnimate = true;
     this.newlyAddedPayment = this.paymentDecoded.payment_hash;
     if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
       this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
@@ -404,8 +398,10 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
     }));
   }
 
-  applyFilter(selFilter: any) {
-    this.payments.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    if (this.selFilter !== '') {
+      this.payments.filter = this.selFilter.trim().toLowerCase();
+    }
   }
 
   loadPaymentsTable(payms) {
@@ -424,6 +420,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       const newPayment = ((payment.creation_date) ? this.datePipe.transform(new Date(payment.creation_date * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(payment).toLowerCase();
       return newPayment.includes(fltr);
     };
+    this.applyFilter();
   }
 
   onDownloadCSV() {

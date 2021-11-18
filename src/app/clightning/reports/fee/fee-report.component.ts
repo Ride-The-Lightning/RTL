@@ -56,7 +56,7 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.events = fhSeletor.forwardingHistory ? fhSeletor.forwardingHistory : [];
+        this.events = fhSeletor.forwardingHistory || [];
         this.filterForwardingEvents(this.startDate, this.endDate);
         this.logger.info(fhSeletor);
       });

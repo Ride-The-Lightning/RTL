@@ -15,7 +15,6 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
 
-import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { ECLLightningSendPaymentsComponent } from '../send-payment-modal/send-payment.component';
 import { ECLPaymentInformationComponent } from '../payment-information-modal/payment-information.component';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
@@ -30,7 +29,6 @@ import { eclNodeInformation, eclNodeSettings, payments } from '../../store/ecl.s
   selector: 'rtl-ecl-lightning-payments',
   templateUrl: './lightning-payments.component.html',
   styleUrls: ['./lightning-payments.component.scss'],
-  animations: [newlyAddedRowAnimation],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Payments') }
   ]
@@ -43,7 +41,6 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faHistory = faHistory;
   public newlyAddedPayment = '';
-  public flgAnimate = true;
   public selNode: SelNodeChild = {};
   public information: GetInfo = {};
   public payments: any;
@@ -59,7 +56,8 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apiCallStatus: ApiCallStatusPayload = null;
+  public selFilter = '';
+  public apiCallStatus: ApiCallStatusPayload = { status: APICallStatusEnum.COMPLETED };
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -90,42 +88,42 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         this.selNode = nodeSettings;
       });
     this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[1])).
-      subscribe((nodeInfo: GetInfo) => {
-        this.information = nodeInfo;
+      subscribe((nodeInfo: any) => {
+        this.information = <GetInfo>nodeInfo;
       });
     this.store.select(payments).pipe(takeUntil(this.unSubs[2])).
-      subscribe((selPayments: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
+      subscribe((paymentsSelector: Payments | ApiCallStatusPayload) => {
         this.errorMessage = '';
-        this.apiCallStatus = selPayments.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+        if (paymentsSelector.hasOwnProperty('sent')) {
+          this.paymentJSONArr = (<Payments>paymentsSelector).sent || [];
+          // FOR MPP TESTING START
+          // If (this.paymentJSONArr.length > 0) {
+          //   This.paymentJSONArr[3].parts.push({
+          //     Id: '34b609a5-f0f1-474e-9e5d-d7783b48702d', amount: 26000, feesPaid: 22, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c87', toChannelAlias: 'ion.radar.tech1', timestamp: 1596389827075
+          //   });
+          //   This.paymentJSONArr[3].parts.push({
+          //     Id: '35b609a5-f0f1-474e-9e5d-d7783b48702e', amount: 27000, feesPaid: 20, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c86', toChannelAlias: 'ion.radar.tech2', timestamp: 1596389817075
+          //   });
+          //   This.paymentJSONArr[5].parts.push({
+          //     Id: '38b609a5-f0f1-474e-9e5d-d7783b48702h', amount: 31000, feesPaid: 18, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c85', toChannelAlias: 'ion.radar.tech3', timestamp: 1596389887075
+          //   });
+          //   This.paymentJSONArr[5].parts.push({
+          //     Id: '36b609a5-f0f1-474e-9e5d-d7783b48702f', amount: 28000, feesPaid: 13, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c84', toChannelAlias: 'ion.radar.tech4', timestamp: 1596389687075
+          //   });
+          //   This.paymentJSONArr[5].parts.push({
+          //     Id: '37b609a5-f0f1-474e-9e5d-d7783b48702g', amount: 25000, feesPaid: 19, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c83', toChannelAlias: 'ion.radar.tech5', timestamp: 1596389707075
+          //   });
+          // }
+          // This.paymentJSONArr = this.paymentJSONArr.splice(2, 5);
+          // FOR MPP TESTING END
+          this.loadPaymentsTable(this.paymentJSONArr);
+        } else {
+          this.apiCallStatus = <ApiCallStatusPayload>paymentsSelector;
+          if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+            this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+          }
         }
-        this.paymentJSONArr = (selPayments.payments && selPayments.payments.sent && selPayments.payments.sent.length > 0) ? selPayments.payments.sent : [];
-        // FOR MPP TESTING START
-        // If (this.paymentJSONArr.length > 0) {
-        //   This.paymentJSONArr[3].parts.push({
-        //     Id: '34b609a5-f0f1-474e-9e5d-d7783b48702d', amount: 26000, feesPaid: 22, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c87', toChannelAlias: 'ion.radar.tech1', timestamp: 1596389827075
-        //   });
-        //   This.paymentJSONArr[3].parts.push({
-        //     Id: '35b609a5-f0f1-474e-9e5d-d7783b48702e', amount: 27000, feesPaid: 20, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c86', toChannelAlias: 'ion.radar.tech2', timestamp: 1596389817075
-        //   });
-        //   This.paymentJSONArr[5].parts.push({
-        //     Id: '38b609a5-f0f1-474e-9e5d-d7783b48702h', amount: 31000, feesPaid: 18, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c85', toChannelAlias: 'ion.radar.tech3', timestamp: 1596389887075
-        //   });
-        //   This.paymentJSONArr[5].parts.push({
-        //     Id: '36b609a5-f0f1-474e-9e5d-d7783b48702f', amount: 28000, feesPaid: 13, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c84', toChannelAlias: 'ion.radar.tech4', timestamp: 1596389687075
-        //   });
-        //   This.paymentJSONArr[5].parts.push({
-        //     Id: '37b609a5-f0f1-474e-9e5d-d7783b48702g', amount: 25000, feesPaid: 19, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c83', toChannelAlias: 'ion.radar.tech5', timestamp: 1596389707075
-        //   });
-        // }
-        // This.paymentJSONArr = this.paymentJSONArr.splice(2, 5);
-        // FOR MPP TESTING END
-        this.loadPaymentsTable(this.paymentJSONArr);
-        setTimeout(() => {
-          this.flgAnimate = false;
-        }, 3000);
-        this.logger.info(selPayments);
+        this.logger.info(paymentsSelector);
       });
   }
 
@@ -163,6 +161,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       return newRowData.includes(fltr);
     };
     this.payments.paginator = this.paginator;
+    this.applyFilter();
   }
 
   onSendPayment(): boolean | void {
@@ -188,7 +187,6 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   }
 
   sendPayment() {
-    this.flgAnimate = true;
     this.newlyAddedPayment = this.paymentDecoded.paymentHash;
     if (!this.paymentDecoded.amount || this.paymentDecoded.amount === 0) {
       const reorderedPaymentDecoded = [
@@ -311,7 +309,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         pipe(take(1)).
         subscribe({
           next: (sentPaymentInfo) => {
-            this.showPaymentView(selPayment, (sentPaymentInfo.length && sentPaymentInfo.length > 0) ? sentPaymentInfo[0] : []);
+            this.showPaymentView(selPayment, (sentPaymentInfo[0] || []));
           }, error: (error) => {
             this.showPaymentView(selPayment, []);
           }
@@ -373,8 +371,10 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
     }));
   }
 
-  applyFilter(selFilter: any) {
-    this.payments.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    if (this.selFilter !== '') {
+      this.payments.filter = this.selFilter.trim().toLowerCase();
+    }
   }
 
   onDownloadCSV() {

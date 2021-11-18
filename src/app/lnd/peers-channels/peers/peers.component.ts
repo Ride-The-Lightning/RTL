@@ -45,6 +45,7 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
+  public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
@@ -164,8 +165,10 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  applyFilter(selFilter: any) {
-    this.peers.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    if (this.selFilter !== '') {
+      this.peers.filter = this.selFilter.trim().toLowerCase();
+    }
   }
 
   loadPeersTable(peers: Peer[]) {
@@ -174,6 +177,7 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.peers.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.peers.filterPredicate = (peer: Peer, fltr: string) => JSON.stringify(peer).toLowerCase().includes(fltr);
     this.peers.paginator = this.paginator;
+    this.applyFilter();
   }
 
   onDownloadCSV() {

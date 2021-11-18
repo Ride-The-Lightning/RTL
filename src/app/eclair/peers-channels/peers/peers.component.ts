@@ -16,7 +16,6 @@ import { CommonService } from '../../../shared/services/common.service';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { ECLOpenChannelComponent } from '../channels/open-channel-modal/open-channel.component';
 import { ECLConnectPeerComponent } from '../connect-peer/connect-peer.component';
-import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 
 import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
@@ -28,7 +27,6 @@ import { eclNodeInformation, onchainBalance, peers } from '../../store/ecl.selec
   selector: 'rtl-ecl-peers',
   templateUrl: './peers.component.html',
   styleUrls: ['./peers.component.scss'],
-  animations: [newlyAddedRowAnimation],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') }
   ]
@@ -39,7 +37,6 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faUsers = faUsers;
   public newlyAddedPeer = '';
-  public flgAnimate = true;
   public displayedColumns: any[] = [];
   public peerAddress = '';
   public peersData: Peer[] = [];
@@ -52,7 +49,8 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apiCallStatus: ApiCallStatusPayload = null;
+  public selFilter = '';
+  public apiCallStatus: ApiCallStatusPayload = { status: APICallStatusEnum.COMPLETED };
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -75,31 +73,32 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[0])).
-      subscribe((nodeInfo: GetInfo) => {
+      subscribe((nodeInfo: any) => {
         this.information = nodeInfo;
       });
     this.store.select(peers).pipe(takeUntil(this.unSubs[1])).
-      subscribe((selPeers: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
+      subscribe((peersSelector: Peer[] | ApiCallStatusPayload) => {
         this.errorMessage = '';
-        this.apiCallStatus = selPeers.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+        if (Array.isArray(peersSelector)) {
+          this.peersData = <Peer[]>peersSelector;
+          this.loadPeersTable(this.peersData);
+        } else {
+          this.apiCallStatus = <ApiCallStatusPayload>peersSelector;
+          if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+            this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+          }
         }
-        this.peersData = selPeers.peers;
-        this.loadPeersTable(this.peersData);
-        setTimeout(() => {
-          this.flgAnimate = false;
-        }, 3000);
-        this.logger.info(selPeers);
+        this.logger.info(peersSelector);
       });
     this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[2])).
-      subscribe((selOCBal: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.availableBalance = selOCBal.onchainBalance.total || 0;
+      subscribe((oCBalanceSelector: OnChainBalance | ApiCallStatusPayload) => {
+        if (oCBalanceSelector.hasOwnProperty('total')) {
+          this.availableBalance = (<OnChainBalance>oCBalanceSelector).total || 0;
+        }
       });
     this.actions.pipe(takeUntil(this.unSubs[3]), filter((action) => action.type === ECLActions.SET_PEERS_ECL)).
       subscribe((setPeers: any) => {
         this.peerAddress = null;
-        this.flgAnimate = true;
       });
   }
 
@@ -196,8 +195,10 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  applyFilter(selFilter: any) {
-    this.peers.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    if (this.selFilter !== '') {
+      this.peers.filter = this.selFilter.trim().toLowerCase();
+    }
   }
 
   loadPeersTable(peers: Peer[]) {
@@ -206,6 +207,7 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.peers.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.peers.filterPredicate = (peer: Peer, fltr: string) => JSON.stringify(peer).toLowerCase().includes(fltr);
     this.peers.paginator = this.paginator;
+    this.applyFilter();
   }
 
   onDownloadCSV() {

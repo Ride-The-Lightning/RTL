@@ -37,6 +37,7 @@ export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy 
   public swapCaption = 'Swap Out';
   public displayedColumns: any[] = [];
   public listSwaps: any;
+  public selFilter = '';
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -85,9 +86,9 @@ export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy 
     }
   }
 
-  applyFilter(selFilter: any) {
-    if (this.listSwaps) {
-      this.listSwaps.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    if (this.listSwaps && this.selFilter !== '') {
+      this.listSwaps.filter = this.selFilter.trim().toLowerCase();
     }
   }
 
@@ -130,6 +131,7 @@ export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy 
       this.paginator.firstPage();
     }
     this.listSwaps.paginator = this.paginator;
+    this.applyFilter();
     this.logger.info(this.listSwaps);
   }
 

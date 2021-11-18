@@ -256,7 +256,7 @@ export class CLEffects implements OnDestroy {
             this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchPeers', status: APICallStatusEnum.COMPLETED } }));
             return {
               type: CLActions.SET_PEERS_CL,
-              payload: peers ? peers : []
+              payload: peers || []
             };
           }),
           catchError((err: any) => {
@@ -278,7 +278,7 @@ export class CLEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'SaveNewPeer', status: APICallStatusEnum.COMPLETED } }));
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.CONNECT_PEER }));
-            this.store.dispatch(setPeers({ payload: ((postRes && postRes.length > 0) ? postRes : []) }));
+            this.store.dispatch(setPeers({ payload: (postRes || []) }));
             return {
               type: CLActions.NEWLY_ADDED_PEER_CL,
               payload: { peer: postRes.find((peer) => action.payload.id.indexOf(peer.id) === 0) }
@@ -444,7 +444,7 @@ export class CLEffects implements OnDestroy {
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchPayments', status: APICallStatusEnum.COMPLETED } }));
       return {
         type: CLActions.SET_PAYMENTS_CL,
-        payload: payments ? payments : []
+        payload: payments || []
       };
     }),
     catchError((err: any) => {
@@ -843,7 +843,7 @@ export class CLEffects implements OnDestroy {
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchUTXOs', status: APICallStatusEnum.COMPLETED } }));
       return {
         type: CLActions.SET_UTXOS_CL,
-        payload: (utxos && utxos.outputs && utxos.outputs.length > 0) ? utxos.outputs : []
+        payload: utxos.outputs || []
       };
     }),
     catchError((err: any) => {

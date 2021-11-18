@@ -10,7 +10,7 @@
       </div>
       <mat-form-field fxFlex="30">
         <div fxLayout="row" fxLayoutAlign="start start">
-          <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
+          <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" placeholder="Filter">
         </div>
       </mat-form-field>
     </div>
@@ -67,7 +67,7 @@
         </ng-container>
         <tr mat-footer-row *matFooterRowDef="['no_peer']" [ngClass]="{'display-none': peers?.data && peers?.data?.length>0}"></tr>
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.pub_key === newlyAddedPeer && flgAnimate) ? 'added' : 'notAdded'"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
     </div>
     <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>

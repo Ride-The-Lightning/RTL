@@ -59,8 +59,8 @@ export class TransactionsReportComponent implements OnInit, AfterContentInit, On
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.payments = allLTSelector.allLightningTransactions.listPaymentsAll ? allLTSelector.allLightningTransactions.listPaymentsAll.payments : [];
-        this.invoices = allLTSelector.allLightningTransactions.listInvoicesAll ? allLTSelector.allLightningTransactions.listInvoicesAll.invoices : [];
+        this.payments = allLTSelector.allLightningTransactions.listPaymentsAll.payments || [];
+        this.invoices = allLTSelector.allLightningTransactions.listInvoicesAll.invoices || [];
         if (this.payments.length > 0 || this.invoices.length > 0) {
           this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
           this.transactionsNonZeroReportData = this.prepareTableData();

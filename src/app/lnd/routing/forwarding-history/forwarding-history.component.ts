@@ -67,7 +67,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
           if (fhSelector.apiCallStatus?.status === APICallStatusEnum.ERROR) {
             this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
           }
-          this.forwardingHistoryData = (fhSelector.forwardingHistory?.forwarding_events) ? fhSelector.forwardingHistory.forwarding_events : [];
+          this.forwardingHistoryData = fhSelector.forwardingHistory.forwarding_events || [];
           this.loadForwardingEventsTable(this.forwardingHistoryData);
           this.logger.info(fhSelector.apiCallStatus);
           this.logger.info(fhSelector.forwardingHistory);

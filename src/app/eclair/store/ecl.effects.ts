@@ -79,6 +79,10 @@ export class ECLEffects implements OnDestroy {
             case ECLWSEventTypeEnum.PAYMENT_RECEIVED:
               this.store.dispatch(updateInvoice({ payload: newMessage }));
               break;
+            case ECLWSEventTypeEnum.PAYMENT_RELAYED:
+              this.logger.warn(newMessage);
+              // this.store.dispatch(updateInvoice({ payload: newMessage }));
+              break;
             case ECLWSEventTypeEnum.CHANNEL_STATE_CHANGED:
               if ((<ChannelStateUpdate>newMessage).currentState === 'NORMAL' || (<ChannelStateUpdate>newMessage).currentState === 'CLOSED') {
                 this.rawChannelsList = this.rawChannelsList.map((channel) => {
@@ -230,7 +234,7 @@ export class ECLEffects implements OnDestroy {
             this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'FetchPeers', status: APICallStatusEnum.COMPLETED } }));
             return {
               type: ECLActions.SET_PEERS_ECL,
-              payload: peers && peers.length ? peers : []
+              payload: peers || []
             };
           }),
           catchError((err: any) => {
@@ -283,7 +287,7 @@ export class ECLEffects implements OnDestroy {
           map((postRes: Peer[]) => {
             this.logger.info(postRes);
             this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'SaveNewPeer', status: APICallStatusEnum.COMPLETED } }));
-            postRes = (postRes && postRes.length) ? postRes : [];
+            postRes = postRes || [];
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.CONNECT_PEER }));
             this.store.dispatch(setPeers({ payload: postRes }));
             return {
@@ -479,7 +483,7 @@ export class ECLEffects implements OnDestroy {
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'FetchTransactions', status: APICallStatusEnum.COMPLETED } }));
       return {
         type: ECLActions.SET_TRANSACTIONS_ECL,
-        payload: (transactions && transactions.length > 0) ? transactions : []
+        payload: transactions || []
       };
     }),
     catchError((err: any) => {

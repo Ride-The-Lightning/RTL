@@ -24,7 +24,7 @@ export class ECLNodeLookupComponent implements OnInit {
 
   ngOnInit() {
     this.addresses = this.lookupResult.addresses ? new MatTableDataSource<any>([...this.lookupResult.addresses]) : new MatTableDataSource([]);
-    this.addresses.data = this.lookupResult.addresses ? this.lookupResult.addresses : [];
+    this.addresses.data = this.lookupResult.addresses || [];
     this.addresses.sort = this.sort;
     this.addresses.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
   }

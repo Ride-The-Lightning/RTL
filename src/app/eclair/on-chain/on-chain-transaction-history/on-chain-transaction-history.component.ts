@@ -40,7 +40,8 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apiCallStatus: ApiCallStatusPayload = null;
+  public selFilter = '';
+  public apiCallStatus: ApiCallStatusPayload = { status: APICallStatusEnum.COMPLETED };
   public apiCallStatusEnum = APICallStatusEnum;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -65,21 +66,25 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
     this.store.dispatch(fetchTransactions());
     this.store.select(transactions).
       pipe(takeUntil(this.unsub[0])).
-      subscribe((selectedTransactions: { transactions: Transaction[], apiCallStatus: ApiCallStatusPayload }) => {
+      subscribe((transactionsSelector: Transaction[] | ApiCallStatusPayload) => {
         this.errorMessage = '';
-        this.apiCallStatus = selectedTransactions.apiCallStatus;
-        if (selectedTransactions.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+        if (Array.isArray(transactionsSelector)) {
+          this.loadTransactionsTable(<Transaction[]>transactionsSelector);
+          this.logger.info(transactionsSelector);
+        } else {
+          this.apiCallStatus = <ApiCallStatusPayload>transactionsSelector;
+          if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+            this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+          }
+          this.logger.error(transactionsSelector);
         }
-        if (selectedTransactions.transactions) {
-          this.loadTransactionsTable(selectedTransactions.transactions);
-        }
-        this.logger.info(selectedTransactions);
       });
   }
 
-  applyFilter(selFilter: any) {
-    this.listTransactions.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    if (this.selFilter !== '') {
+      this.listTransactions.filter = this.selFilter.trim().toLowerCase();
+    }
   }
 
   onTransactionClick(selTransaction: Transaction, event: any) {
@@ -112,6 +117,7 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
       return newRowData.includes(fltr);
     };
     this.listTransactions.paginator = this.paginator;
+    this.applyFilter();
     this.logger.info(this.listTransactions);
   }
 

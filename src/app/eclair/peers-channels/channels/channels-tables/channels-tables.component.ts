@@ -41,27 +41,37 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
         this.activeLink = this.links.findIndex((link) => link.link === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
       });
     this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[1])).
-      subscribe((selAllChannels: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload }) => {
-        this.numOfOpenChannels = (selAllChannels.channelsStatus && selAllChannels.channelsStatus.active && selAllChannels.channelsStatus.active.channels) ? selAllChannels.channelsStatus.active.channels : 0;
-        this.numOfPendingChannels = (selAllChannels.channelsStatus && selAllChannels.channelsStatus.pending && selAllChannels.channelsStatus.pending.channels) ? selAllChannels.channelsStatus.pending.channels : 0;
-        this.numOfInactiveChannels = (selAllChannels.channelsStatus && selAllChannels.channelsStatus.inactive && selAllChannels.channelsStatus.inactive.channels) ? selAllChannels.channelsStatus.inactive.channels : 0;
-        this.logger.info(selAllChannels);
+      subscribe((allChannelsSelector: ({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus } | ApiCallStatusPayload)) => {
+        if (allChannelsSelector.hasOwnProperty('channelsStatus')) {
+          this.numOfOpenChannels = (<any>allChannelsSelector).channelsStatus.active.channels || 0;
+          this.numOfPendingChannels = (<any>allChannelsSelector).channelsStatus.pending.channels || 0;
+          this.numOfInactiveChannels = (<any>allChannelsSelector).channelsStatus.inactive.channels || 0;
+        }
+        this.logger.info(allChannelsSelector);
       });
     this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[2])).
       subscribe((nodeSettings: SelNodeChild) => {
         this.selNode = nodeSettings;
       });
     this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[3])).
-      subscribe((nodeInfo: GetInfo) => {
+      subscribe((nodeInfo: any) => {
         this.information = nodeInfo;
       });
     this.store.select(peers).pipe(takeUntil(this.unSubs[4])).
-      subscribe((selPeers: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.peers = selPeers.peers;
+      subscribe((peersSelector: Peer[] | ApiCallStatusPayload) => {
+        if (Array.isArray(peersSelector)) {
+          this.peers = <Peer[]>peersSelector;
+        } else {
+          this.logger.error(peersSelector);
+        }
       });
     this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[5])).
-      subscribe((selOCBal: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.totalBalance = selOCBal.onchainBalance.total;
+      subscribe((selOCBal: OnChainBalance | ApiCallStatusPayload) => {
+        if (selOCBal.hasOwnProperty('total')) {
+          this.totalBalance = (<OnChainBalance>selOCBal).total;
+        } else {
+          this.logger.error(selOCBal);
+        }
       });
   }
 

@@ -46,7 +46,7 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apiCallStatus: ApiCallStatusPayload = null;
+  public apiCallStatus: ApiCallStatusPayload = { status: APICallStatusEnum.COMPLETED };
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -69,27 +69,39 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
 
   ngOnInit() {
     this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[0])).
-      subscribe((selAllChannels: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload }) => {
+      subscribe((allChannelsSelector: ({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus } | ApiCallStatusPayload)) => {
         this.errorMessage = '';
-        this.apiCallStatus = selAllChannels.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+        if (allChannelsSelector.hasOwnProperty('activeChannels')) {
+          this.pendingChannels = (<any>allChannelsSelector).pendingChannels;
+          this.loadChannelsTable();
+          this.logger.info(allChannelsSelector);
+        } else {
+          this.apiCallStatus = <ApiCallStatusPayload>allChannelsSelector;
+          if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+            this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+          }
+          this.logger.error(allChannelsSelector);
         }
-        this.pendingChannels = selAllChannels.pendingChannels;
-        this.loadChannelsTable();
-        this.logger.info(selAllChannels);
       });
     this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[1])).
-      subscribe((nodeInfo: GetInfo) => {
+      subscribe((nodeInfo: any) => {
         this.information = nodeInfo;
       });
     this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
-      subscribe((selPeers: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.numPeers = (selPeers.peers && selPeers.peers.length) ? selPeers.peers.length : 0;
+      subscribe((peersSelector: Peer[] | ApiCallStatusPayload) => {
+        if (Array.isArray(peersSelector)) {
+          this.numPeers = (<Peer[]>peersSelector).length;
+        } else {
+          this.logger.error(peersSelector);
+        }
       });
     this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[3])).
-      subscribe((selOCBal: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.totalBalance = selOCBal.onchainBalance.total;
+      subscribe((selOCBal: OnChainBalance | ApiCallStatusPayload) => {
+        if (selOCBal.hasOwnProperty('total')) {
+          this.totalBalance = (<OnChainBalance>selOCBal).total;
+        } else {
+          this.logger.error(selOCBal);
+        }
       });
   }
 
@@ -122,6 +134,7 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
     this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.channels.filterPredicate = (channel: Channel, fltr: string) => JSON.stringify(channel).toLowerCase().includes(fltr);
     this.channels.paginator = this.paginator;
+    this.applyFilter();
     this.logger.info(this.channels);
   }
 

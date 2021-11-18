@@ -71,7 +71,7 @@ export class CLRoutingPeersComponent implements OnInit, OnChanges, AfterViewInit
           if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
             this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
           }
-          this.successfulEvents = fhSeletor.forwardingHistory ? fhSeletor.forwardingHistory : [];
+          this.successfulEvents = fhSeletor.forwardingHistory || [];
           if (this.successfulEvents.length > 0 && this.sortIn && this.paginatorIn && this.sortOut && this.paginatorOut) {
             this.loadRoutingPeersTable(this.successfulEvents);
           }

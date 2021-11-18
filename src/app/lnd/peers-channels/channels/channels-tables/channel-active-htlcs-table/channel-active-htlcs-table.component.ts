@@ -39,6 +39,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
+  public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
@@ -68,7 +69,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.channelsJSONArr = (channelsSelector.channels && channelsSelector.channels.length > 0) ? channelsSelector.channels.filter((channel) => channel.pending_htlcs && channel.pending_htlcs.length > 0) : [];
+        this.channelsJSONArr = channelsSelector.channels.filter((channel) => channel.pending_htlcs && channel.pending_htlcs.length > 0) || [];
         this.loadHTLCsTable(this.channelsJSONArr);
         this.logger.info(channelsSelector);
       });
@@ -109,8 +110,10 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
     }));
   }
 
-  applyFilter(selFilter: any) {
-    this.channels.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    if (this.selFilter !== '') {
+      this.channels.filter = this.selFilter.trim().toLowerCase();
+    }
   }
 
   loadHTLCsTable(channels: Channel[]) {
@@ -144,6 +147,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
         channel.pending_htlcs.map((htlc) => JSON.stringify(htlc) + (htlc.incoming ? 'yes' : 'no'));
       return newChannel.includes(fltr);
     };
+    this.applyFilter();
   }
 
   onDownloadCSV() {

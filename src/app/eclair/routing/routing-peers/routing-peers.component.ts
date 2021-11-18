@@ -39,7 +39,7 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apiCallStatus: ApiCallStatusPayload = null;
+  public apiCallStatus: ApiCallStatusPayload = { status: APICallStatusEnum.COMPLETED };
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -63,17 +63,21 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   ngOnInit() {
     this.store.select(payments).
       pipe(takeUntil(this.unSubs[0])).
-      subscribe((selPayments: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
+      subscribe((paymentsSelector: Payments | ApiCallStatusPayload) => {
         this.errorMessage = '';
-        this.apiCallStatus = selPayments.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+        if (paymentsSelector.hasOwnProperty('relayed')) {
+          this.routingPeersData = (<Payments>paymentsSelector).relayed || [];
+          if (this.routingPeersData.length > 0 && this.sortIn && this.paginatorIn && this.sortOut && this.paginatorOut) {
+            this.loadRoutingPeersTable(this.routingPeersData);
+          }
+          this.logger.info(paymentsSelector);
+        } else {
+          this.apiCallStatus = <ApiCallStatusPayload>paymentsSelector;
+          if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+            this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+          }
+          this.logger.error(paymentsSelector);
         }
-        this.routingPeersData = selPayments.payments && selPayments.payments.relayed ? selPayments.payments.relayed : [];
-        if (this.routingPeersData.length > 0 && this.sortIn && this.paginatorIn && this.sortOut && this.paginatorOut) {
-          this.loadRoutingPeersTable(this.routingPeersData);
-        }
-        this.logger.info(selPayments);
       });
   }
 

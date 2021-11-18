@@ -38,6 +38,7 @@ export class SwapsComponent implements AfterViewInit, OnChanges, OnDestroy {
   public swapCaption = 'Loop Out';
   public displayedColumns: any[] = [];
   public listSwaps: any;
+  public selFilter = '';
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -73,8 +74,10 @@ export class SwapsComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.loadSwapsTable(this.swapsData);
   }
 
-  applyFilter(selFilter: any) {
-    this.listSwaps.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    if (this.selFilter !== '') {
+      this.listSwaps.filter = this.selFilter.trim().toLowerCase();
+    }
   }
 
   onSwapClick(selSwap: LoopSwapStatus, event: any) {
@@ -110,6 +113,7 @@ export class SwapsComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.listSwaps.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.listSwaps.filterPredicate = (swap: LoopSwapStatus, fltr: string) => JSON.stringify(swap).toLowerCase().includes(fltr);
     this.listSwaps.paginator = this.paginator;
+    this.applyFilter();
     this.logger.info(this.listSwaps);
   }
 

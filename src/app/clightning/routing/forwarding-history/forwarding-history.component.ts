@@ -67,7 +67,7 @@ export class CLForwardingHistoryComponent implements OnInit, OnChanges, AfterVie
           if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
             this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
           }
-          this.successfulEvents = fhSeletor.forwardingHistory ? fhSeletor.forwardingHistory : [];
+          this.successfulEvents = fhSeletor.forwardingHistory || [];
           if (this.successfulEvents.length > 0 && this.sort && this.paginator) {
             this.loadForwardingEventsTable(this.successfulEvents);
           }
