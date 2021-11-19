@@ -1,443 +1,114 @@
-import { Action } from '@ngrx/store';
+import { createAction, props } from '@ngrx/store';
 
+import { CLActions } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Fees, Peer, Payment, PayRequest, QueryRoutes, Channel, FeeRates,
-  ForwardingEvent, Invoice, ListInvoices, OnChain, UTXO } from '../../shared/models/clModels';
-
-export const RESET_CL_STORE = 'RESET_CL_STORE';
-export const UPDATE_API_CALL_STATUS_CL = 'UPDATE_API_CALL_STATUS_CL';
-export const SET_CHILD_NODE_SETTINGS_CL = 'SET_CHILD_NODE_SETTINGS_CL';
-export const FETCH_INFO_CL = 'FETCH_INFO_CL_CL';
-export const SET_INFO_CL = 'SET_INFO_CL';
-export const FETCH_FEES_CL = 'FETCH_FEES_CL';
-export const SET_FEES_CL = 'SET_FEES_CL';
-export const FETCH_FEE_RATES_CL = 'FETCH_FEE_RATES_CL';
-export const SET_FEE_RATES_CL = 'SET_FEE_RATES_CL';
-export const FETCH_BALANCE_CL = 'FETCH_BALANCE_CL';
-export const SET_BALANCE_CL = 'SET_BALANCE_CL';
-export const FETCH_LOCAL_REMOTE_BALANCE_CL = 'FETCH_LOCAL_REMOTE_BALANCE_CL';
-export const SET_LOCAL_REMOTE_BALANCE_CL = 'SET_LOCAL_REMOTE_BALANCE_CL';
-export const GET_NEW_ADDRESS_CL = 'GET_NEW_ADDRESS_CL';
-export const SET_NEW_ADDRESS_CL = 'SET_NEW_ADDRESS_CL';
-export const FETCH_UTXOS_CL = 'FETCH_UTXOS_CL';
-export const SET_UTXOS_CL = 'SET_UTXOS_CL';
-export const FETCH_PEERS_CL = 'FETCH_PEERS_CL';
-export const SET_PEERS_CL = 'SET_PEERS_CL';
-export const SAVE_NEW_PEER_CL = 'SAVE_NEW_PEER_CL';
-export const NEWLY_ADDED_PEER_CL = 'NEWLY_ADDED_PEER_CL';
-export const ADD_PEER_CL = 'ADD_PEER_CL';
-export const DETACH_PEER_CL = 'DETACH_PEER_CL';
-export const REMOVE_PEER_CL = 'REMOVE_PEER_CL';
-export const FETCH_CHANNELS_CL = 'FETCH_CHANNELS_CL';
-export const SET_CHANNELS_CL = 'SET_CHANNELS_CL';
-export const UPDATE_CHANNELS_CL = 'UPDATE_CHANNELS_CL';
-export const SAVE_NEW_CHANNEL_CL = 'SAVE_NEW_CHANNEL_CL';
-export const CLOSE_CHANNEL_CL = 'CLOSE_CHANNEL_CL';
-export const REMOVE_CHANNEL_CL = 'REMOVE_CHANNEL_CL';
-export const FETCH_PAYMENTS_CL = 'FETCH_PAYMENTS_CL';
-export const SET_PAYMENTS_CL = 'SET_PAYMENTS_CL';
-export const DECODE_PAYMENT_CL = 'DECODE_PAYMENT_CL';
-export const SET_DECODED_PAYMENT_CL = 'SET_DECODED_PAYMENT_CL';
-export const SEND_PAYMENT_CL = 'SEND_PAYMENT_CL';
-export const SEND_PAYMENT_STATUS_CL = 'SEND_PAYMENT_STATUS_CL';
-export const GET_QUERY_ROUTES_CL = 'GET_QUERY_ROUTES_CL';
-export const SET_QUERY_ROUTES_CL = 'SET_QUERY_ROUTES_CL';
-export const PEER_LOOKUP_CL = 'PEER_LOOKUP_CL';
-export const CHANNEL_LOOKUP_CL = 'CHANNEL_LOOKUP_CL';
-export const INVOICE_LOOKUP_CL = 'INVOICE_LOOKUP_CL';
-export const SET_LOOKUP_CL = 'SET_LOOKUP_CL';
-export const GET_FORWARDING_HISTORY_CL = 'GET_FORWARDING_HISTORY_CL';
-export const SET_FORWARDING_HISTORY_CL = 'SET_FORWARDING_HISTORY_CL';
-export const GET_FAILED_FORWARDING_HISTORY_CL = 'GET_FAILED_FORWARDING_HISTORY_CL';
-export const SET_FAILED_FORWARDING_HISTORY_CL = 'SET_FAILED_FORWARDING_HISTORY_CL';
-export const FETCH_INVOICES_CL = 'FETCH_INVOICES_CL';
-export const SET_INVOICES_CL = 'SET_INVOICES_CL';
-export const SAVE_NEW_INVOICE_CL = 'SAVE_NEW_INVOICE_CL';
-export const ADD_INVOICE_CL = 'ADD_INVOICE_CL';
-export const UPDATE_INVOICE_CL = 'UPDATE_INVOICE_CL';
-export const DELETE_EXPIRED_INVOICE_CL = 'DELETE_EXPIRED_INVOICE_CL';
-export const SET_CHANNEL_TRANSACTION_CL = 'SET_CHANNEL_TRANSACTION_CL';
-export const SET_CHANNEL_TRANSACTION_RES_CL = 'SET_CHANNEL_TRANSACTION_RES_CL';
+import { GetInfo, Fees, Peer, Payment, PayRequest, QueryRoutes, Channel, FeeRates, ForwardingEvent, Invoice, ListInvoices, OnChain, UTXO, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, DecodePayment, SendPayment, GetQueryRoutes, ChannelLookup } from '../../shared/models/clModels';
 
-export class UpdateAPICallStatus implements Action {
+export const updateCLAPICallStatus = createAction(CLActions.UPDATE_API_CALL_STATUS_CL, props<{ payload: ApiCallStatusPayload }>());
 
-  readonly type = UPDATE_API_CALL_STATUS_CL;
-  constructor(public payload: ApiCallStatusPayload) { }
+export const resetCLStore = createAction(CLActions.RESET_CL_STORE, props<{ payload: SelNodeChild }>());
 
-}
+export const setChildNodeSettingsCL = createAction(CLActions.SET_CHILD_NODE_SETTINGS_CL, props<{ payload: SelNodeChild }>());
 
-export class ResetCLStore implements Action {
+export const fetchInfoCL = createAction(CLActions.FETCH_INFO_CL, props<{ payload: { loadPage: string } }>());
 
-  readonly type = RESET_CL_STORE;
-  constructor(public payload: SelNodeChild) {}
+export const setInfo = createAction(CLActions.SET_INFO_CL, props<{ payload: GetInfo }>());
 
-}
+export const fetchFees = createAction(CLActions.FETCH_FEES_CL);
 
-export class SetChildNodeSettings implements Action {
+export const setFees = createAction(CLActions.SET_FEES_CL, props<{ payload: Fees }>());
 
-  readonly type = SET_CHILD_NODE_SETTINGS_CL;
-  constructor(public payload: SelNodeChild) {}
+export const fetchFeeRates = createAction(CLActions.FETCH_FEE_RATES_CL, props<{ payload: string }>());
 
-}
+export const setFeeRates = createAction(CLActions.SET_FEE_RATES_CL, props<{ payload: FeeRates }>());
 
-export class FetchInfo implements Action {
+export const fetchBalance = createAction(CLActions.FETCH_BALANCE_CL);
 
-  readonly type = FETCH_INFO_CL;
-  constructor(public payload: {loadPage: string}) {}
+export const setBalance = createAction(CLActions.SET_BALANCE_CL, props<{ payload: any }>());
 
-}
+export const fetchLocalRemoteBalance = createAction(CLActions.FETCH_LOCAL_REMOTE_BALANCE_CL);
 
-export class SetInfo implements Action {
+export const setLocalRemoteBalance = createAction(CLActions.SET_LOCAL_REMOTE_BALANCE_CL, props<{ payload: { localBalance: number, remoteBalance: number } }>());
 
-  readonly type = SET_INFO_CL;
-  constructor(public payload: GetInfo) {}
+export const getNewAddress = createAction(CLActions.GET_NEW_ADDRESS_CL, props<{ payload: GetNewAddress }>());
 
-}
+export const setNewAddress = createAction(CLActions.SET_NEW_ADDRESS_CL, props<{ payload: string }>());
 
-export class FetchFees implements Action {
+export const fetchPeers = createAction(CLActions.FETCH_PEERS_CL);
 
-  readonly type = FETCH_FEES_CL;
+export const setPeers = createAction(CLActions.SET_PEERS_CL, props<{ payload: Peer[] }>());
 
-}
+export const saveNewPeer = createAction(CLActions.SAVE_NEW_PEER_CL, props<{ payload: { id: string } }>());
 
-export class SetFees implements Action {
+export const newlyAddedPeer = createAction(CLActions.NEWLY_ADDED_PEER_CL, props<{ payload: { peer: Peer, balance: number } }>());
 
-  readonly type = SET_FEES_CL;
-  constructor(public payload: Fees) {}
+export const addPeer = createAction(CLActions.ADD_PEER_CL, props<{ payload: Peer }>());
 
-}
+export const detachPeer = createAction(CLActions.DETACH_PEER_CL, props<{ payload: DetachPeer }>());
 
-export class FetchFeeRates implements Action {
+export const removePeer = createAction(CLActions.REMOVE_PEER_CL, props<{ payload: { id: string } }>());
 
-  readonly type = FETCH_FEE_RATES_CL;
-  constructor(public payload: string) {} // FeeRateStyle
+export const fetchPayments = createAction(CLActions.FETCH_PAYMENTS_CL);
 
-}
+export const setPayments = createAction(CLActions.SET_PAYMENTS_CL, props<{ payload: Payment[] }>());
 
-export class SetFeeRates implements Action {
+export const decodePayment = createAction(CLActions.DECODE_PAYMENT_CL, props<{ payload: DecodePayment }>());
 
-  readonly type = SET_FEE_RATES_CL;
-  constructor(public payload: FeeRates) {}
+export const setDecodedPayment = createAction(CLActions.SET_DECODED_PAYMENT_CL, props<{ payload: PayRequest }>());
 
-}
+export const sendPayment = createAction(CLActions.SEND_PAYMENT_CL, props<{ payload: SendPayment }>());
 
-export class FetchBalance implements Action {
+export const sendPaymentStatus = createAction(CLActions.SEND_PAYMENT_STATUS_CL, props<{ payload: any }>());
 
-  readonly type = FETCH_BALANCE_CL;
+export const getQueryRoutes = createAction(CLActions.GET_QUERY_ROUTES_CL, props<{ payload: GetQueryRoutes }>());
 
-}
+export const setQueryRoutes = createAction(CLActions.SET_QUERY_ROUTES_CL, props<{ payload: QueryRoutes }>());
 
-export class SetBalance implements Action {
+export const fetchChannels = createAction(CLActions.FETCH_CHANNELS_CL);
 
-  readonly type = SET_BALANCE_CL;
-  constructor(public payload: {}) {}
+export const setChannels = createAction(CLActions.SET_CHANNELS_CL, props<{ payload: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[] } }>());
 
-}
+export const updateChannel = createAction(CLActions.UPDATE_CHANNEL_CL, props<{ payload: UpdateChannel }>());
 
-export class FetchLocalRemoteBalance implements Action {
+export const saveNewChannel = createAction(CLActions.SAVE_NEW_CHANNEL_CL, props<{ payload: SaveChannel }>());
 
-  readonly type = FETCH_LOCAL_REMOTE_BALANCE_CL;
+export const closeChannel = createAction(CLActions.CLOSE_CHANNEL_CL, props<{ payload: CloseChannel }>());
 
-}
+export const removeChannel = createAction(CLActions.REMOVE_CHANNEL_CL, props<{ payload: CloseChannel }>());
 
-export class SetLocalRemoteBalance implements Action {
+export const peerLookup = createAction(CLActions.PEER_LOOKUP_CL, props<{ payload: string }>());
 
-  readonly type = SET_LOCAL_REMOTE_BALANCE_CL;
-  constructor(public payload: {localBalance: number, remoteBalance: number}) {}
+export const channelLookup = createAction(CLActions.CHANNEL_LOOKUP_CL, props<{ payload: ChannelLookup }>());
 
-}
+export const invoiceLookup = createAction(CLActions.INVOICE_LOOKUP_CL, props<{ payload: string }>());
 
-export class GetNewAddress implements Action {
+export const setLookup = createAction(CLActions.SET_LOOKUP_CL, props<{ payload: any }>());
 
-  readonly type = GET_NEW_ADDRESS_CL;
-  constructor(public payload: { addressId?: string, addressCode?: string, addressTp?: string, addressDetails?: string}) {}
+export const getForwardingHistory = createAction(CLActions.GET_FORWARDING_HISTORY_CL, props<{ payload: { status: string } }>());
 
-}
+export const setForwardingHistory = createAction(CLActions.SET_FORWARDING_HISTORY_CL, props<{ payload: ForwardingEvent[] }>());
 
-export class SetNewAddress implements Action {
+export const getFailedForwardingHistory = createAction(CLActions.GET_FAILED_FORWARDING_HISTORY_CL);
 
-  readonly type = SET_NEW_ADDRESS_CL;
-  constructor(public payload: string) {} // Payload = newAddress
+export const setFailedForwardingHistory = createAction(CLActions.SET_FAILED_FORWARDING_HISTORY_CL, props<{ payload: ForwardingEvent[] }>());
 
-}
+export const fetchInvoices = createAction(CLActions.FETCH_INVOICES_CL, props<{ payload: { num_max_invoices?: number, index_offset?: number, reversed?: boolean } }>());
 
-export class FetchPeers implements Action {
+export const setInvoices = createAction(CLActions.SET_INVOICES_CL, props<{ payload: ListInvoices }>());
 
-  readonly type = FETCH_PEERS_CL;
+export const saveNewInvoice = createAction(CLActions.SAVE_NEW_INVOICE_CL, props<{ payload: { amount: number, label: string, description: string, expiry: number, private: boolean } }>());
 
-}
+export const addInvoice = createAction(CLActions.ADD_INVOICE_CL, props<{ payload: Invoice }>());
 
-export class SetPeers implements Action {
+export const updateInvoice = createAction(CLActions.UPDATE_INVOICE_CL, props<{ payload: Invoice }>());
 
-  readonly type = SET_PEERS_CL;
-  constructor(public payload: Peer[]) {}
+export const deleteExpiredInvoice = createAction(CLActions.DELETE_EXPIRED_INVOICE_CL, props<{ payload?: number }>());
 
-}
+export const setChannelTransaction = createAction(CLActions.SET_CHANNEL_TRANSACTION_CL, props<{ payload: OnChain }>());
 
-export class SaveNewPeer implements Action {
+export const setChannelTransactionRes = createAction(CLActions.SET_CHANNEL_TRANSACTION_RES_CL, props<{ payload: any }>());
 
-  readonly type = SAVE_NEW_PEER_CL;
-  constructor(public payload: {id: string}) {}
+export const fetchUTXOs = createAction(CLActions.FETCH_UTXOS_CL);
 
-}
-
-export class NewlyAddedPeer implements Action {
-
-  readonly type = NEWLY_ADDED_PEER_CL;
-  constructor(public payload: { peer: Peer, balance: number}) {}
-
-}
-
-export class AddPeer implements Action {
-
-  readonly type = ADD_PEER_CL;
-  constructor(public payload: Peer) {}
-
-}
-
-export class DetachPeer implements Action {
-
-  readonly type = DETACH_PEER_CL;
-  constructor(public payload: {id: string, force: boolean}) {}
-
-}
-
-export class RemovePeer implements Action {
-
-  readonly type = REMOVE_PEER_CL;
-  constructor(public payload: {id: string}) {}
-
-}
-
-export class FetchPayments implements Action {
-
-  readonly type = FETCH_PAYMENTS_CL;
-
-}
-
-export class SetPayments implements Action {
-
-  readonly type = SET_PAYMENTS_CL;
-  constructor(public payload: Payment[]) {}
-
-}
-
-export class DecodePayment implements Action {
-
-  readonly type = DECODE_PAYMENT_CL;
-  constructor(public payload: {routeParam: string, fromDialog: boolean}) {} // Payload = routeParam
-
-}
-
-export class SetDecodedPayment implements Action {
-
-  readonly type = SET_DECODED_PAYMENT_CL;
-  constructor(public payload: PayRequest) {}
-
-}
-
-export class SendPayment implements Action {
-
-  readonly type = SEND_PAYMENT_CL;
-  constructor(public payload: {uiMessage: string, fromDialog: boolean, invoice?: string, amount?: number, pubkey?: string}) {}
-
-}
-
-export class SendPaymentStatus implements Action {
-
-  readonly type = SEND_PAYMENT_STATUS_CL;
-  constructor(public payload: any) {}
-
-}
-
-export class GetQueryRoutes implements Action {
-
-  readonly type = GET_QUERY_ROUTES_CL;
-  constructor(public payload: {destPubkey: string, amount: number}) {}
-
-}
-
-export class SetQueryRoutes implements Action {
-
-  readonly type = SET_QUERY_ROUTES_CL;
-  constructor(public payload: QueryRoutes) {}
-
-}
-
-export class FetchChannels implements Action {
-
-  readonly type = FETCH_CHANNELS_CL;
-
-}
-
-export class SetChannels implements Action {
-
-  readonly type = SET_CHANNELS_CL;
-  constructor(public payload: Channel[]) {}
-
-}
-
-export class UpdateChannels implements Action {
-
-  readonly type = UPDATE_CHANNELS_CL;
-  constructor(public payload: {channelId: string, baseFeeMsat: number, feeRate: number}) {}
-
-}
-
-export class SaveNewChannel implements Action {
-
-  readonly type = SAVE_NEW_CHANNEL_CL;
-  constructor(public payload: {peerId: string, satoshis: string, announce: boolean, feeRate?: string, minconf?: number, utxos?: string[]}) {}
-
-}
-
-export class CloseChannel implements Action {
-
-  readonly type = CLOSE_CHANNEL_CL;
-  constructor(public payload: {channelId: string, force: boolean}) {}
-
-}
-
-export class RemoveChannel implements Action {
-
-  readonly type = REMOVE_CHANNEL_CL;
-  constructor(public payload: {channelId: string}) {}
-
-}
-
-export class PeerLookup implements Action {
-
-  readonly type = PEER_LOOKUP_CL;
-  constructor(public payload: string) {} // Payload = id
-
-}
-
-export class ChannelLookup implements Action {
-
-  readonly type = CHANNEL_LOOKUP_CL;
-  constructor(public payload: {uiMessage: string, shortChannelID: string, showError: boolean}) {}
-
-}
-
-export class InvoiceLookup implements Action {
-
-  readonly type = INVOICE_LOOKUP_CL;
-  constructor(public payload: string) {} // Payload = rHashStr
-
-}
-
-export class SetLookup implements Action {
-
-  readonly type = SET_LOOKUP_CL;
-  constructor(public payload: any) {} // Payload = lookup Response (Peer/Channel/Invoice)
-
-}
-
-export class GetForwardingHistory implements Action {
-
-  readonly type = GET_FORWARDING_HISTORY_CL;
-  constructor(public payload: { status: string }) {}
-
-}
-
-export class SetForwardingHistory implements Action {
-
-  readonly type = SET_FORWARDING_HISTORY_CL;
-  constructor(public payload: ForwardingEvent[]) {}
-
-}
-
-export class GetFailedForwardingHistory implements Action {
-
-  readonly type = GET_FAILED_FORWARDING_HISTORY_CL;
-
-}
-
-export class SetFailedForwardingHistory implements Action {
-
-  readonly type = SET_FAILED_FORWARDING_HISTORY_CL;
-  constructor(public payload: ForwardingEvent[]) {}
-
-}
-
-export class FetchInvoices implements Action {
-
-  readonly type = FETCH_INVOICES_CL;
-  constructor(public payload: {num_max_invoices?: number, index_offset?: number, reversed?: boolean}) {}
-
-}
-
-export class SetInvoices implements Action {
-
-  readonly type = SET_INVOICES_CL;
-  constructor(public payload: ListInvoices) {}
-
-}
-
-export class SaveNewInvoice implements Action {
-
-  readonly type = SAVE_NEW_INVOICE_CL;
-  constructor(public payload: {amount: number, label: string, description: string, expiry: number, private: boolean}) {}
-
-}
-
-export class AddInvoice implements Action {
-
-  readonly type = ADD_INVOICE_CL;
-  constructor(public payload: Invoice) {}
-
-}
-
-export class UpdateInvoice implements Action {
-
-  readonly type = UPDATE_INVOICE_CL;
-  constructor(public payload: Invoice) {}
-
-}
-
-export class DeleteExpiredInvoice implements Action {
-
-  readonly type = DELETE_EXPIRED_INVOICE_CL;
-  constructor(public payload?: number) {} // Maxexpiry
-
-}
-
-export class SetChannelTransaction implements Action {
-
-  readonly type = SET_CHANNEL_TRANSACTION_CL;
-  constructor(public payload: OnChain) {}
-
-}
-
-export class SetChannelTransactionRes implements Action {
-
-  readonly type = SET_CHANNEL_TRANSACTION_RES_CL;
-  constructor(public payload: any) {}
-
-}
-
-export class FetchUTXOs implements Action {
-
-  readonly type = FETCH_UTXOS_CL;
-
-}
-
-export class SetUTXOs implements Action {
-
-  readonly type = SET_UTXOS_CL;
-  constructor(public payload: UTXO[]) {}
-
-}
-
-export type CLActions = UpdateAPICallStatus | ResetCLStore |
-SetChildNodeSettings | FetchInfo | SetInfo | FetchFees | SetFees | FetchFeeRates | SetFeeRates |
-FetchBalance | SetBalance | FetchLocalRemoteBalance | SetLocalRemoteBalance |
-GetNewAddress | SetNewAddress | FetchUTXOs | SetUTXOs |
-FetchPeers | SetPeers | AddPeer | DetachPeer | SaveNewPeer | RemovePeer | NewlyAddedPeer |
-FetchChannels | SetChannels | UpdateChannels | SaveNewChannel | CloseChannel | RemoveChannel |
-FetchPayments | SetPayments | SendPayment | SendPaymentStatus | DecodePayment | SetDecodedPayment |
-GetQueryRoutes | SetQueryRoutes | SetChannelTransaction | SetChannelTransactionRes |
-PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
-GetForwardingHistory | SetForwardingHistory | GetFailedForwardingHistory | SetFailedForwardingHistory |
-FetchInvoices | SetInvoices | SaveNewInvoice | AddInvoice | UpdateInvoice | DeleteExpiredInvoice;
+export const setUTXOs = createAction(CLActions.SET_UTXOS_CL, props<{ payload: UTXO[] }>());

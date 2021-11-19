@@ -7,18 +7,19 @@ import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Peer, GetInfo } from '../../../shared/models/lndModels';
+import { Peer, GetInfo, BlockchainBalance } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
-import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { OpenChannelComponent } from '../channels/open-channel-modal/open-channel.component';
 import { ConnectPeerComponent } from '../connect-peer/connect-peer.component';
 
 import { RTLEffects } from '../../../store/rtl.effects';
-import * as LNDActions from '../../store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openAlert, openConfirmation } from '../../../store/rtl.actions';
+import { detachPeer } from '../../store/lnd.actions';
+import { blockchainBalance, lndNodeInformation, peers } from '../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-peers',
@@ -30,8 +31,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public availableBalance = 0;
   public faUsers = faUsers;
   public displayedColumns: any[] = [];
@@ -44,11 +45,12 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListLND = null;
+  public selFilter = '';
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -66,21 +68,23 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[0])).subscribe((nodeInfo: GetInfo) => { this.information = nodeInfo; });
+    this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[1])).
+      subscribe((bcBalanceSelector: { blockchainBalance: BlockchainBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.availableBalance = bcBalanceSelector.blockchainBalance.total_balance || 0;
+      });
+    this.store.select(peers).pipe(takeUntil(this.unSubs[0])).
+      subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchPeers.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchPeers.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPeers.message) : this.apisCallStatus.FetchPeers.message;
+        this.apiCallStatus = peersSelector.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.information = rtlStore.information;
-        this.availableBalance = rtlStore.blockchainBalance.total_balance || 0;
-        this.peersData = rtlStore.peers;
+        this.peersData = peersSelector.peers;
         if (this.peersData.length > 0) {
           this.loadPeersTable(this.peersData);
         }
-        this.logger.info(rtlStore);
+        this.logger.info(peersSelector);
       });
   }
 
@@ -98,20 +102,28 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
       [{ key: 'sat_sent', value: selPeer.sat_sent, title: 'Satoshis Sent', width: 50, type: DataTypeEnum.NUMBER }, { key: 'sat_recv', value: selPeer.sat_recv, title: 'Satoshis Received', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'bytes_sent', value: selPeer.bytes_sent, title: 'Bytes Sent', width: 50, type: DataTypeEnum.NUMBER }, { key: 'bytes_recv', value: selPeer.bytes_recv, title: 'Bytes Received', width: 50, type: DataTypeEnum.NUMBER }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Peer Information',
-      showQRName: 'Public Key',
-      showQRField: selPeer.pub_key,
-      message: reorderedPeer
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Peer Information',
+          showQRName: 'Public Key',
+          showQRField: selPeer.pub_key,
+          message: reorderedPeer
+        }
+      }
+    }));
   }
 
   onConnectPeer() {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      message: { peer: null, information: this.information, balance: this.availableBalance },
-      component: ConnectPeerComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          message: { peer: null, information: this.information, balance: this.availableBalance },
+          component: ConnectPeerComponent
+        }
+      }
+    }));
   }
 
   onOpenChannel(peerToAddChannel: Peer) {
@@ -120,33 +132,43 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
       information: this.information,
       balance: this.availableBalance
     };
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      alertTitle: 'Open Channel',
-      message: peerToAddChannelMessage,
-      component: OpenChannelComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          alertTitle: 'Open Channel',
+          message: peerToAddChannelMessage,
+          component: OpenChannelComponent
+        }
+      }
+    }));
   }
 
   onPeerDetach(peerToDetach: Peer) {
     const msg = 'Disconnect peer: ' + ((peerToDetach.alias) ? peerToDetach.alias : peerToDetach.pub_key);
-    this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-      type: AlertTypeEnum.CONFIRM,
-      alertTitle: 'Disconnect Peer',
-      titleMessage: msg,
-      noBtnText: 'Cancel',
-      yesBtnText: 'Disconnect'
-    } }));
+    this.store.dispatch(openConfirmation({
+      payload: {
+        data: {
+          type: AlertTypeEnum.CONFIRM,
+          alertTitle: 'Disconnect Peer',
+          titleMessage: msg,
+          noBtnText: 'Cancel',
+          yesBtnText: 'Disconnect'
+        }
+      }
+    }));
     this.rtlEffects.closeConfirm.
       pipe(takeUntil(this.unSubs[3])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.store.dispatch(new LNDActions.DetachPeer({ pubkey: peerToDetach.pub_key }));
+          this.store.dispatch(detachPeer({ payload: { pubkey: peerToDetach.pub_key } }));
         }
       });
   }
 
-  applyFilter(selFilter: any) {
-    this.peers.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    if (this.selFilter !== '') {
+      this.peers.filter = this.selFilter.trim().toLowerCase();
+    }
   }
 
   loadPeersTable(peers: Peer[]) {
@@ -155,6 +177,7 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.peers.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.peers.filterPredicate = (peer: Peer, fltr: string) => JSON.stringify(peer).toLowerCase().includes(fltr);
     this.peers.paginator = this.paginator;
+    this.applyFilter();
   }
 
   onDownloadCSV() {

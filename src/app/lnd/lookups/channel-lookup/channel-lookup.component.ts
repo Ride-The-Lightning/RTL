@@ -3,8 +3,9 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { ChannelEdge } from '../../../shared/models/lndModels';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { ChannelEdge, GetInfo } from '../../../shared/models/lndModels';
+import { RTLState } from '../../../store/rtl.state';
+import { lndNodeInformation } from '../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-channel-lookup',
@@ -18,19 +19,17 @@ export class ChannelLookupComponent implements OnInit {
   public node2_match = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>) { }
+  constructor(private store: Store<RTLState>) { }
 
   ngOnInit() {
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        if (this.lookupResult.node1_pub === rtlStore.information.identity_pubkey) {
-          this.node1_match = true;
-        }
-        if (this.lookupResult.node2_pub === rtlStore.information.identity_pubkey) {
-          this.node2_match = true;
-        }
-      });
+    this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[0])).subscribe((nodeInfo: GetInfo) => {
+      if (this.lookupResult.node1_pub === nodeInfo.identity_pubkey) {
+        this.node1_match = true;
+      }
+      if (this.lookupResult.node2_pub === nodeInfo.identity_pubkey) {
+        this.node2_match = true;
+      }
+    });
   }
 
 }

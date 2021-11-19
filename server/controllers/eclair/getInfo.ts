@@ -2,11 +2,15 @@ import request from 'request-promise';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { ECLWSClient, ECLWebSocketClient } from './webSocketClient.js';
+import { CLWSClient, CLWebSocketClient } from '../c-lightning/webSocketClient.js';
+// import { LNDWSClient, LNDWebSocketClient } from '../lnd/webSocketClient.js';
 
 let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
 const eclWsClient: ECLWebSocketClient = ECLWSClient;
+const clWsClient: CLWebSocketClient = CLWSClient;
+// const lndWsClient: LNDWebSocketClient = LNDWSClient;
 
 export const getInfo = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Getting Eclair Node Information..' });
@@ -15,6 +19,8 @@ export const getInfo = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   eclWsClient.connect(req.session.selectedNode);
+  clWsClient.disconnect();
+  // lndWsClient.disconnect();
   options.url = req.session.selectedNode.ln_server_url + '/getinfo';
   options.form = {};
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'GetInfo', msg: 'Selected Node', data: req.session.selectedNode.ln_node });

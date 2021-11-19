@@ -8,11 +8,12 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { ForwardingEvent, RoutingPeer } from '../../../shared/models/clModels';
-import { ApiCallsListCL } from '../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { forwardingHistory } from '../../store/cl.selector';
 
 @Component({
   selector: 'rtl-cl-routing-peers',
@@ -26,8 +27,8 @@ export class CLRoutingPeersComponent implements OnInit, OnChanges, AfterViewInit
 
   @ViewChild('tableIn', { read: MatSort, static: false }) sortIn: MatSort;
   @ViewChild('tableOut', { read: MatSort, static: false }) sortOut: MatSort;
-  @ViewChild('paginatorIn', { static: false }) paginatorIn: MatPaginator|undefined;
-  @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator|undefined;
+  @ViewChild('paginatorIn', { static: false }) paginatorIn: MatPaginator | undefined;
+  @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator | undefined;
   @Input() eventsData = [];
   @Input() filterValue = '';
   public successfulEvents = [];
@@ -40,11 +41,11 @@ export class CLRoutingPeersComponent implements OnInit, OnChanges, AfterViewInit
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListCL = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -62,20 +63,19 @@ export class CLRoutingPeersComponent implements OnInit, OnChanges, AfterViewInit
   }
 
   ngOnInit() {
-    this.store.select('cl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[0])).
+      subscribe((fhSeletor: { forwardingHistory: ForwardingEvent[], apiCallStatus: ApiCallStatusPayload }) => {
         if (this.eventsData.length <= 0) {
           this.errorMessage = '';
-          this.apisCallStatus = rtlStore.apisCallStatus;
-          if (this.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
-            this.errorMessage = (typeof (this.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(this.apisCallStatus.GetForwardingHistory.message) : this.apisCallStatus.GetForwardingHistory.message;
+          this.apiCallStatus = fhSeletor.apiCallStatus;
+          if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+            this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
           }
-          this.successfulEvents = rtlStore.forwardingHistory ? rtlStore.forwardingHistory : [];
+          this.successfulEvents = fhSeletor.forwardingHistory || [];
           if (this.successfulEvents.length > 0 && this.sortIn && this.paginatorIn && this.sortOut && this.paginatorOut) {
             this.loadRoutingPeersTable(this.successfulEvents);
           }
-          this.logger.info(rtlStore);
+          this.logger.info(fhSeletor);
         }
       });
   }
@@ -88,6 +88,7 @@ export class CLRoutingPeersComponent implements OnInit, OnChanges, AfterViewInit
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.eventsData) {
+      this.apiCallStatus = { status: APICallStatusEnum.COMPLETED, action: 'FetchForwardingHistory' };
       this.eventsData = changes.eventsData.currentValue;
       this.successfulEvents = this.eventsData;
       if (!changes.eventsData.firstChange) {

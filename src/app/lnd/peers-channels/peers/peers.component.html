@@ -9,11 +9,11 @@
         <span class="page-title">Connected Peers</span>
       </div>
       <mat-form-field fxFlex="30" fxLayoutAlign="start end">
-        <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
+        <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" placeholder="Filter">
       </mat-form-field>
     </div>
     <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
-      <mat-progress-bar *ngIf="apisCallStatus?.FetchPeers.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+      <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table [dataSource]="peers" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="alias">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Alias </th>
@@ -60,9 +60,9 @@
           </ng-container>
           <ng-container matColumnDef="no_peer">
             <td mat-footer-cell *matFooterCellDef colspan="4">
-              <p *ngIf="(!peers?.data || peers.data?.length<1) && apisCallStatus?.FetchPeers.status === apiCallStatusEnum.COMPLETED">No connected peer.</p>
-              <p *ngIf="(!peers?.data || peers.data?.length<1) && apisCallStatus?.FetchPeers.status === apiCallStatusEnum.INITIATED">Getting peers...</p>
-              <p *ngIf="(!peers?.data || peers.data?.length<1) && apisCallStatus?.FetchPeers.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+              <p *ngIf="(!peers?.data || peers.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No connected peer.</p>
+              <p *ngIf="(!peers?.data || peers.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting peers...</p>
+              <p *ngIf="(!peers?.data || peers.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
             </td>
           </ng-container>
           <tr mat-footer-row *matFooterRowDef="['no_peer']" [ngClass]="{'display-none': peers?.data && peers?.data?.length>0}"></tr>

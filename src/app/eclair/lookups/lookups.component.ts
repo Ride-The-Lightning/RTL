@@ -6,13 +6,13 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
-import { APICallStatusEnum, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, ECLActions, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
 import { CommonService } from '../../shared/services/common.service';
 import { LookupNode } from '../../shared/models/eclModels';
 import { LoggerService } from '../../shared/services/logger.service';
 
-import * as ECLActions from '../store/ecl.actions';
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import { RTLState } from '../../store/rtl.state';
+import { peerLookup } from '../store/ecl.actions';
 
 @Component({
   selector: 'rtl-ecl-lookups',
@@ -40,7 +40,7 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private actions: Actions) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -48,15 +48,15 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
     this.actions.pipe(
       takeUntil(this.unSubs[0]),
       filter((action) => (action.type === ECLActions.SET_LOOKUP_ECL || action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL))).
-      subscribe((resLookup: ECLActions.SetLookup | ECLActions.UpdateAPICallStatus) => {
+      subscribe((resLookup: any) => {
         if (resLookup.type === ECLActions.SET_LOOKUP_ECL) {
           this.flgLoading[0] = true;
           switch (this.selectedFieldId) {
             case 0:
-              this.nodeLookupValue = resLookup.payload[0] ? JSON.parse(JSON.stringify(resLookup.payload[0])) : { nodeid: '' };
+              this.nodeLookupValue = JSON.parse(JSON.stringify(resLookup.payload[0])) || { nodeid: '' };
               break;
             case 1:
-              this.channelLookupValue = resLookup.payload ? JSON.parse(JSON.stringify(resLookup.payload)) : [];
+              this.channelLookupValue = JSON.parse(JSON.stringify(resLookup.payload)) || [];
               break;
             default:
               break;
@@ -76,7 +76,7 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
     });
   }
 
-  onLookup(): boolean|void {
+  onLookup(): boolean | void {
     if (!this.lookupKeyCtrl.value) {
       this.lookupKeyCtrl.setErrors({ required: true });
       return true;
@@ -92,10 +92,10 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
       this.channelLookupValue = [];
       switch (this.selectedFieldId) {
         case 0:
-          this.store.dispatch(new ECLActions.PeerLookup(this.lookupKeyCtrl.value.trim()));
+          this.store.dispatch(peerLookup({ payload: this.lookupKeyCtrl.value.trim() }));
           break;
         case 1:
-        // This.store.dispatch(new ECLActions.ChannelLookup({shortChannelID: this.lookupKey.trim(), showError: false}));
+          // this.store.dispatch(channelLookup({ payload: {shortChannelID: this.lookupKey.trim(), showError: false} }));
           break;
         default:
           break;

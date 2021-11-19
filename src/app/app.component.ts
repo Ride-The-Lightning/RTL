@@ -12,12 +12,13 @@ import * as sha256 from 'sha256';
 import { LoggerService } from './shared/services/logger.service';
 import { CommonService } from './shared/services/common.service';
 import { SessionService } from './shared/services/session.service';
-import { AlertTypeEnum, ScreenSizeEnum } from './shared/services/consts-enums-functions';
-import { RTLConfiguration, Settings, ConfigSettingsNode, GetInfoRoot } from './shared/models/RTLconfig';
+import { AlertTypeEnum, RTLActions, ScreenSizeEnum } from './shared/services/consts-enums-functions';
+import { rootAppConfig, rootNodeData, rootSelectedNode } from './store/rtl.selector';
+import { RTLConfiguration, Settings, GetInfoRoot } from './shared/models/RTLconfig';
+import { closeAllDialogs, fetchRTLConfig, login, logout, openAlert } from './store/rtl.actions';
 import { routeAnimation } from './shared/animation/route-animation';
 
-import * as RTLActions from './store/rtl.actions';
-import * as fromRTLReducer from './store/rtl.reducers';
+import { RTLState } from './store/rtl.state';
 
 @Component({
   selector: 'rtl-app',
@@ -29,7 +30,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('sideNavigation', { static: false }) sideNavigation: any;
   @ViewChild('sideNavContent', { static: false }) sideNavContent: any;
-  public selNode: ConfigSettingsNode;
   public settings: Settings;
   public information: GetInfoRoot = {};
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: Info
@@ -41,10 +41,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   public smallScreen = false;
   public flgSidenavPinned = true;
   public flgLoggedIn = false;
-  unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(
-    private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions,
+    private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private actions: Actions,
     private userIdle: UserIdleService, private router: Router, private sessionService: SessionService, private breakpointObserver: BreakpointObserver, private renderer: Renderer2
   ) { }
 
@@ -75,39 +75,38 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           this.smallScreen = false;
         }
       });
-    this.store.dispatch(new RTLActions.FetchRTLConfig());
+    this.store.dispatch(fetchRTLConfig());
     this.accessKey = this.readAccessKey();
-    this.store.select('root').
-      pipe(takeUntil(this.unSubs[1])).
-      subscribe((rtlStore) => {
-        this.selNode = rtlStore.selNode;
-        this.settings = this.selNode.settings;
-        this.appConfig = rtlStore.appConfig;
-        this.information = rtlStore.nodeData;
-        this.flgLoading[0] = !(this.information.identity_pubkey);
-        this.logger.info(this.settings);
-        if (!this.sessionService.getItem('token')) {
-          this.flgLoggedIn = false;
-          this.flgLoading[0] = false;
-        } else {
-          this.flgLoggedIn = true;
-          this.userIdle.startWatching();
-        }
-      });
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).subscribe((selNode) => {
+      this.settings = selNode.settings;
+      if (!this.sessionService.getItem('token')) {
+        this.flgLoggedIn = false;
+        this.flgLoading[0] = false;
+      } else {
+        this.flgLoggedIn = true;
+        this.userIdle.startWatching();
+      }
+    });
+    this.store.select(rootAppConfig).pipe(takeUntil(this.unSubs[2])).subscribe((appConfig) => { this.appConfig = appConfig; });
+    this.store.select(rootNodeData).pipe(takeUntil(this.unSubs[3])).subscribe((nodeData) => {
+      this.information = nodeData;
+      this.flgLoading[0] = !(this.information.identity_pubkey);
+      this.logger.info(this.information);
+    });
     if (this.sessionService.getItem('defaultPassword') === 'true') {
       this.flgSideNavOpened = false;
     }
     this.actions.pipe(
-      takeUntil(this.unSubs[2]),
+      takeUntil(this.unSubs[4]),
       filter((action) => action.type === RTLActions.SET_RTL_CONFIG || action.type === RTLActions.LOGOUT)).
-      subscribe((action: (RTLActions.SetRTLConfig | RTLActions.Logout)) => {
+      subscribe((action: (any)) => {
         if (action.type === RTLActions.SET_RTL_CONFIG) {
           if (!this.sessionService.getItem('token')) {
             if (+action.payload.sso.rtlSSO) {
               if (!this.accessKey || this.accessKey.trim().length < 32) {
                 this.router.navigate(['./error'], { state: { errorCode: '406', errorMessage: 'Access key too short. It should be at least 32 characters long.' } });
               } else {
-                this.store.dispatch(new RTLActions.Login({ password: sha256(this.accessKey), defaultPassword: false }));
+                this.store.dispatch(login({ payload: { password: sha256(this.accessKey), defaultPassword: false } }));
               }
             } else {
               this.router.navigate(['./login']);
@@ -120,23 +119,25 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           this.userIdle.stopTimer();
         }
       });
-    this.userIdle.onTimerStart().pipe(takeUntil(this.unSubs[3])).subscribe((count) => {
+    this.userIdle.onTimerStart().pipe(takeUntil(this.unSubs[5])).subscribe((count) => {
       this.logger.info('Counting Down: ' + (11 - count));
     });
-    this.userIdle.onTimeout().pipe(takeUntil(this.unSubs[4])).subscribe(() => {
+    this.userIdle.onTimeout().pipe(takeUntil(this.unSubs[6])).subscribe(() => {
       this.logger.info('Time Out!');
       if (this.sessionService.getItem('token')) {
         this.flgLoggedIn = false;
         this.logger.warn('Time limit exceeded for session inactivity.');
-        this.store.dispatch(new RTLActions.CloseAllDialogs());
-        this.store.dispatch(new RTLActions.OpenAlert({
-          data: {
-            type: AlertTypeEnum.WARNING,
-            alertTitle: 'Logging out',
-            titleMessage: 'Time limit exceeded for session inactivity.'
+        this.store.dispatch(closeAllDialogs());
+        this.store.dispatch(openAlert({
+          payload: {
+            data: {
+              type: AlertTypeEnum.WARNING,
+              alertTitle: 'Logging out',
+              titleMessage: 'Time limit exceeded for session inactivity.'
+            }
           }
         }));
-        this.store.dispatch(new RTLActions.Logout());
+        this.store.dispatch(logout());
       }
     });
     if (this.sessionService.getItem('defaultPassword') === 'true') {

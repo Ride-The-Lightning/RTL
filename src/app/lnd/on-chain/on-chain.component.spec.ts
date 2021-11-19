@@ -9,7 +9,10 @@ import { mockDataService, mockLoggerService, mockRTLEffects } from '../../shared
 import { SharedModule } from '../../shared/shared.module';
 import { RTLEffects } from '../../store/rtl.effects';
 
-import { RTLReducer } from '../../store/rtl.reducers';
+import { RootReducer } from '../../store/rtl.reducers';
+import { LNDReducer } from '../../lnd/store/lnd.reducers';
+import { CLReducer } from '../../clightning/store/cl.reducers';
+import { ECLReducer } from '../../eclair/store/ecl.reducers';
 import { OnChainComponent } from './on-chain.component';
 import { OnChainTransactionHistoryComponent } from './utxo-tables/on-chain-transaction-history/on-chain-transaction-history.component';
 import { UTXOTablesComponent } from './utxo-tables/utxo-tables.component';
@@ -26,12 +29,7 @@ describe('OnChainComponent', () => {
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
-        StoreModule.forRoot(RTLReducer, {
-          runtimeChecks: {
-            strictStateImmutability: false,
-            strictActionImmutability: false
-          }
-        })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
       ],
       providers: [
         CommonService,

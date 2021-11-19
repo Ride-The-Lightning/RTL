@@ -1,241 +1,249 @@
-import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Channel, Fees, OnChainBalance, LightningBalance, Peer, ChannelsStatus, Payments, Transaction, Invoice, PaymentReceived } from '../../shared/models/eclModels';
-import { ApiCallsListECL } from '../../shared/models/apiCallsPayload';
-import { APICallStatusEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
-import * as ECLActions from './ecl.actions';
+import { createReducer, on } from '@ngrx/store';
 
-export interface ECLState {
-  apisCallStatus: ApiCallsListECL;
-  nodeSettings: SelNodeChild;
-  information: GetInfo;
-  fees: Fees;
-  activeChannels: Channel[];
-  pendingChannels: Channel[];
-  inactiveChannels: Channel[];
-  channelsStatus: ChannelsStatus;
-  onchainBalance: OnChainBalance;
-  lightningBalance: LightningBalance;
-  peers: Peer[];
-  payments: Payments;
-  transactions: Transaction[];
-  invoices: Invoice[];
-}
+import { initECLState } from './ecl.state';
+import { addInvoice, removeChannel, removePeer, resetECLStore, setActiveChannels, setChannelsStatus, setChildNodeSettingsECL, setFees, setInactiveChannels, setInfo, setInvoices, setLightningBalance, setOnchainBalance, setPayments, setPeers, setPendingChannels, setTransactions, updateECLAPICallStatus, updateChannelState, updateInvoice, updateRelayedPayment } from './ecl.actions';
+import { Channel, PaymentReceived, PaymentRelayed } from '../../shared/models/eclModels';
 
-export const initECLState: ECLState = {
-  apisCallStatus: {
-    FetchInfo: { status: APICallStatusEnum.UN_INITIATED },
-    FetchFees: { status: APICallStatusEnum.UN_INITIATED },
-    FetchChannels: { status: APICallStatusEnum.UN_INITIATED },
-    FetchOnchainBalance: { status: APICallStatusEnum.UN_INITIATED },
-    FetchPeers: { status: APICallStatusEnum.UN_INITIATED },
-    FetchPayments: { status: APICallStatusEnum.UN_INITIATED },
-    FetchInvoices: { status: APICallStatusEnum.UN_INITIATED },
-    FetchTransactions: { status: APICallStatusEnum.UN_INITIATED }
-  },
-  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
-  information: {},
-  fees: {},
-  activeChannels: [],
-  pendingChannels: [],
-  inactiveChannels: [],
-  channelsStatus: {},
-  onchainBalance: { total: 0, confirmed: 0, unconfirmed: 0 },
-  lightningBalance: { localBalance: -1, remoteBalance: -1 },
-  peers: [],
-  payments: {},
-  transactions: [],
-  invoices: []
-};
-
-export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) {
-  switch (action.type) {
-    case ECLActions.SET_CHILD_NODE_SETTINGS_ECL:
-      return {
-        ...state,
-        apiURL: action.payload
-      };
-    case ECLActions.UPDATE_API_CALL_STATUS_ECL:
-      const updatedApisCallStatus = state.apisCallStatus;
-      updatedApisCallStatus[action.payload.action] = {
-        status: action.payload.status,
-        statusCode: action.payload.statusCode,
-        message: action.payload.message,
-        URL: action.payload.URL,
-        filePath: action.payload.filePath
-      };
-      return {
-        ...state,
-        apisCallStatus: updatedApisCallStatus
-      };
-    case ECLActions.SET_CHILD_NODE_SETTINGS_ECL:
-      return {
-        ...state,
-        nodeSettings: action.payload
-      };
-    case ECLActions.RESET_ECL_STORE:
-      return {
-        ...initECLState,
-        nodeSettings: action.payload
-      };
-    case ECLActions.SET_INFO_ECL:
-      return {
-        ...state,
-        information: action.payload
-      };
-    case ECLActions.SET_FEES_ECL:
-      return {
-        ...state,
-        fees: action.payload
-      };
-    case ECLActions.SET_ACTIVE_CHANNELS_ECL:
-      return {
-        ...state,
-        activeChannels: action.payload
-      };
-    case ECLActions.SET_PENDING_CHANNELS_ECL:
-      return {
-        ...state,
-        pendingChannels: action.payload
-      };
-    case ECLActions.SET_INACTIVE_CHANNELS_ECL:
-      return {
-        ...state,
-        inactiveChannels: action.payload
-      };
-    case ECLActions.SET_CHANNELS_STATUS_ECL:
-      return {
-        ...state,
-        channelsStatus: action.payload
-      };
-    case ECLActions.SET_ONCHAIN_BALANCE_ECL:
-      return {
-        ...state,
-        onchainBalance: action.payload
-      };
-    case ECLActions.SET_LIGHTNING_BALANCE_ECL:
-      return {
-        ...state,
-        lightningBalance: action.payload
-      };
-    case ECLActions.SET_PEERS_ECL:
-      return {
-        ...state,
-        peers: action.payload
-      };
-    case ECLActions.REMOVE_PEER_ECL:
-      const modifiedPeers = [...state.peers];
-      const removePeerIdx = state.peers.findIndex((peer) => peer.nodeId === action.payload.nodeId);
-      if (removePeerIdx > -1) {
-        modifiedPeers.splice(removePeerIdx, 1);
-      }
-      return {
-        ...state,
-        peers: modifiedPeers
-      };
-    case ECLActions.REMOVE_CHANNEL_ECL:
-      const modifiedChannels = [...state.activeChannels];
-      const removeChannelIdx = state.activeChannels.findIndex((channel) => channel.channelId === action.payload.channelId);
-      if (removeChannelIdx > -1) {
-        modifiedChannels.splice(removeChannelIdx, 1);
-      }
-      return {
-        ...state,
-        activeChannels: modifiedChannels
-      };
-    case ECLActions.SET_PAYMENTS_ECL:
-      if (action.payload && action.payload.relayed) {
-        const storedChannels = [...state.activeChannels, ...state.pendingChannels, ...state.inactiveChannels];
-        action.payload.relayed.forEach((rlEvent) => {
-          if (storedChannels && storedChannels.length > 0) {
-            for (let idx = 0; idx < storedChannels.length; idx++) {
-              if (storedChannels[idx].channelId.toString() === rlEvent.fromChannelId) {
-                rlEvent.fromChannelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : rlEvent.fromChannelId;
-                rlEvent.fromShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
-                if (rlEvent.toChannelAlias) {
-                  return;
-                }
-              }
-              if (storedChannels[idx].channelId.toString() === rlEvent.toChannelId) {
-                rlEvent.toChannelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : rlEvent.toChannelId;
-                rlEvent.toShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
-                if (rlEvent.fromChannelAlias) {
-                  return;
-                }
-              }
-              if (idx === storedChannels.length - 1) {
-                if (!rlEvent.fromChannelAlias) {
-                  rlEvent.fromChannelAlias = rlEvent.fromChannelId.substring(0, 17) + '...';
-                  rlEvent.fromShortChannelId = '';
-                }
-                if (!rlEvent.toChannelAlias) {
-                  rlEvent.toChannelAlias = rlEvent.toChannelId.substring(0, 17) + '...';
-                  rlEvent.toShortChannelId = '';
-                }
-              }
-            }
-          } else {
-            rlEvent.fromChannelAlias = rlEvent.fromChannelId.substring(0, 17) + '...';
-            rlEvent.fromShortChannelId = '';
-            rlEvent.toChannelAlias = rlEvent.toChannelId.substring(0, 17) + '...';
-            rlEvent.toShortChannelId = '';
-          }
-        });
-      }
-      return {
-        ...state,
-        payments: action.payload
-      };
-    case ECLActions.SET_TRANSACTIONS_ECL:
-      return {
-        ...state,
-        transactions: action.payload
-      };
-    case ECLActions.ADD_INVOICE_ECL:
-      const newInvoices = state.invoices;
-      newInvoices.unshift(action.payload);
-      return {
-        ...state,
-        invoices: newInvoices
-      };
-    case ECLActions.SET_INVOICES_ECL:
-      return {
-        ...state,
-        invoices: action.payload
-      };
-    case ECLActions.UPDATE_INVOICE_ECL:
-      let modifiedInvoices = state.invoices;
-      modifiedInvoices = modifiedInvoices.map((invoice) => {
-        if (invoice.paymentHash === action.payload.paymentHash) {
-          if (action.payload.hasOwnProperty('type')) {
-            const updatedInvoice = invoice;
-            updatedInvoice.amountSettled = ((<PaymentReceived>action.payload).parts && (<PaymentReceived>action.payload).parts.length && (<PaymentReceived>action.payload).parts.length > 0 && (<PaymentReceived>action.payload).parts[0].amount) ? (<PaymentReceived>action.payload).parts[0].amount / 1000 : 0;
-            updatedInvoice.receivedAt = ((<PaymentReceived>action.payload).parts && (<PaymentReceived>action.payload).parts.length && (<PaymentReceived>action.payload).parts.length > 0 && (<PaymentReceived>action.payload).parts[0].timestamp) ? Math.round((<PaymentReceived>action.payload).parts[0].timestamp / 1000) : 0;
-            updatedInvoice.status = 'received';
-            return updatedInvoice;
-          } else {
-            return action.payload;
-          }
+export const ECLReducer = createReducer(initECLState,
+  on(updateECLAPICallStatus, (state, { payload }) => {
+    const updatedApisCallStatus = JSON.parse(JSON.stringify(state.apisCallStatus));
+    updatedApisCallStatus[payload.action] = {
+      status: payload.status,
+      statusCode: payload.statusCode,
+      message: payload.message,
+      URL: payload.URL,
+      filePath: payload.filePath
+    };
+    return {
+      ...state,
+      apisCallStatus: updatedApisCallStatus
+    };
+  }),
+  on(setChildNodeSettingsECL, (state, { payload }) => ({
+    ...state,
+    nodeSettings: payload
+  })),
+  on(resetECLStore, (state, { payload }) => ({
+    ...initECLState,
+    nodeSettings: payload
+  })),
+  on(setInfo, (state, { payload }) => ({
+    ...state,
+    information: payload
+  })),
+  on(setFees, (state, { payload }) => ({
+    ...state,
+    fees: payload
+  })),
+  on(setActiveChannels, (state, { payload }) => ({
+    ...state,
+    activeChannels: payload
+  })),
+  on(setPendingChannels, (state, { payload }) => ({
+    ...state,
+    pendingChannels: payload
+  })),
+  on(setInactiveChannels, (state, { payload }) => ({
+    ...state,
+    inactiveChannels: payload
+  })),
+  on(setChannelsStatus, (state, { payload }) => ({
+    ...state,
+    channelsStatus: payload
+  })),
+  on(setOnchainBalance, (state, { payload }) => ({
+    ...state,
+    onchainBalance: payload
+  })),
+  on(setLightningBalance, (state, { payload }) => ({
+    ...state,
+    lightningBalance: payload
+  })),
+  on(setPeers, (state, { payload }) => ({
+    ...state,
+    peers: payload
+  })),
+  on(removePeer, (state, { payload }) => {
+    const modifiedPeers = [...state.peers];
+    const removePeerIdx = state.peers.findIndex((peer) => peer.nodeId === payload.nodeId);
+    if (removePeerIdx > -1) {
+      modifiedPeers.splice(removePeerIdx, 1);
+    }
+    return {
+      ...state,
+      peers: modifiedPeers
+    };
+  }),
+  on(removeChannel, (state, { payload }) => {
+    const modifiedChannels = [...state.activeChannels];
+    const removeChannelIdx = state.activeChannels.findIndex((channel) => channel.channelId === payload.channelId);
+    if (removeChannelIdx > -1) {
+      modifiedChannels.splice(removeChannelIdx, 1);
+    }
+    return {
+      ...state,
+      activeChannels: modifiedChannels
+    };
+  }),
+  on(setPayments, (state, { payload }) => {
+    if (payload && payload.sent) {
+      const storedChannels = [...state.activeChannels, ...state.pendingChannels, ...state.inactiveChannels];
+      payload.sent.map((sentPayment) => {
+        const peerFound = state.peers.find((peer) => peer.nodeId === sentPayment.recipientNodeId);
+        sentPayment.recipientNodeAlias = peerFound ? peerFound.alias : sentPayment.recipientNodeId;
+        if (sentPayment.parts) {
+          sentPayment.parts.map((part) => {
+            const channelFound = storedChannels.find((channel) => channel.channelId === part.toChannelId);
+            part.toChannelAlias = channelFound ? channelFound.alias : part.toChannelId;
+            return sentPayment.parts;
+          });
         }
-        return invoice;
+        return payload.sent;
       });
-      return {
-        ...state,
-        invoices: modifiedInvoices
-      };
-    case ECLActions.UPDATE_CHANNEL_STATE_ECL:
-      let modifiedPendingChannels = state.pendingChannels;
-      modifiedPendingChannels = modifiedPendingChannels.map((pendingChannel) => {
-        if (pendingChannel.channelId === action.payload.channelId && pendingChannel.nodeId === action.payload.remoteNodeId) {
-          action.payload.currentState = action.payload.currentState.replace(/_/g, ' ');
-          pendingChannel.state = action.payload.currentState;
+    }
+    if (payload && payload.relayed) {
+      const storedChannels = [...state.activeChannels, ...state.pendingChannels, ...state.inactiveChannels];
+      payload.relayed.forEach((rlEvent) => {
+        rlEvent = mapAliases(rlEvent, storedChannels);
+      });
+    }
+    return {
+      ...state,
+      payments: payload
+    };
+  }),
+  on(setTransactions, (state, { payload }) => ({
+    ...state,
+    transactions: payload
+  })),
+  on(addInvoice, (state, { payload }) => {
+    const newInvoices = state.invoices;
+    newInvoices.unshift(payload);
+    return {
+      ...state,
+      invoices: newInvoices
+    };
+  }),
+  on(setInvoices, (state, { payload }) => ({
+    ...state,
+    invoices: payload
+  })),
+  on(updateInvoice, (state, { payload }) => {
+    let modifiedInvoices = state.invoices;
+    modifiedInvoices = modifiedInvoices.map((invoice) => {
+      if (invoice.paymentHash === payload.paymentHash) {
+        if (payload.hasOwnProperty('type')) {
+          const updatedInvoice = JSON.parse(JSON.stringify(invoice));
+          updatedInvoice.amountSettled = ((<PaymentReceived>payload).parts && (<PaymentReceived>payload).parts.length && (<PaymentReceived>payload).parts.length > 0 && (<PaymentReceived>payload).parts[0].amount) ? (<PaymentReceived>payload).parts[0].amount / 1000 : 0;
+          updatedInvoice.receivedAt = ((<PaymentReceived>payload).parts && (<PaymentReceived>payload).parts.length && (<PaymentReceived>payload).parts.length > 0 && (<PaymentReceived>payload).parts[0].timestamp) ? Math.round((<PaymentReceived>payload).parts[0].timestamp / 1000) : 0;
+          updatedInvoice.status = 'received';
+          return updatedInvoice;
+        } else {
+          return payload;
         }
-        return pendingChannel;
-      });
-      return {
-        ...state,
-        pendingChannels: modifiedPendingChannels
-      };
-    default:
-      return state;
+      }
+      return invoice;
+    });
+    return {
+      ...state,
+      invoices: modifiedInvoices
+    };
+  }),
+  on(updateChannelState, (state, { payload }) => {
+    let modifiedPendingChannels = state.pendingChannels;
+    modifiedPendingChannels = modifiedPendingChannels.map((pendingChannel) => {
+      if (pendingChannel.channelId === payload.channelId && pendingChannel.nodeId === payload.remoteNodeId) {
+        payload.currentState = payload.currentState.replace(/_/g, ' ');
+        pendingChannel.state = payload.currentState;
+      }
+      return pendingChannel;
+    });
+    return {
+      ...state,
+      pendingChannels: modifiedPendingChannels
+    };
+  }),
+  on(updateRelayedPayment, (state, { payload }) => {
+    const modifiedPayments = state.payments;
+    const updatedPayload = mapAliases(payload, [...state.activeChannels, ...state.pendingChannels, ...state.inactiveChannels]);
+    updatedPayload.amountIn = Math.round(payload.amountIn / 1000);
+    updatedPayload.amountOut = Math.round(payload.amountOut / 1000);
+    modifiedPayments.relayed.unshift(updatedPayload);
+    const feeSats = payload.amountIn - payload.amountOut;
+    const modifiedLightningBalance = { localBalance: (state.lightningBalance.localBalance + feeSats), remoteBalance: (state.lightningBalance.remoteBalance - feeSats) };
+    const modifiedChannelStatus = state.channelsStatus;
+    modifiedChannelStatus.active.capacity = state.channelsStatus.active.capacity + feeSats;
+    const modifiedFees = {
+      daily_fee: (state.fees.daily_fee + feeSats), daily_txs: (state.fees.daily_txs + 1),
+      weekly_fee: (state.fees.weekly_fee + feeSats), weekly_txs: (state.fees.weekly_txs + 1),
+      monthly_fee: (state.fees.monthly_fee + feeSats), monthly_txs: (state.fees.monthly_txs + 1)
+    };
+    const modifiedActiveChannels = state.activeChannels;
+    let foundFrom = false;
+    let foundTo = false;
+    for (const channel of modifiedActiveChannels) {
+      if (channel.channelId === payload.fromChannelId) {
+        foundFrom = true;
+        const channelTotal = channel.toLocal + channel.toRemote;
+        channel.toLocal = channel.toLocal + updatedPayload.amountIn;
+        channel.toRemote = channel.toRemote - updatedPayload.amountIn;
+        channel.balancedness = (channelTotal === 0) ? 1 : +(1 - Math.abs((channel.toLocal - channel.toRemote) / channelTotal)).toFixed(3);
+      }
+      if (channel.channelId === payload.toChannelId) {
+        foundTo = true;
+        const channelTotal = channel.toLocal + channel.toRemote;
+        channel.toLocal = channel.toLocal - updatedPayload.amountOut;
+        channel.toRemote = channel.toRemote + updatedPayload.amountOut;
+        channel.balancedness = (channelTotal === 0) ? 1 : +(1 - Math.abs((channel.toLocal - channel.toRemote) / channelTotal)).toFixed(3);
+      }
+      if (foundTo && foundFrom) {
+        break;
+      }
+    };
+    return {
+      ...state,
+      payments: modifiedPayments,
+      lightningBalance: modifiedLightningBalance,
+      channelStatus: modifiedChannelStatus,
+      fees: modifiedFees,
+      activeChannels: modifiedActiveChannels
+    };
+  })
+);
+
+const mapAliases = (rlEvent: PaymentRelayed, storedChannels: Channel[]) => {
+  if (storedChannels && storedChannels.length > 0) {
+    for (let idx = 0; idx < storedChannels.length; idx++) {
+      if (storedChannels[idx].channelId.toString() === rlEvent.fromChannelId) {
+        rlEvent.fromChannelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : rlEvent.fromChannelId;
+        rlEvent.fromShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
+        if (rlEvent.toChannelAlias) {
+          return rlEvent;
+        }
+      }
+      if (storedChannels[idx].channelId.toString() === rlEvent.toChannelId) {
+        rlEvent.toChannelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : rlEvent.toChannelId;
+        rlEvent.toShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
+        if (rlEvent.fromChannelAlias) {
+          return rlEvent;
+        }
+      }
+      if (idx === storedChannels.length - 1) {
+        if (!rlEvent.fromChannelAlias) {
+          rlEvent.fromChannelAlias = rlEvent.fromChannelId.substring(0, 17) + '...';
+          rlEvent.fromShortChannelId = '';
+        }
+        if (!rlEvent.toChannelAlias) {
+          rlEvent.toChannelAlias = rlEvent.toChannelId.substring(0, 17) + '...';
+          rlEvent.toShortChannelId = '';
+        }
+      }
+    }
+  } else {
+    rlEvent.fromChannelAlias = rlEvent.fromChannelId.substring(0, 17) + '...';
+    rlEvent.fromShortChannelId = '';
+    rlEvent.toChannelAlias = rlEvent.toChannelId.substring(0, 17) + '...';
+    rlEvent.toShortChannelId = '';
   }
-}
+  return rlEvent;
+};

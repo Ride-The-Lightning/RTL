@@ -9,20 +9,22 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatStepper } from '@angular/material/stepper';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import * as sha256 from 'sha256';
 
 import { SelNodeChild, GetInfoRoot, RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CLOnChainSendFunds } from '../../../shared/models/alertData';
 import { GetInfo, Balance, OnChain, UTXO } from '../../../shared/models/clModels';
-import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, FEE_RATE_TYPES, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, FEE_RATE_TYPES, APICallStatusEnum, CLActions } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { RTLEffects } from '../../../store/rtl.effects';
-
-import * as CLActions from '../../store/cl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
-import * as sha256 from 'sha256';
+import { RTLState } from '../../../store/rtl.state';
+import { isAuthorized, openSnackBar } from '../../../store/rtl.actions';
+import { setChannelTransaction } from '../../store/cl.actions';
+import { rootAppConfig, rootSelectedNode } from '../../../store/rtl.selector';
+import { clNodeInformation, utxos } from '../../store/cl.selector';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-cl-on-chain-send-modal',
@@ -38,7 +40,6 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
   public sweepAll = false;
   public selNode: SelNodeChild = {};
   public appConfig: RTLConfiguration;
-  public nodeData: GetInfoRoot;
   public addressTypes = [];
   public utxos: UTXO[] = [];
   public selUTXOs = [];
@@ -69,9 +70,9 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
   passwordFormGroup: FormGroup;
   sendFundFormGroup: FormGroup;
   confirmFormGroup: FormGroup;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLOnChainSendModalComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOnChainSendFunds, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions, private formBuilder: FormBuilder, private rtlEffects: RTLEffects, private snackBar: MatSnackBar) { }
+  constructor(public dialogRef: MatDialogRef<CLOnChainSendModalComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOnChainSendFunds, private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions, private formBuilder: FormBuilder, private rtlEffects: RTLEffects, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.sweepAll = this.data.sweepAll;
@@ -86,7 +87,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
       transactionBlocks: [{ value: null, disabled: true }]
     });
     this.confirmFormGroup = this.formBuilder.group({});
-    this.sendFundFormGroup.controls.flgMinConf.valueChanges.pipe(takeUntil(this.unSubs[4])).subscribe((flg) => {
+    this.sendFundFormGroup.controls.flgMinConf.valueChanges.pipe(takeUntil(this.unSubs[0])).subscribe((flg) => {
       if (flg) {
         this.sendFundFormGroup.controls.transactionBlocks.enable();
         this.sendFundFormGroup.controls.transactionBlocks.setValidators([Validators.required]);
@@ -102,27 +103,30 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
         this.sendFundFormGroup.controls.transactionFeeRate.setValue(null);
       }
     });
-    combineLatest([this.store.select('root'), this.store.select('cl')]).
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe(([rootStore, rtlStore]) => {
-        this.fiatConversion = rootStore.selNode.settings.fiatConversion;
-        this.amountUnits = rootStore.selNode.settings.currencyUnits;
-        this.appConfig = rootStore.appConfig;
-        this.nodeData = rootStore.nodeData;
-        this.information = rtlStore.information;
+    combineLatest([this.store.select(rootSelectedNode), this.store.select(rootAppConfig)]).pipe(takeUntil(this.unSubs[1])).
+      subscribe(([selNode, appConfig]) => {
+        this.fiatConversion = selNode.settings.fiatConversion;
+        this.amountUnits = selNode.settings.currencyUnits;
+        this.appConfig = appConfig;
+      });
+    this.store.select(clNodeInformation).pipe(takeUntil(this.unSubs[2])).
+      subscribe((nodeInfo: GetInfo) => {
+        this.information = nodeInfo;
         this.isCompatibleVersion =
           this.commonService.isVersionCompatible(this.information.version, '0.9.0') &&
           this.commonService.isVersionCompatible(this.information.api_version, '0.4.0');
-        this.utxos = this.commonService.sortAscByKey(rtlStore.utxos.filter((utxo) => utxo.status === 'confirmed'), 'value');
-        this.logger.info(rootStore);
-        this.logger.info(rtlStore);
+      });
+    this.store.select(utxos).pipe(takeUntil(this.unSubs[3])).
+      subscribe((utxosSeletor: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.utxos = this.commonService.sortAscByKey(utxosSeletor.utxos.filter((utxo) => utxo.status === 'confirmed'), 'value');
+        this.logger.info(utxosSeletor);
       });
     this.actions.pipe(
-      takeUntil(this.unSubs[1]),
+      takeUntil(this.unSubs[4]),
       filter((action) => action.type === CLActions.UPDATE_API_CALL_STATUS_CL || action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL)).
-      subscribe((action: CLActions.UpdateAPICallStatus | CLActions.SetChannelTransactionRes) => {
+      subscribe((action: any) => {
         if (action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL) {
-          this.store.dispatch(new RTLActions.OpenSnackBar('Fund Sent Successfully!'));
+          this.store.dispatch(openSnackBar({ payload: 'Fund Sent Successfully!' }));
           this.dialogRef.close();
         }
         if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SetChannelTransaction') {
@@ -136,7 +140,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
       return true;
     }
     this.flgValidated = false;
-    this.store.dispatch(new RTLActions.IsAuthorized(sha256(this.passwordFormGroup.controls.password.value)));
+    this.store.dispatch(isAuthorized({ payload: sha256(this.passwordFormGroup.controls.password.value).toString() }));
     this.rtlEffects.isAuthorizedRes.
       pipe(take(1)).
       subscribe((authRes) => {
@@ -177,16 +181,16 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
         }
       }
       delete this.transaction.utxos;
-      this.store.dispatch(new CLActions.SetChannelTransaction(this.transaction));
+      this.store.dispatch(setChannelTransaction({ payload: this.transaction }));
     } else {
       if (this.transaction.satoshis && this.transaction.satoshis !== 'all' && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
         this.commonService.convertCurrency(+this.transaction.satoshis, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion).
-          pipe(takeUntil(this.unSubs[2])).
+          pipe(takeUntil(this.unSubs[5])).
           subscribe({
             next: (data) => {
               this.transaction.satoshis = data[CurrencyUnitEnum.SATS];
               this.selAmountUnit = CurrencyUnitEnum.SATS;
-              this.store.dispatch(new CLActions.SetChannelTransaction(this.transaction));
+              this.store.dispatch(setChannelTransaction({ payload: this.transaction }));
             }, error: (err) => {
               this.transaction.satoshis = null;
               this.selAmountUnit = CurrencyUnitEnum.SATS;
@@ -194,7 +198,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
             }
           });
       } else {
-        this.store.dispatch(new CLActions.SetChannelTransaction(this.transaction));
+        this.store.dispatch(setChannelTransaction({ payload: this.transaction }));
       }
     }
   }
@@ -283,7 +287,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
     let currSelectedUnit = event.value === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : event.value;
     if (this.transaction.satoshis && this.selAmountUnit !== event.value) {
       this.commonService.convertCurrency(+this.transaction.satoshis, prevSelectedUnit, currSelectedUnit, this.amountUnits[2], this.fiatConversion).
-        pipe(takeUntil(this.unSubs[3])).
+        pipe(takeUntil(this.unSubs[6])).
         subscribe({
           next: (data) => {
             this.selAmountUnit = event.value;

@@ -5,13 +5,14 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { ECLOpenChannelComponent } from '../open-channel-modal/open-channel.component';
-import { WebSocketClientService } from '../../../../shared/services/web-socket.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
-import { GetInfo, Peer } from '../../../../shared/models/eclModels';
+import { Channel, ChannelsStatus, GetInfo, LightningBalance, OnChainBalance, Peer } from '../../../../shared/models/eclModels';
 import { SelNodeChild } from '../../../../shared/models/RTLconfig';
 
-import * as RTLActions from '../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { RTLState } from '../../../../store/rtl.state';
+import { openAlert } from '../../../../store/rtl.actions';
+import { allChannelsInfo, eclNodeInformation, eclNodeSettings, onchainBalance, peers } from '../../../store/ecl.selector';
+import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-ecl-channels-tables',
@@ -29,27 +30,38 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
   public totalBalance = 0;
   public links = [{ link: 'open', name: 'Open' }, { link: 'pending', name: 'Pending' }, { link: 'inactive', name: 'Inactive' }];
   public activeLink = 0;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private router: Router, private wsService: WebSocketClientService) {}
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private router: Router) { }
 
   ngOnInit() {
     this.activeLink = this.links.findIndex((link) => link.link === this.router.url.substring(this.router.url.lastIndexOf('/') + 1));
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe((value: ResolveEnd) => {
+      subscribe((value: any) => {
         this.activeLink = this.links.findIndex((link) => link.link === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
       });
-    this.store.select('ecl').
-      pipe(takeUntil(this.unSubs[1])).
-      subscribe((rtlStore) => {
-        this.numOfOpenChannels = (rtlStore.channelsStatus && rtlStore.channelsStatus.active && rtlStore.channelsStatus.active.channels) ? rtlStore.channelsStatus.active.channels : 0;
-        this.numOfPendingChannels = (rtlStore.channelsStatus && rtlStore.channelsStatus.pending && rtlStore.channelsStatus.pending.channels) ? rtlStore.channelsStatus.pending.channels : 0;
-        this.numOfInactiveChannels = (rtlStore.channelsStatus && rtlStore.channelsStatus.inactive && rtlStore.channelsStatus.inactive.channels) ? rtlStore.channelsStatus.inactive.channels : 0;
-        this.selNode = rtlStore.nodeSettings;
-        this.information = rtlStore.information;
-        this.peers = rtlStore.peers;
-        this.totalBalance = rtlStore.onchainBalance.total;
-        this.logger.info(rtlStore);
+    this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[1])).
+      subscribe((allChannelsSelector: ({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload })) => {
+        this.numOfOpenChannels = (allChannelsSelector.channelsStatus && allChannelsSelector.channelsStatus.active && allChannelsSelector.channelsStatus.active.channels) ? allChannelsSelector.channelsStatus.active.channels : 0;
+        this.numOfPendingChannels = (allChannelsSelector.channelsStatus && allChannelsSelector.channelsStatus.pending && allChannelsSelector.channelsStatus.pending.channels) ? allChannelsSelector.channelsStatus.pending.channels : 0;
+        this.numOfInactiveChannels = (allChannelsSelector.channelsStatus && allChannelsSelector.channelsStatus.inactive && allChannelsSelector.channelsStatus.inactive.channels) ? allChannelsSelector.channelsStatus.inactive.channels : 0;
+        this.logger.info(allChannelsSelector);
+      });
+    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[2])).
+      subscribe((nodeSettings: SelNodeChild) => {
+        this.selNode = nodeSettings;
+      });
+    this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[3])).
+      subscribe((nodeInfo: GetInfo) => {
+        this.information = nodeInfo;
+      });
+    this.store.select(peers).pipe(takeUntil(this.unSubs[4])).
+      subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.peers = peersSelector.peers;
+      });
+    this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[5])).
+      subscribe((oCBalanceSelector: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.totalBalance = oCBalanceSelector.onchainBalance.total;
       });
   }
 
@@ -59,11 +71,15 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
       information: this.information,
       balance: this.totalBalance
     };
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      alertTitle: 'Open Channel',
-      message: peerToAddChannelMessage,
-      component: ECLOpenChannelComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          alertTitle: 'Open Channel',
+          message: peerToAddChannelMessage,
+          component: ECLOpenChannelComponent
+        }
+      }
+    }));
   }
 
   onSelectedTabChange(event) {

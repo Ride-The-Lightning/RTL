@@ -2,11 +2,11 @@
   <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container">
     <div fxFlex="70"></div>
     <mat-form-field fxFlex="30">
-      <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
+      <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" placeholder="Filter">
     </mat-form-field>
   </div>
   <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
-    <mat-progress-bar *ngIf="apisCallStatus?.FetchAllChannels.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+    <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
     <table mat-table #table fxFlex="100" [dataSource]="channels" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
       <!-- Channel Group Row Start -->
       <ng-container matColumnDef="amount">
@@ -81,9 +81,9 @@
       </ng-container>
       <ng-container matColumnDef="no_channel">
         <td mat-footer-cell *matFooterCellDef colspan="4">
-          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apisCallStatus?.FetchAllChannels.status === apiCallStatusEnum.COMPLETED">No active htlc available.</p>
-          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apisCallStatus?.FetchAllChannels.status === apiCallStatusEnum.INITIATED">Getting active htlcs...</p>
-          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apisCallStatus?.FetchAllChannels.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No active htlc available.</p>
+          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting active htlcs...</p>
+          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
         </td>
       </ng-container>
       <!-- channel Group Row End -->

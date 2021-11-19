@@ -85,6 +85,6 @@ export interface SelNodeChild {
 
 export class HelpTopic {
 
-  constructor(public help: {question: string, answer: string, link?: string, linkCaption?: string, lnImplementation?: string}) { }
+  constructor(public help: { question: string, answer: string, link?: string, linkCaption?: string, lnImplementation?: string }) { }
 
 }

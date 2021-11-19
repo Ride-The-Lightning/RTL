@@ -19,21 +19,22 @@ import { CommonService } from '../shared/services/common.service';
 import { SessionService } from '../shared/services/session.service';
 import { LoggerService } from '../shared/services/logger.service';
 import { DataService } from '../shared/services/data.service';
+import { WebSocketClientService } from '../shared/services/web-socket.service';
 import { ErrorMessageComponent } from '../shared/components/data-modal/error-message/error-message.component';
-import { APICallStatusEnum, UI_MESSAGES } from '../shared/services/consts-enums-functions';
+import { APICallStatusEnum, RTLActions, UI_MESSAGES } from '../shared/services/consts-enums-functions';
 import { environment } from '../../environments/environment';
 
 import { RTLEffects } from './rtl.effects';
-import * as RTLActions from './rtl.actions';
-import * as LNDActions from '../lnd/store/lnd.actions';
-import * as ECLActions from '../eclair/store/ecl.actions';
-import * as CLActions from '../clightning/store/cl.actions';
-import * as fromRTLReducer from './rtl.reducers';
+import { RTLState } from './rtl.state';
+import { updateRootAPICallStatus, openSpinner, closeSpinner, openAlert, resetRootStore } from './rtl.actions';
+import { resetLNDStore, fetchInfoLND } from '../lnd/store/lnd.actions';
+import { resetCLStore } from '../clightning/store/cl.actions';
+import { resetECLStore } from '../eclair/store/ecl.actions';
 
 describe('RTL Root Effects', () => {
   let actions: ReplaySubject<any>;
   let effects: RTLEffects;
-  let mockStore: Store<fromRTLReducer.RTLState>;
+  let mockStore: Store<RTLState>;
   let snackBar: MatSnackBar;
   let container: any;
   let httpClient: HttpClient;
@@ -49,7 +50,7 @@ describe('RTL Root Effects', () => {
         HttpClientTestingModule
       ],
       providers: [
-        RTLEffects, CommonService, HttpClient,
+        RTLEffects, CommonService, HttpClient, WebSocketClientService,
         { provide: SessionService, useClass: mockSessionService },
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
@@ -83,15 +84,15 @@ describe('RTL Root Effects', () => {
     actions.next(setSelectedNodeAction);
     const sub = effects.setSelectedNode.subscribe((setSelectedNodeResponse) => {
       expect(setSelectedNodeResponse).toEqual({ type: RTLActions.VOID });
-      expect(storeDispatchSpy.calls.all()[0].args[0]).toEqual(new RTLActions.OpenSpinner(UI_MESSAGES.UPDATE_SELECTED_NODE));
-      expect(storeDispatchSpy.calls.all()[1].args[0]).toEqual(new RTLActions.UpdateAPICallStatus({ action: 'UpdateSelNode', status: APICallStatusEnum.INITIATED }));
-      expect(storeDispatchSpy.calls.all()[2].args[0]).toEqual(new RTLActions.UpdateAPICallStatus({ action: 'UpdateSelNode', status: APICallStatusEnum.COMPLETED }));
-      expect(storeDispatchSpy.calls.all()[3].args[0]).toEqual(new RTLActions.CloseSpinner(UI_MESSAGES.UPDATE_SELECTED_NODE));
-      expect(storeDispatchSpy.calls.all()[4].args[0]).toEqual(new RTLActions.ResetRootStore(mockActionsData.resetRootStore));
-      expect(storeDispatchSpy.calls.all()[5].args[0]).toEqual(new LNDActions.ResetLNDStore(mockActionsData.resetChildrenStores));
-      expect(storeDispatchSpy.calls.all()[6].args[0]).toEqual(new CLActions.ResetCLStore(mockActionsData.resetChildrenStores));
-      expect(storeDispatchSpy.calls.all()[7].args[0]).toEqual(new ECLActions.ResetECLStore(mockActionsData.resetChildrenStores));
-      expect(storeDispatchSpy.calls.all()[8].args[0]).toEqual(new LNDActions.FetchInfo({ loadPage: 'HOME' }));
+      expect(storeDispatchSpy.calls.all()[0].args[0]).toEqual(openSpinner({ payload: UI_MESSAGES.UPDATE_SELECTED_NODE }));
+      expect(storeDispatchSpy.calls.all()[1].args[0]).toEqual(updateRootAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.INITIATED } }));
+      expect(storeDispatchSpy.calls.all()[2].args[0]).toEqual(updateRootAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.COMPLETED } }));
+      expect(storeDispatchSpy.calls.all()[3].args[0]).toEqual(closeSpinner({ payload: UI_MESSAGES.UPDATE_SELECTED_NODE }));
+      expect(storeDispatchSpy.calls.all()[4].args[0]).toEqual(resetRootStore({ payload: mockActionsData.resetRootStore }));
+      expect(storeDispatchSpy.calls.all()[5].args[0]).toEqual(resetLNDStore({ payload: mockActionsData.resetChildrenStores }));
+      expect(storeDispatchSpy.calls.all()[6].args[0]).toEqual(resetCLStore({ payload: mockActionsData.resetChildrenStores }));
+      expect(storeDispatchSpy.calls.all()[7].args[0]).toEqual(resetECLStore({ payload: mockActionsData.resetChildrenStores }));
+      expect(storeDispatchSpy.calls.all()[8].args[0]).toEqual(fetchInfoLND({ payload: { loadPage: 'HOME' } }));
       expect(storeDispatchSpy).toHaveBeenCalledTimes(9);
       done();
       setTimeout(() => sub.unsubscribe());
@@ -115,11 +116,11 @@ describe('RTL Root Effects', () => {
     actions.next(setSelectedNodeAction);
     const sub = effects.setSelectedNode.subscribe((setSelectedNodeResponse: any) => {
       expect(setSelectedNodeResponse).toEqual({ type: RTLActions.VOID });
-      expect(storeDispatchSpy.calls.all()[0].args[0]).toEqual(new RTLActions.OpenSpinner(UI_MESSAGES.UPDATE_SELECTED_NODE));
-      expect(storeDispatchSpy.calls.all()[1].args[0]).toEqual(new RTLActions.UpdateAPICallStatus({ action: 'UpdateSelNode', status: APICallStatusEnum.INITIATED }));
-      expect(storeDispatchSpy.calls.all()[2].args[0]).toEqual(new RTLActions.CloseSpinner(UI_MESSAGES.UPDATE_SELECTED_NODE));
-      expect(storeDispatchSpy.calls.all()[3].args[0]).toEqual(new RTLActions.OpenAlert({ data: { type: 'ERROR', alertTitle: 'Update Selected Node Failed!', message: { code: '500', message: 'Request failed.', URL: environment.CONF_API + '/updateSelNode' }, component: ErrorMessageComponent } }));
-      expect(storeDispatchSpy.calls.all()[4].args[0]).toEqual(new RTLActions.UpdateAPICallStatus({ action: 'UpdateSelNode', status: APICallStatusEnum.ERROR, statusCode: '500', message: 'Request failed.', URL: environment.CONF_API + '/updateSelNode' }));
+      expect(storeDispatchSpy.calls.all()[0].args[0]).toEqual(openSpinner({ payload: UI_MESSAGES.UPDATE_SELECTED_NODE }));
+      expect(storeDispatchSpy.calls.all()[1].args[0]).toEqual(updateRootAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.INITIATED } }));
+      expect(storeDispatchSpy.calls.all()[2].args[0]).toEqual(closeSpinner({ payload: UI_MESSAGES.UPDATE_SELECTED_NODE }));
+      expect(storeDispatchSpy.calls.all()[3].args[0]).toEqual(openAlert({ payload: { data: { type: 'ERROR', alertTitle: 'Update Selected Node Failed!', message: { code: '500', message: 'Request failed.', URL: environment.CONF_API + '/updateSelNode' }, component: ErrorMessageComponent } } }));
+      expect(storeDispatchSpy.calls.all()[4].args[0]).toEqual(updateRootAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.ERROR, statusCode: '500', message: 'Request failed.', URL: environment.CONF_API + '/updateSelNode' } }));
       expect(storeDispatchSpy).toHaveBeenCalledTimes(5);
       done();
       setTimeout(() => sub.unsubscribe());

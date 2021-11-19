@@ -7,14 +7,15 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Channel, GetInfo, PendingChannels, PendingOpenChannel } from '../../../../../shared/models/lndModels';
 import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, ScreenSizeEnum } from '../../../../../shared/services/consts-enums-functions';
-import { ApiCallsListLND } from '../../../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 import { BumpFeeComponent } from '../../bump-fee-modal/bump-fee.component';
 
-import * as RTLActions from '../../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../../store/rtl.reducers';
+import { openAlert } from '../../../../../store/rtl.actions';
+import { RTLState } from '../../../../../store/rtl.state';
+import { lndNodeInformation, lndNodeSettings, pendingChannels } from '../../../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-channel-pending-table',
@@ -23,7 +24,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 })
 export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   public selNode: SelNodeChild = {};
   public selectedFilter = '';
   public information: GetInfo = {};
@@ -43,11 +44,11 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.displayedOpenColumns = ['remote_alias', 'actions'];
@@ -68,17 +69,16 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngOnInit() {
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => { this.selNode = nodeSettings; });
+    this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => { this.information = nodeInfo; });
+    this.store.select(pendingChannels).pipe(takeUntil(this.unSubs[0])).
+      subscribe((pendingChannelsSelector: { pendingChannels: PendingChannels, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchPendingChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPendingChannels.message) : this.apisCallStatus.FetchPendingChannels.message;
+        this.apiCallStatus = pendingChannelsSelector.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.selNode = rtlStore.nodeSettings;
-        this.information = rtlStore.information;
-        this.pendingChannels = rtlStore.pendingChannels;
+        this.pendingChannels = pendingChannelsSelector.pendingChannels;
         if (this.pendingChannels.pending_open_channels && this.pendingChannels.pending_open_channels.length && this.pendingChannels.pending_open_channels.length > 0) {
           this.loadOpenChannelsTable(this.pendingChannels.pending_open_channels);
         }
@@ -91,7 +91,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
         if (this.pendingChannels.waiting_close_channels && this.pendingChannels.waiting_close_channels.length && this.pendingChannels.waiting_close_channels.length > 0) {
           this.loadWaitClosingChannelsTable(this.pendingChannels.waiting_close_channels);
         }
-        this.logger.info(rtlStore);
+        this.logger.info(pendingChannelsSelector);
       });
   }
 
@@ -118,27 +118,35 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
     const reorderedChannel = [
       [{ key: 'channel_point', value: preOrderedChannel.channel_point, title: 'Channel Point', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'remote_alias', value: preOrderedChannel.remote_alias, title: 'Peer Alias', width: 25, type: DataTypeEnum.STRING },
-        { key: 'remote_node_pub', value: preOrderedChannel.remote_node_pub, title: 'Peer Node Pubkey', width: 75, type: DataTypeEnum.STRING }],
+      { key: 'remote_node_pub', value: preOrderedChannel.remote_node_pub, title: 'Peer Node Pubkey', width: 75, type: DataTypeEnum.STRING }],
       [{ key: 'capacity', value: preOrderedChannel.capacity, title: 'Capacity', width: 25, type: DataTypeEnum.NUMBER },
-        { key: 'confirmation_height', value: preOrderedChannel.confirmation_height, title: 'Confirmation Height', width: 25, type: DataTypeEnum.NUMBER },
-        { key: 'local_balance', value: preOrderedChannel.local_balance, title: 'Local Balance', width: 25, type: DataTypeEnum.NUMBER },
-        { key: 'remote_balance', value: preOrderedChannel.remote_balance, title: 'Remote Balance', width: 25, type: DataTypeEnum.NUMBER }],
+      { key: 'confirmation_height', value: preOrderedChannel.confirmation_height, title: 'Confirmation Height', width: 25, type: DataTypeEnum.NUMBER },
+      { key: 'local_balance', value: preOrderedChannel.local_balance, title: 'Local Balance', width: 25, type: DataTypeEnum.NUMBER },
+      { key: 'remote_balance', value: preOrderedChannel.remote_balance, title: 'Remote Balance', width: 25, type: DataTypeEnum.NUMBER }],
       [{ key: 'fee_per_kw', value: preOrderedChannel.fee_per_kw, title: 'Fee/KW', width: 25, type: DataTypeEnum.NUMBER },
-        { key: 'commit_weight', value: preOrderedChannel.commit_weight, title: 'Commit Weight', width: 25, type: DataTypeEnum.NUMBER },
-        { key: 'commit_fee', value: preOrderedChannel.commit_fee, title: 'Commit Fee', width: 50, type: DataTypeEnum.NUMBER }]
+      { key: 'commit_weight', value: preOrderedChannel.commit_weight, title: 'Commit Weight', width: 25, type: DataTypeEnum.NUMBER },
+      { key: 'commit_fee', value: preOrderedChannel.commit_fee, title: 'Commit Fee', width: 50, type: DataTypeEnum.NUMBER }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Opening Channel Information',
-      message: reorderedChannel
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Opening Channel Information',
+          message: reorderedChannel
+        }
+      }
+    }));
   }
 
   onBumpFee(selChannel: PendingOpenChannel) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      pendingChannel: selChannel,
-      component: BumpFeeComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          pendingChannel: selChannel,
+          component: BumpFeeComponent
+        }
+      }
+    }));
   }
 
   onForceClosingClick(selChannel: any) {
@@ -150,20 +158,24 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
       [{ key: 'closing_txid', value: preOrderedChannel.closing_txid, title: 'Closing Transaction ID', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'channel_point', value: preOrderedChannel.channel_point, title: 'Channel Point', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'remote_alias', value: preOrderedChannel.remote_alias, title: 'Peer Alias', width: 25, type: DataTypeEnum.STRING },
-        { key: 'remote_node_pub', value: preOrderedChannel.remote_node_pub, title: 'Peer Node Pubkey', width: 75, type: DataTypeEnum.STRING }],
+      { key: 'remote_node_pub', value: preOrderedChannel.remote_node_pub, title: 'Peer Node Pubkey', width: 75, type: DataTypeEnum.STRING }],
       [{ key: 'capacity', value: preOrderedChannel.capacity, title: 'Capacity', width: 25, type: DataTypeEnum.NUMBER },
-        { key: 'limbo_balance', value: preOrderedChannel.limbo_balance, title: 'Limbo Balance', width: 25, type: DataTypeEnum.NUMBER },
-        { key: 'local_balance', value: preOrderedChannel.local_balance, title: 'Local Balance', width: 25, type: DataTypeEnum.NUMBER },
-        { key: 'remote_balance', value: preOrderedChannel.remote_balance, title: 'Remote Balance', width: 25, type: DataTypeEnum.NUMBER }],
+      { key: 'limbo_balance', value: preOrderedChannel.limbo_balance, title: 'Limbo Balance', width: 25, type: DataTypeEnum.NUMBER },
+      { key: 'local_balance', value: preOrderedChannel.local_balance, title: 'Local Balance', width: 25, type: DataTypeEnum.NUMBER },
+      { key: 'remote_balance', value: preOrderedChannel.remote_balance, title: 'Remote Balance', width: 25, type: DataTypeEnum.NUMBER }],
       [{ key: 'maturity_height', value: preOrderedChannel.maturity_height, title: 'Maturity Height', width: 25, type: DataTypeEnum.NUMBER },
-        { key: 'blocks_til_maturity', value: preOrderedChannel.blocks_til_maturity, title: 'Blocks Till Maturity', width: 25, type: DataTypeEnum.NUMBER },
-        { key: 'recovered_balance', value: preOrderedChannel.recovered_balance, title: 'Recovered Balance', width: 50, type: DataTypeEnum.NUMBER }]
+      { key: 'blocks_til_maturity', value: preOrderedChannel.blocks_til_maturity, title: 'Blocks Till Maturity', width: 25, type: DataTypeEnum.NUMBER },
+      { key: 'recovered_balance', value: preOrderedChannel.recovered_balance, title: 'Recovered Balance', width: 50, type: DataTypeEnum.NUMBER }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Force Closing Channel Information',
-      message: reorderedChannel
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Force Closing Channel Information',
+          message: reorderedChannel
+        }
+      }
+    }));
   }
 
   onClosingClick(selChannel: any) {
@@ -175,16 +187,20 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
       [{ key: 'closing_txid', value: preOrderedChannel.closing_txid, title: 'Closing Transaction ID', width: 50, type: DataTypeEnum.STRING }],
       [{ key: 'channel_point', value: preOrderedChannel.channel_point, title: 'Channel Point', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'remote_alias', value: preOrderedChannel.remote_alias, title: 'Peer Alias', width: 25, type: DataTypeEnum.STRING },
-        { key: 'remote_node_pub', value: preOrderedChannel.remote_node_pub, title: 'Peer Node Pubkey', width: 75, type: DataTypeEnum.STRING }],
+      { key: 'remote_node_pub', value: preOrderedChannel.remote_node_pub, title: 'Peer Node Pubkey', width: 75, type: DataTypeEnum.STRING }],
       [{ key: 'capacity', value: preOrderedChannel.capacity, title: 'Capacity', width: 25, type: DataTypeEnum.NUMBER },
-        { key: 'local_balance', value: preOrderedChannel.local_balance, title: 'Local Balance', width: 25, type: DataTypeEnum.NUMBER },
-        { key: 'remote_balance', value: preOrderedChannel.remote_balance, title: 'Remote Balance', width: 50, type: DataTypeEnum.NUMBER }]
+      { key: 'local_balance', value: preOrderedChannel.local_balance, title: 'Local Balance', width: 25, type: DataTypeEnum.NUMBER },
+      { key: 'remote_balance', value: preOrderedChannel.remote_balance, title: 'Remote Balance', width: 50, type: DataTypeEnum.NUMBER }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Closing Channel Information',
-      message: reorderedChannel
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Closing Channel Information',
+          message: reorderedChannel
+        }
+      }
+    }));
   }
 
   onWaitClosingClick(selChannel: any) {
@@ -197,17 +213,21 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
       [{ key: 'local_txid', value: preOrderedChannel.local_txid, title: 'Transaction ID', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'channel_point', value: preOrderedChannel.channel_point, title: 'Channel Point', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'remote_alias', value: preOrderedChannel.remote_alias, title: 'Peer Alias', width: 25, type: DataTypeEnum.STRING },
-        { key: 'remote_node_pub', value: preOrderedChannel.remote_node_pub, title: 'Peer Node Pubkey', width: 75, type: DataTypeEnum.STRING }],
+      { key: 'remote_node_pub', value: preOrderedChannel.remote_node_pub, title: 'Peer Node Pubkey', width: 75, type: DataTypeEnum.STRING }],
       [{ key: 'capacity', value: preOrderedChannel.capacity, title: 'Capacity', width: 25, type: DataTypeEnum.NUMBER },
-        { key: 'limbo_balance', value: preOrderedChannel.limbo_balance, title: 'Limbo Balance', width: 25, type: DataTypeEnum.NUMBER },
-        { key: 'local_balance', value: preOrderedChannel.local_balance, title: 'Local Balance', width: 25, type: DataTypeEnum.NUMBER },
-        { key: 'remote_balance', value: preOrderedChannel.remote_balance, title: 'Remote Balance', width: 25, type: DataTypeEnum.NUMBER }]
+      { key: 'limbo_balance', value: preOrderedChannel.limbo_balance, title: 'Limbo Balance', width: 25, type: DataTypeEnum.NUMBER },
+      { key: 'local_balance', value: preOrderedChannel.local_balance, title: 'Local Balance', width: 25, type: DataTypeEnum.NUMBER },
+      { key: 'remote_balance', value: preOrderedChannel.remote_balance, title: 'Remote Balance', width: 25, type: DataTypeEnum.NUMBER }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Wait Closing Channel Information',
-      message: reorderedChannel
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Wait Closing Channel Information',
+          message: reorderedChannel
+        }
+      }
+    }));
   }
 
   loadOpenChannelsTable(channels) {
@@ -248,10 +268,6 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
     this.pendingWaitClosingChannels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.pendingWaitClosingChannels.filterPredicate = (channel: any, fltr: string) => JSON.stringify(channel).toLowerCase().includes(fltr);
     this.logger.info(this.pendingWaitClosingChannels);
-  }
-
-  applyFilter(selFilter: string) {
-    this.selectedFilter = selFilter.trim().toLowerCase();
   }
 
   ngOnDestroy() {

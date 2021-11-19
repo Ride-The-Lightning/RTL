@@ -8,9 +8,9 @@ import { ChannelsStatus } from '../../../shared/models/clModels';
 })
 export class CLChannelStatusInfoComponent {
 
-  @Input() channelsStatus: ChannelsStatus = {};
+  @Input() channelsStatus: ChannelsStatus = { active: {}, pending: {}, inactive: {} };
   @Input() errorMessage: string;
 
-  constructor() {}
+  constructor() { }
 
 }

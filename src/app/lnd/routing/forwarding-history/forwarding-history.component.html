@@ -7,7 +7,7 @@
     </mat-form-field>
   </div>
   <div *ngIf="errorMessage === ''" [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
-    <mat-progress-bar *ngIf="apisCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+    <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
     <table mat-table #table fxFlex="100" [dataSource]="forwardingHistoryEvents" matSort class="overflow-auto">
     <ng-container matColumnDef="timestamp">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Timestamp</th>
@@ -48,9 +48,9 @@
       </ng-container>
       <ng-container matColumnDef="no_event">
         <td mat-footer-cell *matFooterCellDef colspan="4">
-          <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apisCallStatus?.status === apiCallStatusEnum.COMPLETED">No forwarding history available.</p>
-          <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apisCallStatus?.status === apiCallStatusEnum.INITIATED">Getting forwarding history...</p>
-          <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apisCallStatus?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+          <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No forwarding history available.</p>
+          <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting forwarding history...</p>
+          <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
         </td>
       </ng-container>
       <tr mat-footer-row *matFooterRowDef="['no_event']" [ngClass]="{'display-none': forwardingHistoryEvents?.data && forwardingHistoryEvents?.data?.length>0}"></tr>

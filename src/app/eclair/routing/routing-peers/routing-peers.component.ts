@@ -6,13 +6,14 @@ import { Store } from '@ngrx/store';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { PaymentRelayed, RoutingPeers } from '../../../shared/models/eclModels';
+import { PaymentRelayed, Payments, RoutingPeers } from '../../../shared/models/eclModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
-import { ApiCallsListECL } from '../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { payments } from '../../store/ecl.selector';
 
 @Component({
   selector: 'rtl-ecl-routing-peers',
@@ -26,8 +27,8 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
 
   @ViewChild('tableIn', { read: MatSort, static: false }) sortIn: MatSort;
   @ViewChild('tableOut', { read: MatSort, static: false }) sortOut: MatSort;
-  @ViewChild('paginatorIn', { static: false }) paginatorIn: MatPaginator|undefined;
-  @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator|undefined;
+  @ViewChild('paginatorIn', { static: false }) paginatorIn: MatPaginator | undefined;
+  @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator | undefined;
   public routingPeersData = [];
   public displayedColumns: any[] = [];
   public RoutingPeersIncoming: any;
@@ -38,11 +39,11 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListECL = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -60,19 +61,19 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   ngOnInit() {
-    this.store.select('ecl').
+    this.store.select(payments).
       pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+      subscribe((paymentsSelector: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchPayments.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPayments.message) : this.apisCallStatus.FetchPayments.message;
+        this.apiCallStatus = paymentsSelector.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.routingPeersData = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
+        this.routingPeersData = paymentsSelector.payments && paymentsSelector.payments.relayed ? paymentsSelector.payments.relayed : [];
         if (this.routingPeersData.length > 0 && this.sortIn && this.paginatorIn && this.sortOut && this.paginatorOut) {
           this.loadRoutingPeersTable(this.routingPeersData);
         }
-        this.logger.info(rtlStore);
+        this.logger.info(paymentsSelector);
       });
   }
 

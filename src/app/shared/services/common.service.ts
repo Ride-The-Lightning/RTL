@@ -286,9 +286,7 @@ export class CommonService {
   }
 
   isVersionCompatible(currentVersion, checkVersion) {
-    const versionsArr = currentVersion ? currentVersion.trim().replace('v', '').
-      split('-')[0].
-      split('.') : [];
+    const versionsArr = currentVersion.trim().replace('v', '').split('-')[0].split('.') || [];
     const checkVersionsArr = checkVersion.split('.');
     return (+versionsArr[0] > +checkVersionsArr[0]) ||
       (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] > +checkVersionsArr[1]) ||

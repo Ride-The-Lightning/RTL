@@ -12,19 +12,19 @@
           <mat-card fxLayout="row" fxFlex="95" fxLayoutAlign="start stretch" class="dashboard-card w-96 h-93">
             <mat-card-content fxLayout="column" fxFlex="100"
             [ngClass]="{'dashboard-card-content': true, 
-            'error-border': (card.id === 'node' && apisCallStatus?.FetchInfo.status === apiCallStatusEnum.ERROR) ||
-            (card.id === 'status' && (apisCallStatus?.FetchInfo.status === apiCallStatusEnum.ERROR || apisCallStatus?.FetchLocalRemoteBalance.status === apiCallStatusEnum.ERROR)) ||
-            (card.id === 'fee' && (apisCallStatus?.FetchFees.status === apiCallStatusEnum.ERROR || apisCallStatus?.FetchChannels.status === apiCallStatusEnum.ERROR || apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.ERROR)) ||
-            (card.id === 'feeRatesKB' && apisCallStatus?.FetchFeeRatesperkb.status === apiCallStatusEnum.ERROR) ||
-            (card.id === 'feeRatesKW' && apisCallStatus?.FetchFeeRatesperkw.status === apiCallStatusEnum.ERROR) ||
-            (card.id === 'onChainFeeEstimates' && apisCallStatus?.FetchFeeRatesperkw.status === apiCallStatusEnum.ERROR)}">
+            'error-border': (card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR) ||
+            (card.id === 'status' && (apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR || apiCallStatusLRBal.status === apiCallStatusEnum.ERROR)) ||
+            (card.id === 'fee' && (apiCallStatusFees.status === apiCallStatusEnum.ERROR || apiCallStatusChannels.status === apiCallStatusEnum.ERROR || apiCallStatusFHistory.status === apiCallStatusEnum.ERROR)) ||
+            (card.id === 'feeRatesKB' && apiCallStatusPerKB.status === apiCallStatusEnum.ERROR) ||
+            (card.id === 'feeRatesKW' && apiCallStatusPerKW.status === apiCallStatusEnum.ERROR) ||
+            (card.id === 'onChainFeeEstimates' && apiCallStatusPerKW.status === apiCallStatusEnum.ERROR)}">
               <mat-progress-bar mode="indeterminate"
-                *ngIf="(card.id === 'node' && apisCallStatus?.FetchInfo.status === apiCallStatusEnum.INITIATED) ||
-                (card.id === 'status' && (apisCallStatus?.FetchInfo.status === apiCallStatusEnum.INITIATED || apisCallStatus?.FetchLocalRemoteBalance.status === apiCallStatusEnum.INITIATED)) ||
-                (card.id === 'fee' && (apisCallStatus?.FetchFees.status === apiCallStatusEnum.INITIATED || apisCallStatus?.FetchChannels.status === apiCallStatusEnum.INITIATED || apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.INITIATED)) ||
-                (card.id === 'feeRatesKB' && apisCallStatus?.FetchFeeRatesperkb.status === apiCallStatusEnum.INITIATED) ||
-                (card.id === 'feeRatesKW' && apisCallStatus?.FetchFeeRatesperkw.status === apiCallStatusEnum.INITIATED) ||
-                (card.id === 'onChainFeeEstimates' && apisCallStatus?.FetchFeeRatesperkw.status === apiCallStatusEnum.INITIATED)"
+                *ngIf="(card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED) ||
+                (card.id === 'status' && (apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED || apiCallStatusLRBal.status === apiCallStatusEnum.INITIATED)) ||
+                (card.id === 'fee' && (apiCallStatusFees.status === apiCallStatusEnum.INITIATED || apiCallStatusChannels.status === apiCallStatusEnum.INITIATED || apiCallStatusFHistory.status === apiCallStatusEnum.INITIATED)) ||
+                (card.id === 'feeRatesKB' && apiCallStatusPerKB.status === apiCallStatusEnum.INITIATED) ||
+                (card.id === 'feeRatesKW' && apiCallStatusPerKW.status === apiCallStatusEnum.INITIATED) ||
+                (card.id === 'onChainFeeEstimates' && apiCallStatusPerKW.status === apiCallStatusEnum.INITIATED)"
               ></mat-progress-bar>
               <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
                 <rtl-cl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="false"></rtl-cl-node-info>
@@ -53,19 +53,19 @@
           <mat-card fxLayout="row" fxFlex="95" fxLayoutAlign="start stretch" class="dashboard-card w-96 h-93">
             <mat-card-content fxLayout="column" fxFlex="100"
             [ngClass]="{'dashboard-card-content': true, 
-              'error-border': (card.id === 'node' && apisCallStatus?.FetchInfo.status === apiCallStatusEnum.ERROR) ||
-              (card.id === 'status' && (apisCallStatus?.FetchInfo.status === apiCallStatusEnum.ERROR || apisCallStatus?.FetchLocalRemoteBalance.status === apiCallStatusEnum.ERROR)) ||
-              (card.id === 'fee' && (apisCallStatus?.FetchFees.status === apiCallStatusEnum.ERROR || apisCallStatus?.FetchChannels.status === apiCallStatusEnum.ERROR || apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.ERROR)) ||
-              (card.id === 'feeRatesKB' && apisCallStatus?.FetchFeeRatesperkb.status === apiCallStatusEnum.ERROR) ||
-              (card.id === 'feeRatesKW' && apisCallStatus?.FetchFeeRatesperkw.status === apiCallStatusEnum.ERROR) ||
-              (card.id === 'onChainFeeEstimates' && apisCallStatus?.FetchFeeRatesperkw.status === apiCallStatusEnum.ERROR)}">
+              'error-border': (card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR) ||
+              (card.id === 'status' && (apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR || apiCallStatusLRBal.status === apiCallStatusEnum.ERROR)) ||
+              (card.id === 'fee' && (apiCallStatusFees.status === apiCallStatusEnum.ERROR || apiCallStatusChannels.status === apiCallStatusEnum.ERROR || apiCallStatusFHistory.status === apiCallStatusEnum.ERROR)) ||
+              (card.id === 'feeRatesKB' && apiCallStatusPerKB.status === apiCallStatusEnum.ERROR) ||
+              (card.id === 'feeRatesKW' && apiCallStatusPerKW.status === apiCallStatusEnum.ERROR) ||
+              (card.id === 'onChainFeeEstimates' && apiCallStatusPerKW.status === apiCallStatusEnum.ERROR)}">
               <mat-progress-bar mode="indeterminate"
-                *ngIf="(card.id === 'node' && apisCallStatus?.FetchInfo.status === apiCallStatusEnum.INITIATED) ||
-                (card.id === 'status' && (apisCallStatus?.FetchInfo.status === apiCallStatusEnum.INITIATED || apisCallStatus?.FetchLocalRemoteBalance.status === apiCallStatusEnum.INITIATED)) ||
-                (card.id === 'fee' && (apisCallStatus?.FetchFees.status === apiCallStatusEnum.INITIATED || apisCallStatus?.FetchChannels.status === apiCallStatusEnum.INITIATED || apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.INITIATED)) ||
-                (card.id === 'feeRatesKB' && apisCallStatus?.FetchFeeRatesperkb.status === apiCallStatusEnum.INITIATED) ||
-                (card.id === 'feeRatesKW' && apisCallStatus?.FetchFeeRatesperkw.status === apiCallStatusEnum.INITIATED) ||
-                (card.id === 'onChainFeeEstimates' && apisCallStatus?.FetchFeeRatesperkw.status === apiCallStatusEnum.INITIATED)"
+                *ngIf="(card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED) ||
+                (card.id === 'status' && (apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED || apiCallStatusLRBal.status === apiCallStatusEnum.INITIATED)) ||
+                (card.id === 'fee' && (apiCallStatusFees.status === apiCallStatusEnum.INITIATED || apiCallStatusChannels.status === apiCallStatusEnum.INITIATED || apiCallStatusFHistory.status === apiCallStatusEnum.INITIATED)) ||
+                (card.id === 'feeRatesKB' && apiCallStatusPerKB.status === apiCallStatusEnum.INITIATED) ||
+                (card.id === 'feeRatesKW' && apiCallStatusPerKW.status === apiCallStatusEnum.INITIATED) ||
+                (card.id === 'onChainFeeEstimates' && apiCallStatusPerKW.status === apiCallStatusEnum.INITIATED)"
               ></mat-progress-bar>
               <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
                 <rtl-cl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="false"></rtl-cl-node-info>

@@ -1,10 +1,10 @@
 import exprs from 'express';
 const { Router } = exprs;
 import { isAuthenticated } from '../../utils/authCheck.js';
-import { getBalance } from '../../controllers/lnd/balance.js';
+import { getBlockchainBalance } from '../../controllers/lnd/balance.js';
 
 const router = Router();
 
-router.get('/:source', isAuthenticated, getBalance);
+router.get('/', isAuthenticated, getBlockchainBalance);
 
 export default router;

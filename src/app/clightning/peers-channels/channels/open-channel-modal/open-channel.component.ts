@@ -11,10 +11,10 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { CommonService } from '../../../../shared/services/common.service';
 import { Peer, GetInfo, UTXO } from '../../../../shared/models/clModels';
 import { CLOpenChannelAlert } from '../../../../shared/models/alertData';
-import { APICallStatusEnum, FEE_RATE_TYPES, ScreenSizeEnum } from '../../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, CLActions, FEE_RATE_TYPES, ScreenSizeEnum } from '../../../../shared/services/consts-enums-functions';
 
-import * as CLActions from '../../../store/cl.actions';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { RTLState } from '../../../../store/rtl.state';
+import { saveNewChannel } from '../../../store/cl.actions';
 
 @Component({
   selector: 'rtl-cl-open-channel',
@@ -52,7 +52,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private decimalPipe: DecimalPipe, private commonService: CommonService) {
+  constructor(public dialogRef: MatDialogRef<CLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOpenChannelAlert, private store: Store<RTLState>, private actions: Actions, private decimalPipe: DecimalPipe, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -62,12 +62,12 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
     this.totalBalance = this.data.message.balance;
     this.utxos = this.data.message.utxos;
     this.alertTitle = this.data.alertTitle;
-    this.peer = this.data.message.peer ? this.data.message.peer : null;
-    this.peers = this.data.message.peers && this.data.message.peers.length ? this.data.message.peers : [];
+    this.peer = this.data.message.peer || null;
+    this.peers = this.data.message.peers || [];
     this.actions.pipe(
       takeUntil(this.unSubs[0]),
       filter((action) => action.type === CLActions.UPDATE_API_CALL_STATUS_CL || action.type === CLActions.FETCH_CHANNELS_CL)).
-      subscribe((action: CLActions.UpdateAPICallStatus | CLActions.FetchChannels) => {
+      subscribe((action: any) => {
         if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewChannel') {
           this.channelConnectionError = action.payload.message;
         }
@@ -184,7 +184,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
       newChannel['utxos'] = [];
       this.selUTXOs.forEach((utxo) => newChannel['utxos'].push(utxo.txid + ':' + utxo.output));
     }
-    this.store.dispatch(new CLActions.SaveNewChannel(newChannel));
+    this.store.dispatch(saveNewChannel({ payload: newChannel }));
   }
 
   ngOnDestroy() {

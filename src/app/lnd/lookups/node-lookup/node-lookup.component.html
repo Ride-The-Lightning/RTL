@@ -26,6 +26,11 @@
       <span class="foreground-secondary-text">{{lookupResult.num_channels | number}}</span>
     </div>
   </div>
+  <mat-divider [inset]="true" class="mb-1"></mat-divider>
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="end start" class="my-1">
+    <h4 fxLayoutAlign="start" class="font-bold-500">Features</h4>
+    <span class="foreground-secondary-text w-100" *ngFor="let feature of lookupResult.node.features | keyvalue">{{nodeFeaturesEnum[feature.value.name] || feature.value.name}}: {{feature.value.is_required ? 'Mandatory' : 'Optional'}}</span>
+  </div>
   <mat-divider [inset]="true" class="my-1"></mat-divider>        
   <div fxLayout="column" class="mt-2">
     <h4 fxFlex="100" fxLayoutAlign="start" class="font-bold-500 mb-1">Addresses</h4>

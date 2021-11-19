@@ -7,7 +7,7 @@ import { faLayerGroup } from '@fortawesome/free-solid-svg-icons';
 
 import { ConfigSettingsNode, RTLConfiguration } from '../../../models/RTLconfig';
 
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { RTLState } from '../../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-services-settings',
@@ -17,26 +17,19 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
 export class ServicesSettingsComponent implements OnInit, OnDestroy {
 
   public faLayerGroup = faLayerGroup;
-  public selNode: ConfigSettingsNode;
-  public appConfig: RTLConfiguration;
   public links = [{ link: 'loop', name: 'Loop' }, { link: 'boltz', name: 'Boltz' }];
   public activeLink = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private router: Router) { }
+  constructor(private store: Store<RTLState>, private router: Router) { }
 
   ngOnInit() {
     const linkFound = this.links.find((link) => this.router.url.includes(link.link));
     this.activeLink = linkFound ? linkFound.link : this.links[0].link;
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe((value: ResolveEnd) => {
+      subscribe((value: any) => {
         const linkFound = this.links.find((link) => value.urlAfterRedirects.includes(link.link));
         this.activeLink = linkFound ? linkFound.link : this.links[0].link;
-      });
-    this.store.select('root').pipe(takeUntil(this.unSubs[1])).
-      subscribe((rtlStore) => {
-        this.appConfig = rtlStore.appConfig;
-        this.selNode = rtlStore.selNode;
       });
   }
 

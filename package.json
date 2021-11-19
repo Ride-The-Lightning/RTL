@@ -10,7 +10,7 @@
     "prebuildapp": "node ./src/prebuild",
     "buildapp": "ng build --configuration production",
     "buildsource": "ng build --configuration production && npm run buildserver",
-    "build": "ng analytics off && ng lint && ng test && ng build --configuration production && npm run buildserver",
+    "build": "ng analytics off && ng test && ng build --configuration production && npm run buildserver",
     "buildserver": "tsc --project tsconfig.json",
     "watchserver": "tsc --project tsconfig.json --watch",
     "server": "set NODE_ENV=development&&nodemon ./rtl.js",

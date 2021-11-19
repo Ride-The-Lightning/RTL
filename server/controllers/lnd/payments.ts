@@ -34,7 +34,7 @@ export const getAllLightningTransactions = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'All Invoices Options', data: options2 });
   return Promise.all([request(options1), request(options2)]).then((values) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payments & Invoices Received' });
-    res.status(200).json({ paymentsAll: values[0], invoicesAll: values[1] });
+    res.status(200).json({ listPaymentsAll: values[0], listInvoicesAll: values[1] });
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Payments', 'All Lightning Transactions Error', req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });

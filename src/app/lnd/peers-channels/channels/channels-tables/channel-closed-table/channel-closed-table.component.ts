@@ -9,12 +9,13 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ClosedChannel } from '../../../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CHANNEL_CLOSURE_TYPE, APICallStatusEnum } from '../../../../../shared/services/consts-enums-functions';
-import { ApiCallsListLND } from '../../../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 
-import * as RTLActions from '../../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../../store/rtl.reducers';
+import { openAlert } from '../../../../../store/rtl.actions';
+import { RTLState } from '../../../../../store/rtl.state';
+import { closedChannels } from '../../../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-channel-closed-table',
@@ -26,12 +27,12 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 })
 export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public channelClosureType = CHANNEL_CLOSURE_TYPE;
   public faHistory = faHistory;
   public displayedColumns: any[] = [];
-  public closedChannelsData: ClosedChannel[] =[];
+  public closedChannelsData: ClosedChannel[] = [];
   public closedChannels: any;
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
@@ -39,11 +40,12 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListLND = null;
+  public selFilter = '';
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -58,19 +60,18 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   ngOnInit() {
-    this.store.select('lnd').
-      pipe(takeUntil(this.unsub[0])).
-      subscribe((rtlStore) => {
+    this.store.select(closedChannels).pipe(takeUntil(this.unsub[0])).
+      subscribe((closedChannelsSelector: { closedChannels: ClosedChannel[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchClosedChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchClosedChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchClosedChannels.message) : this.apisCallStatus.FetchClosedChannels.message;
+        this.apiCallStatus = closedChannelsSelector.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.closedChannelsData = rtlStore.closedChannels;
+        this.closedChannelsData = closedChannelsSelector.closedChannels;
         if (this.closedChannelsData.length > 0) {
           this.loadClosedChannelsTable(this.closedChannelsData);
         }
-        this.logger.info(rtlStore);
+        this.logger.info(closedChannelsSelector);
       });
   }
 
@@ -80,28 +81,34 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
     }
   }
 
-  applyFilter(selFilter: any) {
-    this.closedChannels.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    if (this.selFilter !== '') {
+      this.closedChannels.filter = this.selFilter.trim().toLowerCase();
+    }
   }
 
   onClosedChannelClick(selChannel: ClosedChannel, event: any) {
     const reorderedChannel = [
       [{ key: 'close_type', value: this.channelClosureType[selChannel.close_type].name, title: 'Close Type', width: 30, type: DataTypeEnum.STRING },
-        { key: 'settled_balance', value: selChannel.settled_balance, title: 'Settled Balance', width: 30, type: DataTypeEnum.NUMBER },
-        { key: 'time_locked_balance', value: selChannel.time_locked_balance, title: 'Time Locked Balance', width: 40, type: DataTypeEnum.NUMBER }],
+      { key: 'settled_balance', value: selChannel.settled_balance, title: 'Settled Balance', width: 30, type: DataTypeEnum.NUMBER },
+      { key: 'time_locked_balance', value: selChannel.time_locked_balance, title: 'Time Locked Balance', width: 40, type: DataTypeEnum.NUMBER }],
       [{ key: 'chan_id', value: selChannel.chan_id, title: 'Channel ID', width: 30 },
-        { key: 'capacity', value: selChannel.capacity, title: 'Capacity', width: 30, type: DataTypeEnum.NUMBER },
-        { key: 'close_height', value: selChannel.close_height, title: 'Close Height', width: 40, type: DataTypeEnum.NUMBER }],
+      { key: 'capacity', value: selChannel.capacity, title: 'Capacity', width: 30, type: DataTypeEnum.NUMBER },
+      { key: 'close_height', value: selChannel.close_height, title: 'Close Height', width: 40, type: DataTypeEnum.NUMBER }],
       [{ key: 'remote_alias', value: selChannel.remote_alias, title: 'Peer Alias', width: 30 },
-        { key: 'remote_pubkey', value: selChannel.remote_pubkey, title: 'Peer Public Key', width: 70 }],
+      { key: 'remote_pubkey', value: selChannel.remote_pubkey, title: 'Peer Public Key', width: 70 }],
       [{ key: 'channel_point', value: selChannel.channel_point, title: 'Channel Point', width: 100 }],
       [{ key: 'closing_tx_hash', value: selChannel.closing_tx_hash, title: 'Closing Transaction Hash', width: 100, type: DataTypeEnum.STRING }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Closed Channel Information',
-      message: reorderedChannel
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Closed Channel Information',
+          message: reorderedChannel
+        }
+      }
+    }));
   }
 
   loadClosedChannelsTable(closedChannels) {
@@ -110,6 +117,7 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
     this.closedChannels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.closedChannels.filterPredicate = (channel: ClosedChannel, fltr: string) => JSON.stringify(channel).toLowerCase().includes(fltr);
     this.closedChannels.paginator = this.paginator;
+    this.applyFilter();
     this.logger.info(this.closedChannels);
   }
 

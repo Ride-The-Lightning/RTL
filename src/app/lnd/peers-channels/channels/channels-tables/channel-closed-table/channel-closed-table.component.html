@@ -2,11 +2,11 @@
   <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container">
     <div fxFlex="70"></div>
     <mat-form-field fxFlex="30">
-      <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
+      <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" placeholder="Filter">
     </mat-form-field>
   </div>
   <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
-    <mat-progress-bar *ngIf="apisCallStatus?.FetchClosedChannels.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+    <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
     <table mat-table #table fxFlex="100" [dataSource]="closedChannels" matSort [ngClass]="{'error-border': errorMessage !== '', 'overflow-auto': true}">
       <ng-container matColumnDef="close_type">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Close Type </th>
@@ -48,9 +48,9 @@
       </ng-container>
       <ng-container matColumnDef="no_closed_channel">
         <td mat-footer-cell *matFooterCellDef colspan="4">
-          <p *ngIf="(!closedChannels?.data || closedChannels?.data?.length<1) && apisCallStatus?.FetchClosedChannels.status === apiCallStatusEnum.COMPLETED">No closed channel available.</p>
-          <p *ngIf="(!closedChannels?.data || closedChannels?.data?.length<1) && apisCallStatus?.FetchClosedChannels.status === apiCallStatusEnum.INITIATED">Getting closed channels...</p>
-          <p *ngIf="(!closedChannels?.data || closedChannels?.data?.length<1) && apisCallStatus?.FetchClosedChannels.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+          <p *ngIf="(!closedChannels?.data || closedChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No closed channel available.</p>
+          <p *ngIf="(!closedChannels?.data || closedChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting closed channels...</p>
+          <p *ngIf="(!closedChannels?.data || closedChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
         </td>
       </ng-container>
       <tr mat-footer-row *matFooterRowDef="['no_closed_channel']" [ngClass]="{'display-none': closedChannels?.data && closedChannels?.data?.length>0}"></tr>
