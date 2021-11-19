@@ -57,7 +57,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apiCallStatus: ApiCallStatusPayload = { status: APICallStatusEnum.COMPLETED };
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -88,18 +88,15 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
         this.information = <GetInfo>nodeInfo;
       });
     this.store.select(invoices).pipe(takeUntil(this.unSubs[2])).
-      subscribe((invoicesSelector: Invoice[] | ApiCallStatusPayload) => {
+      subscribe((invoicesSelector: { invoices: Invoice[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        if (Array.isArray(invoicesSelector)) {
-          this.invoiceJSONArr = <Invoice[]>invoicesSelector || [];
-          if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator) {
-            this.loadInvoicesTable(this.invoiceJSONArr);
-          }
-        } else {
-          this.apiCallStatus = <ApiCallStatusPayload>invoicesSelector;
-          if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-            this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-          }
+        this.apiCallStatus = invoicesSelector.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+        }
+        this.invoiceJSONArr = (invoicesSelector.invoices && invoicesSelector.invoices.length > 0) ? invoicesSelector.invoices : [];
+        if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator) {
+          this.loadInvoicesTable(this.invoiceJSONArr);
         }
         this.logger.info(invoicesSelector);
       });

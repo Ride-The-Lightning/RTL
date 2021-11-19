@@ -3,7 +3,7 @@ import { createAction, props } from '@ngrx/store';
 import { ECLActions } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Channel, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus, Payments, Route, Transaction, SendPaymentOnChain, Invoice, PaymentReceived, ChannelStateUpdate, SaveChannel, UpdateChannel, CloseChannel, GetQueryRoutes, CreateInvoice, SendPayment } from '../../shared/models/eclModels';
+import { GetInfo, Channel, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus, Payments, Route, Transaction, SendPaymentOnChain, Invoice, PaymentReceived, ChannelStateUpdate, SaveChannel, UpdateChannel, CloseChannel, GetQueryRoutes, CreateInvoice, SendPayment, PaymentRelayed } from '../../shared/models/eclModels';
 
 export const updateECLAPICallStatus = createAction(ECLActions.UPDATE_API_CALL_STATUS_ECL, props<{ payload: ApiCallStatusPayload }>());
 
@@ -98,3 +98,5 @@ export const invoiceLookup = createAction(ECLActions.INVOICE_LOOKUP_ECL, props<{
 export const setLookup = createAction(ECLActions.SET_LOOKUP_ECL, props<{ payload: any }>());
 
 export const updateChannelState = createAction(ECLActions.UPDATE_CHANNEL_STATE_ECL, props<{ payload: ChannelStateUpdate }>());
+
+export const updateRelayedPayment = createAction(ECLActions.UPDATE_RELAYED_PAYMENT_ECL, props<{ payload: PaymentRelayed }>());

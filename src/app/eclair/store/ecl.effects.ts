@@ -19,7 +19,7 @@ import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpi
 import { ECLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 
 import { RTLState } from '../../store/rtl.state';
-import { fetchChannels, fetchFees, fetchInvoices, fetchOnchainBalance, fetchPayments, fetchPeers, sendPaymentStatus, setActiveChannels, setChannelsStatus, setInactiveChannels, setLightningBalance, setPeers, setPendingChannels, setQueryRoutes, updateECLAPICallStatus, updateChannelState, updateInvoice } from './ecl.actions';
+import { fetchChannels, fetchFees, fetchInvoices, fetchOnchainBalance, fetchPayments, fetchPeers, sendPaymentStatus, setActiveChannels, setChannelsStatus, setInactiveChannels, setLightningBalance, setPeers, setPendingChannels, setQueryRoutes, updateECLAPICallStatus, updateChannelState, updateInvoice, updateRelayedPayment } from './ecl.actions';
 import { allAPIsCallStatus } from './ecl.selector';
 import { ApiCallsListECL } from '../../shared/models/apiCallsPayload';
 
@@ -80,8 +80,8 @@ export class ECLEffects implements OnDestroy {
               this.store.dispatch(updateInvoice({ payload: newMessage }));
               break;
             case ECLWSEventTypeEnum.PAYMENT_RELAYED:
-              this.logger.warn(newMessage);
-              // this.store.dispatch(updateInvoice({ payload: newMessage }));
+              delete newMessage.source;
+              this.store.dispatch(updateRelayedPayment({ payload: newMessage }));
               break;
             case ECLWSEventTypeEnum.CHANNEL_STATE_CHANGED:
               if ((<ChannelStateUpdate>newMessage).currentState === 'NORMAL' || (<ChannelStateUpdate>newMessage).currentState === 'CLOSED') {

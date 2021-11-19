@@ -6,7 +6,7 @@ export const lndNodeSettings = createSelector(lndState, (state: LNDState) => sta
 export const lndNodeInformation = createSelector(lndState, (state: LNDState) => state.information);
 export const nodeInfoStatus = createSelector(lndState, (state: LNDState) => ({ information: state.information, apiCallStatus: state.apisCallStatus.FetchInfo }));
 export const allAPIsCallStatus = createSelector(lndState, (state: LNDState) => state.apisCallStatus);
-export const forwardingHistory = createSelector(lndState, (state: LNDState) => ({ forwardingHistory: state.forwardingHistory, apiCallStatus: state.apisCallStatus.GetForwardingHistory }));
+export const forwardingHistory = createSelector(lndState, (state: LNDState) => ({ forwardingHistory: state.forwardingHistory, apiCallStatus: state.apisCallStatus.FetchForwardingHistory }));
 export const payments = createSelector(lndState, (state: LNDState) => ({ listPayments: state.listPayments, apiCallStatus: state.apisCallStatus.FetchPayments }));
 export const fees = createSelector(lndState, (state: LNDState) => ({ fees: state.fees, apiCallStatus: state.apisCallStatus.FetchFees }));
 export const peers = createSelector(lndState, (state: LNDState) => ({ peers: state.peers, apiCallStatus: state.apisCallStatus.FetchPeers }));

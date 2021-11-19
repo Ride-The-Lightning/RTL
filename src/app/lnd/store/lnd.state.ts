@@ -36,7 +36,7 @@ export const initLNDState: LNDState = {
     FetchBalanceBlockchain: { status: APICallStatusEnum.UN_INITIATED },
     FetchInvoices: { status: APICallStatusEnum.UN_INITIATED },
     FetchPayments: { status: APICallStatusEnum.UN_INITIATED },
-    GetForwardingHistory: { status: APICallStatusEnum.UN_INITIATED },
+    FetchForwardingHistory: { status: APICallStatusEnum.UN_INITIATED },
     FetchUTXOs: { status: APICallStatusEnum.UN_INITIATED },
     FetchTransactions: { status: APICallStatusEnum.UN_INITIATED },
     FetchLightningTransactions: { status: APICallStatusEnum.UN_INITIATED },
@@ -45,7 +45,16 @@ export const initLNDState: LNDState = {
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, fiatConversion: false, channelBackupPath: '', currencyUnits: [], selCurrencyUnit: '', lnImplementation: '', swapServerUrl: '' },
   information: {},
   peers: [],
-  fees: {},
+  fees: {
+    channel_fees: [],
+    day_fee_sum: 0,
+    week_fee_sum: 0,
+    month_fee_sum: 0,
+    daily_tx_count: 0,
+    weekly_tx_count: 0,
+    monthly_tx_count: 0,
+    forwarding_events_history: {}
+  },
   networkInfo: {},
   blockchainBalance: { total_balance: -1 },
   lightningBalance: { local: -1, remote: -1 },
@@ -58,6 +67,21 @@ export const initLNDState: LNDState = {
   utxos: [],
   listPayments: { payments: [] },
   listInvoices: { invoices: [] },
-  allLightningTransactions: { listPaymentsAll: null, listInvoicesAll: null },
-  forwardingHistory: {}
+  allLightningTransactions: {
+    listPaymentsAll: {
+      payments: [],
+      first_index_offset: '',
+      last_index_offset: ''
+    }, listInvoicesAll: {
+      invoices: [],
+      total_invoices: 0,
+      last_index_offset: '',
+      first_index_offset: ''
+    }
+  },
+  forwardingHistory: {
+    last_offset_index: 0,
+    total_fee_msat: 0,
+    forwarding_events: []
+  }
 };

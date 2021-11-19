@@ -14,7 +14,7 @@ import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 
 import { RTLState } from '../../store/rtl.state';
-import { allChannelsInfo, eclNodeInformation, eclNodeSettings, fees, onchainBalance } from '../store/ecl.selector';
+import { allChannelsInfo, eclNodeSettings, fees, nodeInfoStatus, onchainBalance } from '../store/ecl.selector';
 
 @Component({
   selector: 'rtl-ecl-home',
@@ -113,63 +113,49 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
       subscribe((nodeSettings) => {
         this.selNode = nodeSettings;
       });
-    this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[1])).
-      subscribe((nodeInfo: GetInfo | ApiCallStatusPayload) => {
+    this.store.select(nodeInfoStatus).pipe(takeUntil(this.unSubs[1])).
+      subscribe((selNodeInfoStatusSelector: { information: GetInfo, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessages[0] = '';
-        if (nodeInfo.hasOwnProperty('nodeId')) {
-          this.information = <GetInfo>nodeInfo;
-          this.logger.info(nodeInfo);
-        } else {
-          this.apiCallStatusNodeInfo = <ApiCallStatusPayload>nodeInfo;
-          if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {
-            this.errorMessages[0] = (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message;
-          }
-          this.logger.error(nodeInfo);
+        this.apiCallStatusNodeInfo = selNodeInfoStatusSelector.apiCallStatus;
+        if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[0] = (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message;
         }
+        this.information = selNodeInfoStatusSelector.information;
       });
+
     this.store.select(fees).pipe(takeUntil(this.unSubs[2])).
-      subscribe((feesSelector: Fees | ApiCallStatusPayload) => {
+      subscribe((feesSelector: { fees: Fees, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessages[1] = '';
-        if (feesSelector.hasOwnProperty('daily_fee')) {
-          this.fees = <Fees>feesSelector;
-        } else {
-          this.apiCallStatusFees = <ApiCallStatusPayload>feesSelector;
-          if (this.apiCallStatusFees.status === APICallStatusEnum.ERROR) {
-            this.errorMessages[1] = (typeof (this.apiCallStatusFees.message) === 'object') ? JSON.stringify(this.apiCallStatusFees.message) : this.apiCallStatusFees.message;
-          }
+        this.apiCallStatusFees = feesSelector.apiCallStatus;
+        if (this.apiCallStatusFees.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[1] = (typeof (this.apiCallStatusFees.message) === 'object') ? JSON.stringify(this.apiCallStatusFees.message) : this.apiCallStatusFees.message;
         }
+        this.fees = feesSelector.fees;
       });
     this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[3]),
       withLatestFrom(this.store.select(onchainBalance))).
-      subscribe(([allChannelsSelector, oCBalanceSelector]: [({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus } | ApiCallStatusPayload), (OnChainBalance | ApiCallStatusPayload)]) => {
+      subscribe(([allChannelsSelector, oCBalanceSelector]: [({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload }), ({ onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload })]) => {
         this.errorMessages[2] = '';
         this.errorMessages[3] = '';
-        if (allChannelsSelector.hasOwnProperty('activeChannels')) {
-          this.channels = (<any>allChannelsSelector).activeChannels;
-        } else {
-          this.apiCallStatusAllChannels = <ApiCallStatusPayload>allChannelsSelector;
-          if (this.apiCallStatusAllChannels.status === APICallStatusEnum.ERROR) {
-            this.errorMessages[2] = (typeof (this.apiCallStatusAllChannels.message) === 'object') ? JSON.stringify(this.apiCallStatusAllChannels.message) : this.apiCallStatusAllChannels.message;
-          }
+        this.apiCallStatusAllChannels = allChannelsSelector.apiCallStatus;
+        this.apiCallStatusOCBal = oCBalanceSelector.apiCallStatus;
+        if (this.apiCallStatusAllChannels.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[2] = (typeof (this.apiCallStatusAllChannels.message) === 'object') ? JSON.stringify(this.apiCallStatusAllChannels.message) : this.apiCallStatusAllChannels.message;
         }
-
-        if (oCBalanceSelector.hasOwnProperty('total')) {
-          this.onchainBalance = <OnChainBalance>oCBalanceSelector;
-        } else {
-          this.apiCallStatusOCBal = <ApiCallStatusPayload>oCBalanceSelector;
-          if (this.apiCallStatusOCBal.status === APICallStatusEnum.ERROR) {
-            this.errorMessages[3] = (typeof (this.apiCallStatusOCBal.message) === 'object') ? JSON.stringify(this.apiCallStatusOCBal.message) : this.apiCallStatusOCBal.message;
-          }
+        if (this.apiCallStatusOCBal.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[3] = (typeof (this.apiCallStatusOCBal.message) === 'object') ? JSON.stringify(this.apiCallStatusOCBal.message) : this.apiCallStatusOCBal.message;
         }
+        this.channels = allChannelsSelector.activeChannels;
+        this.onchainBalance = oCBalanceSelector.onchainBalance;
         this.balances.onchain = this.onchainBalance.total;
-        this.balances.lightning = (<any>allChannelsSelector).lightningBalance.localBalance;
+        this.balances.lightning = allChannelsSelector.lightningBalance.localBalance;
         this.balances.total = this.balances.lightning + this.balances.onchain;
         this.balances = Object.assign({}, this.balances);
-        const local = ((<any>allChannelsSelector).lightningBalance.localBalance) ? +(<any>allChannelsSelector).lightningBalance.localBalance : 0;
-        const remote = ((<any>allChannelsSelector).lightningBalance.remoteBalance) ? +(<any>allChannelsSelector).lightningBalance.remoteBalance : 0;
+        const local = (allChannelsSelector.lightningBalance.localBalance) ? +allChannelsSelector.lightningBalance.localBalance : 0;
+        const remote = (allChannelsSelector.lightningBalance.remoteBalance) ? +allChannelsSelector.lightningBalance.remoteBalance : 0;
         const total = local + remote;
         this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: +(1 - Math.abs((local - remote) / total)).toFixed(3) };
-        this.channelsStatus = (<any>allChannelsSelector).channelsStatus;
+        this.channelsStatus = allChannelsSelector.channelsStatus;
         this.totalInboundLiquidity = 0;
         this.totalOutboundLiquidity = 0;
         this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels, 'balancedness')));

@@ -52,11 +52,9 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
         this.selNode = nodeSettings;
       });
     this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[1])).
-      subscribe((allChannelsSelector: ({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus } | ApiCallStatusPayload)) => {
-        if (allChannelsSelector.hasOwnProperty('activeChannels')) {
-          this.activeChannels = (<any>allChannelsSelector).activeChannels;
-          this.logger.info(allChannelsSelector);
-        }
+      subscribe((allChannelsSelector: ({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload })) => {
+        this.activeChannels = allChannelsSelector.activeChannels;
+        this.logger.info(allChannelsSelector);
       });
     this.actions.pipe(
       takeUntil(this.unSubs[1]),

@@ -20,7 +20,7 @@ export class CLWebSocketClient {
 
   public reconnet = () => {
     if (this.reconnectTimeOut) { return; }
-    this.waitTime = (this.waitTime >= 16) ? 16 : (this.waitTime * 2);
+    this.waitTime = (this.waitTime >= 64) ? 64 : (this.waitTime * 2);
     this.reconnectTimeOut = setTimeout(() => {
       if (this.selectedNode) {
         this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Reconnecting to the CLightning\'s Websocket Server..' });

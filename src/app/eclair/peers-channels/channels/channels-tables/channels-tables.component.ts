@@ -41,12 +41,10 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
         this.activeLink = this.links.findIndex((link) => link.link === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
       });
     this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[1])).
-      subscribe((allChannelsSelector: ({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus } | ApiCallStatusPayload)) => {
-        if (allChannelsSelector.hasOwnProperty('channelsStatus')) {
-          this.numOfOpenChannels = (<any>allChannelsSelector).channelsStatus.active.channels || 0;
-          this.numOfPendingChannels = (<any>allChannelsSelector).channelsStatus.pending.channels || 0;
-          this.numOfInactiveChannels = (<any>allChannelsSelector).channelsStatus.inactive.channels || 0;
-        }
+      subscribe((allChannelsSelector: ({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload })) => {
+        this.numOfOpenChannels = (allChannelsSelector.channelsStatus && allChannelsSelector.channelsStatus.active && allChannelsSelector.channelsStatus.active.channels) ? allChannelsSelector.channelsStatus.active.channels : 0;
+        this.numOfPendingChannels = (allChannelsSelector.channelsStatus && allChannelsSelector.channelsStatus.pending && allChannelsSelector.channelsStatus.pending.channels) ? allChannelsSelector.channelsStatus.pending.channels : 0;
+        this.numOfInactiveChannels = (allChannelsSelector.channelsStatus && allChannelsSelector.channelsStatus.inactive && allChannelsSelector.channelsStatus.inactive.channels) ? allChannelsSelector.channelsStatus.inactive.channels : 0;
         this.logger.info(allChannelsSelector);
       });
     this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[2])).
@@ -54,24 +52,16 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
         this.selNode = nodeSettings;
       });
     this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[3])).
-      subscribe((nodeInfo: any) => {
+      subscribe((nodeInfo: GetInfo) => {
         this.information = nodeInfo;
       });
     this.store.select(peers).pipe(takeUntil(this.unSubs[4])).
-      subscribe((peersSelector: Peer[] | ApiCallStatusPayload) => {
-        if (Array.isArray(peersSelector)) {
-          this.peers = <Peer[]>peersSelector;
-        } else {
-          this.logger.error(peersSelector);
-        }
+      subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.peers = peersSelector.peers;
       });
     this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[5])).
-      subscribe((selOCBal: OnChainBalance | ApiCallStatusPayload) => {
-        if (selOCBal.hasOwnProperty('total')) {
-          this.totalBalance = (<OnChainBalance>selOCBal).total;
-        } else {
-          this.logger.error(selOCBal);
-        }
+      subscribe((oCBalanceSelector: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.totalBalance = oCBalanceSelector.onchainBalance.total;
       });
   }
 

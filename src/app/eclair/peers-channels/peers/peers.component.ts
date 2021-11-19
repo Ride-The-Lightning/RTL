@@ -50,7 +50,7 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public selFilter = '';
-  public apiCallStatus: ApiCallStatusPayload = { status: APICallStatusEnum.COMPLETED };
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -77,24 +77,19 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
         this.information = nodeInfo;
       });
     this.store.select(peers).pipe(takeUntil(this.unSubs[1])).
-      subscribe((peersSelector: Peer[] | ApiCallStatusPayload) => {
+      subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        if (Array.isArray(peersSelector)) {
-          this.peersData = <Peer[]>peersSelector;
-          this.loadPeersTable(this.peersData);
-        } else {
-          this.apiCallStatus = <ApiCallStatusPayload>peersSelector;
-          if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-            this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-          }
+        this.apiCallStatus = peersSelector.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
+        this.peersData = peersSelector.peers;
+        this.loadPeersTable(this.peersData);
         this.logger.info(peersSelector);
       });
     this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[2])).
-      subscribe((oCBalanceSelector: OnChainBalance | ApiCallStatusPayload) => {
-        if (oCBalanceSelector.hasOwnProperty('total')) {
-          this.availableBalance = (<OnChainBalance>oCBalanceSelector).total || 0;
-        }
+      subscribe((oCBalanceSelector: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.availableBalance = oCBalanceSelector.onchainBalance.total || 0;
       });
     this.actions.pipe(takeUntil(this.unSubs[3]), filter((action) => action.type === ECLActions.SET_PEERS_ECL)).
       subscribe((setPeers: any) => {

@@ -39,7 +39,7 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apiCallStatus: ApiCallStatusPayload = { status: APICallStatusEnum.COMPLETED };
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -63,21 +63,17 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   ngOnInit() {
     this.store.select(payments).
       pipe(takeUntil(this.unSubs[0])).
-      subscribe((paymentsSelector: Payments | ApiCallStatusPayload) => {
+      subscribe((paymentsSelector: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        if (paymentsSelector.hasOwnProperty('relayed')) {
-          this.routingPeersData = (<Payments>paymentsSelector).relayed || [];
-          if (this.routingPeersData.length > 0 && this.sortIn && this.paginatorIn && this.sortOut && this.paginatorOut) {
-            this.loadRoutingPeersTable(this.routingPeersData);
-          }
-          this.logger.info(paymentsSelector);
-        } else {
-          this.apiCallStatus = <ApiCallStatusPayload>paymentsSelector;
-          if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-            this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-          }
-          this.logger.error(paymentsSelector);
+        this.apiCallStatus = paymentsSelector.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
+        this.routingPeersData = paymentsSelector.payments && paymentsSelector.payments.relayed ? paymentsSelector.payments.relayed : [];
+        if (this.routingPeersData.length > 0 && this.sortIn && this.paginatorIn && this.sortOut && this.paginatorOut) {
+          this.loadRoutingPeersTable(this.routingPeersData);
+        }
+        this.logger.info(paymentsSelector);
       });
   }
 

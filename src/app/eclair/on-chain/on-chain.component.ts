@@ -43,10 +43,8 @@ export class ECLOnChainComponent implements OnInit, OnDestroy {
         this.selNode = nodeSettings;
       });
     this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[2])).
-      subscribe((oCBalanceSelector: OnChainBalance | ApiCallStatusPayload) => {
-        if (oCBalanceSelector.hasOwnProperty('total')) {
-          this.balances = [{ title: 'Total Balance', dataValue: (<OnChainBalance>oCBalanceSelector).total || 0 }, { title: 'Confirmed', dataValue: (<OnChainBalance>oCBalanceSelector).confirmed }, { title: 'Unconfirmed', dataValue: (<OnChainBalance>oCBalanceSelector).unconfirmed }];
-        }
+      subscribe((oCBalanceSelector: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.balances = [{ title: 'Total Balance', dataValue: oCBalanceSelector.onchainBalance.total || 0 }, { title: 'Confirmed', dataValue: oCBalanceSelector.onchainBalance.confirmed }, { title: 'Unconfirmed', dataValue: oCBalanceSelector.onchainBalance.unconfirmed }];
       });
   }
 

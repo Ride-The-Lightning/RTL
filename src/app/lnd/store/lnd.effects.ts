@@ -827,21 +827,21 @@ export class LNDEffects implements OnDestroy {
   fetchForwardingHistory = createEffect(() => this.actions.pipe(
     ofType(LNDActions.GET_FORWARDING_HISTORY_LND),
     mergeMap((action: { type: string, payload: SwitchReq }) => {
-      this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'GetForwardingHistory', status: APICallStatusEnum.INITIATED } }));
+      this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchForwardingHistory', status: APICallStatusEnum.INITIATED } }));
       const queryHeaders: SwitchReq = {
         num_max_events: action.payload.num_max_events, index_offset: action.payload.index_offset, end_time: action.payload.end_time, start_time: action.payload.start_time
       };
       return this.httpClient.post(this.CHILD_API_URL + environment.SWITCH_API, queryHeaders).pipe(
         map((fhRes: any) => {
           this.logger.info(fhRes);
-          this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'GetForwardingHistory', status: APICallStatusEnum.COMPLETED } }));
+          this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchForwardingHistory', status: APICallStatusEnum.COMPLETED } }));
           return {
             type: LNDActions.SET_FORWARDING_HISTORY_LND,
             payload: fhRes
           };
         }),
         catchError((err: any) => {
-          this.handleErrorWithAlert('GetForwardingHistory', UI_MESSAGES.NO_SPINNER, 'Get Forwarding History Failed', this.CHILD_API_URL + environment.SWITCH_API, err);
+          this.handleErrorWithAlert('FetchForwardingHistory', UI_MESSAGES.NO_SPINNER, 'Get Forwarding History Failed', this.CHILD_API_URL + environment.SWITCH_API, err);
           return of({ type: RTLActions.VOID });
         })
       );

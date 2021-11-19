@@ -655,12 +655,12 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.GET_FORWARDING_HISTORY_CL),
     withLatestFrom(this.store.select(clNodeInformation)),
     mergeMap(([action, nodeInfo]: [{ type: string, payload: { status: string } }, GetInfo]) => {
-      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'GetForwardingHistory', status: APICallStatusEnum.INITIATED } }));
+      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchForwardingHistory', status: APICallStatusEnum.INITIATED } }));
       return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=' + action.payload.status).
         pipe(
           map((fhRes: any) => {
             this.logger.info(fhRes);
-            this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'GetForwardingHistory', status: APICallStatusEnum.COMPLETED } }));
+            this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchForwardingHistory', status: APICallStatusEnum.COMPLETED } }));
             const isNewerVersion = (nodeInfo.api_version) ? this.commonService.isVersionCompatible(nodeInfo.api_version, '0.5.0') : false;
             if (!isNewerVersion) {
               const filteredFailedEvents = [];
@@ -681,7 +681,7 @@ export class CLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('GetForwardingHistory', UI_MESSAGES.NO_SPINNER, 'Get Forwarding History Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=' + action.payload.status, err);
+            this.handleErrorWithAlert('FetchForwardingHistory', UI_MESSAGES.NO_SPINNER, 'Get Forwarding History Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=' + action.payload.status, err);
             return of({ type: RTLActions.VOID });
           })
         );
@@ -692,11 +692,11 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.GET_FAILED_FORWARDING_HISTORY_CL),
     withLatestFrom(this.store.select(clNodeInformation)),
     mergeMap(([action, nodeInfo]: [{ type: string, payload: any }, GetInfo]) => {
-      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'GetFailedForwardingHistory', status: APICallStatusEnum.INITIATED } }));
+      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchFailedForwardingHistory', status: APICallStatusEnum.INITIATED } }));
       // For backwards compatibility < 0.5.0 START
       const isNewerVersion = (nodeInfo.api_version) ? this.commonService.isVersionCompatible(nodeInfo.api_version, '0.5.0') : false;
       if (!isNewerVersion) {
-        this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'GetFailedForwardingHistory', status: APICallStatusEnum.COMPLETED } }));
+        this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchFailedForwardingHistory', status: APICallStatusEnum.COMPLETED } }));
         return of({ type: RTLActions.VOID });
       } // For backwards compatibility < 0.5.0 END
       let failedEventsReq = new Observable();
@@ -705,13 +705,13 @@ export class CLEffects implements OnDestroy {
       failedEventsReq = forkJoin([failedRes, localFailedRes]);
       return failedEventsReq.pipe(map((ffhRes: any) => {
         this.logger.info(ffhRes);
-        this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'GetFailedForwardingHistory', status: APICallStatusEnum.COMPLETED } }));
+        this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchFailedForwardingHistory', status: APICallStatusEnum.COMPLETED } }));
         return {
           type: CLActions.SET_FAILED_FORWARDING_HISTORY_CL,
           payload: this.commonService.sortDescByKey([...ffhRes[0], ...ffhRes[1]], 'received_time')
         };
       }), catchError((err) => {
-        this.handleErrorWithAlert('GetFailedForwardingHistory', UI_MESSAGES.NO_SPINNER, 'Get Failed Forwarding History Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=failed', err);
+        this.handleErrorWithAlert('FetchFailedForwardingHistory', UI_MESSAGES.NO_SPINNER, 'Get Failed Forwarding History Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=failed', err);
         return of({ type: RTLActions.VOID });
       }));
     }))

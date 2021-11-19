@@ -49,13 +49,9 @@ export class ECLTransactionsReportComponent implements OnInit, AfterContentInit,
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
     this.store.select(payments).pipe(takeUntil(this.unSubs[0]),
       withLatestFrom(this.store.select(invoices))).
-      subscribe(([paymentsSelector, invoicesSelector]: [(Payments | ApiCallStatusPayload), (Invoice[] | ApiCallStatusPayload)]) => {
-        if (paymentsSelector.hasOwnProperty('sent')) {
-          this.payments = (<Payments>paymentsSelector).sent || [];
-        }
-        if (Array.isArray(invoicesSelector)) {
-          this.invoices = <Invoice[]>invoicesSelector || [];
-        }
+      subscribe(([paymentsSelector, invoicesSelector]: [({ payments: Payments, apiCallStatus: ApiCallStatusPayload }), ({ invoices: Invoice[], apiCallStatus: ApiCallStatusPayload })]) => {
+        this.payments = paymentsSelector.payments.sent ? paymentsSelector.payments.sent : [];
+        this.invoices = invoicesSelector.invoices ? invoicesSelector.invoices : [];
         if (this.payments.length > 0 || this.invoices.length > 0) {
           this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
           this.transactionsNonZeroReportData = this.prepareTableData();

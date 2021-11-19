@@ -9,7 +9,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
-import { PayRequest, Channel } from '../../../shared/models/lndModels';
+import { PayRequest, Channel, ChannelsSummary, LightningBalance } from '../../../shared/models/lndModels';
 import { APICallStatusEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES, LNDActions, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -18,6 +18,7 @@ import { DataService } from '../../../shared/services/data.service';
 import { RTLState } from '../../../store/rtl.state';
 import { sendPayment } from '../../store/lnd.actions';
 import { channels, lndNodeSettings } from '../../store/lnd.selector';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-lightning-send-payments',
@@ -50,15 +51,15 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => { this.selNode = nodeSettings; });
     this.store.select(channels).pipe(takeUntil(this.unSubs[1])).
-      subscribe((rtlStore) => {
-        this.activeChannels = rtlStore.channels.filter((channel) => channel.active);
+      subscribe((channelsSelector: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.activeChannels = channelsSelector.channels.filter((channel) => channel.active);
         this.filteredMinAmtActvChannels = this.activeChannels;
         if (this.filteredMinAmtActvChannels.length && this.filteredMinAmtActvChannels.length > 0) {
           this.selectedChannelCtrl.enable();
         } else {
           this.selectedChannelCtrl.disable();
         }
-        this.logger.info(rtlStore);
+        this.logger.info(channelsSelector);
       });
     this.actions.pipe(
       takeUntil(this.unSubs[2]),

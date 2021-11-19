@@ -39,7 +39,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apiCallStatus: ApiCallStatusPayload = { status: APICallStatusEnum.COMPLETED };
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -62,21 +62,18 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
 
   ngOnInit() {
     this.store.select(payments).pipe(takeUntil(this.unSubs[0])).
-      subscribe((paymentsSelector: Payments | ApiCallStatusPayload) => {
+      subscribe((paymentsSelector: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
         if (this.eventsData.length === 0) {
           this.errorMessage = '';
-          if (paymentsSelector.hasOwnProperty('relayed')) {
-            this.eventsData = (<Payments>paymentsSelector).relayed || [];
-            if (this.eventsData.length > 0 && this.sort && this.paginator) {
-              this.loadForwardingEventsTable(this.eventsData);
-            }
-            this.logger.info(this.eventsData);
-          } else {
-            this.apiCallStatus = <ApiCallStatusPayload>paymentsSelector;
-            if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-              this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-            }
+          this.apiCallStatus = paymentsSelector.apiCallStatus;
+          if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+            this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
           }
+          this.eventsData = paymentsSelector.payments && paymentsSelector.payments.relayed ? paymentsSelector.payments.relayed : [];
+          if (this.eventsData.length > 0 && this.sort && this.paginator) {
+            this.loadForwardingEventsTable(this.eventsData);
+          }
+          this.logger.info(this.eventsData);
         }
       });
   }

@@ -34,7 +34,7 @@ export interface ApiCallsListLND {
   FetchClosedChannels: ApiCallStatusPayload;
   FetchInvoices: ApiCallStatusPayload;
   FetchPayments: ApiCallStatusPayload;
-  GetForwardingHistory: ApiCallStatusPayload;
+  FetchForwardingHistory: ApiCallStatusPayload;
   FetchUTXOs: ApiCallStatusPayload;
   FetchTransactions: ApiCallStatusPayload;
   FetchNetwork: ApiCallStatusPayload;
@@ -54,8 +54,8 @@ export interface ApiCallsListCL {
   FetchPeers: ApiCallStatusPayload;
   FetchUTXOs: ApiCallStatusPayload;
   FetchPayments: ApiCallStatusPayload;
-  GetForwardingHistory: ApiCallStatusPayload;
-  GetFailedForwardingHistory: ApiCallStatusPayload;
+  FetchForwardingHistory: ApiCallStatusPayload;
+  FetchFailedForwardingHistory: ApiCallStatusPayload;
 }
 
 export interface ApiCallsListECL {

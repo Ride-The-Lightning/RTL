@@ -41,7 +41,7 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public selFilter = '';
-  public apiCallStatus: ApiCallStatusPayload = { status: APICallStatusEnum.COMPLETED };
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -64,20 +64,17 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
 
   ngOnInit() {
     this.store.dispatch(fetchTransactions());
-    this.store.select(transactions).
-      pipe(takeUntil(this.unsub[0])).
-      subscribe((transactionsSelector: Transaction[] | ApiCallStatusPayload) => {
+    this.store.select(transactions).pipe(takeUntil(this.unsub[0])).
+      subscribe((transactionsSelector: { transactions: Transaction[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        if (Array.isArray(transactionsSelector)) {
-          this.loadTransactionsTable(<Transaction[]>transactionsSelector);
-          this.logger.info(transactionsSelector);
-        } else {
-          this.apiCallStatus = <ApiCallStatusPayload>transactionsSelector;
-          if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-            this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-          }
-          this.logger.error(transactionsSelector);
+        this.apiCallStatus = transactionsSelector.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
+        if (transactionsSelector.transactions) {
+          this.loadTransactionsTable(transactionsSelector.transactions);
+        }
+        this.logger.info(transactionsSelector);
       });
   }
 

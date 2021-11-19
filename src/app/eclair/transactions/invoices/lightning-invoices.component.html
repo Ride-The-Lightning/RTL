@@ -41,7 +41,7 @@
         </ng-container>
         <ng-container matColumnDef="receivedAt">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Settled </th>
-          <td mat-cell *matCellDef="let invoice">{{invoice.receivedAtStr || '-'}}</td>
+          <td mat-cell *matCellDef="let invoice">{{((invoice.receivedAt * 1000) | date:'dd/MMM/YYYY HH:mm') || '-'}}</td>
         </ng-container>
         <ng-container matColumnDef="description">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>

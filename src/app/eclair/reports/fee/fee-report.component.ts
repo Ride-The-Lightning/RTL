@@ -47,14 +47,10 @@ export class ECLFeeReportComponent implements OnInit, AfterContentInit, OnDestro
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
     this.store.select(payments).pipe(takeUntil(this.unSubs[0])).
-      subscribe((paymentsSelector: Payments | ApiCallStatusPayload) => {
-        if (paymentsSelector.hasOwnProperty('relayed')) {
-          this.events = (<Payments>paymentsSelector).relayed || [];
-          this.filterForwardingEvents(this.startDate, this.endDate);
-          this.logger.info(paymentsSelector);
-        } else {
-          this.logger.error(paymentsSelector);
-        }
+      subscribe((paymentsSelector: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
+        this.events = paymentsSelector.payments && paymentsSelector.payments.relayed ? paymentsSelector.payments.relayed : [];
+        this.filterForwardingEvents(this.startDate, this.endDate);
+        this.logger.info(paymentsSelector);
       });
   }
 
