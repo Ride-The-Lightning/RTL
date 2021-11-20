@@ -5,9 +5,6 @@ import { Common, CommonService } from '../../utils/common.js';
 let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
-const eclWsClient: ECLWebSocketClient = ECLWSClient;
-const clWsClient: CLWebSocketClient = CLWSClient;
-// const lndWsClient: LNDWebSocketClient = LNDWSClient;
 
 export const getInfo = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Getting LND Node Information..' });
