@@ -5,13 +5,22 @@ import parseHocon from 'hocon-parser';
 import request from 'request-promise';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
+import { WSServer } from '../../utils/webSocketServer.js';
 const options = { url: '' };
 const logger = Logger;
 const common = Common;
+const wsServer = WSServer;
 export const updateSelectedNode = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Updating Selected Node..' });
-    const selNodeIndex = req.body.selNodeIndex;
+    const selNodeIndex = req.body.currNodeIndex;
     req.session.selectedNode = common.findNode(selNodeIndex);
+    if (req.headers && req.headers.authorization && req.headers.authorization !== '') {
+        wsServer.updateLNWSClientDetails('ADD', req.session.id, req.session.selectedNode.index, req.session.selectedNode.ln_implementation);
+    }
+    if (req.body.prevNodeIndex >= 0) {
+        const prevNode = common.findNode(req.body.prevNodeIndex);
+        wsServer.updateLNWSClientDetails('REMOVE', req.session.id, +prevNode.index, prevNode.ln_implementation);
+    }
     const responseVal = !req.session.selectedNode.ln_node ? '' : req.session.selectedNode.ln_node;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Selected Node Updated To', data: responseVal });
     res.status(200).json({ status: 'Selected Node Updated To: ' + JSON.stringify(responseVal) + '!' });

@@ -11,12 +11,10 @@ import { TwoFactorAuthComponent } from '../../data-modal/two-factor-auth/two-fac
 import { RTLConfiguration, ConfigSettingsNode } from '../../../models/RTLconfig';
 import { PASSWORD_BLACKLIST, RTLActions, UI_MESSAGES } from '../../../services/consts-enums-functions';
 import { SessionService } from '../../../services/session.service';
-import { LoggerService } from '../../../services/logger.service';
 import { openAlert, resetPassword, setSelectedNode } from '../../../../store/rtl.actions';
 
 import { RTLState } from '../../../../store/rtl.state';
 import { rootAppConfig, rootSelectedNode } from '../../../../store/rtl.selector';
-import { SetSelectedNode } from '../../../models/rtlModels';
 
 @Component({
   selector: 'rtl-auth-settings',
@@ -40,7 +38,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
   public selNode: ConfigSettingsNode;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<RTLState>, private logger: LoggerService, private actions: Actions, private router: Router, private sessionService: SessionService) { }
+  constructor(private store: Store<RTLState>, private actions: Actions, private router: Router, private sessionService: SessionService) { }
 
   ngOnInit() {
     this.initializeNodeData = this.sessionService.getItem('defaultPassword') === 'true';
@@ -77,7 +75,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
     if (!this.currPassword || !this.newPassword || !this.confirmPassword || this.currPassword === this.newPassword || this.newPassword !== this.confirmPassword || PASSWORD_BLACKLIST.includes(this.newPassword.toLowerCase())) {
       return true;
     }
-    this.store.dispatch(resetPassword({ payload: { currPassword: sha256(this.currPassword), newPassword: sha256(this.newPassword) } }));
+    this.store.dispatch(resetPassword({ payload: { currPassword: sha256(this.currPassword).toString(), newPassword: sha256(this.newPassword).toString() } }));
   }
 
   matchOldAndNewPasswords(): boolean {
@@ -141,7 +139,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.initializeNodeData) {
-      this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: this.selNode, isInitialSetup: true } }));
+      this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, prevLnNodeIndex: -1, currentLnNode: this.selNode, isInitialSetup: true } }));
     }
     this.unSubs.forEach((unsub) => {
       unsub.next();

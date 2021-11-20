@@ -106,7 +106,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
               if (!this.accessKey || this.accessKey.trim().length < 32) {
                 this.router.navigate(['./error'], { state: { errorCode: '406', errorMessage: 'Access key too short. It should be at least 32 characters long.' } });
               } else {
-                this.store.dispatch(login({ payload: { password: sha256(this.accessKey), defaultPassword: false } }));
+                this.store.dispatch(login({ payload: { password: sha256(this.accessKey).toString(), defaultPassword: false } }));
               }
             } else {
               this.router.navigate(['./login']);

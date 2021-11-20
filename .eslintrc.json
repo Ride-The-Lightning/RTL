@@ -131,7 +131,7 @@
         "lines-around-comment": "error",
         "max-depth": "error",
         "max-nested-callbacks": "error",
-        "max-statements-per-line": ["error", { "max": 2 }],
+        "max-statements-per-line": ["error", { "max": 3 }],
         "no-array-constructor": "error",
         "no-continue": "error",
         "no-mixed-operators": "error",

@@ -14,6 +14,9 @@ import eclRoutes from '../routes/eclair/index.js';
 import { Common } from './common.js';
 import { Logger } from './logger.js';
 import { Config } from './config.js';
+import { CLWSClient } from '../controllers/c-lightning/webSocketClient.js';
+import { ECLWSClient } from '../controllers/eclair/webSocketClient.js';
+// import { LNDWSClient, LNDWebSocketClient } from '../controllers/lnd/webSocketClient.js';
 const ONE_DAY = 1000 * 60 * 60 * 24;
 export class ExpressApplication {
     constructor() {
@@ -21,6 +24,9 @@ export class ExpressApplication {
         this.logger = Logger;
         this.common = Common;
         this.config = Config;
+        this.eclWsClient = ECLWSClient;
+        this.clWsClient = CLWSClient;
+        // public lndWsClient: LNDWebSocketClient = LNDWSClient;
         this.directoryName = dirname(fileURLToPath(import.meta.url));
         this.getApp = () => this.app;
         this.loadConfiguration = () => {

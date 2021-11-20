@@ -230,7 +230,7 @@ export class RTLEffects implements OnDestroy {
           }
         });
         if (searchNode) {
-          this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: searchNode, isInitialSetup: true } }));
+          this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, prevLnNodeIndex: -1, currentLnNode: searchNode, isInitialSetup: true } }));
           return {
             type: RTLActions.SET_RTL_CONFIG,
             payload: rtlConfig
@@ -493,12 +493,12 @@ export class RTLEffects implements OnDestroy {
       mergeMap((action: { type: string, payload: SetSelectedNode }) => {
         this.store.dispatch(openSpinner({ payload: action.payload.uiMessage }));
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.INITIATED } }));
-        return this.httpClient.post(environment.CONF_API + '/updateSelNode', { selNodeIndex: action.payload.lnNode.index }).pipe(
+        return this.httpClient.post(environment.CONF_API + '/updateSelNode', { prevNodeIndex: action.payload.prevLnNodeIndex, currNodeIndex: action.payload.currentLnNode.index }).pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.COMPLETED } }));
             this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
-            this.initializeNode(action.payload.lnNode, action.payload.isInitialSetup);
+            this.initializeNode(action.payload.currentLnNode, action.payload.isInitialSetup);
             return { type: RTLActions.VOID };
           }),
           catchError((err: any) => {
@@ -557,10 +557,10 @@ export class RTLEffects implements OnDestroy {
     this.store.dispatch(resetCLStore({ payload: selNode }));
     this.store.dispatch(resetECLStore({ payload: selNode }));
     if (this.sessionService.getItem('token')) {
-      const apiUrl = (environment.production && window.location.origin) ? (window.location.origin + '/rtl/api') : API_URL;
-      this.wsService.connectWebSocket(apiUrl.replace(/^http/, 'ws') + environment.Web_SOCKET_API);
       const nodeLnImplementation = node.lnImplementation.toUpperCase();
       this.dataService.setChildAPIUrl(nodeLnImplementation);
+      const apiUrl = (environment.production && window.location.origin) ? (window.location.origin + '/rtl/api') : API_URL;
+      this.wsService.connectWebSocket(apiUrl.replace(/^http/, 'ws') + environment.Web_SOCKET_API, nodeLnImplementation, node.index);
       switch (nodeLnImplementation) {
         case 'CLT':
           this.store.dispatch(fetchInfoCL({ payload: { loadPage: landingPage } }));

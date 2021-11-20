@@ -196,8 +196,9 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   }
 
   onNodeSelectionChange(selNodeValue: ConfigSettingsNode) {
+    const prevIndex = this.selNode.index;
     this.selNode = selNodeValue;
-    this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.UPDATE_SELECTED_NODE, lnNode: selNodeValue, isInitialSetup: false } }));
+    this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.UPDATE_SELECTED_NODE, prevLnNodeIndex: +prevIndex, currentLnNode: selNodeValue, isInitialSetup: false } }));
     this.ChildNavClicked.emit('selectNode');
   }
 

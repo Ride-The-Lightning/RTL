@@ -15,7 +15,8 @@ export interface SaveSettings {
 
 export interface SetSelectedNode {
   uiMessage: string;
-  lnNode: ConfigSettingsNode;
+  prevLnNodeIndex: number;
+  currentLnNode: ConfigSettingsNode;
   isInitialSetup: boolean;
 }
 

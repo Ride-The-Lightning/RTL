@@ -26,7 +26,7 @@ export const RootReducer = createReducer(initRootState,
   })),
   on(setSelectedNode, (state, { payload }) => ({
     ...state,
-    selNode: payload.lnNode
+    selNode: payload.currentLnNode
   })),
   on(setNodeData, (state, { payload }) => ({
     ...state,

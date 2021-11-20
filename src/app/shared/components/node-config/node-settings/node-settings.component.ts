@@ -116,10 +116,11 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
   }
 
   onResetSettings() {
+    const prevIndex = this.selNode.index;
     this.selNode.settings = this.previousSettings;
     this.selectedThemeMode = this.themeModes.find((themeMode) => themeMode.id === this.previousSettings.themeMode);
     this.selectedThemeColor = this.previousSettings.themeColor;
-    this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: this.selNode, isInitialSetup: true } }));
+    this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, prevLnNodeIndex: +prevIndex, currentLnNode: this.selNode, isInitialSetup: true } }));
   }
 
   ngOnDestroy() {

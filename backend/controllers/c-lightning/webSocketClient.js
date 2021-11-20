@@ -9,37 +9,35 @@ export class CLWebSocketClient {
         this.logger = Logger;
         this.common = Common;
         this.wsServer = WSServer;
-        this.webSocketClient = null;
+        this.webSocketClients = [];
         this.reconnectTimeOut = null;
         this.waitTime = 0.5;
-        this.selectedNode = null;
-        this.prevMessage = {};
-        this.reconnet = () => {
+        this.reconnet = (clWsClt) => {
             if (this.reconnectTimeOut) {
                 return;
             }
             this.waitTime = (this.waitTime >= 64) ? 64 : (this.waitTime * 2);
             this.reconnectTimeOut = setTimeout(() => {
-                if (this.selectedNode) {
-                    this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Reconnecting to the CLightning\'s Websocket Server..' });
-                    this.connect(this.selectedNode);
+                if (clWsClt.selectedNode) {
+                    this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Reconnecting to the CLightning\'s Websocket Server..' });
+                    this.connect(clWsClt.selectedNode);
                 }
                 this.reconnectTimeOut = null;
             }, this.waitTime * 1000);
         };
         this.connect = (selectedNode) => {
             try {
-                if (!this.webSocketClient || this.webSocketClient.readyState !== WebSocket.OPEN) {
-                    this.selectedNode = selectedNode;
-                    if (this.selectedNode && this.selectedNode.ln_server_url) {
-                        this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Connecting to the CLightning\'s Websocket Server..' });
-                        const WS_LINK = (this.selectedNode.ln_server_url).replace(/^http/, 'ws') + '/v1/ws';
-                        const mcrnHexEncoded = Buffer.from(fs.readFileSync(join(this.selectedNode.macaroon_path, 'access.macaroon'))).toString('hex');
-                        this.webSocketClient = new WebSocket(WS_LINK, [mcrnHexEncoded, 'hex'], { rejectUnauthorized: false });
-                        this.webSocketClient.onopen = this.onClientOpen;
-                        this.webSocketClient.onclose = this.onClientClose;
-                        this.webSocketClient.onmessage = this.onClientMessage;
-                        this.webSocketClient.onerror = this.onClientError;
+                const clientExists = this.webSocketClients.find((wsc) => wsc.selectedNode === selectedNode);
+                if (!clientExists) {
+                    if (selectedNode.ln_server_url) {
+                        const newWebSocketClient = { selectedNode: selectedNode, webSocketClient: null };
+                        this.connectWithClient(newWebSocketClient);
+                        this.webSocketClients.push(newWebSocketClient);
+                    }
+                }
+                else {
+                    if ((!clientExists.webSocketClient || clientExists.webSocketClient.readyState !== WebSocket.OPEN) && selectedNode.ln_server_url) {
+                        this.connectWithClient(clientExists);
                     }
                 }
             }
@@ -47,41 +45,51 @@ export class CLWebSocketClient {
                 throw new Error(err);
             }
         };
-        this.onClientOpen = () => {
-            this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Connected to the CLightning\'s Websocket Server..' });
-            this.waitTime = 0.5;
+        this.connectWithClient = (clWsClt) => {
+            this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Connecting to the CLightning\'s Websocket Server..' });
+            const WS_LINK = (clWsClt.selectedNode.ln_server_url).replace(/^http/, 'ws') + '/v1/ws';
+            const mcrnHexEncoded = Buffer.from(fs.readFileSync(join(clWsClt.selectedNode.macaroon_path, 'access.macaroon'))).toString('hex');
+            clWsClt.webSocketClient = new WebSocket(WS_LINK, [mcrnHexEncoded, 'hex'], { rejectUnauthorized: false });
+            clWsClt.webSocketClient.onopen = () => {
+                this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Connected to the CLightning\'s Websocket Server..' });
+                this.waitTime = 0.5;
+            };
+            clWsClt.webSocketClient.onclose = (e) => {
+                if (clWsClt && clWsClt.selectedNode && clWsClt.selectedNode.ln_implementation === 'CLT') {
+                    this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Web socket disconnected, will reconnect again...' });
+                    clWsClt.webSocketClient.close();
+                    this.reconnet(clWsClt);
+                }
+            };
+            clWsClt.webSocketClient.onmessage = (msg) => {
+                this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Received message from the server..', data: msg.data });
+                msg = (typeof msg.data === 'string') ? JSON.parse(msg.data) : msg.data;
+                msg['source'] = 'CLT';
+                const msgStr = JSON.stringify(msg);
+                this.wsServer.sendEventsToAllWSClients(msgStr);
+            };
+            clWsClt.webSocketClient.onerror = (err) => {
+                this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'ERROR', fileName: 'CLWebSocket', msg: 'Web socket error', error: err });
+                this.wsServer.sendErrorToAllWSClients(err);
+                clWsClt.webSocketClient.close();
+                this.reconnet(clWsClt);
+            };
         };
-        this.onClientClose = (e) => {
-            if (this.selectedNode && this.selectedNode.ln_implementation === 'CLT') {
-                this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Web socket disconnected, will reconnect again...' });
-                this.webSocketClient.close();
-                this.reconnet();
+        this.disconnect = (selectedNode) => {
+            const clientExists = this.webSocketClients.find((wsc) => wsc.selectedNode === selectedNode);
+            if (clientExists && clientExists.webSocketClient && clientExists.webSocketClient.readyState === WebSocket.OPEN) {
+                this.logger.log({ selectedNode: clientExists.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Disconnecting from the CLightning\'s Websocket Server..' });
+                clientExists.webSocketClient.close();
+                const clientIdx = this.webSocketClients.findIndex((wsc) => wsc.selectedNode === selectedNode);
+                this.webSocketClients.splice(clientIdx, 1);
             }
         };
-        this.onClientMessage = (msg) => {
-            this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Received message from the server..', data: msg.data });
-            msg = (typeof msg.data === 'string') ? JSON.parse(msg.data) : msg.data;
-            msg['source'] = 'CLT';
-            const msgStr = JSON.stringify(msg);
-            if (this.prevMessage.hasOwnProperty(msg.event) && this.prevMessage[msg.event] === msgStr) {
-                return;
-            }
-            this.prevMessage[msg.event] = msgStr;
-            this.wsServer.sendEventsToAllWSClients(msgStr);
-        };
-        this.onClientError = (err) => {
-            this.logger.log({ selectedNode: this.selectedNode, level: 'ERROR', fileName: 'CLWebSocket', msg: 'Web socket error', error: err });
-            this.wsServer.sendErrorToAllWSClients(err);
-            this.webSocketClient.close();
-            this.reconnet();
-        };
-        this.disconnect = () => {
-            if (this.webSocketClient && this.webSocketClient.readyState === WebSocket.OPEN) {
-                this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Disconnecting from the CLightning\'s Websocket Server..' });
-                this.webSocketClient.close();
-            }
-            this.selectedNode = null;
-        };
+        this.wsServer.eventEmitterCLT.on('CONNECT', (nodeIndex) => {
+            this.connect(this.common.findNode(+nodeIndex));
+        });
+        this.wsServer.eventEmitterCLT.on('DISCONNECT', (nodeIndex) => {
+            this.disconnect(this.common.findNode(+nodeIndex));
+        });
     }
 }
 export const CLWSClient = new CLWebSocketClient();
