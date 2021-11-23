@@ -43,6 +43,10 @@ export const getInfo = (req, res, next) => {
                     chainObj.chain = 'Bitcoin';
                     chainObj.network = 'Mainnet';
                 }
+                else if (body.network === 'signet') {
+                    chainObj.chain = 'Bitcoin';
+                    chainObj.network = 'Signet';
+                }
                 else if (body.network === 'litecoin') {
                     chainObj.chain = 'Litecoin';
                     chainObj.network = 'Mainnet';
