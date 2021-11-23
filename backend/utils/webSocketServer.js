@@ -19,7 +19,7 @@ export class WebSocketServer {
             if (this.webSocketServer.clients.size && this.webSocketServer.clients.size > 0) {
                 this.webSocketServer.clients.forEach((client) => {
                     if (client.isAlive === false) {
-                        this.updateLNWSClientDetails('REMOVE', client.sessionId, client.clientNodeIndex, client.clientLnImplementation);
+                        this.updateLNWSClientDetails(client.sessionId, -1, client.clientNodeIndex);
                         return client.terminate();
                     }
                     client.isAlive = false;
@@ -56,93 +56,110 @@ export class WebSocketServer {
             websocket.clientId = Date.now();
             websocket.isAlive = true;
             websocket.sessionId = cookieParser.signedCookie(cookies['connect.sid'], this.common.secret_key);
-            websocket.clientNodeIndex = protocols[2];
-            websocket.clientLnImplementation = protocols[1];
+            websocket.clientNodeIndex = protocols[1];
             this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Connected: ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
-            websocket.on('error', this.sendErrorToAllWSClients);
-            websocket.on('message', this.sendEventsToAllWSClients);
+            websocket.on('error', this.sendErrorToAllLNClient);
+            websocket.on('message', this.sendEventsToAllLNClient);
             websocket.on('pong', () => { websocket.isAlive = true; });
             websocket.on('close', () => {
-                this.updateLNWSClientDetails('REMOVE', websocket.sessionId, websocket.clientNodeIndex, websocket.clientLnImplementation);
+                this.updateLNWSClientDetails(websocket.sessionId, -1, websocket.clientNodeIndex);
                 this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Disconnected: ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
             });
         };
-        this.updateLNWSClientDetails = (event, sessionId, clientNodeIndex, clientLnImplementation) => {
-            let foundClient = this.clientDetails.find((clientDetail) => clientDetail.index === clientNodeIndex);
-            if (event === 'ADD') {
-                if (foundClient) {
-                    const foundSessionIdx = foundClient.sessionIds.findIndex((sid) => sid === sessionId);
-                    if (foundSessionIdx < 0) {
-                        foundClient.sessionIds.push(sessionId);
+        this.updateLNWSClientDetails = (sessionId, currNodeIndex, prevNodeIndex) => {
+            if (prevNodeIndex >= 0 && currNodeIndex >= 0) {
+                this.webSocketServer.clients.forEach((client) => {
+                    if (client.sessionId === sessionId) {
+                        client.clientNodeIndex = currNodeIndex;
                     }
+                });
+                this.disconnectFromNodeClient(sessionId, prevNodeIndex);
+                this.connectToNodeClient(sessionId, currNodeIndex);
+            }
+            else if (prevNodeIndex >= 0 && currNodeIndex < 0) {
+                this.disconnectFromNodeClient(sessionId, prevNodeIndex);
+            }
+            else if (prevNodeIndex < 0 && currNodeIndex >= 0) {
+                this.connectToNodeClient(sessionId, currNodeIndex);
+            }
+            else {
+                const selectedNode = this.common.findNode(currNodeIndex);
+                this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Invalid Node Selection. Previous and current node indices can not be less than zero.' });
+            }
+        };
+        this.disconnectFromNodeClient = (sessionId, prevNodeIndex) => {
+            const foundClient = this.clientDetails.find((clientDetail) => clientDetail.index === +prevNodeIndex);
+            if (foundClient) {
+                const foundSessionIdx = foundClient.sessionIds.findIndex((sid) => sid === sessionId);
+                if (foundSessionIdx > -1) {
+                    foundClient.sessionIds.splice(foundSessionIdx, 1);
                 }
-                else {
-                    foundClient = { index: clientNodeIndex, implementation: clientLnImplementation, sessionIds: [sessionId] };
-                    this.clientDetails.push(foundClient);
-                    switch (clientLnImplementation) {
+                if (foundClient.sessionIds.length === 0) {
+                    const foundClientIdx = this.clientDetails.findIndex((clientDetail) => clientDetail.index === +prevNodeIndex);
+                    this.clientDetails.splice(foundClientIdx, 1);
+                    const prevSelectedNode = this.common.findNode(prevNodeIndex);
+                    switch (prevSelectedNode.ln_implementation) {
                         case 'CLT':
-                            this.eventEmitterCLT.emit('CONNECT', clientNodeIndex);
+                            this.eventEmitterCLT.emit('DISCONNECT', prevNodeIndex);
                             break;
                         case 'ECL':
-                            this.eventEmitterECL.emit('CONNECT', clientNodeIndex);
+                            this.eventEmitterECL.emit('DISCONNECT', prevNodeIndex);
                             break;
                         default:
                             break;
                     }
                 }
             }
-            else if (event === 'REMOVE') {
-                if (foundClient) {
-                    const foundSessionIdx = foundClient.sessionIds.findIndex((sid) => sid === sessionId);
-                    if (foundSessionIdx > -1) {
-                        foundClient.sessionIds.splice(foundSessionIdx, 1);
-                    }
-                    if (foundClient.sessionIds.length === 0) {
-                        switch (clientLnImplementation) {
-                            case 'CLT':
-                                this.eventEmitterCLT.emit('DISCONNECT', clientNodeIndex);
-                                break;
-                            case 'ECL':
-                                this.eventEmitterECL.emit('DISCONNECT', clientNodeIndex);
-                                break;
-                            default:
-                                break;
-                        }
-                    }
+        };
+        this.connectToNodeClient = (sessionId, currNodeIndex) => {
+            let foundClient = this.clientDetails.find((clientDetail) => clientDetail.index === +currNodeIndex);
+            if (foundClient) {
+                const foundSessionIdx = foundClient.sessionIds.findIndex((sid) => sid === sessionId);
+                if (foundSessionIdx < 0) {
+                    foundClient.sessionIds.push(sessionId);
                 }
             }
-            return foundClient;
-        };
-        this.sendErrorToClient = (client, serverError) => {
-            try {
-                this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Sending error to client...: ' + JSON.stringify(serverError) });
-                client.send(JSON.stringify({ error: serverError }));
-                client.close();
+            else {
+                const currSelectedNode = this.common.findNode(currNodeIndex);
+                foundClient = { index: currNodeIndex, sessionIds: [sessionId] };
+                this.clientDetails.push(foundClient);
+                switch (currSelectedNode.ln_implementation) {
+                    case 'CLT':
+                        this.eventEmitterCLT.emit('CONNECT', currNodeIndex);
+                        break;
+                    case 'ECL':
+                        this.eventEmitterECL.emit('CONNECT', currNodeIndex);
+                        break;
+                    default:
+                        break;
+                }
             }
-            catch (err) {
-                this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Error while sending error: ' + JSON.stringify(err) });
-            }
         };
-        this.sendErrorToAllWSClients = (serverError) => {
+        this.sendErrorToAllLNClient = (serverError, selectedNode) => {
             try {
                 this.webSocketServer.clients.forEach((client) => {
-                    this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Broadcasting error to clients...: ' + JSON.stringify(serverError) });
-                    client.send(JSON.stringify({ error: serverError }));
+                    const serverErrorStr = ((typeof serverError === 'object' && serverError.message) ? JSON.stringify(serverError.message) : (typeof serverError === 'object') ? JSON.stringify(serverError) : serverError);
+                    this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Broadcasting error to clients...: ' + serverErrorStr });
+                    if (+client.clientNodeIndex === +selectedNode.index) {
+                        client.send('{ error: ' + serverErrorStr + '}');
+                    }
                 });
             }
             catch (err) {
-                this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Error while broadcasting message: ' + JSON.stringify(err) });
+                this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Error while broadcasting message: ' + JSON.stringify(err) });
             }
         };
-        this.sendEventsToAllWSClients = (newMessage) => {
+        this.sendEventsToAllLNClient = (newMessage, selectedNode) => {
             try {
                 this.webSocketServer.clients.forEach((client) => {
-                    this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Broadcasting message to client...: ' + client.clientId });
-                    client.send(newMessage);
+                    if (+client.clientNodeIndex === +selectedNode.index) {
+                        this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Broadcasting message to client...: ' + client.clientId });
+                        client.send(newMessage);
+                    }
                 });
             }
             catch (err) {
-                this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Error while broadcasting message: ' + JSON.stringify(err) });
+                this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Error while broadcasting message: ' + JSON.stringify(err) });
             }
         };
         this.generateAcceptValue = (acceptKey) => crypto.createHash('sha1').update(acceptKey + crypto.randomBytes(64).toString('hex')).digest('base64');

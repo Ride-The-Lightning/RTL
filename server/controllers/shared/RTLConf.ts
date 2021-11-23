@@ -18,11 +18,7 @@ export const updateSelectedNode = (req, res, next) => {
   const selNodeIndex = req.body.currNodeIndex;
   req.session.selectedNode = common.findNode(selNodeIndex);
   if (req.headers && req.headers.authorization && req.headers.authorization !== '') {
-    wsServer.updateLNWSClientDetails('ADD', req.session.id, req.session.selectedNode.index, req.session.selectedNode.ln_implementation);
-  }
-  if (req.body.prevNodeIndex >= 0) {
-    const prevNode = common.findNode(req.body.prevNodeIndex);
-    wsServer.updateLNWSClientDetails('REMOVE', req.session.id, +prevNode.index, prevNode.ln_implementation);
+    wsServer.updateLNWSClientDetails(req.session.id, +req.session.selectedNode.index, +req.body.prevNodeIndex);
   }
   const responseVal = !req.session.selectedNode.ln_node ? '' : req.session.selectedNode.ln_node;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Selected Node Updated To', data: responseVal });

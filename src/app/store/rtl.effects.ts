@@ -560,7 +560,7 @@ export class RTLEffects implements OnDestroy {
       const nodeLnImplementation = node.lnImplementation.toUpperCase();
       this.dataService.setChildAPIUrl(nodeLnImplementation);
       const apiUrl = (environment.production && window.location.origin) ? (window.location.origin + '/rtl/api') : API_URL;
-      this.wsService.connectWebSocket(apiUrl.replace(/^http/, 'ws') + environment.Web_SOCKET_API, nodeLnImplementation, node.index);
+      this.wsService.connectWebSocket(apiUrl.replace(/^http/, 'ws') + environment.Web_SOCKET_API, node.index);
       switch (nodeLnImplementation) {
         case 'CLT':
           this.store.dispatch(fetchInfoCL({ payload: { loadPage: landingPage } }));

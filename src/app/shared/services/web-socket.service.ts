@@ -12,7 +12,6 @@ export class WebSocketClientService implements OnDestroy {
   public clWSMessages: BehaviorSubject<any> = new BehaviorSubject(null);
   public eclWSMessages: BehaviorSubject<any> = new BehaviorSubject(null);
   private wsUrl = '';
-  private nodeImplementation = '';
   private nodeIndex = '';
   private socket: WebSocketSubject<any> | null;
   private RETRY_SECONDS = 5;
@@ -21,15 +20,14 @@ export class WebSocketClientService implements OnDestroy {
 
   constructor(private logger: LoggerService, private sessionService: SessionService) { }
 
-  connectWebSocket(finalWSUrl: string, nodeLnImplementation: string, nodeIndex: string) {
+  connectWebSocket(finalWSUrl: string, nodeIndex: string) {
     if (!this.socket || this.socket.closed) {
       this.wsUrl = finalWSUrl;
-      this.nodeImplementation = nodeLnImplementation;
       this.nodeIndex = nodeIndex;
       this.logger.info('Websocket Url: ' + this.wsUrl);
       this.socket = new WebSocketSubject({
         url: finalWSUrl,
-        protocol: [this.sessionService.getItem('token'), nodeLnImplementation, nodeIndex]
+        protocol: [this.sessionService.getItem('token'), nodeIndex]
       });
       this.subscribeToMessages();
     }
@@ -40,7 +38,7 @@ export class WebSocketClientService implements OnDestroy {
     this.RETRY_SECONDS = (this.RETRY_SECONDS >= 160) ? 160 : (this.RETRY_SECONDS * 2);
     this.RECONNECT_TIMEOUT = setTimeout(() => {
       this.logger.info('Reconnecting Web Socket.');
-      this.connectWebSocket(this.wsUrl, this.nodeImplementation, this.nodeIndex);
+      this.connectWebSocket(this.wsUrl, this.nodeIndex);
       this.RECONNECT_TIMEOUT = null;
     }, this.RETRY_SECONDS * 1000);
   }
