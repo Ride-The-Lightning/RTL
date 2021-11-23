@@ -120,11 +120,13 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
           { key: 'fee_per_millionth', value: remoteNode.fee_per_millionth, title: 'Fee/Millionth', width: 33, type: DataTypeEnum.NUMBER },
           { key: 'delay', value: remoteNode.delay, title: 'Delay', width: 33, type: DataTypeEnum.NUMBER }]
         ];
+        const titleMsg = 'Remote policy for Channel: ' + ((!selChannel.alias && !selChannel.short_channel_id) ? selChannel.channel_id : (selChannel.alias && selChannel.short_channel_id) ? selChannel.alias + ' (' + selChannel.short_channel_id + ')' : selChannel.alias ? selChannel.alias : selChannel.short_channel_id);
         this.store.dispatch(openAlert({
           payload: {
             data: {
               type: AlertTypeEnum.INFORMATION,
               alertTitle: 'Remote Channel Policy',
+              titleMessage: titleMsg,
               message: reorderedChannelPolicy
             }
           }
@@ -178,7 +180,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
             this.myChanPolicy = { fee_base_msat: 0, fee_rate_milli_msat: 0 };
           }
           this.logger.info(this.myChanPolicy);
-          const titleMsg = 'Update fee policy for Channel: ' + channelToUpdate.channel_id;
+          const titleMsg = 'Update fee policy for Channel: ' + ((!channelToUpdate.alias && !channelToUpdate.short_channel_id) ? channelToUpdate.channel_id : (channelToUpdate.alias && channelToUpdate.short_channel_id) ? channelToUpdate.alias + ' (' + channelToUpdate.short_channel_id + ')' : channelToUpdate.alias ? channelToUpdate.alias : channelToUpdate.short_channel_id);
           const confirmationMsg = [];
           this.store.dispatch(openConfirmation({
             payload: {
@@ -221,7 +223,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
         data: {
           type: AlertTypeEnum.CONFIRM,
           alertTitle: 'Close Channel',
-          titleMessage: 'Closing channel: ' + channelToClose.channel_id,
+          titleMessage: 'Closing channel: ' + ((!channelToClose.alias && !channelToClose.short_channel_id) ? channelToClose.channel_id : (channelToClose.alias && channelToClose.short_channel_id) ? channelToClose.alias + ' (' + channelToClose.short_channel_id + ')' : channelToClose.alias ? channelToClose.alias : channelToClose.short_channel_id),
           noBtnText: 'Cancel',
           yesBtnText: 'Close Channel'
         }
