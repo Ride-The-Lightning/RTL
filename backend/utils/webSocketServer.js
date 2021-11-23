@@ -98,15 +98,17 @@ export class WebSocketServer {
                     const foundClientIdx = this.clientDetails.findIndex((clientDetail) => clientDetail.index === +prevNodeIndex);
                     this.clientDetails.splice(foundClientIdx, 1);
                     const prevSelectedNode = this.common.findNode(prevNodeIndex);
-                    switch (prevSelectedNode.ln_implementation) {
-                        case 'CLT':
-                            this.eventEmitterCLT.emit('DISCONNECT', prevNodeIndex);
-                            break;
-                        case 'ECL':
-                            this.eventEmitterECL.emit('DISCONNECT', prevNodeIndex);
-                            break;
-                        default:
-                            break;
+                    if (prevSelectedNode && prevSelectedNode.ln_implementation) {
+                        switch (prevSelectedNode.ln_implementation) {
+                            case 'CLT':
+                                this.eventEmitterCLT.emit('DISCONNECT', prevNodeIndex);
+                                break;
+                            case 'ECL':
+                                this.eventEmitterECL.emit('DISCONNECT', prevNodeIndex);
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             }
@@ -123,15 +125,17 @@ export class WebSocketServer {
                 const currSelectedNode = this.common.findNode(currNodeIndex);
                 foundClient = { index: currNodeIndex, sessionIds: [sessionId] };
                 this.clientDetails.push(foundClient);
-                switch (currSelectedNode.ln_implementation) {
-                    case 'CLT':
-                        this.eventEmitterCLT.emit('CONNECT', currNodeIndex);
-                        break;
-                    case 'ECL':
-                        this.eventEmitterECL.emit('CONNECT', currNodeIndex);
-                        break;
-                    default:
-                        break;
+                if (currSelectedNode && currSelectedNode.ln_implementation) {
+                    switch (currSelectedNode.ln_implementation) {
+                        case 'CLT':
+                            this.eventEmitterCLT.emit('CONNECT', currNodeIndex);
+                            break;
+                        case 'ECL':
+                            this.eventEmitterECL.emit('CONNECT', currNodeIndex);
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
         };

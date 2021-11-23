@@ -9,7 +9,11 @@
     <mat-card-content class="padding-gap-x-large">
       <form fxLayout="column">
         <div fxLayout="column" class="bordered-box mb-1 p-2">
-          <p fxLayoutAlign="start center" class="pb-1 word-break">{{channelToClose.active ? ('Closing channel: ' + channelToClose.channel_point) : ('Force closing channel: ' + channelToClose.channel_point)}}</p>
+          <p fxLayoutAlign="start center" class="pb-1 word-break">{{
+            channelToClose.active ? 
+            ('Closing channel: ' + ((!channelToClose.remote_alias && !channelToClose.chan_id) ? channelToClose.channel_point : (channelToClose.remote_alias && channelToClose.chan_id) ? channelToClose.remote_alias + ' (' + channelToClose.chan_id + ')' : channelToClose.remote_alias ? channelToClose.remote_alias : channelToClose.chan_id)) : 
+            ('Force closing channel: ' + ((!channelToClose.remote_alias && !channelToClose.chan_id) ? channelToClose.channel_point : (channelToClose.remote_alias && channelToClose.chan_id) ? channelToClose.remote_alias + ' (' + channelToClose.chan_id + ')' : channelToClose.remote_alias ? channelToClose.remote_alias : channelToClose.chan_id))}}
+          </p>
           <div *ngIf="flgPendingHtlcs" fxLayoutAlign="start center">
             <p fxFlex="100" fxLayoutAlign="start center" class="color-warn"><mat-icon class="mr-1 icon-small">close</mat-icon>{{errorMsg}}</p>
           </div>

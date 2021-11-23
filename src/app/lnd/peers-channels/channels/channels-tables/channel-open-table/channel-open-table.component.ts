@@ -136,11 +136,13 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
           { key: 'fee_rate_milli_msat', value: resLookup.fee_rate_milli_msat / 10000, title: 'Fee Rate (%)', width: 25, type: DataTypeEnum.NUMBER, digitsInfo: '1.0-8' },
           { key: 'time_lock_delta', value: resLookup.time_lock_delta, title: 'Time Lock Delta', width: 25, type: DataTypeEnum.NUMBER }]
         ];
+        const titleMsg = 'Remote policy for Channel: ' + ((!selChannel.remote_alias && !selChannel.chan_id) ? selChannel.channel_point : (selChannel.remote_alias && selChannel.chan_id) ? selChannel.remote_alias + ' (' + selChannel.chan_id + ')' : selChannel.remote_alias ? selChannel.remote_alias : selChannel.chan_id);
         this.store.dispatch(openAlert({
           payload: {
             data: {
               type: AlertTypeEnum.INFORMATION,
               alertTitle: 'Remote Channel Policy',
+              titleMessage: titleMsg,
               message: reorderedChannelPolicy
             }
           }
@@ -208,7 +210,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
             this.myChanPolicy = { fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0 };
           }
           this.logger.info(this.myChanPolicy);
-          const titleMsg = 'Update fee policy for channel point: ' + channelToUpdate.channel_point;
+          const titleMsg = 'Update fee policy for Channel: ' + ((!channelToUpdate.remote_alias && !channelToUpdate.chan_id) ? channelToUpdate.channel_point : (channelToUpdate.remote_alias && channelToUpdate.chan_id) ? channelToUpdate.remote_alias + ' (' + channelToUpdate.chan_id + ')' : channelToUpdate.remote_alias ? channelToUpdate.remote_alias : channelToUpdate.chan_id);
           const confirmationMsg = [];
           this.store.dispatch(openConfirmation({
             payload: {
