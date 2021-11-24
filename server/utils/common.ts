@@ -16,6 +16,7 @@ export class CommonService {
   public port = 3000;
   public host = null;
   public rtl_pass = '';
+  public flg_allow_password_update = true;
   public rtl_secret2fa = '';
   public rtl_sso = 0;
   public rtl_cookie_path = '';

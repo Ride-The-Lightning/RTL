@@ -57,6 +57,7 @@ export class RTLConfiguration {
     public selectedNodeIndex: number,
     public sso: SSO,
     public enable2FA: boolean,
+    public allowPasswordUpdate: boolean,
     public nodes: ConfigSettingsNode[]
   ) { }
 

@@ -14,6 +14,7 @@ export class CommonService {
         this.port = 3000;
         this.host = null;
         this.rtl_pass = '';
+        this.flg_allow_password_update = true;
         this.rtl_secret2fa = '';
         this.rtl_sso = 0;
         this.rtl_cookie_path = '';
