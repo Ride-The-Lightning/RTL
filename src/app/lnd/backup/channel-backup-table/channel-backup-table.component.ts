@@ -114,9 +114,7 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   applyFilter() {
-    if (this.selFilter !== '') {
-      this.channels.filter = this.selFilter.trim().toLowerCase();
-    }
+    this.channels.filter = this.selFilter.trim().toLowerCase();
   }
 
   loadBackupTable(channels: any[]) {

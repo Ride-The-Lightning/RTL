@@ -173,9 +173,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   }
 
   applyFilter() {
-    if (this.selFilter !== '') {
-      this.invoices.filter = this.selFilter.trim().toLowerCase();
-    }
+    this.invoices.filter = this.selFilter.trim().toLowerCase();
   }
 
   onPageChange(event: PageEvent) {

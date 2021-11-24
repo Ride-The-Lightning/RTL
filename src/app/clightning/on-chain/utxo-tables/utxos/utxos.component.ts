@@ -86,9 +86,7 @@ export class CLOnChainUtxosComponent implements OnInit, OnChanges, AfterViewInit
   }
 
   applyFilter() {
-    if (this.selFilter !== '') {
-      this.listUTXOs.filter = this.selFilter.trim().toLowerCase();
-    }
+    this.listUTXOs.filter = this.selFilter.trim().toLowerCase();
   }
 
   onUTXOClick(selUtxo: UTXO, event: any) {

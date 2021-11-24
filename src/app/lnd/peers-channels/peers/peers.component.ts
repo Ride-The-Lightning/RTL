@@ -166,9 +166,7 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   applyFilter() {
-    if (this.selFilter !== '') {
-      this.peers.filter = this.selFilter.trim().toLowerCase();
-    }
+    this.peers.filter = this.selFilter.trim().toLowerCase();
   }
 
   loadPeersTable(peers: Peer[]) {

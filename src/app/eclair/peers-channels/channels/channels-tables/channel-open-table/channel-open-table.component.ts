@@ -182,9 +182,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   applyFilter() {
-    if (this.selFilter !== '') {
-      this.channels.filter = this.selFilter.trim().toLowerCase();
-    }
+    this.channels.filter = this.selFilter.trim().toLowerCase();
   }
 
   onChannelClick(selChannel: Channel, event: any) {

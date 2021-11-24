@@ -111,9 +111,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
   }
 
   applyFilter() {
-    if (this.selFilter !== '') {
-      this.channels.filter = this.selFilter.trim().toLowerCase();
-    }
+    this.channels.filter = this.selFilter.trim().toLowerCase();
   }
 
   loadHTLCsTable(channels: Channel[]) {

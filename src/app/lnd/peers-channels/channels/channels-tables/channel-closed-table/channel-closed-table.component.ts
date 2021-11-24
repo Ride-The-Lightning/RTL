@@ -82,9 +82,7 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   applyFilter() {
-    if (this.selFilter !== '') {
-      this.closedChannels.filter = this.selFilter.trim().toLowerCase();
-    }
+    this.closedChannels.filter = this.selFilter.trim().toLowerCase();
   }
 
   onClosedChannelClick(selChannel: ClosedChannel, event: any) {

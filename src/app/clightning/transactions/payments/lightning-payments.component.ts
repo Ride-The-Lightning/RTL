@@ -282,9 +282,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   }
 
   applyFilter() {
-    if (this.selFilter !== '') {
-      this.payments.filter = this.selFilter.trim().toLowerCase();
-    }
+    this.payments.filter = this.selFilter.trim().toLowerCase();
   }
 
   loadPaymentsTable(payments: Payment[]) {

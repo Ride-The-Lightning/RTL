@@ -127,9 +127,7 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
   }
 
   applyFilter() {
-    if (this.selFilter !== '') {
-      this.failedForwardingEvents.filter = this.selFilter.trim().toLowerCase();
-    }
+    this.failedForwardingEvents.filter = this.selFilter.trim().toLowerCase();
   }
 
   ngOnDestroy() {

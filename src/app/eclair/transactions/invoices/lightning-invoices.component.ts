@@ -185,9 +185,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   }
 
   applyFilter() {
-    if (this.selFilter !== '') {
-      this.invoices.filter = this.selFilter.trim().toLowerCase();
-    }
+    this.invoices.filter = this.selFilter.trim().toLowerCase();
   }
 
   onInvoiceValueChange() {

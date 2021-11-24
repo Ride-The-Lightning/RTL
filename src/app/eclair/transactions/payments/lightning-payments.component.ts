@@ -369,9 +369,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   }
 
   applyFilter() {
-    if (this.selFilter !== '') {
-      this.payments.filter = this.selFilter.trim().toLowerCase();
-    }
+    this.payments.filter = this.selFilter.trim().toLowerCase();
   }
 
   onDownloadCSV() {

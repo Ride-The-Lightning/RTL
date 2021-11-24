@@ -85,9 +85,7 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
   }
 
   applyFilter() {
-    if (this.selFilter !== '') {
-      this.listTransactions.filter = this.selFilter.trim().toLowerCase();
-    }
+    this.listTransactions.filter = this.selFilter.trim().toLowerCase();
   }
 
   onTransactionClick(selTransaction: Transaction) {

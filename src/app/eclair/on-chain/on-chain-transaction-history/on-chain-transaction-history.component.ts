@@ -79,9 +79,7 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
   }
 
   applyFilter() {
-    if (this.selFilter !== '') {
-      this.listTransactions.filter = this.selFilter.trim().toLowerCase();
-    }
+    this.listTransactions.filter = this.selFilter.trim().toLowerCase();
   }
 
   onTransactionClick(selTransaction: Transaction, event: any) {

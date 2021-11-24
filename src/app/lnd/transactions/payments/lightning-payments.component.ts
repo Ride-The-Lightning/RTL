@@ -399,9 +399,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   }
 
   applyFilter() {
-    if (this.selFilter !== '') {
-      this.payments.filter = this.selFilter.trim().toLowerCase();
-    }
+    this.payments.filter = this.selFilter.trim().toLowerCase();
   }
 
   loadPaymentsTable(payms) {

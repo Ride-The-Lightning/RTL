@@ -75,9 +75,7 @@ export class SwapsComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   applyFilter() {
-    if (this.selFilter !== '') {
-      this.listSwaps.filter = this.selFilter.trim().toLowerCase();
-    }
+    this.listSwaps.filter = this.selFilter.trim().toLowerCase();
   }
 
   onSwapClick(selSwap: LoopSwapStatus, event: any) {

@@ -90,9 +90,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   applyFilter() {
-    if (this.selFilter !== '') {
-      this.listUTXOs.filter = this.selFilter.trim().toLowerCase();
-    }
+    this.listUTXOs.filter = this.selFilter.trim().toLowerCase();
   }
 
   onUTXOClick(selUTXO: UTXO) {
