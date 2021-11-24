@@ -23,7 +23,7 @@ import { rootAppConfig, rootSelectedNode } from '../../../../store/rtl.selector'
 })
 export class AuthSettingsComponent implements OnInit, OnDestroy {
 
-  @ViewChild('authForm', { static: true }) form: any;
+  @ViewChild('authForm', { static: false }) form: any;
   public faInfoCircle = faInfoCircle;
   public faUserLock = faUserLock;
   public faUserClock = faUserClock;
@@ -67,7 +67,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
               break;
           }
         }
-        this.form.resetForm();
+        if (this.form) { this.form.resetForm(); }
       });
   }
 
@@ -80,7 +80,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
 
   matchOldAndNewPasswords(): boolean {
     let invalid = false;
-    if (this.form.controls.newpassword) {
+    if (this.form && this.form.controls && this.form.controls.newpassword) {
       if (!this.newPassword) {
         this.form.controls.newpassword.setErrors({ invalid: true });
         this.errorMsg = 'New password is required.';
@@ -104,7 +104,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
 
   matchNewPasswords(): boolean {
     let invalid = false;
-    if (this.form.controls.confirmpassword) {
+    if (this.form && this.form.controls && this.form.controls.confirmpassword) {
       if (!this.confirmPassword) {
         this.form.controls.confirmpassword.setErrors({ invalid: true });
         this.errorConfirmMsg = 'Confirm password is required.';

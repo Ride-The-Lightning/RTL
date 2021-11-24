@@ -83,6 +83,7 @@ export const getRTLConfig = (req, res, next) => {
             const nodeConfData = JSON.parse(data);
             const sso = { rtlSSO: common.rtl_sso, logoutRedirectLink: common.logout_redirect_link };
             const enable2FA = !!common.rtl_secret2fa;
+            const allowPasswordUpdate = common.flg_allow_password_update;
             const nodesArr = [];
             if (common.nodes && common.nodes.length > 0) {
                 common.nodes.forEach((node, i) => {
@@ -112,7 +113,7 @@ export const getRTLConfig = (req, res, next) => {
                 });
             }
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'RTL Configuration Received' });
-            res.status(200).json({ defaultNodeIndex: nodeConfData.defaultNodeIndex, selectedNodeIndex: (req.session.selectedNode && req.session.selectedNode.index ? req.session.selectedNode.index : common.initSelectedNode.index), sso: sso, enable2FA: enable2FA, nodes: nodesArr });
+            res.status(200).json({ defaultNodeIndex: nodeConfData.defaultNodeIndex, selectedNodeIndex: (req.session.selectedNode && req.session.selectedNode.index ? req.session.selectedNode.index : common.initSelectedNode.index), sso: sso, enable2FA: enable2FA, allowPasswordUpdate: allowPasswordUpdate, nodes: nodesArr });
         }
     });
 };
