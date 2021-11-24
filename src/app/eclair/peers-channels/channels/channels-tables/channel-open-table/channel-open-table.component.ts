@@ -104,11 +104,11 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
     }
   }
 
-  onChannelUpdate(channelToUpdate: any) {
+  onChannelUpdate(channelToUpdate: Channel) {
     if (channelToUpdate !== 'all' && channelToUpdate.state !== 'NORMAL') {
       return;
     }
-    const titleMsg = channelToUpdate === 'all' ? 'Update fee policy for selected/all channels' :
+    const titleMsg = channelToUpdate === 'all' ? 'Update fee policy for all channels' :
       ('Update fee policy for Channel: ' + ((!channelToUpdate.alias && !channelToUpdate.shortChannelId) ? channelToUpdate.channelId : (channelToUpdate.alias && channelToUpdate.shortChannelId) ? channelToUpdate.alias + ' (' + channelToUpdate.shortChannelId + ')' : channelToUpdate.alias ? channelToUpdate.alias : channelToUpdate.shortChannelId));
     const confirmationMsg = [];
     this.store.dispatch(openConfirmation({
@@ -122,8 +122,8 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
           titleMessage: titleMsg,
           flgShowInput: true,
           getInputs: [
-            { placeholder: 'Base Fee (mSats)', inputType: 'number', inputValue: channelToUpdate && channelToUpdate.feeBaseMsat ? channelToUpdate.feeBaseMsat : 1000, width: 48 },
-            { placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: channelToUpdate && channelToUpdate.feeProportionalMillionths ? channelToUpdate.feeProportionalMillionths : 100, min: 1, width: 48, hintFunction: this.percentHintFunction }
+            { placeholder: 'Base Fee (mSats)', inputType: 'number', inputValue: channelToUpdate && typeof channelToUpdate.feeBaseMsat !== 'undefined' ? channelToUpdate.feeBaseMsat : 1000, width: 48 },
+            { placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: channelToUpdate && typeof channelToUpdate.feeProportionalMillionths !== 'undefined' ? channelToUpdate.feeProportionalMillionths : 100, min: 1, width: 48, hintFunction: this.percentHintFunction }
           ]
         }
       }
@@ -135,15 +135,15 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
           let updateRequestPayload = null;
-          let channel_ids = '';
+          let node_ids = '';
           if (channelToUpdate === 'all') {
             this.activeChannels.forEach((channel) => {
-              channel_ids = channel_ids + ',' + channel.channelId;
+              node_ids = node_ids + ',' + channel.nodeId;
             });
-            channel_ids = channel_ids.substring(1);
-            updateRequestPayload = { baseFeeMsat: base_fee, feeRate: fee_rate, channelIds: channel_ids };
+            node_ids = node_ids.substring(1);
+            updateRequestPayload = { baseFeeMsat: base_fee, feeRate: fee_rate, nodeIds: node_ids };
           } else {
-            updateRequestPayload = { baseFeeMsat: base_fee, feeRate: fee_rate, channelId: channelToUpdate.channelId };
+            updateRequestPayload = { baseFeeMsat: base_fee, feeRate: fee_rate, nodeId: channelToUpdate.nodeId };
           }
           this.store.dispatch(updateChannel({ payload: updateRequestPayload }));
         }

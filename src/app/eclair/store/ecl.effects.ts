@@ -361,17 +361,17 @@ export class ECLEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: UpdateChannel }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UPDATE_CHAN_POLICY }));
       let queryParam = '?feeBaseMsat=' + action.payload.baseFeeMsat + '&feeProportionalMillionths=' + action.payload.feeRate;
-      if (action.payload.channelIds) {
-        queryParam = queryParam + '&channelIds=' + action.payload.channelIds;
+      if (action.payload.nodeIds) {
+        queryParam = queryParam + '&nodeIds=' + action.payload.nodeIds;
       } else {
-        queryParam = queryParam + '&channelId=' + action.payload.channelId;
+        queryParam = queryParam + '&nodeId=' + action.payload.nodeId;
       }
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API + '/updateRelayFee' + queryParam, {}).
         pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_CHAN_POLICY }));
-            if (action.payload.channelIds) {
+            if (action.payload.nodeIds) {
               this.store.dispatch(openSnackBar({ payload: 'Channels Updated Successfully.' }));
             } else {
               this.store.dispatch(openSnackBar({ payload: 'Channel Updated Successfully!' }));
