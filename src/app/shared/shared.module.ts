@@ -98,7 +98,7 @@ import { AutoFocusDirective } from './directive/auto-focus.directive';
 import { MonthlyDateDirective, YearlyDateDirective } from './directive/date-formats.directive';
 import { MaxValidator } from './directive/max-amount.directive';
 import { MinValidator } from './directive/min-amount.directive';
-import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
+import { RemoveLeadingZerosPipe, CamelCasePipe } from './pipes/app.pipe';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: false,
@@ -220,6 +220,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     MonthlyDateDirective,
     YearlyDateDirective,
     RemoveLeadingZerosPipe,
+    CamelCasePipe,
     MaxValidator,
     MinValidator,
     AppSettingsComponent,
@@ -286,6 +287,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     MaxValidator,
     MinValidator,
     RemoveLeadingZerosPipe,
+    CamelCasePipe,
     AuthSettingsComponent,
     TransactionsReportTableComponent,
     OnChainGeneratedAddressComponent,

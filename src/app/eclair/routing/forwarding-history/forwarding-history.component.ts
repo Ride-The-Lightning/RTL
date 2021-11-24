@@ -111,6 +111,9 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
       { key: 'toShortChannelId', value: selFEvent.toShortChannelId, title: 'To Short Channel ID', width: 50, type: DataTypeEnum.STRING }],
       [{ key: 'toChannelId', value: selFEvent.toChannelId, title: 'To Channel Id', width: 100, type: DataTypeEnum.STRING }]
     ];
+    if (selFEvent.type !== 'payment-relayed') {
+      reorderedFHEvent.unshift([{ key: 'type', value: this.commonService.camelCase(selFEvent.type), title: 'Relay Type', width: 100, type: DataTypeEnum.STRING }]);
+    }
     this.store.dispatch(openAlert({
       payload: {
         data: {
