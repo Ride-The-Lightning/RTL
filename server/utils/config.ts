@@ -19,7 +19,7 @@ export class ConfigService {
 
   constructor() { }
 
-  setDefaultConfig = () => {
+  private setDefaultConfig = () => {
     const homeDir = os.userInfo().homedir;
     let macaroonPath = '';
     let configPath = '';
@@ -76,7 +76,7 @@ export class ConfigService {
         }
       ]
     };
-  }
+  };
 
   private normalizePort = (val) => {
     const port = parseInt(val, 10);
@@ -108,18 +108,25 @@ export class ConfigService {
     } catch (err) {
       this.errMsg = this.errMsg + '\nLog level update failed!';
     }
-  }
+  };
 
   private validateNodeConfig = (config) => {
     if ((+process.env.RTL_SSO === 0) || (typeof process.env.RTL_SSO === 'undefined' && +config.SSO.rtlSSO === 0)) {
-      if (config.multiPassHashed !== '' && config.multiPassHashed) {
+      if (process.env.APP_PASSWORD && process.env.APP_PASSWORD.trim() !== '') {
+        this.common.rtl_pass = this.hash.update(process.env.APP_PASSWORD).digest('hex');
+        this.common.flg_allow_password_update = false;
+      } else if (config.multiPassHashed && config.multiPassHashed !== '') {
         this.common.rtl_pass = config.multiPassHashed;
-      } else if (config.multiPass !== '' && config.multiPass) {
+      } else if (config.multiPass && config.multiPass !== '') {
         this.common.rtl_pass = this.common.replacePasswordWithHash(this.hash.update(config.multiPass).digest('hex'));
       } else {
         this.errMsg = this.errMsg + '\nNode Authentication can be set with multiPass only. Please set multiPass in RTL-Config.json';
       }
       this.common.rtl_secret2fa = config.secret2fa;
+    } else {
+      if ((process.env.APP_PASSWORD && process.env.APP_PASSWORD.trim() !== '') || (config.multiPass && config.multiPass.trim() !== '') || (config.multiPassHashed && config.multiPassHashed.trim() !== '')) {
+        this.errMsg = this.errMsg + '\nRTL Password cannot be set with SSO. Please set SSO as 0 or remove password.';
+      }
     }
     this.common.port = (process.env.PORT) ? this.normalizePort(process.env.PORT) : (config.port) ? this.normalizePort(config.port) : 3000;
     this.common.host = (process.env.HOST) ? process.env.HOST : (config.host) ? config.host : null;
@@ -148,10 +155,6 @@ export class ConfigService {
         }
         if (process.env.CONFIG_PATH) {
           this.common.nodes[idx].config_path = process.env.CONFIG_PATH;
-        } else if (process.env.LND_CONFIG_PATH) {
-          this.common.nodes[idx].config_path = process.env.LND_CONFIG_PATH;
-        } else if (node.Authentication && node.Authentication.lndConfigPath) {
-          this.common.nodes[idx].config_path = node.Authentication.lndConfigPath;
         } else if (node.Authentication && node.Authentication.configPath) {
           this.common.nodes[idx].config_path = node.Authentication.configPath;
         } else {
@@ -257,7 +260,7 @@ export class ConfigService {
     }
     this.setSSOParams(config);
     if (this.errMsg && this.errMsg.trim() !== '') { throw new Error(this.errMsg); }
-  }
+  };
 
   private setSSOParams = (config) => {
     if (process.env.RTL_SSO) {
@@ -291,174 +294,12 @@ export class ConfigService {
     } else {
       this.common.initSelectedNode = this.common.findNode(this.common.nodes[0].index);
     }
-  }
-
-  private modifyJsonMultiNodeConfig = (confFileFullPath) => {
-    const RTLConfFile = this.common.rtl_conf_file_path + '/RTL-Multi-Node-Conf.json';
-    const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
-    if (!config.SSO) { config.SSO = {}; }
-    const newConfig = {
-      port: config.port ? config.port : 3000,
-      defaultNodeIndex: config.defaultNodeIndex ? config.defaultNodeIndex : 1,
-      SSO: {
-        rtlSSO: config.SSO.rtlSSO ? config.SSO.rtlSSO : 0,
-        rtlCookiePath: config.SSO.rtlCookiePath ? config.SSO.rtlCookiePath : '',
-        logoutRedirectLink: config.SSO.logoutRedirectLink ? config.SSO.logoutRedirectLink : ''
-      },
-      nodes: []
-    };
-    if (config.host) { newConfig['host'] = config.host; }
-    if (config.nodes && config.nodes.length > 0) {
-      let newNode;
-      config.nodes.forEach((node, idx) => {
-        newNode = {
-          index: node.index ? node.index : (idx + 1),
-          lnNode: node.lnNode ? node.lnNode : 'Node ' + (idx + 1),
-          lnImplementation: node.lnImplementation ? node.lnImplementation : 'LND',
-          Authentication: {
-            macaroonPath: node.Authentication.macaroonPath ? node.Authentication.macaroonPath : ''
-          },
-          Settings: {
-            userPersona: node.Settings.userPersona ? node.Settings.userPersona : 'MERCHANT',
-            logLevel: node.Settings.logLevel,
-            fiatConversion: node.Settings.fiatConversion ? node.Settings.fiatConversion : false
-          }
-        };
-
-        if (node.Authentication.configPath) {
-          newNode.Authentication.configPath = node.Authentication.configPath;
-        } else if (node.Authentication.lndConfigPath) {
-          newNode.Authentication.configPath = node.Authentication.lndConfigPath;
-        }
-
-        if (node.Settings.theme) {
-          const themeArr = node.Settings.theme.split('-');
-          if (themeArr[2]) { themeArr[1] = themeArr[1] + themeArr[2]; } // For light-blue-gray
-          newNode.Settings.themeMode = (themeArr[0] === 'dark') ? 'NIGHT' : 'DAY';
-          newNode.Settings.themeColor = (themeArr[1] === 'blue') ? 'INDIGO' : (themeArr[1] === 'pink') ? 'PINK' : (themeArr[1] === 'green' || themeArr[1] === 'teal') ? 'TEAL' : 'PURPLE';
-        } else {
-          newNode.Settings.themeMode = node.Settings.themeMode ? node.Settings.themeMode : 'DAY';
-          newNode.Settings.themeColor = node.Settings.themeColor ? node.Settings.themeColor : 'PURPLE';
-        }
-        if (node.Settings.currencyUnit) {
-          newNode.Settings.currencyUnit = node.Settings.currencyUnit;
-        }
-        if (node.Settings.bitcoindConfigPath) {
-          newNode.Settings.bitcoindConfigPath = node.Settings.bitcoindConfigPath;
-        }
-        if (node.Settings.channelBackupPath) {
-          newNode.Settings.channelBackupPath = node.Settings.channelBackupPath;
-        }
-        if (node.Settings.lnServerUrl) {
-          newNode.Settings.lnServerUrl = node.Settings.lnServerUrl.endsWith('/v1') ? node.Settings.lnServerUrl.slice(0, -3) : node.Settings.lnServerUrl;
-        } else if (node.Settings.lndServerUrl) {
-          newNode.Settings.lnServerUrl = node.Settings.lndServerUrl.endsWith('/v1') ? node.Settings.lndServerUrl.slice(0, -3) : node.Settings.lndServerUrl;
-        }
-        newConfig.nodes.push(newNode);
-      });
-    }
-    newConfig['multiPassHashed'] = config.multiPassHashed ? config.multiPassHashed : config.multiPass ? this.hash.update(config.multiPass).digest('hex') : '';
-    fs.writeFileSync(confFileFullPath, JSON.stringify(newConfig, null, 2), 'utf-8');
-  }
-
-  private modifyIniSingleNodeConfig = (confFileFullPath) => {
-    const RTLConfFile = this.common.rtl_conf_file_path + '/RTL.conf';
-    const config = ini.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
-    if (!config.SSO) { config.SSO = {}; }
-    if (!config.Authentication) { config.Authentication = {}; }
-    if (!config.Settings) { config.Settings = {}; }
-    const newConfig = {
-      port: config.Settings.port ? config.Settings.port : 3000,
-      defaultNodeIndex: 1,
-      SSO: {
-        rtlSSO: config.SSO.rtlSSO ? config.SSO.rtlSSO : 0,
-        rtlCookiePath: config.SSO.rtlCookiePath ? config.SSO.rtlCookiePath : '',
-        logoutRedirectLink: config.SSO.logoutRedirectLink ? config.SSO.logoutRedirectLink : ''
-      },
-      nodes: [
-        {
-          index: 1,
-          lnNode: 'Node 1',
-          lnImplementation: config.Settings.lnImplementation ? config.Settings.lnImplementation : 'LND',
-          Authentication: {
-            macaroonPath: config.Authentication.macaroonPath ? config.Authentication.macaroonPath : (config.Authentication.macroonPath ? config.Authentication.macroonPath : ''),
-            configPath: config.Authentication.configPath ? config.Authentication.configPath : (config.Authentication.lndConfigPath ? config.Authentication.lndConfigPath : '')
-          },
-          Settings: {
-            userPersona: config.Settings.userPersona ? config.Settings.userPersona : 'MERCHANT',
-            logLevel: config.Settings.logLevel ? config.Settings.logLevel : 'ERROR',
-            fiatConversion: config.Settings.fiatConversion ? config.Settings.fiatConversion : false
-          }
-        }
-      ]
-    };
-    if (config.Settings.theme) {
-      const themeArr = config.Settings.theme.split('-');
-      if (themeArr[2]) { themeArr[1] = themeArr[1] + themeArr[2]; } // For light-blue-gray
-      newConfig.nodes[0].Settings['themeMode'] = (themeArr[0] === 'dark') ? 'NIGHT' : 'DAY';
-      newConfig.nodes[0].Settings['themeColor'] = (themeArr[1] === 'blue') ? 'INDIGO' : (themeArr[1] === 'pink') ? 'PINK' : (themeArr[1] === 'green' || themeArr[1] === 'teal') ? 'TEAL' : 'PURPLE';
-    } else {
-      newConfig.nodes[0].Settings['themeMode'] = config.Settings.themeMode ? config.Settings.themeMode : 'DAY';
-      newConfig.nodes[0].Settings['themeColor'] = config.Settings.themeColor ? config.Settings.themeColor : 'PURPLE';
-    }
-    if (config.Settings.currencyUnit) {
-      newConfig.nodes[0].Settings['currencyUnit'] = config.Settings.currencyUnit;
-    }
-
-    if (config.Settings.bitcoindConfigPath) {
-      newConfig.nodes[0].Settings['bitcoindConfigPath'] = config.Settings.bitcoindConfigPath;
-    } else if (config.Authentication.bitcoindConfigPath) {
-      newConfig.nodes[0].Settings['bitcoindConfigPath'] = config.Authentication.bitcoindConfigPath;
-    }
-
-    if (config.Settings.channelBackupPath) {
-      newConfig.nodes[0].Settings['channelBackupPath'] = config.Settings.channelBackupPath;
-    }
-    if (config.Settings.lnServerUrl) {
-      newConfig.nodes[0].Settings['lnServerUrl'] = config.Settings.lnServerUrl.endsWith('/v1') ? config.Settings.lnServerUrl.slice(0, -3) : config.Settings.lnServerUrl;
-    } else if (config.Settings.lndServerUrl) {
-      newConfig.nodes[0].Settings['lnServerUrl'] = config.Settings.lndServerUrl.endsWith('/v1') ? config.Settings.lndServerUrl.slice(0, -3) : config.Settings.lndServerUrl;
-    } else if (config.Authentication.lndServerUrl) {
-      newConfig.nodes[0].Settings['lnServerUrl'] = config.Authentication.lndServerUrl.endsWith('/v1') ? config.Authentication.lndServerUrl.slice(0, -3) : config.Authentication.lndServerUrl;
-    }
-    newConfig['multiPassHashed'] = config.Authentication.rtlPassHashed ? config.Authentication.rtlPassHashed : config.Authentication.rtlPass ? this.hash.update(config.Authentication.rtlPass).digest('hex') : '';
-    fs.writeFileSync(confFileFullPath, JSON.stringify(newConfig, null, 2), 'utf-8');
-  }
-
-  private upgradeConfig = (confFileFullPath) => {
-    try {
-      const singleNodeConfFile = this.common.rtl_conf_file_path + '/RTL.conf';
-      const multiNodeConfFile = this.common.rtl_conf_file_path + '/RTL-Multi-Node-Conf.json';
-      const singleNodeExists = fs.existsSync(singleNodeConfFile);
-      const multiNodeExists = fs.existsSync(multiNodeConfFile);
-      if ((singleNodeExists && multiNodeExists) || (!singleNodeExists && multiNodeExists)) {
-        this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'Config', msg: 'Start...config migration for file', data: multiNodeConfFile });
-        this.modifyJsonMultiNodeConfig(confFileFullPath);
-        this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'Config', msg: 'End...config migration' });
-      } else if (singleNodeExists && !multiNodeExists) {
-        this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'Config', msg: 'Start...config migration for file ', data: singleNodeConfFile });
-        this.modifyIniSingleNodeConfig(confFileFullPath);
-        this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'Config', msg: 'End...config migration' });
-      } else if (!singleNodeExists && !multiNodeExists) {
-        if (!fs.existsSync(confFileFullPath)) {
-          this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'Config', msg: 'Start...config creation at ', data: confFileFullPath });
-          fs.writeFileSync(confFileFullPath, JSON.stringify(this.setDefaultConfig(), null, 2), 'utf-8');
-          this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'Config', msg: 'End...config creation' });
-        }
-      }
-    } catch (err) {
-      this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while upgrading the RTL config file: \n' + err });
-      throw new Error(err);
-    }
-  }
+  };
 
   public setServerConfiguration = () => {
     try {
       this.common.rtl_conf_file_path = (process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH : join(this.directoryName, '../..');
       const confFileFullPath = this.common.rtl_conf_file_path + sep + 'RTL-Config.json';
-      if (!fs.existsSync(confFileFullPath)) {
-        this.upgradeConfig(confFileFullPath);
-      }
       const config = JSON.parse(fs.readFileSync(confFileFullPath, 'utf-8'));
       this.updateLogByLevel();
       this.validateNodeConfig(config);
