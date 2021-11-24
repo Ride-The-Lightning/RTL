@@ -26,11 +26,11 @@
           </ng-container>
           <ng-container matColumnDef="total_amount">
             <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Amount (Sats)</th>
-            <td mat-cell *matCellDef="let rPeer"><span fxLayoutAlign="end center">{{rPeer.total_amount | number}}</span></td>
+            <td mat-cell *matCellDef="let rPeer"><span fxLayoutAlign="end center">{{rPeer?.total_amount/1000 | number:rPeer?.total_amount < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
           </ng-container>
           <ng-container matColumnDef="total_fee">
             <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Fee (Sats)</th>
-            <td mat-cell *matCellDef="let rPeer"><span fxLayoutAlign="end center">{{rPeer.total_fee | number}}</span></td>
+            <td mat-cell *matCellDef="let rPeer"><span fxLayoutAlign="end center">{{rPeer?.total_fee/1000 | number:rPeer?.total_fee < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
           </ng-container>
           <ng-container matColumnDef="no_incoming_event">
             <td mat-footer-cell *matFooterCellDef colspan="4">
@@ -71,11 +71,11 @@
           </ng-container>
           <ng-container matColumnDef="total_amount">
             <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Amount (Sats)</th>
-            <td mat-cell *matCellDef="let rPeer"><span fxLayoutAlign="end center">{{rPeer.total_amount | number}}</span></td>
+            <td mat-cell *matCellDef="let rPeer"><span fxLayoutAlign="end center">{{rPeer?.total_amount/1000 | number:rPeer?.total_amount < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
           </ng-container>
           <ng-container matColumnDef="total_fee">
             <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Fee (Sats)</th>
-            <td mat-cell *matCellDef="let rPeer"><span fxLayoutAlign="end center">{{rPeer.total_fee | number}}</span></td>
+            <td mat-cell *matCellDef="let rPeer"><span fxLayoutAlign="end center">{{rPeer?.total_fee/1000 | number:rPeer?.total_fee < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
           </ng-container>
           <ng-container matColumnDef="no_outgoing_event">
             <td mat-footer-cell *matFooterCellDef colspan="4">
