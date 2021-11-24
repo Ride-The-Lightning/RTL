@@ -212,38 +212,89 @@ export const ECLReducer = createReducer(initECLState,
 );
 
 const mapAliases = (rlEvent: PaymentRelayed, storedChannels: Channel[]) => {
-  if (storedChannels && storedChannels.length > 0) {
-    for (let idx = 0; idx < storedChannels.length; idx++) {
-      if (storedChannels[idx].channelId.toString() === rlEvent.fromChannelId) {
-        rlEvent.fromChannelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : rlEvent.fromChannelId;
-        rlEvent.fromShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
-        if (rlEvent.toChannelAlias) {
-          return rlEvent;
+  if (rlEvent.type === 'payment-relayed') {
+    if (storedChannels && storedChannels.length > 0) {
+      for (let idx = 0; idx < storedChannels.length; idx++) {
+        if (storedChannels[idx].channelId.toString() === rlEvent.fromChannelId) {
+          rlEvent.fromChannelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : rlEvent.fromChannelId;
+          rlEvent.fromShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
+          if (rlEvent.toChannelAlias) {
+            return rlEvent;
+          }
+        }
+        if (storedChannels[idx].channelId.toString() === rlEvent.toChannelId) {
+          rlEvent.toChannelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : rlEvent.toChannelId;
+          rlEvent.toShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
+          if (rlEvent.fromChannelAlias) {
+            return rlEvent;
+          }
+        }
+        if (idx === storedChannels.length - 1) {
+          if (!rlEvent.fromChannelAlias) {
+            rlEvent.fromChannelAlias = rlEvent.fromChannelId.substring(0, 17) + '...';
+            rlEvent.fromShortChannelId = '';
+          }
+          if (!rlEvent.toChannelAlias) {
+            rlEvent.toChannelAlias = rlEvent.toChannelId.substring(0, 17) + '...';
+            rlEvent.toShortChannelId = '';
+          }
         }
       }
-      if (storedChannels[idx].channelId.toString() === rlEvent.toChannelId) {
-        rlEvent.toChannelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : rlEvent.toChannelId;
-        rlEvent.toShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
-        if (rlEvent.fromChannelAlias) {
-          return rlEvent;
-        }
-      }
-      if (idx === storedChannels.length - 1) {
-        if (!rlEvent.fromChannelAlias) {
-          rlEvent.fromChannelAlias = rlEvent.fromChannelId.substring(0, 17) + '...';
-          rlEvent.fromShortChannelId = '';
-        }
-        if (!rlEvent.toChannelAlias) {
-          rlEvent.toChannelAlias = rlEvent.toChannelId.substring(0, 17) + '...';
-          rlEvent.toShortChannelId = '';
-        }
-      }
+    } else {
+      rlEvent.fromChannelAlias = rlEvent.fromChannelId.substring(0, 17) + '...';
+      rlEvent.fromShortChannelId = '';
+      rlEvent.toChannelAlias = rlEvent.toChannelId.substring(0, 17) + '...';
+      rlEvent.toShortChannelId = '';
     }
-  } else {
-    rlEvent.fromChannelAlias = rlEvent.fromChannelId.substring(0, 17) + '...';
-    rlEvent.fromShortChannelId = '';
-    rlEvent.toChannelAlias = rlEvent.toChannelId.substring(0, 17) + '...';
-    rlEvent.toShortChannelId = '';
+  } else if (rlEvent.type = 'trampoline-payment-relayed') {
+    if (storedChannels && storedChannels.length > 0) {
+      for (let idx = 0; idx < storedChannels.length; idx++) {
+        rlEvent.incoming.forEach((incomingEvent) => {
+          if (storedChannels[idx].channelId.toString() === incomingEvent.channelId) {
+            incomingEvent.channelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : incomingEvent.channelId;
+            incomingEvent.shortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
+          }
+        });
+        rlEvent.outgoing.forEach((outgoingEvent) => {
+          if (storedChannels[idx].channelId.toString() === outgoingEvent.channelId) {
+            outgoingEvent.channelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : outgoingEvent.channelId;
+            outgoingEvent.shortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
+          }
+        });
+        if (idx === storedChannels.length - 1) {
+          if (!rlEvent.incoming[0].channelAlias) {
+            rlEvent.incoming.forEach((incomingEvent) => {
+              incomingEvent.channelAlias = incomingEvent.channelId.substring(0, 17) + '...';
+              incomingEvent.shortChannelId = '';
+            });
+          }
+          if (!rlEvent.outgoing[0].channelAlias) {
+            rlEvent.outgoing.forEach((outgoingEvent) => {
+              outgoingEvent.channelAlias = outgoingEvent.channelId.substring(0, 17) + '...';
+              outgoingEvent.shortChannelId = '';
+            });
+          }
+        }
+      }
+    } else {
+      rlEvent.incoming.forEach((incomingEvent) => {
+        incomingEvent.channelAlias = incomingEvent.channelId.substring(0, 17) + '...';
+        incomingEvent.shortChannelId = '';
+      });
+      rlEvent.outgoing.forEach((outgoingEvent) => {
+        outgoingEvent.channelAlias = outgoingEvent.channelId.substring(0, 17) + '...';
+        outgoingEvent.shortChannelId = '';
+      });
+    }
+    rlEvent.amountIn = rlEvent.incoming.reduce((acc, curr) => acc + curr.amount, 0);
+    rlEvent.fromChannelId = rlEvent.incoming[0].channelId;
+    rlEvent.fromChannelAlias = rlEvent.incoming[0].channelAlias;
+    rlEvent.fromShortChannelId = rlEvent.incoming[0].shortChannelId;
+
+    rlEvent.amountOut = rlEvent.outgoing.reduce((acc, curr) => acc + curr.amount, 0);
+    rlEvent.toChannelId = rlEvent.outgoing[0].channelId;
+    rlEvent.toChannelAlias = rlEvent.outgoing[0].channelAlias;
+    rlEvent.toShortChannelId = rlEvent.outgoing[0].shortChannelId;
   }
   return rlEvent;
 };

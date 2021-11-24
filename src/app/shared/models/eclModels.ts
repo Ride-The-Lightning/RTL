@@ -67,6 +67,8 @@ export interface PaymentRelayed {
   toShortChannelId?: string;
   toChannelAlias?: string;
   timestamp?: number;
+  incoming?: Array<{ amount: number, channelId?: string, channelAlias?: string, shortChannelId?: string }>;
+  outgoing?: Array<{ amount: number, channelId?: string, channelAlias?: string, shortChannelId?: string }>;
 }
 
 export interface Payments {
