@@ -435,10 +435,12 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         subscribe((decodedPayments: PayRequest[]) => {
           let increament = 0;
           decodedPayments.forEach((decodedPayment, idx) => {
-            while (paymentsDataCopy[idx + increament].payment_hash !== decodedPayment.payment_hash) {
-              increament = increament + 1;
+            if (decodedPayment) {
+              while (paymentsDataCopy[idx + increament].payment_hash !== decodedPayment.payment_hash) {
+                increament = increament + 1;
+              }
+              paymentsDataCopy[idx + increament].description = decodedPayment.description;
             }
-            paymentsDataCopy[idx + increament].description = decodedPayment.description;
           });
           const flattenedPayments = paymentsDataCopy.reduce((acc, curr) => acc.concat(curr), []);
           this.commonService.downloadFile(flattenedPayments, 'Payments');
