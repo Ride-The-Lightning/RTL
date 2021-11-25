@@ -35,6 +35,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   @Input() isDustUTXO = false;
   public utxos: UTXO[];
+  public dustUtxos: UTXO[];
   public addressType = WALLET_ADDRESS_TYPE;
   faMoneyBillWave = faMoneyBillWave;
   public displayedColumns: any[] = [];
@@ -76,16 +77,20 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
           this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         if (utxosSelector.utxos && utxosSelector.utxos.length > 0) {
-          this.utxos = (this.isDustUTXO) ? utxosSelector.utxos.filter((utxo) => +utxo.amount_sat < 1000) : utxosSelector.utxos;
-          this.loadUTXOsTable(this.utxos);
+          this.dustUtxos = utxosSelector.utxos.filter((utxo) => +utxo.amount_sat < 1000);
+          this.utxos = utxosSelector.utxos;
+          this.loadUTXOsTable((this.isDustUTXO) ? this.dustUtxos : this.utxos);
         }
         this.logger.info(utxosSelector);
       });
   }
 
   ngOnChanges() {
-    if (this.utxos && this.utxos.length > 0) {
+    if (!this.isDustUTXO && this.utxos && this.utxos.length > 0) {
       this.loadUTXOsTable(this.utxos);
+    }
+    if (this.isDustUTXO && this.dustUtxos && this.dustUtxos.length > 0) {
+      this.loadUTXOsTable(this.dustUtxos);
     }
   }
 
