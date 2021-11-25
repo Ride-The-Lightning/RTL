@@ -16,7 +16,8 @@ export const isAuthenticated = (req, res, next) => {
     }
 };
 export const verifyWSUser = (info, next) => {
-    const protocols = !info.req.headers['sec-websocket-protocol'] ? [] : info.req.headers['sec-websocket-protocol'].split(',').map((s) => s.trim());
+    const headers = JSON.parse(JSON.stringify(info.req.headers));
+    const protocols = !headers['sec-websocket-protocol'] ? [] : headers['sec-websocket-protocol'].split(',').map((s) => s.trim());
     const jwToken = (protocols && protocols.length > 0) ? protocols[0] : '';
     if (!jwToken || jwToken === '') {
         next(false, 401, 'Authentication Failed! Please Login First!');
@@ -28,7 +29,7 @@ export const verifyWSUser = (info, next) => {
             }
             else {
                 const updatedReq = JSON.parse(JSON.stringify(info.req));
-                updatedReq['cookies'] = !updatedReq.headers.cookie ? {} : '{"' + updatedReq.headers.cookie.replace(/ /g, '').replace(/;/g, '","').trim().replace(/[=]/g, '":"') + '"}';
+                updatedReq['cookies'] = !headers || !headers.cookie ? {} : '{"' + headers.cookie.replace(/ /g, '').replace(/;/g, '","').trim().replace(/[=]/g, '":"') + '"}';
                 updatedReq['cookies'] = JSON.parse(updatedReq['cookies']);
                 csurfProtection(updatedReq, null, (err) => {
                     if (err) {
