@@ -12,7 +12,7 @@ import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { ChannelRebalanceAlert } from '../../../../shared/models/alertData';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { Channel, QueryRoutes, ListInvoices, Invoice } from '../../../../shared/models/lndModels';
-import { APICallStatusEnum, FEE_LIMIT_TYPES, LNDActions, PAGE_SIZE, UI_MESSAGES } from '../../../../shared/services/consts-enums-functions';
+import { FEE_LIMIT_TYPES, LNDActions, PAGE_SIZE, UI_MESSAGES } from '../../../../shared/services/consts-enums-functions';
 
 import { RTLState } from '../../../../store/rtl.state';
 import { saveNewInvoice, sendPayment } from '../../../store/lnd.actions';
@@ -121,7 +121,11 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     if (this.inputFormGroup.controls.selRebalancePeer.value && typeof this.inputFormGroup.controls.selRebalancePeer.value === 'string') {
       this.onSelectedPeerChanged();
     }
-    if (!this.inputFormGroup.controls.selRebalancePeer.value || typeof this.inputFormGroup.controls.selRebalancePeer.value === 'string' || !this.inputFormGroup.controls.rebalanceAmount.value) {
+    if (!this.inputFormGroup.controls.selRebalancePeer.value || typeof this.inputFormGroup.controls.selRebalancePeer.value === 'string') {
+      this.inputFormGroup.controls.selRebalancePeer.setErrors({ required: true });
+      return true;
+    }
+    if (!this.inputFormGroup.controls.rebalanceAmount.value) {
       return true;
     }
     if (this.stepper.selectedIndex === 0) {
@@ -131,10 +135,6 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     this.queryRoute = null;
     this.feeFormGroup.reset();
     this.feeFormGroup.controls.selFeeLimitType.setValue(this.feeLimitTypes[0]);
-    this.feeFormGroup.controls.feeLimit.setValue('');
-    this.feeFormGroup.controls.feeLimit.setErrors(null);
-    this.feeFormGroup.controls.hiddenFeeLimit.setValue('');
-    this.feeFormGroup.controls.hiddenFeeLimit.setErrors(null);
   }
 
   stepSelectionChanged(event: any) {
@@ -214,7 +214,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   sendPayment(payReq: string) {
     this.flgInvoiceGenerated = true;
     this.paymentRequest = payReq;
-    this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, paymentReq: payReq, outgoingChannel: this.selChannel, feeLimitType: this.feeFormGroup.controls.selFeeLimitType.value, feeLimit: this.feeFormGroup.controls.feeLimit.value, allowSelfPayment: true, lastHopPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, fromDialog: true } }));
+    this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, paymentReq: payReq, outgoingChannel: this.selChannel, feeLimitType: this.feeFormGroup.controls.selFeeLimitType.value.id, feeLimit: this.feeFormGroup.controls.feeLimit.value, allowSelfPayment: true, lastHopPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, fromDialog: true } }));
   }
 
   filterActiveChannels() {
