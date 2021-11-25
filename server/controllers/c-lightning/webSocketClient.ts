@@ -85,10 +85,15 @@ export class CLWebSocketClient {
     };
 
     clWsClt.webSocketClient.onerror = (err) => {
-      this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'ERROR', fileName: 'CLWebSocket', msg: 'Web socket error', error: err });
-      this.wsServer.sendErrorToAllLNClient(err, clWsClt.selectedNode);
-      clWsClt.webSocketClient.close();
-      if (clWsClt.reConnect) { this.reconnet(clWsClt); }
+      this.common.api_version = '0.5.1';
+      if (this.common.api_version === '' || this.common.isVersionCompatible(this.common.api_version, '0.5.3')) {
+        this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'ERROR', fileName: 'CLWebSocket', msg: 'Web socket error', error: err });
+        this.wsServer.sendErrorToAllLNClient(err, clWsClt.selectedNode);
+        clWsClt.webSocketClient.close();
+        if (clWsClt.reConnect) { this.reconnet(clWsClt); }
+      } else {
+        clWsClt.reConnect = false;
+      }
     };
   };
 

@@ -21,6 +21,7 @@ export class CommonService {
   public rtl_sso = 0;
   public rtl_cookie_path = '';
   public logout_redirect_link = '';
+  public api_version = '';
   public secret_key = crypto.randomBytes(64).toString('hex');
   public read_dummy_data = false;
   public baseHref = '/rtl';
@@ -396,6 +397,14 @@ export class CommonService {
       });
     });
   };
+
+  public isVersionCompatible = (currentVersion, checkVersion) => {
+    const versionsArr = currentVersion.trim().replace('v', '').split('-')[0].split('.') || [];
+    const checkVersionsArr = checkVersion.split('.');
+    return (+versionsArr[0] > +checkVersionsArr[0]) ||
+      (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] > +checkVersionsArr[1]) ||
+      (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] === +checkVersionsArr[1] && +versionsArr[2] >= +checkVersionsArr[2]);
+  }
 
   public getMonthDays = (selMonth, selYear) => ((selMonth === 1 && selYear % 4 === 0) ? (this.MONTHS[selMonth].days + 1) : this.MONTHS[selMonth].days);
 

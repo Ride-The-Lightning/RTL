@@ -62,6 +62,7 @@ export const getInfo = (req, res, next) => {
                         body.uris.push(body.id + '@' + addr.address + ':' + addr.port);
                     });
                 }
+                common.api_version = body.api_version || '';
                 logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'CLightning Node Information Received' });
                 res.status(200).json(body);
             }

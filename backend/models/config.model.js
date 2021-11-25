@@ -1,5 +1,5 @@
 export class CommonSelectedNode {
-    constructor(options, ln_server_url, macaroon_path, ln_api_password, swap_server_url, boltz_server_url, config_path, rtl_conf_file_path, swap_macaroon_path, boltz_macaroon_path, bitcoind_config_path, channel_backup_path, log_level, log_file, index, ln_node, ln_implementation, user_persona, theme_mode, theme_color, fiat_conversion, currency_unit) {
+    constructor(options, ln_server_url, macaroon_path, ln_api_password, swap_server_url, boltz_server_url, config_path, rtl_conf_file_path, swap_macaroon_path, boltz_macaroon_path, bitcoind_config_path, channel_backup_path, log_level, log_file, index, ln_node, ln_implementation, user_persona, theme_mode, theme_color, fiat_conversion, currency_unit, api_version) {
         this.options = options;
         this.ln_server_url = ln_server_url;
         this.macaroon_path = macaroon_path;
@@ -22,6 +22,7 @@ export class CommonSelectedNode {
         this.theme_color = theme_color;
         this.fiat_conversion = fiat_conversion;
         this.currency_unit = currency_unit;
+        this.api_version = api_version;
     }
 }
 export class AuthenticationConfiguration {
