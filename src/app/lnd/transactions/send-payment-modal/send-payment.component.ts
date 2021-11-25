@@ -128,17 +128,20 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     }
   }
 
-  sendPayment() {
+  sendPayment(): boolean | void {
+    if (this.selFeeLimitType !== this.feeLimitTypes[0] && !this.feeLimit) {
+      return true;
+    }
     if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
       this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
     }
     if (!this.paymentDecoded.num_satoshis || this.paymentDecoded.num_satoshis === '' || this.paymentDecoded.num_satoshis === '0') {
       this.zeroAmtInvoice = true;
       this.paymentDecoded.num_satoshis = this.paymentAmount;
-      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, paymentAmount: this.paymentAmount, outgoingChannel: this.selectedChannelCtrl.value, feeLimitType: { id: this.selFeeLimitType.id, name: this.selFeeLimitType.name }, feeLimit: this.feeLimit, fromDialog: true } }));
+      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, paymentAmount: this.paymentAmount, outgoingChannel: this.selectedChannelCtrl.value, feeLimitType: this.selFeeLimitType.id, feeLimit: this.feeLimit, fromDialog: true } }));
     } else {
       this.zeroAmtInvoice = false;
-      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, outgoingChannel: this.selectedChannelCtrl.value, feeLimitType: { id: this.selFeeLimitType.id, name: this.selFeeLimitType.name }, feeLimit: this.feeLimit, fromDialog: true } }));
+      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, outgoingChannel: this.selectedChannelCtrl.value, feeLimitType: this.selFeeLimitType.id, feeLimit: this.feeLimit, fromDialog: true } }));
     }
   }
 

@@ -667,9 +667,9 @@ export class LNDEffects implements OnDestroy {
       if (action.payload.lastHopPubkey) {
         queryHeaders['lastHopPubkey'] = action.payload.lastHopPubkey;
       }
-      if (action.payload.feeLimitType && action.payload.feeLimitType !== FEE_LIMIT_TYPES[0]) {
+      if (action.payload.feeLimitType && action.payload.feeLimitType !== FEE_LIMIT_TYPES[0].id) {
         queryHeaders['feeLimit'] = {};
-        queryHeaders['feeLimit'][action.payload.feeLimitType.id] = action.payload.feeLimit;
+        queryHeaders['feeLimit'][action.payload.feeLimitType] = action.payload.feeLimit;
       }
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', queryHeaders).pipe(
         map((sendRes: any) => {

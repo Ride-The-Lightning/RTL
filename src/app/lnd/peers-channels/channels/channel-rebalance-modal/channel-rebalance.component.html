@@ -37,8 +37,8 @@
                   <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectedPeerChanged()">
                     <mat-option *ngFor="let activeChannel of filteredActiveChannels | async" [value]="activeChannel">{{activeChannel.remote_alias || activeChannel.chan_id}}</mat-option>
                   </mat-autocomplete>
-                  <mat-error *ngIf="inputFormGroup.controls.selRebalancePeer.errors?.required">Peer is required.</mat-error>
-                  <mat-error *ngIf="inputFormGroup.controls.selRebalancePeer.errors?.notfound">Peer not found in the list.</mat-error>
+                  <mat-error *ngIf="inputFormGroup.controls.selRebalancePeer.errors?.required">Receive from Peer is required.</mat-error>
+                  <mat-error *ngIf="inputFormGroup.controls.selRebalancePeer.errors?.notfound">Receive from Peer not found in the list.</mat-error>
                 </mat-form-field>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">

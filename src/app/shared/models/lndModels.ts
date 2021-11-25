@@ -551,7 +551,7 @@ export interface SendPayment {
   paymentReq: string;
   paymentAmount?: number;
   outgoingChannel?: Channel;
-  feeLimitType?: { id: string, name: string };
+  feeLimitType?: string;
   feeLimit?: number;
   allowSelfPayment?: boolean;
   lastHopPubkey?: string;
