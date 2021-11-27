@@ -58,7 +58,7 @@ export class CLEffects implements OnDestroy {
       takeUntil(this.unSubs[1])).
       subscribe((newMessage) => {
         if (newMessage) {
-          switch (newMessage.type) {
+          switch (newMessage.event) {
             case CLWSEventTypeEnum.INVOICE:
               this.logger.info(newMessage);
               if (newMessage && newMessage.data && newMessage.data.label) {

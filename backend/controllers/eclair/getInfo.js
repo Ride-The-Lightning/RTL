@@ -34,6 +34,7 @@ export const getInfo = (req, res, next) => {
                 logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'GetInfo', msg: 'Get Info Response', data: body });
                 body.lnImplementation = 'Eclair';
                 logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Eclair Node Information Received' });
+                req.session.selectedNode.ln_version = body.version.split('-')[0] || '';
                 res.status(200).json(body);
             }).
                 catch((errRes) => {

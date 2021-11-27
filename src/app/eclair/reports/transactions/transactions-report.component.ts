@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener, AfterContentInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -18,7 +18,7 @@ import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
   styleUrls: ['./transactions-report.component.scss'],
   animations: [fadeIn]
 })
-export class ECLTransactionsReportComponent implements OnInit, AfterContentInit, OnDestroy {
+export class ECLTransactionsReportComponent implements OnInit, OnDestroy {
 
   public scrollRanges = SCROLL_RANGES;
   public reportPeriod = SCROLL_RANGES[0];
@@ -57,24 +57,22 @@ export class ECLTransactionsReportComponent implements OnInit, AfterContentInit,
           this.transactionsNonZeroReportData = this.prepareTableData();
         }
       });
-  }
+    this.commonService.containerSizeUpdated.pipe(takeUntil(this.unSubs[1])).subscribe((CONTAINER_SIZE) => {
+      switch (this.screenSize) {
+        case ScreenSizeEnum.MD:
+          this.screenPaddingX = CONTAINER_SIZE.width / 10;
+          break;
 
-  ngAfterContentInit() {
-    const CONTAINER_SIZE = this.commonService.getContainerSize();
-    switch (this.screenSize) {
-      case ScreenSizeEnum.MD:
-        this.screenPaddingX = CONTAINER_SIZE.width / 10;
-        break;
+        case ScreenSizeEnum.LG:
+          this.screenPaddingX = CONTAINER_SIZE.width / 16;
+          break;
 
-      case ScreenSizeEnum.LG:
-        this.screenPaddingX = CONTAINER_SIZE.width / 16;
-        break;
-
-      default:
-        this.screenPaddingX = CONTAINER_SIZE.width / 20;
-        break;
-    }
-    this.view = [CONTAINER_SIZE.width - this.screenPaddingX, CONTAINER_SIZE.height / 2.2];
+        default:
+          this.screenPaddingX = CONTAINER_SIZE.width / 20;
+          break;
+      }
+      this.view = [CONTAINER_SIZE.width - this.screenPaddingX, CONTAINER_SIZE.height / 2.2];
+    });
   }
 
   @HostListener('mouseup', ['$event']) onChartMouseUp(e) {

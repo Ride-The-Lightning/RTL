@@ -87,7 +87,9 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
         this.informationChain.chain = '';
         this.informationChain.network = '';
       }
-
+      if (this.selNode && this.selNode.lnImplementation === 'CLT' && this.information.api_version) {
+        this.loadCLTMenu();
+      }
       this.flgLoading = !(this.information.identity_pubkey);
       if (window.innerWidth <= 414) {
         this.smallScreen = true;

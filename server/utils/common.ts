@@ -399,11 +399,14 @@ export class CommonService {
   };
 
   public isVersionCompatible = (currentVersion, checkVersion) => {
-    const versionsArr = currentVersion.trim().replace('v', '').split('-')[0].split('.') || [];
-    const checkVersionsArr = checkVersion.split('.');
-    return (+versionsArr[0] > +checkVersionsArr[0]) ||
-      (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] > +checkVersionsArr[1]) ||
-      (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] === +checkVersionsArr[1] && +versionsArr[2] >= +checkVersionsArr[2]);
+    if (currentVersion) {
+      const versionsArr = currentVersion.trim().replace('v', '').split('-')[0].split('.') || [];
+      const checkVersionsArr = checkVersion.split('.');
+      return (+versionsArr[0] > +checkVersionsArr[0]) ||
+        (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] > +checkVersionsArr[1]) ||
+        (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] === +checkVersionsArr[1] && +versionsArr[2] >= +checkVersionsArr[2]);
+    }
+    return false;
   }
 
   public getMonthDays = (selMonth, selYear) => ((selMonth === 1 && selYear % 4 === 0) ? (this.MONTHS[selMonth].days + 1) : this.MONTHS[selMonth].days);
