@@ -70,7 +70,7 @@ export const addInvoice = (req, res, next) => {
         options.form.value = req.body.amount;
     }
     options.form = JSON.stringify(options.form);
-    return request.post(options).then((body) => {
+    request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Add Invoice Responce', data: body });
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Invoice Added' });
         try {
@@ -85,7 +85,7 @@ export const addInvoice = (req, res, next) => {
         body.r_preimage = body.r_preimage ? Buffer.from(body.r_preimage, 'base64').toString('hex') : '';
         body.r_hash = body.r_hash ? Buffer.from(body.r_hash, 'base64').toString('hex') : '';
         body.description_hash = body.description_hash ? Buffer.from(body.description_hash, 'base64').toString('hex') : null;
-        return res.status(201).json(body);
+        res.status(201).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Invoices', 'Add Invoice Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });

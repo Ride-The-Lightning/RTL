@@ -36,15 +36,17 @@ export class LNDWebSocketClient {
                         }
                     });
                 }
+                return null;
             }).catch((errRes) => {
                 const err = this.common.handleError(errRes, 'WebSocketClient', 'Pending Invoices Error', selectedNode);
                 return ({ message: err.message, error: err.error });
             });
         };
         this.subscribeToInvoice = (options, selectedNode, rHash) => {
+            rHash = rHash.replace(/\+/g, '-').replace(/[/]/g, '_');
             this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Subscribing to Invoice ' + rHash + ' ..' });
-            options.url = selectedNode.ln_server_url + '/v2/invoices/subscribe/' + encodeURIComponent(rHash);
-            return request(options).then((msg) => {
+            options.url = selectedNode.ln_server_url + '/v2/invoices/subscribe/' + rHash;
+            request(options).then((msg) => {
                 this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Invoice Information Received for ' + rHash });
                 if (typeof msg === 'string') {
                     const results = msg.split('\n');
@@ -58,12 +60,10 @@ export class LNDWebSocketClient {
                 const msgStr = JSON.stringify(msg);
                 this.logger.log({ selectedNode: selectedNode, level: 'DEBUG', fileName: 'WebSocketClient', msg: 'Invoice Info Received', data: msgStr });
                 this.wsServer.sendEventsToAllLNClients(msgStr, selectedNode);
-                return msgStr;
             }).catch((errRes) => {
                 const err = this.common.handleError(errRes, 'Invoices', 'Subscribe to Invoice Error for ' + rHash, selectedNode);
                 const errStr = ((typeof err === 'object' && err.message) ? JSON.stringify({ error: err.message + ' ' + rHash }) : (typeof err === 'object') ? JSON.stringify({ error: err + ' ' + rHash }) : ('{ "error": ' + err + ' ' + rHash + ' }'));
                 this.wsServer.sendErrorToAllLNClients(errStr, selectedNode);
-                return errStr;
             });
         };
         this.setOptionsForSelNode = (selectedNode) => {
