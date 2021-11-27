@@ -6,7 +6,7 @@
     </mat-form-field>
   </div>
   <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
-    <mat-progress-bar *ngIf="apisCallStatus?.FetchChannels.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+    <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
     <table mat-table #table fxFlex="100" [dataSource]="channels" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
       <ng-container matColumnDef="state">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> State </th>
@@ -41,9 +41,9 @@
       </ng-container>
       <ng-container matColumnDef="no_channel">
         <td mat-footer-cell *matFooterCellDef colspan="4">
-          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apisCallStatus?.FetchChannels.status === apiCallStatusEnum.COMPLETED">No pending channel available.</p>
-          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apisCallStatus?.FetchChannels.status === apiCallStatusEnum.INITIATED">Getting pending channels...</p>
-          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apisCallStatus?.FetchChannels.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No pending channel available.</p>
+          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting pending channels...</p>
+          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
         </td>
       </ng-container>
       <tr mat-footer-row *matFooterRowDef="['no_channel']" [ngClass]="{'display-none': channels?.data && channels?.data?.length>0}"></tr>

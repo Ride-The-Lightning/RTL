@@ -9,10 +9,9 @@ export interface ChannelStatus {
 }
 
 export interface ChannelsStatus {
-  active?: ChannelStatus;
-  inactive?: ChannelStatus;
-  pending?: ChannelStatus;
-  closing?: ChannelStatus;
+  active: ChannelStatus;
+  inactive: ChannelStatus;
+  pending: ChannelStatus;
 }
 
 export interface Address {
@@ -344,4 +343,68 @@ export interface RoutingPeer {
   events?: number;
   total_amount?: number;
   total_fee?: number;
+}
+
+export interface SaveChannel {
+  peerId: string;
+  satoshis: string;
+  announce?: boolean;
+  feeRate?: string;
+  minconf?: number;
+  utxos?: string[];
+}
+
+export interface GetNewAddress {
+  addressId?: string;
+  addressCode?: string;
+  addressTp?: string;
+  addressDetails?: string;
+}
+
+export interface DetachPeer {
+  id: string;
+  force: boolean;
+}
+
+export interface UpdateChannel {
+  channelId: string;
+  baseFeeMsat: number;
+  feeRate: number;
+}
+
+export interface CloseChannel {
+  id: string;
+  channelId: string;
+  force: boolean;
+}
+
+export interface DecodePayment {
+  routeParam: string;
+  fromDialog: boolean;
+}
+
+export interface SendPayment {
+  uiMessage: string;
+  fromDialog: boolean;
+  label?: string;
+  invoice?: string;
+  amount?: number;
+  pubkey?: string;
+}
+
+export interface GetQueryRoutes {
+  destPubkey: string;
+  amount: number;
+}
+
+export interface ChannelLookup {
+  uiMessage: string;
+  shortChannelID: string;
+  showError: boolean;
+}
+
+export interface FetchInvoices {
+  num_max_invoices?: number;
+  index_offset?: number;
+  reversed?: boolean;
 }

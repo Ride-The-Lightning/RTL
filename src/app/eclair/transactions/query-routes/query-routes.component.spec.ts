@@ -7,7 +7,10 @@ import { DataService } from '../../../shared/services/data.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { mockDataService, mockLoggerService, mockECLEffects } from '../../../shared/test-helpers/mock-services';
 import { SharedModule } from '../../../shared/shared.module';
-import { RTLReducer } from '../../../store/rtl.reducers';
+import { RootReducer } from '../../../store/rtl.reducers';
+import { LNDReducer } from '../../../lnd/store/lnd.reducers';
+import { CLReducer } from '../../../clightning/store/cl.reducers';
+import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { ECLEffects } from '../../store/ecl.effects';
 
 import { ECLQueryRoutesComponent } from './query-routes.component';
@@ -22,12 +25,7 @@ describe('ECLQueryRoutesComponent', () => {
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot(RTLReducer, {
-          runtimeChecks: {
-            strictStateImmutability: false,
-            strictActionImmutability: false
-          }
-        })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
       ],
       providers: [
         CommonService,

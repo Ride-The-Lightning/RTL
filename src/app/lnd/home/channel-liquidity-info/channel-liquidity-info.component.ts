@@ -10,8 +10,10 @@ import { LoopModalComponent } from '../../../shared/components/services/loop/loo
 import { LoopService } from '../../../shared/services/loop.service';
 import { CommonService } from '../../../shared/services/common.service';
 
-import * as fromRTLReducer from '../../../store/rtl.reducers';
-import * as RTLActions from '../../../store/rtl.actions';
+import { RTLState } from '../../../store/rtl.state';
+import { openAlert } from '../../../store/rtl.actions';
+import { SelNodeChild } from '../../../shared/models/RTLconfig';
+import { lndNodeSettings } from '../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-channel-liquidity-info',
@@ -30,15 +32,13 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private router: Router, private loopService: LoopService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) { }
+  constructor(private router: Router, private loopService: LoopService, private commonService: CommonService, private store: Store<RTLState>) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        this.showLoop = !!((rtlStore.nodeSettings.swapServerUrl && rtlStore.nodeSettings.swapServerUrl.trim() !== ''));
-      });
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => {
+      this.showLoop = !!((nodeSettings.swapServerUrl && nodeSettings.swapServerUrl.trim() !== ''));
+    });
   }
 
   goToChannels() {
@@ -49,13 +49,15 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
     this.loopService.getLoopOutTermsAndQuotes(this.targetConf).
       pipe(takeUntil(this.unSubs[1])).
       subscribe((response) => {
-        this.store.dispatch(new RTLActions.OpenAlert({
-          minHeight: '56rem', data: {
-            channel: channel,
-            minQuote: response[0],
-            maxQuote: response[1],
-            direction: LoopTypeEnum.LOOP_OUT,
-            component: LoopModalComponent
+        this.store.dispatch(openAlert({
+          payload: {
+            minHeight: '56rem', data: {
+              channel: channel,
+              minQuote: response[0],
+              maxQuote: response[1],
+              direction: LoopTypeEnum.LOOP_OUT,
+              component: LoopModalComponent
+            }
           }
         }));
       });

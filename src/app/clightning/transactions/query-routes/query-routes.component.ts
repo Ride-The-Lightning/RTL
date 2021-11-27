@@ -11,9 +11,9 @@ import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/ser
 import { CommonService } from '../../../shared/services/common.service';
 
 import { CLEffects } from '../../store/cl.effects';
-import * as CLActions from '../../store/cl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openAlert } from '../../../store/rtl.actions';
+import { getQueryRoutes } from '../../store/cl.actions';
 
 @Component({
   selector: 'rtl-cl-query-routes',
@@ -22,7 +22,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class CLQueryRoutesComponent implements OnInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild('queryRoutesForm', { static: true }) form: any;
   public destinationPubkey = '';
   public amount: number = null;
@@ -36,7 +36,7 @@ export class CLQueryRoutesComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private clEffects: CLEffects, private commonService: CommonService) {
+  constructor(private store: Store<RTLState>, private clEffects: CLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -71,12 +71,12 @@ export class CLQueryRoutesComponent implements OnInit, OnDestroy {
       });
   }
 
-  onQueryRoutes(): boolean|void {
+  onQueryRoutes(): boolean | void {
     if (!this.destinationPubkey || !this.amount) {
       return true;
     }
     this.flgLoading[0] = true;
-    this.store.dispatch(new CLActions.GetQueryRoutes({ destPubkey: this.destinationPubkey, amount: this.amount * 1000 }));
+    this.store.dispatch(getQueryRoutes({ payload: { destPubkey: this.destinationPubkey, amount: this.amount * 1000 } }));
   }
 
   resetData() {
@@ -91,17 +91,21 @@ export class CLQueryRoutesComponent implements OnInit, OnDestroy {
     const reorderedHop = [
       [{ key: 'id', value: selHop.id, title: 'ID', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'channel', value: selHop.channel, title: 'Channel', width: 50, type: DataTypeEnum.STRING },
-        { key: 'alias', value: selHop.alias, title: 'Peer Alias', width: 50, type: DataTypeEnum.STRING }],
+      { key: 'alias', value: selHop.alias, title: 'Peer Alias', width: 50, type: DataTypeEnum.STRING }],
       [{ key: 'msatoshi', value: selHop.msatoshi, title: 'mSatoshi', width: 50, type: DataTypeEnum.NUMBER },
-        { key: 'amount_msat', value: selHop.amount_msat, title: 'Amount mSat', width: 50, type: DataTypeEnum.STRING }],
+      { key: 'amount_msat', value: selHop.amount_msat, title: 'Amount mSat', width: 50, type: DataTypeEnum.STRING }],
       [{ key: 'direction', value: selHop.direction, title: 'Direction', width: 50, type: DataTypeEnum.STRING },
-        { key: 'delay', value: selHop.delay, title: 'Delay', width: 50, type: DataTypeEnum.NUMBER }]
+      { key: 'delay', value: selHop.delay, title: 'Delay', width: 50, type: DataTypeEnum.NUMBER }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Route Information',
-      message: reorderedHop
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Route Information',
+          message: reorderedHop
+        }
+      }
+    }));
   }
 
   ngOnDestroy() {

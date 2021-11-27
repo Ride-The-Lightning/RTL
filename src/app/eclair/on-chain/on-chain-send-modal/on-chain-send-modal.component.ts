@@ -9,13 +9,14 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild, GetInfoRoot, RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { GetInfo, OnChainBalance, SendPaymentOnChain } from '../../../shared/models/eclModels';
-import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
+import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, APICallStatusEnum, UI_MESSAGES, ECLActions } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
-import * as ECLActions from '../../store/ecl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openSnackBar } from '../../../store/rtl.actions';
+import { sendOnchainFunds } from '../../store/ecl.actions';
+import { rootSelectedNode } from '../../../store/rtl.selector';
 
 @Component({
   selector: 'rtl-ecl-on-chain-send-modal',
@@ -27,8 +28,6 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
   @ViewChild('form', { static: true }) form: any;
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: SelNodeChild = {};
-  public appConfig: RTLConfiguration;
-  public nodeData: GetInfoRoot;
   public addressTypes = [];
   public selectedAddress = ADDRESS_TYPES[1];
   public blockchainBalance: OnChainBalance = {};
@@ -45,25 +44,21 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
   public amountError = 'Amount is Required.';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ECLOnChainSendModalComponent>, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions) { }
+  constructor(public dialogRef: MatDialogRef<ECLOnChainSendModalComponent>, private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions) { }
 
   ngOnInit() {
-    this.store.select('root').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rootStore) => {
-        this.fiatConversion = rootStore.selNode.settings.fiatConversion;
-        this.amountUnits = rootStore.selNode.settings.currencyUnits;
-        this.appConfig = rootStore.appConfig;
-        this.nodeData = rootStore.nodeData;
-        this.logger.info(rootStore);
-      });
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((selNode) => {
+      this.fiatConversion = selNode.settings.fiatConversion;
+      this.amountUnits = selNode.settings.currencyUnits;
+      this.logger.info(selNode);
+    });
     this.actions.pipe(
       takeUntil(this.unSubs[1]),
       filter((action) => action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL || action.type === ECLActions.SEND_ONCHAIN_FUNDS_RES_ECL)
     ).
-      subscribe((action: ECLActions.UpdateAPICallStatus | ECLActions.SendOnchainFundsRes) => {
+      subscribe((action: any) => {
         if (action.type === ECLActions.SEND_ONCHAIN_FUNDS_RES_ECL) {
-          this.store.dispatch(new RTLActions.OpenSnackBar('Fund Sent Successfully!'));
+          this.store.dispatch(openSnackBar({ payload: 'Fund Sent Successfully!' }));
           this.dialogRef.close();
         }
         if (action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SendOnchainFunds') {
@@ -84,7 +79,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
           next: (data) => {
             this.transaction.amount = parseInt(data[CurrencyUnitEnum.SATS]);
             this.selAmountUnit = CurrencyUnitEnum.SATS;
-            this.store.dispatch(new ECLActions.SendOnchainFunds(this.transaction));
+            this.store.dispatch(sendOnchainFunds({ payload: this.transaction }));
           }, error: (err) => {
             this.transaction.amount = null;
             this.selAmountUnit = CurrencyUnitEnum.SATS;
@@ -92,7 +87,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
           }
         });
     } else {
-      this.store.dispatch(new ECLActions.SendOnchainFunds(this.transaction));
+      this.store.dispatch(sendOnchainFunds({ payload: this.transaction }));
     }
   }
 

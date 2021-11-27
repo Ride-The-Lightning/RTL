@@ -1,14 +1,16 @@
 import { Component, OnInit, OnDestroy, HostListener, AfterContentInit } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { PaymentSent, Invoice } from '../../../shared/models/eclModels';
+import { PaymentSent, Invoice, Payments } from '../../../shared/models/eclModels';
 import { CommonService } from '../../../shared/services/common.service';
 import { MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { invoices, payments } from '../../store/ecl.selector';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-ecl-transactions-report',
@@ -40,16 +42,16 @@ export class ECLTransactionsReportComponent implements OnInit, AfterContentInit,
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private commonService: CommonService, private store: Store<RTLState>) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select('ecl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        this.payments = rtlStore.payments.sent ? rtlStore.payments.sent : [];
-        this.invoices = rtlStore.invoices ? rtlStore.invoices : [];
+    this.store.select(payments).pipe(takeUntil(this.unSubs[0]),
+      withLatestFrom(this.store.select(invoices))).
+      subscribe(([paymentsSelector, invoicesSelector]: [({ payments: Payments, apiCallStatus: ApiCallStatusPayload }), ({ invoices: Invoice[], apiCallStatus: ApiCallStatusPayload })]) => {
+        this.payments = paymentsSelector.payments.sent ? paymentsSelector.payments.sent : [];
+        this.invoices = invoicesSelector.invoices ? invoicesSelector.invoices : [];
         if (this.payments.length > 0 || this.invoices.length > 0) {
           this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
           this.transactionsNonZeroReportData = this.prepareTableData();
@@ -147,7 +149,7 @@ export class ECLTransactionsReportComponent implements OnInit, AfterContentInit,
     }, []);
   }
 
-  onSelectionChange(selectedValues: {selDate: Date, selScrollRange: string}) {
+  onSelectionChange(selectedValues: { selDate: Date, selScrollRange: string }) {
     const selMonth = selectedValues.selDate.getMonth();
     const selYear = selectedValues.selDate.getFullYear();
     this.reportPeriod = selectedValues.selScrollRange;

@@ -5,27 +5,31 @@ let options = null;
 const logger = Logger;
 const common = Common;
 export const getInfo = (req, res, next) => {
-    logger.log({ level: 'INFO', fileName: 'GetInfo', msg: 'Getting CLightning Node Information..' });
-    common.setOptions();
-    options = common.getOptions();
-    options.url = common.getSelLNServerUrl() + '/v1/getinfo';
-    logger.log({ level: 'DEBUG', fileName: 'GetInfo', msg: 'Selected Node', data: common.selectedNode.ln_node });
-    logger.log({ level: 'DEBUG', fileName: 'GetInfo', msg: 'Calling Info from C-Lightning server url', data: options.url });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Getting CLightning Node Information..' });
+    common.logEnvVariables(req);
+    common.setOptions(req);
+    options = common.getOptions(req);
+    if (options.error) {
+        return res.status(options.statusCode).json({ message: options.message, error: options.error });
+    }
+    options.url = req.session.selectedNode.ln_server_url + '/v1/getinfo';
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'GetInfo', msg: 'Selected Node', data: req.session.selectedNode.ln_node });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'GetInfo', msg: 'Calling Info from C-Lightning server url', data: options.url });
     if (!options.headers || !options.headers.macaroon) {
         const errMsg = 'C-Lightning get info failed due to bad or missing macaroon!';
-        const err = common.handleError({ statusCode: 502, message: 'Bad Macaroon', error: errMsg }, 'GetInfo', errMsg);
+        const err = common.handleError({ statusCode: 502, message: 'Bad Macaroon', error: errMsg }, 'GetInfo', errMsg, req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     }
     else {
         request(options).then((body) => {
-            logger.log({ level: 'DEBUG', fileName: 'GetInfo', msg: 'Node Information', data: body });
+            logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'GetInfo', msg: 'Node Information', data: body });
             const body_str = (!body) ? '' : JSON.stringify(body);
             const search_idx = (!body) ? -1 : body_str.search('Not Found');
             if (!body || search_idx > -1 || body.error) {
                 if (body && !body.error) {
                     body.error = 'Error From Server!';
                 }
-                const err = common.handleError(body, 'GetInfo', 'Get Info Error');
+                const err = common.handleError(body, 'GetInfo', 'Get Info Error', req.session.selectedNode);
                 return res.status(err.statusCode).json({ message: err.message, error: err.error });
             }
             else {
@@ -38,6 +42,10 @@ export const getInfo = (req, res, next) => {
                 else if (body.network === 'bitcoin') {
                     chainObj.chain = 'Bitcoin';
                     chainObj.network = 'Mainnet';
+                }
+                else if (body.network === 'signet') {
+                    chainObj.chain = 'Bitcoin';
+                    chainObj.network = 'Signet';
                 }
                 else if (body.network === 'litecoin') {
                     chainObj.chain = 'Litecoin';
@@ -54,11 +62,12 @@ export const getInfo = (req, res, next) => {
                         body.uris.push(body.id + '@' + addr.address + ':' + addr.port);
                     });
                 }
-                logger.log({ level: 'INFO', fileName: 'GetInfo', msg: 'CLightning Node Information Received' });
+                common.api_version = body.api_version || '';
+                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'CLightning Node Information Received' });
                 res.status(200).json(body);
             }
         }).catch((errRes) => {
-            const err = common.handleError(errRes, 'GetInfo', 'Get Info Error');
+            const err = common.handleError(errRes, 'GetInfo', 'Get Info Error', req.session.selectedNode);
             return res.status(err.statusCode).json({ message: err.message, error: err.error });
         });
     }

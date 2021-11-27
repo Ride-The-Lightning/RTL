@@ -8,7 +8,10 @@ import { CommonService } from '../../shared/services/common.service';
 import { LoggerService } from '../../shared/services/logger.service';
 import { mockCLEffects, mockDataService, mockLoggerService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../shared/test-helpers/mock-services';
 
-import { RTLReducer } from '../../store/rtl.reducers';
+import { RootReducer } from '../../store/rtl.reducers';
+import { LNDReducer } from '../../lnd/store/lnd.reducers';
+import { CLReducer } from '../../clightning/store/cl.reducers';
+import { ECLReducer } from '../../eclair/store/ecl.reducers';
 import { CLHomeComponent } from './home.component';
 import { CLNodeInfoComponent } from './node-info/node-info.component';
 import { CLBalancesInfoComponent } from './balances-info/balances-info.component';
@@ -27,12 +30,7 @@ describe('CLHomeComponent', () => {
       imports: [
         SharedModule,
         RouterTestingModule,
-        StoreModule.forRoot(RTLReducer, {
-          runtimeChecks: {
-            strictStateImmutability: false,
-            strictActionImmutability: false
-          }
-        }),
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [

@@ -1,586 +1,149 @@
-import { Action } from '@ngrx/store';
+import { createAction, props } from '@ngrx/store';
 
+import { LNDActions } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices,
-  ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq,
-  SwitchRes, QueryRoutes, PendingChannelsGroup, LightningNode, UTXO, ListPayments }
-  from '../../shared/models/lndModels';
-
-export const RESET_LND_STORE = 'RESET_LND_STORE';
-export const UPDATE_API_CALL_STATUS_LND = 'UPDATE_API_CALL_STATUS_LND';
-export const SET_CHILD_NODE_SETTINGS_LND = 'SET_CHILD_NODE_SETTINGS_LND';
-export const FETCH_INFO_LND = 'FETCH_INFO_LND';
-export const SET_INFO_LND = 'SET_INFO_LND';
-export const FETCH_PEERS_LND = 'FETCH_PEERS_LND';
-export const SET_PEERS_LND = 'SET_PEERS_LND';
-export const SAVE_NEW_PEER_LND = 'SAVE_NEW_PEER_LND';
-export const NEWLY_ADDED_PEER_LND = 'NEWLY_ADDED_PEER_LND';
-export const DETACH_PEER_LND = 'DETACH_PEER_LND';
-export const REMOVE_PEER_LND = 'REMOVE_PEER_LND';
-export const SAVE_NEW_INVOICE_LND = 'SAVE_NEW_INVOICE_LND';
-export const NEWLY_SAVED_INVOICE_LND = 'NEWLY_SAVED_INVOICE_LND';
-export const ADD_INVOICE_LND = 'ADD_INVOICE_LND';
-export const FETCH_FEES_LND = 'FETCH_FEES_LND';
-export const SET_FEES_LND = 'SET_FEES_LND';
-export const FETCH_BALANCE_LND = 'FETCH_BALANCE_LND';
-export const SET_BALANCE_LND = 'SET_BALANCE_LND';
-export const FETCH_NETWORK_LND = 'FETCH_NETWORK_LND';
-export const SET_NETWORK_LND = 'SET_NETWORK_LND';
-export const FETCH_ALL_CHANNELS_LND = 'FETCH_ALL_CHANNELS_LND';
-export const FETCH_PENDING_CHANNELS_LND = 'FETCH_PENDING_CHANNELS_LND';
-export const FETCH_CLOSED_CHANNELS_LND = 'FETCH_CLOSED_CHANNELS_LND';
-export const SET_ALL_CHANNELS_LND = 'SET_ALL_CHANNELS_LND';
-export const SET_PENDING_CHANNELS_LND = 'SET_PENDING_CHANNELS_LND';
-export const SET_CLOSED_CHANNELS_LND = 'SET_CLOSED_CHANNELS_LND';
-export const UPDATE_CHANNELS_LND = 'UPDATE_CHANNELS_LND';
-export const SAVE_NEW_CHANNEL_LND = 'SAVE_NEW_CHANNEL_LND';
-export const CLOSE_CHANNEL_LND = 'CLOSE_CHANNEL_LND';
-export const REMOVE_CHANNEL_LND = 'REMOVE_CHANNEL_LND';
-export const BACKUP_CHANNELS_LND = 'BACKUP_CHANNELS_LND';
-export const VERIFY_CHANNELS_LND = 'VERIFY_CHANNELS_LND';
-export const BACKUP_CHANNELS_RES_LND = 'BACKUP_CHANNELS_RES_LND';
-export const VERIFY_CHANNELS_RES_LND = 'VERIFY_CHANNELS_RES_LND';
-export const RESTORE_CHANNELS_LIST_LND = 'RESTORE_CHANNELS_LIST_LND';
-export const SET_RESTORE_CHANNELS_LIST_LND = 'SET_RESTORE_CHANNELS_LIST_LND';
-export const RESTORE_CHANNELS_LND = 'RESTORE_CHANNELS_LND';
-export const RESTORE_CHANNELS_RES_LND = 'RESTORE_CHANNELS_RES_LND';
-export const FETCH_INVOICES_LND = 'FETCH_INVOICES_LND';
-export const SET_INVOICES_LND = 'SET_INVOICES_LND';
-export const UPDATE_INVOICE_LND = 'UPDATE_INVOICE_LND';
-export const SET_TOTAL_INVOICES_LND = 'SET_TOTAL_INVOICES_LND';
-export const FETCH_TRANSACTIONS_LND = 'FETCH_TRANSACTIONS_LND';
-export const SET_TRANSACTIONS_LND = 'SET_TRANSACTIONS_LND';
-export const FETCH_UTXOS_LND = 'FETCH_UTXOS_LND';
-export const SET_UTXOS_LND = 'SET_UTXOS_LND';
-export const FETCH_PAYMENTS_LND = 'FETCH_PAYMENTS_LND';
-export const SET_PAYMENTS_LND = 'SET_PAYMENTS_LND';
-export const SEND_PAYMENT_LND = 'SEND_PAYMENT_LND';
-export const SEND_PAYMENT_STATUS_LND = 'SEND_PAYMENT_STATUS_LND';
-export const FETCH_GRAPH_NODE_LND = 'FETCH_GRAPH_NODE_LND';
-export const SET_GRAPH_NODE_LND = 'SET_GRAPH_NODE_LND';
-export const GET_NEW_ADDRESS_LND = 'GET_NEW_ADDRESS_LND';
-export const SET_NEW_ADDRESS_LND = 'SET_NEW_ADDRESS_LND';
-export const SET_CHANNEL_TRANSACTION_LND = 'SET_CHANNEL_TRANSACTION_LND';
-export const SET_CHANNEL_TRANSACTION_RES_LND = 'SET_CHANNEL_TRANSACTION_RES_LND';
-export const GEN_SEED_LND = 'GEN_SEED_LND';
-export const GEN_SEED_RESPONSE_LND = 'GEN_SEED_RESPONSE_LND';
-export const INIT_WALLET_LND = 'INIT_WALLET_LND';
-export const INIT_WALLET_RESPONSE_LND = 'INIT_WALLET_RESPONSE_LND';
-export const UNLOCK_WALLET_LND = 'UNLOCK_WALLET_LND';
-export const PEER_LOOKUP_LND = 'PEER_LOOKUP_LND';
-export const CHANNEL_LOOKUP_LND = 'CHANNEL_LOOKUP_LND';
-export const INVOICE_LOOKUP_LND = 'INVOICE_LOOKUP_LND';
-export const SET_LOOKUP_LND = 'SET_LOOKUP_LND';
-export const GET_FORWARDING_HISTORY_LND = 'GET_FORWARDING_HISTORY_LND';
-export const SET_FORWARDING_HISTORY_LND = 'SET_FORWARDING_HISTORY_LND';
-export const GET_QUERY_ROUTES_LND = 'GET_QUERY_ROUTES_LND';
-export const SET_QUERY_ROUTES_LND = 'SET_QUERY_ROUTES_LND';
-export const GET_ALL_LIGHTNING_TRANSATIONS_LND = 'GET_ALL_LIGHTNING_TRANSATIONS_LND';
-export const SET_ALL_LIGHTNING_TRANSATIONS_LND = 'SET_ALL_LIGHTNING_TRANSATIONS_LND';
+import {
+  GetInfo, Peer, NetworkInfo, Fees, Channel, Invoice, ListInvoices, ChannelsTransaction, ClosedChannel, Transaction, SwitchReq,
+  SwitchRes, QueryRoutes, LightningNode, UTXO, ListPayments, SavePeer, SaveInvoice, SaveChannel, CloseChannel, FetchInvoices, FetchPayments, SendPayment, GetNewAddress, GetQueryRoutes, InitWallet, ChannelLookup, SetRestoreChannelsList, NewlyAddedPeer, BlockchainBalance, SetPendingChannels, BackupChannels, SetAllLightningTransactions
+} from '../../shared/models/lndModels';
 
-export class UpdateAPICallStatus implements Action {
+export const updateLNDAPICallStatus = createAction(LNDActions.UPDATE_API_CALL_STATUS_LND, props<{ payload: ApiCallStatusPayload }>());
 
-  readonly type = UPDATE_API_CALL_STATUS_LND;
-  constructor(public payload: ApiCallStatusPayload) { }
+export const resetLNDStore = createAction(LNDActions.RESET_LND_STORE, props<{ payload: SelNodeChild }>());
 
-}
+export const setChildNodeSettingsLND = createAction(LNDActions.SET_CHILD_NODE_SETTINGS_LND, props<{ payload: SelNodeChild }>());
 
-export class ResetLNDStore implements Action {
+export const fetchInfoLND = createAction(LNDActions.FETCH_INFO_LND, props<{ payload: { loadPage: string } }>());
 
-  readonly type = RESET_LND_STORE;
-  constructor(public payload: SelNodeChild) {}
+export const setInfo = createAction(LNDActions.SET_INFO_LND, props<{ payload: GetInfo }>());
 
-}
+export const fetchPeers = createAction(LNDActions.FETCH_PEERS_LND);
 
-export class SetChildNodeSettings implements Action {
+export const setPeers = createAction(LNDActions.SET_PEERS_LND, props<{ payload: Peer[] }>());
 
-  readonly type = SET_CHILD_NODE_SETTINGS_LND;
-  constructor(public payload: SelNodeChild) {}
+export const saveNewPeer = createAction(LNDActions.SAVE_NEW_PEER_LND, props<{ payload: SavePeer }>());
 
-}
+export const newlyAddedPeer = createAction(LNDActions.NEWLY_ADDED_PEER_LND, props<{ payload: NewlyAddedPeer }>());
 
-export class FetchInfo implements Action {
+export const detachPeer = createAction(LNDActions.DETACH_PEER_LND, props<{ payload: { pubkey: string } }>());
 
-  readonly type = FETCH_INFO_LND;
-  constructor(public payload: {loadPage: string}) {}
+export const removePeer = createAction(LNDActions.REMOVE_PEER_LND, props<{ payload: { pubkey: string } }>());
 
-}
+export const saveNewInvoice = createAction(LNDActions.SAVE_NEW_INVOICE_LND, props<{ payload: SaveInvoice }>());
 
-export class SetInfo implements Action {
+export const newlySavedInvoice = createAction(LNDActions.NEWLY_SAVED_INVOICE_LND, props<{ payload: { paymentRequest: string } }>());
 
-  readonly type = SET_INFO_LND;
-  constructor(public payload: GetInfo) {}
+export const addInvoice = createAction(LNDActions.ADD_INVOICE_LND, props<{ payload: Invoice }>());
 
-}
+export const fetchFees = createAction(LNDActions.FETCH_FEES_LND);
 
-export class FetchPeers implements Action {
+export const setFees = createAction(LNDActions.SET_FEES_LND, props<{ payload: Fees }>());
 
-  readonly type = FETCH_PEERS_LND;
+export const fetchBalanceBlockchain = createAction(LNDActions.FETCH_BLOCKCHAIN_BALANCE_LND);
 
-}
+export const setBalanceBlockchain = createAction(LNDActions.SET_BLOCKCHAIN_BALANCE_LND, props<{ payload: BlockchainBalance }>());
 
-export class SetPeers implements Action {
+export const fetchNetwork = createAction(LNDActions.FETCH_NETWORK_LND);
 
-  readonly type = SET_PEERS_LND;
-  constructor(public payload: Peer[]) {}
+export const setNetwork = createAction(LNDActions.SET_NETWORK_LND, props<{ payload: NetworkInfo }>());
 
-}
+export const fetchChannels = createAction(LNDActions.FETCH_CHANNELS_LND);
 
-export class SaveNewPeer implements Action {
+export const setChannels = createAction(LNDActions.SET_CHANNELS_LND, props<{ payload: Channel[] }>());
 
-  readonly type = SAVE_NEW_PEER_LND;
-  constructor(public payload: {pubkey: string, host: string, perm: boolean}) {}
+export const fetchPendingChannels = createAction(LNDActions.FETCH_PENDING_CHANNELS_LND);
 
-}
+export const setPendingChannels = createAction(LNDActions.SET_PENDING_CHANNELS_LND, props<{ payload: SetPendingChannels }>());
 
-export class NewlyAddedPeer implements Action {
+export const fetchClosedChannels = createAction(LNDActions.FETCH_CLOSED_CHANNELS_LND);
 
-  readonly type = NEWLY_ADDED_PEER_LND;
-  constructor(public payload: { peer: Peer, balance: number}) {}
+export const setClosedChannels = createAction(LNDActions.SET_CLOSED_CHANNELS_LND, props<{ payload: ClosedChannel[] }>());
 
-}
+export const updateChannel = createAction(LNDActions.UPDATE_CHANNEL_LND, props<{ payload: any }>());
 
-export class DetachPeer implements Action {
+export const saveNewChannel = createAction(LNDActions.SAVE_NEW_CHANNEL_LND, props<{ payload: SaveChannel }>());
 
-  readonly type = DETACH_PEER_LND;
-  constructor(public payload: {pubkey: string}) {}
+export const closeChannel = createAction(LNDActions.CLOSE_CHANNEL_LND, props<{ payload: CloseChannel }>());
 
-}
+export const removeChannel = createAction(LNDActions.REMOVE_CHANNEL_LND, props<{ payload: { channelPoint: string } }>());
 
-export class RemovePeer implements Action {
+export const backupChannels = createAction(LNDActions.BACKUP_CHANNELS_LND, props<{ payload: BackupChannels }>());
 
-  readonly type = REMOVE_PEER_LND;
-  constructor(public payload: {pubkey: string}) {}
+export const verifyChannel = createAction(LNDActions.VERIFY_CHANNEL_LND, props<{ payload: { channelPoint: string } }>());
 
-}
+export const backupChannelsRes = createAction(LNDActions.BACKUP_CHANNELS_RES_LND, props<{ payload: string }>());
 
-export class SaveNewInvoice implements Action {
+export const verifyChannelRes = createAction(LNDActions.VERIFY_CHANNEL_RES_LND, props<{ payload: string }>());
 
-  readonly type = SAVE_NEW_INVOICE_LND;
-  constructor(public payload: {uiMessage: string, memo: string, invoiceValue: number, private: boolean, expiry: number, pageSize: number, openModal: boolean}) {}
+export const restoreChannelsList = createAction(LNDActions.RESTORE_CHANNELS_LIST_LND);
 
-}
+export const setRestoreChannelsList = createAction(LNDActions.SET_RESTORE_CHANNELS_LIST_LND, props<{ payload: SetRestoreChannelsList }>());
 
-export class NewlySavedInvoice implements Action {
+export const restoreChannels = createAction(LNDActions.RESTORE_CHANNELS_LND, props<{ payload: { channelPoint: string } }>());
 
-  readonly type = NEWLY_SAVED_INVOICE_LND;
-  constructor(public payload: { paymentRequest: string}) {}
+export const restoreChannelsRes = createAction(LNDActions.RESTORE_CHANNELS_RES_LND, props<{ payload: string }>());
 
-}
+export const fetchInvoices = createAction(LNDActions.FETCH_INVOICES_LND, props<{ payload: FetchInvoices }>());
 
-export class AddInvoice implements Action {
+export const setInvoices = createAction(LNDActions.SET_INVOICES_LND, props<{ payload: ListInvoices }>());
 
-  readonly type = ADD_INVOICE_LND;
-  constructor(public payload: Invoice) {}
+export const updateInvoice = createAction(LNDActions.UPDATE_INVOICE_LND, props<{ payload: Invoice }>());
 
-}
+export const fetchTransactions = createAction(LNDActions.FETCH_TRANSACTIONS_LND);
 
-export class FetchFees implements Action {
+export const setTransactions = createAction(LNDActions.SET_TRANSACTIONS_LND, props<{ payload: Transaction[] }>());
 
-  readonly type = FETCH_FEES_LND;
+export const fetchUTXOs = createAction(LNDActions.FETCH_UTXOS_LND);
 
-}
+export const setUTXOs = createAction(LNDActions.SET_UTXOS_LND, props<{ payload: UTXO[] }>());
 
-export class SetFees implements Action {
+export const fetchPayments = createAction(LNDActions.FETCH_PAYMENTS_LND, props<{ payload: FetchPayments }>());
 
-  readonly type = SET_FEES_LND;
-  constructor(public payload: Fees) {}
+export const setPayments = createAction(LNDActions.SET_PAYMENTS_LND, props<{ payload: ListPayments }>());
 
-}
+export const sendPayment = createAction(LNDActions.SEND_PAYMENT_LND, props<{ payload: SendPayment }>());
 
-export class FetchBalance implements Action {
+export const sendPaymentStatus = createAction(LNDActions.SEND_PAYMENT_STATUS_LND, props<{ payload: any }>());
 
-  readonly type = FETCH_BALANCE_LND;
-  constructor(public payload: string) {} // Payload = routeParam
+export const fetchGraphNode = createAction(LNDActions.FETCH_GRAPH_NODE_LND, props<{ payload: { pubkey: string } }>());
 
-}
+export const setGraphNode = createAction(LNDActions.SET_GRAPH_NODE_LND, props<{ payload: { node: LightningNode } }>());
 
-export class SetBalance implements Action {
+export const getNewAddress = createAction(LNDActions.GET_NEW_ADDRESS_LND, props<{ payload: GetNewAddress }>());
 
-  readonly type = SET_BALANCE_LND;
-  constructor(public payload: {target: string, balance: Balance}) {}
+export const setNewAddress = createAction(LNDActions.SET_NEW_ADDRESS_LND, props<{ payload: string }>());
 
-}
+export const setChannelTransaction = createAction(LNDActions.SET_CHANNEL_TRANSACTION_LND, props<{ payload: ChannelsTransaction }>());
 
-export class FetchNetwork implements Action {
+export const setChannelTransactionRes = createAction(LNDActions.SET_CHANNEL_TRANSACTION_RES_LND, props<{ payload: any }>());
 
-  readonly type = FETCH_NETWORK_LND;
+export const genSeed = createAction(LNDActions.GEN_SEED_LND, props<{ payload: string }>());
 
-}
+export const genSeedResponse = createAction(LNDActions.GEN_SEED_RESPONSE_LND, props<{ payload: Array<string> }>());
 
-export class SetNetwork implements Action {
+export const initWallet = createAction(LNDActions.INIT_WALLET_LND, props<{ payload: InitWallet }>());
 
-  readonly type = SET_NETWORK_LND;
-  constructor(public payload: NetworkInfo) {}
+export const initWalletResponse = createAction(LNDActions.INIT_WALLET_RESPONSE_LND, props<{ payload: string }>());
 
-}
+export const unlockWallet = createAction(LNDActions.UNLOCK_WALLET_LND, props<{ payload: { pwd: string } }>());
 
-export class FetchAllChannels implements Action {
+export const peerLookup = createAction(LNDActions.PEER_LOOKUP_LND, props<{ payload: string }>());
 
-  readonly type = FETCH_ALL_CHANNELS_LND;
+export const channelLookup = createAction(LNDActions.CHANNEL_LOOKUP_LND, props<{ payload: ChannelLookup }>());
 
-}
+export const invoiceLookup = createAction(LNDActions.INVOICE_LOOKUP_LND, props<{ payload: string }>());
 
-export class SetAllChannels implements Action {
+export const setLookup = createAction(LNDActions.SET_LOOKUP_LND, props<{ payload: any }>());
 
-  readonly type = SET_ALL_CHANNELS_LND;
-  constructor(public payload: Channel[]) {}
+export const getForwardingHistory = createAction(LNDActions.GET_FORWARDING_HISTORY_LND, props<{ payload: SwitchReq }>());
 
-}
+export const setForwardingHistory = createAction(LNDActions.SET_FORWARDING_HISTORY_LND, props<{ payload: SwitchRes }>());
 
-export class FetchPendingChannels implements Action {
+export const getQueryRoutes = createAction(LNDActions.GET_QUERY_ROUTES_LND, props<{ payload: GetQueryRoutes }>());
 
-  readonly type = FETCH_PENDING_CHANNELS_LND;
+export const setQueryRoutes = createAction(LNDActions.SET_QUERY_ROUTES_LND, props<{ payload: QueryRoutes }>());
 
-}
+export const getAllLightningTransactions = createAction(LNDActions.GET_ALL_LIGHTNING_TRANSATIONS_LND);
 
-export class SetPendingChannels implements Action {
-
-  readonly type = SET_PENDING_CHANNELS_LND;
-  constructor(public payload: {channels: PendingChannels, pendingChannels: PendingChannelsGroup}) {}
-
-}
-
-export class FetchClosedChannels implements Action {
-
-  readonly type = FETCH_CLOSED_CHANNELS_LND;
-
-}
-
-export class SetClosedChannels implements Action {
-
-  readonly type = SET_CLOSED_CHANNELS_LND;
-  constructor(public payload: ClosedChannel[]) {}
-
-}
-
-export class UpdateChannels implements Action {
-
-  readonly type = UPDATE_CHANNELS_LND;
-  constructor(public payload: any) {}
-
-}
-
-export class SaveNewChannel implements Action {
-
-  readonly type = SAVE_NEW_CHANNEL_LND;
-  constructor(public payload: {selectedPeerPubkey: string, fundingAmount: number, private: boolean, transType: string, transTypeValue: string, spendUnconfirmed: boolean}) {}
-
-}
-
-export class CloseChannel implements Action {
-
-  readonly type = CLOSE_CHANNEL_LND;
-  constructor(public payload: {channelPoint: string, forcibly: boolean, targetConf?: number, satPerByte?: number}) {}
-
-}
-
-export class RemoveChannel implements Action {
-
-  readonly type = REMOVE_CHANNEL_LND;
-  constructor(public payload: {channelPoint: string}) {}
-
-}
-
-export class BackupChannels implements Action {
-
-  readonly type = BACKUP_CHANNELS_LND;
-  constructor(public payload: {uiMessage: string, channelPoint: string, showMessage: string}) {}
-
-}
-
-export class VerifyChannels implements Action {
-
-  readonly type = VERIFY_CHANNELS_LND;
-  constructor(public payload: {channelPoint: string}) {}
-
-}
-
-export class BackupChannelsRes implements Action {
-
-  readonly type = BACKUP_CHANNELS_RES_LND;
-  constructor(public payload: string) {}
-
-}
-
-export class VerifyChannelsRes implements Action {
-
-  readonly type = VERIFY_CHANNELS_RES_LND;
-  constructor(public payload: string) {}
-
-}
-
-export class RestoreChannelsList implements Action {
-
-  readonly type = RESTORE_CHANNELS_LIST_LND;
-
-}
-
-export class SetRestoreChannelsList implements Action {
-
-  readonly type = SET_RESTORE_CHANNELS_LIST_LND;
-  constructor(public payload: {all_restore_exists: boolean, files: []}) {}
-
-}
-
-export class RestoreChannels implements Action {
-
-  readonly type = RESTORE_CHANNELS_LND;
-  constructor(public payload: {channelPoint: string}) {}
-
-}
-
-export class RestoreChannelsRes implements Action {
-
-  readonly type = RESTORE_CHANNELS_RES_LND;
-  constructor(public payload: string) {}
-
-}
-
-export class FetchInvoices implements Action {
-
-  readonly type = FETCH_INVOICES_LND;
-  constructor(public payload: {num_max_invoices?: number, index_offset?: number, reversed?: boolean}) {}
-
-}
-
-export class SetInvoices implements Action {
-
-  readonly type = SET_INVOICES_LND;
-  constructor(public payload: ListInvoices) {}
-
-}
-
-export class UpdateInvoice implements Action {
-
-  readonly type = UPDATE_INVOICE_LND;
-  constructor(public payload: Invoice) {}
-
-}
-
-export class SetTotalInvoices implements Action {
-
-  readonly type = SET_TOTAL_INVOICES_LND;
-  constructor(public payload: number) {}
-
-}
-
-export class FetchTransactions implements Action {
-
-  readonly type = FETCH_TRANSACTIONS_LND;
-
-}
-
-export class SetTransactions implements Action {
-
-  readonly type = SET_TRANSACTIONS_LND;
-  constructor(public payload: Transaction[]) {}
-
-}
-
-export class FetchUTXOs implements Action {
-
-  readonly type = FETCH_UTXOS_LND;
-
-}
-
-export class SetUTXOs implements Action {
-
-  readonly type = SET_UTXOS_LND;
-  constructor(public payload: UTXO[]) {}
-
-}
-
-export class FetchPayments implements Action {
-
-  readonly type = FETCH_PAYMENTS_LND;
-  constructor(public payload: {max_payments?: number, index_offset?: number, reversed?: boolean}) {}
-
-}
-
-export class SetPayments implements Action {
-
-  readonly type = SET_PAYMENTS_LND;
-  constructor(public payload: ListPayments) {}
-
-}
-
-export class SendPayment implements Action {
-
-  readonly type = SEND_PAYMENT_LND;
-  constructor(public payload: { uiMessage: string, fromDialog: boolean, paymentReq: string, paymentAmount?: number, outgoingChannel?: Channel, feeLimitType?: {id: string, name: string}, feeLimit?: number, allowSelfPayment?: boolean, lastHopPubkey?: string }) {}
-
-}
-
-export class SendPaymentStatus implements Action {
-
-  readonly type = SEND_PAYMENT_STATUS_LND;
-  constructor(public payload: any) {}
-
-}
-
-export class FetchGraphNode implements Action {
-
-  readonly type = FETCH_GRAPH_NODE_LND;
-  constructor(public payload: {pubkey: string}) {}
-
-}
-
-export class SetGraphNode implements Action {
-
-  readonly type = SET_GRAPH_NODE_LND;
-  constructor(public payload: {node: LightningNode}) {}
-
-}
-
-export class GetNewAddress implements Action {
-
-  readonly type = GET_NEW_ADDRESS_LND;
-  constructor(public payload: { addressId?: string, addressCode?: string, addressTp?: string, addressDetails?: string}) {}
-
-}
-
-export class SetNewAddress implements Action {
-
-  readonly type = SET_NEW_ADDRESS_LND;
-  constructor(public payload: string) {} // Payload = newAddress
-
-}
-
-export class SetChannelTransaction implements Action {
-
-  readonly type = SET_CHANNEL_TRANSACTION_LND;
-  constructor(public payload: ChannelsTransaction) {}
-
-}
-
-export class SetChannelTransactionRes implements Action {
-
-  readonly type = SET_CHANNEL_TRANSACTION_RES_LND;
-  constructor(public payload: any) {}
-
-}
-
-export class GenSeed implements Action {
-
-  readonly type = GEN_SEED_LND;
-  constructor(public payload: string) {}
-
-}
-
-export class GenSeedResponse implements Action {
-
-  readonly type = GEN_SEED_RESPONSE_LND;
-  constructor(public payload: Array<string>) {}
-
-}
-
-export class InitWallet implements Action {
-
-  readonly type = INIT_WALLET_LND;
-  constructor(public payload: {pwd: string, cipher?: Array<string>, passphrase?: string}) {}
-
-}
-
-export class InitWalletResponse implements Action {
-
-  readonly type = INIT_WALLET_RESPONSE_LND;
-  constructor(public payload: string) {}
-
-}
-
-export class UnlockWallet implements Action {
-
-  readonly type = UNLOCK_WALLET_LND;
-  constructor(public payload: {pwd: string}) {}
-
-}
-
-export class PeerLookup implements Action {
-
-  readonly type = PEER_LOOKUP_LND;
-  constructor(public payload: string) {} // Payload = pubkey
-
-}
-
-export class ChannelLookup implements Action {
-
-  readonly type = CHANNEL_LOOKUP_LND;
-  constructor(public payload: {uiMessage: string, channelID: string}) {}
-
-}
-
-export class InvoiceLookup implements Action {
-
-  readonly type = INVOICE_LOOKUP_LND;
-  constructor(public payload: string) {} // Payload = rHashStr
-
-}
-
-export class SetLookup implements Action {
-
-  readonly type = SET_LOOKUP_LND;
-  constructor(public payload: any) {} // Payload = lookup Response (Peer/Channel/Invoice)
-
-}
-
-export class GetForwardingHistory implements Action {
-
-  readonly type = GET_FORWARDING_HISTORY_LND;
-  constructor(public payload: SwitchReq) {}
-
-}
-
-export class SetForwardingHistory implements Action {
-
-  readonly type = SET_FORWARDING_HISTORY_LND;
-  constructor(public payload: SwitchRes) {}
-
-}
-
-export class GetQueryRoutes implements Action {
-
-  readonly type = GET_QUERY_ROUTES_LND;
-  constructor(public payload: {destPubkey: string, amount: number, outgoingChanId?: string}) {}
-
-}
-
-export class SetQueryRoutes implements Action {
-
-  readonly type = SET_QUERY_ROUTES_LND;
-  constructor(public payload: QueryRoutes) {}
-
-}
-
-export class GetAllLightningTransactions implements Action {
-
-  readonly type = GET_ALL_LIGHTNING_TRANSATIONS_LND;
-
-}
-
-export class SetAllLightningTransactions implements Action {
-
-  readonly type = SET_ALL_LIGHTNING_TRANSATIONS_LND;
-  constructor(public payload: { paymentsAll: ListPayments, invoicesAll: ListInvoices }) {}
-
-}
-
-export type LNDActions = UpdateAPICallStatus | ResetLNDStore | SetChildNodeSettings |
-FetchInfo | SetInfo | FetchPeers | SetPeers | NewlyAddedPeer | DetachPeer | SaveNewPeer | RemovePeer |
-AddInvoice | SaveNewInvoice | NewlySavedInvoice | GetForwardingHistory | SetForwardingHistory |
-FetchFees | SetFees |
-FetchBalance | SetBalance |
-FetchNetwork | SetNetwork |
-FetchAllChannels | SetAllChannels | FetchPendingChannels | SetPendingChannels | FetchClosedChannels | SetClosedChannels | UpdateChannels |
-SaveNewChannel | CloseChannel | RemoveChannel |
-BackupChannels | VerifyChannels | BackupChannelsRes | VerifyChannelsRes |
-RestoreChannels | RestoreChannelsRes | RestoreChannelsList | SetRestoreChannelsList |
-FetchTransactions | SetTransactions | FetchUTXOs | SetUTXOs |
-FetchInvoices | SetInvoices | UpdateInvoice | SetTotalInvoices |
-FetchPayments | SetPayments | SendPayment | SendPaymentStatus |
-GetAllLightningTransactions | SetAllLightningTransactions |
-FetchGraphNode | SetGraphNode | GetQueryRoutes | SetQueryRoutes |
-GetNewAddress | SetNewAddress | SetChannelTransaction | SetChannelTransactionRes |
-GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
-PeerLookup | ChannelLookup | InvoiceLookup | SetLookup;
+export const setAllLightningTransactions = createAction(LNDActions.SET_ALL_LIGHTNING_TRANSATIONS_LND, props<{ payload: SetAllLightningTransactions }>());

@@ -20,11 +20,11 @@
         <span class="page-title">Payments History</span>
       </div>
       <mat-form-field fxFlex="30" fxLayoutAlign="start end">
-        <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
+        <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" placeholder="Filter">
       </mat-form-field>
     </div>
     <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
-      <mat-progress-bar *ngIf="apisCallStatus?.FetchPayments.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+      <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table fxFlex="100" [dataSource]="payments" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="created_at">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Created At</th>
@@ -65,9 +65,9 @@
         </ng-container>
         <ng-container matColumnDef="no_payment">
           <td mat-footer-cell *matFooterCellDef colspan="4">
-            <p *ngIf="(!payments?.data || payments?.data?.length<1) && apisCallStatus?.FetchPayments.status === apiCallStatusEnum.COMPLETED">No payment available.</p>
-            <p *ngIf="(!payments?.data || payments?.data?.length<1) && apisCallStatus?.FetchPayments.status === apiCallStatusEnum.INITIATED">Getting payments...</p>
-            <p *ngIf="(!payments?.data || payments?.data?.length<1) && apisCallStatus?.FetchPayments.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+            <p *ngIf="(!payments?.data || payments?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.COMPLETED">No payment available.</p>
+            <p *ngIf="(!payments?.data || payments?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.INITIATED">Getting payments...</p>
+            <p *ngIf="(!payments?.data || payments?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
           </td>
         </ng-container>
 
@@ -130,11 +130,11 @@
             </div>
           </td>
         </ng-container>
-        <tr mat-row *matRowDef="let row; columns: mppColumns; when: is_group;" [@newlyAddedRowAnimation]="(row.payment_hash === newlyAddedPayment && flgAnimate) ? 'added' : 'notAdded'"></tr>
+        <tr mat-row *matRowDef="let row; columns: mppColumns; when: is_group;"></tr>
         <!-- Payment Group Row End -->
         <tr mat-footer-row *matFooterRowDef="['no_payment']" [ngClass]="{'display-none': payments?.data && payments?.data?.length>0}"></tr>
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns; when: !is_group;" [@newlyAddedRowAnimation]="(row.payment_hash === newlyAddedPayment && flgAnimate) ? 'added' : 'notAdded'"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns; when: !is_group;"></tr>
       </table>
     </div>
     <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>

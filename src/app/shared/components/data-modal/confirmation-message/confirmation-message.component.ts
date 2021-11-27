@@ -7,8 +7,8 @@ import { LoggerService } from '../../../services/logger.service';
 import { InputData, ConfirmationData } from '../../../models/alertData';
 import { AlertTypeEnum, DataTypeEnum } from '../../../services/consts-enums-functions';
 
-import * as RTLActions from '../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { RTLState } from '../../../../store/rtl.state';
+import { closeConfirmation } from '../../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-confirmation-message',
@@ -31,7 +31,7 @@ export class ConfirmationMessageComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<ConfirmationMessageComponent>, @Inject(MAT_DIALOG_DATA) public data: ConfirmationData, private logger: LoggerService,
-    private store: Store<fromRTLReducer.RTLState>
+    private store: Store<RTLState>
   ) { }
 
   ngOnInit() {
@@ -53,7 +53,7 @@ export class ConfirmationMessageComponent implements OnInit {
     if (dialogRes && this.getInputs && this.getInputs.some((input) => !input.inputValue)) {
       return true;
     }
-    this.store.dispatch(new RTLActions.CloseConfirmation(dialogRes));
+    this.store.dispatch(closeConfirmation({ payload: dialogRes }));
   }
 
 }

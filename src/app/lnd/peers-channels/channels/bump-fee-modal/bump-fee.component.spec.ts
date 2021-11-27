@@ -2,7 +2,10 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { StoreModule } from '@ngrx/store';
 
-import { RTLReducer } from '../../../../store/rtl.reducers';
+import { RootReducer } from '../../../../store/rtl.reducers';
+import { LNDReducer } from '../../../../lnd/store/lnd.reducers';
+import { CLReducer } from '../../../../clightning/store/cl.reducers';
+import { ECLReducer } from '../../../../eclair/store/ecl.reducers';
 import { DataService } from '../../../../shared/services/data.service';
 
 import { BumpFeeComponent } from './bump-fee.component';
@@ -21,12 +24,7 @@ describe('BumpFeeComponent', () => {
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot(RTLReducer, {
-          runtimeChecks: {
-            strictStateImmutability: false,
-            strictActionImmutability: false
-          }
-        })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
       ],
       providers: [
         { provide: LoggerService, useClass: mockLoggerService },

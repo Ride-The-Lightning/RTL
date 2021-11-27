@@ -6,18 +6,19 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { GetInfo, Channel } from '../../../../../shared/models/clModels';
+import { GetInfo, Channel, Balance } from '../../../../../shared/models/clModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum, APICallStatusEnum, CLChannelPendingState } from '../../../../../shared/services/consts-enums-functions';
-import { ApiCallsListCL } from '../../../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 import { CLChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 
 import { RTLEffects } from '../../../../../store/rtl.effects';
-import * as RTLActions from '../../../../../store/rtl.actions';
-import * as CLActions from '../../../../store/cl.actions';
-import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 import { CLBumpFeeComponent } from '../../bump-fee-modal/bump-fee.component';
+import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
+import { RTLState } from '../../../../../store/rtl.state';
+import { closeChannel } from '../../../../store/cl.actions';
+import { channels, nodeInfoAndBalanceAndNumPeers } from '../../../../store/cl.selector';
 
 @Component({
   selector: 'rtl-cl-channel-pending-table',
@@ -29,8 +30,8 @@ import { CLBumpFeeComponent } from '../../bump-fee-modal/bump-fee.component';
 })
 export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public isCompatibleVersion = false;
   public totalBalance = 0;
   public displayedColumns: any[] = [];
@@ -48,11 +49,11 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListCL = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -70,26 +71,29 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
   }
 
   ngOnInit() {
-    this.store.select('cl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchChannels.message) : this.apisCallStatus.FetchChannels.message;
-        }
-        this.information = rtlStore.information;
+    this.store.select(nodeInfoAndBalanceAndNumPeers).pipe(takeUntil(this.unSubs[0])).
+      subscribe((infoBalNumpeersSelector: { information: GetInfo, balance: Balance, numPeers: number }) => {
+        this.information = infoBalNumpeersSelector.information;
         if (this.information.api_version) {
           this.isCompatibleVersion = this.commonService.isVersionCompatible(this.information.api_version, '0.4.2');
         }
-        this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
-        this.totalBalance = rtlStore.balance.totalBalance;
-        this.channelsData = rtlStore.allChannels.filter((channel) => !(channel.state === 'CHANNELD_NORMAL' && channel.connected));
+        this.numPeers = infoBalNumpeersSelector.numPeers;
+        this.totalBalance = infoBalNumpeersSelector.balance.totalBalance;
+        this.logger.info(infoBalNumpeersSelector);
+      });
+    this.store.select(channels).pipe(takeUntil(this.unSubs[1])).
+      subscribe((channelsSeletor: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessage = '';
+        this.apiCallStatus = channelsSeletor.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+        }
+        this.channelsData = [...channelsSeletor.pendingChannels, ...channelsSeletor.inactiveChannels];
         this.channelsData = this.channelsData.sort((a, b) => ((this.CLChannelPendingState[a.state] >= this.CLChannelPendingState[b.state]) ? 1 : -1));
         if (this.channelsData && this.channelsData.length > 0) {
           this.loadChannelsTable(this.channelsData);
         }
-        this.logger.info(rtlStore);
+        this.logger.info(channelsSeletor);
       });
   }
 
@@ -104,33 +108,45 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
   }
 
   onBumpFee(selChannel: Channel) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      channel: selChannel,
-      component: CLBumpFeeComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          channel: selChannel,
+          component: CLBumpFeeComponent
+        }
+      }
+    }));
   }
 
   onChannelClick(selChannel: Channel, event: any) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      channel: selChannel,
-      showCopy: true,
-      component: CLChannelInformationComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          channel: selChannel,
+          showCopy: true,
+          component: CLChannelInformationComponent
+        }
+      }
+    }));
   }
 
   onChannelClose(channelToClose: Channel) {
-    this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-      type: AlertTypeEnum.CONFIRM,
-      alertTitle: 'Force Close Channel',
-      titleMessage: 'Force closing channel: ' + channelToClose.channel_id,
-      noBtnText: 'Cancel',
-      yesBtnText: 'Force Close'
-    } }));
+    this.store.dispatch(openConfirmation({
+      payload: {
+        data: {
+          type: AlertTypeEnum.CONFIRM,
+          alertTitle: 'Force Close Channel',
+          titleMessage: 'Force closing channel: ' + ((!channelToClose.alias && !channelToClose.short_channel_id) ? channelToClose.channel_id : (channelToClose.alias && channelToClose.short_channel_id) ? channelToClose.alias + ' (' + channelToClose.short_channel_id + ')' : channelToClose.alias ? channelToClose.alias : channelToClose.short_channel_id),
+          noBtnText: 'Cancel',
+          yesBtnText: 'Force Close'
+        }
+      }
+    }));
     this.rtlEffects.closeConfirm.
-      pipe(takeUntil(this.unSubs[3])).
+      pipe(takeUntil(this.unSubs[2])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.store.dispatch(new CLActions.CloseChannel({ channelId: channelToClose.channel_id, force: true }));
+          this.store.dispatch(closeChannel({ payload: { id: channelToClose.id, channelId: channelToClose.channel_id, force: true } }));
         }
       });
   }
@@ -140,11 +156,11 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
     this.channels = new MatTableDataSource<Channel>([...mychannels]);
     this.channels.filterPredicate = (channel: Channel, fltr: string) => {
       const newChannel = ((channel.connected) ? 'connected' : 'disconnected') + (channel.channel_id ? channel.channel_id.toLowerCase() : '') +
-      (channel.short_channel_id ? channel.short_channel_id.toLowerCase() : '') + (channel.id ? channel.id.toLowerCase() : '') + (channel.alias ? channel.alias.toLowerCase() : '') +
-      (channel.private ? 'private' : 'public') + ((channel.state && this.CLChannelPendingState[channel.state]) ? this.CLChannelPendingState[channel.state].toLowerCase() : '') +
-      (channel.funding_txid ? channel.funding_txid.toLowerCase() : '') + (channel.msatoshi_to_us ? channel.msatoshi_to_us : '') +
-      (channel.msatoshi_total ? channel.msatoshi_total : '') + (channel.their_channel_reserve_satoshis ? channel.their_channel_reserve_satoshis : '') +
-      (channel.our_channel_reserve_satoshis ? channel.our_channel_reserve_satoshis : '') + (channel.spendable_msatoshi ? channel.spendable_msatoshi : '');
+        (channel.short_channel_id ? channel.short_channel_id.toLowerCase() : '') + (channel.id ? channel.id.toLowerCase() : '') + (channel.alias ? channel.alias.toLowerCase() : '') +
+        (channel.private ? 'private' : 'public') + ((channel.state && this.CLChannelPendingState[channel.state]) ? this.CLChannelPendingState[channel.state].toLowerCase() : '') +
+        (channel.funding_txid ? channel.funding_txid.toLowerCase() : '') + (channel.msatoshi_to_us ? channel.msatoshi_to_us : '') +
+        (channel.msatoshi_total ? channel.msatoshi_total : '') + (channel.their_channel_reserve_satoshis ? channel.their_channel_reserve_satoshis : '') +
+        (channel.our_channel_reserve_satoshis ? channel.our_channel_reserve_satoshis : '') + (channel.spendable_msatoshi ? channel.spendable_msatoshi : '');
       return newChannel.includes(fltr);
     };
     this.channels.sort = this.sort;

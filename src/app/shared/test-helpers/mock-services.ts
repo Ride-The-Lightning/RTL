@@ -2,9 +2,8 @@ import { HttpResponse } from '@angular/common/http';
 import { BehaviorSubject, of, throwError } from 'rxjs';
 
 import { API_URL } from '../../../environments/environment';
+import { CLActions } from '../services/consts-enums-functions';
 import { mockResponseData } from './test-data';
-
-import * as CLActions from '../../clightning/store/cl.actions';
 
 export class mockMatDialogRef {
 

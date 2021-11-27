@@ -1,14 +1,14 @@
 <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x-large">
   <rtl-horizontal-scroller (stepChanged)="onSelectionChange($event)"></rtl-horizontal-scroller>
   <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x">
-    <div *ngIf="apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.INITIATED" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1">
+    <div *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1">
       <mat-progress-bar mode="indeterminate"></mat-progress-bar>
       <p>Getting fee report...</p>
     </div>
-    <div *ngIf="apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.ERROR" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1 error-border">{{errorMessage}}</div>
-    <div *ngIf="apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.COMPLETED && feeReportData.length > 0 && filteredEventsBySelectedPeriod.length > 0" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 font-bold-700 mt-1"
+    <div *ngIf="apiCallStatus?.status === apiCallStatusEnum.ERROR" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1 error-border">{{errorMessage}}</div>
+    <div *ngIf="apiCallStatus?.status === apiCallStatusEnum.COMPLETED && feeReportData.length > 0 && filteredEventsBySelectedPeriod.length > 0" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 font-bold-700 mt-1"
     [@fadeIn]="totalFeeMsat">{{(totalFeeMsat / 1000 || 0) | number:'1.0-2'}} Sats/{{(filteredEventsBySelectedPeriod.length || 0) | number}} Events</div>
-    <div *ngIf="apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.COMPLETED && (feeReportData.length <= 0 || filteredEventsBySelectedPeriod.length <= 0)" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1">No fee report for the selected period</div>
+    <div *ngIf="apiCallStatus?.status === apiCallStatusEnum.COMPLETED && (feeReportData.length <= 0 || filteredEventsBySelectedPeriod.length <= 0)" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1">No fee report for the selected period</div>
     <div class="mt-1">
       <ngx-charts-bar-vertical
         *ngIf="feeReportData.length > 0 && filteredEventsBySelectedPeriod.length > 0"

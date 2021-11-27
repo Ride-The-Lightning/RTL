@@ -121,6 +121,9 @@
     .material-icons {
       font-size: $medium-font-size * 2;
     }
+    .material-icons.mat-icon.small-icon {
+      font-size: $medium-font-size * 1.2;
+    }
     .mat-step-header .mat-step-icon .mat-icon {
       font-size: initial;
     }

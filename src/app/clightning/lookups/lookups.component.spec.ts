@@ -3,7 +3,10 @@ import { StoreModule } from '@ngrx/store';
 import { CommonService } from '../../shared/services/common.service';
 import { LoggerService } from '../../shared/services/logger.service';
 
-import { RTLReducer } from '../../store/rtl.reducers';
+import { RootReducer } from '../../store/rtl.reducers';
+import { LNDReducer } from '../../lnd/store/lnd.reducers';
+import { CLReducer } from '../../clightning/store/cl.reducers';
+import { ECLReducer } from '../../eclair/store/ecl.reducers';
 import { CLLookupsComponent } from './lookups.component';
 import { SharedModule } from '../../shared/shared.module';
 import { CLNodeLookupComponent } from './node-lookup/node-lookup.component';
@@ -23,12 +26,7 @@ describe('CLLookupsComponent', () => {
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot(RTLReducer, {
-          runtimeChecks: {
-            strictStateImmutability: false,
-            strictActionImmutability: false
-          }
-        }),
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [

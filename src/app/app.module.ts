@@ -2,6 +2,7 @@ import { HammerModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { LayoutModule } from '@angular/cdk/layout';
 
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
@@ -22,12 +23,14 @@ import { WebSocketClientService } from './shared/services/web-socket.service';
 import { CommonService } from './shared/services/common.service';
 import { BoltzService } from './shared/services/boltz.service';
 
-import { RTLReducer } from './store/rtl.reducers';
 import { RTLEffects } from './store/rtl.effects';
 import { LNDEffects } from './lnd/store/lnd.effects';
 import { CLEffects } from './clightning/store/cl.effects';
 import { ECLEffects } from './eclair/store/ecl.effects';
-import { LayoutModule } from '@angular/cdk/layout';
+import { RootReducer } from './store/rtl.reducers';
+import { LNDReducer } from './lnd/store/lnd.reducers';
+import { CLReducer } from './clightning/store/cl.reducers';
+import { ECLReducer } from './eclair/store/ecl.reducers';
 
 @NgModule({
   imports: [
@@ -37,12 +40,14 @@ import { LayoutModule } from '@angular/cdk/layout';
     LayoutModule,
     HammerModule,
     UserIdleModule.forRoot({ idle: 3590, timeout: 10, ping: 12000 }), // One hour
-    StoreModule.forRoot(RTLReducer, {
-      runtimeChecks: {
-        strictStateImmutability: false,
-        strictActionImmutability: false
-      }
-    }),
+    StoreModule.forRoot(
+      { root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer },
+      {
+        runtimeChecks: {
+          strictStateImmutability: false,
+          strictActionImmutability: false
+        }
+      }),
     EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects, ECLEffects]),
     !environment.production ? StoreDevtoolsModule.instrument() : []
   ],
@@ -53,4 +58,4 @@ import { LayoutModule } from '@angular/cdk/layout';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }

@@ -12,10 +12,10 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { Peer } from '../../../shared/models/clModels';
 import { CLOpenChannelAlert } from '../../../shared/models/alertData';
-import { APICallStatusEnum, FEE_RATE_TYPES, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, CLActions, FEE_RATE_TYPES, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 
-import * as CLActions from '../../store/cl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { saveNewChannel, saveNewPeer } from '../../store/cl.actions';
 
 @Component({
   selector: 'rtl-cl-connect-peer',
@@ -45,7 +45,7 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
   statusFormGroup: FormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private formBuilder: FormBuilder, private actions: Actions, private logger: LoggerService, private commonService: CommonService) {
+  constructor(public dialogRef: MatDialogRef<CLConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOpenChannelAlert, private store: Store<RTLState>, private formBuilder: FormBuilder, private actions: Actions, private logger: LoggerService, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -94,7 +94,7 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
     this.actions.pipe(
       takeUntil(this.unSubs[2]),
       filter((action) => action.type === CLActions.NEWLY_ADDED_PEER_CL || action.type === CLActions.FETCH_CHANNELS_CL || action.type === CLActions.UPDATE_API_CALL_STATUS_CL)).
-      subscribe((action: (CLActions.NewlyAddedPeer | CLActions.FetchChannels | CLActions.UpdateAPICallStatus)) => {
+      subscribe((action: any) => {
         if (action.type === CLActions.NEWLY_ADDED_PEER_CL) {
           this.logger.info(action.payload);
           this.flgEditable = false;
@@ -115,22 +115,25 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
       });
   }
 
-  onConnectPeer(): boolean|void {
+  onConnectPeer(): boolean | void {
     if (!this.peerFormGroup.controls.peerAddress.value) {
       return true;
     }
     this.peerConnectionError = '';
-    this.store.dispatch(new CLActions.SaveNewPeer({ id: this.peerFormGroup.controls.peerAddress.value }));
+    this.store.dispatch(saveNewPeer({ payload: { id: this.peerFormGroup.controls.peerAddress.value } }));
   }
 
-  onOpenChannel(): boolean|void {
+  onOpenChannel(): boolean | void {
     if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) || (this.channelFormGroup.controls.flgMinConf.value && !this.channelFormGroup.controls.minConfValue.value)) {
       return true;
     }
     this.channelConnectionError = '';
-    this.store.dispatch(new CLActions.SaveNewChannel({
-      peerId: this.newlyAddedPeer.id, satoshis: this.channelFormGroup.controls.fundingAmount.value, announce: !this.channelFormGroup.controls.isPrivate.value,
-      feeRate: (this.channelFormGroup.controls.selFeeRate.value === 'customperkb' && !this.channelFormGroup.controls.flgMinConf.value && this.channelFormGroup.controls.customFeeRate.value) ? ((this.channelFormGroup.controls.customFeeRate.value * 1000) + 'perkb') : this.channelFormGroup.controls.selFeeRate.value, minconf: this.channelFormGroup.controls.flgMinConf.value ? this.channelFormGroup.controls.minConfValue.value : null
+    this.store.dispatch(saveNewChannel({
+      payload: {
+        peerId: this.newlyAddedPeer.id, satoshis: this.channelFormGroup.controls.fundingAmount.value, announce: !this.channelFormGroup.controls.isPrivate.value,
+        feeRate: (this.channelFormGroup.controls.selFeeRate.value === 'customperkb' && !this.channelFormGroup.controls.flgMinConf.value && this.channelFormGroup.controls.customFeeRate.value) ? ((this.channelFormGroup.controls.customFeeRate.value * 1000) + 'perkb') : this.channelFormGroup.controls.selFeeRate.value,
+        minconf: this.channelFormGroup.controls.flgMinConf.value ? this.channelFormGroup.controls.minConfValue.value : null
+      }
     }));
   }
 

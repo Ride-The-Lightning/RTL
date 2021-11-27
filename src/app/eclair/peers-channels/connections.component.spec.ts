@@ -4,10 +4,13 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { StoreModule } from '@ngrx/store';
 import { CommonService } from '../../shared/services/common.service';
 import { DataService } from '../../shared/services/data.service';
-import { mockDataService, mockLoggerService } from '../../shared/test-helpers/mock-services';
+import { mockDataService } from '../../shared/test-helpers/mock-services';
 import { SharedModule } from '../../shared/shared.module';
 
-import { RTLReducer } from '../../store/rtl.reducers';
+import { RootReducer } from '../../store/rtl.reducers';
+import { LNDReducer } from '../../lnd/store/lnd.reducers';
+import { CLReducer } from '../../clightning/store/cl.reducers';
+import { ECLReducer } from '../../eclair/store/ecl.reducers';
 import { ECLConnectionsComponent } from './connections.component';
 
 describe('ECLConnectionsComponent', () => {
@@ -21,12 +24,7 @@ describe('ECLConnectionsComponent', () => {
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
-        StoreModule.forRoot(RTLReducer, {
-          runtimeChecks: {
-            strictStateImmutability: false,
-            strictActionImmutability: false
-          }
-        })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
       ],
       providers: [
         CommonService,

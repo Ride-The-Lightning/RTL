@@ -4,40 +4,42 @@ import { takeUntil } from 'rxjs/operators';
 import { WebSocketSubject } from 'rxjs/webSocket';
 
 import { LoggerService } from '../../shared/services/logger.service';
-import { WSEventTypeEnum } from './consts-enums-functions';
 import { SessionService } from './session.service';
 
 @Injectable()
 export class WebSocketClientService implements OnDestroy {
 
-  public wsMessages: BehaviorSubject<any> = new BehaviorSubject(null);
-  private prevMessage = {};
+  public clWSMessages: BehaviorSubject<any> = new BehaviorSubject(null);
+  public eclWSMessages: BehaviorSubject<any> = new BehaviorSubject(null);
+  public lndWSMessages: BehaviorSubject<any> = new BehaviorSubject(null);
   private wsUrl = '';
+  private nodeIndex = '';
   private socket: WebSocketSubject<any> | null;
   private RETRY_SECONDS = 5;
   private RECONNECT_TIMEOUT = null;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private sessionService: SessionService) {}
+  constructor(private logger: LoggerService, private sessionService: SessionService) { }
 
-  connectWebSocket(finalWSUrl: string) {
-    this.wsUrl = finalWSUrl;
-    this.logger.info('Websocket Url: ' + this.wsUrl);
+  connectWebSocket(finalWSUrl: string, nodeIndex: string) {
     if (!this.socket || this.socket.closed) {
+      this.wsUrl = finalWSUrl;
+      this.nodeIndex = nodeIndex;
+      this.logger.info('Websocket Url: ' + this.wsUrl);
       this.socket = new WebSocketSubject({
         url: finalWSUrl,
-        protocol: [this.sessionService.getItem('token')]
+        protocol: [this.sessionService.getItem('token'), nodeIndex]
       });
       this.subscribeToMessages();
     }
   }
 
   reconnectOnError() {
-    if (this.RECONNECT_TIMEOUT) { return; }
+    if (this.RECONNECT_TIMEOUT || (this.socket && !this.socket.closed)) { return; }
     this.RETRY_SECONDS = (this.RETRY_SECONDS >= 160) ? 160 : (this.RETRY_SECONDS * 2);
     this.RECONNECT_TIMEOUT = setTimeout(() => {
       this.logger.info('Reconnecting Web Socket.');
-      this.connectWebSocket(this.wsUrl);
+      this.connectWebSocket(this.wsUrl, this.nodeIndex);
       this.RECONNECT_TIMEOUT = null;
     }, this.RETRY_SECONDS * 1000);
   }
@@ -49,13 +51,6 @@ export class WebSocketClientService implements OnDestroy {
     }
   }
 
-  sendMessage(msg: any) {
-    if (this.socket) {
-      const payload = { token: 'token_from_session_service', message: msg };
-      this.socket.next(payload);
-    }
-  }
-
   private subscribeToMessages() {
     this.socket.pipe(takeUntil(this.unSubs[1])).subscribe({
       next: (msg) => {
@@ -63,11 +58,20 @@ export class WebSocketClientService implements OnDestroy {
         if (msg.error) {
           this.handleError(msg.error);
         } else {
-          const msgStr = JSON.stringify(msg);
-          if (this.prevMessage.hasOwnProperty(msg.type) && this.prevMessage[msg.type] === msgStr) { return; }
-          this.prevMessage[msg.type] = msgStr;
           this.logger.info('Next Message from WS:' + JSON.stringify(msg));
-          this.wsMessages.next(msg);
+          switch (msg.source) {
+            case 'LND':
+              this.lndWSMessages.next(msg);
+              break;
+            case 'CLT':
+              this.clWSMessages.next(msg);
+              break;
+            case 'ECL':
+              this.eclWSMessages.next(msg);
+              break;
+            default:
+              break;
+          }
         }
       },
       error: (err) => this.handleError(err),
@@ -77,14 +81,20 @@ export class WebSocketClientService implements OnDestroy {
 
   private handleError(err) {
     this.logger.error(err);
-    this.wsMessages.error(err);
+    this.clWSMessages.error(err);
+    this.eclWSMessages.error(err);
+    this.lndWSMessages.error(err);
     this.reconnectOnError();
   }
 
   ngOnDestroy() {
     this.closeConnection();
-    this.wsMessages.next(null);
-    this.wsMessages.complete();
+    this.clWSMessages.next(null);
+    this.clWSMessages.complete();
+    this.eclWSMessages.next(null);
+    this.eclWSMessages.complete();
+    this.lndWSMessages.next(null);
+    this.lndWSMessages.complete();
   }
 
 }

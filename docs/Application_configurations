@@ -47,6 +47,7 @@ parameters have `default` values for initial setup and can be updated after RTL 
 ;If the environment variables are set, it will take precedence over the parameters in the RTL-Config.json file.
 PORT (port number for the rtl node server, default 3000, Required)
 HOST (host for the rtl node server, default localhost, Optional)
+APP_PASSWORD (Plaintext password to be provided by the parent container, NOT suggested for standalone RTL applications, to be used by Umbrel) (Optional)
 LN_IMPLEMENTATION (LND/CLT/ECL. Default 'LND', Required)
 LN_SERVER_URL (LN server URL for LNP REST APIs, default https://localhost:8080) (Required)
 SWAP_SERVER_URL (Swap server URL for REST APIs, default http://localhost:8081) (Optional)

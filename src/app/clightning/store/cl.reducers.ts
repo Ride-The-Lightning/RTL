@@ -1,250 +1,178 @@
-import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { APICallStatusEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ForwardingEvent, ListInvoices, UTXO } from '../../shared/models/clModels';
-import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
-import * as CLActions from '../store/cl.actions';
+import { createReducer, on } from '@ngrx/store';
 
-export interface CLState {
-  apisCallStatus: ApiCallsListCL;
-  nodeSettings: SelNodeChild;
-  information: GetInfo;
-  fees: Fees;
-  feeRatesPerKB: FeeRates;
-  feeRatesPerKW: FeeRates;
-  balance: Balance;
-  localRemoteBalance: LocalRemoteBalance;
-  peers: Peer[];
-  allChannels: Channel[];
-  payments: Payment[];
-  forwardingHistory: ForwardingEvent[];
-  failedForwardingHistory: ForwardingEvent[];
-  invoices: ListInvoices;
-  utxos: UTXO[];
-}
+import { initCLState } from './cl.state';
+import { addInvoice, addPeer, removeChannel, removePeer, resetCLStore, setBalance, setChannels, setChildNodeSettingsCL, setFailedForwardingHistory, setFeeRates, setFees, setForwardingHistory, setInfo, setInvoices, setLocalRemoteBalance, setPayments, setPeers, setUTXOs, updateCLAPICallStatus, updateInvoice } from './cl.actions';
+import { Channel } from '../../shared/models/clModels';
+import { state } from '@angular/animations';
 
-export const initCLState: CLState = {
-  apisCallStatus: {
-    FetchInfo: { status: APICallStatusEnum.UN_INITIATED },
-    FetchInvoices: { status: APICallStatusEnum.UN_INITIATED },
-    FetchFees: { status: APICallStatusEnum.UN_INITIATED },
-    FetchChannels: { status: APICallStatusEnum.UN_INITIATED },
-    FetchBalance: { status: APICallStatusEnum.UN_INITIATED },
-    FetchLocalRemoteBalance: { status: APICallStatusEnum.UN_INITIATED },
-    FetchFeeRatesperkb: { status: APICallStatusEnum.UN_INITIATED },
-    FetchFeeRatesperkw: { status: APICallStatusEnum.UN_INITIATED },
-    FetchPeers: { status: APICallStatusEnum.UN_INITIATED },
-    FetchUTXOs: { status: APICallStatusEnum.UN_INITIATED },
-    FetchPayments: { status: APICallStatusEnum.UN_INITIATED },
-    GetForwardingHistory: { status: APICallStatusEnum.UN_INITIATED },
-    GetFailedForwardingHistory: { status: APICallStatusEnum.UN_INITIATED }
-  },
-  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
-  information: {},
-  fees: {},
-  feeRatesPerKB: {},
-  feeRatesPerKW: {},
-  balance: {},
-  localRemoteBalance: { localBalance: -1, remoteBalance: -1 },
-  peers: [],
-  allChannels: [],
-  payments: [],
-  forwardingHistory: [],
-  failedForwardingHistory: [],
-  invoices: { invoices: [] },
-  utxos: []
-};
+export const CLReducer = createReducer(initCLState,
+  on(updateCLAPICallStatus, (state, { payload }) => {
+    const updatedApisCallStatus = JSON.parse(JSON.stringify(state.apisCallStatus));
+    updatedApisCallStatus[payload.action] = {
+      status: payload.status,
+      statusCode: payload.statusCode,
+      message: payload.message,
+      URL: payload.URL,
+      filePath: payload.filePath
+    };
+    return {
+      ...state,
+      apisCallStatus: updatedApisCallStatus
+    };
+  }),
+  on(setChildNodeSettingsCL, (state, { payload }) => ({
+    ...state,
+    nodeSettings: payload
+  })),
+  on(resetCLStore, (state, { payload }) => ({
+    ...initCLState,
+    nodeSettings: payload
+  })),
+  on(setInfo, (state, { payload }) => ({
+    ...state,
+    information: payload
+  })),
+  on(setFees, (state, { payload }) => ({
+    ...state,
+    fees: payload
+  })),
+  on(setFeeRates, (state, { payload }) => {
+    if (payload.perkb) {
+      return {
+        ...state,
+        feeRatesPerKB: payload
+      };
+    } else if (payload.perkw) {
+      return {
+        ...state,
+        feeRatesPerKW: payload
+      };
+    } else {
+      return {
+        ...state
+      };
+    }
+  }),
+  on(setBalance, (state, { payload }) => ({
+    ...state,
+    balance: payload
+  })),
+  on(setLocalRemoteBalance, (state, { payload }) => ({
+    ...state,
+    localRemoteBalance: payload
+  })),
+  on(setPeers, (state, { payload }) => ({
+    ...state,
+    peers: payload
+  })),
+  on(addPeer, (state, { payload }) => ({
+    ...state,
+    peers: [...state.peers, payload]
+  })),
+  on(removePeer, (state, { payload }) => {
+    const modifiedPeers = [...state.peers];
+    const removePeerIdx = state.peers.findIndex((peer) => peer.id === payload.id);
+    if (removePeerIdx > -1) {
+      modifiedPeers.splice(removePeerIdx, 1);
+    }
+    return {
+      ...state,
+      peers: modifiedPeers
+    };
+  }),
+  on(setChannels, (state, { payload }) => ({
+    ...state,
+    activeChannels: payload.activeChannels,
+    pendingChannels: payload.pendingChannels,
+    inactiveChannels: payload.inactiveChannels
+  })),
+  on(removeChannel, (state, { payload }) => {
+    const modifiedPeers = [...state.peers];
+    modifiedPeers.forEach((peer) => {
+      if (peer.id === payload.id) {
+        peer.connected = false;
+        delete peer.netaddr;
+      }
+    });
+    return {
+      ...state,
+      peers: modifiedPeers
+    };
+  }),
+  on(setPayments, (state, { payload }) => ({
+    ...state,
+    payments: payload
+  })),
+  on(setForwardingHistory, (state, { payload }) => {
+    const modifiedFeeWithTxCount = state.fees;
+    const storedChannels = [...state.activeChannels, ...state.pendingChannels, ...state.inactiveChannels];
+    payload = mapAliases(payload, storedChannels);
+    modifiedFeeWithTxCount.totalTxCount = payload.length;
+    return {
+      ...state,
+      fee: modifiedFeeWithTxCount,
+      forwardingHistory: payload
+    };
+  }),
+  on(setFailedForwardingHistory, (state, { payload }) => {
+    const storedChannels = [...state.activeChannels, ...state.pendingChannels, ...state.inactiveChannels];
+    payload = mapAliases(payload, storedChannels);
+    return {
+      ...state,
+      failedForwardingHistory: payload
+    };
+  }),
+  on(addInvoice, (state, { payload }) => {
+    const newInvoices = state.invoices;
+    newInvoices.invoices.unshift(payload);
+    return {
+      ...state,
+      invoices: newInvoices
+    };
+  }),
+  on(setInvoices, (state, { payload }) => ({
+    ...state,
+    invoices: payload
+  })),
+  on(updateInvoice, (state, { payload }) => {
+    const modifiedInvoices = state.invoices;
+    modifiedInvoices.invoices = modifiedInvoices.invoices.map((invoice) => ((invoice.label === payload.label) ? payload : invoice));
+    return {
+      ...state,
+      invoices: modifiedInvoices
+    };
+  }),
+  on(setUTXOs, (state, { payload }) => ({
+    ...state,
+    utxos: payload
+  }))
+);
 
-export function CLReducer(state = initCLState, action: CLActions.CLActions) {
-  switch (action.type) {
-    case CLActions.UPDATE_API_CALL_STATUS_CL:
-      const updatedApisCallStatus = state.apisCallStatus;
-      updatedApisCallStatus[action.payload.action] = {
-        status: action.payload.status,
-        statusCode: action.payload.statusCode,
-        message: action.payload.message,
-        URL: action.payload.URL,
-        filePath: action.payload.filePath
-      };
-      return {
-        ...state,
-        apisCallStatus: updatedApisCallStatus
-      };
-    case CLActions.SET_CHILD_NODE_SETTINGS_CL:
-      return {
-        ...state,
-        nodeSettings: action.payload
-      };
-    case CLActions.RESET_CL_STORE:
-      return {
-        ...initCLState,
-        nodeSettings: action.payload
-      };
-    case CLActions.SET_INFO_CL:
-      return {
-        ...state,
-        information: action.payload
-      };
-    case CLActions.SET_FEES_CL:
-      return {
-        ...state,
-        fees: action.payload
-      };
-    case CLActions.SET_FEE_RATES_CL:
-      if (action.payload.perkb) {
-        return {
-          ...state,
-          feeRatesPerKB: action.payload
-        };
-      } else if (action.payload.perkw) {
-        return {
-          ...state,
-          feeRatesPerKW: action.payload
-        };
-      } else {
-        return {
-          ...state
-        };
-      }
-    case CLActions.SET_BALANCE_CL:
-      return {
-        ...state,
-        balance: action.payload
-      };
-    case CLActions.SET_LOCAL_REMOTE_BALANCE_CL:
-      return {
-        ...state,
-        localRemoteBalance: action.payload
-      };
-    case CLActions.SET_PEERS_CL:
-      return {
-        ...state,
-        peers: action.payload
-      };
-    case CLActions.ADD_PEER_CL:
-      return {
-        ...state,
-        peers: [...state.peers, action.payload]
-      };
-    case CLActions.REMOVE_PEER_CL:
-      const modifiedPeers = [...state.peers];
-      const removePeerIdx = state.peers.findIndex((peer) => peer.id === action.payload.id);
-      if (removePeerIdx > -1) {
-        modifiedPeers.splice(removePeerIdx, 1);
-      }
-      return {
-        ...state,
-        peers: modifiedPeers
-      };
-    case CLActions.SET_CHANNELS_CL:
-      return {
-        ...state,
-        allChannels: action.payload
-      };
-    case CLActions.REMOVE_CHANNEL_CL:
-      const modifiedChannels = [...state.allChannels];
-      const removeChannelIdx = state.allChannels.findIndex((channel) => channel.channel_id === action.payload.channelId);
-      if (removeChannelIdx > -1) {
-        modifiedChannels.splice(removeChannelIdx, 1);
-      }
-      return {
-        ...state,
-        allChannels: modifiedChannels
-      };
-    case CLActions.SET_PAYMENTS_CL:
-      return {
-        ...state,
-        payments: action.payload
-      };
-    case CLActions.SET_FORWARDING_HISTORY_CL:
-      const modifiedFeeWithTxCount = state.fees;
-      if (action.payload && action.payload.length > 0) {
-        const storedChannels = [...state.allChannels];
-        action.payload.forEach((fhEvent, i) => {
-          if (storedChannels && storedChannels.length > 0) {
-            for (let idx = 0; idx < storedChannels.length; idx++) {
-              if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id === fhEvent.in_channel) {
-                fhEvent.in_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.in_channel;
-                if (fhEvent.out_channel_alias) { return; }
-              }
-              if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id.toString() === fhEvent.out_channel) {
-                fhEvent.out_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.out_channel;
-                if (fhEvent.in_channel_alias) { return; }
-              }
-              if (idx === storedChannels.length - 1) {
-                if (!fhEvent.in_channel_alias) { fhEvent.in_channel_alias = fhEvent.in_channel; }
-                if (!fhEvent.out_channel_alias) { fhEvent.out_channel_alias = fhEvent.out_channel; }
-              }
-            }
-          } else {
-            fhEvent.in_channel_alias = fhEvent.in_channel;
-            fhEvent.out_channel_alias = fhEvent.out_channel;
+const mapAliases = (payload: any, storedChannels: Channel[]) => {
+  if (payload && payload.length > 0) {
+    payload.forEach((fhEvent, i) => {
+      if (storedChannels && storedChannels.length > 0) {
+        for (let idx = 0; idx < storedChannels.length; idx++) {
+          if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id === fhEvent.in_channel) {
+            fhEvent.in_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.in_channel;
+            if (fhEvent.out_channel_alias) { return; }
           }
-        });
-        modifiedFeeWithTxCount.totalTxCount = action.payload.length;
-      } else {
-        action.payload = [];
-      }
-      return {
-        ...state,
-        fee: modifiedFeeWithTxCount,
-        forwardingHistory: action.payload
-      };
-    case CLActions.SET_FAILED_FORWARDING_HISTORY_CL:
-      if (action.payload && action.payload.length > 0) {
-        const storedChannels = [...state.allChannels];
-        action.payload.forEach((fhEvent, i) => {
-          if (storedChannels && storedChannels.length > 0) {
-            for (let idx = 0; idx < storedChannels.length; idx++) {
-              if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id === fhEvent.in_channel) {
-                fhEvent.in_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.in_channel;
-                if (fhEvent.out_channel_alias) { return; }
-              }
-              if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id.toString() === fhEvent.out_channel) {
-                fhEvent.out_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.out_channel;
-                if (fhEvent.in_channel_alias) { return; }
-              }
-              if (idx === storedChannels.length - 1) {
-                if (!fhEvent.in_channel_alias) { fhEvent.in_channel_alias = fhEvent.in_channel; }
-                if (!fhEvent.out_channel_alias) { fhEvent.out_channel_alias = fhEvent.out_channel; }
-              }
-            }
-          } else {
-            fhEvent.in_channel_alias = fhEvent.in_channel;
-            fhEvent.out_channel_alias = fhEvent.out_channel;
+          if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id.toString() === fhEvent.out_channel) {
+            fhEvent.out_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.out_channel;
+            if (fhEvent.in_channel_alias) { return; }
           }
-        });
+          if (idx === storedChannels.length - 1) {
+            if (!fhEvent.in_channel_alias) { fhEvent.in_channel_alias = fhEvent.in_channel; }
+            if (!fhEvent.out_channel_alias) { fhEvent.out_channel_alias = fhEvent.out_channel; }
+          }
+        }
       } else {
-        action.payload = [];
+        fhEvent.in_channel_alias = fhEvent.in_channel;
+        fhEvent.out_channel_alias = fhEvent.out_channel;
       }
-      return {
-        ...state,
-        failedForwardingHistory: action.payload
-      };
-    case CLActions.ADD_INVOICE_CL:
-      const newInvoices = state.invoices;
-      newInvoices.invoices.unshift(action.payload);
-      return {
-        ...state,
-        invoices: newInvoices
-      };
-    case CLActions.SET_INVOICES_CL:
-      return {
-        ...state,
-        invoices: action.payload
-      };
-    case CLActions.UPDATE_INVOICE_CL:
-      const modifiedInvoices = state.invoices;
-      modifiedInvoices.invoices = modifiedInvoices.invoices.map((invoice) => ((invoice.label === action.payload.label) ? action.payload : invoice));
-      return {
-        ...state,
-        invoices: modifiedInvoices
-      };
-    case CLActions.SET_UTXOS_CL:
-      return {
-        ...state,
-        utxos: action.payload
-      };
-    default:
-      return state;
+    });
+  } else {
+    payload = [];
   }
-}
+  return payload;
+};

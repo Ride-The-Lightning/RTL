@@ -57,6 +57,7 @@ export class RTLConfiguration {
     public selectedNodeIndex: number,
     public sso: SSO,
     public enable2FA: boolean,
+    public allowPasswordUpdate: boolean,
     public nodes: ConfigSettingsNode[]
   ) { }
 
@@ -85,6 +86,6 @@ export interface SelNodeChild {
 
 export class HelpTopic {
 
-  constructor(public help: {question: string, answer: string, link?: string, linkCaption?: string, lnImplementation?: string}) { }
+  constructor(public help: { question: string, answer: string, link?: string, linkCaption?: string, lnImplementation?: string }) { }
 
 }

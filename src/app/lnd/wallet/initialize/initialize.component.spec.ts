@@ -3,7 +3,10 @@ import { StoreModule } from '@ngrx/store';
 import { mockLNDEffects } from '../../../shared/test-helpers/mock-services';
 import { SharedModule } from '../../../shared/shared.module';
 
-import { RTLReducer } from '../../../store/rtl.reducers';
+import { RootReducer } from '../../../store/rtl.reducers';
+import { LNDReducer } from '../../../lnd/store/lnd.reducers';
+import { CLReducer } from '../../../clightning/store/cl.reducers';
+import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { LNDEffects } from '../../store/lnd.effects';
 import { InitializeWalletComponent } from './initialize.component';
 
@@ -16,12 +19,7 @@ describe('InitializeWalletComponent', () => {
       declarations: [InitializeWalletComponent],
       imports: [
         SharedModule,
-        StoreModule.forRoot(RTLReducer, {
-          runtimeChecks: {
-            strictStateImmutability: false,
-            strictActionImmutability: false
-          }
-        })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
       ],
       providers: [
         { provide: LNDEffects, useClass: mockLNDEffects }

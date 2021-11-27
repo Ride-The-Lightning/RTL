@@ -9,8 +9,8 @@ import { MONTHS, ScreenSizeEnum, SCROLL_RANGES, UI_MESSAGES } from '../../../sha
 import { DataService } from '../../../shared/services/data.service';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
-import * as fromRTLReducer from '../../../store/rtl.reducers';
-import * as fromLNDReducer from '../../store/lnd.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { lndNodeInformation } from '../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-fee-report',
@@ -39,12 +39,12 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
   public errorMessage = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private dataService: DataService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private dataService: DataService, private commonService: CommonService, private store: Store<RTLState>) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select(fromLNDReducer.getInformation).pipe(takeUntil(this.unSubs[0])).subscribe((info) => {
+    this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[0])).subscribe((info) => {
       if (info.identity_pubkey) {
         this.fetchEvents(this.startDate, this.endDate);
       }
@@ -74,19 +74,21 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
     const startDateInSeconds = Math.round(start.getTime() / 1000).toString();
     const endDateInSeconds = Math.round(end.getTime() / 1000).toString();
     this.dataService.getForwardingHistory(startDateInSeconds, endDateInSeconds).
-      pipe(takeUntil(this.unSubs[1])).subscribe({ next: (res) => {
-        this.errorMessage = '';
-        if (res.forwarding_events && res.forwarding_events.length) {
-          res.forwarding_events = res.forwarding_events.reverse();
-          this.events = res;
-          this.feeReportData = this.prepareFeeReport(start);
-        } else {
-          this.events = {};
-          this.feeReportData = [];
+      pipe(takeUntil(this.unSubs[1])).subscribe({
+        next: (res) => {
+          this.errorMessage = '';
+          if (res.forwarding_events && res.forwarding_events.length) {
+            res.forwarding_events = res.forwarding_events.reverse();
+            this.events = res;
+            this.feeReportData = this.prepareFeeReport(start);
+          } else {
+            this.events = {};
+            this.feeReportData = [];
+          }
+        }, error: (err) => {
+          this.errorMessage = err;
         }
-      }, error: (err) => {
-        this.errorMessage = err;
-      } });
+      });
   }
 
   @HostListener('mouseup', ['$event']) onChartMouseUp(e) {
@@ -132,7 +134,7 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
     return feeReport;
   }
 
-  onSelectionChange(selectedValues: {selDate: Date, selScrollRange: string}) {
+  onSelectionChange(selectedValues: { selDate: Date, selScrollRange: string }) {
     const selMonth = selectedValues.selDate.getMonth();
     const selYear = selectedValues.selDate.getFullYear();
     this.reportPeriod = selectedValues.selScrollRange;

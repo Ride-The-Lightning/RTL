@@ -1,21 +1,23 @@
 import request from 'request-promise';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
-import { ECLWSClient } from './webSocketClient.js';
 let options = null;
 const logger = Logger;
 const common = Common;
-const eclWsClient = ECLWSClient;
 export const getInfo = (req, res, next) => {
-    logger.log({ level: 'INFO', fileName: 'GetInfo', msg: 'Getting Eclair Node Information..' });
-    common.setOptions();
-    options = common.getOptions();
-    options.url = common.getSelLNServerUrl() + '/getinfo';
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Getting Eclair Node Information..' });
+    common.logEnvVariables(req);
+    common.setOptions(req);
+    options = common.getOptions(req);
+    if (options.error) {
+        return res.status(options.statusCode).json({ message: options.message, error: options.error });
+    }
+    options.url = req.session.selectedNode.ln_server_url + '/getinfo';
     options.form = {};
-    logger.log({ level: 'DEBUG', fileName: 'GetInfo', msg: 'Selected Node', data: common.selectedNode.ln_node });
-    logger.log({ level: 'DEBUG', fileName: 'GetInfo', msg: 'Calling Info from Eclair server url', data: options.url });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'GetInfo', msg: 'Selected Node', data: req.session.selectedNode.ln_node });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'GetInfo', msg: 'Calling Info from Eclair server url', data: options.url });
     if (common.read_dummy_data) {
-        common.getDummyData('GetInfo').then((data) => {
+        common.getDummyData('GetInfo', req.session.selectedNode.ln_implementation).then((data) => {
             data.lnImplementation = 'Eclair';
             res.status(200).json(data);
         });
@@ -23,20 +25,19 @@ export const getInfo = (req, res, next) => {
     else {
         if (!options.headers || !options.headers.authorization) {
             const errMsg = 'Eclair Get info failed due to missing or wrong password!';
-            const err = common.handleError({ statusCode: 502, message: 'Missing or Wrong Password', error: errMsg }, 'GetInfo', errMsg);
+            const err = common.handleError({ statusCode: 502, message: 'Missing or Wrong Password', error: errMsg }, 'GetInfo', errMsg, req.session.selectedNode);
             return res.status(err.statusCode).json({ message: err.message, error: err.error });
         }
         else {
             request.post(options).then((body) => {
-                logger.log({ level: 'INFO', fileName: 'GetInfo', msg: 'Connecting to the Eclair\'s Websocket Server.' });
-                eclWsClient.connect();
-                logger.log({ level: 'DEBUG', fileName: 'GetInfo', msg: 'Get Info Response', data: body });
+                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Connecting to the Eclair\'s Websocket Server.' });
+                logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'GetInfo', msg: 'Get Info Response', data: body });
                 body.lnImplementation = 'Eclair';
-                logger.log({ level: 'INFO', fileName: 'GetInfo', msg: 'Eclair Node Information Received' });
+                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Eclair Node Information Received' });
                 res.status(200).json(body);
             }).
                 catch((errRes) => {
-                const err = common.handleError(errRes, 'GetInfo', 'Get Info Error');
+                const err = common.handleError(errRes, 'GetInfo', 'Get Info Error', req);
                 return res.status(err.statusCode).json({ message: err.message, error: err.error });
             });
         }

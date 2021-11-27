@@ -5,7 +5,10 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faUsers, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import { RTLState } from '../../store/rtl.state';
+import { allChannelsInfo, onchainBalance, peers } from '../store/ecl.selector';
+import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
+import { Channel, ChannelsStatus, LightningBalance, OnChainBalance, Peer } from '../../shared/models/eclModels';
 
 @Component({
   selector: 'rtl-ecl-connections',
@@ -23,20 +26,25 @@ export class ECLConnectionsComponent implements OnInit, OnDestroy {
   public activeLink = 0;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private router: Router) {}
+  constructor(private store: Store<RTLState>, private router: Router) { }
 
   ngOnInit() {
     this.activeLink = this.links.findIndex((link) => link.link === this.router.url.substring(this.router.url.lastIndexOf('/') + 1));
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe((value: ResolveEnd) => {
+      subscribe((value: any) => {
         this.activeLink = this.links.findIndex((link) => link.link === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
       });
-    this.store.select('ecl').
-      pipe(takeUntil(this.unSubs[1])).
-      subscribe((rtlStore) => {
-        this.activePeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
-        this.activeChannels = rtlStore.channelsStatus && rtlStore.channelsStatus.active && rtlStore.channelsStatus.active.channels ? rtlStore.channelsStatus.active.channels : 0;
-        this.balances = [{ title: 'Total Balance', dataValue: rtlStore.onchainBalance.total || 0 }, { title: 'Confirmed', dataValue: rtlStore.onchainBalance.confirmed }, { title: 'Unconfirmed', dataValue: rtlStore.onchainBalance.unconfirmed }];
+    this.store.select(peers).pipe(takeUntil(this.unSubs[1])).
+      subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.activePeers = (peersSelector.peers && peersSelector.peers.length) ? peersSelector.peers.length : 0;
+      });
+    this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[2])).
+      subscribe((allChannelsSelector: ({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload })) => {
+        this.activeChannels = allChannelsSelector.channelsStatus && allChannelsSelector.channelsStatus.active && allChannelsSelector.channelsStatus.active.channels ? allChannelsSelector.channelsStatus.active.channels : 0;
+      });
+    this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[3])).
+      subscribe((oCBalanceSelector: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.balances = [{ title: 'Total Balance', dataValue: oCBalanceSelector.onchainBalance.total || 0 }, { title: 'Confirmed', dataValue: oCBalanceSelector.onchainBalance.confirmed }, { title: 'Unconfirmed', dataValue: oCBalanceSelector.onchainBalance.unconfirmed }];
       });
   }
 

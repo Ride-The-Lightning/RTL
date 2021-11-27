@@ -10,3 +10,14 @@ export class RemoveLeadingZerosPipe implements PipeTransform {
   }
 
 }
+
+@Pipe({
+  name: 'camelcase'
+})
+export class CamelCasePipe implements PipeTransform {
+
+  transform(value: string, args?: any): string {
+    return value.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => (word.toUpperCase())).replace(/\s+/g, '').replace(/-/g, ' ');
+  }
+
+}

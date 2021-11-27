@@ -11,8 +11,8 @@ import { CommonService } from './common.service';
 import { LoggerService } from '../../shared/services/logger.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 
-import * as RTLActions from '../../store/rtl.actions';
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import { RTLState } from '../../store/rtl.state';
+import { closeSpinner, logout, openAlert, openSpinner } from '../../store/rtl.actions';
 
 @Injectable()
 export class LoopService implements OnDestroy {
@@ -22,22 +22,23 @@ export class LoopService implements OnDestroy {
   public swapsChanged = new BehaviorSubject<LoopSwapStatus[]>([]);
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private httpClient: HttpClient, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) { }
+  constructor(private httpClient: HttpClient, private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService) { }
 
   getSwapsList() {
     return this.swaps;
   }
 
   listSwaps() {
-    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_LOOP_SWAPS));
+    this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_LOOP_SWAPS }));
     this.loopUrl = API_URL + environment.LOOP_API + '/swaps';
-    this.httpClient.get(this.loopUrl).pipe(takeUntil(this.unSubs[0])).
+    this.httpClient.get<LoopSwapStatus[]>(this.loopUrl).pipe(takeUntil(this.unSubs[0])).
       subscribe({
         next: (swapResponse: LoopSwapStatus[]) => {
-          this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_LOOP_SWAPS));
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_LOOP_SWAPS }));
           this.swaps = swapResponse;
           this.swapsChanged.next(this.swaps);
-        }, error: (err) => this.handleErrorWithAlert(UI_MESSAGES.GET_LOOP_SWAPS, this.loopUrl, err)
+        },
+        error: (err) => this.handleErrorWithAlert(UI_MESSAGES.GET_LOOP_SWAPS, this.loopUrl, err)
       });
   }
 
@@ -60,11 +61,11 @@ export class LoopService implements OnDestroy {
     params = params.append('targetConf', targetConf.toString());
     params = params.append('swapPublicationDeadline', swapPublicationDeadline.toString());
     this.loopUrl = API_URL + environment.LOOP_API + '/out/quote/' + amount;
-    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_QUOTE));
+    this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_QUOTE }));
     return this.httpClient.get(this.loopUrl, { params: params }).pipe(
       takeUntil(this.unSubs[1]),
       map((res) => {
-        this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_QUOTE));
+        this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_QUOTE }));
         return res;
       }),
       catchError((err) => this.handleErrorWithoutAlert('Loop Out Quote', UI_MESSAGES.GET_QUOTE, err))
@@ -76,11 +77,11 @@ export class LoopService implements OnDestroy {
     params = params.append('targetConf', targetConf.toString());
     params = params.append('swapPublicationDeadline', (new Date().getTime() + (30 * 60000)).toString());
     this.loopUrl = API_URL + environment.LOOP_API + '/out/termsAndQuotes';
-    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_TERMS_QUOTES));
+    this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_TERMS_QUOTES }));
     return this.httpClient.get(this.loopUrl, { params: params }).pipe(
       takeUntil(this.unSubs[2]),
       map((res) => {
-        this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_TERMS_QUOTES));
+        this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_TERMS_QUOTES }));
         return res;
       }),
       catchError((err) => this.handleErrorWithAlert(UI_MESSAGES.GET_TERMS_QUOTES, this.loopUrl, err))
@@ -103,11 +104,11 @@ export class LoopService implements OnDestroy {
     params = params.append('targetConf', targetConf.toString());
     params = params.append('swapPublicationDeadline', swapPublicationDeadline.toString());
     this.loopUrl = API_URL + environment.LOOP_API + '/in/quote/' + amount;
-    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_QUOTE));
+    this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_QUOTE }));
     return this.httpClient.get(this.loopUrl, { params: params }).pipe(
       takeUntil(this.unSubs[3]),
       map((res) => {
-        this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_QUOTE));
+        this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_QUOTE }));
         return res;
       }),
       catchError((err) => this.handleErrorWithoutAlert('Loop In Qoute', UI_MESSAGES.GET_QUOTE, err))
@@ -119,11 +120,11 @@ export class LoopService implements OnDestroy {
     params = params.append('targetConf', targetConf.toString());
     params = params.append('swapPublicationDeadline', (new Date().getTime() + (30 * 60000)).toString());
     this.loopUrl = API_URL + environment.LOOP_API + '/in/termsAndQuotes';
-    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_TERMS_QUOTES));
+    this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_TERMS_QUOTES }));
     return this.httpClient.get(this.loopUrl, { params: params }).pipe(
       takeUntil(this.unSubs[4]),
       map((res) => {
-        this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_TERMS_QUOTES));
+        this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_TERMS_QUOTES }));
         return res;
       }), catchError((err) => this.handleErrorWithAlert(UI_MESSAGES.GET_TERMS_QUOTES, this.loopUrl, err))
     );
@@ -137,19 +138,21 @@ export class LoopService implements OnDestroy {
   handleErrorWithoutAlert(actionName: string, uiMessage: string, err: { status: number, error: any }) {
     let errMsg = '';
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
-    this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
+    this.store.dispatch(closeSpinner({ payload: uiMessage }));
     if (err.status === 401) {
       errMsg = 'Unauthorized User.';
       this.logger.info('Redirecting to Login');
-      this.store.dispatch(new RTLActions.Logout());
+      this.store.dispatch(logout());
     } else if (err.status === 503) {
       errMsg = 'Unable to Connect to Loop Server.';
-      this.store.dispatch(new RTLActions.OpenAlert({
-        data: {
-          type: 'ERROR',
-          alertTitle: 'Loop Not Connected',
-          message: { code: err.status, message: 'Unable to Connect to Loop Server', URL: actionName },
-          component: ErrorMessageComponent
+      this.store.dispatch(openAlert({
+        payload: {
+          data: {
+            type: 'ERROR',
+            alertTitle: 'Loop Not Connected',
+            message: { code: err.status, message: 'Unable to Connect to Loop Server', URL: actionName },
+            component: ErrorMessageComponent
+          }
         }
       }));
     } else {
@@ -161,30 +164,34 @@ export class LoopService implements OnDestroy {
   handleErrorWithAlert(uiMessage: string, errURL: string, err: any) {
     let errMsg = '';
     this.logger.error(err);
-    this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
+    this.store.dispatch(closeSpinner({ payload: uiMessage }));
     if (err.status === 401) {
       errMsg = 'Unauthorized User.';
       this.logger.info('Redirecting to Login');
-      this.store.dispatch(new RTLActions.Logout());
+      this.store.dispatch(logout());
     } else if (err.status === 503) {
       errMsg = 'Unable to Connect to Loop Server.';
-      this.store.dispatch(new RTLActions.OpenAlert({
-        data: {
-          type: 'ERROR',
-          alertTitle: 'Loop Not Connected',
-          message: { code: err.status, message: 'Unable to Connect to Loop Server', URL: errURL },
-          component: ErrorMessageComponent
+      this.store.dispatch(openAlert({
+        payload: {
+          data: {
+            type: 'ERROR',
+            alertTitle: 'Loop Not Connected',
+            message: { code: err.status, message: 'Unable to Connect to Loop Server', URL: errURL },
+            component: ErrorMessageComponent
+          }
         }
       }));
     } else {
       errMsg = this.commonService.extractErrorMessage(err);
       const errCode = (err.error && err.error.error && err.error.error.code) ? err.error.error.code : (err.error && err.error.code) ? err.error.code : err.code ? err.code : err.status;
-      this.store.dispatch(new RTLActions.OpenAlert({
-        data: {
-          type: AlertTypeEnum.ERROR,
-          alertTitle: 'ERROR',
-          message: { code: errCode, message: errMsg, URL: errURL },
-          component: ErrorMessageComponent
+      this.store.dispatch(openAlert({
+        payload: {
+          data: {
+            type: AlertTypeEnum.ERROR,
+            alertTitle: 'ERROR',
+            message: { code: errCode, message: errMsg, URL: errURL },
+            component: ErrorMessageComponent
+          }
         }
       }));
     }

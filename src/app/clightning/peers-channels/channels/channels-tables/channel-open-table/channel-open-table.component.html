@@ -5,7 +5,7 @@
       <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" name="filter" placeholder="Filter">
     </mat-form-field>
   </div>
-  <mat-progress-bar *ngIf="apisCallStatus?.FetchChannels.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+  <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
   <div [perfectScrollbar] fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100">
     <table mat-table #table [dataSource]="channels" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
       <ng-container matColumnDef="short_channel_id">
@@ -91,10 +91,10 @@
       </ng-container>
       <ng-container matColumnDef="no_peer">
         <td mat-footer-cell *matFooterCellDef colspan="4">
-          <p *ngIf="numPeers<1 && (!channels?.data || channels?.data?.length<1) && apisCallStatus?.FetchChannels.status === apiCallStatusEnum.COMPLETED">No peers connected. Add a peer in order to open a channel.</p>
-          <p *ngIf="numPeers>0 && (!channels?.data || channels?.data?.length<1) && apisCallStatus?.FetchChannels.status === apiCallStatusEnum.COMPLETED">No channel available.</p>
-          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apisCallStatus?.FetchChannels.status === apiCallStatusEnum.INITIATED">Getting channels...</p>
-          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apisCallStatus?.FetchChannels.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+          <p *ngIf="numPeers<1 && (!channels?.data || channels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No peers connected. Add a peer in order to open a channel.</p>
+          <p *ngIf="numPeers>0 && (!channels?.data || channels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No channel available.</p>
+          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting channels...</p>
+          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
         </td>
       </ng-container>
       <tr mat-footer-row *matFooterRowDef="['no_peer']" [ngClass]="{'display-none': numPeers>0 && channels?.data && channels?.data?.length>0}"></tr>

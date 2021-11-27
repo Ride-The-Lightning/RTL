@@ -3,7 +3,10 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { StoreModule } from '@ngrx/store';
 
-import { RTLReducer } from '../../../../../store/rtl.reducers';
+import { RootReducer } from '../../../../../store/rtl.reducers';
+import { LNDReducer } from '../../../../../lnd/store/lnd.reducers';
+import { CLReducer } from '../../../../../clightning/store/cl.reducers';
+import { ECLReducer } from '../../../../../eclair/store/ecl.reducers';
 import { CommonService } from '../../../../../shared/services/common.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { LoopService } from '../../../../../shared/services/loop.service';
@@ -25,12 +28,7 @@ describe('LoopModalComponent', () => {
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
-        StoreModule.forRoot(RTLReducer, {
-          runtimeChecks: {
-            strictStateImmutability: false,
-            strictActionImmutability: false
-          }
-        })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
       ],
       providers: [
         CommonService,

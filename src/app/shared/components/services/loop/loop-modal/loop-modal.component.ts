@@ -16,9 +16,11 @@ import { LoopAlert } from '../../../../models/alertData';
 import { LoopService } from '../../../../services/loop.service';
 import { LoggerService } from '../../../../services/logger.service';
 import { CommonService } from '../../../../services/common.service';
-import { Channel } from '../../../../models/lndModels';
+import { Channel, ChannelsSummary, LightningBalance } from '../../../../models/lndModels';
 
-import * as fromRTLReducer from '../../../../../store/rtl.reducers';
+import { RTLState } from '../../../../../store/rtl.state';
+import { channels } from '../../../../../lnd/store/lnd.selector';
+import { ApiCallStatusPayload } from '../../../../models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-loop-modal',
@@ -55,7 +57,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   statusFormGroup: FormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<LoopModalComponent>, @Inject(MAT_DIALOG_DATA) public data: LoopAlert, private store: Store<fromRTLReducer.RTLState>, private loopService: LoopService, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe, private logger: LoggerService, private router: Router, private commonService: CommonService) { }
+  constructor(public dialogRef: MatDialogRef<LoopModalComponent>, @Inject(MAT_DIALOG_DATA) public data: LoopAlert, private store: Store<RTLState>, private loopService: LoopService, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe, private logger: LoggerService, private router: Router, private commonService: CommonService) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
@@ -78,10 +80,9 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     this.statusFormGroup = this.formBuilder.group({});
     this.onFormValueChanges();
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[6])).
-      subscribe((rtlStore) => {
-        this.localBalanceToCompare = (this.channel) ? +this.channel.local_balance : +rtlStore.totalLocalBalance;
+    this.store.select(channels).pipe(takeUntil(this.unSubs[6])).
+      subscribe((channelsSelector: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.localBalanceToCompare = (this.channel) ? +this.channel.local_balance : +channelsSelector.lightningBalance.local;
       });
   }
 

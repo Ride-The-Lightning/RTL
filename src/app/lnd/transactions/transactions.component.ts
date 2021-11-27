@@ -1,13 +1,17 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ResolveEnd } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { takeUntil, filter, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faExchangeAlt, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../shared/services/logger.service';
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import { RTLState } from '../../store/rtl.state';
+import { channels, lndNodeSettings } from '../store/lnd.selector';
+import { Channel, ChannelsSummary, LightningBalance } from '../../shared/models/lndModels';
+import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
+import { SelNodeChild } from '../../shared/models/RTLconfig';
 
 @Component({
   selector: 'rtl-transactions',
@@ -24,26 +28,26 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   public activeLink = this.links[0].link;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private router: Router) {}
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private router: Router) { }
 
   ngOnInit() {
     const linkFound = this.links.find((link) => this.router.url.includes(link.link));
     this.activeLink = linkFound ? linkFound.link : this.links[0].link;
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe((value: ResolveEnd) => {
+      subscribe((value: any) => {
         const linkFound = this.links.find((link) => value.urlAfterRedirects.includes(link.link));
         this.activeLink = linkFound ? linkFound.link : this.links[0].link;
       });
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[1])).
-      subscribe((rtlStore) => {
-        this.currencyUnits = rtlStore.nodeSettings.currencyUnits;
-        if (rtlStore.nodeSettings.userPersona === UserPersonaEnum.OPERATOR) {
-          this.balances = [{ title: 'Local Capacity', dataValue: rtlStore.totalLocalBalance, tooltip: 'Amount you can send' }, { title: 'Remote Capacity', dataValue: rtlStore.totalRemoteBalance, tooltip: 'Amount you can receive' }];
+    this.store.select(channels).pipe(takeUntil(this.unSubs[1]),
+      withLatestFrom(this.store.select(lndNodeSettings))).
+      subscribe(([channelsSelector, nodeSettings]: [{ channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }, SelNodeChild]) => {
+        this.currencyUnits = nodeSettings.currencyUnits;
+        if (nodeSettings.userPersona === UserPersonaEnum.OPERATOR) {
+          this.balances = [{ title: 'Local Capacity', dataValue: channelsSelector.lightningBalance.local, tooltip: 'Amount you can send' }, { title: 'Remote Capacity', dataValue: channelsSelector.lightningBalance.remote, tooltip: 'Amount you can receive' }];
         } else {
-          this.balances = [{ title: 'Outbound Capacity', dataValue: rtlStore.totalLocalBalance, tooltip: 'Amount you can send' }, { title: 'Inbound Capacity', dataValue: rtlStore.totalRemoteBalance, tooltip: 'Amount you can receive' }];
+          this.balances = [{ title: 'Outbound Capacity', dataValue: channelsSelector.lightningBalance.local, tooltip: 'Amount you can send' }, { title: 'Inbound Capacity', dataValue: channelsSelector.lightningBalance.remote, tooltip: 'Amount you can receive' }];
         }
-        this.logger.info(rtlStore);
+        this.logger.info(channelsSelector);
       });
   }
 

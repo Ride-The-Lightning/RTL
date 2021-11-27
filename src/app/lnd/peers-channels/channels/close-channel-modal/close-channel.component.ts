@@ -9,10 +9,10 @@ import { faExclamationTriangle, faInfoCircle } from '@fortawesome/free-solid-svg
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { Channel } from '../../../../shared/models/lndModels';
 import { ChannelInformation } from '../../../../shared/models/alertData';
-import { APICallStatusEnum, TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, LNDActions, TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
 
-import * as LNDActions from '../../../store/lnd.actions';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { RTLState } from '../../../../store/rtl.state';
+import { closeChannel } from '../../../store/lnd.actions';
 
 @Component({
   selector: 'rtl-close-channel',
@@ -32,17 +32,17 @@ export class CloseChannelComponent implements OnInit, OnDestroy {
   public errorMsg = 'Please wait for pending HTLCs to settle before attempting channel closure.';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CloseChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelInformation, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private logger: LoggerService) {}
+  constructor(public dialogRef: MatDialogRef<CloseChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelInformation, private store: Store<RTLState>, private actions: Actions, private logger: LoggerService) { }
 
   ngOnInit() {
     this.channelToClose = this.data.channel;
     this.actions.pipe(
       takeUntil(this.unSubs[0]),
-      filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.SET_ALL_CHANNELS_LND)).
-      subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.SetAllChannels) => {
-        if (action.type === LNDActions.SET_ALL_CHANNELS_LND) {
+      filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.SET_CHANNELS_LND)).
+      subscribe((action: any) => {
+        if (action.type === LNDActions.SET_CHANNELS_LND) {
           const filteredChannel = action.payload.find((channel) => channel.chan_id === this.data.channel.chan_id);
-          if (filteredChannel.pending_htlcs && filteredChannel.pending_htlcs.length && filteredChannel.pending_htlcs.length > 0) {
+          if (filteredChannel && filteredChannel.pending_htlcs && filteredChannel.pending_htlcs.length && filteredChannel.pending_htlcs.length > 0) {
             this.flgPendingHtlcs = true;
           }
         }
@@ -52,7 +52,7 @@ export class CloseChannelComponent implements OnInit, OnDestroy {
       });
   }
 
-  onCloseChannel(): boolean|void {
+  onCloseChannel(): boolean | void {
     if ((this.selTransType === '1' && (!this.blocks || this.blocks === 0)) || (this.selTransType === '2' && (!this.fees || this.fees === 0))) {
       return true;
     }
@@ -63,7 +63,7 @@ export class CloseChannelComponent implements OnInit, OnDestroy {
     if (this.fees) {
       closeChannelParams.satPerByte = this.fees;
     }
-    this.store.dispatch(new LNDActions.CloseChannel(closeChannelParams));
+    this.store.dispatch(closeChannel({ payload: closeChannelParams }));
     this.dialogRef.close(false);
   }
 

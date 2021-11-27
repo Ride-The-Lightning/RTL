@@ -2,12 +2,15 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { StoreModule } from '@ngrx/store';
 
-import { RTLReducer } from '../../../../store/rtl.reducers';
+import { RootReducer } from '../../../../store/rtl.reducers';
+import { LNDReducer } from '../../../../lnd/store/lnd.reducers';
+import { CLReducer } from '../../../../clightning/store/cl.reducers';
+import { ECLReducer } from '../../../../eclair/store/ecl.reducers';
 import { LoopService } from '../../../../shared/services/loop.service';
 
 import { LoopComponent } from './loop.component';
 import { SharedModule } from '../../../shared.module';
-import { mockDataService, mockLoggerService, mockLoopService } from '../../../test-helpers/mock-services';
+import { mockDataService, mockLoopService } from '../../../test-helpers/mock-services';
 import { CommonService } from '../../../services/common.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../services/data.service';
@@ -23,12 +26,7 @@ describe('LoopComponent', () => {
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
-        StoreModule.forRoot(RTLReducer, {
-          runtimeChecks: {
-            strictStateImmutability: false,
-            strictActionImmutability: false
-          }
-        })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
       ],
       providers: [
         CommonService,

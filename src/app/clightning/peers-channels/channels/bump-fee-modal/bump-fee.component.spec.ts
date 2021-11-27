@@ -8,7 +8,10 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 import { SharedModule } from '../../../../shared/shared.module';
 import { mockCLEffects, mockDataService, mockECLEffects, mockLNDEffects, mockLoggerService, mockMatDialogRef, mockRTLEffects } from '../../../../shared/test-helpers/mock-services';
 
-import { RTLReducer } from '../../../../store/rtl.reducers';
+import { RootReducer } from '../../../../store/rtl.reducers';
+import { LNDReducer } from '../../../../lnd/store/lnd.reducers';
+import { CLReducer } from '../../../../clightning/store/cl.reducers';
+import { ECLReducer } from '../../../../eclair/store/ecl.reducers';
 import { CLBumpFeeComponent } from './bump-fee.component';
 
 describe('CLBumpFeeComponent', () => {
@@ -21,12 +24,7 @@ describe('CLBumpFeeComponent', () => {
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot(RTLReducer, {
-          runtimeChecks: {
-            strictStateImmutability: false,
-            strictActionImmutability: false
-          }
-        }),
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [

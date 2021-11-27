@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { GraphNode } from '../../../shared/models/lndModels';
+import { NodeFeaturesLND } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 @Component({
@@ -12,6 +13,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 export class NodeLookupComponent {
 
   @Input() lookupResult: GraphNode;
+  public nodeFeaturesEnum = NodeFeaturesLND;
   public displayedColumns = ['network', 'addr', 'actions'];
 
   constructor(private logger: LoggerService, private snackBar: MatSnackBar) { }

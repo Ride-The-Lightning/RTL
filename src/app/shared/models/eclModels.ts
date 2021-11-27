@@ -67,6 +67,8 @@ export interface PaymentRelayed {
   toShortChannelId?: string;
   toChannelAlias?: string;
   timestamp?: number;
+  incoming?: Array<{ amount: number, channelId?: string, channelAlias?: string, shortChannelId?: string }>;
+  outgoing?: Array<{ amount: number, channelId?: string, channelAlias?: string, shortChannelId?: string }>;
 }
 
 export interface Payments {
@@ -216,4 +218,40 @@ export interface ChannelStateUpdate {
   previousState?: string;
   remoteNodeId?: string;
   type?: string;
+}
+
+export interface SaveChannel {
+  nodeId: string;
+  amount: number;
+  private: boolean;
+  feeRate?: number;
+}
+
+export interface UpdateChannel {
+  baseFeeMsat: number;
+  feeRate: number;
+  nodeId?: string;
+  nodeIds?: string;
+}
+
+export interface CloseChannel {
+  channelId: string;
+  force: boolean;
+}
+
+export interface GetQueryRoutes {
+  nodeId: string;
+  amount: number;
+}
+
+export interface SendPayment {
+  fromDialog: boolean;
+  invoice: string;
+  amountMsat?: number;
+}
+
+export interface CreateInvoice {
+  description: string;
+  expireIn: number;
+  amountMsat?: number;
 }

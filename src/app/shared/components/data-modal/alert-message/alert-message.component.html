@@ -40,8 +40,8 @@
     <div fxFlex="50" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large mb-1" [ngClass]="{'display-none': showQRField === '' || (screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM)}">
       <qrcode *ngIf="showQRField !== ''" [qrdata]="showQRField" [margin]="2" [width]="240" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
     </div>
-    <div fxLayout="row" fxFlex="100">
-      <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="pb-1">{{data.titleMessage}}</p>
+    <div fxLayout="column" fxFlex="100">
+      <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="pb-2">{{data.titleMessage}}</p>
       <div *ngIf="messageObjs?.length>0" fxFlex="100">
         <div *ngFor="let objs of messageObjs; index as i;">
           <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="start center" fxLayoutAlign.gt-md="space-between start">

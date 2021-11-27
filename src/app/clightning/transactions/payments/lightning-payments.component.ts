@@ -10,25 +10,24 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { GetInfo, Payment, PayRequest } from '../../../shared/models/clModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
-import { ApiCallsListCL } from '../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
-import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { CLLightningSendPaymentsComponent } from '../send-payment-modal/send-payment.component';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 
 import { CLEffects } from '../../store/cl.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
-import * as CLActions from '../../store/cl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openAlert, openConfirmation } from '../../../store/rtl.actions';
+import { decodePayment, sendPayment } from '../../store/cl.actions';
+import { clNodeInformation, clNodeSettings, payments } from '../../store/cl.selector';
 
 @Component({
   selector: 'rtl-cl-lightning-payments',
   templateUrl: './lightning-payments.component.html',
   styleUrls: ['./lightning-payments.component.scss'],
-  animations: [newlyAddedRowAnimation],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Payments') }
   ]
@@ -37,11 +36,10 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
 
   @Input() calledFrom = 'transactions'; // Transactions/home
   @ViewChild('sendPaymentForm', { static: false }) form;
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faHistory = faHistory;
   public newlyAddedPayment = '';
-  public flgAnimate = true;
   public selNode: SelNodeChild = {};
   public information: GetInfo = {};
   public payments: any;
@@ -57,11 +55,12 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListCL = null;
+  public selFilter = '';
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects, private decimalPipe: DecimalPipe, private titleCasePipe: TitleCasePipe, private datePipe: DatePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects, private decimalPipe: DecimalPipe, private titleCasePipe: TitleCasePipe, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -83,24 +82,24 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngOnInit() {
-    this.store.select('cl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(clNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => {
+      this.selNode = nodeSettings;
+    });
+    this.store.select(clNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => {
+      this.information = nodeInfo;
+    });
+    this.store.select(payments).pipe(takeUntil(this.unSubs[2])).
+      subscribe((paymentsSeletor: { payments: Payment[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchPayments.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPayments.message) : this.apisCallStatus.FetchPayments.message;
+        this.apiCallStatus = paymentsSeletor.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.information = rtlStore.information;
-        this.selNode = rtlStore.nodeSettings;
-        this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
+        this.paymentJSONArr = paymentsSeletor.payments || [];
         if (this.paymentJSONArr.length > 0) {
           this.loadPaymentsTable(this.paymentJSONArr);
         }
-        setTimeout(() => {
-          this.flgAnimate = false;
-        }, 3000);
-        this.logger.info(rtlStore);
+        this.logger.info(paymentsSeletor);
       });
   }
 
@@ -114,14 +113,14 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
     return payment.is_group;
   }
 
-  onSendPayment(): boolean|void {
+  onSendPayment(): boolean | void {
     if (!this.paymentRequest) {
       return true;
     }
     if (this.paymentDecoded.created_at) {
       this.sendPayment();
     } else {
-      this.store.dispatch(new CLActions.DecodePayment({ routeParam: this.paymentRequest, fromDialog: false }));
+      this.store.dispatch(decodePayment({ payload: { routeParam: this.paymentRequest, fromDialog: false } }));
       this.clEffects.setDecodedPaymentCL.
         pipe(take(1)).
         subscribe((decodedPayment) => {
@@ -139,7 +138,6 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   }
 
   sendPayment() {
-    this.flgAnimate = true;
     this.newlyAddedPayment = this.paymentDecoded.payment_hash;
     if (!this.paymentDecoded.msatoshi || this.paymentDecoded.msatoshi === 0) {
       const reorderedPaymentDecoded = [
@@ -147,28 +145,32 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
         [{ key: 'payee', value: this.paymentDecoded.payee, title: 'Payee', width: 100 }],
         [{ key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100 }],
         [{ key: 'created_at', value: this.paymentDecoded.created_at, title: 'Creation Date', width: 40, type: DataTypeEnum.DATE_TIME },
-          { key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 30, type: DataTypeEnum.NUMBER },
-          { key: 'min_finaltv_expiry', value: this.paymentDecoded.min_final_cltv_expiry, title: 'CLTV Expiry', width: 30 }]
+        { key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 30, type: DataTypeEnum.NUMBER },
+        { key: 'min_finaltv_expiry', value: this.paymentDecoded.min_final_cltv_expiry, title: 'CLTV Expiry', width: 30 }]
       ];
       const titleMsg = 'It is a zero amount invoice. Enter the amount (Sats) to pay.';
-      this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-        type: AlertTypeEnum.CONFIRM,
-        alertTitle: 'Enter Amount and Confirm Send Payment',
-        message: reorderedPaymentDecoded,
-        noBtnText: 'Cancel',
-        yesBtnText: 'Send Payment',
-        flgShowInput: true,
-        titleMessage: titleMsg,
-        getInputs: [
-          { placeholder: 'Amount (Sats)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: '', width: 30 }
-        ]
-      } }));
+      this.store.dispatch(openConfirmation({
+        payload: {
+          data: {
+            type: AlertTypeEnum.CONFIRM,
+            alertTitle: 'Enter Amount and Confirm Send Payment',
+            message: reorderedPaymentDecoded,
+            noBtnText: 'Cancel',
+            yesBtnText: 'Send Payment',
+            flgShowInput: true,
+            titleMessage: titleMsg,
+            getInputs: [
+              { placeholder: 'Amount (Sats)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: '', width: 30 }
+            ]
+          }
+        }
+      }));
       this.rtlEffects.closeConfirm.
         pipe(take(1)).
         subscribe((confirmRes) => {
           if (confirmRes) {
             this.paymentDecoded.msatoshi = confirmRes[0].inputValue;
-            this.store.dispatch(new CLActions.SendPayment({ uiMessage: UI_MESSAGES.SEND_PAYMENT, invoice: this.paymentRequest, amount: confirmRes[0].inputValue * 1000, fromDialog: false }));
+            this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, invoice: this.paymentRequest, amount: confirmRes[0].inputValue * 1000, fromDialog: false } }));
             this.resetData();
           }
         });
@@ -178,22 +180,26 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
         [{ key: 'payee', value: this.paymentDecoded.payee, title: 'Payee', width: 100 }],
         [{ key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100 }],
         [{ key: 'created_at', value: this.paymentDecoded.created_at, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME },
-          { key: 'num_satoshis', value: this.paymentDecoded.msatoshi / 1000, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
+        { key: 'num_satoshis', value: this.paymentDecoded.msatoshi / 1000, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
         [{ key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.NUMBER },
-          { key: 'min_finaltv_expiry', value: this.paymentDecoded.min_final_cltv_expiry, title: 'CLTV Expiry', width: 50 }]
+        { key: 'min_finaltv_expiry', value: this.paymentDecoded.min_final_cltv_expiry, title: 'CLTV Expiry', width: 50 }]
       ];
-      this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-        type: AlertTypeEnum.CONFIRM,
-        alertTitle: 'Confirm Send Payment',
-        noBtnText: 'Cancel',
-        yesBtnText: 'Send Payment',
-        message: reorderedPaymentDecoded
-      } }));
+      this.store.dispatch(openConfirmation({
+        payload: {
+          data: {
+            type: AlertTypeEnum.CONFIRM,
+            alertTitle: 'Confirm Send Payment',
+            noBtnText: 'Cancel',
+            yesBtnText: 'Send Payment',
+            message: reorderedPaymentDecoded
+          }
+        }
+      }));
       this.rtlEffects.closeConfirm.
         pipe(take(1)).
         subscribe((confirmRes) => {
           if (confirmRes) {
-            this.store.dispatch(new CLActions.SendPayment({ uiMessage: UI_MESSAGES.SEND_PAYMENT, invoice: this.paymentRequest, fromDialog: false }));
+            this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, invoice: this.paymentRequest, fromDialog: false } }));
             this.resetData();
           }
         });
@@ -204,18 +210,20 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
     this.paymentRequest = event;
     this.paymentDecodedHint = '';
     if (this.paymentRequest && this.paymentRequest.length > 100) {
-      this.store.dispatch(new CLActions.DecodePayment({ routeParam: this.paymentRequest, fromDialog: false }));
+      this.store.dispatch(decodePayment({ payload: { routeParam: this.paymentRequest, fromDialog: false } }));
       this.clEffects.setDecodedPaymentCL.subscribe((decodedPayment) => {
         this.paymentDecoded = decodedPayment;
         if (this.paymentDecoded.msatoshi) {
           if (this.selNode.fiatConversion) {
             this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
-              pipe(takeUntil(this.unSubs[1])).
-              subscribe({ next: (data) => {
-                this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
-              }, error: (error) => {
-                this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
-              } });
+              pipe(takeUntil(this.unSubs[3])).
+              subscribe({
+                next: (data) => {
+                  this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
+                }, error: (error) => {
+                  this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
+                }
+              });
           } else {
             this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
           }
@@ -227,9 +235,13 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   }
 
   openSendPaymentModal() {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      component: CLLightningSendPaymentsComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          component: CLLightningSendPaymentsComponent
+        }
+      }
+    }));
   }
 
   resetData() {
@@ -243,30 +255,34 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
       [{ key: 'bolt11', value: selPayment.bolt11, title: 'Bolt 11', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'payment_preimage', value: selPayment.payment_preimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'id', value: selPayment.id, title: 'ID', width: 20, type: DataTypeEnum.STRING },
-        { key: 'destination', value: selPayment.destination, title: 'Destination', width: 80, type: DataTypeEnum.STRING }],
+      { key: 'destination', value: selPayment.destination, title: 'Destination', width: 80, type: DataTypeEnum.STRING }],
       [{ key: 'created_at', value: selPayment.created_at, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME },
-        { key: 'status', value: this.titleCasePipe.transform(selPayment.status), title: 'Status', width: 50, type: DataTypeEnum.STRING }],
+      { key: 'status', value: this.titleCasePipe.transform(selPayment.status), title: 'Status', width: 50, type: DataTypeEnum.STRING }],
       [{ key: 'msatoshi', value: selPayment.msatoshi, title: 'Amount (mSats)', width: 50, type: DataTypeEnum.NUMBER },
-        { key: 'msatoshi_sent', value: selPayment.msatoshi_sent, title: 'Amount Sent (mSats)', width: 50, type: DataTypeEnum.NUMBER }]
+      { key: 'msatoshi_sent', value: selPayment.msatoshi_sent, title: 'Amount Sent (mSats)', width: 50, type: DataTypeEnum.NUMBER }]
     ];
     if (selPayment.memo && selPayment.memo !== '') {
       reorderedPayment.splice(2, 0, [{ key: 'memo', value: selPayment.memo, title: 'Memo', width: 100, type: DataTypeEnum.STRING }]);
     }
     if (selPayment.hasOwnProperty('partid')) {
       reorderedPayment.unshift([{ key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 80, type: DataTypeEnum.STRING },
-        { key: 'partid', value: selPayment.partid, title: 'Part ID', width: 20, type: DataTypeEnum.STRING }]);
+      { key: 'partid', value: selPayment.partid, title: 'Part ID', width: 20, type: DataTypeEnum.STRING }]);
     } else {
       reorderedPayment.unshift([{ key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }]);
     }
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Payment Information',
-      message: reorderedPayment
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Payment Information',
+          message: reorderedPayment
+        }
+      }
+    }));
   }
 
-  applyFilter(selFilter: any) {
-    this.payments.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    this.payments.filter = this.selFilter.trim().toLowerCase();
   }
 
   loadPaymentsTable(payments: Payment[]) {
@@ -280,6 +296,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
       return newRowData.includes(fltr);
     };
     this.payments.paginator = this.paginator;
+    this.applyFilter();
   }
 
   onDownloadCSV() {

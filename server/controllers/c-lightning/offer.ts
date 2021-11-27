@@ -14,7 +14,7 @@ export const getOffers = async (req, res, next) => {
     logger.log({ level: 'DEBUG', fileName: 'Offer', msg: 'Get Offers Response', data: allOffers });
     return res.status(200).json(allOffers);
   } catch (errRes) {
-    const err = common.handleError(errRes, 'Offer', 'Get Offers Error');
+    const err = common.handleError(errRes, 'Offer', 'Get Offers Error', req.session.selectedNode);
     return res.status(500).json({ message: err.message, error: err.error });
   }
 };
@@ -31,7 +31,7 @@ export const getOffer = async (req, res, next) => {
       return res.sendStatus(404);
     }
   } catch (errRes) {
-    const err = common.handleError(errRes, 'Offer', 'Get Offer Error');
+    const err = common.handleError(errRes, 'Offer', 'Get Offer Error', req.session.selectedNode);
     return res.status(500).json({ message: err.message, error: err.error });
   }
 };
@@ -44,7 +44,7 @@ export const saveOffer = async (req, res, next) => {
     logger.log({ level: 'DEBUG', fileName: 'Offer', msg: 'Offer Saved', data: savedOffer });
     res.status(201).json(savedOffer);
   } catch (errRes) {
-    const err = common.handleError(errRes, 'Offer', 'Save Offer Error');
+    const err = common.handleError(errRes, 'Offer', 'Save Offer Error', req.session.selectedNode);
     return res.status(500).json({ message: err.message, error: err.error });
   }
 };
@@ -64,7 +64,7 @@ export const updateOffer = async (req, res, next) => {
       return res.sendStatus(404);
     }
   } catch (errRes) {
-    const err = common.handleError(errRes, 'Offer', 'Update Offer Error');
+    const err = common.handleError(errRes, 'Offer', 'Update Offer Error', req.session.selectedNode);
     return res.status(500).json({ message: err.message, error: err.error });
   }
 };
@@ -81,7 +81,7 @@ export const deleteOffer = async (req, res, next) => {
       return res.sendStatus(404);
     }
   } catch (errRes) {
-    const err = common.handleError(errRes, 'Offers', 'Delete Offer Error');
+    const err = common.handleError(errRes, 'Offers', 'Delete Offer Error', req.session.selectedNode);
     return res.status(500).json({ message: err.message, error: err.error });
   }
 };
@@ -89,14 +89,14 @@ export const deleteOffer = async (req, res, next) => {
 
 export const decodePayment = (req, res, next) => {
   logger.log({ level: 'INFO', fileName: 'Offer', msg: 'Decoding Payment..' });
-  options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/v1/utility/decode/' + req.params.invoice;
+  options = common.getOptions(req);
+  options.url = req.session.selectedNode.ln_server_url + '/v1/utility/decode/' + req.params.invoice;
   request(options).then((body) => {
     logger.log({ level: 'DEBUG', fileName: 'Offer', msg: 'Payment Decode Received', data: body });
     logger.log({ level: 'INFO', fileName: 'Offer', msg: 'Payment Decoded' });
     res.status(200).json(body);
   }).catch((errRes) => {
-    const err = common.handleError(errRes, 'Offer', 'Decode Payment Error');
+    const err = common.handleError(errRes, 'Offer', 'Decode Payment Error', req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
   });
 };
@@ -104,16 +104,16 @@ export const decodePayment = (req, res, next) => {
 
 export const fetchInvoice = (req, res, next) => {
   logger.log({ level: 'INFO', fileName: 'Offer', msg: 'Fetching Invoice..' });
-  options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/v1/offers/fetchInvoice';
+  options = common.getOptions(req);
+  options.url = req.session.selectedNode.ln_server_url + '/v1/offers/fetchInvoice';
   options.method = 'POST';
   options.body = req.body;
   request(options).then((body) => {
     logger.log({ level: 'DEBUG', fileName: 'Offer', msg: 'Invoice Received', data: body });
     logger.log({ level: 'INFO', fileName: 'Offer', msg: 'Invoice Received' });
-    res.status(200).json(body)
+    res.status(200).json(body);
   }).catch((errRes) => {
-    const err = common.handleError(errRes, 'Offer', 'Fetch Invoice Error');
-    return res.status(err.statusCode).json({ message: err.message, error: err.error })
-  })
-}
+    const err = common.handleError(errRes, 'Offer', 'Fetch Invoice Error', req.session.selectedNode);
+    return res.status(err.statusCode).json({ message: err.message, error: err.error });
+  });
+};
