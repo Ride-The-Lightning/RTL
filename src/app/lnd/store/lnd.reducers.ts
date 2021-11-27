@@ -58,7 +58,7 @@ export const LNDReducer = createReducer(initLNDState,
   }),
   on(updateInvoice, (state, { payload }) => {
     const modifiedListInvoices = state.listInvoices;
-    modifiedListInvoices.invoices = modifiedListInvoices.invoices.map((invoice) => ((invoice.r_hash === payload.r_hash) ? payload : invoice));
+    modifiedListInvoices.invoices = modifiedListInvoices.invoices.map((invoice) => ((invoice.payment_request === payload.payment_request) ? payload : invoice));
     return {
       ...state,
       listInvoices: modifiedListInvoices
@@ -134,10 +134,15 @@ export const LNDReducer = createReducer(initLNDState,
     ...state,
     networkInfo: payload
   })),
-  on(setInvoices, (state, { payload }) => ({
-    ...state,
-    listInvoices: payload
-  })),
+  on(setInvoices, (state, { payload }) => {
+    if (!payload.total_invoices) {
+      payload.total_invoices = state.listInvoices.total_invoices;
+    }
+    return {
+      ...state,
+      listInvoices: payload
+    };
+  }),
   on(setTransactions, (state, { payload }) => {
     flgTransactionsSet = true;
     if (payload.length && flgUTXOsSet) {

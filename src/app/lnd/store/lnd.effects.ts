@@ -15,13 +15,14 @@ import { SessionService } from '../../shared/services/session.service';
 import { GetInfo, Fees, BlockchainBalance, NetworkInfo, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsSummary, UTXO, ListPayments, SavePeer, SaveInvoice, SaveChannel, CloseChannel, FetchInvoices, FetchPayments, SendPayment, LightningNode, GetNewAddress, ChannelsTransaction, GetQueryRoutes, QueryRoutes, InitWallet, ChannelLookup, SetRestoreChannelsList } from '../../shared/models/lndModels';
 import { InvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
-import { RTLActions, LNDActions, AlertTypeEnum, APICallStatusEnum, FEE_LIMIT_TYPES, PAGE_SIZE, UI_MESSAGES } from '../../shared/services/consts-enums-functions';
+import { RTLActions, LNDActions, AlertTypeEnum, APICallStatusEnum, FEE_LIMIT_TYPES, PAGE_SIZE, UI_MESSAGES, LNDWSEventTypeEnum } from '../../shared/services/consts-enums-functions';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 import { RTLState } from '../../store/rtl.state';
 
 import { backupChannels, fetchBalanceBlockchain, fetchClosedChannels, fetchFees, fetchInfoLND, fetchInvoices, fetchNetwork, fetchPayments, fetchPeers, fetchPendingChannels, fetchTransactions, getAllLightningTransactions, setForwardingHistory, setLookup, setPeers, setQueryRoutes, setRestoreChannelsList, updateLNDAPICallStatus, updateInvoice, fetchChannels } from './lnd.actions';
 import { allAPIsCallStatus, lndNodeInformation } from './lnd.selector';
 import { ApiCallsListLND } from '../../shared/models/apiCallsPayload';
+import { WebSocketClientService } from '../../shared/services/web-socket.service';
 
 @Injectable()
 export class LNDEffects implements OnDestroy {
@@ -40,6 +41,7 @@ export class LNDEffects implements OnDestroy {
     private sessionService: SessionService,
     public dialog: MatDialog,
     private router: Router,
+    private wsService: WebSocketClientService,
     private location: Location
   ) {
     this.store.select(allAPIsCallStatus).pipe(takeUntil(this.unSubs[0])).
@@ -54,6 +56,23 @@ export class LNDEffects implements OnDestroy {
         ) {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.INITALIZE_NODE_DATA }));
           this.flgInitialized = true;
+        }
+      });
+    this.wsService.lndWSMessages.pipe(takeUntil(this.unSubs[1])).
+      subscribe((newMessage) => {
+        this.logger.info('Received new message from the service: ' + newMessage);
+        if (newMessage) {
+          switch (newMessage.type) {
+            case LNDWSEventTypeEnum.INVOICE:
+              this.logger.info(newMessage);
+              if (newMessage && newMessage.result && newMessage.result.payment_request) {
+                this.store.dispatch(updateInvoice({ payload: newMessage.result }));
+              }
+              break;
+            default:
+              this.logger.info('Received Event from WS: ' + JSON.stringify(newMessage));
+              break;
+          }
         }
       });
   }

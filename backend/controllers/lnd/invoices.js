@@ -1,9 +1,11 @@
 import request from 'request-promise';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
+import { LNDWSClient } from './webSocketClient.js';
 let options = null;
 const logger = Logger;
 const common = Common;
+const lndWsClient = LNDWSClient;
 export const getInvoice = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Getting Invoice Information..' });
     options = common.getOptions(req);
@@ -68,10 +70,22 @@ export const addInvoice = (req, res, next) => {
         options.form.value = req.body.amount;
     }
     options.form = JSON.stringify(options.form);
-    request.post(options).then((body) => {
+    return request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Add Invoice Responce', data: body });
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Invoice Added' });
-        res.status(201).json(body);
+        try {
+            if (body.r_hash) {
+                lndWsClient.subscribeToInvoice(options, req.session.selectedNode, body.r_hash);
+            }
+        }
+        catch (errRes) {
+            const err = common.handleError(errRes, 'Invoices', 'Subscribe to Newly Added Invoice Error', req.session.selectedNode);
+            logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Invoice', msg: 'Subscribe to Newly Added Invoice Error', error: err });
+        }
+        body.r_preimage = body.r_preimage ? Buffer.from(body.r_preimage, 'base64').toString('hex') : '';
+        body.r_hash = body.r_hash ? Buffer.from(body.r_hash, 'base64').toString('hex') : '';
+        body.description_hash = body.description_hash ? Buffer.from(body.description_hash, 'base64').toString('hex') : null;
+        return res.status(201).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Invoices', 'Add Invoice Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
