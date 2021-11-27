@@ -13,7 +13,7 @@ export class WebSocketServer {
         this.clientDetails = [];
         this.eventEmitterCLT = new EventEmitter();
         this.eventEmitterECL = new EventEmitter();
-        // public eventEmitterLND = new EventEmitter();
+        this.eventEmitterLND = new EventEmitter();
         this.webSocketServer = null;
         this.pingInterval = setInterval(() => {
             if (this.webSocketServer.clients.size && this.webSocketServer.clients.size > 0) {
@@ -56,14 +56,14 @@ export class WebSocketServer {
             websocket.clientId = Date.now();
             websocket.isAlive = true;
             websocket.sessionId = cookieParser.signedCookie(cookies['connect.sid'], this.common.secret_key);
-            websocket.clientNodeIndex = protocols[1];
+            websocket.clientNodeIndex = +protocols[1];
             this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Connected: ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
-            websocket.on('error', this.sendErrorToAllLNClient);
-            websocket.on('message', this.sendEventsToAllLNClient);
+            websocket.on('error', this.sendErrorToAllLNClients);
+            websocket.on('message', this.sendEventsToAllLNClients);
             websocket.on('pong', () => { websocket.isAlive = true; });
-            websocket.on('close', () => {
+            websocket.on('close', (code, reason) => {
                 this.updateLNWSClientDetails(websocket.sessionId, -1, websocket.clientNodeIndex);
-                this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Disconnected: ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
+                this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Disconnected due to ' + code + ' : ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
             });
         };
         this.updateLNWSClientDetails = (sessionId, currNodeIndex, prevNodeIndex) => {
@@ -100,6 +100,9 @@ export class WebSocketServer {
                     const prevSelectedNode = this.common.findNode(prevNodeIndex);
                     if (prevSelectedNode && prevSelectedNode.ln_implementation) {
                         switch (prevSelectedNode.ln_implementation) {
+                            case 'LND':
+                                this.eventEmitterLND.emit('DISCONNECT', prevNodeIndex);
+                                break;
                             case 'CLT':
                                 this.eventEmitterCLT.emit('DISCONNECT', prevNodeIndex);
                                 break;
@@ -127,6 +130,9 @@ export class WebSocketServer {
                 this.clientDetails.push(foundClient);
                 if (currSelectedNode && currSelectedNode.ln_implementation) {
                     switch (currSelectedNode.ln_implementation) {
+                        case 'LND':
+                            this.eventEmitterLND.emit('CONNECT', currNodeIndex);
+                            break;
                         case 'CLT':
                             this.eventEmitterCLT.emit('CONNECT', currNodeIndex);
                             break;
@@ -139,13 +145,12 @@ export class WebSocketServer {
                 }
             }
         };
-        this.sendErrorToAllLNClient = (serverError, selectedNode) => {
+        this.sendErrorToAllLNClients = (serverError, selectedNode) => {
             try {
                 this.webSocketServer.clients.forEach((client) => {
-                    const serverErrorStr = ((typeof serverError === 'object' && serverError.message) ? JSON.stringify(serverError.message) : (typeof serverError === 'object') ? JSON.stringify(serverError) : serverError);
-                    this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Broadcasting error to clients...: ' + serverErrorStr });
+                    this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Broadcasting error to clients...: ' + serverError });
                     if (+client.clientNodeIndex === +selectedNode.index) {
-                        client.send('{ error: ' + serverErrorStr + '}');
+                        client.send(serverError);
                     }
                 });
             }
@@ -153,7 +158,7 @@ export class WebSocketServer {
                 this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Error while broadcasting message: ' + JSON.stringify(err) });
             }
         };
-        this.sendEventsToAllLNClient = (newMessage, selectedNode) => {
+        this.sendEventsToAllLNClients = (newMessage, selectedNode) => {
             try {
                 this.webSocketServer.clients.forEach((client) => {
                     if (+client.clientNodeIndex === +selectedNode.index) {

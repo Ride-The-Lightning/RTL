@@ -69,13 +69,14 @@ export class CLWebSocketClient {
                 msg = (typeof msg.data === 'string') ? JSON.parse(msg.data) : msg.data;
                 msg['source'] = 'CLT';
                 const msgStr = JSON.stringify(msg);
-                this.wsServer.sendEventsToAllLNClient(msgStr, clWsClt.selectedNode);
+                this.wsServer.sendEventsToAllLNClients(msgStr, clWsClt.selectedNode);
             };
             clWsClt.webSocketClient.onerror = (err) => {
                 this.common.api_version = '0.5.1';
                 if (this.common.api_version === '' || this.common.isVersionCompatible(this.common.api_version, '0.5.3')) {
                     this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'ERROR', fileName: 'CLWebSocket', msg: 'Web socket error', error: err });
-                    this.wsServer.sendErrorToAllLNClient(err, clWsClt.selectedNode);
+                    const errStr = ((typeof err === 'object' && err.message) ? JSON.stringify({ error: err.message }) : (typeof err === 'object') ? JSON.stringify({ error: err }) : ('{ "error": ' + err + ' }'));
+                    this.wsServer.sendErrorToAllLNClients(errStr, clWsClt.selectedNode);
                     clWsClt.webSocketClient.close();
                     if (clWsClt.reConnect) {
                         this.reconnet(clWsClt);

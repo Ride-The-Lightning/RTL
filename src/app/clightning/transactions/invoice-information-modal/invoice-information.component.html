@@ -27,7 +27,7 @@
         <div fxLayout="row">
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">{{screenSize === screenSizeEnum.XS ? 'Amount' : 'Amount Requested'}}</h4>
-            <span class="foreground-secondary-text">{{(invoice.msatoshi/1000 || 0) | number}} Sats<ng-container *ngIf="!invoice.msatoshi"> (zero amount) </ng-container></span>
+            <span class="foreground-secondary-text">{{(invoice.msatoshi/1000 || 0) | number}} Sats<ng-container *ngIf="!invoice.msatoshi || invoice?.msatoshi === '0'"> (zero amount) </ng-container></span>
           </div>
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Amount Received</h4>

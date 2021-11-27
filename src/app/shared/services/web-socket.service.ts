@@ -11,6 +11,7 @@ export class WebSocketClientService implements OnDestroy {
 
   public clWSMessages: BehaviorSubject<any> = new BehaviorSubject(null);
   public eclWSMessages: BehaviorSubject<any> = new BehaviorSubject(null);
+  public lndWSMessages: BehaviorSubject<any> = new BehaviorSubject(null);
   private wsUrl = '';
   private nodeIndex = '';
   private socket: WebSocketSubject<any> | null;
@@ -60,6 +61,7 @@ export class WebSocketClientService implements OnDestroy {
           this.logger.info('Next Message from WS:' + JSON.stringify(msg));
           switch (msg.source) {
             case 'LND':
+              this.lndWSMessages.next(msg);
               break;
             case 'CLT':
               this.clWSMessages.next(msg);
@@ -81,6 +83,7 @@ export class WebSocketClientService implements OnDestroy {
     this.logger.error(err);
     this.clWSMessages.error(err);
     this.eclWSMessages.error(err);
+    this.lndWSMessages.error(err);
     this.reconnectOnError();
   }
 
@@ -90,6 +93,8 @@ export class WebSocketClientService implements OnDestroy {
     this.clWSMessages.complete();
     this.eclWSMessages.next(null);
     this.eclWSMessages.complete();
+    this.lndWSMessages.next(null);
+    this.lndWSMessages.complete();
   }
 
 }

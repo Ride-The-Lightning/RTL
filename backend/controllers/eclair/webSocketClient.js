@@ -68,11 +68,12 @@ export class ECLWebSocketClient {
                 msg = (typeof msg.data === 'string') ? JSON.parse(msg.data) : msg.data;
                 msg['source'] = 'ECL';
                 const msgStr = JSON.stringify(msg);
-                this.wsServer.sendEventsToAllLNClient(msgStr, eclWsClt.selectedNode);
+                this.wsServer.sendEventsToAllLNClients(msgStr, eclWsClt.selectedNode);
             };
             eclWsClt.webSocketClient.onerror = (err) => {
                 this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'ERROR', fileName: 'ECLWebSocket', msg: 'Web socket error', error: err });
-                this.wsServer.sendErrorToAllLNClient(err, eclWsClt.selectedNode);
+                const errStr = ((typeof err === 'object' && err.message) ? JSON.stringify({ error: err.message }) : (typeof err === 'object') ? JSON.stringify({ error: err }) : ('{ "error": ' + err + ' }'));
+                this.wsServer.sendErrorToAllLNClients(errStr, eclWsClt.selectedNode);
                 eclWsClt.webSocketClient.close();
                 if (eclWsClt.reConnect) {
                     this.reconnet(eclWsClt);

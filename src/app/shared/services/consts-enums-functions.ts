@@ -76,6 +76,10 @@ export enum CLWSEventTypeEnum {
   SEND_PAYMENT = 'send-payment'
 }
 
+export enum LNDWSEventTypeEnum {
+  INVOICE = 'invoice'
+}
+
 export enum UserPersonaEnum {
   OPERATOR = 'OPERATOR',
   MERCHANT = 'MERCHANT',
