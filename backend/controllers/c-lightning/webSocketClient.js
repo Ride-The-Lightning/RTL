@@ -72,8 +72,7 @@ export class CLWebSocketClient {
                 this.wsServer.sendEventsToAllLNClients(msgStr, clWsClt.selectedNode);
             };
             clWsClt.webSocketClient.onerror = (err) => {
-                this.common.api_version = '0.5.1';
-                if (this.common.api_version === '' || this.common.isVersionCompatible(this.common.api_version, '0.5.3')) {
+                if (this.common.api_version === '' || this.common.isVersionCompatible(this.common.api_version, '0.6.0')) {
                     this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'ERROR', fileName: 'CLWebSocket', msg: 'Web socket error', error: err });
                     const errStr = ((typeof err === 'object' && err.message) ? JSON.stringify({ error: err.message }) : (typeof err === 'object') ? JSON.stringify({ error: err }) : ('{ "error": ' + err + ' }'));
                     this.wsServer.sendErrorToAllLNClients(errStr, clWsClt.selectedNode);

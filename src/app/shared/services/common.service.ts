@@ -286,11 +286,14 @@ export class CommonService {
   }
 
   isVersionCompatible(currentVersion, checkVersion) {
-    const versionsArr = currentVersion.trim().replace('v', '').split('-')[0].split('.') || [];
-    const checkVersionsArr = checkVersion.split('.');
-    return (+versionsArr[0] > +checkVersionsArr[0]) ||
-      (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] > +checkVersionsArr[1]) ||
-      (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] === +checkVersionsArr[1] && +versionsArr[2] >= +checkVersionsArr[2]);
+    if (currentVersion) {
+      const versionsArr = currentVersion.trim().replace('v', '').split('-')[0].split('.') || [];
+      const checkVersionsArr = checkVersion.split('.');
+      return (+versionsArr[0] > +checkVersionsArr[0]) ||
+        (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] > +checkVersionsArr[1]) ||
+        (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] === +checkVersionsArr[1] && +versionsArr[2] >= +checkVersionsArr[2]);
+    }
+    return false;
   }
 
   extractErrorMessage(err: any, genericErrorMessage: string = 'Unknown Error.') {

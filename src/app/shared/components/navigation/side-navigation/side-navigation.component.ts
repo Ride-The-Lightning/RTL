@@ -178,7 +178,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     let clonedMenu = [];
     clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.CLChildren));
     this.navMenus.data = clonedMenu.filter((navMenuData) => {
-      if (navMenuData.children && navMenuData.children.length) {
+      if (navMenuData.children && navMenuData.children.length && this.information.api_version) {
         navMenuData.children = navMenuData.children.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona) && navMenuChild.link !== '/cl/messages') ||
           (navMenuChild.link === '/cl/messages' && this.information.api_version && this.commonService.isVersionCompatible(this.information.api_version, '0.2.2')));
       }
