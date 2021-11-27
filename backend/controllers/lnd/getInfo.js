@@ -40,6 +40,7 @@ export const getInfo = (req, res, next) => {
             }
             else {
                 logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'LND Node Information Received' });
+                req.session.selectedNode.ln_version = body.version.split('-')[0] || '';
                 res.status(200).json(body);
             }
         }).catch((errRes) => {

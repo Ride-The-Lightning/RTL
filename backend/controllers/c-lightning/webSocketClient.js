@@ -72,7 +72,7 @@ export class CLWebSocketClient {
                 this.wsServer.sendEventsToAllLNClients(msgStr, clWsClt.selectedNode);
             };
             clWsClt.webSocketClient.onerror = (err) => {
-                if (this.common.api_version === '' || this.common.isVersionCompatible(this.common.api_version, '0.6.0')) {
+                if (clWsClt.selectedNode.api_version === '' || !clWsClt.selectedNode.api_version || this.common.isVersionCompatible(clWsClt.selectedNode.api_version, '0.6.0')) {
                     this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'ERROR', fileName: 'CLWebSocket', msg: 'Web socket error', error: err });
                     const errStr = ((typeof err === 'object' && err.message) ? JSON.stringify({ error: err.message }) : (typeof err === 'object') ? JSON.stringify({ error: err }) : ('{ "error": ' + err + ' }'));
                     this.wsServer.sendErrorToAllLNClients(errStr, clWsClt.selectedNode);
@@ -95,6 +95,12 @@ export class CLWebSocketClient {
                 const clientIdx = this.webSocketClients.findIndex((wsc) => wsc.selectedNode === selectedNode);
                 this.webSocketClients.splice(clientIdx, 1);
             }
+        };
+        this.updateSelectedNode = (newSelectedNode) => {
+            const clientIdx = this.webSocketClients.findIndex((wsc) => +wsc.selectedNode.index === +newSelectedNode.index);
+            const newClient = this.webSocketClients[clientIdx];
+            newClient.selectedNode = JSON.parse(JSON.stringify(newSelectedNode));
+            this.webSocketClients[clientIdx] = newClient;
         };
         this.wsServer.eventEmitterCLT.on('CONNECT', (nodeIndex) => {
             this.connect(this.common.findNode(+nodeIndex));

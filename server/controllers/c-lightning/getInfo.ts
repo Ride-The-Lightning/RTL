@@ -1,10 +1,12 @@
 import request from 'request-promise';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
+import { CLWSClient, CLWebSocketClient } from './webSocketClient.js';
 
 let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
+const clWsClient: CLWebSocketClient = CLWSClient;
 
 export const getInfo = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Getting CLightning Node Information..' });
@@ -54,7 +56,9 @@ export const getInfo = (req, res, next) => {
             body.uris.push(body.id + '@' + addr.address + ':' + addr.port);
           });
         }
-        common.api_version = body.api_version || '';
+        req.session.selectedNode.api_version = body.api_version || '';
+        req.session.selectedNode.ln_version = body.version || '';
+        clWsClient.updateSelectedNode(req.session.selectedNode);
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'CLightning Node Information Received' });
         res.status(200).json(body);
       }

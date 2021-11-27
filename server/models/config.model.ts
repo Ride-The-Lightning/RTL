@@ -23,6 +23,7 @@ export class CommonSelectedNode {
     public theme_color?: string,
     public fiat_conversion?: boolean,
     public currency_unit?: string,
+    public ln_version?: string,
     public api_version?: string
   ) { }
 

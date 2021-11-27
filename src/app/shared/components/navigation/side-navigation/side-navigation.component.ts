@@ -87,7 +87,9 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
         this.informationChain.chain = '';
         this.informationChain.network = '';
       }
-
+      if (this.selNode && this.selNode.lnImplementation === 'CLT' && this.information.api_version) {
+        this.loadCLTMenu();
+      }
       this.flgLoading = !(this.information.identity_pubkey);
       if (window.innerWidth <= 414) {
         this.smallScreen = true;
@@ -178,7 +180,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     let clonedMenu = [];
     clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.CLChildren));
     this.navMenus.data = clonedMenu.filter((navMenuData) => {
-      if (navMenuData.children && navMenuData.children.length && this.information.api_version) {
+      if (navMenuData.children && navMenuData.children.length) {
         navMenuData.children = navMenuData.children.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona) && navMenuChild.link !== '/cl/messages') ||
           (navMenuChild.link === '/cl/messages' && this.information.api_version && this.commonService.isVersionCompatible(this.information.api_version, '0.2.2')));
       }

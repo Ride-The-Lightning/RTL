@@ -1,20 +1,21 @@
-import { Injectable } from '@angular/core';
-import { of, Observable, throwError } from 'rxjs';
-import { take, map, catchError } from 'rxjs/operators';
+import { Injectable, OnDestroy } from '@angular/core';
+import { of, Observable, throwError, BehaviorSubject } from 'rxjs';
+import { takeUntil, take, map, catchError } from 'rxjs/operators';
 
 import { LoggerService } from './logger.service';
 import { DataService } from './data.service';
 import { CurrencyUnitEnum, TimeUnitEnum, ScreenSizeEnum, APICallStatusEnum } from './consts-enums-functions';
 
 @Injectable()
-export class CommonService {
+export class CommonService implements OnDestroy {
 
   currencyUnits = [];
   CurrencyUnitEnum = CurrencyUnitEnum;
   conversionData = { data: null, last_fetched: null };
   private ratesAPIStatus = APICallStatusEnum.UN_INITIATED;
   private screenSize = ScreenSizeEnum.MD;
-  private containerSize = { width: 1200, height: 800 };
+  private containerSize = { width: 0, height: 0 };
+  public containerSizeUpdated: BehaviorSubject<{ width: number, height: number }> = new BehaviorSubject(this.containerSize);
 
   constructor(public dataService: DataService, private logger: LoggerService) { }
 
@@ -32,6 +33,7 @@ export class CommonService {
 
   setContainerSize(width: number, height) {
     this.containerSize = { width: width, height: height };
+    this.containerSizeUpdated.next(this.containerSize);
   }
 
   sortByKey(array: any[], key: string, keyDataType: string, direction = 'asc') {
@@ -328,6 +330,11 @@ export class CommonService {
           err.status ? err.status : genericErrorNumber;
     this.logger.info('Error Number: ' + errNum);
     return errNum;
+  }
+
+  ngOnDestroy() {
+    this.containerSizeUpdated.next(null);
+    this.containerSizeUpdated.complete();
   }
 
 }

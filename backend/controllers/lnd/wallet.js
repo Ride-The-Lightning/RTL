@@ -105,7 +105,12 @@ export const getUTXOs = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/v2/wallet/utxos';
-    options.form = JSON.stringify({ max_confs: req.query.max_confs });
+    if (common.isVersionCompatible(req.session.selectedNode.ln_version, '0.14.0')) {
+        options.form = JSON.stringify({ max_confs: req.query.max_confs });
+    }
+    else {
+        options.url = options.url + '?max_confs=' + req.query.max_confs;
+    }
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Wallet', msg: 'UTXO List Response', data: body });
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'UTXOs Received' });
