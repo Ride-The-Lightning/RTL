@@ -55,7 +55,7 @@ export class ExpressApplication {
 
   private loadDb = () => {
     database.rtlSequelize.sync().then(() => {
-      this.logger.log({ level: 'DEBUG', fileName: 'App', msg: 'Database Connected' });
+      this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'DEBUG', fileName: 'App', msg: 'Database Connected' });
     });
   }
 
