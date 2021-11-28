@@ -1,4 +1,4 @@
-import * as cookie from 'cookie';
+import { parse } from 'cookie';
 import * as cookieParser from 'cookie-parser';
 import * as crypto from 'crypto';
 import WebSocket from 'ws';
@@ -57,7 +57,7 @@ export class WebSocketServer {
 
   public mountEventsOnConnection = (websocket, request) => {
     const protocols = !request.headers['sec-websocket-protocol'] ? [] : request.headers['sec-websocket-protocol'].split(',').map((s) => s.trim());
-    const cookies = cookie.parse(request.headers.cookie);
+    const cookies = parse(request.headers.cookie);
     websocket.clientId = Date.now();
     websocket.isAlive = true;
     websocket.sessionId = cookieParser.signedCookie(cookies['connect.sid'], this.common.secret_key);
