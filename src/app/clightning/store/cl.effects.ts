@@ -498,7 +498,7 @@ export class CLEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: { offer: string, msatoshi?: string, quantity?: number, recurrence_counter?: number, recurrence_start?: number, recurrence_label?: string } }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.FETCH_INVOICE }));
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchOfferInvoice', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.post(this.CHILD_API_URL + environment.FETCH_INVOICE_API, { offer: action.payload.offer, msatoshi: action.payload.msatoshi, quantity: action.payload.quantity, recurrence_counter: action.payload.recurrence_counter, recurrence_start: action.payload.recurrence_start, recurrence_label: action.payload.recurrence_label }).
+      return this.httpClient.post(this.CHILD_API_URL + environment.OFFERS_API + '/fetchInvoice', { offer: action.payload.offer, msatoshi: action.payload.msatoshi, quantity: action.payload.quantity, recurrence_counter: action.payload.recurrence_counter, recurrence_start: action.payload.recurrence_start, recurrence_label: action.payload.recurrence_label }).
         pipe(
           map((fetchedInvoice: any) => {
             this.logger.info(fetchedInvoice);
@@ -510,7 +510,7 @@ export class CLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('FetchOfferInvoice', UI_MESSAGES.FETCH_INVOICE, 'Invoice Fetch Failed', this.CHILD_API_URL + environment.FETCH_INVOICE_API + '/' + action.payload, err);
+            this.handleErrorWithAlert('FetchOfferInvoice', UI_MESSAGES.FETCH_INVOICE, 'Invoice Fetch Failed', this.CHILD_API_URL + environment.OFFERS_API + '/fetchInvoice/' + action.payload, err);
             return of({ type: RTLActions.VOID });
           })
         );
@@ -533,7 +533,7 @@ export class CLEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: DecodePayment }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DECODE_OFFER }));
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'DecodeOffer', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get(this.CHILD_API_URL + environment.OFFER_API + '/' + action.payload.routeParam).
+      return this.httpClient.get(this.CHILD_API_URL + environment.OFFERS_API + '/decode/' + action.payload.routeParam).
         pipe(
           map((decodedOffer) => {
             this.logger.info(decodedOffer);

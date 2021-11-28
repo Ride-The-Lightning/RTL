@@ -273,11 +273,6 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
   color: #CCCCCC !important;
 }
 
-.mat-dialog-container {
-  padding: 0 !important;
-  overflow: hidden !important;
-}
-
 .mt-1px {
   margin-top: 1px !important;
 }
@@ -1417,7 +1412,7 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
 .alert {
   margin-bottom: 1rem;
   padding: 0.6rem 1rem;
-  border-radius: 4px;
+  border-radius: 2px;
 }
 
 .dashboard-vert-menu.mat-menu-panel {
@@ -1534,7 +1529,7 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
 .mat-expansion-panel.flat-expansion-panel {
   box-shadow: none;
   padding: 0;
-  border-radius: 4px;
+  border-radius: 2px;
   background: none;
   & .mat-expansion-panel-header {
     padding: 0 $gap*3 0 $gap*3;

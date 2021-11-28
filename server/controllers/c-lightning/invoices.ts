@@ -49,7 +49,7 @@ export const addInvoice = (req, res, next) => {
   options.url = req.session.selectedNode.ln_server_url + '/v1/invoice/genInvoice';
   options.body = req.body;
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Add Invoice Responce', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Add Invoice Response', data: body });
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Invoice Created' });
     res.status(201).json(body);
   }).catch((errRes) => {

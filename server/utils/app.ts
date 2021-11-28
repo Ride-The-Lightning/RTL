@@ -14,7 +14,7 @@ import eclRoutes from '../routes/eclair/index.js';
 import { Common, CommonService } from './common.js';
 import { Logger, LoggerService } from './logger.js';
 import { Config, ConfigService } from './config.js';
-import { database } from './database.init.js';
+import { Database } from './database.js';
 import { CLWSClient, CLWebSocketClient } from '../controllers/c-lightning/webSocketClient.js';
 import { ECLWSClient, ECLWebSocketClient } from '../controllers/eclair/webSocketClient.js';
 import { LNDWSClient, LNDWebSocketClient } from '../controllers/lnd/webSocketClient.js';
@@ -54,7 +54,7 @@ export class ExpressApplication {
   }
 
   private loadDb = () => {
-    database.rtlSequelize.sync().then(() => {
+    Database.rtlSequelize.sync().then(() => {
       this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'DEBUG', fileName: 'App', msg: 'Database Connected' });
     });
   }

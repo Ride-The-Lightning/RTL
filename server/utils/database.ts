@@ -1,15 +1,16 @@
+/* eslint-disable no-console */
 import sqlz from 'sequelize';
 const { Sequelize } = sqlz;
-import { offer } from '../models/offers.model.js';
+import { Offer } from '../models/offers.model.js';
 
 const rtlSequelize = new Sequelize('RTLStore', '', '', {
-  storage: './database/db.sqlite',
+  storage: './database/rtl-db.sqlite',
   dialect: 'sqlite',
   logging: console.log
 });
 
-export const database = {
+export const Database = {
   Sequelize,
   rtlSequelize,
-  offer: offer(rtlSequelize, Sequelize)
+  offer: Offer(rtlSequelize, Sequelize)
 };

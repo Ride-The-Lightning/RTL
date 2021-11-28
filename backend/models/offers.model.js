@@ -1,17 +1,13 @@
-export const offer = (sequelize, Sequelize) => {
-    const offerInstance = sequelize.define("offerCollection", {
+export const Offer = (sequelize, Sequelize) => {
+    const offerInstance = sequelize.define('Offers', {
         id: {
             type: Sequelize.UUIDV4,
             primaryKey: true,
-            allowNull: false,
+            allowNull: false
         },
-        alias: {
+        offerInvoice: {
             type: Sequelize.STRING,
-            allowNull: false,
-        },
-        offerString: {
-            type: Sequelize.STRING,
-            allowNull: false,
+            allowNull: false
         }
     });
     return offerInstance;
