@@ -68,4 +68,3 @@ export const disableOffer = (req, res, next) => {
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
   });
 };
-

@@ -73,7 +73,7 @@ export const decodePayment = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/pay/decodePay/' + req.params.invoice;
+    options.url = req.session.selectedNode.ln_server_url + '/v1/utility/decode/' + req.params.payReq;
     request(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment Decode Received', data: body });
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Decoded' });
@@ -88,14 +88,20 @@ export const postPayment = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    if (req.params.type === 'keysend') {
+    if (req.body.paymentType === 'KEYSEND') {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Keysend Payment..' });
         options.url = req.session.selectedNode.ln_server_url + '/v1/pay/keysend';
     }
     else {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Send Payment..' });
+        if (req.body.paymentType === 'OFFER') {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Sending Offer Payment..' });
+        }
+        else {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Sending Invoice Payment..' });
+        }
         options.url = req.session.selectedNode.ln_server_url + '/v1/pay';
     }
+    delete req.body.paymentType;
     options.body = req.body;
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Send Payment Response', data: body });

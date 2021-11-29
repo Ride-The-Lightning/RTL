@@ -9,7 +9,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { GetInfo, Payment, PayRequest } from '../../../shared/models/clModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, UI_MESSAGES, PaymentTypes } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -170,7 +170,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
         subscribe((confirmRes) => {
           if (confirmRes) {
             this.paymentDecoded.msatoshi = confirmRes[0].inputValue;
-            this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, invoice: this.paymentRequest, amount: confirmRes[0].inputValue * 1000, fromDialog: false } }));
+            this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.INVOICE, invoice: this.paymentRequest, amount: confirmRes[0].inputValue * 1000, fromDialog: false } }));
             this.resetData();
           }
         });
@@ -199,7 +199,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
         pipe(take(1)).
         subscribe((confirmRes) => {
           if (confirmRes) {
-            this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, invoice: this.paymentRequest, fromDialog: false } }));
+            this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.INVOICE, invoice: this.paymentRequest, fromDialog: false } }));
             this.resetData();
           }
         });

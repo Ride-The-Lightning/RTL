@@ -126,7 +126,6 @@ export class RTLEffects implements OnDestroy {
         if (!updatedPayload.width) {
           updatedPayload.width = this.alertWidth;
         }
-        console.warn(updatedPayload);
         if (action.payload.data.component) {
           this.dialogRef = this.dialog.open(action.payload.data.component, updatedPayload);
         } else {

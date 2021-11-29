@@ -14,12 +14,12 @@ import { SessionService } from '../../shared/services/session.service';
 import { WebSocketClientService } from '../../shared/services/web-socket.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer, ForwardingEvent, OnChain, QueryRoutes, PayRequest, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, DecodePayment, SendPayment, GetQueryRoutes, ChannelLookup, FetchInvoices, Channel, FetchInvoice, OfferRequest } from '../../shared/models/clModels';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer, ForwardingEvent, OnChain, QueryRoutes, PayRequest, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, DecodePayment, SendPayment, GetQueryRoutes, ChannelLookup, FetchInvoices, Channel, OfferInvoice, OfferRequest } from '../../shared/models/clModels';
 import { AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLWSEventTypeEnum, CLActions, RTLActions } from '../../shared/services/consts-enums-functions';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 
 import { RTLState } from '../../store/rtl.state';
-import { fetchBalance, fetchChannels, fetchFeeRates, fetchFees, fetchInvoices, fetchLocalRemoteBalance, fetchPayments, fetchPeers, fetchUTXOs, getForwardingHistory, setDecodedPayment, setFailedForwardingHistory, setLookup, setPeers, setQueryRoutes, updateCLAPICallStatus, updateInvoice } from './cl.actions';
+import { fetchBalance, fetchChannels, fetchFeeRates, fetchFees, fetchInvoices, fetchLocalRemoteBalance, fetchPayments, fetchPeers, fetchUTXOs, getForwardingHistory, setFailedForwardingHistory, setLookup, setPeers, setQueryRoutes, updateCLAPICallStatus, updateInvoice } from './cl.actions';
 import { allAPIsCallStatus, clNodeInformation } from './cl.selector';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 
@@ -485,7 +485,7 @@ export class CLEffects implements OnDestroy {
   setDecodedPaymentCL = createEffect(
     () => this.actions.pipe(
       ofType(CLActions.SET_DECODED_PAYMENT_CL),
-      map((action: { type: string, payload: PayRequest }) => {
+      map((action: { type: string, payload: PayRequest | OfferRequest }) => {
         this.logger.info(action.payload);
         return action.payload;
       })
@@ -495,10 +495,10 @@ export class CLEffects implements OnDestroy {
 
   fetchOfferInvoiceCL = createEffect(() => this.actions.pipe(
     ofType(CLActions.FETCH_OFFER_INVOICE_CL),
-    mergeMap((action: { type: string, payload: { offer: string, msatoshi?: string, quantity?: number, recurrence_counter?: number, recurrence_start?: number, recurrence_label?: string } }) => {
+    mergeMap((action: { type: string, payload: { offer: string, msatoshi?: string } }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.FETCH_INVOICE }));
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchOfferInvoice', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.post(this.CHILD_API_URL + environment.OFFERS_API + '/fetchInvoice', { offer: action.payload.offer, msatoshi: action.payload.msatoshi, quantity: action.payload.quantity, recurrence_counter: action.payload.recurrence_counter, recurrence_start: action.payload.recurrence_start, recurrence_label: action.payload.recurrence_label }).
+      return this.httpClient.post(this.CHILD_API_URL + environment.OFFERS_API + '/fetchOfferInvoice', action.payload).
         pipe(
           map((fetchedInvoice: any) => {
             this.logger.info(fetchedInvoice);
@@ -520,7 +520,7 @@ export class CLEffects implements OnDestroy {
   setOfferInvoiceCL = createEffect(
     () => this.actions.pipe(
       ofType(CLActions.SET_OFFER_INVOICE_CL),
-      map((action: { type: string, payload: FetchInvoice }) => {
+      map((action: { type: string, payload: OfferInvoice }) => {
         this.logger.info(action.payload);
         return action.payload;
       })
@@ -528,58 +528,17 @@ export class CLEffects implements OnDestroy {
     { dispatch: false }
   )
 
-  decodeOfferPaymentCL = createEffect(() => this.actions.pipe(
-    ofType(CLActions.DECODE_OFFER_PAYMENT_CL),
-    mergeMap((action: { type: string, payload: DecodePayment }) => {
-      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DECODE_OFFER }));
-      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'DecodeOffer', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get(this.CHILD_API_URL + environment.OFFERS_API + '/decode/' + action.payload.routeParam).
-        pipe(
-          map((decodedOffer) => {
-            this.logger.info(decodedOffer);
-            this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'DecodeOffer', status: APICallStatusEnum.COMPLETED } }));
-            this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.DECODE_OFFER }));
-            return {
-              type: CLActions.SET_DECODED_OFFER_CL,
-              payload: decodedOffer ? decodedOffer : {}
-            };
-          }),
-          catchError((err: any) => {
-            if (action.payload.fromDialog) {
-              this.handleErrorWithoutAlert('DecodePayment', UI_MESSAGES.DECODE_OFFER, 'Decode Payment Failed.', err);
-            } else {
-              this.handleErrorWithAlert('DecodePayment', UI_MESSAGES.DECODE_OFFER, 'Decode Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload, err);
-            }
-            return of({ type: RTLActions.VOID });
-          })
-        );
-    })
-  ));
-
-  setDecodedOfferCL = createEffect(
-    () => this.actions.pipe(
-      ofType(CLActions.SET_DECODED_OFFER_CL),
-      map((action: { type: string, payload: OfferRequest }) => {
-        this.logger.info(action.payload);
-        return action.payload;
-      })
-    ),
-    { dispatch: false }
-  );
-
   sendPaymentCL = createEffect(() => this.actions.pipe(
     ofType(CLActions.SEND_PAYMENT_CL),
     mergeMap((action: { type: string, payload: SendPayment }) => {
       this.store.dispatch(openSpinner({ payload: action.payload.uiMessage }));
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'SendPayment', status: APICallStatusEnum.INITIATED } }));
-      const paymentUrl = (action.payload.pubkey && action.payload.pubkey !== '') ? this.CHILD_API_URL + environment.PAYMENTS_API + '/keysend' : this.CHILD_API_URL + environment.PAYMENTS_API + '/invoice';
-      return this.httpClient.post(paymentUrl, action.payload).pipe(
+      return this.httpClient.post(this.CHILD_API_URL + environment.PAYMENTS_API, action.payload).pipe(
         map((sendRes: any) => {
           this.logger.info(sendRes);
           this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
           this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'SendPayment', status: APICallStatusEnum.COMPLETED } }));
           this.store.dispatch(openSnackBar({ payload: 'Payment Sent Successfully!' }));
-          this.store.dispatch(setDecodedPayment({ payload: null }));
           setTimeout(() => {
             this.store.dispatch(fetchChannels());
             this.store.dispatch(fetchBalance());

@@ -1,3 +1,5 @@
+import { PaymentTypes } from '../services/consts-enums-functions';
+
 export enum feeRateStyle {
   KB = 'KB',
   KW = 'KW'
@@ -181,12 +183,13 @@ interface Recurrence {
   limit?: number;
   paywindow?: PayWindow;
 }
+
 export interface OfferRequest {
-  type: string;
-  valid: boolean;
-  offer_id: string;
-  node_id: string;
-  description: string;
+  type?: string;
+  valid?: boolean;
+  offer_id?: string;
+  node_id?: string;
+  description?: string;
   signature?: string;
   chains?: string[];
   currency?: string;
@@ -220,7 +223,7 @@ interface NextPeriod {
   paywindow_end: string;
 }
 
-export interface FetchInvoice {
+export interface OfferInvoice {
   invoice: string;
   changes: Changes;
   next_period?: NextPeriod;
@@ -386,6 +389,7 @@ export interface DecodePayment {
 export interface SendPayment {
   uiMessage: string;
   fromDialog: boolean;
+  paymentType: PaymentTypes;
   label?: string;
   invoice?: string;
   amount?: number;

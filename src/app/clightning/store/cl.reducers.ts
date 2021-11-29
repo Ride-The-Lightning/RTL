@@ -1,9 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
-
 import { initCLState } from './cl.state';
 import { addInvoice, addPeer, removeChannel, removePeer, resetCLStore, setBalance, setChannels, setChildNodeSettingsCL, setFailedForwardingHistory, setFeeRates, setFees, setForwardingHistory, setInfo, setInvoices, setLocalRemoteBalance, setPayments, setPeers, setUTXOs, updateCLAPICallStatus, updateInvoice } from './cl.actions';
 import { Channel } from '../../shared/models/clModels';
-import { state } from '@angular/animations';
 
 export const CLReducer = createReducer(initCLState,
   on(updateCLAPICallStatus, (state, { payload }) => {
