@@ -1,5 +1,7 @@
-@use '~@angular/material' as mat;
-@import "constants";
+@use '@angular/material' as mat;
+@use 'sass:math' as math;
+@import 'constants';
+
 
 @mixin theme-font($typography) {
   &.small {
@@ -97,12 +99,12 @@
     }
     .modal-info-header {
       font-size: $medium-font-size * 1.3;
-      padding: $gap $gap/2 $gap $gap * 2 !important;
+      padding: $gap math.div($gap, 2) $gap $gap * 2 !important;
       @include for_screensize(tab-port) {
-        padding: $gap/2 $gap/2 $gap/2 $gap !important;
+        padding: math.div($gap, 2) math.div($gap, 2) math.div($gap, 2) $gap !important;
       }
       @include for_screensize(phone) {
-        padding: $gap/4 !important;
+        padding: math.div($gap, 4) !important;
       }
     }
     .top-toolbar-icon.icon-pinned {

@@ -34,8 +34,8 @@
               </mat-select>
             </mat-form-field>
             <mat-form-field fxFlex="26">
-              <input matInput [(ngModel)]="feeLimit" [placeholder]="selfeeLimitType?.placeholder" type="number" name="feeLmt" [step]="1" [min]="0" required tabindex="6" #fLmt="ngModel" [disabled]="selFeeLimitType === feeLimitTypes[0]">
-              <mat-error *ngIf="selFeeLimitType !== feeLimitTypes[0] && !feeLimit">{{selfeeLimitType?.placeholder}} is required.</mat-error>
+              <input matInput [(ngModel)]="feeLimit" [placeholder]="selFeeLimitType?.placeholder" type="number" name="feeLmt" [step]="1" [min]="0" required tabindex="6" #fLmt="ngModel" [disabled]="selFeeLimitType === feeLimitTypes[0]">
+              <mat-error *ngIf="selFeeLimitType !== feeLimitTypes[0] && !feeLimit">{{selFeeLimitType?.placeholder}} is required.</mat-error>
             </mat-form-field>
             <mat-form-field fxFlex="40" fxLayoutAlign="start end">
               <input type="text" placeholder="First Outgoing Channel" aria-label="First Outgoing Channel" matInput [formControl]="selectedChannelCtrl" [matAutocomplete]="auto" tabindex="7">

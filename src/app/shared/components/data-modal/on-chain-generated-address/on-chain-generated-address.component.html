@@ -1,6 +1,6 @@
 <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
-  <div fxFlex="35" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
-    <qrcode [qrdata]="address" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
+  <div fxFlex="35" *ngIf="address" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
+    <qr-code [value]="address" [size]="qrWidth" [errorCorrectionLevel]="'L'"></qr-code>
   </div>
   <div fxFlex="65">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
@@ -12,8 +12,8 @@
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <div fxLayout="column">
-        <div fxFlex="50" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
-          <qrcode [qrdata]="address" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
+        <div fxFlex="50" *ngIf="address" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
+          <qr-code [value]="address" [size]="qrWidth" [errorCorrectionLevel]="'L'"></qr-code>
         </div>
         <div fxLayout="row" *ngIf="addressType!==''">
           <div fxFlex="100">

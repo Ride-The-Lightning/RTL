@@ -1,6 +1,6 @@
 <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
   <div fxFlex="35" [fxLayoutAlign]="invoice?.bolt11 && invoice?.bolt11 !== '' ? 'center start' : 'center center'" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
-    <qrcode *ngIf="invoice?.bolt11 && invoice?.bolt11 !== ''" [qrdata]="invoice?.bolt11" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
+    <qr-code *ngIf="invoice?.bolt11 && invoice?.bolt11 !== ''" [value]="invoice?.bolt11" [size]="qrWidth" [errorCorrectionLevel]="'L'"></qr-code>
     <span *ngIf="!invoice?.bolt11 || invoice?.bolt11 === ''" class="font-size-300">N/A</span>
   </div>
   <div fxFlex="65">
@@ -14,7 +14,7 @@
     <mat-card-content class="padding-gap-x-large" [ngClass]="{'xs-scroll-y': screenSize === screenSizeEnum.XS}">
       <div fxLayout="column">
         <div fxFlex="30" [fxLayoutAlign]="invoice?.bolt11 && invoice?.bolt11 !== '' ? 'center start' : 'center center'" class="modal-qr-code-container padding-gap" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
-          <qrcode *ngIf="invoice?.bolt11 && invoice?.bolt11 !== ''" [qrdata]="invoice?.bolt11" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
+          <qr-code *ngIf="invoice?.bolt11 && invoice?.bolt11 !== ''" [value]="invoice?.bolt11" [size]="qrWidth" [errorCorrectionLevel]="'L'"></qr-code>
           <span *ngIf="!invoice?.bolt11 || invoice?.bolt11 === ''" class="font-size-120">QR Code Not Applicable</span>
         </div>
         <mat-divider *ngIf="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM" [inset]="true" class="my-1"></mat-divider>
