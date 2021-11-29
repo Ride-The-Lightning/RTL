@@ -41,7 +41,7 @@
     "@ngrx/store": "^12.0.0",
     "@swimlane/ngx-charts": "^16.0.0",
     "angular-user-idle": "^2.2.5",
-    "angularx-qrcode": "^11.0.0",
+    "angularx-qrcode": "^1.6.4",
     "atob": "^2.1.2",
     "cookie-parser": "^1.4.5",
     "csurf": "^1.11.0",
@@ -59,7 +59,7 @@
     "rxjs": "^7.1.0",
     "sequelize": "^6.7.0",
     "sha256": "^0.2.0",
-    "sqlite3": "^5.0.2",
+    "sqlite3": "^4.2.0",
     "tslib": "^2.0.0",
     "typescript": "~4.2.4",
     "uuidv4": "^6.2.12",
@@ -67,7 +67,7 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~12.0.1",
+    "@angular-devkit/build-angular": "^13.0.3",
     "@angular-eslint/builder": "12.0.0",
     "@angular-eslint/eslint-plugin": "12.0.0",
     "@angular-eslint/eslint-plugin-template": "12.0.0",

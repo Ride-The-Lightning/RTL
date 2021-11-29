@@ -15,7 +15,7 @@ describe('RTL reducer', () => {
 
   describe('Action SetSelectedNode', () => {
     it('should set selected node', () => {
-      const SetSelectedNodeAction = setSelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: mockActionsData.setSelectedNode, isInitialSetup: false } });
+      const SetSelectedNodeAction = setSelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, prevLnNodeIndex: -1, currentLnNode: mockActionsData.setSelectedNode, isInitialSetup: false } });
       const newState = RootReducer(initRootState, SetSelectedNodeAction);
 
       expect(newState.selNode.settings.themeMode).toBe('NIGHT');

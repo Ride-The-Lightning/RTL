@@ -43,10 +43,10 @@ export class CLInvoiceInformationComponent implements OnInit, OnDestroy {
       this.qrWidth = 220;
     }
     this.store.select(listInvoices).pipe(takeUntil(this.unSubs[0])).
-      subscribe((invoicesSeletor: { listInvoices: ListInvoices, apiCallStatus: ApiCallStatusPayload }) => {
-        const invoices = invoicesSeletor.listInvoices.invoices || [];
+      subscribe((invoicesSelector: { listInvoices: ListInvoices, apiCallStatus: ApiCallStatusPayload }) => {
+        const invoices = invoicesSelector.listInvoices.invoices || [];
         this.invoice = invoices.find((invoice) => invoice.payment_hash === this.invoice.payment_hash);
-        this.logger.info(invoicesSeletor);
+        this.logger.info(invoicesSelector);
       });
   }
 

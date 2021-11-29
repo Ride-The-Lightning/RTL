@@ -11,6 +11,7 @@ import { LNDReducer } from '../../lnd/store/lnd.reducers';
 import { CLReducer } from '../../clightning/store/cl.reducers';
 import { ECLReducer } from '../../eclair/store/ecl.reducers';
 import { CLFeeRatesComponent } from './fee-rates/fee-rates.component';
+import { CLOnChainFeeEstimatesComponent } from './on-chain-fee-estimates/on-chain-fee-estimates.component';
 import { CLNetworkInfoComponent } from './network-info.component';
 
 describe('CLNetworkInfoComponent', () => {
@@ -19,7 +20,7 @@ describe('CLNetworkInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLNetworkInfoComponent, CLFeeRatesComponent],
+      declarations: [CLNetworkInfoComponent, CLFeeRatesComponent, CLOnChainFeeEstimatesComponent],
       imports: [
         SharedModule,
         StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })

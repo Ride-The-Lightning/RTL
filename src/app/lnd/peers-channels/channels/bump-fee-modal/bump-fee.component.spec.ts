@@ -39,6 +39,7 @@ describe('BumpFeeComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(BumpFeeComponent);
     component = fixture.componentInstance;
+    component.data.pendingChannel = { channel: { channel_point: '' } };
     fixture.detectChanges();
   });
 
