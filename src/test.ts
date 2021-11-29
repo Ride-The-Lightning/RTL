@@ -6,7 +6,9 @@ import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@ang
 declare const require: any;
 getTestBed().initTestEnvironment(
   BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting()
+  platformBrowserDynamicTesting(), {
+    teardown: { destroyAfterEach: false }
+}
 );
 
 const context = require.context('./', true, /\.spec\.ts$/);
