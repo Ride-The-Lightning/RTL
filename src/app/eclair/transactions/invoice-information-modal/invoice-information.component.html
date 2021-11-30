@@ -26,7 +26,15 @@
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Amount Settled</h4>
             <span class="foreground-secondary-text">
-              <ng-container *ngIf="invoice?.amountSettled">{{invoice?.amountSettled | number}} Sats</ng-container>
+              <ng-container *ngIf="invoice?.amountSettled">
+                <div *ngIf="flgInvoicePaid" class="invoice-animation-container">
+                  <div class="invoice-animation-div">
+                    <span class="wiggle">{{invoice?.amountSettled | number}} Sats</span>
+                    <span *ngFor="let i of [].constructor(35)" class="particles-circle"></span>
+                  </div>
+                </div>
+                <div *ngIf="!flgInvoicePaid">{{invoice?.amountSettled | number}} Sats</div>
+              </ng-container>
               <ng-container *ngIf="!invoice?.amountSettled">
                 <span *ngIf="invoice?.status !== 'unpaid'">-</span>
                 <mat-spinner [diameter]="20" *ngIf="invoice?.status === 'unpaid'"></mat-spinner>

@@ -763,7 +763,7 @@ export class CLEffects implements OnDestroy {
               payload: {
                 data: {
                   invoice: postRes,
-                  newlyAdded: false,
+                  newlyAdded: true,
                   component: CLInvoiceInformationComponent
                 }
               }

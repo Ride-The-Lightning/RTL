@@ -30,6 +30,7 @@ export class ECLInvoiceInformationComponent implements OnInit, OnDestroy {
   public qrWidth = 240;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public flgInvoicePaid = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<ECLInvoiceInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLInvoiceInformation, private logger: LoggerService, private commonService: CommonService, private snackBar: MatSnackBar, private store: Store<RTLState>) { }
@@ -43,8 +44,13 @@ export class ECLInvoiceInformationComponent implements OnInit, OnDestroy {
     }
     this.store.select(invoices).pipe(takeUntil(this.unSubs[0])).
       subscribe((invoicesSelector: { invoices: Invoice[], apiCallStatus: ApiCallStatusPayload }) => {
+        let invoiceStatus = this.invoice.status;
         const invoices = (invoicesSelector.invoices && invoicesSelector.invoices.length > 0) ? invoicesSelector.invoices : [];
         this.invoice = invoices.find((invoice) => invoice.paymentHash === this.invoice.paymentHash);
+        if (invoiceStatus !== this.invoice.status && this.invoice.status === 'received') {
+          this.flgInvoicePaid = true;
+          setTimeout(() => { this.flgInvoicePaid = false; }, 4000);
+        }
         this.logger.info(invoicesSelector);
       });
   }

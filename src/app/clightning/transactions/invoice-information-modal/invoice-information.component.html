@@ -32,8 +32,19 @@
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Amount Received</h4>
             <span class="overflow-wrap foreground-secondary-text">
-              <span *ngIf="invoice?.status !== 'unpaid'">{{invoice?.msatoshi_received/1000 | number}} {{invoice?.msatoshi_received ? 'Sats' : '-'}}</span>
-              <mat-spinner [diameter]="20" *ngIf="invoice?.status === 'unpaid'"></mat-spinner>
+              <ng-container *ngIf="invoice?.status === 'paid'">
+                <div *ngIf="flgInvoicePaid" class="invoice-animation-container">
+                  <div class="invoice-animation-div">
+                    <span class="wiggle">{{invoice?.msatoshi_received/1000 | number}} Sats</span>
+                    <span *ngFor="let i of [].constructor(35)" class="particles-circle"></span>
+                  </div>
+                </div>
+                <div *ngIf="!flgInvoicePaid">{{invoice?.msatoshi_received/1000 | number}} Sats</div>
+              </ng-container>
+              <ng-container *ngIf="invoice?.status !== 'paid'">
+                <span *ngIf="invoice?.status !== 'unpaid'">-</span>
+                <mat-spinner [diameter]="20" *ngIf="invoice?.status === 'unpaid'"></mat-spinner>
+              </ng-container>
             </span>
           </div>
         </div>

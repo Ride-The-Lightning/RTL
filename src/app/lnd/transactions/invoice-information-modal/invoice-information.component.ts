@@ -36,6 +36,7 @@ export class InvoiceInformationComponent implements OnInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public flgOpened = false;
+  public flgInvoicePaid = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<InvoiceInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: InvoiceInformation, private logger: LoggerService, private commonService: CommonService, private snackBar: MatSnackBar, private store: Store<RTLState>) { }
@@ -50,9 +51,14 @@ export class InvoiceInformationComponent implements OnInit, OnDestroy {
     const invoiceToCompare = JSON.parse(JSON.stringify(this.invoice));
     this.store.select(invoices).pipe(takeUntil(this.unSubs[0])).
       subscribe((invoicesSelector: { listInvoices: ListInvoices, apiCallStatus: ApiCallStatusPayload }) => {
+        let invoiceStatus = this.invoice.state;
         const invoices = invoicesSelector.listInvoices.invoices || [];
         const foundInvoice = invoices.find((invoice) => invoice.r_hash === invoiceToCompare.r_hash);
         this.invoice = foundInvoice;
+        if (invoiceStatus !== this.invoice.state && this.invoice.state === 'SETTLED') {
+          this.flgInvoicePaid = true;
+          setTimeout(() => { this.flgInvoicePaid = false; }, 4000);
+        }
         this.logger.info(invoicesSelector);
       });
   }

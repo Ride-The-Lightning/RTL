@@ -19,7 +19,7 @@ import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpi
 import { ECLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 
 import { RTLState } from '../../store/rtl.state';
-import { fetchChannels, fetchFees, fetchInvoices, fetchOnchainBalance, fetchPayments, fetchPeers, sendPaymentStatus, setActiveChannels, setChannelsStatus, setInactiveChannels, setLightningBalance, setPeers, setPendingChannels, setQueryRoutes, updateECLAPICallStatus, updateChannelState, updateInvoice, updateRelayedPayment } from './ecl.actions';
+import { fetchChannels, fetchFees, fetchInvoices, fetchOnchainBalance, fetchPayments, fetchPeers, sendPaymentStatus, setActiveChannels, setChannelsStatus, setInactiveChannels, setLightningBalance, setPeers, setPendingChannels, setQueryRoutes, updateECLAPICallStatus, updateChannelState, updateInvoice, updateRelayedPayment, addInvoice } from './ecl.actions';
 import { allAPIsCallStatus } from './ecl.selector';
 import { ApiCallsListECL } from '../../shared/models/apiCallsPayload';
 
@@ -532,19 +532,17 @@ export class ECLEffects implements OnDestroy {
             postRes.expiresAt = Math.round(postRes.timestamp + action.payload.expireIn);
             postRes.description = action.payload.description;
             postRes.status = 'unpaid';
-            this.store.dispatch(openAlert({
+            this.store.dispatch(addInvoice({ payload: postRes }));
+            return {
+              type: RTLActions.OPEN_ALERT,
               payload: {
                 data: {
                   invoice: postRes,
-                  newlyAdded: false,
+                  newlyAdded: true,
                   component: ECLInvoiceInformationComponent
                 }
               }
-            }));
-            return {
-              type: ECLActions.ADD_INVOICE_ECL,
-              payload: postRes
-            };
+            }
           }),
           catchError((err: any) => {
             this.handleErrorWithoutAlert('CreateInvoice', UI_MESSAGES.CREATE_INVOICE, 'Create Invoice Failed.', err);
