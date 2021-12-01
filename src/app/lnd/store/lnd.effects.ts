@@ -240,16 +240,20 @@ export class LNDEffects implements OnDestroy {
               postRes.cltv_expiry = '144';
               postRes.private = action.payload.private;
               postRes.creation_date = Math.round(new Date().getTime() / 1000).toString();
-              this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
-              return {
-                type: RTLActions.OPEN_ALERT,
-                payload: {
-                  data: {
-                    invoice: postRes,
-                    newlyAdded: true,
-                    component: InvoiceInformationComponent
+              setTimeout(() => {
+                this.store.dispatch(openAlert({
+                  payload: {
+                    data: {
+                      invoice: postRes,
+                      newlyAdded: true,
+                      component: InvoiceInformationComponent
+                    }
                   }
-                }
+                }));
+              }, 100);
+              return {
+                type: RTLActions.CLOSE_SPINNER,
+                payload: action.payload.uiMessage
               };
             } else {
               return {

@@ -532,17 +532,21 @@ export class ECLEffects implements OnDestroy {
             postRes.expiresAt = Math.round(postRes.timestamp + action.payload.expireIn);
             postRes.description = action.payload.description;
             postRes.status = 'unpaid';
-            this.store.dispatch(addInvoice({ payload: postRes }));
-            return {
-              type: RTLActions.OPEN_ALERT,
-              payload: {
-                data: {
-                  invoice: postRes,
-                  newlyAdded: true,
-                  component: ECLInvoiceInformationComponent
+            setTimeout(() => {
+              this.store.dispatch(openAlert({
+                payload: {
+                  data: {
+                    invoice: postRes,
+                    newlyAdded: true,
+                    component: ECLInvoiceInformationComponent
+                  }
                 }
-              }
-            }
+              }));
+            }, 100);
+            return {
+              type: ECLActions.ADD_INVOICE_ECL,
+              payload: postRes
+            };
           }),
           catchError((err: any) => {
             this.handleErrorWithoutAlert('CreateInvoice', UI_MESSAGES.CREATE_INVOICE, 'Create Invoice Failed.', err);

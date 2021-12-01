@@ -49,13 +49,16 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
     this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => { this.selNode = nodeSettings; });
     this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => { this.information = nodeInfo; });
     this.actions.pipe(takeUntil(this.unSubs[2]),
-      filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.FETCH_INVOICES_LND)).
+      filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND)).
       subscribe((action: any) => {
-        if (action.type === LNDActions.FETCH_INVOICES_LND) {
-          this.dialogRef.close();
-        }
-        if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewInvoice') {
+        if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.action === 'SaveNewInvoice') {
           this.invoiceError = action.payload.message;
+          if (action.payload.status === APICallStatusEnum.ERROR) {
+            this.invoiceError = action.payload.message;
+          }
+          if (action.payload.status === APICallStatusEnum.COMPLETED) {
+            this.dialogRef.close();
+          }
         }
       });
   }
