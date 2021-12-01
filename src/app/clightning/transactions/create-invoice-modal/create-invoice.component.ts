@@ -8,7 +8,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { InvoiceInformation } from '../../../shared/models/alertData';
-import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, UI_MESSAGES, CLActions } from '../../../shared/services/consts-enums-functions';
+import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, CLActions } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo } from '../../../shared/models/clModels';
 import { CommonService } from '../../../shared/services/common.service';
@@ -54,13 +54,15 @@ export class CLCreateInvoiceComponent implements OnInit, OnDestroy {
     });
     this.actions.pipe(
       takeUntil(this.unSubs[2]),
-      filter((action) => action.type === CLActions.UPDATE_API_CALL_STATUS_CL || action.type === CLActions.ADD_INVOICE_CL)).
+      filter((action) => action.type === CLActions.UPDATE_API_CALL_STATUS_CL)).
       subscribe((action: any) => {
-        if (action.type === CLActions.ADD_INVOICE_CL) {
-          this.dialogRef.close();
-        }
-        if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewInvoice') {
-          this.invoiceError = action.payload.message;
+        if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.action === 'SaveNewInvoice') {
+          if (action.payload.status === APICallStatusEnum.ERROR) {
+            this.invoiceError = action.payload.message;
+          }
+          if (action.payload.status === APICallStatusEnum.COMPLETED) {
+            this.dialogRef.close();
+          }
         }
       });
   }

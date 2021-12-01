@@ -29,18 +29,18 @@
             <mat-form-field fxFlex="30" fxLayoutAlign="start end">
               <mat-select tabindex="5" [(value)]="selFeeLimitType" Placeholder="Fee Limits">
                 <mat-option *ngFor="let feeLimitType of feeLimitTypes" [value]="feeLimitType">
-                  {{feeLimitType.name}}
+                  {{feeLimitType?.name}}
                 </mat-option>
               </mat-select>
             </mat-form-field>
             <mat-form-field fxFlex="26">
-              <input matInput [(ngModel)]="feeLimit" [placeholder]="selFeeLimitType.placeholder" type="number" name="feeLmt" [step]="1" [min]="0" required tabindex="6" #fLmt="ngModel" [disabled]="selFeeLimitType === feeLimitTypes[0]">
-              <mat-error *ngIf="selFeeLimitType !== feeLimitTypes[0] && !feeLimit">{{selFeeLimitType.placeholder}} is required.</mat-error>
+              <input matInput [(ngModel)]="feeLimit" [placeholder]="selFeeLimitType?.placeholder" type="number" name="feeLmt" [step]="1" [min]="0" required tabindex="6" #fLmt="ngModel" [disabled]="selFeeLimitType === feeLimitTypes[0]">
+              <mat-error *ngIf="selFeeLimitType !== feeLimitTypes[0] && !feeLimit">{{selFeeLimitType?.placeholder}} is required.</mat-error>
             </mat-form-field>
             <mat-form-field fxFlex="40" fxLayoutAlign="start end">
               <input type="text" placeholder="First Outgoing Channel" aria-label="First Outgoing Channel" matInput [formControl]="selectedChannelCtrl" [matAutocomplete]="auto" tabindex="7">
               <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectedChannelChanged()">
-                <mat-option *ngFor="let activeChannel of filteredMinAmtActvChannels" [value]="activeChannel">{{activeChannel.remote_alias || activeChannel.chan_id}}</mat-option>
+                <mat-option *ngFor="let activeChannel of filteredMinAmtActvChannels" [value]="activeChannel">{{activeChannel?.remote_alias || activeChannel?.chan_id}}</mat-option>
               </mat-autocomplete>
               <mat-error *ngIf="selectedChannelCtrl.errors?.notfound">Channel not found in the list.</mat-error>
             </mat-form-field>

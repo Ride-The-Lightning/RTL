@@ -41,7 +41,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
 
 import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { QRCodeModule } from 'angularx-qrcode';
+import { QrCodeModule } from 'ng-qrcode';
 import { PerfectScrollbarModule, PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 
 import { ThemeOverlay } from './theme/overlay-container/theme-overlay';
@@ -170,7 +170,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     MatSnackBarModule,
     MatAutocompleteModule,
     NgxChartsModule,
-    QRCodeModule,
+    QrCodeModule,
     RouterModule,
     HttpClientModule,
     PerfectScrollbarModule
@@ -213,7 +213,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     MatSnackBarModule,
     MatAutocompleteModule,
     NgxChartsModule,
-    QRCodeModule,
+    QrCodeModule,
     PerfectScrollbarModule,
     ClipboardDirective,
     AutoFocusDirective,

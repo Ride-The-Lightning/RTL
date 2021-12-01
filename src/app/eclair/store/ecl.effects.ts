@@ -19,7 +19,7 @@ import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpi
 import { ECLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 
 import { RTLState } from '../../store/rtl.state';
-import { fetchChannels, fetchFees, fetchInvoices, fetchOnchainBalance, fetchPayments, fetchPeers, sendPaymentStatus, setActiveChannels, setChannelsStatus, setInactiveChannels, setLightningBalance, setPeers, setPendingChannels, setQueryRoutes, updateECLAPICallStatus, updateChannelState, updateInvoice, updateRelayedPayment } from './ecl.actions';
+import { fetchChannels, fetchFees, fetchInvoices, fetchOnchainBalance, fetchPayments, fetchPeers, sendPaymentStatus, setActiveChannels, setChannelsStatus, setInactiveChannels, setLightningBalance, setPeers, setPendingChannels, setQueryRoutes, updateECLAPICallStatus, updateChannelState, updateInvoice, updateRelayedPayment, addInvoice } from './ecl.actions';
 import { allAPIsCallStatus } from './ecl.selector';
 import { ApiCallsListECL } from '../../shared/models/apiCallsPayload';
 
@@ -532,15 +532,17 @@ export class ECLEffects implements OnDestroy {
             postRes.expiresAt = Math.round(postRes.timestamp + action.payload.expireIn);
             postRes.description = action.payload.description;
             postRes.status = 'unpaid';
-            this.store.dispatch(openAlert({
-              payload: {
-                data: {
-                  invoice: postRes,
-                  newlyAdded: false,
-                  component: ECLInvoiceInformationComponent
+            setTimeout(() => {
+              this.store.dispatch(openAlert({
+                payload: {
+                  data: {
+                    invoice: postRes,
+                    newlyAdded: true,
+                    component: ECLInvoiceInformationComponent
+                  }
                 }
-              }
-            }));
+              }));
+            }, 100);
             return {
               type: ECLActions.ADD_INVOICE_ECL,
               payload: postRes

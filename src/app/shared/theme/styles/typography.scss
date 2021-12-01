@@ -1,4 +1,4 @@
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 $small-typography: mat.define-typography-config(
     $display-4: (font-size: 100px, line-height: 105px, font-weight: 300),
     $display-3: (font-size: 50px, line-height: 54px, font-weight: 400), 

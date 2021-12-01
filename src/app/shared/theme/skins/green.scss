@@ -1,10 +1,10 @@
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 @import './color-swatches/light-dull-theme.scss';
 @import './color-swatches/dark-bright-theme.scss';
 @import './color-swatches/red-warn.swatch.scss';
 @import './color-swatches/green-primary.swatch.scss';
 @import './color-swatches/white.swatch.scss';
-@import '~@angular/material/theming';
+@import '@angular/material/theming';
 
 $green-primary: mat.define-palette($green-primary, 500, 300, A200);
 $green-accent:  mat.define-palette(mat.$gray-palette, 800, 600, 900);

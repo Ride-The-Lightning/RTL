@@ -25,6 +25,7 @@ describe('ECLNodeLookupComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ECLNodeLookupComponent);
     component = fixture.componentInstance;
+    component.lookupResult = { features: { activated: [] } };
     fixture.detectChanges();
   });
 

@@ -79,7 +79,7 @@ describe('RTL Root Effects', () => {
     actions = new ReplaySubject(1);
     const setSelectedNodeAction = {
       type: RTLActions.SET_SELECTED_NODE,
-      payload: { uiMessage: UI_MESSAGES.UPDATE_SELECTED_NODE, lnNode: mockActionsData.setSelectedNode, isInitialSetup: false }
+      payload: { uiMessage: UI_MESSAGES.UPDATE_SELECTED_NODE, prevLnNodeIndex: -1, currentLnNode: mockActionsData.setSelectedNode, isInitialSetup: false }
     };
     actions.next(setSelectedNodeAction);
     const sub = effects.setSelectedNode.subscribe((setSelectedNodeResponse) => {
@@ -102,7 +102,7 @@ describe('RTL Root Effects', () => {
     const expectedResponse = mockResponseData.setSelectedNodeSuccess;
     req.flush(expectedResponse);
     expect(req.request.method).toEqual('POST');
-    expect(req.request.body).toEqual({ selNodeIndex: setSelectedNodeAction.payload.lnNode.index });
+    expect(req.request.body).toEqual({ prevNodeIndex: -1, currNodeIndex: setSelectedNodeAction.payload.currentLnNode.index });
   });
 
   it('should throw error on dispatch set selected node', (done) => {
@@ -111,7 +111,7 @@ describe('RTL Root Effects', () => {
     actions = new ReplaySubject(1);
     const setSelectedNodeAction = {
       type: RTLActions.SET_SELECTED_NODE,
-      payload: { uiMessage: UI_MESSAGES.UPDATE_SELECTED_NODE, lnNode: mockActionsData.setSelectedNode, isInitialSetup: false }
+      payload: { uiMessage: UI_MESSAGES.UPDATE_SELECTED_NODE, prevLnNodeIndex: -1, currentLnNode: mockActionsData.setSelectedNode, isInitialSetup: false }
     };
     actions.next(setSelectedNodeAction);
     const sub = effects.setSelectedNode.subscribe((setSelectedNodeResponse: any) => {

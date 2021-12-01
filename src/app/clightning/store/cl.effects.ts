@@ -793,15 +793,17 @@ export class CLEffects implements OnDestroy {
             postRes.expires_at = Math.round((new Date().getTime() / 1000) + action.payload.expiry);
             postRes.description = action.payload.description;
             postRes.status = 'unpaid';
-            this.store.dispatch(openAlert({
-              payload: {
-                data: {
-                  invoice: postRes,
-                  newlyAdded: false,
-                  component: CLInvoiceInformationComponent
+            setTimeout(() => {
+              this.store.dispatch(openAlert({
+                payload: {
+                  data: {
+                    invoice: postRes,
+                    newlyAdded: true,
+                    component: CLInvoiceInformationComponent
+                  }
                 }
-              }
-            }));
+              }));
+            }, 100);
             return {
               type: CLActions.ADD_INVOICE_CL,
               payload: postRes
