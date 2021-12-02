@@ -25,7 +25,7 @@
   .mat-expansion-panel.flat-expansion-panel {
     box-shadow: none;
     padding: 0;
-    border-radius: 4px;
+    border-radius: 2px;
     background: none;
   }
 
@@ -142,6 +142,16 @@
     }
   }
 
+  .mat-dialog-container {
+    padding: 0;
+    overflow: hidden;
+    border-radius: 2px;
+  }
+  
+  .mat-button, .mat-icon-button, .mat-stroked-button, .mat-flat-button {
+    border-radius: 2px;
+  }
+  
   .cc-data-block {
     & .cc-data-title {
       font-size: 80%;
@@ -162,7 +172,7 @@
 
   table.mat-table {
     border: 1px solid $foreground-divider;
-    border-radius: 4px;
+    border-radius: 2px;
     background: none;
     thead tr th {
       color: $foreground-base;
@@ -175,7 +185,7 @@
 
   .bordered-box {
     border: 1px solid $foreground-divider;
-    border-radius: 4px;
+    border-radius: 2px;
     background: none;
     &.read-only {
       background-color: $hover-background;

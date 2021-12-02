@@ -6,7 +6,7 @@ import { listPayments, decodePayment, postPayment } from '../../controllers/c-li
 const router = Router();
 
 router.get('/', isAuthenticated, listPayments);
-router.get('/:invoice', isAuthenticated, decodePayment);
-router.post('/:type', isAuthenticated, postPayment);
+router.get('/:payReq', isAuthenticated, decodePayment);
+router.post('/', isAuthenticated, postPayment);
 
 export default router;

@@ -4,7 +4,6 @@ import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-
 import CORS from './cors.js';
 import CSRF from './csrf.js';
 
@@ -15,6 +14,7 @@ import eclRoutes from '../routes/eclair/index.js';
 import { Common, CommonService } from './common.js';
 import { Logger, LoggerService } from './logger.js';
 import { Config, ConfigService } from './config.js';
+import { Database } from './database.js';
 import { CLWSClient, CLWebSocketClient } from '../controllers/c-lightning/webSocketClient.js';
 import { ECLWSClient, ECLWebSocketClient } from '../controllers/eclair/webSocketClient.js';
 import { LNDWSClient, LNDWebSocketClient } from '../controllers/lnd/webSocketClient.js';
@@ -41,10 +41,10 @@ export class ExpressApplication {
     this.app.use(bodyParser.urlencoded({ extended: false, limit: '25mb' }));
 
     this.loadConfiguration();
-    this.loadDatabase();
     this.setCORS();
     this.setCSRF();
     this.setApplicationRoutes();
+    this.loadDb();
   }
 
   public getApp = () => this.app;
@@ -53,8 +53,10 @@ export class ExpressApplication {
     this.config.setServerConfiguration();
   }
 
-  public loadDatabase = async () => {
-    this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'App', msg: 'LOAD DATABASE: IN PROGRESS' });
+  private loadDb = () => {
+    Database.rtlSequelize.sync().then(() => {
+      this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'DEBUG', fileName: 'App', msg: 'Database Connected' });
+    });
   }
 
   public setCORS = () => { CORS.mount(this.app); }

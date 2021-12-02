@@ -1,3 +1,5 @@
+import { PaymentTypes } from '../services/consts-enums-functions';
+
 export enum feeRateStyle {
   KB = 'KB',
   KW = 'KW'
@@ -157,6 +159,74 @@ export interface PayRequest {
   min_final_cltv_expiry?: number;
   payment_hash?: string;
   signature?: string;
+}
+
+interface HopObj {
+  node_id: string;
+  enctlv: string;
+}
+interface Paths {
+  blinding: string;
+  path: HopObj[];
+}
+interface PayWindow {
+  seconds_before: number;
+  seconds_after: number;
+  proportional_amount?: boolean;
+}
+interface Recurrence {
+  time_unit: number;
+  period: number;
+  time_unit_name?: string;
+  basetime?: number;
+  start_any_period?: number;
+  limit?: number;
+  paywindow?: PayWindow;
+}
+
+export interface OfferRequest {
+  type?: string;
+  valid?: boolean;
+  offer_id?: string;
+  node_id?: string;
+  description?: string;
+  signature?: string;
+  chains?: string[];
+  currency?: string;
+  minor_unit?: number;
+  amount?: number;
+  amount_msat?: string;
+  send_invoice?: boolean;
+  refund_for?: string;
+  vendor?: string;
+  features?: string;
+  absolute_expiry?: string;
+  paths?: Paths[];
+  quantity_min?: number;
+  quantity_max?: number;
+  recurrence?: Recurrence;
+}
+
+interface Changes {
+  description_appended?: string;
+  description?: string;
+  vendor_removed?: string;
+  vendor?: string;
+  msat?: string;
+}
+
+interface NextPeriod {
+  counter: string;
+  starttime: string;
+  endtime: string;
+  paywindow_start: string;
+  paywindow_end: string;
+}
+
+export interface OfferInvoice {
+  invoice: string;
+  changes: Changes;
+  next_period?: NextPeriod;
 }
 
 export interface ForwardingEvent {
@@ -319,7 +389,11 @@ export interface DecodePayment {
 export interface SendPayment {
   uiMessage: string;
   fromDialog: boolean;
+  paymentType: PaymentTypes;
+  label?: string;
   invoice?: string;
+  description?: string;
+  saveToDB?: boolean;
   amount?: number;
   pubkey?: string;
 }

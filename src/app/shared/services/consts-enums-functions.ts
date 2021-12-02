@@ -246,9 +246,12 @@ export const UI_MESSAGES = {
   CREATE_INVOICE: 'Creating Invoice...',
   DELETE_INVOICE: 'Deleting Invoices...',
   DECODE_PAYMENT: 'Decoding Payment...',
+  DECODE_OFFER: 'Decoding Offer...',
   DECODE_PAYMENTS: 'Decoding Payments...',
+  FETCH_INVOICE: 'Fetching Invoice...',
   GET_SENT_PAYMENTS: 'Getting Sent Payments...',
   SEND_PAYMENT: 'Sending Payment...',
+  SEND_OFFER: 'Sending Offer...',
   SEND_KEYSEND: 'Sending Keysend Payment...',
   SEARCHING_NODE: 'Searching Node...',
   SEARCHING_CHANNEL: 'Searching Channel...',
@@ -284,6 +287,12 @@ export const UI_MESSAGES = {
   GET_RTL_CONFIG: 'Getting RTL Config...',
   VERIFY_TOKEN: 'Verify Token...'
 };
+
+export enum PaymentTypes {
+  INVOICE = 'INVOICE',
+  OFFER = 'OFFER',
+  KEYSEND = 'KEYSEND'
+}
 
 export enum RTLActions {
   VOID = 'VOID',
@@ -452,6 +461,8 @@ export enum CLActions {
   DELETE_EXPIRED_INVOICE_CL = 'DELETE_EXPIRED_INVOICE_CL',
   SET_CHANNEL_TRANSACTION_CL = 'SET_CHANNEL_TRANSACTION_CL',
   SET_CHANNEL_TRANSACTION_RES_CL = 'SET_CHANNEL_TRANSACTION_RES_CL',
+  FETCH_OFFER_INVOICE_CL = 'FETCH_OFFER_INVOICE_CL',
+  SET_OFFER_INVOICE_CL = 'SET_OFFER_INVOICE_CL'
 };
 
 export enum ECLActions {

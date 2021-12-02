@@ -10,6 +10,7 @@ import paymentsCLRoutes from './payments.js';
 import peersCLRoutes from './peers.js';
 import networkCLRoutes from './network.js';
 import messageCLRoutes from './message.js';
+import offersCLRoutes from './offers.js';
 
 const router = Router();
 
@@ -23,7 +24,8 @@ const clRoutes = [
   { path: '/payments', route: paymentsCLRoutes },
   { path: '/peers', route: peersCLRoutes },
   { path: '/network', route: networkCLRoutes },
-  { path: '/message', route: messageCLRoutes }
+  { path: '/message', route: messageCLRoutes },
+  { path: '/offers', route: offersCLRoutes }
 ];
 
 clRoutes.forEach((route) => {

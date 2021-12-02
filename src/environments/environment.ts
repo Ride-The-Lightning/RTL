@@ -23,6 +23,7 @@ export const environment = {
   SWITCH_API: '/switch',
   ON_CHAIN_API: '/onchain',
   MESSAGE_API: '/message',
+  OFFERS_API: '/offers',
   LOOP_API: '/loop',
   BOLTZ_API: '/boltz',
   Web_SOCKET_API: '/ws',

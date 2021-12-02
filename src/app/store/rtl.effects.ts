@@ -207,8 +207,8 @@ export class RTLEffects implements OnDestroy {
           this.alertWidth = '80%';
           this.confirmWidth = '80%';
         } else {
-          this.alertWidth = '55%';
-          this.confirmWidth = '60%';
+          this.alertWidth = '45%';
+          this.confirmWidth = '50%';
         }
         this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_RTL_CONFIG }));
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'FetchRTLConfig', status: APICallStatusEnum.INITIATED } }));

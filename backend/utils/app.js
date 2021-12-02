@@ -1,4 +1,3 @@
-import { __awaiter } from "tslib";
 import express from 'express';
 import sessions from 'express-session';
 import cookieParser from 'cookie-parser';
@@ -14,6 +13,7 @@ import eclRoutes from '../routes/eclair/index.js';
 import { Common } from './common.js';
 import { Logger } from './logger.js';
 import { Config } from './config.js';
+import { Database } from './database.js';
 import { CLWSClient } from '../controllers/c-lightning/webSocketClient.js';
 import { ECLWSClient } from '../controllers/eclair/webSocketClient.js';
 import { LNDWSClient } from '../controllers/lnd/webSocketClient.js';
@@ -32,9 +32,11 @@ export class ExpressApplication {
         this.loadConfiguration = () => {
             this.config.setServerConfiguration();
         };
-        this.loadDatabase = () => __awaiter(this, void 0, void 0, function* () {
-            this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'App', msg: 'LOAD DATABASE: IN PROGRESS' });
-        });
+        this.loadDb = () => {
+            Database.rtlSequelize.sync().then(() => {
+                this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'DEBUG', fileName: 'App', msg: 'Database Connected' });
+            });
+        };
         this.setCORS = () => { CORS.mount(this.app); };
         this.setCSRF = () => { CSRF.mount(this.app); };
         this.setApplicationRoutes = () => {
@@ -81,10 +83,10 @@ export class ExpressApplication {
         this.app.use(bodyParser.json({ limit: '25mb' }));
         this.app.use(bodyParser.urlencoded({ extended: false, limit: '25mb' }));
         this.loadConfiguration();
-        this.loadDatabase();
         this.setCORS();
         this.setCSRF();
         this.setApplicationRoutes();
+        this.loadDb();
     }
 }
 export default ExpressApplication;
