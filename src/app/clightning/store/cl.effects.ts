@@ -510,7 +510,7 @@ export class CLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('FetchOfferInvoice', UI_MESSAGES.FETCH_INVOICE, 'Invoice Fetch Failed', this.CHILD_API_URL + environment.OFFERS_API + '/fetchInvoice/' + action.payload, err);
+            this.handleErrorWithoutAlert('FetchOfferInvoice', UI_MESSAGES.FETCH_INVOICE, 'Offer Invoice Fetch Failed', err);
             return of({ type: RTLActions.VOID });
           })
         );
@@ -538,7 +538,14 @@ export class CLEffects implements OnDestroy {
           this.logger.info(sendRes);
           this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
           this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'SendPayment', status: APICallStatusEnum.COMPLETED } }));
-          this.store.dispatch(openSnackBar({ payload: 'Payment Sent Successfully!' }));
+          let snackBarMessageStr = 'Payment Sent Successfully!';
+          if (sendRes.saveToDBError) {
+            snackBarMessageStr = 'Payment Sent Successfully but Offer Saving to Database Failed.';
+          }
+          if (sendRes.saveToDBResponse && sendRes.saveToDBResponse !== 'NA') {
+            snackBarMessageStr = 'Payment Sent Successfully and Offer Saved to Database.';
+          }
+          this.store.dispatch(openSnackBar({ payload: snackBarMessageStr }));
           setTimeout(() => {
             this.store.dispatch(fetchChannels());
             this.store.dispatch(fetchBalance());
@@ -546,7 +553,7 @@ export class CLEffects implements OnDestroy {
           }, 1000);
           return {
             type: CLActions.SEND_PAYMENT_STATUS_CL,
-            payload: sendRes
+            payload: sendRes.paymentResponse
           };
         }),
         catchError((err: any) => {

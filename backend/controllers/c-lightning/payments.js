@@ -97,25 +97,34 @@ export const postPayment = (req, res, next) => {
     else {
         if (req.body.paymentType === 'OFFER') {
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Sending Offer Payment..' });
+            options.body = { invoice: req.body.invoice };
         }
         else {
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Sending Invoice Payment..' });
+            options.body = req.body;
         }
         options.url = req.session.selectedNode.ln_server_url + '/v1/pay';
     }
-    options.body = { invoice: req.body.invoice };
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Send Payment Response', data: body });
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent' });
-        if (req.body.paymentType === 'OFFER' && req.body.saveToDB) {
-            const offer = { id: v4(), invoice: req.body.invoice, amount: req.body.amount, description: req.body.description };
-            return Database.offer.create(offer).then((savedOffer) => {
-                logger.log({ level: 'DEBUG', fileName: 'Offer', msg: 'Offer Saved', data: savedOffer });
-                return res.status(201).json({ paymentRes: body, dbRes: savedOffer });
-            }).catch((errDB) => {
-                logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Payments', msg: 'Offer DB save error', error: errDB });
-                return res.status(201).json({ paymentRes: body, dbRes: errDB });
-            });
+        if (req.body.paymentType === 'OFFER') {
+            if (req.body.saveToDB) {
+                const offer = { id: v4(), invoice: req.body.invoice, amountmSat: req.body.amount, description: req.body.description };
+                return Database.offer.create(offer).then((savedOffer) => {
+                    logger.log({ level: 'DEBUG', fileName: 'Offer', msg: 'Offer Saved', data: savedOffer });
+                    return res.status(201).json({ paymentResponse: body, saveToDBResponse: savedOffer.dataValues });
+                }).catch((errDB) => {
+                    logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Payments', msg: 'Offer DB save error', error: errDB });
+                    return res.status(201).json({ paymentResponse: body, saveToDBError: errDB });
+                });
+            }
+            else {
+                return res.status(201).json({ paymentResponse: body, saveToDBResponse: 'NA' });
+            }
+        }
+        if (req.body.paymentType === 'INVOICE') {
+            return res.status(201).json({ paymentResponse: body, saveToDBResponse: 'NA' });
         }
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Payments', 'Send Payment Error', req.session.selectedNode);

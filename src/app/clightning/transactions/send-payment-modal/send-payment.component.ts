@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
-import { take, takeUntil, filter } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -95,13 +95,21 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
         }
         if (action.type === CLActions.SET_DECODED_PAYMENT_CL) {
           if (this.paymentType === PaymentTypes.INVOICE) {
-            this.paymentDecoded = action.payload;
-            this.setPaymentDecodedDetails();
+            if (action.payload.type === 'bolt12 offer' && action.payload.offer_id) {
+              this.paymentDecodedHint = 'ERROR: Select Offer option to pay the bolt12 offer invoice.';
+              this.paymentReq.control.setErrors({ decodeError: true });
+            } else {
+              this.paymentDecoded = action.payload;
+              this.setPaymentDecodedDetails();
+            }
           } else if (this.paymentType === PaymentTypes.OFFER) {
-            this.offerDecoded = action.payload;
-            this.offerAmount = this.offerDecoded.amount;
-            this.offerMemo = this.offerDecoded.description;
-            this.setOfferDecodedDetails();
+            if (action.payload.type === 'bolt11 invoice' && action.payload.payment_hash) {
+              this.offerDecodedHint = 'ERROR: Select Invoice option to pay the bolt11 invoice.';
+              this.offerReq.control.setErrors({ decodeError: true });
+            } else {
+              this.offerDecoded = action.payload;
+              this.setOfferDecodedDetails();
+            }
           }
         }
         if (action.type === CLActions.SET_OFFER_INVOICE_CL) {
@@ -176,12 +184,12 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
     } else if (this.paymentType === PaymentTypes.OFFER) {
       if (!this.offerInvoice) {
         if (this.zeroAmtOffer) {
-          this.store.dispatch(fetchOfferInvoice({ payload: { offer: this.offerRequest, msatoshi: this.offerAmount } }));
+          this.store.dispatch(fetchOfferInvoice({ payload: { offer: this.offerRequest, msatoshi: this.offerAmount * 1000 } }));
         } else {
           this.store.dispatch(fetchOfferInvoice({ payload: { offer: this.offerRequest } }));
         }
       } else {
-        this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_OFFER, paymentType: PaymentTypes.OFFER, invoice: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, amount: this.offerAmount || this.offerDecoded.amount, description: this.offerMemo, fromDialog: true } }));
+        this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_OFFER, paymentType: PaymentTypes.OFFER, invoice: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, amount: this.offerAmount * 1000, description: this.offerMemo, fromDialog: true } }));
       }
     }
   }
@@ -222,13 +230,13 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   onAmountChange(event: any) {
     if (this.paymentType === PaymentTypes.INVOICE) {
       delete this.paymentDecoded.msatoshi;
-      this.paymentDecoded.msatoshi = event;
+      this.paymentDecoded.msatoshi = +event.target.value;
     }
     if (this.paymentType === PaymentTypes.OFFER) {
       delete this.offerDecoded.amount;
-      this.offerDecoded.amount_msat = '';
-      this.offerDecoded.amount = event;
-      this.offerDecoded.amount_msat = event + 'msat';
+      delete this.offerDecoded.amount_msat;
+      this.offerDecoded.amount = +event.target.value * 1000;
+      this.offerDecoded.amount_msat = event.target.value + 'msat';
     }
   }
 
@@ -247,19 +255,21 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.offerDecodedHint = 'Zero Amount Offer | Description: ' + this.offerDecoded.description;
     } else {
       this.zeroAmtOffer = false;
-      this.offerDecoded.amount = +this.offerDecoded.amount_msat.slice(0, -4);
+      this.offerDecoded.amount = +(this.offerDecoded.amount || this.offerDecoded.amount_msat.slice(0, -4));
+      this.offerAmount = this.offerDecoded.amount ? this.offerDecoded.amount / 1000 : 0;
+      this.offerMemo = this.offerDecoded.description;
       if (this.selNode.fiatConversion) {
-        this.commonService.convertCurrency(this.offerDecoded.amount ? this.offerDecoded.amount / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
+        this.commonService.convertCurrency(this.offerAmount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
           pipe(takeUntil(this.unSubs[5])).
           subscribe({
             next: (data) => {
-              this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.offerDecoded.amount ? this.offerDecoded.amount / 1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Description: ' + this.offerDecoded.description;
+              this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.offerAmount) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Description: ' + this.offerDecoded.description;
             }, error: (error) => {
-              this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.offerDecoded.amount ? this.offerDecoded.amount / 1000 : 0) + ' Sats | Description: ' + this.offerDecoded.description + '. Unable to convert currency.';
+              this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.offerAmount) + ' Sats | Description: ' + this.offerDecoded.description + '. Unable to convert currency.';
             }
           });
       } else {
-        this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.offerDecoded.amount ? this.offerDecoded.amount / 1000 : 0) + ' Sats | Description: ' + this.offerDecoded.description;
+        this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.offerAmount) + ' Sats | Description: ' + this.offerDecoded.description;
       }
     }
   }
