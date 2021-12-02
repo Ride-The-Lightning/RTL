@@ -10,7 +10,7 @@ import { faAngleDoubleDown, faAngleDoubleUp, faChartPie, faBolt, faServer, faNet
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { UserPersonaEnum, ScreenSizeEnum, APICallStatusEnum, CLActions } from '../../shared/services/consts-enums-functions';
 import { ChannelsStatus, GetInfo, Fees, Channel, Balance, LocalRemoteBalance } from '../../shared/models/clModels';
-import { ApiCallsListCL, ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 

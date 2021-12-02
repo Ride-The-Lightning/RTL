@@ -392,6 +392,8 @@ export interface SendPayment {
   paymentType: PaymentTypes;
   label?: string;
   invoice?: string;
+  description?: string;
+  saveToDB?: boolean;
   amount?: number;
   pubkey?: string;
 }

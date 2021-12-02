@@ -251,6 +251,7 @@ export const UI_MESSAGES = {
   FETCH_INVOICE: 'Fetching Invoice...',
   GET_SENT_PAYMENTS: 'Getting Sent Payments...',
   SEND_PAYMENT: 'Sending Payment...',
+  SEND_OFFER: 'Sending Offer...',
   SEND_KEYSEND: 'Sending Keysend Payment...',
   SEARCHING_NODE: 'Searching Node...',
   SEARCHING_CHANNEL: 'Searching Channel...',

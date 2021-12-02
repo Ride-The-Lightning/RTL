@@ -5,7 +5,15 @@ export const Offer = (sequelize, Sequelize) => {
             primaryKey: true,
             allowNull: false
         },
-        offerInvoice: {
+        invoice: {
+            type: Sequelize.STRING,
+            allowNull: false
+        },
+        amount: {
+            type: Sequelize.NUMBER,
+            allowNull: false
+        },
+        description: {
             type: Sequelize.STRING,
             allowNull: false
         }

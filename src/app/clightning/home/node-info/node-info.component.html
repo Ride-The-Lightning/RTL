@@ -14,11 +14,12 @@
     </div>
   </div>
   <div>
-    <h4 class="dashboard-info-title">Implementation</h4>
-    <div class="overflow-wrap dashboard-info-value">{{(information?.lnImplementation || information?.version) ? information?.lnImplementation + ' ' + information?.version : ''}}</div>
+    <h4 class="dashboard-info-title">CLT & API Versions</h4>
+    <div class="overflow-wrap dashboard-info-value">{{information?.version + ' & v' + information?.api_version}}</div>
   </div>
   <div>
-    <h4 class="dashboard-info-title">Chain</h4>
+    <h4 class="dashboard-info-title">Implementation & Chain</h4>
+    <span class="overflow-wrap dashboard-info-value">{{information?.lnImplementation + ' '}}</span>
     <span class="overflow-wrap dashboard-info-value" *ngFor="let chain of chains">{{chain}}</span>
   </div>
 </div>

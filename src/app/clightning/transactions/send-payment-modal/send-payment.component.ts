@@ -51,6 +51,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public zeroAmtOffer = false;
   public offerInvoice: OfferInvoice = null;
   public offerAmount = null;
+  public flgSaveToDB = false;
 
   public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
@@ -98,6 +99,8 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
             this.setPaymentDecodedDetails();
           } else if (this.paymentType === PaymentTypes.OFFER) {
             this.offerDecoded = action.payload;
+            this.offerAmount = this.offerDecoded.amount;
+            this.offerMemo = this.offerDecoded.description;
             this.setOfferDecodedDetails();
           }
         }
@@ -115,10 +118,13 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
               this.paymentDecodedHint = 'ERROR: ' + action.payload.message;
               this.paymentReq.control.setErrors({ decodeError: true });
             }
-            if (this.paymentType === PaymentTypes.INVOICE) {
+            if (this.paymentType === PaymentTypes.OFFER) {
               this.offerDecodedHint = 'ERROR: ' + action.payload.message;
               this.offerReq.control.setErrors({ decodeError: true });
             }
+          }
+          if (action.payload.action === 'FetchOfferInvoice' && this.paymentType === PaymentTypes.OFFER) {
+            this.paymentError = action.payload.message;
           }
         }
       });
@@ -175,7 +181,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
           this.store.dispatch(fetchOfferInvoice({ payload: { offer: this.offerRequest } }));
         }
       } else {
-        this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.OFFER, invoice: this.offerInvoice.invoice, fromDialog: true } }));
+        this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_OFFER, paymentType: PaymentTypes.OFFER, invoice: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, amount: this.offerAmount || this.offerDecoded.amount, description: this.offerMemo, fromDialog: true } }));
       }
     }
   }
@@ -228,6 +234,8 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
 
   onPaymentTypeChange() {
     this.paymentError = '';
+    this.paymentDecodedHint = '';
+    this.offerDecodedHint = '';
     this.offerInvoice = null;
   }
 

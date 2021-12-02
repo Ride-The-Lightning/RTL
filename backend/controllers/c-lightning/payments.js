@@ -1,6 +1,8 @@
 import request from 'request-promise';
+import { v4 } from 'uuid';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
+import { Database } from '../../utils/database.js';
 let options = null;
 const logger = Logger;
 const common = Common;
@@ -101,12 +103,20 @@ export const postPayment = (req, res, next) => {
         }
         options.url = req.session.selectedNode.ln_server_url + '/v1/pay';
     }
-    delete req.body.paymentType;
-    options.body = req.body;
+    options.body = { invoice: req.body.invoice };
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Send Payment Response', data: body });
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent' });
-        res.status(201).json(body);
+        if (req.body.paymentType === 'OFFER' && req.body.saveToDB) {
+            const offer = { id: v4(), invoice: req.body.invoice, amount: req.body.amount, description: req.body.description };
+            return Database.offer.create(offer).then((savedOffer) => {
+                logger.log({ level: 'DEBUG', fileName: 'Offer', msg: 'Offer Saved', data: savedOffer });
+                return res.status(201).json({ paymentRes: body, dbRes: savedOffer });
+            }).catch((errDB) => {
+                logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Payments', msg: 'Offer DB save error', error: errDB });
+                return res.status(201).json({ paymentRes: body, dbRes: errDB });
+            });
+        }
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Payments', 'Send Payment Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
