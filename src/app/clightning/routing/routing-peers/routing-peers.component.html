@@ -5,7 +5,7 @@
       <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="page-sub-title-container w-100" [ngClass]="{'mt-2': screenSize === screenSizeEnum.XS, 'mt-1': screenSize === screenSizeEnum.SM}">
         <div fxFlex="70">Incoming</div>
         <mat-form-field fxFlex="30">
-          <input matInput (keyup)="applyIncomingFilter($event.target)" placeholder="Filter">
+          <input matInput (keyup)="applyIncomingFilter()" [(ngModel)]="filterIn" placeholder="Filter">
         </mat-form-field>
       </div>
       <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="table-container">
@@ -50,7 +50,7 @@
       <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="page-sub-title-container w-100" [ngClass]="{'mt-2': screenSize !== screenSizeEnum.LG}">
         <div fxFlex="70">Outgoing</div>
         <mat-form-field fxFlex="30">
-          <input matInput #filterOut (keyup)="applyOutgoingFilter($event.target)" placeholder="Filter">
+          <input matInput (keyup)="applyOutgoingFilter()" [(ngModel)]="filterOut" placeholder="Filter">
         </mat-form-field>
       </div>
       <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container">

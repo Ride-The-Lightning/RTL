@@ -11,9 +11,9 @@ import { CommonService } from '../../../shared/services/common.service';
 import { CLInvoiceInformation } from '../../../shared/models/alertData';
 import { ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 
-import { Invoice, ListInvoices } from '../../../shared/models/clModels';
+import { GetInfo, Invoice, ListInvoices } from '../../../shared/models/clModels';
 import { RTLState } from '../../../store/rtl.state';
-import { listInvoices } from '../../store/cl.selector';
+import { clNodeInformation, listInvoices } from '../../store/cl.selector';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
@@ -32,6 +32,7 @@ export class CLInvoiceInformationComponent implements OnInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public flgInvoicePaid = false;
+  public flgVersionCompatible: boolean = true;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<CLInvoiceInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: CLInvoiceInformation, private logger: LoggerService, private commonService: CommonService, private snackBar: MatSnackBar, private store: Store<RTLState>) { }
@@ -43,7 +44,11 @@ export class CLInvoiceInformationComponent implements OnInit, OnDestroy {
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.qrWidth = 220;
     }
-    this.store.select(listInvoices).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(clNodeInformation).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeInfo: GetInfo) => {
+        this.flgVersionCompatible = this.commonService.isVersionCompatible(nodeInfo.api_version, '0.6.0');
+      });
+    this.store.select(listInvoices).pipe(takeUntil(this.unSubs[1])).
       subscribe((invoicesSelector: { listInvoices: ListInvoices, apiCallStatus: ApiCallStatusPayload }) => {
         let invoiceStatus = this.invoice.status;
         const invoices = invoicesSelector.listInvoices.invoices || [];

@@ -57,6 +57,7 @@ export class CLEffects implements OnDestroy {
     this.wsService.clWSMessages.pipe(
       takeUntil(this.unSubs[1])).
       subscribe((newMessage) => {
+        this.logger.info('Received new message from the service: ' + JSON.stringify(newMessage));
         if (newMessage) {
           switch (newMessage.event) {
             case CLWSEventTypeEnum.INVOICE:

@@ -36,8 +36,9 @@
                   </div>
                   <div *ngIf="!flgInvoicePaid">{{invoice?.amt_paid_sat | number}} Sats</div>
                 </ng-container>
-                <ng-container *ngIf="(!invoice?.amt_paid_sat || invoice?.amt_paid_sat === '0') && invoice?.state === 'OPEN'">
-                  <mat-spinner [diameter]="20"></mat-spinner>
+                <ng-container *ngIf="(!invoice?.amt_paid_sat || invoice?.amt_paid_sat === '0')">
+                  <span *ngIf="invoice?.state !== 'OPEN' || !flgVersionCompatible">-</span>
+                  <mat-spinner [diameter]="20" *ngIf="invoice?.state === 'OPEN' && flgVersionCompatible"></mat-spinner>
                 </ng-container>
               </span>
             </div>

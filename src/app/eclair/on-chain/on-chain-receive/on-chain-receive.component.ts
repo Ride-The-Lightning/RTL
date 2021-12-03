@@ -25,15 +25,17 @@ export class ECLOnChainReceiveComponent {
     this.eclEffects.setNewAddress.pipe(take(1)).
       subscribe((newAddress) => {
         this.newAddress = newAddress;
-        this.store.dispatch(openAlert({
-          payload: {
-            data: {
-              address: this.newAddress,
-              addressType: '',
-              component: OnChainGeneratedAddressComponent
+        setTimeout(() => {
+          this.store.dispatch(openAlert({
+            payload: {
+              data: {
+                address: this.newAddress,
+                addressType: '',
+                component: OnChainGeneratedAddressComponent
+              }
             }
-          }
-        }));
+          }));
+        }, 0);
       });
   }
 

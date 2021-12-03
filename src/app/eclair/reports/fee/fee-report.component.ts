@@ -108,7 +108,7 @@ export class ECLFeeReportComponent implements OnInit, OnDestroy {
     this.logger.info('Fee Report Prepare Starting at ' + new Date(Date.now()).toLocaleString() + ' From ' + start.toLocaleString());
     if (this.reportPeriod === SCROLL_RANGES[1]) {
       for (let i = 0; i < 12; i++) {
-        feeReport.push({ name: MONTHS[i].name, value: 0.000000001, extra: { totalEvents: 0 } });
+        feeReport.push({ name: MONTHS[i].name, value: 0.0, extra: { totalEvents: 0 } });
       }
       this.filteredEventsBySelectedPeriod.map((event) => {
         const monthNumber = new Date(event.timestamp).getMonth();
@@ -119,7 +119,7 @@ export class ECLFeeReportComponent implements OnInit, OnDestroy {
       });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
-        feeReport.push({ name: i + 1, value: 0.000000001, extra: { totalEvents: 0 } });
+        feeReport.push({ name: i + 1, value: 0.0, extra: { totalEvents: 0 } });
       }
       this.filteredEventsBySelectedPeriod.map((event) => {
         const dateNumber = Math.floor((Math.floor(event.timestamp / 1000) - startDateInSeconds) / this.secondsInADay);

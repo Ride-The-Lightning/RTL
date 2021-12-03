@@ -42,8 +42,8 @@
                 <div *ngIf="!flgInvoicePaid">{{invoice?.msatoshi_received/1000 | number}} Sats</div>
               </ng-container>
               <ng-container *ngIf="invoice?.status !== 'paid'">
-                <span *ngIf="invoice?.status !== 'unpaid'">-</span>
-                <mat-spinner [diameter]="20" *ngIf="invoice?.status === 'unpaid'"></mat-spinner>
+                <span *ngIf="invoice?.status !== 'unpaid' || !flgVersionCompatible">-</span>
+                <mat-spinner [diameter]="20" *ngIf="invoice?.status === 'unpaid' && flgVersionCompatible"></mat-spinner>
               </ng-container>
             </span>
           </div>

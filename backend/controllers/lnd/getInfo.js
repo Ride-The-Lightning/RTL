@@ -1,9 +1,11 @@
 import request from 'request-promise';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
+import { LNDWSClient } from './webSocketClient.js';
 let options = null;
 const logger = Logger;
 const common = Common;
+const lndWsClient = LNDWSClient;
 export const getInfo = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Getting LND Node Information..' });
     common.logEnvVariables(req);
@@ -41,6 +43,7 @@ export const getInfo = (req, res, next) => {
             else {
                 logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'LND Node Information Received' });
                 req.session.selectedNode.ln_version = body.version.split('-')[0] || '';
+                lndWsClient.updateSelectedNode(req.session.selectedNode);
                 res.status(200).json(body);
             }
         }).catch((errRes) => {

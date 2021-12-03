@@ -60,7 +60,7 @@ export class LNDEffects implements OnDestroy {
       });
     this.wsService.lndWSMessages.pipe(takeUntil(this.unSubs[1])).
       subscribe((newMessage) => {
-        this.logger.info('Received new message from the service: ' + newMessage);
+        this.logger.info('Received new message from the service: ' + JSON.stringify(newMessage));
         if (newMessage) {
           switch (newMessage.type) {
             case LNDWSEventTypeEnum.INVOICE:

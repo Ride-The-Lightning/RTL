@@ -8,11 +8,11 @@ import { Store } from '@ngrx/store';
 
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
-import { Invoice } from '../../../shared/models/eclModels';
+import { GetInfo, Invoice } from '../../../shared/models/eclModels';
 import { ECLInvoiceInformation } from '../../../shared/models/alertData';
 import { ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { RTLState } from '../../../store/rtl.state';
-import { invoices } from '../../store/ecl.selector';
+import { eclNodeInformation, invoices } from '../../store/ecl.selector';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
@@ -31,6 +31,7 @@ export class ECLInvoiceInformationComponent implements OnInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public flgInvoicePaid = false;
+  public flgVersionCompatible: boolean = true;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<ECLInvoiceInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLInvoiceInformation, private logger: LoggerService, private commonService: CommonService, private snackBar: MatSnackBar, private store: Store<RTLState>) { }
@@ -42,7 +43,11 @@ export class ECLInvoiceInformationComponent implements OnInit, OnDestroy {
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.qrWidth = 220;
     }
-    this.store.select(invoices).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeInfo: GetInfo) => {
+        this.flgVersionCompatible = this.commonService.isVersionCompatible(nodeInfo.version, '0.5.0');
+      });
+    this.store.select(invoices).pipe(takeUntil(this.unSubs[1])).
       subscribe((invoicesSelector: { invoices: Invoice[], apiCallStatus: ApiCallStatusPayload }) => {
         let invoiceStatus = this.invoice.status;
         const invoices = (invoicesSelector.invoices && invoicesSelector.invoices.length > 0) ? invoicesSelector.invoices : [];

@@ -108,7 +108,7 @@ export class FeeReportComponent implements OnInit, OnDestroy {
     const feeReport = [];
     if (this.reportPeriod === SCROLL_RANGES[1]) {
       for (let i = 0; i < 12; i++) {
-        feeReport.push({ name: MONTHS[i].name, value: 0.000000001, extra: { totalEvents: 0 } });
+        feeReport.push({ name: MONTHS[i].name, value: 0.0, extra: { totalEvents: 0 } });
       }
       this.events.forwarding_events.map((event) => {
         const monthNumber = new Date((+event.timestamp) * 1000).getMonth();
@@ -119,7 +119,7 @@ export class FeeReportComponent implements OnInit, OnDestroy {
       });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
-        feeReport.push({ name: i + 1, value: 0.000000001, extra: { totalEvents: 0 } });
+        feeReport.push({ name: i + 1, value: 0.0, extra: { totalEvents: 0 } });
       }
       this.events.forwarding_events.map((event) => {
         const dateNumber = Math.floor((+event.timestamp - startDateInSeconds) / this.secondsInADay);

@@ -59,6 +59,7 @@ export class ECLEffects implements OnDestroy {
     this.wsService.eclWSMessages.pipe(
       takeUntil(this.unSubs[1])).
       subscribe((newMessage) => {
+        this.logger.info('Received new message from the service: ' + JSON.stringify(newMessage));
         let snackBarMsg = '';
         if (newMessage) {
           switch (newMessage.type) {

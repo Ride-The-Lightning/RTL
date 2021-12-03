@@ -114,8 +114,6 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   loadRoutingPeersTable(forwardingEvents: ForwardingEvent[]) {
-    this.filterIn = '';
-    this.filterOut = '';
     if (forwardingEvents.length > 0) {
       const results = this.groupRoutingPeers(forwardingEvents);
       this.RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>(results[0]);
@@ -133,6 +131,8 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       this.RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>([]);
       this.RoutingPeersOutgoing = new MatTableDataSource<RoutingPeers>([]);
     }
+    this.applyIncomingFilter();
+    this.applyOutgoingFilter();
   }
 
   groupRoutingPeers(forwardingEvents: ForwardingEvent[]) {
@@ -157,12 +157,12 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
     return [this.commonService.sortDescByKey(incomingResults, 'total_amount'), this.commonService.sortDescByKey(outgoingResults, 'total_amount')];
   }
 
-  applyIncomingFilter(selFilter: any) {
-    this.RoutingPeersIncoming.filter = selFilter.value.trim().toLowerCase();
+  applyIncomingFilter() {
+    this.RoutingPeersIncoming.filter = this.filterIn.toLowerCase();
   }
 
-  applyOutgoingFilter(selFilter: any) {
-    this.RoutingPeersOutgoing.filter = selFilter.value.trim().toLowerCase();
+  applyOutgoingFilter() {
+    this.RoutingPeersOutgoing.filter = this.filterOut.toLowerCase();
   }
 
   ngOnDestroy() {

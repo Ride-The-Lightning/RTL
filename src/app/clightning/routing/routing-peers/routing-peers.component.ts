@@ -41,6 +41,8 @@ export class CLRoutingPeersComponent implements OnInit, OnChanges, AfterViewInit
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
+  public filterIn = '';
+  public filterOut = '';
   public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
@@ -115,6 +117,8 @@ export class CLRoutingPeersComponent implements OnInit, OnChanges, AfterViewInit
       this.RoutingPeersIncoming = new MatTableDataSource<RoutingPeer>([]);
       this.RoutingPeersOutgoing = new MatTableDataSource<RoutingPeer>([]);
     }
+    this.applyIncomingFilter();
+    this.applyOutgoingFilter();
     this.logger.info(this.RoutingPeersIncoming);
     this.logger.info(this.RoutingPeersOutgoing);
   }
@@ -143,12 +147,12 @@ export class CLRoutingPeersComponent implements OnInit, OnChanges, AfterViewInit
     return [this.commonService.sortDescByKey(incomingResults, 'total_fee'), this.commonService.sortDescByKey(outgoingResults, 'total_fee')];
   }
 
-  applyIncomingFilter(selFilter: any) {
-    this.RoutingPeersIncoming.filter = selFilter.value.trim().toLowerCase();
+  applyIncomingFilter() {
+    this.RoutingPeersIncoming.filter = this.filterIn.toLowerCase();
   }
 
-  applyOutgoingFilter(selFilter: any) {
-    this.RoutingPeersOutgoing.filter = selFilter.value.trim().toLowerCase();
+  applyOutgoingFilter() {
+    this.RoutingPeersOutgoing.filter = this.filterOut.toLowerCase();
   }
 
   ngOnDestroy() {

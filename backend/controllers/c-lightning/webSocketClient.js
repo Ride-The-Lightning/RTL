@@ -27,7 +27,7 @@ export class CLWebSocketClient {
         };
         this.connect = (selectedNode) => {
             try {
-                const clientExists = this.webSocketClients.find((wsc) => wsc.selectedNode === selectedNode);
+                const clientExists = this.webSocketClients.find((wsc) => wsc.selectedNode.index === selectedNode.index);
                 if (!clientExists) {
                     if (selectedNode.ln_server_url) {
                         const newWebSocketClient = { selectedNode: selectedNode, reConnect: true, webSocketClient: null };
@@ -87,12 +87,12 @@ export class CLWebSocketClient {
             };
         };
         this.disconnect = (selectedNode) => {
-            const clientExists = this.webSocketClients.find((wsc) => wsc.selectedNode === selectedNode);
+            const clientExists = this.webSocketClients.find((wsc) => wsc.selectedNode.index === selectedNode.index);
             if (clientExists && clientExists.webSocketClient && clientExists.webSocketClient.readyState === WebSocket.OPEN) {
                 this.logger.log({ selectedNode: clientExists.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Disconnecting from the CLightning\'s Websocket Server..' });
                 clientExists.reConnect = false;
                 clientExists.webSocketClient.close();
-                const clientIdx = this.webSocketClients.findIndex((wsc) => wsc.selectedNode === selectedNode);
+                const clientIdx = this.webSocketClients.findIndex((wsc) => wsc.selectedNode.index === selectedNode.index);
                 this.webSocketClients.splice(clientIdx, 1);
             }
         };

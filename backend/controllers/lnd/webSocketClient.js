@@ -12,11 +12,10 @@ export class LNDWebSocketClient {
         this.webSocketClients = [];
         this.connect = (selectedNode) => {
             try {
-                const clientExists = this.webSocketClients.find((wsc) => wsc.selectedNode === selectedNode);
+                const clientExists = this.webSocketClients.find((wsc) => wsc.selectedNode.index === selectedNode.index);
                 if (!clientExists && selectedNode.ln_server_url) {
                     const newWebSocketClient = { selectedNode: selectedNode };
                     this.webSocketClients.push(newWebSocketClient);
-                    this.fetchUnpaidInvoices(selectedNode);
                 }
             }
             catch (err) {
@@ -27,7 +26,7 @@ export class LNDWebSocketClient {
             this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Getting Unpaid Invoices..' });
             const options = this.setOptionsForSelNode(selectedNode);
             options.url = selectedNode.ln_server_url + '/v1/invoices?pending_only=true';
-            request(options).then((body) => {
+            return request(options).then((body) => {
                 this.logger.log({ selectedNode: selectedNode, level: 'DEBUG', fileName: 'WebSocketClient', msg: 'Pending Invoices Received', data: body });
                 if (body.invoices && body.invoices.length > 0) {
                     body.invoices.forEach((invoice) => {
@@ -77,11 +76,20 @@ export class LNDWebSocketClient {
             return options;
         };
         this.disconnect = (selectedNode) => {
-            const clientExists = this.webSocketClients.find((wsc) => wsc.selectedNode === selectedNode);
+            const clientExists = this.webSocketClients.find((wsc) => wsc.selectedNode.index === selectedNode.index);
             if (clientExists) {
                 this.logger.log({ selectedNode: clientExists.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Disconnecting from the LND\'s Websocket Server..' });
-                const clientIdx = this.webSocketClients.findIndex((wsc) => wsc.selectedNode === selectedNode);
+                const clientIdx = this.webSocketClients.findIndex((wsc) => wsc.selectedNode.index === selectedNode.index);
                 this.webSocketClients.splice(clientIdx, 1);
+            }
+        };
+        this.updateSelectedNode = (newSelectedNode) => {
+            const clientIdx = this.webSocketClients.findIndex((wsc) => +wsc.selectedNode.index === +newSelectedNode.index);
+            const newClient = this.webSocketClients[clientIdx];
+            newClient.selectedNode = JSON.parse(JSON.stringify(newSelectedNode));
+            this.webSocketClients[clientIdx] = newClient;
+            if (this.webSocketClients[clientIdx].selectedNode.ln_version === '' || !this.webSocketClients[clientIdx].selectedNode.ln_version || this.common.isVersionCompatible(this.webSocketClients[clientIdx].selectedNode.ln_version, '0.14.0')) {
+                this.fetchUnpaidInvoices(this.webSocketClients[clientIdx].selectedNode);
             }
         };
         this.wsServer.eventEmitterLND.on('CONNECT', (nodeIndex) => {

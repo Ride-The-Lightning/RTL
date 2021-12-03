@@ -9,10 +9,10 @@ import { Store } from '@ngrx/store';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { InvoiceInformation } from '../../../shared/models/alertData';
-import { Invoice, ListInvoices } from '../../../shared/models/lndModels';
+import { GetInfo, Invoice, ListInvoices } from '../../../shared/models/lndModels';
 import { ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { RTLState } from '../../../store/rtl.state';
-import { invoices } from '../../store/lnd.selector';
+import { invoices, lndNodeInformation } from '../../store/lnd.selector';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
@@ -37,6 +37,7 @@ export class InvoiceInformationComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   public flgOpened = false;
   public flgInvoicePaid = false;
+  public flgVersionCompatible: boolean = true;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<InvoiceInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: InvoiceInformation, private logger: LoggerService, private commonService: CommonService, private snackBar: MatSnackBar, private store: Store<RTLState>) { }
@@ -48,8 +49,12 @@ export class InvoiceInformationComponent implements OnInit, OnDestroy {
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.qrWidth = 220;
     }
+    this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeInfo: GetInfo) => {
+        this.flgVersionCompatible = this.commonService.isVersionCompatible(nodeInfo.version, '0.5.0');
+      });
     const invoiceToCompare = JSON.parse(JSON.stringify(this.invoice));
-    this.store.select(invoices).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(invoices).pipe(takeUntil(this.unSubs[1])).
       subscribe((invoicesSelector: { listInvoices: ListInvoices, apiCallStatus: ApiCallStatusPayload }) => {
         let invoiceStatus = this.invoice.state;
         const invoices = invoicesSelector.listInvoices.invoices || [];
