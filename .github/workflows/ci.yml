@@ -69,7 +69,7 @@ jobs:
           key: ${{ runner.os }}-angular-${{ github.sha }}
 
       - name: Run build production
-        run: npm run build
+        run: npm run build:prod
 
   deploy:
     runs-on: ubuntu-latest
