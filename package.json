@@ -10,6 +10,7 @@
     "build:prod": "ng build --configuration production",
     "server": "set NODE_ENV=development&&nodemon ./rtl.js",
     "test": "ng test --watch=true --code-coverage",
+    "test:code-coverage": "ng test --watch=false --code-coverage",
     "lint": "ng lint",
     "postinstall": "ngcc"
   },
