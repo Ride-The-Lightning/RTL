@@ -67,8 +67,8 @@
           <span *ngIf="sendFundError !== ''">{{sendFundError}}</span>
         </div>
         <div class="mt-2" fxLayout="row" fxFlex="100" fxLayoutAlign="end center">
-          <button class="mr-1" mat-stroked-button color="primary" tabindex="7" type="reset">Clear Fields</button>
-          <button mat-flat-button color="primary" type="submit" tabindex="8">Send Funds</button>
+          <button class="mr-1" mat-button color="primary" tabindex="7" type="reset">Clear Fields</button>
+          <button mat-button color="primary" type="submit" tabindex="8">Send Funds</button>
         </div>
       </form>
     </mat-card-content>
@@ -88,7 +88,7 @@
             </mat-form-field>
           </div>
           <div class="mt-2" fxLayout="row">
-            <button mat-stroked-button color="primary" tabindex="3" type="default" (click)="onAuthenticate()">Confirm</button>
+            <button mat-button color="primary" tabindex="3" type="default" (click)="onAuthenticate()">Confirm</button>
           </div>
         </form>
       </mat-step>
@@ -119,7 +119,7 @@
             </div>
           </div>
           <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-            <button mat-stroked-button color="primary" tabindex="8" type="default" matStepperNext>Next</button>
+            <button mat-button color="primary" tabindex="8" type="default" matStepperNext>Next</button>
           </div>
         </form>
       </mat-step>
@@ -136,14 +136,14 @@
               <span *ngIf="sendFundError !== ''">{{sendFundError}}</span>
             </div>
             <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-              <button mat-stroked-button color="primary" tabindex="9" type="button" (click)="onSendFunds()">Sweep All Funds</button>
+              <button mat-button color="primary" tabindex="9" type="button" (click)="onSendFunds()">Sweep All Funds</button>
             </div>
           </div>
         </form>
       </mat-step>
     </mat-vertical-stepper>
     <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">        
-      <button mat-stroked-button color="primary" tabindex="12" type="button" [mat-dialog-close]="false" default>{{flgValidated ? 'Close' : 'Cancel'}}</button>
+      <button mat-button color="primary" tabindex="12" type="button" [mat-dialog-close]="false" default>{{flgValidated ? 'Close' : 'Cancel'}}</button>
     </div>
   </div>
 </ng-template>

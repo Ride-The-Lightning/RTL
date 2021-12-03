@@ -51,9 +51,9 @@
           </div>        
         </div>
         <div fxLayout="row" fxLayoutAlign="end center">
-          <button mat-stroked-button color="primary" type="reset" class="mr-1" (click)="onClose(false)" tabindex="2">{{noBtnText}}</button>
-          <button autoFocus *ngIf="flgShowInput" mat-flat-button color="primary" type="submit" tabindex="3" (click)="onClose(getInputs)" default>{{yesBtnText}}</button>
-          <button autoFocus *ngIf="!flgShowInput" mat-flat-button color="primary" type="submit" tabindex="4" (click)="onClose(true)" default>{{yesBtnText}}</button>
+          <button mat-button color="primary" type="reset" class="mr-1" (click)="onClose(false)" tabindex="2">{{noBtnText}}</button>
+          <button autoFocus *ngIf="flgShowInput" mat-button color="primary" type="submit" tabindex="3" (click)="onClose(getInputs)" default>{{yesBtnText}}</button>
+          <button autoFocus *ngIf="!flgShowInput" mat-button color="primary" type="submit" tabindex="4" (click)="onClose(true)" default>{{yesBtnText}}</button>
         </div>
       </form>
     </mat-card-content>
