@@ -35,8 +35,8 @@
           <span *ngIf="invoiceError !== ''">{{invoiceError}}</span>
         </div>
         <div fxLayout="row" fxFlex="100" class="mt-1" fxLayoutAlign="end center">
-          <button class="mr-1" mat-stroked-button color="primary" tabindex="7" type="reset" (click)="resetData()">Clear Field</button>
-          <button mat-flat-button color="primary" (click)="onAddInvoice(addInvoiceForm)" tabindex="8">Create Invoice</button>
+          <button class="mr-1" mat-button color="primary" tabindex="7" type="reset" (click)="resetData()">Clear Field</button>
+          <button mat-button color="primary" (click)="onAddInvoice(addInvoiceForm)" tabindex="8">Create Invoice</button>
         </div>
       </form>
     </mat-card-content>

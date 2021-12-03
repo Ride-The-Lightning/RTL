@@ -42,7 +42,7 @@
                 </mat-form-field>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="3" type="submit" (click)="onSelectFee()">Select Fee</button>
+                <button mat-button color="primary" tabindex="3" type="submit" (click)="onSelectFee()">Select Fee</button>
               </div>
             </form>
           </mat-step>
@@ -66,7 +66,7 @@
                 </div>                
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="8" type="submit" (click)="onRebalance()">Rebalance</button>
+                <button mat-button color="primary" tabindex="8" type="submit" (click)="onRebalance()">Rebalance</button>
               </div>
             </form>
           </mat-step>
@@ -95,13 +95,13 @@
               </div>
               <h4 *ngIf="flgInvoiceGenerated && flgPaymentSent" fxLayoutAlign="start" class="font-bold-500 mt-1">{{paymentStatus && paymentStatus.payment_hash ? 'Rebalance Successful.' : 'Rebalance Failed.'}}</h4>
               <div class="mt-1" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button *ngIf="paymentStatus && paymentStatus.error" mat-flat-button color="primary" tabindex="11" type="button" (click)="onRestart()">Start Again</button>
+                <button *ngIf="paymentStatus && paymentStatus.error" mat-button color="primary" tabindex="11" type="button" (click)="onRestart()">Start Again</button>
               </div>
             </form>
           </mat-step>
         </mat-vertical-stepper>
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">        
-          <button mat-stroked-button color="primary" tabindex="12" type="button" [mat-dialog-close]="false" default>Close</button>
+          <button mat-button color="primary" tabindex="12" type="button" [mat-dialog-close]="false" default>Close</button>
         </div>
       </div>
     </mat-card-content>

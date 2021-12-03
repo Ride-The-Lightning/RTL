@@ -17,7 +17,7 @@
                 </mat-form-field>
               </div>
               <div class="mt-2" fxLayout="row">
-                <button mat-stroked-button color="primary" tabindex="3" type="button" (click)="onAuthenticate()">Confirm</button>
+                <button mat-button color="primary" tabindex="3" type="button" (click)="onAuthenticate()">Confirm</button>
               </div>
             </form>
           </mat-step>
@@ -39,7 +39,7 @@
                 </mat-form-field>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="6" type="button" matStepperNext>Next</button>
+                <button mat-button color="primary" tabindex="6" type="button" matStepperNext>Next</button>
               </div>
             </form>
           </mat-step>
@@ -55,7 +55,7 @@
                   </mat-form-field>
                 </div>
                 <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                  <button mat-stroked-button color="primary" tabindex="8" type="button" (click)="onVerifyToken()">{{tokenFormGroup?.controls?.token?.errors?.notValid ? 'Retry' : 'Verify'}}</button>
+                  <button mat-button color="primary" tabindex="8" type="button" (click)="onVerifyToken()">{{tokenFormGroup?.controls?.token?.errors?.notValid ? 'Retry' : 'Verify'}}</button>
                 </div>
               </div>
               <div *ngIf="flgValidated && isTokenValid">
@@ -72,7 +72,7 @@
                   <span>You are about to disable two-factor authentication security from RTL. Are you sure you want to turn it off?</span>
                 </div>
                 <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                  <button mat-stroked-button color="primary" tabindex="8" type="button" (click)="onVerifyToken()">Disable</button>
+                  <button mat-button color="primary" tabindex="8" type="button" (click)="onVerifyToken()">Disable</button>
                 </div>
               </div>
               <div *ngIf="flgValidated && isTokenValid">
@@ -82,7 +82,7 @@
           </mat-step>
         </mat-vertical-stepper>
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">        
-          <button mat-stroked-button color="primary" tabindex="12" type="button" [mat-dialog-close]="false" default>{{flgValidated && isTokenValid ? 'Close' : 'Cancel'}}</button>
+          <button mat-button color="primary" tabindex="12" type="button" [mat-dialog-close]="false" default>{{flgValidated && isTokenValid ? 'Close' : 'Cancel'}}</button>
         </div>
       </div>
     </mat-card-content>

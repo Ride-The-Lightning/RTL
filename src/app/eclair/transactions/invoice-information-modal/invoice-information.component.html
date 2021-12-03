@@ -96,12 +96,12 @@
           <mat-divider class="w-100 my-1"></mat-divider>        
         </div>
         <div [ngClass]="{'mt-2': !showAdvanced, 'mt-1': showAdvanced}" fxLayout="row" fxLayoutAlign="end center">
-          <button class="mr-1" mat-stroked-button color="primary" type="reset" (click)="onShowAdvanced()" tabindex="1">
+          <button class="mr-1" mat-button color="primary" type="reset" (click)="onShowAdvanced()" tabindex="1">
             <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
             <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
           </button>
-          <button *ngIf="invoice?.serialized && invoice?.serialized !== ''" autoFocus mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="invoice?.serialized" (copied)="onCopyPayment($event)">Copy Invoice</button>
-          <button *ngIf="!invoice?.serialized || invoice?.serialized === ''" autoFocus mat-flat-button color="primary" tabindex="2" type="button" (click)="onClose()">OK</button>
+          <button *ngIf="invoice?.serialized && invoice?.serialized !== ''" autoFocus mat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="invoice?.serialized" (copied)="onCopyPayment($event)">Copy Invoice</button>
+          <button *ngIf="!invoice?.serialized || invoice?.serialized === ''" autoFocus mat-button color="primary" tabindex="2" type="button" (click)="onClose()">OK</button>
         </div>
       </div>
       </mat-card-content>

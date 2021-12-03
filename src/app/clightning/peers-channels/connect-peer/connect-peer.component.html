@@ -21,7 +21,7 @@
                 <span>{{peerConnectionError}}</span>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="3" type="button" (click)="onConnectPeer()">{{peerConnectionError !== '' ? 'Retry' : 'Add Peer'}}</button>
+                <button mat-button color="primary" tabindex="3" type="button" (click)="onConnectPeer()">{{peerConnectionError !== '' ? 'Retry' : 'Add Peer'}}</button>
               </div>
             </form>
           </mat-step>
@@ -70,13 +70,13 @@
                 <span>{{channelConnectionError}}</span>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="8" type="submit">{{channelConnectionError !== '' ? 'Retry' : 'Open Channel'}}</button>
+                <button mat-button color="primary" tabindex="8" type="submit">{{channelConnectionError !== '' ? 'Retry' : 'Open Channel'}}</button>
               </div>
             </form>
           </mat-step>
         </mat-vertical-stepper>
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">        
-          <button mat-stroked-button color="primary" tabindex="12" type="button" [mat-dialog-close]="false" default>{{newlyAddedPeer?.id ? 'Do It Later' : 'Close'}}</button>
+          <button mat-button color="primary" tabindex="12" type="button" [mat-dialog-close]="false" default>{{newlyAddedPeer?.id ? 'Do It Later' : 'Close'}}</button>
         </div>
       </div>
     </mat-card-content>

@@ -47,9 +47,9 @@
           </div>        
         </div>
         <div fxLayout="row" fxLayoutAlign="end center">
-          <button *ngIf="channelToClose.active && !flgPendingHtlcs" mat-stroked-button color="primary" type="reset" class="mr-1" (click)="resetData()" tabindex="3" default>Clear</button>
-          <button *ngIf="!flgPendingHtlcs" mat-flat-button color="primary" type="submit" tabindex="4" (click)="onCloseChannel()">{{channelToClose.active ? 'Close Channel' : 'Force Close'}}</button>
-          <button *ngIf="flgPendingHtlcs" mat-flat-button color="primary" type="submit" tabindex="5" (click)="onClose()">Ok</button>
+          <button *ngIf="channelToClose.active && !flgPendingHtlcs" mat-button color="primary" type="reset" class="mr-1" (click)="resetData()" tabindex="3" default>Clear</button>
+          <button *ngIf="!flgPendingHtlcs" mat-button color="primary" type="submit" tabindex="4" (click)="onCloseChannel()">{{channelToClose.active ? 'Close Channel' : 'Force Close'}}</button>
+          <button *ngIf="flgPendingHtlcs" mat-button color="primary" type="submit" tabindex="5" (click)="onClose()">Ok</button>
         </div>
       </form>
     </mat-card-content>

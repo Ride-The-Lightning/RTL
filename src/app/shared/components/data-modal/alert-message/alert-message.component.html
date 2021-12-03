@@ -26,11 +26,11 @@
       </button>
     </div>
     <div fxLayout="row" fxLayoutAlign="end center" class="padding-gap-x-large padding-gap-bottom-large">
-      <button *ngIf="(!showQRField || showQRField === '') && (showCopyName === '')" tabindex="1" autoFocus mat-flat-button color="primary" type="submit" [mat-dialog-close]="false" default>OK</button>
-      <button *ngIf="showCopyName !== ''" class="mr-1" fxLayoutAlign="center center" tabindex="1" mat-stroked-button color="primary" type="button" [mat-dialog-close]="false" default>Close</button>
-      <button *ngIf="showCopyName !== ''" autoFocus mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="showCopyField" (copied)="onCopyField($event)">Copy {{showCopyName}}</button>
-      <button *ngIf="showQRField !== ''" class="mr-1" fxLayoutAlign="center center" tabindex="1" mat-stroked-button color="primary" type="button" [mat-dialog-close]="false" default>Close</button>
-      <button *ngIf="showQRField !== ''" autoFocus mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="showQRField" (copied)="onCopyField($event)">Copy {{showQRName}}</button>
+      <button *ngIf="(!showQRField || showQRField === '') && (showCopyName === '')" tabindex="1" autoFocus mat-button color="primary" type="submit" [mat-dialog-close]="false" default>OK</button>
+      <button *ngIf="showCopyName !== ''" class="mr-1" fxLayoutAlign="center center" tabindex="1" mat-button color="primary" type="button" [mat-dialog-close]="false" default>Close</button>
+      <button *ngIf="showCopyName !== ''" autoFocus mat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="showCopyField" (copied)="onCopyField($event)">Copy {{showCopyName}}</button>
+      <button *ngIf="showQRField !== ''" class="mr-1" fxLayoutAlign="center center" tabindex="1" mat-button color="primary" type="button" [mat-dialog-close]="false" default>Close</button>
+      <button *ngIf="showQRField !== ''" autoFocus mat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="showQRField" (copied)="onCopyField($event)">Copy {{showQRName}}</button>
     </div>
   </div>
 </div>
