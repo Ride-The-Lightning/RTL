@@ -124,19 +124,18 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
 
   onViewRemotePolicy(selChannel: Channel) {
     this.store.dispatch(channelLookup({ payload: { uiMessage: UI_MESSAGES.GET_REMOTE_POLICY, channelID: selChannel.chan_id.toString() + '/' + this.information.identity_pubkey } }));
-    this.lndEffects.setLookup.
-      pipe(take(1)).
-      subscribe((resLookup): boolean | void => {
-        if (!resLookup.fee_base_msat && !resLookup.fee_rate_milli_msat && !resLookup.time_lock_delta) {
-          return false;
-        }
-        const reorderedChannelPolicy = [
-          [{ key: 'fee_base_msat', value: resLookup.fee_base_msat, title: 'Base Fees (mSats)', width: 25, type: DataTypeEnum.NUMBER },
-          { key: 'fee_rate_milli_msat', value: resLookup.fee_rate_milli_msat, title: 'Fee Rate (milli mSats)', width: 25, type: DataTypeEnum.NUMBER },
-          { key: 'fee_rate_milli_msat', value: resLookup.fee_rate_milli_msat / 10000, title: 'Fee Rate (%)', width: 25, type: DataTypeEnum.NUMBER, digitsInfo: '1.0-8' },
-          { key: 'time_lock_delta', value: resLookup.time_lock_delta, title: 'Time Lock Delta', width: 25, type: DataTypeEnum.NUMBER }]
-        ];
-        const titleMsg = 'Remote policy for Channel: ' + ((!selChannel.remote_alias && !selChannel.chan_id) ? selChannel.channel_point : (selChannel.remote_alias && selChannel.chan_id) ? selChannel.remote_alias + ' (' + selChannel.chan_id + ')' : selChannel.remote_alias ? selChannel.remote_alias : selChannel.chan_id);
+    this.lndEffects.setLookup.pipe(take(1)).subscribe((resLookup): boolean | void => {
+      if (!resLookup.fee_base_msat && !resLookup.fee_rate_milli_msat && !resLookup.time_lock_delta) {
+        return false;
+      }
+      const reorderedChannelPolicy = [
+        [{ key: 'fee_base_msat', value: resLookup.fee_base_msat, title: 'Base Fees (mSats)', width: 25, type: DataTypeEnum.NUMBER },
+        { key: 'fee_rate_milli_msat', value: resLookup.fee_rate_milli_msat, title: 'Fee Rate (milli mSats)', width: 25, type: DataTypeEnum.NUMBER },
+        { key: 'fee_rate_milli_msat', value: resLookup.fee_rate_milli_msat / 10000, title: 'Fee Rate (%)', width: 25, type: DataTypeEnum.NUMBER, digitsInfo: '1.0-8' },
+        { key: 'time_lock_delta', value: resLookup.time_lock_delta, title: 'Time Lock Delta', width: 25, type: DataTypeEnum.NUMBER }]
+      ];
+      const titleMsg = 'Remote policy for Channel: ' + ((!selChannel.remote_alias && !selChannel.chan_id) ? selChannel.channel_point : (selChannel.remote_alias && selChannel.chan_id) ? selChannel.remote_alias + ' (' + selChannel.chan_id + ')' : selChannel.remote_alias ? selChannel.remote_alias : selChannel.chan_id);
+      setTimeout(() => {
         this.store.dispatch(openAlert({
           payload: {
             data: {
@@ -147,7 +146,8 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
             }
           }
         }));
-      });
+      }, 0);
+    });
   }
 
   onCircularRebalance(selChannel: any) {
@@ -199,19 +199,18 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     } else {
       this.myChanPolicy = { fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0 };
       this.store.dispatch(channelLookup({ payload: { uiMessage: UI_MESSAGES.GET_CHAN_POLICY, channelID: channelToUpdate.chan_id.toString() } }));
-      this.lndEffects.setLookup.
-        pipe(take(1)).
-        subscribe((resLookup) => {
-          if (resLookup.node1_pub === this.information.identity_pubkey) {
-            this.myChanPolicy = resLookup.node1_policy;
-          } else if (resLookup.node2_pub === this.information.identity_pubkey) {
-            this.myChanPolicy = resLookup.node2_policy;
-          } else {
-            this.myChanPolicy = { fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0 };
-          }
-          this.logger.info(this.myChanPolicy);
-          const titleMsg = 'Update fee policy for Channel: ' + ((!channelToUpdate.remote_alias && !channelToUpdate.chan_id) ? channelToUpdate.channel_point : (channelToUpdate.remote_alias && channelToUpdate.chan_id) ? channelToUpdate.remote_alias + ' (' + channelToUpdate.chan_id + ')' : channelToUpdate.remote_alias ? channelToUpdate.remote_alias : channelToUpdate.chan_id);
-          const confirmationMsg = [];
+      this.lndEffects.setLookup.pipe(take(1)).subscribe((resLookup) => {
+        if (resLookup.node1_pub === this.information.identity_pubkey) {
+          this.myChanPolicy = resLookup.node1_policy;
+        } else if (resLookup.node2_pub === this.information.identity_pubkey) {
+          this.myChanPolicy = resLookup.node2_policy;
+        } else {
+          this.myChanPolicy = { fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0 };
+        }
+        this.logger.info(this.myChanPolicy);
+        const titleMsg = 'Update fee policy for Channel: ' + ((!channelToUpdate.remote_alias && !channelToUpdate.chan_id) ? channelToUpdate.channel_point : (channelToUpdate.remote_alias && channelToUpdate.chan_id) ? channelToUpdate.remote_alias + ' (' + channelToUpdate.chan_id + ')' : channelToUpdate.remote_alias ? channelToUpdate.remote_alias : channelToUpdate.chan_id);
+        const confirmationMsg = [];
+        setTimeout(() => {
           this.store.dispatch(openConfirmation({
             payload: {
               data: {
@@ -230,7 +229,8 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
               }
             }
           }));
-        });
+        }, 0);
+      });
       this.rtlEffects.closeConfirm.
         pipe(takeUntil(this.unSubs[6])).
         subscribe((confirmRes) => {

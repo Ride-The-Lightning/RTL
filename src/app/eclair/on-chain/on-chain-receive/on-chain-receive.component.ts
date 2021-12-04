@@ -22,21 +22,20 @@ export class ECLOnChainReceiveComponent {
 
   onGenerateAddress() {
     this.store.dispatch(getNewAddress());
-    this.eclEffects.setNewAddress.pipe(take(1)).
-      subscribe((newAddress) => {
-        this.newAddress = newAddress;
-        setTimeout(() => {
-          this.store.dispatch(openAlert({
-            payload: {
-              data: {
-                address: this.newAddress,
-                addressType: '',
-                component: OnChainGeneratedAddressComponent
-              }
+    this.eclEffects.setNewAddress.pipe(take(1)).subscribe((newAddress) => {
+      this.newAddress = newAddress;
+      setTimeout(() => {
+        this.store.dispatch(openAlert({
+          payload: {
+            data: {
+              address: this.newAddress,
+              addressType: '',
+              component: OnChainGeneratedAddressComponent
             }
-          }));
-        }, 0);
-      });
+          }
+        }));
+      }, 0);
+    });
   }
 
 }

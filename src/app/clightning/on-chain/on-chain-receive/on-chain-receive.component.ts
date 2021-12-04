@@ -25,22 +25,20 @@ export class CLOnChainReceiveComponent {
 
   onGenerateAddress() {
     this.store.dispatch(getNewAddress({ payload: this.selectedAddressType }));
-    this.clEffects.setNewAddressCL.
-      pipe(take(1)).
-      subscribe((newAddress) => {
-        this.newAddress = newAddress;
-        setTimeout(() => {
-          this.store.dispatch(openAlert({
-            payload: {
-              data: {
-                address: this.newAddress,
-                addressType: this.selectedAddressType.addressTp,
-                component: OnChainGeneratedAddressComponent
-              }
+    this.clEffects.setNewAddressCL.pipe(take(1)).subscribe((newAddress) => {
+      this.newAddress = newAddress;
+      setTimeout(() => {
+        this.store.dispatch(openAlert({
+          payload: {
+            data: {
+              address: this.newAddress,
+              addressType: this.selectedAddressType.addressTp,
+              component: OnChainGeneratedAddressComponent
             }
-          }));
-        }, 0);
-      });
+          }
+        }));
+      }, 0);
+    });
   }
 
 }
