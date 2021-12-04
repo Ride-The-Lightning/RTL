@@ -48,6 +48,7 @@ Thumbs.db
 /logs/*
 /cookies/*
 /backup/*
+/database/rtl-db.sqlite
 cookies
 .env
 RTL-Config.json

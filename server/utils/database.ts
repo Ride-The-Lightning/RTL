@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { join, dirname, sep } from 'path';
+import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import sqlz from 'sequelize';
 const { Sequelize } = sqlz;
