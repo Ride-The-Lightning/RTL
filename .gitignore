@@ -44,7 +44,7 @@ cookies
 # System Files
 .DS_Store
 Thumbs.db
-
+/database/*
 /logs/*
 /cookies/*
 /backup/*
