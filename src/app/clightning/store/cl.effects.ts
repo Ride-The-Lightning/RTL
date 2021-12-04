@@ -386,25 +386,23 @@ export class CLEffects implements OnDestroy {
       return this.httpClient.post(
         this.CHILD_API_URL + environment.CHANNELS_API + '/setChannelFee',
         { id: action.payload.channelId, base: action.payload.baseFeeMsat, ppm: action.payload.feeRate }
-      ).
-        pipe(
-          map((postRes: any) => {
-            this.logger.info(postRes);
-            this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_CHAN_POLICY }));
-            if (action.payload.channelId === 'all') {
-              this.store.dispatch(openSnackBar({ payload: { message: 'All Channels Updated Successfully. Fee policy updates may take some time to reflect on the channel.', duration: 5000 } }));
-            } else {
-              this.store.dispatch(openSnackBar({ payload: { message: 'Channel Updated Successfully. Fee policy updates may take some time to reflect on the channel.', duration: 5000 } }));
-            }
-            return {
-              type: CLActions.FETCH_CHANNELS_CL
-            };
-          }),
-          catchError((err: any) => {
-            this.handleErrorWithAlert('UpdateChannel', UI_MESSAGES.UPDATE_CHAN_POLICY, 'Update Channel Failed', this.CHILD_API_URL + environment.CHANNELS_API, err);
-            return of({ type: RTLActions.VOID });
-          })
-        );
+      ).pipe(map((postRes: any) => {
+        this.logger.info(postRes);
+        this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_CHAN_POLICY }));
+        if (action.payload.channelId === 'all') {
+          this.store.dispatch(openSnackBar({ payload: { message: 'All Channels Updated Successfully. Fee policy updates may take some time to reflect on the channel.', duration: 5000 } }));
+        } else {
+          this.store.dispatch(openSnackBar({ payload: { message: 'Channel Updated Successfully. Fee policy updates may take some time to reflect on the channel.', duration: 5000 } }));
+        }
+        return {
+          type: CLActions.FETCH_CHANNELS_CL
+        };
+      }),
+        catchError((err: any) => {
+          this.handleErrorWithAlert('UpdateChannel', UI_MESSAGES.UPDATE_CHAN_POLICY, 'Update Channel Failed', this.CHILD_API_URL + environment.CHANNELS_API, err);
+          return of({ type: RTLActions.VOID });
+        })
+      );
     })
   ));
 

@@ -55,20 +55,18 @@ export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.qrHops = new MatTableDataSource([]);
-    this.eclEffects.setQueryRoutes.
-      pipe(takeUntil(this.unSubs[1])).
-      subscribe((queryRoute) => {
-        this.qrHops.data = [];
-        if (queryRoute) {
-          this.flgLoading[0] = false;
-          this.qrHops = new MatTableDataSource<Route>([...queryRoute]);
-          this.qrHops.data = queryRoute;
-        } else {
-          this.flgLoading[0] = 'error';
-        }
-        this.qrHops.sort = this.sort;
-        this.qrHops.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-      });
+    this.eclEffects.setQueryRoutes.pipe(takeUntil(this.unSubs[1])).subscribe((queryRoute) => {
+      this.qrHops.data = [];
+      if (queryRoute) {
+        this.flgLoading[0] = false;
+        this.qrHops = new MatTableDataSource<Route>([...queryRoute]);
+        this.qrHops.data = queryRoute;
+      } else {
+        this.flgLoading[0] = 'error';
+      }
+      this.qrHops.sort = this.sort;
+      this.qrHops.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+    });
   }
 
   onQueryRoutes(): boolean | void {

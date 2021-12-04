@@ -121,19 +121,17 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
       this.sendPayment();
     } else {
       this.store.dispatch(decodePayment({ payload: { routeParam: this.paymentRequest, fromDialog: false } }));
-      this.clEffects.setDecodedPaymentCL.
-        pipe(take(1)).
-        subscribe((decodedPayment) => {
-          this.paymentDecoded = decodedPayment;
-          if (this.paymentDecoded.created_at) {
-            if (!this.paymentDecoded.msatoshi) {
-              this.paymentDecoded.msatoshi = 0;
-            }
-            this.sendPayment();
-          } else {
-            this.resetData();
+      this.clEffects.setDecodedPaymentCL.pipe(take(1)).subscribe((decodedPayment) => {
+        this.paymentDecoded = decodedPayment;
+        if (this.paymentDecoded.created_at) {
+          if (!this.paymentDecoded.msatoshi) {
+            this.paymentDecoded.msatoshi = 0;
           }
-        });
+          this.sendPayment();
+        } else {
+          this.resetData();
+        }
+      });
     }
   }
 

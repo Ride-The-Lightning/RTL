@@ -11,10 +11,10 @@ import { MatStepper } from '@angular/material/stepper';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import * as sha256 from 'sha256';
 
-import { SelNodeChild, GetInfoRoot, RTLConfiguration } from '../../../shared/models/RTLconfig';
+import { SelNodeChild, RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CLOnChainSendFunds } from '../../../shared/models/alertData';
 import { GetInfo, Balance, OnChain, UTXO } from '../../../shared/models/clModels';
-import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, FEE_RATE_TYPES, APICallStatusEnum, CLActions } from '../../../shared/services/consts-enums-functions';
+import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, FEE_RATE_TYPES, APICallStatusEnum, CLActions, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
@@ -52,7 +52,10 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
   public newAddress = '';
   public transaction: OnChain = {};
   public feeRateTypes = FEE_RATE_TYPES;
+  public selFeeRate = '';
+  public customFeeRate = null;
   public flgMinConf = false;
+  public minConfValue = null;
   public sendFundError = '';
   public fiatConversion = false;
   public amountUnits = CURRENCY_UNITS;
@@ -70,9 +73,13 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
   passwordFormGroup: FormGroup;
   sendFundFormGroup: FormGroup;
   confirmFormGroup: FormGroup;
+  public screenSize = '';
+  public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLOnChainSendModalComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOnChainSendFunds, private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions, private formBuilder: FormBuilder, private rtlEffects: RTLEffects, private snackBar: MatSnackBar) { }
+  constructor(public dialogRef: MatDialogRef<CLOnChainSendModalComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOnChainSendFunds, private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions, private formBuilder: FormBuilder, private rtlEffects: RTLEffects, private snackBar: MatSnackBar) {
+    this.screenSize = this.commonService.getScreenSize();
+  }
 
   ngOnInit() {
     this.sweepAll = this.data.sweepAll;
@@ -82,25 +89,36 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
     });
     this.sendFundFormGroup = this.formBuilder.group({
       transactionAddress: ['', Validators.required],
-      transactionFeeRate: [null],
+      selFeeRate: [null],
+      customFeeRate: [null],
       flgMinConf: [false],
-      transactionBlocks: [{ value: null, disabled: true }]
+      minConfValue: [{ value: null, disabled: true }]
     });
     this.confirmFormGroup = this.formBuilder.group({});
     this.sendFundFormGroup.controls.flgMinConf.valueChanges.pipe(takeUntil(this.unSubs[0])).subscribe((flg) => {
       if (flg) {
-        this.sendFundFormGroup.controls.transactionBlocks.enable();
-        this.sendFundFormGroup.controls.transactionBlocks.setValidators([Validators.required]);
-        this.sendFundFormGroup.controls.transactionBlocks.setValue(null);
-        this.sendFundFormGroup.controls.transactionFeeRate.disable();
-        this.sendFundFormGroup.controls.transactionFeeRate.setValue(null);
+        this.sendFundFormGroup.controls.selFeeRate.disable();
+        this.sendFundFormGroup.controls.selFeeRate.setValue(null);
+        this.sendFundFormGroup.controls.minConfValue.reset();
+        this.sendFundFormGroup.controls.minConfValue.enable();
+        this.sendFundFormGroup.controls.minConfValue.setValidators([Validators.required]);
+        this.sendFundFormGroup.controls.minConfValue.setValue(null);
       } else {
-        this.sendFundFormGroup.controls.transactionBlocks.disable();
-        this.sendFundFormGroup.controls.transactionBlocks.setValidators(null);
-        this.sendFundFormGroup.controls.transactionBlocks.setValue(null);
-        this.sendFundFormGroup.controls.transactionBlocks.setErrors(null);
-        this.sendFundFormGroup.controls.transactionFeeRate.enable();
-        this.sendFundFormGroup.controls.transactionFeeRate.setValue(null);
+        this.sendFundFormGroup.controls.selFeeRate.enable();
+        this.sendFundFormGroup.controls.selFeeRate.setValue(null);
+        this.sendFundFormGroup.controls.minConfValue.setValue(null);
+        this.sendFundFormGroup.controls.minConfValue.disable();
+        this.sendFundFormGroup.controls.minConfValue.setValidators(null);
+        this.sendFundFormGroup.controls.minConfValue.setErrors(null);
+      }
+    });
+    this.sendFundFormGroup.controls.selFeeRate.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe((feeRate) => {
+      this.sendFundFormGroup.controls.customFeeRate.setValue(null);
+      this.sendFundFormGroup.controls.customFeeRate.reset();
+      if (feeRate === 'customperkb' && !this.sendFundFormGroup.controls.flgMinConf.value) {
+        this.sendFundFormGroup.controls.customFeeRate.setValidators([Validators.required]);
+      } else {
+        this.sendFundFormGroup.controls.customFeeRate.setValidators(null);
       }
     });
     combineLatest([this.store.select(rootSelectedNode), this.store.select(rootAppConfig)]).pipe(takeUntil(this.unSubs[1])).
@@ -155,9 +173,6 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
   }
 
   onSendFunds(): boolean | void {
-    if (this.invalidValues) {
-      return true;
-    }
     this.sendFundError = '';
     if (this.flgUseAllBalance) {
       this.transaction.satoshis = 'all';
@@ -167,22 +182,29 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
       this.selUTXOs.forEach((utxo) => this.transaction.utxos.push(utxo.txid + ':' + utxo.output));
     }
     if (this.sweepAll) {
+      if ((!this.sendFundFormGroup.controls.transactionAddress.value || this.sendFundFormGroup.controls.transactionAddress.value === '') || (this.sendFundFormGroup.controls.flgMinConf.value && (!this.sendFundFormGroup.controls.minConfValue.value || this.sendFundFormGroup.controls.minConfValue.value <= 0) || (this.selFeeRate === 'customperkb' && !this.flgMinConf && !this.customFeeRate))) {
+        return true;
+      }
       this.transaction.satoshis = 'all';
       this.transaction.address = this.sendFundFormGroup.controls.transactionAddress.value;
       if (this.sendFundFormGroup.controls.flgMinConf.value) {
         delete this.transaction.feeRate;
-        this.transaction.minconf = this.sendFundFormGroup.controls.transactionBlocks.value;
+        this.transaction.minconf = this.sendFundFormGroup.controls.flgMinConf.value ? this.sendFundFormGroup.controls.minConfValue.value : null
       } else {
         delete this.transaction.minconf;
-        if (this.sendFundFormGroup.controls.transactionFeeRate.value) {
-          this.transaction.feeRate = this.sendFundFormGroup.controls.transactionFeeRate.value;
-        } else {
-          delete this.transaction.feeRate;
-        }
+        this.transaction.feeRate = (this.sendFundFormGroup.controls.selFeeRate.value === 'customperkb' && !this.sendFundFormGroup.controls.flgMinConf.value && this.sendFundFormGroup.controls.customFeeRate.value) ? ((this.sendFundFormGroup.controls.customFeeRate.value * 1000) + 'perkb') : this.sendFundFormGroup.controls.selFeeRate.value;
       }
       delete this.transaction.utxos;
       this.store.dispatch(setChannelTransaction({ payload: this.transaction }));
     } else {
+      this.transaction.minconf = this.flgMinConf ? this.minConfValue : null;
+      this.transaction['feeRate'] = (this.selFeeRate === 'customperkb' && !this.flgMinConf && this.customFeeRate) ? (this.customFeeRate * 1000) + 'perkb' : this.selFeeRate;
+      if ((!this.transaction.address || this.transaction.address === '') ||
+        ((!this.transaction.satoshis || +this.transaction.satoshis <= 0)) ||
+        (this.flgMinConf && (!this.transaction.minconf || this.transaction.minconf <= 0)) ||
+        (this.selFeeRate === 'customperkb' && !this.flgMinConf && !this.customFeeRate)) {
+        return true;
+      }
       if (this.transaction.satoshis && this.transaction.satoshis !== 'all' && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
         this.commonService.convertCurrency(+this.transaction.satoshis, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion).
           pipe(takeUntil(this.unSubs[5])).
@@ -200,16 +222,6 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
       } else {
         this.store.dispatch(setChannelTransaction({ payload: this.transaction }));
       }
-    }
-  }
-
-  get invalidValues(): boolean {
-    if (this.sweepAll) {
-      return (!this.sendFundFormGroup.controls.transactionAddress.value || this.sendFundFormGroup.controls.transactionAddress.value === '') || (this.sendFundFormGroup.controls.flgMinConf.value && (!this.sendFundFormGroup.controls.transactionBlocks.value || this.sendFundFormGroup.controls.transactionBlocks.value <= 0));
-    } else {
-      return (!this.transaction.address || this.transaction.address === '') ||
-        ((!this.transaction.satoshis || +this.transaction.satoshis <= 0)) ||
-        (this.flgMinConf && (!this.transaction.minconf || this.transaction.minconf <= 0));
     }
   }
 
@@ -239,8 +251,8 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
       case 2:
         this.passwordFormLabel = 'User authenticated successfully';
         this.sendFundFormLabel = 'Sweep funds | Address: ' + this.sendFundFormGroup.controls.transactionAddress.value +
-          (this.sendFundFormGroup.controls.flgMinConf.value ? (' | Min Confirmation Blocks: ' + this.sendFundFormGroup.controls.transactionBlocks.value) : (this.sendFundFormGroup.controls.transactionFeeRate.value ? (' | Fee Rate: ' +
-            this.feeRateTypes.find((frType) => frType.feeRateId === this.sendFundFormGroup.controls.transactionFeeRate.value).feeRateType) : ''));
+          (this.sendFundFormGroup.controls.flgMinConf.value ? (' | Min Confirmation Blocks: ' + this.sendFundFormGroup.controls.minConfValue.value) : (this.sendFundFormGroup.controls.selFeeRate.value ? (' | Fee Rate: ' +
+            this.feeRateTypes.find((frType) => frType.feeRateId === this.sendFundFormGroup.controls.selFeeRate.value).feeRateType) : ''));
         break;
 
       default:

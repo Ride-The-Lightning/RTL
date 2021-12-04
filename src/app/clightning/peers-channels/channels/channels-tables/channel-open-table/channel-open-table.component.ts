@@ -103,24 +103,23 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
 
   onViewRemotePolicy(selChannel: Channel) {
     this.store.dispatch(channelLookup({ payload: { uiMessage: UI_MESSAGES.GET_REMOTE_POLICY, shortChannelID: selChannel.short_channel_id, showError: true } }));
-    this.clEffects.setLookupCL.
-      pipe(take(1)).
-      subscribe((resLookup: ChannelEdge[]): boolean | void => {
-        if (resLookup.length === 0) {
-          return false;
-        }
-        let remoteNode: ChannelEdge = {};
-        if (resLookup[0].source !== this.information.id) {
-          remoteNode = resLookup[0];
-        } else {
-          remoteNode = resLookup[1];
-        }
-        const reorderedChannelPolicy = [
-          [{ key: 'base_fee_millisatoshi', value: remoteNode.base_fee_millisatoshi, title: 'Base Fees (mSats)', width: 34, type: DataTypeEnum.NUMBER },
-          { key: 'fee_per_millionth', value: remoteNode.fee_per_millionth, title: 'Fee/Millionth', width: 33, type: DataTypeEnum.NUMBER },
-          { key: 'delay', value: remoteNode.delay, title: 'Delay', width: 33, type: DataTypeEnum.NUMBER }]
-        ];
-        const titleMsg = 'Remote policy for Channel: ' + ((!selChannel.alias && !selChannel.short_channel_id) ? selChannel.channel_id : (selChannel.alias && selChannel.short_channel_id) ? selChannel.alias + ' (' + selChannel.short_channel_id + ')' : selChannel.alias ? selChannel.alias : selChannel.short_channel_id);
+    this.clEffects.setLookupCL.pipe(take(1)).subscribe((resLookup: ChannelEdge[]): boolean | void => {
+      if (resLookup.length === 0) {
+        return false;
+      }
+      let remoteNode: ChannelEdge = {};
+      if (resLookup[0].source !== this.information.id) {
+        remoteNode = resLookup[0];
+      } else {
+        remoteNode = resLookup[1];
+      }
+      const reorderedChannelPolicy = [
+        [{ key: 'base_fee_millisatoshi', value: remoteNode.base_fee_millisatoshi, title: 'Base Fees (mSats)', width: 34, type: DataTypeEnum.NUMBER },
+        { key: 'fee_per_millionth', value: remoteNode.fee_per_millionth, title: 'Fee/Millionth', width: 33, type: DataTypeEnum.NUMBER },
+        { key: 'delay', value: remoteNode.delay, title: 'Delay', width: 33, type: DataTypeEnum.NUMBER }]
+      ];
+      const titleMsg = 'Remote policy for Channel: ' + ((!selChannel.alias && !selChannel.short_channel_id) ? selChannel.channel_id : (selChannel.alias && selChannel.short_channel_id) ? selChannel.alias + ' (' + selChannel.short_channel_id + ')' : selChannel.alias ? selChannel.alias : selChannel.short_channel_id);
+      setTimeout(() => {
         this.store.dispatch(openAlert({
           payload: {
             data: {
@@ -131,7 +130,8 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
             }
           }
         }));
-      });
+      }, 0);
+    });
   }
 
   onChannelUpdate(channelToUpdate: any) {
@@ -157,31 +157,28 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
           }
         }
       }));
-      this.rtlEffects.closeConfirm.
-        pipe(takeUntil(this.unSubs[1])).
-        subscribe((confirmRes) => {
-          if (confirmRes) {
-            const base_fee = confirmRes[0].inputValue;
-            const fee_rate = confirmRes[1].inputValue;
-            this.store.dispatch(updateChannel({ payload: { baseFeeMsat: base_fee, feeRate: fee_rate, channelId: 'all' } }));
-          }
-        });
+      this.rtlEffects.closeConfirm.pipe(takeUntil(this.unSubs[1])).subscribe((confirmRes) => {
+        if (confirmRes) {
+          const base_fee = confirmRes[0].inputValue;
+          const fee_rate = confirmRes[1].inputValue;
+          this.store.dispatch(updateChannel({ payload: { baseFeeMsat: base_fee, feeRate: fee_rate, channelId: 'all' } }));
+        }
+      });
     } else {
       this.myChanPolicy = { fee_base_msat: 0, fee_rate_milli_msat: 0 };
       this.store.dispatch(channelLookup({ payload: { uiMessage: UI_MESSAGES.GET_CHAN_POLICY, shortChannelID: channelToUpdate.short_channel_id, showError: false } }));
-      this.clEffects.setLookupCL.
-        pipe(take(1)).
-        subscribe((resLookup: ChannelEdge[]) => {
-          if (resLookup.length > 0 && resLookup[0].source === this.information.id) {
-            this.myChanPolicy = { fee_base_msat: resLookup[0].base_fee_millisatoshi, fee_rate_milli_msat: resLookup[0].fee_per_millionth };
-          } else if (resLookup.length > 1 && resLookup[1].source === this.information.id) {
-            this.myChanPolicy = { fee_base_msat: resLookup[1].base_fee_millisatoshi, fee_rate_milli_msat: resLookup[1].fee_per_millionth };
-          } else {
-            this.myChanPolicy = { fee_base_msat: 0, fee_rate_milli_msat: 0 };
-          }
-          this.logger.info(this.myChanPolicy);
-          const titleMsg = 'Update fee policy for Channel: ' + ((!channelToUpdate.alias && !channelToUpdate.short_channel_id) ? channelToUpdate.channel_id : (channelToUpdate.alias && channelToUpdate.short_channel_id) ? channelToUpdate.alias + ' (' + channelToUpdate.short_channel_id + ')' : channelToUpdate.alias ? channelToUpdate.alias : channelToUpdate.short_channel_id);
-          const confirmationMsg = [];
+      this.clEffects.setLookupCL.pipe(take(1)).subscribe((resLookup: ChannelEdge[]) => {
+        if (resLookup.length > 0 && resLookup[0].source === this.information.id) {
+          this.myChanPolicy = { fee_base_msat: resLookup[0].base_fee_millisatoshi, fee_rate_milli_msat: resLookup[0].fee_per_millionth };
+        } else if (resLookup.length > 1 && resLookup[1].source === this.information.id) {
+          this.myChanPolicy = { fee_base_msat: resLookup[1].base_fee_millisatoshi, fee_rate_milli_msat: resLookup[1].fee_per_millionth };
+        } else {
+          this.myChanPolicy = { fee_base_msat: 0, fee_rate_milli_msat: 0 };
+        }
+        this.logger.info(this.myChanPolicy);
+        const titleMsg = 'Update fee policy for Channel: ' + ((!channelToUpdate.alias && !channelToUpdate.short_channel_id) ? channelToUpdate.channel_id : (channelToUpdate.alias && channelToUpdate.short_channel_id) ? channelToUpdate.alias + ' (' + channelToUpdate.short_channel_id + ')' : channelToUpdate.alias ? channelToUpdate.alias : channelToUpdate.short_channel_id);
+        const confirmationMsg = [];
+        setTimeout(() => {
           this.store.dispatch(openConfirmation({
             payload: {
               data: {
@@ -199,7 +196,8 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
               }
             }
           }));
-        });
+        }, 0);
+      });
       this.rtlEffects.closeConfirm.
         pipe(takeUntil(this.unSubs[2])).
         subscribe((confirmRes) => {

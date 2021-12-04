@@ -82,33 +82,29 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
 
     this.insecureLND = !window.location.protocol.includes('https:');
 
-    this.lndEffects.initWalletRes.
-      pipe(takeUntil(this.unsubs[2])).
-      subscribe((initWalletResponse) => {
-        this.initWalletResponse = initWalletResponse;
-      });
+    this.lndEffects.initWalletRes.pipe(takeUntil(this.unsubs[2])).subscribe((initWalletResponse) => {
+      this.initWalletResponse = initWalletResponse;
+    });
 
-    this.lndEffects.genSeedResponse.
-      pipe(takeUntil(this.unsubs[3])).
-      subscribe((genSeedRes) => {
-        this.genSeedResponse = genSeedRes;
-        if (this.passphraseFormGroup.controls.enterPassphrase.value) {
-          this.store.dispatch(initWallet({
-            payload: {
-              pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
-              cipher: this.genSeedResponse,
-              passphrase: window.btoa(this.passphraseFormGroup.controls.passphrase.value)
-            }
-          }));
-        } else {
-          this.store.dispatch(initWallet({
-            payload: {
-              pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
-              cipher: this.genSeedResponse
-            }
-          }));
-        }
-      });
+    this.lndEffects.genSeedResponse.pipe(takeUntil(this.unsubs[3])).subscribe((genSeedRes) => {
+      this.genSeedResponse = genSeedRes;
+      if (this.passphraseFormGroup.controls.enterPassphrase.value) {
+        this.store.dispatch(initWallet({
+          payload: {
+            pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
+            cipher: this.genSeedResponse,
+            passphrase: window.btoa(this.passphraseFormGroup.controls.passphrase.value)
+          }
+        }));
+      } else {
+        this.store.dispatch(initWallet({
+          payload: {
+            pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
+            cipher: this.genSeedResponse
+          }
+        }));
+      }
+    });
   }
 
   onInitWallet(): boolean | void {
