@@ -3,9 +3,9 @@ import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { faCodeBranch, faCog, faLifeRing, faEject, faUserCog } from '@fortawesome/free-solid-svg-icons';
+import { faCodeBranch, faCode, faCog, faLifeRing, faEject, faUserCog } from '@fortawesome/free-solid-svg-icons';
 
-import { GetInfoRoot, ConfigSettingsNode } from '../../../models/RTLconfig';
+import { GetInfoRoot } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { SessionService } from '../../../services/session.service';
 import { GetInfoChain } from '../../../models/lndModels';
@@ -27,6 +27,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
 
   public faUserCog = faUserCog;
   public faCodeBranch = faCodeBranch;
+  public faCode = faCode;
   public faCog = faCog;
   public faLifeRing = faLifeRing;
   public faEject = faEject;
@@ -44,7 +45,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.store.select(rootNodeData).
       pipe(takeUntil(this.unSubs[0])).
-      subscribe((nodeData) => {
+      subscribe((nodeData: GetInfoRoot) => {
         this.information = nodeData;
         this.flgLoading = !(this.information.identity_pubkey);
         if (this.information.identity_pubkey) {

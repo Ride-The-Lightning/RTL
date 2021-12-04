@@ -93,6 +93,7 @@ export const postPayment = (req, res, next) => {
     if (req.body.paymentType === 'KEYSEND') {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Keysend Payment..' });
         options.url = req.session.selectedNode.ln_server_url + '/v1/pay/keysend';
+        options.body = req.body;
     }
     else {
         if (req.body.paymentType === 'OFFER') {
@@ -125,6 +126,9 @@ export const postPayment = (req, res, next) => {
         }
         if (req.body.paymentType === 'INVOICE') {
             return res.status(201).json({ paymentResponse: body, saveToDBResponse: 'NA' });
+        }
+        if (req.body.paymentType === 'KEYSEND') {
+            return res.status(201).json(body);
         }
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Payments', 'Send Payment Error', req.session.selectedNode);

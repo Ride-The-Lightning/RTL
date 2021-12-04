@@ -28,7 +28,7 @@
 </div>
 <ng-template #invoiceBlock>
   <mat-form-field fxFlex="100">
-    <textarea autoFocus matInput placeholder="Payment Request" name="paymentRequest" tabindex="4" [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" (matTextareaAutosize)="true" required #paymentReq="ngModel"></textarea>
+    <textarea autoFocus matInput placeholder="Payment Request" rows="4" name="paymentRequest" tabindex="4" [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" (matTextareaAutosize)="true" required #paymentReq="ngModel"></textarea>
     <mat-hint *ngIf="paymentRequest && paymentDecodedHint !== ''">{{paymentDecodedHint}}</mat-hint>
     <mat-error *ngIf="!paymentRequest">Payment request is required.</mat-error>
     <mat-error *ngIf="paymentReq.errors?.decodeError">{{paymentDecodedHint}}</mat-error>
