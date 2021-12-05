@@ -3,7 +3,7 @@ import { createAction, props } from '@ngrx/store';
 import { CLActions } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Fees, Peer, Payment, PayRequest, QueryRoutes, Channel, FeeRates, ForwardingEvent, Invoice, ListInvoices, OnChain, UTXO, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, DecodePayment, SendPayment, GetQueryRoutes, ChannelLookup, OfferInvoice } from '../../shared/models/clModels';
+import { GetInfo, Fees, Peer, Payment, PayRequest, QueryRoutes, Channel, FeeRates, ForwardingEvent, Invoice, ListInvoices, OnChain, UTXO, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, DecodePayment, SendPayment, GetQueryRoutes, ChannelLookup, OfferInvoice, Offer } from '../../shared/models/clModels';
 
 export const updateCLAPICallStatus = createAction(CLActions.UPDATE_API_CALL_STATUS_CL, props<{ payload: ApiCallStatusPayload }>());
 
@@ -116,3 +116,11 @@ export const setUTXOs = createAction(CLActions.SET_UTXOS_CL, props<{ payload: UT
 export const fetchOfferInvoice = createAction(CLActions.FETCH_OFFER_INVOICE_CL, props<{ payload: { offer: string, msatoshi?: number } }>());
 
 export const setOfferInvoice = createAction(CLActions.SET_OFFER_INVOICE_CL, props<{ payload: OfferInvoice }>());
+
+export const fetchOffers = createAction(CLActions.FETCH_OFFERS_CL);
+
+export const setOffers = createAction(CLActions.SET_OFFERS_CL, props<{ payload: Offer[] }>());
+
+export const saveNewOffer = createAction(CLActions.SAVE_NEW_OFFER_CL, props<{ payload: { amount: number, label: string, description: string, expiry: number, private: boolean } }>());
+
+export const addOffer = createAction(CLActions.ADD_OFFER_CL, props<{ payload: Offer }>());

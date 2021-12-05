@@ -1,6 +1,6 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { APICallStatusEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ForwardingEvent, ListInvoices, UTXO } from '../../shared/models/clModels';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ForwardingEvent, ListInvoices, UTXO, Offer } from '../../shared/models/clModels';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 
 export interface CLState {
@@ -21,6 +21,7 @@ export interface CLState {
   failedForwardingHistory: ForwardingEvent[];
   invoices: ListInvoices;
   utxos: UTXO[];
+  offers: Offer[];
 }
 
 export const initCLState: CLState = {
@@ -37,7 +38,8 @@ export const initCLState: CLState = {
     FetchUTXOs: { status: APICallStatusEnum.UN_INITIATED },
     FetchPayments: { status: APICallStatusEnum.UN_INITIATED },
     FetchForwardingHistory: { status: APICallStatusEnum.UN_INITIATED },
-    FetchFailedForwardingHistory: { status: APICallStatusEnum.UN_INITIATED }
+    FetchFailedForwardingHistory: { status: APICallStatusEnum.UN_INITIATED },
+    FetchOffers: { status: APICallStatusEnum.UN_INITIATED }
   },
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [], enableOffers: false },
   information: {},
@@ -54,5 +56,6 @@ export const initCLState: CLState = {
   forwardingHistory: [],
   failedForwardingHistory: [],
   invoices: { invoices: [] },
-  utxos: []
+  utxos: [],
+  offers: []
 };

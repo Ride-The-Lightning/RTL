@@ -24,7 +24,7 @@ export class ECLTransactionsComponent implements OnInit, OnDestroy {
   faChartPie = faChartPie;
   currencyUnits = [];
   balances = [{ title: 'Local Capacity', dataValue: 0, tooltip: 'Amount you can send' }, { title: 'Remote Capacity', dataValue: 0, tooltip: 'Amount you can receive' }];
-  public links = [{ link: 'payments', name: 'Payments' }, { link: 'invoices', name: 'Invoices' }, { link: 'queryroutes', name: 'Query Routes' }];
+  public links = [{ link: 'payments', name: 'Payments' }, { link: 'invoices', name: 'Invoices' }];
   public activeLink = this.links[0].link;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 

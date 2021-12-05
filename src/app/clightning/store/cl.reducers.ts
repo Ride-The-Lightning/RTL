@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { initCLState } from './cl.state';
-import { addInvoice, addPeer, removeChannel, removePeer, resetCLStore, setBalance, setChannels, setChildNodeSettingsCL, setFailedForwardingHistory, setFeeRates, setFees, setForwardingHistory, setInfo, setInvoices, setLocalRemoteBalance, setPayments, setPeers, setUTXOs, updateCLAPICallStatus, updateInvoice } from './cl.actions';
+import { addInvoice, addPeer, removeChannel, removePeer, resetCLStore, setBalance, setChannels, setChildNodeSettingsCL, setFailedForwardingHistory, setFeeRates, setFees, setForwardingHistory, setInfo, setInvoices, setLocalRemoteBalance, setOffers, addOffer, setPayments, setPeers, setUTXOs, updateCLAPICallStatus, updateInvoice } from './cl.actions';
 import { Channel } from '../../shared/models/clModels';
 
 export const CLReducer = createReducer(initCLState,
@@ -126,6 +126,18 @@ export const CLReducer = createReducer(initCLState,
     return {
       ...state,
       invoices: newInvoices
+    };
+  }),
+  on(setOffers, (state, { payload }) => ({
+    ...state,
+    offers: payload
+  })),
+  on(addOffer, (state, { payload }) => {
+    const newOffers = state.offers;
+    newOffers.unshift(payload);
+    return {
+      ...state,
+      offers: newOffers
     };
   }),
   on(setInvoices, (state, { payload }) => ({

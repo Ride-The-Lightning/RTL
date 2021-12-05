@@ -9,7 +9,13 @@ export const listOffers = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Getting Offers..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.ln_server_url + '/v1/channel/listOffers' + req.query;
+  options.url = req.session.selectedNode.ln_server_url + '/v1/offers/listoffers';
+  if (req.query.offer_id) {
+    options.url = options.url + '?offer_id=' + req.query.offer_id;
+  }
+  if (req.query.active_only) {
+    options.url = options.url + '?active_only=' + req.query.active_only;
+  }
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Offers List URL', data: options.url });
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Offers List Received', data: body });

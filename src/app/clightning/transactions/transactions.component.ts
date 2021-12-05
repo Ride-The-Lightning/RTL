@@ -13,6 +13,7 @@ import { clNodeSettings, localRemoteBalance } from '../store/cl.selector';
 import { LocalRemoteBalance } from '../../shared/models/clModels';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
+import { fetchOffers } from '../store/cl.actions';
 
 @Component({
   selector: 'rtl-cl-transactions',
@@ -25,13 +26,14 @@ export class CLTransactionsComponent implements OnInit, OnDestroy {
   faChartPie = faChartPie;
   currencyUnits = [];
   balances = [{ title: 'Local Capacity', dataValue: 0, tooltip: 'Amount you can send' }, { title: 'Remote Capacity', dataValue: 0, tooltip: 'Amount you can receive' }];
-  public links = [{ link: 'payments', name: 'Payments' }, { link: 'invoices', name: 'Invoices' }, { link: 'queryroutes', name: 'Query Routes' }];
+  public links = [{ link: 'payments', name: 'Payments' }, { link: 'invoices', name: 'Invoices' }, { link: 'offers', name: 'Offers' }];
   public activeLink = this.links[0].link;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private router: Router) { }
 
   ngOnInit() {
+    this.store.dispatch(fetchOffers());
     const linkFound = this.links.find((link) => this.router.url.includes(link.link));
     this.activeLink = linkFound ? linkFound.link : this.links[0].link;
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).

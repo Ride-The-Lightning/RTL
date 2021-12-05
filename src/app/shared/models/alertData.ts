@@ -1,7 +1,7 @@
 import { DataTypeEnum, LoopTypeEnum, SwapTypeEnum } from '../services/consts-enums-functions';
 import { GetInfoRoot, RTLConfiguration } from './RTLconfig';
 import { GetInfo, Invoice, Channel, Peer, PendingOpenChannel, UTXO } from './lndModels';
-import { Invoice as InvoiceCL, GetInfo as GetInfoCL, Peer as PeerCL, Channel as ChannelCL, UTXO as UTXOCL } from './clModels';
+import { Invoice as InvoiceCL, GetInfo as GetInfoCL, Peer as PeerCL, Channel as ChannelCL, UTXO as UTXOCL, Offer as OfferCL } from './clModels';
 import { GetInfo as GetInfoECL, Peer as PeerECL, Channel as ChannelECL, Invoice as InvoiceECL, PaymentSent as PaymentSentECL } from './eclModels';
 import { LoopQuote } from './loopModels';
 import { ServiceInfo } from './boltzModels';
@@ -86,6 +86,13 @@ export interface InvoiceInformation {
 
 export interface CLInvoiceInformation {
   invoice: InvoiceCL;
+  newlyAdded?: boolean;
+  pageSize: number;
+  component?: any;
+}
+
+export interface CLOfferInformation {
+  offer: OfferCL;
   newlyAdded?: boolean;
   pageSize: number;
   component?: any;
@@ -202,7 +209,7 @@ export interface DialogConfig {
   maxWidth?: string;
   minHeight?: string;
   data: AlertData | ConfirmationData | ErrorData | ChannelRebalanceAlert | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation |
-  CLInvoiceInformation | ECLInvoiceInformation | ECLPaymentInformation | ChannelInformation | CLChannelInformation |
+  CLInvoiceInformation | CLOfferInformation | ECLInvoiceInformation | ECLPaymentInformation | ChannelInformation | CLChannelInformation |
   PendingOpenChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | SwapAlert | AuthConfig |
   OnChainLabelUTXO | OnChainSendFunds | CLOnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert;
 }

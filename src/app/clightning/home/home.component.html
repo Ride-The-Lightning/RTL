@@ -92,7 +92,7 @@
             <rtl-cl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'outboundLiq'" [direction]="'Out'" [totalLiquidity]="totalOutboundLiquidity" [activeChannels]="allOutboundChannels" [errorMessage]="errorMessages[4]"></rtl-cl-channel-liquidity-info>
             <span fxLayout="column" fxFlex="100" fxLayoutAlign="space-between start" *ngSwitchCase="'transactions'">
               <mat-tab-group fxLayout="column" class="w-100 dashboard-tabs-group">
-                <mat-tab label="Receive"><rtl-cl-lightning-invoices class="h-100" [calledFrom]="'home'"></rtl-cl-lightning-invoices></mat-tab>
+                <mat-tab label="Receive"><rtl-cl-lightning-invoices-table class="h-100" [calledFrom]="'home'"></rtl-cl-lightning-invoices-table></mat-tab>
                 <mat-tab label="Pay"><rtl-cl-lightning-payments [calledFrom]="'home'"></rtl-cl-lightning-payments></mat-tab>
                 <mat-tab [disabled]="true">
                   <ng-template mat-tab-label>
