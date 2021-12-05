@@ -13,8 +13,8 @@ import { CommonService } from '../../shared/services/common.service';
 import { SessionService } from '../../shared/services/session.service';
 import { WebSocketClientService } from '../../shared/services/web-socket.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
-import { CLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer, ForwardingEvent, OnChain, QueryRoutes, PayRequest, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, DecodePayment, SendPayment, GetQueryRoutes, ChannelLookup, FetchInvoices, Channel, OfferInvoice, OfferRequest } from '../../shared/models/clModels';
+import { CLInvoiceInformationComponent } from '../transactions/invoices/invoice-information-modal/invoice-information.component';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer, ForwardingEvent, OnChain, QueryRoutes, PayRequest, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, DecodePayment, SendPayment, GetQueryRoutes, ChannelLookup, FetchInvoices, Channel, OfferInvoice, OfferRequest, Offer } from '../../shared/models/clModels';
 import { AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLWSEventTypeEnum, CLActions, RTLActions } from '../../shared/services/consts-enums-functions';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 
@@ -842,6 +842,27 @@ export class CLEffects implements OnDestroy {
           }),
           catchError((err: any) => {
             this.handleErrorWithoutAlert('FetchInvoices', UI_MESSAGES.NO_SPINNER, 'Fetching Invoices Failed.', err);
+            return of({ type: RTLActions.VOID });
+          })
+        );
+    })
+  ));
+
+  offersFetchCL = createEffect(() => this.actions.pipe(
+    ofType(CLActions.FETCH_OFFERS_CL),
+    mergeMap((action: { type: string, payload: any }) => {
+      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchOffers', status: APICallStatusEnum.INITIATED } }));
+      return this.httpClient.get(this.CHILD_API_URL + environment.OFFERS_API).
+        pipe(map((res: any) => {
+          this.logger.info(res);
+          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchOffers', status: APICallStatusEnum.COMPLETED } }));
+          return {
+            type: CLActions.SET_OFFERS_CL,
+            payload: res.offers ? res.offers : []
+          };
+        }),
+          catchError((err: any) => {
+            this.handleErrorWithoutAlert('FetchOffers', UI_MESSAGES.NO_SPINNER, 'Fetching Offers Failed.', err);
             return of({ type: RTLActions.VOID });
           })
         );

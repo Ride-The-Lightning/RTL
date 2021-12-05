@@ -9,31 +9,31 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES, CLActions } from '../../../shared/services/consts-enums-functions';
-import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
-import { SelNodeChild } from '../../../shared/models/RTLconfig';
-import { GetInfo, Invoice, ListInvoices } from '../../../shared/models/clModels';
-import { LoggerService } from '../../../shared/services/logger.service';
-import { CommonService } from '../../../shared/services/common.service';
+import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES, CLActions } from '../../../../shared/services/consts-enums-functions';
+import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
+import { SelNodeChild } from '../../../../shared/models/RTLconfig';
+import { GetInfo, Invoice, ListInvoices } from '../../../../shared/models/clModels';
+import { LoggerService } from '../../../../shared/services/logger.service';
+import { CommonService } from '../../../../shared/services/common.service';
 
 import { CLCreateInvoiceComponent } from '../create-invoice-modal/create-invoice.component';
 import { CLInvoiceInformationComponent } from '../invoice-information-modal/invoice-information.component';
 
-import { RTLEffects } from '../../../store/rtl.effects';
-import { RTLState } from '../../../store/rtl.state';
-import { openAlert, openConfirmation } from '../../../store/rtl.actions';
-import { deleteExpiredInvoice, invoiceLookup, saveNewInvoice } from '../../store/cl.actions';
-import { clNodeInformation, clNodeSettings, listInvoices } from '../../store/cl.selector';
+import { RTLEffects } from '../../../../store/rtl.effects';
+import { RTLState } from '../../../../store/rtl.state';
+import { openAlert, openConfirmation } from '../../../../store/rtl.actions';
+import { deleteExpiredInvoice, invoiceLookup, saveNewInvoice } from '../../../store/cl.actions';
+import { clNodeInformation, clNodeSettings, listInvoices } from '../../../store/cl.selector';
 
 @Component({
-  selector: 'rtl-cl-lightning-invoices',
-  templateUrl: './lightning-invoices.component.html',
-  styleUrls: ['./lightning-invoices.component.scss'],
+  selector: 'rtl-cl-lightning-invoices-table',
+  templateUrl: './lightning-invoices-table.component.html',
+  styleUrls: ['./lightning-invoices-table.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Invoices') }
   ]
 })
-export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CLLightningInvoicesTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input() calledFrom = 'transactions'; // Transactions/home
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;

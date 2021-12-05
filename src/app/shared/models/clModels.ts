@@ -88,6 +88,15 @@ export interface Invoice {
   warning_capacity?: string;
 }
 
+export interface Offer {
+  offer_id?: string;
+  active?: boolean;
+  single_use?: boolean;
+  bolt12?: string;
+  bolt12_unsigned?: string;
+  used?: boolean;
+}
+
 export interface ListInvoices {
   invoices?: Invoice[];
   last_index_offset?: string;

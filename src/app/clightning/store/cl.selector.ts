@@ -22,3 +22,4 @@ export const nodeInfoAndNodeSettingsAndBalance = createSelector(clState, (state:
 export const nodeInfoAndBalanceAndNumPeers = createSelector(clState, (state: CLState) => ({ information: state.information, balance: state.balance, numPeers: state.peers.length }));
 export const nodeInfoAndBalance = createSelector(clState, (state: CLState) => ({ information: state.information, balance: state.balance }));
 export const nodeInfoAndNodeSettingsAndAPIsStatus = createSelector(clState, (state: CLState) => ({ information: state.information, nodeSettings: state.nodeSettings, apisCallStatus: [state.apisCallStatus.FetchInfo, state.apisCallStatus.FetchForwardingHistory] }));
+export const offers = createSelector(clState, (state: CLState) => ({ offers: state.offers, apiCallStatus: state.apisCallStatus.FetchOffers }));

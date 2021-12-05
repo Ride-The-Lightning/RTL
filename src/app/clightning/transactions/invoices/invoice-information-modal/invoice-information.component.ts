@@ -6,15 +6,15 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { LoggerService } from '../../../shared/services/logger.service';
-import { CommonService } from '../../../shared/services/common.service';
-import { CLInvoiceInformation } from '../../../shared/models/alertData';
-import { ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { LoggerService } from '../../../../shared/services/logger.service';
+import { CommonService } from '../../../../shared/services/common.service';
+import { CLInvoiceInformation } from '../../../../shared/models/alertData';
+import { ScreenSizeEnum } from '../../../../shared/services/consts-enums-functions';
 
-import { GetInfo, Invoice, ListInvoices } from '../../../shared/models/clModels';
-import { RTLState } from '../../../store/rtl.state';
-import { clNodeInformation, listInvoices } from '../../store/cl.selector';
-import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
+import { GetInfo, Invoice, ListInvoices } from '../../../../shared/models/clModels';
+import { RTLState } from '../../../../store/rtl.state';
+import { clNodeInformation, listInvoices } from '../../../store/cl.selector';
+import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-cl-invoice-information',

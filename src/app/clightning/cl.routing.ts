@@ -17,7 +17,7 @@ import { CLChannelOpenTableComponent } from './peers-channels/channels/channels-
 import { CLChannelPendingTableComponent } from './peers-channels/channels/channels-tables/channel-pending-table/channel-pending-table.component';
 import { CLPeersComponent } from './peers-channels/peers/peers.component';
 import { CLLightningPaymentsComponent } from './transactions/payments/lightning-payments.component';
-import { CLLightningInvoicesComponent } from './transactions/invoices/lightning-invoices.component';
+import { CLLightningInvoicesTableComponent } from './transactions/invoices/invoices-table/lightning-invoices-table.component';
 import { CLQueryRoutesComponent } from './graph/query-routes/query-routes.component';
 import { CLSignComponent } from './sign-verify-message/sign/sign.component';
 import { CLVerifyComponent } from './sign-verify-message/verify/verify.component';
@@ -31,6 +31,7 @@ import { CLTransactionsReportComponent } from './reports/transactions/transactio
 import { CLUnlockedGuard } from '../shared/services/auth.guard';
 import { NotFoundComponent } from '../shared/components/not-found/not-found.component';
 import { CLGraphComponent } from './graph/graph.component';
+import { CLOffersTableComponent } from './transactions/offers/offers-table/offers-table.component';
 
 export const ClRoutes: Routes = [
   {
@@ -63,7 +64,8 @@ export const ClRoutes: Routes = [
         path: 'transactions', component: CLTransactionsComponent, canActivate: [CLUnlockedGuard], children: [
           { path: '', pathMatch: 'full', redirectTo: 'payments' },
           { path: 'payments', component: CLLightningPaymentsComponent, canActivate: [CLUnlockedGuard] },
-          { path: 'invoices', component: CLLightningInvoicesComponent, canActivate: [CLUnlockedGuard] }
+          { path: 'invoices', component: CLLightningInvoicesTableComponent, canActivate: [CLUnlockedGuard] },
+          { path: 'offers', component: CLOffersTableComponent, canActivate: [CLUnlockedGuard] }
         ]
       },
       {
