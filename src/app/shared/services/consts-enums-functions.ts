@@ -216,7 +216,8 @@ export const SCROLL_RANGES = ['MONTHLY', 'YEARLY'];
 
 export enum ServicesEnum {
   LOOP = 'LOOP',
-  BOLTZ = 'BOLTZ'
+  BOLTZ = 'BOLTZ',
+  OFFERS = 'OFFERS'
 }
 
 export const PASSWORD_BLACKLIST = ['password', 'changeme', 'moneyprintergobrrr'];
@@ -269,6 +270,7 @@ export const UI_MESSAGES = {
   WAIT_SYNC_NODE: 'Waiting for Node Sync...',
   UPDATE_BOLTZ_SETTINGS: 'Updating Boltz Service Settings...',
   UPDATE_LOOP_SETTINGS: 'Updating Loop Service Settings...',
+  UPDATE_SETTING: 'Updating Setting...',
   UPDATE_UI_SETTINGS: 'Updating Settings...',
   UPDATE_NODE_SETTINGS: 'Updating Node Settings...',
   UPDATE_SELECTED_NODE: 'Updating Selected Node...',

@@ -39,7 +39,7 @@ export const initCLState: CLState = {
     FetchForwardingHistory: { status: APICallStatusEnum.UN_INITIATED },
     FetchFailedForwardingHistory: { status: APICallStatusEnum.UN_INITIATED }
   },
-  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
+  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [], enableOffers: false },
   information: {},
   fees: {},
   feeRatesPerKB: {},

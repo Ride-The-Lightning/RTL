@@ -64,6 +64,7 @@ import { NodeSettingsComponent } from './components/node-config/node-settings/no
 import { ServicesSettingsComponent } from './components/node-config/services-settings/services-settings.component';
 import { LoopServiceSettingsComponent } from './components/node-config/services-settings/loop-service-settings/loop-service-settings.component';
 import { BoltzServiceSettingsComponent } from './components/node-config/services-settings/boltz-service-settings/boltz-service-settings.component';
+import { OffersServiceSettingsComponent } from './components/node-config/services-settings/offers-service-settings/offers-service-settings.component';
 import { ErrorComponent } from './components/error/error.component';
 import { CurrencyUnitConverterComponent } from './components/currency-unit-converter/currency-unit-converter.component';
 import { HorizontalScrollerComponent } from './components/horizontal-scroller/horizontal-scroller.component';
@@ -240,6 +241,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     ServicesSettingsComponent,
     LoopServiceSettingsComponent,
     BoltzServiceSettingsComponent,
+    OffersServiceSettingsComponent,
     CurrencyUnitConverterComponent,
     HorizontalScrollerComponent,
     TransactionsReportTableComponent,
@@ -277,6 +279,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     ServicesSettingsComponent,
     LoopServiceSettingsComponent,
     BoltzServiceSettingsComponent,
+    OffersServiceSettingsComponent,
     CurrencyUnitConverterComponent,
     HorizontalScrollerComponent,
     ErrorComponent,

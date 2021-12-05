@@ -102,6 +102,7 @@ export const getRTLConfig = (req, res, next) => {
           settings.lnServerUrl = node.ln_server_url;
           settings.swapServerUrl = node.swap_server_url;
           settings.boltzServerUrl = node.boltz_server_url;
+          settings.enableOffers = node.enable_offers;
           settings.channelBackupPath = node.channel_backup_path;
           settings.currencyUnit = node.currency_unit;
           nodesArr.push({
@@ -324,12 +325,16 @@ export const updateServiceSettings = (req, res, next) => {
           }
           break;
 
+        case 'OFFERS':
+          node.Settings.enableOffers = req.body.settings.enableOffers;
+          selectedNode.enable_offers = req.body.settings.enableOffers;
+          break;
+
         default:
           break;
       }
-      common.replaceNode(req.session.selectedNode.index, selectedNode);
+      common.replaceNode(req, selectedNode);
     }
-    return node;
   });
   try {
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');

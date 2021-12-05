@@ -1,5 +1,5 @@
 export class CommonSelectedNode {
-    constructor(options, ln_server_url, macaroon_path, ln_api_password, swap_server_url, boltz_server_url, config_path, rtl_conf_file_path, swap_macaroon_path, boltz_macaroon_path, bitcoind_config_path, channel_backup_path, log_level, log_file, index, ln_node, ln_implementation, user_persona, theme_mode, theme_color, fiat_conversion, currency_unit, ln_version, api_version) {
+    constructor(options, ln_server_url, macaroon_path, ln_api_password, swap_server_url, boltz_server_url, config_path, rtl_conf_file_path, swap_macaroon_path, boltz_macaroon_path, bitcoind_config_path, channel_backup_path, log_level, log_file, index, ln_node, ln_implementation, user_persona, theme_mode, theme_color, fiat_conversion, currency_unit, ln_version, api_version, enable_offers) {
         this.options = options;
         this.ln_server_url = ln_server_url;
         this.macaroon_path = macaroon_path;
@@ -24,6 +24,7 @@ export class CommonSelectedNode {
         this.currency_unit = currency_unit;
         this.ln_version = ln_version;
         this.api_version = api_version;
+        this.enable_offers = enable_offers;
     }
 }
 export class AuthenticationConfiguration {
@@ -34,7 +35,7 @@ export class AuthenticationConfiguration {
     }
 }
 export class NodeSettingsConfiguration {
-    constructor(userPersona, themeMode, themeColor, fiatConversion, currencyUnit, bitcoindConfigPath, logLevel, lnServerUrl, swapServerUrl, boltzServerUrl, channelBackupPath) {
+    constructor(userPersona, themeMode, themeColor, fiatConversion, currencyUnit, bitcoindConfigPath, logLevel, lnServerUrl, swapServerUrl, boltzServerUrl, channelBackupPath, enableOffers) {
         this.userPersona = userPersona;
         this.themeMode = themeMode;
         this.themeColor = themeColor;
@@ -46,6 +47,7 @@ export class NodeSettingsConfiguration {
         this.swapServerUrl = swapServerUrl;
         this.boltzServerUrl = boltzServerUrl;
         this.channelBackupPath = channelBackupPath;
+        this.enableOffers = enableOffers;
     }
 }
 export class LogJSONObj {

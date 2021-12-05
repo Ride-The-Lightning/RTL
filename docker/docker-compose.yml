@@ -126,3 +126,4 @@ services:
       RTL_CONFIG_PATH: /RTL
       BITCOIND_CONFIG_PATH: ''
       CHANNEL_BACKUP_PATH: /shared/lnd/backup
+      ENABLE_OFFERS: false
