@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { initCLState } from './cl.state';
-import { addInvoice, addPeer, removeChannel, removePeer, resetCLStore, setBalance, setChannels, setChildNodeSettingsCL, setFailedForwardingHistory, setFeeRates, setFees, setForwardingHistory, setInfo, setInvoices, setLocalRemoteBalance, setOffers, addOffer, setPayments, setPeers, setUTXOs, updateCLAPICallStatus, updateInvoice } from './cl.actions';
+import { addInvoice, addPeer, removeChannel, removePeer, resetCLStore, setBalance, setChannels, setChildNodeSettingsCL, setFailedForwardingHistory, setFeeRates, setFees, setForwardingHistory, setInfo, setInvoices, setLocalRemoteBalance, setOffers, addOffer, setPayments, setPeers, setUTXOs, updateCLAPICallStatus, updateInvoice, updateOffer } from './cl.actions';
 import { Channel } from '../../shared/models/clModels';
 
 export const CLReducer = createReducer(initCLState,
@@ -155,7 +155,18 @@ export const CLReducer = createReducer(initCLState,
   on(setUTXOs, (state, { payload }) => ({
     ...state,
     utxos: payload
-  }))
+  })),
+  on(updateOffer, (state, { payload }) => {
+    const modifiedOffers = [...state.offers];
+    const updateOfferIdx = state.offers.findIndex((offer) => offer.offer_id === payload.offer.offer_id);
+    if (updateOfferIdx > -1) {
+      modifiedOffers.splice(updateOfferIdx, 1, payload.offer);
+    }
+    return {
+      ...state,
+      offers: modifiedOffers
+    };
+  })
 );
 
 const mapAliases = (payload: any, storedChannels: Channel[]) => {

@@ -121,6 +121,10 @@ export const fetchOffers = createAction(CLActions.FETCH_OFFERS_CL);
 
 export const setOffers = createAction(CLActions.SET_OFFERS_CL, props<{ payload: Offer[] }>());
 
-export const saveNewOffer = createAction(CLActions.SAVE_NEW_OFFER_CL, props<{ payload: { amount: number, label: string, description: string, expiry: number, private: boolean } }>());
+export const saveNewOffer = createAction(CLActions.SAVE_NEW_OFFER_CL, props<{ payload: { amount: string, description: string, vendor: string } }>());
 
 export const addOffer = createAction(CLActions.ADD_OFFER_CL, props<{ payload: Offer }>());
+
+export const disableOffer = createAction(CLActions.DISABLE_OFFER_CL, props<{ payload: { offer_id: string } }>());
+
+export const updateOffer = createAction(CLActions.UPDATE_OFFER_CL, props<{ payload: { offer: Offer } }>());

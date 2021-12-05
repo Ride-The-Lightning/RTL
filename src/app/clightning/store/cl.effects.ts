@@ -22,6 +22,7 @@ import { RTLState } from '../../store/rtl.state';
 import { fetchBalance, fetchChannels, fetchFeeRates, fetchFees, fetchInvoices, fetchLocalRemoteBalance, fetchPayments, fetchPeers, fetchUTXOs, getForwardingHistory, setFailedForwardingHistory, setLookup, setPeers, setQueryRoutes, updateCLAPICallStatus, updateInvoice } from './cl.actions';
 import { allAPIsCallStatus, clNodeInformation } from './cl.selector';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
+import { CLOfferInformationComponent } from '../transactions/offers/offer-information-modal/offer-information.component';
 
 @Injectable()
 export class CLEffects implements OnDestroy {
@@ -823,6 +824,41 @@ export class CLEffects implements OnDestroy {
     })
   ));
 
+  saveNewOfferCL = createEffect(() => this.actions.pipe(
+    ofType(CLActions.SAVE_NEW_OFFER_CL),
+    mergeMap((action: { type: string, payload: { amount: string, description: string, vendor: string } }) => {
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.CREATE_OFFER }));
+      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'SaveNewOffer', status: APICallStatusEnum.INITIATED } }));
+      return this.httpClient.post(this.CHILD_API_URL + environment.OFFERS_API, {
+        amount: action.payload.amount, description: action.payload.description, vendor: action.payload.vendor
+      }).pipe(map((postRes: Offer) => {
+        this.logger.info(postRes);
+        this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'SaveNewOffer', status: APICallStatusEnum.COMPLETED } }));
+        this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.CREATE_OFFER }));
+        setTimeout(() => {
+          this.store.dispatch(openAlert({
+            payload: {
+              data: {
+                offer: postRes,
+                newlyAdded: true,
+                component: CLOfferInformationComponent
+              }
+            }
+          }));
+        }, 100);
+        return {
+          type: CLActions.ADD_OFFER_CL,
+          payload: postRes
+        };
+      }),
+        catchError((err: any) => {
+          this.handleErrorWithoutAlert('SaveNewOffer', UI_MESSAGES.CREATE_OFFER, 'Create Offer Failed.', err);
+          return of({ type: RTLActions.VOID });
+        })
+      );
+    })
+  ));
+
   invoicesFetchCL = createEffect(() => this.actions.pipe(
     ofType(CLActions.FETCH_INVOICES_CL),
     mergeMap((action: { type: string, payload: FetchInvoices }) => {
@@ -863,6 +899,30 @@ export class CLEffects implements OnDestroy {
         }),
           catchError((err: any) => {
             this.handleErrorWithoutAlert('FetchOffers', UI_MESSAGES.NO_SPINNER, 'Fetching Offers Failed.', err);
+            return of({ type: RTLActions.VOID });
+          })
+        );
+    })
+  ));
+
+  offersDisableCL = createEffect(() => this.actions.pipe(
+    ofType(CLActions.DISABLE_OFFER_CL),
+    mergeMap((action: { type: string, payload: { offer_id: string } }) => {
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DISABLE_OFFER }));
+      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'DisableOffer', status: APICallStatusEnum.INITIATED } }));
+      return this.httpClient.delete(this.CHILD_API_URL + environment.OFFERS_API + '/' + action.payload.offer_id).
+        pipe(map((postRes: any) => {
+          this.logger.info(postRes);
+          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'DisableOffer', status: APICallStatusEnum.COMPLETED } }));
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.DISABLE_OFFER }));
+          this.store.dispatch(openSnackBar({ payload: 'Offer Disabled Successfully!' }));
+          return {
+            type: CLActions.UPDATE_OFFER_CL,
+            payload: { offer: postRes }
+          };
+        }),
+          catchError((err: any) => {
+            this.handleErrorWithoutAlert('DisableOffer', UI_MESSAGES.DISABLE_OFFER, 'Disabling Offer Failed.', err);
             return of({ type: RTLActions.VOID });
           })
         );

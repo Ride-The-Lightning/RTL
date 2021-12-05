@@ -287,7 +287,9 @@ export const UI_MESSAGES = {
   GET_FEE_REPORT: 'Getting fee report...',
   GET_LOOKUP_DETAILS: 'Getting lookup details...',
   GET_RTL_CONFIG: 'Getting RTL Config...',
-  VERIFY_TOKEN: 'Verify Token...'
+  VERIFY_TOKEN: 'Verify Token...',
+  DISABLE_OFFER: 'Disabling Offer...',
+  CREATE_OFFER: 'Creating Offer...'
 };
 
 export enum PaymentTypes {
@@ -468,8 +470,10 @@ export enum CLActions {
   SET_OFFER_INVOICE_CL = 'SET_OFFER_INVOICE_CL',
   FETCH_OFFERS_CL = 'FETCH_OFFERS_CL',
   SET_OFFERS_CL = 'SET_OFFERS_CL',
-  SAVE_NEW_OFFER_CL = 'SAVE_NEWOFFER_CL',
-  ADD_OFFER_CL = 'ADD_OFFER_CL'
+  SAVE_NEW_OFFER_CL = 'SAVE_NEW_OFFER_CL',
+  ADD_OFFER_CL = 'ADD_OFFER_CL',
+  DISABLE_OFFER_CL = 'DISABLE_OFFER_CL',
+  UPDATE_OFFER_CL = 'UPDATE_OFFER_CL'
 };
 
 export enum ECLActions {

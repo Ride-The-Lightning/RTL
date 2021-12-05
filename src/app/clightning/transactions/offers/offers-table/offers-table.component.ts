@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
-import { DecimalPipe, DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -8,7 +7,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum } from '../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum } from '../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../../../shared/models/RTLconfig';
 import { GetInfo, Offer } from '../../../../shared/models/clModels';
@@ -20,7 +19,7 @@ import { CLOfferInformationComponent } from '../offer-information-modal/offer-in
 
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert } from '../../../../store/rtl.actions';
-import { saveNewOffer } from '../../../store/cl.actions';
+import { disableOffer, saveNewOffer } from '../../../store/cl.actions';
 import { clNodeInformation, clNodeSettings, offers } from '../../../store/cl.selector';
 
 @Component({
@@ -61,7 +60,7 @@ export class CLOffersTableComponent implements OnInit, AfterViewInit, OnDestroy 
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private datePipe: DatePipe) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -138,6 +137,7 @@ export class CLOffersTableComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   onDisableOffer(selOffer: Offer) {
+    this.store.dispatch(disableOffer({ payload: { offer_id: selOffer.offer_id } }));
   }
 
   onPrintOffer(selOffer: Offer) {
@@ -152,7 +152,10 @@ export class CLOffersTableComponent implements OnInit, AfterViewInit, OnDestroy 
     this.offers.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.offers.sort = this.sort;
     this.offers.filterPredicate = (rowData: Offer, fltr: string) => {
-      const newRowData = ((rowData.active) ? 'active' : 'inactive') + ((rowData.used) ? 'used' : 'unused') + ((rowData.single_use) ? 'single' : 'multiple') + JSON.stringify(rowData).toLowerCase();
+      const newRowData = ((rowData.active) ? ' active' : ' inactive') + ((rowData.used) ? ' used' : ' unused') + ((rowData.single_use) ? ' single' : ' multiple') + JSON.stringify(rowData).toLowerCase();
+      if (fltr === 'active' || fltr === 'inactive' || fltr === 'used' || fltr === 'unused' || fltr === 'single' || fltr === 'multiple') {
+        fltr = ' ' + fltr;
+      }
       return newRowData.includes(fltr);
     };
     this.offers.paginator = this.paginator;

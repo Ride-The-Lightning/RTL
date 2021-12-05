@@ -13,11 +13,11 @@ export const Offer = (sequelize, Sequelize) => {
             type: Sequelize.NUMBER,
             allowNull: false
         },
-        label: {
+        title: {
             type: Sequelize.STRING,
             allowNull: false
         },
-        issuer: {
+        vendor: {
             type: Sequelize.STRING,
             allowNull: true
         },

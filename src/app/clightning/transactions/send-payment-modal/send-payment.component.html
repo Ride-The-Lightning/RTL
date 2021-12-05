@@ -65,6 +65,6 @@
     <mat-checkbox fxFlex="30" tabindex="6" class="my-1" color="primary" [(ngModel)]="flgSaveToDB" matTooltip="Save offer in database for future payments" [matTooltipPosition]="'above'">Save Offer</mat-checkbox>
   </div>    
   <mat-form-field fxFlex="100" *ngIf="flgSaveToDB">
-    <input matInput placeholder="Label to Save" [(ngModel)]="offerLabel" tabindex="7">
+    <input matInput placeholder="Title to Save" [(ngModel)]="offerTitle" tabindex="7">
   </mat-form-field>
 </ng-template>
