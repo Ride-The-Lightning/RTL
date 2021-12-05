@@ -1,31 +1,33 @@
-import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
+import { faInfoCircle, faCode, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-import { ServicesEnum, UI_MESSAGES } from '../../../../services/consts-enums-functions';
-import { ConfigSettingsNode } from '../../../../models/RTLconfig';
-import { LoggerService } from '../../../../services/logger.service';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import { updateServiceSettings } from '../../../../../store/rtl.actions';
-import { RTLState } from '../../../../../store/rtl.state';
-import { setChildNodeSettingsLND } from '../../../../../lnd/store/lnd.actions';
-import { setChildNodeSettingsCL } from '../../../../../clightning/store/cl.actions';
-import { setChildNodeSettingsECL } from '../../../../../eclair/store/ecl.actions';
-import { rootSelectedNode } from '../../../../../store/rtl.selector';
+import { LoggerService } from '../../../services/logger.service';
+import { RTLState } from '../../../../store/rtl.state';
+import { rootSelectedNode } from '../../../../store/rtl.selector';
+import { ConfigSettingsNode } from '../../../models/RTLconfig';
+import { updateServiceSettings } from '../../../../store/rtl.actions';
+import { setChildNodeSettingsLND } from '../../../../lnd/store/lnd.actions';
+import { setChildNodeSettingsCL } from '../../../../clightning/store/cl.actions';
+import { setChildNodeSettingsECL } from '../../../../eclair/store/ecl.actions';
+import { ServicesEnum, UI_MESSAGES } from '../../../services/consts-enums-functions';
 
 @Component({
-  selector: 'rtl-offers-service-settings',
-  templateUrl: './offers-service-settings.component.html',
-  styleUrls: ['./offers-service-settings.component.scss']
+  selector: 'rtl-experimental-settings',
+  templateUrl: './experimental-settings.component.html',
+  styleUrls: ['./experimental-settings.component.scss']
 })
-export class OffersServiceSettingsComponent implements OnInit, OnDestroy {
+export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
 
-  @ViewChild('form', { static: true }) form: any;
   public faInfoCircle = faInfoCircle;
-  public selNode: ConfigSettingsNode;
+  public faExclamationTriangle = faExclamationTriangle;
+  public faCode = faCode;
+  public features = [{ name: 'Offers', enabled: false }];
   public enableOffers = false;
-  unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  public selNode: ConfigSettingsNode;
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>) { }
 
@@ -33,18 +35,16 @@ export class OffersServiceSettingsComponent implements OnInit, OnDestroy {
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).
       subscribe((selNode) => {
         this.selNode = selNode;
-        this.enableOffers = selNode.settings.enableOffers || false;
-        this.logger.info(selNode);
+        this.enableOffers = this.selNode.settings.enableOffers;
+        this.features[0].enabled = this.enableOffers;
+        this.logger.info(this.selNode);
       });
   }
 
-  onEnableServiceChanged(event) {
-    this.enableOffers = event.checked;
-  }
-
-  onUpdateService(): boolean | void {
+  onUpdateFeature(): boolean | void {
     this.logger.info(this.selNode);
     this.selNode.settings.enableOffers = this.enableOffers;
+    this.features[0].enabled = this.enableOffers;
     this.store.dispatch(updateServiceSettings({ payload: { uiMessage: UI_MESSAGES.UPDATE_SETTING, service: ServicesEnum.OFFERS, settings: { enableOffers: this.enableOffers } } }));
     this.store.dispatch(setChildNodeSettingsLND({
       payload: {
@@ -64,9 +64,9 @@ export class OffersServiceSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach((unsub) => {
-      unsub.next();
-      unsub.complete();
+    this.unSubs.forEach((completeSub) => {
+      completeSub.next(null);
+      completeSub.complete();
     });
   }
 

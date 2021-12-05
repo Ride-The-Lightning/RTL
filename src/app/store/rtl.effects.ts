@@ -27,7 +27,7 @@ import { ErrorMessageComponent } from '../shared/components/data-modal/error-mes
 import { ShowPubkeyComponent } from '../shared/components/data-modal/show-pubkey/show-pubkey.component';
 
 import { RTLState } from './rtl.state';
-import { resetRootStore, setNodeData, setSelectedNode, updateRootAPICallStatus, closeSpinner, openAlert, openSpinner, openSnackBar, fetchRTLConfig, closeAllDialogs, logout } from './rtl.actions';
+import { resetRootStore, setNodeData, setSelectedNode, updateRootAPICallStatus, closeSpinner, openAlert, openSpinner, openSnackBar, fetchRTLConfig, closeAllDialogs, logout, updateRootNodeSettings } from './rtl.actions';
 import { fetchInfoLND, resetLNDStore } from '../lnd/store/lnd.actions';
 import { fetchInfoCL, resetCLStore } from '../clightning/store/cl.actions';
 import { fetchInfoECL, resetECLStore } from '../eclair/store/ecl.actions';
@@ -289,6 +289,7 @@ export class RTLEffects implements OnDestroy {
             this.logger.info(updateStatus);
             this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'UpdateServiceSettings', status: APICallStatusEnum.COMPLETED } }));
             this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
+            this.store.dispatch(updateRootNodeSettings({ payload: action.payload }));
             return {
               type: RTLActions.OPEN_SNACK_BAR,
               payload: updateStatus.message + '.'

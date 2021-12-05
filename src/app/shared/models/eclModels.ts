@@ -230,6 +230,8 @@ export interface SaveChannel {
 export interface UpdateChannel {
   baseFeeMsat: number;
   feeRate: number;
+  channelId?: string;
+  channelIds?: string;
   nodeId?: string;
   nodeIds?: string;
 }

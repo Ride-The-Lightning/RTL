@@ -1540,6 +1540,9 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
     @include for_screensize(phone) {
       padding: 0 math.div($gap, 2) 0 math.div($gap, 2);
     }
+    & .mat-expansion-indicator {
+      margin-top: -5px;
+    }
   }
   & .mat-expansion-panel-body {
     padding: 0 $gap*3 $gap*2 $gap*3;

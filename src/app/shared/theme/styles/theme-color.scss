@@ -378,6 +378,7 @@
       border: 1px solid $red-color;
       background-color: $red-background-color;
       color: $red-color;
+      overflow-wrap: break-word;
       & .alert-icon.ng-fa-icon {
         color: $red-color;
       }

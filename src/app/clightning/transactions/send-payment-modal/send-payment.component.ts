@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { NgModel } from '@angular/forms';
+import { NgForm, NgModel } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
@@ -27,6 +27,10 @@ import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 })
 export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
 
+  @ViewChild('sendPaymentForm', { static: false }) form: NgForm;
+  @ViewChild('paymentAmt', { static: false }) paymentAmt: NgModel;
+  @ViewChild('offerAmt', { static: false }) offerAmt: NgModel;
+
   private paymentReq: NgModel;
   @ViewChild('paymentReq') set payReq(paymReq: NgModel) {
     if (paymReq) {
@@ -47,7 +51,9 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public offerDecoded: OfferRequest = {};
   public offerRequest = '';
   public offerDecodedHint = '';
-  public offerMemo = '';
+  public offerDescription = '';
+  public offerIssuer = '';
+  public offerLabel = '';
   public zeroAmtOffer = false;
   public offerInvoice: OfferInvoice = null;
   public offerAmount = null;
@@ -146,7 +152,11 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
         break;
 
       case PaymentTypes.INVOICE:
-        if (!this.paymentRequest) { return true; }
+        if (!this.paymentRequest || (this.zeroAmtInvoice && (this.paymentAmount === 0 || !this.paymentAmount))) {
+          this.paymentReq.control.markAsTouched();
+          this.paymentAmt.control.markAsTouched();
+          return true;
+        }
         if (this.paymentDecoded.created_at) {
           this.sendPayment();
         } else {
@@ -156,7 +166,11 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
         break;
 
       case PaymentTypes.OFFER:
-        if (!this.offerRequest) { return true; }
+        if (!this.offerRequest || (this.zeroAmtOffer && (this.offerAmount === 0 || !this.offerAmount))) {
+          this.offerReq.control.markAsTouched();
+          this.offerAmt.control.markAsTouched();
+          return true;
+        }
         if (this.offerDecoded.offer_id) {
           this.sendPayment();
         } else {
@@ -189,7 +203,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
           this.store.dispatch(fetchOfferInvoice({ payload: { offer: this.offerRequest } }));
         }
       } else {
-        this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_OFFER, paymentType: PaymentTypes.OFFER, invoice: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, amount: this.offerAmount * 1000, description: this.offerMemo, fromDialog: true } }));
+        this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_OFFER, paymentType: PaymentTypes.OFFER, invoice: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, offer: this.offerRequest, amount: this.offerAmount * 1000, label: this.offerLabel, issuer: this.offerIssuer, description: this.offerDescription, fromDialog: true } }));
       }
     }
   }
@@ -216,6 +230,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
     this.offerDecodedHint = '';
     this.offerReq.control.setErrors(null);
     this.zeroAmtOffer = false;
+    this.flgSaveToDB = false;
     this.paymentError = '';
   }
 
@@ -257,7 +272,8 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.zeroAmtOffer = false;
       this.offerDecoded.amount = +(this.offerDecoded.amount || this.offerDecoded.amount_msat.slice(0, -4));
       this.offerAmount = this.offerDecoded.amount ? this.offerDecoded.amount / 1000 : 0;
-      this.offerMemo = this.offerDecoded.description;
+      this.offerDescription = this.offerDecoded.description;
+      this.offerIssuer = this.offerDecoded.issuer ? this.offerDecoded.issuer : this.offerDecoded.vendor ? this.offerDecoded.vendor : '';
       if (this.selNode.fiatConversion) {
         this.commonService.convertCurrency(this.offerAmount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
           pipe(takeUntil(this.unSubs[5])).

@@ -4,7 +4,7 @@
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">Send Payment</span>
       </div>
-      <button tabindex="12" fxFlex="9" fxLayoutAlign="center" class="btn-close-x p-0" [mat-dialog-close]="false" default mat-button>X</button>
+      <button tabindex="12" fxFlex="10" fxLayoutAlign="center" class="btn-close-x p-0" [mat-dialog-close]="false" default mat-button>X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large" fxLayout="column" fxLayoutAlign="start stretch">
       <mat-radio-group *ngIf="isCompatibleVersion" class="my-1" color="primary" name="paymentType" [(ngModel)]="paymentType" (change)="onPaymentTypeChange()" fxFlex="100" fxLayoutAlign="start start">
@@ -12,15 +12,15 @@
         <mat-radio-button fxFlex="20" tabindex="2" value="{{paymentTypes.KEYSEND}}">Keysend</mat-radio-button>
         <mat-radio-button *ngIf="selNode.enableOffers" fxFlex="20" tabindex="3" value="{{paymentTypes.OFFER}}">Offer</mat-radio-button>
       </mat-radio-group>
-      <form fxLayoutAlign="space-between stretch" fxLayout="column" #sendPaymentForm="ngForm">
+      <form fxLayoutAlign="space-between stretch" fxLayout="column" #sendPaymentForm="ngForm" (submit)="onSendPayment()" (reset)="resetData()">
         <ng-container *ngTemplateOutlet="paymentType === paymentTypes.KEYSEND ? keysendBlock : paymentType === paymentTypes.OFFER ? offerBlock : invoiceBlock"></ng-container>
         <div fxFlex="100" class="alert alert-danger mt-1" *ngIf="paymentError !== ''">
           <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
           <span *ngIf="paymentError !== ''">{{paymentError}}</span>
         </div>
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
-          <button class="mr-1" mat-button color="primary" tabindex="8" type="reset" (click)="resetData()">Clear Fields</button>
-          <button mat-button color="primary" (click)="onSendPayment()" tabindex="7">Send Payment</button>
+          <button class="mr-1" mat-button color="primary" tabindex="9" type="reset">Clear Fields</button>
+          <button mat-button color="primary" type="submit" tabindex="8">Send Payment</button>
         </div>
       </form>
     </mat-card-content>
@@ -62,6 +62,9 @@
     <mat-error *ngIf="!offerAmount">Offer amount is required.</mat-error>
   </mat-form-field>
   <div fxFlex="100">
-    <mat-checkbox fxFlex="30" tabindex="6" class="mt-1" color="primary" [(ngModel)]="flgSaveToDB" matTooltip="Save offer in database for future payments" [matTooltipPosition]="'above'">Save Offer</mat-checkbox>
+    <mat-checkbox fxFlex="30" tabindex="6" class="my-1" color="primary" [(ngModel)]="flgSaveToDB" matTooltip="Save offer in database for future payments" [matTooltipPosition]="'above'">Save Offer</mat-checkbox>
   </div>    
+  <mat-form-field fxFlex="100" *ngIf="flgSaveToDB">
+    <input matInput placeholder="Label to Save" [(ngModel)]="offerLabel" tabindex="7">
+  </mat-form-field>
 </ng-template>

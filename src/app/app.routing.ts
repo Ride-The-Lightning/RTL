@@ -19,7 +19,7 @@ import { LoginComponent } from './shared/components/login/login.component';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 import { ErrorComponent } from './shared/components/error/error.component';
 import { AuthGuard } from './shared/services/auth.guard';
-import { OffersServiceSettingsComponent } from './shared/components/node-config/services-settings/offers-service-settings/offers-service-settings.component';
+import { ExperimentalSettingsComponent } from './shared/components/node-config/experimental-settings/experimental-settings.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
@@ -36,16 +36,16 @@ export const routes: Routes = [
   },
   {
     path: 'config', component: NodeConfigComponent, canActivate: [AuthGuard], children: [
-      { path: '', pathMatch: 'full', redirectTo: 'node' },
-      { path: 'node', component: NodeSettingsComponent, canActivate: [AuthGuard] },
+      { path: '', pathMatch: 'full', redirectTo: 'layout' },
+      { path: 'layout', component: NodeSettingsComponent, canActivate: [AuthGuard] },
       {
         path: 'services', component: ServicesSettingsComponent, canActivate: [AuthGuard], children: [
           { path: '', pathMatch: 'full', redirectTo: 'loop' },
           { path: 'loop', component: LoopServiceSettingsComponent, canActivate: [AuthGuard] },
           { path: 'boltz', component: BoltzServiceSettingsComponent, canActivate: [AuthGuard] },
-          { path: 'offers', component: OffersServiceSettingsComponent, canActivate: [AuthGuard] }
         ]
       },
+      { path: 'experimental', component: ExperimentalSettingsComponent, canActivate: [AuthGuard] },
       { path: 'lnconfig', component: LNPConfigComponent, canActivate: [AuthGuard] }
     ]
   },

@@ -135,15 +135,28 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
           let updateRequestPayload = null;
-          let node_ids = '';
-          if (channelToUpdate === 'all') {
-            this.activeChannels.forEach((channel) => {
-              node_ids = node_ids + ',' + channel.nodeId;
-            });
-            node_ids = node_ids.substring(1);
-            updateRequestPayload = { baseFeeMsat: base_fee, feeRate: fee_rate, nodeIds: node_ids };
+          if (this.commonService.isVersionCompatible(this.information.version, '0.6.2')) {
+            let node_ids = '';
+            if (channelToUpdate === 'all') {
+              this.activeChannels.forEach((channel) => {
+                node_ids = node_ids + ',' + channel.nodeId;
+              });
+              node_ids = node_ids.substring(1);
+              updateRequestPayload = { baseFeeMsat: base_fee, feeRate: fee_rate, nodeIds: node_ids };
+            } else {
+              updateRequestPayload = { baseFeeMsat: base_fee, feeRate: fee_rate, nodeId: channelToUpdate.nodeId };
+            }
           } else {
-            updateRequestPayload = { baseFeeMsat: base_fee, feeRate: fee_rate, nodeId: channelToUpdate.nodeId };
+            let channel_ids = '';
+            if (channelToUpdate === 'all') {
+              this.activeChannels.forEach((channel) => {
+                channel_ids = channel_ids + ',' + channel.channelId;
+              });
+              channel_ids = channel_ids.substring(1);
+              updateRequestPayload = { baseFeeMsat: base_fee, feeRate: fee_rate, channelIds: channel_ids };
+            } else {
+              updateRequestPayload = { baseFeeMsat: base_fee, feeRate: fee_rate, channelId: channelToUpdate.channelId };
+            }
           }
           this.store.dispatch(updateChannel({ payload: updateRequestPayload }));
         }

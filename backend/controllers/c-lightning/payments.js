@@ -111,7 +111,7 @@ export const postPayment = (req, res, next) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent' });
         if (req.body.paymentType === 'OFFER') {
             if (req.body.saveToDB) {
-                const offer = { id: v4(), invoice: req.body.invoice, amountmSat: req.body.amount, description: req.body.description };
+                const offer = { id: v4(), offer: req.body.offer, amountmSat: req.body.amount, label: req.body.label, issuer: req.body.issuer, description: req.body.description };
                 return Database.offer.create(offer).then((savedOffer) => {
                     logger.log({ level: 'DEBUG', fileName: 'Offer', msg: 'Offer Saved', data: savedOffer });
                     return res.status(201).json({ paymentResponse: body, saveToDBResponse: savedOffer.dataValues });

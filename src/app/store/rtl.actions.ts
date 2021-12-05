@@ -48,6 +48,8 @@ export const twoFASaveSettings = createAction(RTLActions.TWO_FA_SAVE_SETTINGS, p
 
 export const setSelectedNode = createAction(RTLActions.SET_SELECTED_NODE, props<{ payload: SetSelectedNode }>());
 
+export const updateRootNodeSettings = createAction(RTLActions.UPDATE_ROOT_NODE_SETTINGS, props<{ payload: UpdateServiceSetting }>());
+
 export const updateServiceSettings = createAction(RTLActions.UPDATE_SERVICE_SETTINGS, props<{ payload: UpdateServiceSetting }>());
 
 export const setNodeData = createAction(RTLActions.SET_NODE_DATA, props<{ payload: GetInfoRoot }>());

@@ -34,6 +34,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   faEject = faEject;
   faEye = faEye;
   public appConfig: RTLConfiguration;
+  public selConfigNodeIndex: Number;
   public selNode: ConfigSettingsNode;
   public settings: Settings;
   public version = '';
@@ -87,9 +88,6 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
         this.informationChain.chain = '';
         this.informationChain.network = '';
       }
-      if (this.selNode && this.selNode.lnImplementation === 'CLT' && this.information.api_version) {
-        this.loadCLTMenu();
-      }
       this.flgLoading = !(this.information.identity_pubkey);
       if (window.innerWidth <= 414) {
         this.smallScreen = true;
@@ -98,9 +96,13 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     this.store.select(rootSelectedNode).
       pipe(takeUntil(this.unSubs[2])).
       subscribe((selNode) => {
+        let previousSelNode: ConfigSettingsNode = this.selNode ? JSON.parse(JSON.stringify(this.selNode)) : null;
         this.selNode = selNode;
         this.settings = this.selNode.settings;
-        if (this.selNode && this.selNode.lnImplementation) {
+        if (previousSelNode.index !== this.selNode.index) {
+          this.selConfigNodeIndex = +selNode.index;
+        }
+        if (this.selNode && this.selNode.lnImplementation && this.selNode.lnImplementation !== previousSelNode.lnImplementation) {
           this.filterSideMenuNodes();
         }
         this.logger.info(selNode);
@@ -197,10 +199,11 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     this.ChildNavClicked.emit('showData');
   }
 
-  onNodeSelectionChange(selNodeValue: ConfigSettingsNode) {
-    const prevIndex = this.selNode.index;
-    this.selNode = selNodeValue;
-    this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.UPDATE_SELECTED_NODE, prevLnNodeIndex: +prevIndex, currentLnNode: selNodeValue, isInitialSetup: false } }));
+  onNodeSelectionChange(selNodeValue: Number) {
+    const prevIndex = this.selConfigNodeIndex;
+    this.selConfigNodeIndex = selNodeValue;
+    const foundNode = this.appConfig.nodes.find((node) => +node.index === selNodeValue);
+    this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.UPDATE_SELECTED_NODE, prevLnNodeIndex: +prevIndex, currentLnNode: foundNode, isInitialSetup: false } }));
     this.ChildNavClicked.emit('selectNode');
   }
 

@@ -201,6 +201,7 @@ export interface OfferRequest {
   description?: string;
   signature?: string;
   chains?: string[];
+  issuer?: string;
   currency?: string;
   minor_unit?: number;
   amount?: number;
@@ -400,9 +401,11 @@ export interface SendPayment {
   fromDialog: boolean;
   paymentType: PaymentTypes;
   label?: string;
+  issuer?: string;
   invoice?: string;
   description?: string;
   saveToDB?: boolean;
+  offer?: string;
   amount?: number;
   pubkey?: string;
 }
