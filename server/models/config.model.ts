@@ -24,7 +24,8 @@ export class CommonSelectedNode {
     public fiat_conversion?: boolean,
     public currency_unit?: string,
     public ln_version?: string,
-    public api_version?: string
+    public api_version?: string,
+    public enable_offers?: boolean
   ) { }
 
 }
@@ -52,7 +53,8 @@ export class NodeSettingsConfiguration {
     public lnServerUrl?: string,
     public swapServerUrl?: string,
     public boltzServerUrl?: string,
-    public channelBackupPath?: string
+    public channelBackupPath?: string,
+    public enableOffers?: boolean
   ) { }
 
 }

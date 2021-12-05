@@ -10,7 +10,7 @@
       <mat-radio-group *ngIf="isCompatibleVersion" class="my-1" color="primary" name="paymentType" [(ngModel)]="paymentType" (change)="onPaymentTypeChange()" fxFlex="100" fxLayoutAlign="start start">
         <mat-radio-button fxFlex="20" tabindex="1" value="{{paymentTypes.INVOICE}}">Invoice</mat-radio-button>
         <mat-radio-button fxFlex="20" tabindex="2" value="{{paymentTypes.KEYSEND}}">Keysend</mat-radio-button>
-        <mat-radio-button fxFlex="20" tabindex="3" value="{{paymentTypes.OFFER}}">Offer</mat-radio-button>
+        <mat-radio-button *ngIf="selNode.enableOffers" fxFlex="20" tabindex="3" value="{{paymentTypes.OFFER}}">Offer</mat-radio-button>
       </mat-radio-group>
       <form fxLayoutAlign="space-between stretch" fxLayout="column" #sendPaymentForm="ngForm">
         <ng-container *ngTemplateOutlet="paymentType === paymentTypes.KEYSEND ? keysendBlock : paymentType === paymentTypes.OFFER ? offerBlock : invoiceBlock"></ng-container>
