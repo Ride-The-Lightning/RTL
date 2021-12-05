@@ -57,7 +57,7 @@ export class CLQueryRoutesComponent implements OnInit, OnDestroy {
     this.clEffects.setQueryRoutesCL.pipe(takeUntil(this.unSubs[1])).subscribe((queryRoute) => {
       this.qrHops = new MatTableDataSource([]);
       this.qrHops.data = [];
-      if (queryRoute.routes) {
+      if (queryRoute.routes && queryRoute.routes.length && queryRoute.routes.length > 0) {
         this.flgLoading[0] = false;
         this.qrHops = new MatTableDataSource<Routes>([...queryRoute.routes]);
         this.qrHops.data = queryRoute.routes;

@@ -25,6 +25,7 @@ export class CLTransactionsComponent implements OnInit, OnDestroy {
   faExchangeAlt = faExchangeAlt;
   faChartPie = faChartPie;
   currencyUnits = [];
+  routerUrl = '';
   balances = [{ title: 'Local Capacity', dataValue: 0, tooltip: 'Amount you can send' }, { title: 'Remote Capacity', dataValue: 0, tooltip: 'Amount you can receive' }];
   public selNode: SelNodeChild = {};
   public links = [{ link: 'payments', name: 'Payments' }, { link: 'invoices', name: 'Invoices' }];
@@ -40,12 +41,15 @@ export class CLTransactionsComponent implements OnInit, OnDestroy {
       subscribe((value: any) => {
         const linkFound = this.links.find((link) => value.urlAfterRedirects.includes(link.link));
         this.activeLink = linkFound ? linkFound.link : this.links[0].link;
+        this.routerUrl = value.urlAfterRedirects;
       });
     this.store.select(clNodeSettings).pipe(takeUntil(this.unSubs[1])).subscribe((nodeSettings: SelNodeChild) => {
       this.selNode = nodeSettings;
       if (this.selNode.enableOffers) {
         this.store.dispatch(fetchOffers());
         this.links.push({ link: 'offers', name: 'Offers' });
+        const linkFound = this.links.find((link) => this.router.url.includes(link.link));
+        this.activeLink = linkFound ? linkFound.link : this.links[0].link;
       }
     });
     this.store.select(localRemoteBalance).pipe(takeUntil(this.unSubs[2]),

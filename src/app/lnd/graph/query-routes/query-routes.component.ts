@@ -55,7 +55,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.lndEffects.setQueryRoutes.pipe(takeUntil(this.unSubs[1])).subscribe((queryRoute) => {
       this.qrHops = new MatTableDataSource([]);
-      if (queryRoute.routes && queryRoute.routes[0].hops) {
+      if (queryRoute.routes && queryRoute.routes.length && queryRoute.routes.length > 0 && queryRoute.routes[0].hops) {
         this.flgLoading[0] = false;
         this.qrHops = new MatTableDataSource<Hop>([...queryRoute.routes[0].hops]);
         this.qrHops.data = queryRoute.routes[0].hops;

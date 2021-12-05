@@ -99,10 +99,10 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
         let previousSelNode: ConfigSettingsNode = this.selNode ? JSON.parse(JSON.stringify(this.selNode)) : null;
         this.selNode = selNode;
         this.settings = this.selNode.settings;
-        if (previousSelNode.index !== this.selNode.index) {
+        if (!previousSelNode || previousSelNode.index !== this.selNode.index) {
           this.selConfigNodeIndex = +selNode.index;
         }
-        if (this.selNode && this.selNode.lnImplementation && this.selNode.lnImplementation !== previousSelNode.lnImplementation) {
+        if (this.selNode && this.selNode.lnImplementation && previousSelNode && previousSelNode.lnImplementation && this.selNode.lnImplementation !== previousSelNode.lnImplementation) {
           this.filterSideMenuNodes();
         }
         this.logger.info(selNode);

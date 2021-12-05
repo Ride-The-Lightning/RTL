@@ -18,7 +18,7 @@
         <ng-container matColumnDef="offer_id">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Offer ID </th>
           <td mat-cell *matCellDef="let offer">
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '42rem'}">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '30rem' : ''}">
               <span class="ellipsis-child">
                 <span *ngIf="offer.active" class="dot green" matTooltip="Active" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
                 <span *ngIf="!offer.active" class="dot red" matTooltip="Inactive" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
@@ -51,8 +51,8 @@
               <mat-select placeholder="Actions" tabindex="4" class="mr-0">
                 <mat-select-trigger></mat-select-trigger>
                 <mat-option (click)="onOfferClick(offer)">View Info</mat-option>
-                <mat-option (click)="onDisableOffer(offer)">Disable Offer</mat-option>
-                <mat-option (click)="onPrintOffer(offer)">Print</mat-option>
+                <mat-option *ngIf="offer.active" (click)="onDisableOffer(offer)">Disable Offer</mat-option>
+                <mat-option *ngIf="offer.active" (click)="onPrintOffer(offer)">Export QR code</mat-option>
               </mat-select>
             </div>            
           </td>

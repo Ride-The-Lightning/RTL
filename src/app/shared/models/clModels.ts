@@ -400,8 +400,8 @@ export interface SendPayment {
   uiMessage: string;
   fromDialog: boolean;
   paymentType: PaymentTypes;
-  label?: string;
-  issuer?: string;
+  title?: string;
+  vendor?: string;
   invoice?: string;
   description?: string;
   saveToDB?: boolean;

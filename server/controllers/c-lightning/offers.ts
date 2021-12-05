@@ -68,7 +68,7 @@ export const disableOffer = (req, res, next) => {
   request.delete(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Offer Disabled', data: body });
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Disabled' });
-    res.status(204).json({ status: 'Offer Disabled Successfully' });
+    res.status(202).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Offers', 'Disable Offer Error', req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });

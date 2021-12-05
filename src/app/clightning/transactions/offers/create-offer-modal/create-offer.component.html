@@ -4,39 +4,30 @@
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">Create Offer</span>
       </div>
-      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" [mat-dialog-close]="false" default mat-button>X</button>
+      <button tabindex="6" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" [mat-dialog-close]="false" default mat-button>X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <form fxLayout="row wrap" fxLayoutAlign="start space-between" fxFlex="100" #addOfferForm="ngForm">
         <mat-form-field fxFlex="100" fxLayoutAlign="start end">
-          <input matInput autoFocus [(ngModel)]="description" placeholder="Description" tabindex="2" name="description">
+          <input matInput autoFocus [(ngModel)]="description" placeholder="Description" tabindex="1" name="description">
         </mat-form-field>
         <div fxLayout="row" fxLayoutAlign="space-between start" fxFlex="100">
           <mat-form-field fxFlex="40">
-            <input matInput [(ngModel)]="offerValue" (keyup)="onOfferValueChange()" placeholder="Amount" type="number" [step]="100" [min]="1" tabindex="3" name="offerValue">
+            <input matInput [(ngModel)]="offerValue" (keyup)="onOfferValueChange()" placeholder="Amount" type="number" [step]="100" [min]="1" tabindex="2" name="offerValue">
             <span matSuffix>  Sats </span>
             <mat-hint>{{offerValueHint}}</mat-hint>
           </mat-form-field>
-          <mat-form-field fxFlex="30">
-            <input matInput [(ngModel)]="expiry" name="expiry" placeholder="Expiry" type="number" [step]="selTimeUnit === timeUnitEnum.SECS ? 300 : selTimeUnit === timeUnitEnum.MINS ? 10 : selTimeUnit === timeUnitEnum.HOURS ? 2 : 1" [min]="1" tabindex="4">
-            <span matSuffix> {{selTimeUnit | titlecase}} </span>
+          <mat-form-field fxFlex="58" fxLayoutAlign="start end">
+            <input matInput [(ngModel)]="vendor" placeholder="Vendor" tabindex="3" name="vendor">
           </mat-form-field>
-          <mat-form-field fxFlex="26">
-            <mat-select [value]="selTimeUnit" tabindex="5" name="timeUnit" (selectionChange)="onTimeUnitChange($event)">
-              <mat-option *ngFor="let timeUnit of timeUnits" [value]="timeUnit">{{timeUnit | titlecase}}</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <div fxFlex="50" fxLayoutAlign="start center" class="mt-2">
-          <mat-slide-toggle tabindex="6" color="primary" [(ngModel)]="private" matTooltip="Include routing hints for private channels" [matTooltipPosition]="'above'" name="private">Private Routing Hints</mat-slide-toggle>
-        </div>
+          </div>
         <div fxFlex="100" class="alert alert-danger mt-1" *ngIf="offerError !== ''">
           <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
           <span *ngIf="offerError !== ''">{{offerError}}</span>
         </div>
         <div fxLayout="row" fxFlex="100" class="mt-1" fxLayoutAlign="end center">
-          <button class="mr-1" mat-button color="primary" tabindex="7" type="reset" (click)="resetData()">Clear Field</button>
-          <button mat-button color="primary" (click)="onAddOffer(addOfferForm)" tabindex="8">Create Offer</button>
+          <button class="mr-1" mat-button color="primary" tabindex="4" type="reset" (click)="resetData()">Clear Field</button>
+          <button mat-button color="primary" (click)="onAddOffer()" tabindex="5">Create Offer</button>
         </div>
       </form>
     </mat-card-content>

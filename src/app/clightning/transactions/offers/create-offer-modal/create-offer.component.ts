@@ -27,18 +27,12 @@ export class CLCreateOfferComponent implements OnInit, OnDestroy {
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: SelNodeChild = {};
   public description = '';
-  public expiry: number;
   public offerValue: number;
+  public vendor = '';
   public offerValueHint = '';
-  public offerPaymentReq = '';
   public offers: any;
   public information: GetInfo = {};
-  public private = false;
-  public expiryStep = 100;
   public pageSize = PAGE_SIZE;
-  public timeUnitEnum = TimeUnitEnum;
-  public timeUnits = TIME_UNITS;
-  public selTimeUnit = TimeUnitEnum.SECS;
   public offerError = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -51,6 +45,7 @@ export class CLCreateOfferComponent implements OnInit, OnDestroy {
     });
     this.store.select(clNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => {
       this.information = nodeInfo;
+      this.vendor = this.information.alias;
     });
     this.actions.pipe(
       takeUntil(this.unSubs[2]),
@@ -67,29 +62,17 @@ export class CLCreateOfferComponent implements OnInit, OnDestroy {
       });
   }
 
-  onAddOffer(form: any) {
+  onAddOffer() {
     this.offerError = '';
-    if (!this.offerValue) {
-      this.offerValue = 0;
-    }
-    let expiryInSecs = (this.expiry ? this.expiry : 3600);
-    if (this.selTimeUnit !== TimeUnitEnum.SECS) {
-      expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
-    }
-    this.store.dispatch(saveNewOffer({
-      payload: {
-        label: ('ulbl' + Math.random().toString(36).slice(2) + Date.now()), amount: this.offerValue * 1000, description: this.description, expiry: expiryInSecs, private: this.private
-      }
-    }));
+    let offerAmt = !this.offerValue ? 'any' : this.offerValue + 'sats';
+    this.store.dispatch(saveNewOffer({ payload: { amount: offerAmt, description: this.description, vendor: this.vendor } }));
   }
 
   resetData() {
     this.description = '';
+    this.vendor = this.information.alias;
     this.offerValue = null;
-    this.private = false;
-    this.expiry = null;
     this.offerValueHint = '';
-    this.selTimeUnit = TimeUnitEnum.SECS;
     this.offerError = '';
   }
 
@@ -106,13 +89,6 @@ export class CLCreateOfferComponent implements OnInit, OnDestroy {
           }
         });
     }
-  }
-
-  onTimeUnitChange(event: any) {
-    if (this.expiry && this.selTimeUnit !== event.value) {
-      this.expiry = this.commonService.convertTime(this.expiry, this.selTimeUnit, event.value);
-    }
-    this.selTimeUnit = event.value;
   }
 
   ngOnDestroy() {

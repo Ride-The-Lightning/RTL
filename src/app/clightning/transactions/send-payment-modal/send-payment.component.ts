@@ -52,8 +52,8 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public offerRequest = '';
   public offerDecodedHint = '';
   public offerDescription = '';
-  public offerIssuer = '';
-  public offerLabel = '';
+  public offerVendor = '';
+  public offerTitle = '';
   public zeroAmtOffer = false;
   public offerInvoice: OfferInvoice = null;
   public offerAmount = null;
@@ -203,7 +203,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
           this.store.dispatch(fetchOfferInvoice({ payload: { offer: this.offerRequest } }));
         }
       } else {
-        this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_OFFER, paymentType: PaymentTypes.OFFER, invoice: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, offer: this.offerRequest, amount: this.offerAmount * 1000, label: this.offerLabel, issuer: this.offerIssuer, description: this.offerDescription, fromDialog: true } }));
+        this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_OFFER, paymentType: PaymentTypes.OFFER, invoice: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, offer: this.offerRequest, amount: this.offerAmount * 1000, title: this.offerTitle, vendor: this.offerVendor, description: this.offerDescription, fromDialog: true } }));
       }
     }
   }
@@ -273,7 +273,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.offerDecoded.amount = +(this.offerDecoded.amount || this.offerDecoded.amount_msat.slice(0, -4));
       this.offerAmount = this.offerDecoded.amount ? this.offerDecoded.amount / 1000 : 0;
       this.offerDescription = this.offerDecoded.description;
-      this.offerIssuer = this.offerDecoded.issuer ? this.offerDecoded.issuer : this.offerDecoded.vendor ? this.offerDecoded.vendor : '';
+      this.offerVendor = this.offerDecoded.vendor ? this.offerDecoded.vendor : this.offerDecoded.issuer ? this.offerDecoded.issuer : '';
       if (this.selNode.fiatConversion) {
         this.commonService.convertCurrency(this.offerAmount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
           pipe(takeUntil(this.unSubs[5])).

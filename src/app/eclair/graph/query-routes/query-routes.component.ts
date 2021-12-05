@@ -57,7 +57,7 @@ export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
     this.qrHops = new MatTableDataSource([]);
     this.eclEffects.setQueryRoutes.pipe(takeUntil(this.unSubs[1])).subscribe((queryRoute) => {
       this.qrHops.data = [];
-      if (queryRoute) {
+      if (queryRoute && queryRoute.length && queryRoute.length > 0) {
         this.flgLoading[0] = false;
         this.qrHops = new MatTableDataSource<Route>([...queryRoute]);
         this.qrHops.data = queryRoute;
