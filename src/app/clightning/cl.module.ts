@@ -16,14 +16,15 @@ import { CLOnChainUtxosComponent } from './on-chain/utxo-tables/utxos/utxos.comp
 import { CLOnChainComponent } from './on-chain/on-chain.component';
 import { CLLightningPaymentsComponent } from './transactions/payments/lightning-payments.component';
 import { CLTransactionsComponent } from './transactions/transactions.component';
-import { CLLookupsComponent } from './lookups/lookups.component';
+import { CLLookupsComponent } from './graph/lookups/lookups.component';
 import { CLRoutingComponent } from './routing/routing.component';
 import { CLForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
 import { CLFailedTransactionsComponent } from './routing/failed-transactions/failed-transactions.component';
 import { CLRoutingPeersComponent } from './routing/routing-peers/routing-peers.component';
-import { CLChannelLookupComponent } from './lookups/channel-lookup/channel-lookup.component';
-import { CLNodeLookupComponent } from './lookups/node-lookup/node-lookup.component';
-import { CLQueryRoutesComponent } from './transactions/query-routes/query-routes.component';
+import { CLChannelLookupComponent } from './graph/lookups/channel-lookup/channel-lookup.component';
+import { CLNodeLookupComponent } from './graph/lookups/node-lookup/node-lookup.component';
+import { CLQueryRoutesComponent } from './graph/query-routes/query-routes.component';
+import { CLGraphComponent } from './graph/graph.component';
 import { CLChannelOpenTableComponent } from './peers-channels/channels/channels-tables/channel-open-table/channel-open-table.component';
 import { CLChannelPendingTableComponent } from './peers-channels/channels/channels-tables/channel-pending-table/channel-pending-table.component';
 import { CLBumpFeeComponent } from './peers-channels/channels/bump-fee-modal/bump-fee.component';
@@ -75,6 +76,7 @@ import { CLUnlockedGuard } from '../shared/services/auth.guard';
     CLChannelLookupComponent,
     CLNodeLookupComponent,
     CLQueryRoutesComponent,
+    CLGraphComponent,
     CLOnChainReceiveComponent,
     CLUTXOTablesComponent,
     CLOnChainUtxosComponent,
@@ -112,4 +114,4 @@ import { CLUnlockedGuard } from '../shared/services/auth.guard';
   ],
   bootstrap: [CLRootComponent]
 })
-export class CLModule {}
+export class CLModule { }

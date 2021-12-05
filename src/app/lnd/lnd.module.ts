@@ -21,22 +21,23 @@ import { ChannelPendingTableComponent } from './peers-channels/channels/channels
 import { BumpFeeComponent } from './peers-channels/channels/bump-fee-modal/bump-fee.component';
 import { ChannelClosedTableComponent } from './peers-channels/channels/channels-tables/channel-closed-table/channel-closed-table.component';
 import { TransactionsComponent } from './transactions/transactions.component';
-import { LookupsComponent } from './lookups/lookups.component';
+import { LookupsComponent } from './graph/lookups/lookups.component';
 import { ReportsComponent } from './reports/reports.component';
 import { FeeReportComponent } from './reports/fee/fee-report.component';
 import { TransactionsReportComponent } from './reports/transactions/transactions-report.component';
 import { RoutingComponent } from './routing/routing.component';
 import { ForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
 import { RoutingPeersComponent } from './routing/routing-peers/routing-peers.component';
-import { ChannelLookupComponent } from './lookups/channel-lookup/channel-lookup.component';
-import { NodeLookupComponent } from './lookups/node-lookup/node-lookup.component';
+import { ChannelLookupComponent } from './graph/lookups/channel-lookup/channel-lookup.component';
+import { NodeLookupComponent } from './graph/lookups/node-lookup/node-lookup.component';
 import { BackupComponent } from './backup/backup.component';
 import { ChannelBackupTableComponent } from './backup/channel-backup-table/channel-backup-table.component';
 import { ChannelRestoreTableComponent } from './backup/channel-restore-table/channel-restore-table.component';
 import { SignVerifyMessageComponent } from './sign-verify-message/sign-verify-message.component';
 import { SignComponent } from './sign-verify-message/sign/sign.component';
 import { VerifyComponent } from './sign-verify-message/verify/verify.component';
-import { QueryRoutesComponent } from './transactions/query-routes/query-routes.component';
+import { QueryRoutesComponent } from './graph/query-routes/query-routes.component';
+import { GraphComponent } from './graph/graph.component';
 import { ChannelOpenTableComponent } from './peers-channels/channels/channels-tables/channel-open-table/channel-open-table.component';
 import { ChannelActiveHTLCsTableComponent } from './peers-channels/channels/channels-tables/channel-active-htlcs-table/channel-active-htlcs-table.component';
 import { UnlockWalletComponent } from './wallet/unlock/unlock.component';
@@ -96,6 +97,7 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     FeeReportComponent,
     TransactionsReportComponent,
     QueryRoutesComponent,
+    GraphComponent,
     OnChainReceiveComponent,
     OnChainComponent,
     UTXOTablesComponent,
@@ -130,4 +132,4 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
   ],
   bootstrap: [LNDRootComponent]
 })
-export class LNDModule {}
+export class LNDModule { }

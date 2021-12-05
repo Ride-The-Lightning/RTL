@@ -7,7 +7,7 @@ import { ECLOnChainComponent } from './on-chain/on-chain.component';
 import { ECLConnectionsComponent } from './peers-channels/connections.component';
 import { ECLTransactionsComponent } from './transactions/transactions.component';
 import { ECLRoutingComponent } from './routing/routing.component';
-import { ECLLookupsComponent } from './lookups/lookups.component';
+import { ECLLookupsComponent } from './graph/lookups/lookups.component';
 import { ECLOnChainReceiveComponent } from './on-chain/on-chain-receive/on-chain-receive.component';
 import { ECLOnChainSendComponent } from './on-chain/on-chain-send/on-chain-send.component';
 import { ECLChannelsTablesComponent } from './peers-channels/channels/channels-tables/channels-tables.component';
@@ -16,7 +16,7 @@ import { ECLChannelPendingTableComponent } from './peers-channels/channels/chann
 import { ECLPeersComponent } from './peers-channels/peers/peers.component';
 import { ECLLightningPaymentsComponent } from './transactions/payments/lightning-payments.component';
 import { ECLLightningInvoicesComponent } from './transactions/invoices/lightning-invoices.component';
-import { ECLQueryRoutesComponent } from './transactions/query-routes/query-routes.component';
+import { ECLQueryRoutesComponent } from './graph/query-routes/query-routes.component';
 import { ECLChannelInactiveTableComponent } from './peers-channels/channels/channels-tables/channel-inactive-table/channel-inactive-table.component';
 import { ECLForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
 import { ECLRoutingPeersComponent } from './routing/routing-peers/routing-peers.component';
@@ -25,6 +25,7 @@ import { ECLFeeReportComponent } from './reports/fee/fee-report.component';
 import { ECLTransactionsReportComponent } from './reports/transactions/transactions-report.component';
 import { ECLUnlockedGuard } from '../shared/services/auth.guard';
 import { NotFoundComponent } from '../shared/components/not-found/not-found.component';
+import { ECLGraphComponent } from './graph/graph.component';
 
 export const EclRoutes: Routes = [
   {
@@ -57,8 +58,7 @@ export const EclRoutes: Routes = [
         path: 'transactions', component: ECLTransactionsComponent, canActivate: [ECLUnlockedGuard], children: [
           { path: '', pathMatch: 'full', redirectTo: 'payments' },
           { path: 'payments', component: ECLLightningPaymentsComponent, canActivate: [ECLUnlockedGuard] },
-          { path: 'invoices', component: ECLLightningInvoicesComponent, canActivate: [ECLUnlockedGuard] },
-          { path: 'queryroutes', component: ECLQueryRoutesComponent, canActivate: [ECLUnlockedGuard] }
+          { path: 'invoices', component: ECLLightningInvoicesComponent, canActivate: [ECLUnlockedGuard] }
         ]
       },
       {
@@ -75,7 +75,13 @@ export const EclRoutes: Routes = [
           { path: 'transactions', component: ECLTransactionsReportComponent, canActivate: [ECLUnlockedGuard] }
         ]
       },
-      { path: 'lookups', component: ECLLookupsComponent, canActivate: [ECLUnlockedGuard] },
+      {
+        path: 'graph', component: ECLGraphComponent, canActivate: [ECLUnlockedGuard], children: [
+          { path: '', pathMatch: 'full', redirectTo: 'lookups' },
+          { path: 'lookups', component: ECLLookupsComponent, canActivate: [ECLUnlockedGuard] },
+          { path: 'queryroutes', component: ECLQueryRoutesComponent, canActivate: [ECLUnlockedGuard] }
+        ]
+      },
       { path: '**', component: NotFoundComponent }
     ]
   }
