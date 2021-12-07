@@ -1,4 +1,7 @@
-import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { createFeatureSelector, createSelector, select } from '@ngrx/store';
+import { pipe, filter, map, take, find } from 'rxjs';
+import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
+import { Offer } from '../../shared/models/clModels';
 import { CLState } from './cl.state';
 
 export const clState = createFeatureSelector<CLState>('cl');
@@ -23,3 +26,5 @@ export const nodeInfoAndBalanceAndNumPeers = createSelector(clState, (state: CLS
 export const nodeInfoAndBalance = createSelector(clState, (state: CLState) => ({ information: state.information, balance: state.balance }));
 export const nodeInfoAndNodeSettingsAndAPIsStatus = createSelector(clState, (state: CLState) => ({ information: state.information, nodeSettings: state.nodeSettings, apisCallStatus: [state.apisCallStatus.FetchInfo, state.apisCallStatus.FetchForwardingHistory] }));
 export const offers = createSelector(clState, (state: CLState) => ({ offers: state.offers, apiCallStatus: state.apisCallStatus.FetchOffers }));
+export const paidOffers = createSelector(clState, (state: CLState) => ({ paidOffers: state.paidOffers, apiCallStatus: state.apisCallStatus.FetchPaidOffers }));
+export const getoffer = (offerBolt12Str) => createSelector(clState, (state: CLState) => (state.offers.find((offer: Offer) => offer.bolt12 === offerBolt12Str)));

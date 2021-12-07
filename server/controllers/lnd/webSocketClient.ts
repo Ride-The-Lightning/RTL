@@ -2,8 +2,6 @@ import request from 'request-promise';
 import * as fs from 'fs';
 import { join } from 'path';
 
-import WebSocket from 'ws';
-
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { WSServer } from '../../utils/webSocketServer.js';
@@ -106,7 +104,7 @@ export class LNDWebSocketClient {
     const newClient = this.webSocketClients[clientIdx];
     newClient.selectedNode = JSON.parse(JSON.stringify(newSelectedNode));
     this.webSocketClients[clientIdx] = newClient;
-    if (this.webSocketClients[clientIdx].selectedNode.ln_version === '' || !this.webSocketClients[clientIdx].selectedNode.ln_version || this.common.isVersionCompatible(this.webSocketClients[clientIdx].selectedNode.ln_version, '0.14.0')) {
+    if (this.webSocketClients[clientIdx].selectedNode.ln_version === '' || !this.webSocketClients[clientIdx].selectedNode.ln_version || this.common.isVersionCompatible(this.webSocketClients[clientIdx].selectedNode.ln_version, '0.11.0')) {
       this.fetchUnpaidInvoices(this.webSocketClients[clientIdx].selectedNode);
     }
   }

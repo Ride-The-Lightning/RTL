@@ -28,7 +28,7 @@
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Active</h4>
             <span class="foreground-secondary-text">
-              {{offer.active ? 'Active' : 'Inactive'}}
+              {{!offer?.active ? 'N/K' : offer?.active ? 'Active' : 'Inactive'}}
             </span>
           </div>
         </div>
@@ -54,13 +54,13 @@
             <div fxFlex="50">
               <h4 fxLayoutAlign="start" class="font-bold-500">Used</h4>
               <span class="foreground-secondary-text">
-                {{ offer.used ? 'Yes' : 'No' }}
+                {{!offer?.used ? 'N/K' : offer?.used ? 'Yes' : 'No' }}
               </span>
             </div>
             <div fxFlex="50">
               <h4 fxLayoutAlign="start" class="font-bold-500">Single Use</h4>
               <span class="foreground-secondary-text">
-                {{ offer.single_use ? 'Yes' : 'No' }}
+                {{ !offer?.single_use ? 'N/K' : offer?.single_use ? 'Yes' : 'No' }}
               </span>
             </div>
           </div>
@@ -75,7 +75,7 @@
           <div fxLayout="row">
             <div fxFlex="100">
               <h4 fxLayoutAlign="start" class="font-bold-500">Offer ID</h4>
-              <span class="foreground-secondary-text">{{ offer.offer_id }}</span>
+              <span class="foreground-secondary-text">{{ offerDecoded.offer_id }}</span>
             </div>
           </div>
           <mat-divider class="w-100 my-1"></mat-divider>   

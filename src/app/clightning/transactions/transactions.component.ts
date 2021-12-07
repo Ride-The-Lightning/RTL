@@ -13,7 +13,7 @@ import { clNodeSettings, localRemoteBalance } from '../store/cl.selector';
 import { LocalRemoteBalance } from '../../shared/models/clModels';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { fetchOffers } from '../store/cl.actions';
+import { fetchOffers, fetchPaidOffers } from '../store/cl.actions';
 
 @Component({
   selector: 'rtl-cl-transactions',
@@ -47,7 +47,9 @@ export class CLTransactionsComponent implements OnInit, OnDestroy {
       this.selNode = nodeSettings;
       if (this.selNode.enableOffers) {
         this.store.dispatch(fetchOffers());
+        this.store.dispatch(fetchPaidOffers());
         this.links.push({ link: 'offers', name: 'Offers' });
+        this.links.push({ link: 'paidoffr', name: 'Paid Offers' });
         const linkFound = this.links.find((link) => this.router.url.includes(link.link));
         this.activeLink = linkFound ? linkFound.link : this.links[0].link;
       }

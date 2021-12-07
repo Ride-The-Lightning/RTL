@@ -5,7 +5,7 @@ export const Offer = (sequelize, Sequelize) => {
       primaryKey: true,
       allowNull: false
     },
-    offer: {
+    offerBolt12: {
       type: Sequelize.STRING,
       allowNull: false
     },

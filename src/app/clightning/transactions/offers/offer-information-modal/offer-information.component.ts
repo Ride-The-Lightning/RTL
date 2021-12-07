@@ -56,6 +56,7 @@ export class CLOfferInformationComponent implements OnInit, OnDestroy {
       filter((action) => action.type === CLActions.SET_DECODED_PAYMENT_CL)).
       subscribe((action: any) => {
         if (action.type === CLActions.SET_DECODED_PAYMENT_CL) {
+          console.warn(action.payload);
           this.offerDecoded = action.payload;
           if (this.offerDecoded.offer_id && !this.offerDecoded.amount_msat) {
             this.offerDecoded.amount_msat = '0msat';

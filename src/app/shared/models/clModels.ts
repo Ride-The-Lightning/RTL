@@ -97,6 +97,15 @@ export interface Offer {
   used?: boolean;
 }
 
+export interface PaidOffer {
+  id?: string;
+  offerBolt12?: string;
+  amountmSat?: number;
+  title?: string;
+  vendor?: string;
+  description?: string;
+}
+
 export interface ListInvoices {
   invoices?: Invoice[];
   last_index_offset?: string;
@@ -405,7 +414,7 @@ export interface SendPayment {
   invoice?: string;
   description?: string;
   saveToDB?: boolean;
-  offer?: string;
+  offerBolt12?: string;
   amount?: number;
   pubkey?: string;
 }

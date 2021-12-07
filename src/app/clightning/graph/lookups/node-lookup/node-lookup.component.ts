@@ -28,8 +28,9 @@ export class CLNodeLookupComponent implements OnInit {
     this.addresses.sort = this.sort;
     this.addresses.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     if (this.lookupResult.features && this.lookupResult.features.trim() !== '') {
+      const featureHex = parseInt(this.lookupResult.features, 16);
       NODE_FEATURES_CLT.forEach((feature) => {
-        if (!!(parseInt(this.lookupResult.features, 16) & ((1 << feature.range.min) | (1 << feature.range.max)))) {
+        if (!!(featureHex & ((1 << feature.range.min) | (1 << feature.range.max)))) {
           this.featureDescriptions.push(feature.description + '\n');
         }
       });

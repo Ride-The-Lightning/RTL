@@ -267,6 +267,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
     this.channels.sort = this.sort;
     this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.channels.paginator = this.paginator;
+    this.applyFilter();
     this.logger.info(this.channels);
   }
 

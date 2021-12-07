@@ -1,9 +1,22 @@
 import request from 'request-promise';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
+import { Database } from '../../utils/database.js';
 let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
+
+export const listPaidOffers = (req, res, next) => {
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Getting Paid Offers..' });
+  Database.offer.findAll().then((offers) => {
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Paid Offers List Received', data: offers });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Paid Offers Received' });
+    res.status(200).json(offers);
+  }).catch((errRes) => {
+    const err = common.handleError(errRes, 'Offers', 'List Paid Offers Error', req.session.selectedNode);
+    return res.status(err.statusCode).json({ message: err.message, error: err.error });
+  });
+};
 
 export const listOffers = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Getting Offers..' });

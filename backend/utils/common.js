@@ -157,6 +157,7 @@ export class CommonService {
             this.nodes.splice(foundIndex, 1, newNode);
             req.session.selectedNode = this.findNode(req.session.selectedNode.index);
         };
+        this.convertTimeToEpoch = (timeToConvert) => Math.floor(timeToConvert.getTime() / 1000);
         this.convertTimestampToTime = (num) => {
             const myDate = new Date(+num * 1000);
             let days = myDate.getDate().toString();

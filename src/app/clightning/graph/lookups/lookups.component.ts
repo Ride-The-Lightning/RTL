@@ -51,10 +51,10 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
           this.flgLoading[0] = true;
           switch (this.selectedFieldId) {
             case 0:
-              this.nodeLookupValue = JSON.parse(JSON.stringify(resLookup.payload[0])) || { nodeid: '' };
+              this.nodeLookupValue = typeof resLookup.payload[0] !== 'object' ? { nodeid: '' } : JSON.parse(JSON.stringify(resLookup.payload[0]));
               break;
             case 1:
-              this.channelLookupValue = JSON.parse(JSON.stringify(resLookup.payload)) || [];
+              this.channelLookupValue = typeof resLookup.payload[0] !== 'object' ? [] : JSON.parse(JSON.stringify(resLookup.payload));
               break;
             default:
               break;
