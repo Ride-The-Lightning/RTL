@@ -19,7 +19,7 @@ import { AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLWSEventTypeEnum, CLAct
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 
 import { RTLState } from '../../store/rtl.state';
-import { fetchBalance, fetchChannels, fetchFeeRates, fetchFees, fetchInvoices, fetchLocalRemoteBalance, fetchPayments, fetchPeers, fetchUTXOs, getForwardingHistory, setFailedForwardingHistory, setLookup, setPeers, setQueryRoutes, updateCLAPICallStatus, updateInvoice } from './cl.actions';
+import { addPaidOffer, fetchBalance, fetchChannels, fetchFeeRates, fetchFees, fetchInvoices, fetchLocalRemoteBalance, fetchPayments, fetchPeers, fetchUTXOs, getForwardingHistory, setFailedForwardingHistory, setLookup, setPeers, setQueryRoutes, updateCLAPICallStatus, updateInvoice } from './cl.actions';
 import { allAPIsCallStatus, clNodeInformation } from './cl.selector';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 import { CLOfferInformationComponent } from '../transactions/offers/offer-information-modal/offer-information.component';
@@ -543,6 +543,7 @@ export class CLEffects implements OnDestroy {
             snackBarMessageStr = 'Payment Sent Successfully but Offer Saving to Database Failed.';
           }
           if (sendRes.saveToDBResponse && sendRes.saveToDBResponse !== 'NA') {
+            this.store.dispatch(addPaidOffer(sendRes.saveToDBResponse));
             snackBarMessageStr = 'Payment Sent Successfully and Offer Saved to Database.';
           }
           this.store.dispatch(openSnackBar({ payload: snackBarMessageStr }));
@@ -923,6 +924,27 @@ export class CLEffects implements OnDestroy {
         }),
           catchError((err: any) => {
             this.handleErrorWithoutAlert('DisableOffer', UI_MESSAGES.DISABLE_OFFER, 'Disabling Offer Failed.', err);
+            return of({ type: RTLActions.VOID });
+          })
+        );
+    })
+  ));
+
+  offersPaidFetchCL = createEffect(() => this.actions.pipe(
+    ofType(CLActions.FETCH_PAID_OFFERS_CL),
+    mergeMap((action: { type: string, payload: any }) => {
+      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchPaidOffers', status: APICallStatusEnum.INITIATED } }));
+      return this.httpClient.get(this.CHILD_API_URL + environment.OFFERS_API + '/paidoffers').
+        pipe(map((res: any) => {
+          this.logger.info(res);
+          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchPaidOffers', status: APICallStatusEnum.COMPLETED } }));
+          return {
+            type: CLActions.SET_PAID_OFFERS_CL,
+            payload: res || []
+          };
+        }),
+          catchError((err: any) => {
+            this.handleErrorWithoutAlert('FetchPaidOffers', UI_MESSAGES.NO_SPINNER, 'Fetching Paid Offers Failed.', err);
             return of({ type: RTLActions.VOID });
           })
         );

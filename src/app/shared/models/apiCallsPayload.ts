@@ -57,6 +57,7 @@ export interface ApiCallsListCL {
   FetchForwardingHistory: ApiCallStatusPayload;
   FetchFailedForwardingHistory: ApiCallStatusPayload;
   FetchOffers: ApiCallStatusPayload;
+  FetchPaidOffers: ApiCallStatusPayload;
 }
 
 export interface ApiCallsListECL {

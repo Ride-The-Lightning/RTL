@@ -1,11 +1,11 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Inject } from '@angular/core';
 import { NgForm, NgModel } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
@@ -14,11 +14,11 @@ import { APICallStatusEnum, CLActions, PaymentTypes, CurrencyUnitEnum, CURRENCY_
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
-import { CLEffects } from '../../store/cl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { decodePayment, fetchOfferInvoice, sendPayment } from '../../store/cl.actions';
 import { channels, clNodeInformation, clNodeSettings } from '../../store/cl.selector';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
+import { CLPaymentInformation } from '../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-cl-lightning-send-payments',
@@ -58,6 +58,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public offerInvoice: OfferInvoice = null;
   public offerAmount = null;
   public flgSaveToDB = false;
+  public hideSaveOption = false;
 
   public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
@@ -76,9 +77,28 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public isCompatibleVersion = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLLightningSendPaymentsComponent>, private store: Store<RTLState>, private clEffects: CLEffects, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions) { }
+  constructor(public dialogRef: MatDialogRef<CLLightningSendPaymentsComponent>, @Inject(MAT_DIALOG_DATA) public data: CLPaymentInformation, private store: Store<RTLState>, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions) { }
 
   ngOnInit() {
+    if (this.data && this.data.paymentType) {
+      this.paymentType = this.data.paymentType;
+      switch (this.paymentType) {
+        case PaymentTypes.INVOICE:
+          this.paymentRequest = this.data.invoiceBolt11;
+          break;
+        case PaymentTypes.KEYSEND:
+          this.pubkey = this.data.pubkeyKeysend;
+          break;
+        case PaymentTypes.OFFER:
+          this.onPaymentRequestEntry(this.data.offerBolt12);
+          this.offerTitle = this.data.offerTitle;
+          this.flgSaveToDB = false;
+          this.hideSaveOption = true;
+          break;
+        default:
+          break;
+      }
+    }
     this.store.select(clNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => {
       this.selNode = nodeSettings;
     });
@@ -203,7 +223,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
           this.store.dispatch(fetchOfferInvoice({ payload: { offer: this.offerRequest } }));
         }
       } else {
-        this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_OFFER, paymentType: PaymentTypes.OFFER, invoice: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, offer: this.offerRequest, amount: this.offerAmount * 1000, title: this.offerTitle, vendor: this.offerVendor, description: this.offerDescription, fromDialog: true } }));
+        this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_OFFER, paymentType: PaymentTypes.OFFER, invoice: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, offerBolt12: this.offerRequest, amount: this.offerAmount * 1000, title: this.offerTitle, vendor: this.offerVendor, description: this.offerDescription, fromDialog: true } }));
       }
     }
   }
@@ -228,18 +248,18 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
     this.offerInvoice = null;
     this.offerAmount = null;
     this.offerDecodedHint = '';
-    this.offerReq.control.setErrors(null);
     this.zeroAmtOffer = false;
     this.flgSaveToDB = false;
     this.paymentError = '';
+    if (this.offerReq) { this.offerReq.control.setErrors(null); }
   }
 
   resetInvoiceDetails() {
     this.paymentAmount = null;
     this.paymentDecodedHint = '';
-    this.paymentReq.control.setErrors(null);
     this.zeroAmtInvoice = false;
     this.paymentError = '';
+    if (this.paymentReq) { this.paymentReq.control.setErrors(null); }
   }
 
   onAmountChange(event: any) {

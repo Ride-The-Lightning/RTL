@@ -54,6 +54,7 @@ import { CLOnChainSendModalComponent } from './on-chain/on-chain-send-modal/on-c
 import { CLCreateOfferComponent } from './transactions/offers/create-offer-modal/create-offer.component';
 import { CLOfferInformationComponent } from './transactions/offers/offer-information-modal/offer-information.component';
 import { CLOffersTableComponent } from './transactions/offers/offers-table/offers-table.component';
+import { CLPaidOffersTableComponent } from './transactions/offers/paid-offers-table/paid-offers-table.component';
 
 import { CLUnlockedGuard } from '../shared/services/auth.guard';
 
@@ -113,7 +114,8 @@ import { CLUnlockedGuard } from '../shared/services/auth.guard';
     CLChannelInformationComponent,
     CLCreateOfferComponent,
     CLOfferInformationComponent,
-    CLOffersTableComponent
+    CLOffersTableComponent,
+    CLPaidOffersTableComponent
   ],
   providers: [
     CLUnlockedGuard

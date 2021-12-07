@@ -32,6 +32,7 @@ import { CLUnlockedGuard } from '../shared/services/auth.guard';
 import { NotFoundComponent } from '../shared/components/not-found/not-found.component';
 import { CLGraphComponent } from './graph/graph.component';
 import { CLOffersTableComponent } from './transactions/offers/offers-table/offers-table.component';
+import { CLPaidOffersTableComponent } from './transactions/offers/paid-offers-table/paid-offers-table.component';
 
 export const ClRoutes: Routes = [
   {
@@ -65,7 +66,8 @@ export const ClRoutes: Routes = [
           { path: '', pathMatch: 'full', redirectTo: 'payments' },
           { path: 'payments', component: CLLightningPaymentsComponent, canActivate: [CLUnlockedGuard] },
           { path: 'invoices', component: CLLightningInvoicesTableComponent, canActivate: [CLUnlockedGuard] },
-          { path: 'offers', component: CLOffersTableComponent, canActivate: [CLUnlockedGuard] }
+          { path: 'offers', component: CLOffersTableComponent, canActivate: [CLUnlockedGuard] },
+          { path: 'paidoffr', component: CLPaidOffersTableComponent, canActivate: [CLUnlockedGuard] }
         ]
       },
       {

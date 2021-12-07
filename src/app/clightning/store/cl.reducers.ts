@@ -1,6 +1,11 @@
 import { createReducer, on } from '@ngrx/store';
 import { initCLState } from './cl.state';
-import { addInvoice, addPeer, removeChannel, removePeer, resetCLStore, setBalance, setChannels, setChildNodeSettingsCL, setFailedForwardingHistory, setFeeRates, setFees, setForwardingHistory, setInfo, setInvoices, setLocalRemoteBalance, setOffers, addOffer, setPayments, setPeers, setUTXOs, updateCLAPICallStatus, updateInvoice, updateOffer } from './cl.actions';
+import {
+  addInvoice, addPeer, removeChannel, removePeer, resetCLStore, setBalance, setChannels,
+  setChildNodeSettingsCL, setFailedForwardingHistory, setFeeRates, setFees, setForwardingHistory,
+  setInfo, setInvoices, setLocalRemoteBalance, setOffers, addOffer, setPayments, setPeers, setUTXOs,
+  updateCLAPICallStatus, updateInvoice, updateOffer, setPaidOffers, addPaidOffer
+} from './cl.actions';
 import { Channel } from '../../shared/models/clModels';
 
 export const CLReducer = createReducer(initCLState,
@@ -128,18 +133,6 @@ export const CLReducer = createReducer(initCLState,
       invoices: newInvoices
     };
   }),
-  on(setOffers, (state, { payload }) => ({
-    ...state,
-    offers: payload
-  })),
-  on(addOffer, (state, { payload }) => {
-    const newOffers = state.offers;
-    newOffers.unshift(payload);
-    return {
-      ...state,
-      offers: newOffers
-    };
-  }),
   on(setInvoices, (state, { payload }) => ({
     ...state,
     invoices: payload
@@ -156,6 +149,18 @@ export const CLReducer = createReducer(initCLState,
     ...state,
     utxos: payload
   })),
+  on(setOffers, (state, { payload }) => ({
+    ...state,
+    offers: payload
+  })),
+  on(addOffer, (state, { payload }) => {
+    const newOffers = state.offers;
+    newOffers.unshift(payload);
+    return {
+      ...state,
+      offers: newOffers
+    };
+  }),
   on(updateOffer, (state, { payload }) => {
     const modifiedOffers = [...state.offers];
     const updateOfferIdx = state.offers.findIndex((offer) => offer.offer_id === payload.offer.offer_id);
@@ -165,6 +170,18 @@ export const CLReducer = createReducer(initCLState,
     return {
       ...state,
       offers: modifiedOffers
+    };
+  }),
+  on(setPaidOffers, (state, { payload }) => ({
+    ...state,
+    paidOffers: payload
+  })),
+  on(addPaidOffer, (state, { payload }) => {
+    const newPaidOffers = state.paidOffers;
+    newPaidOffers.unshift(payload);
+    return {
+      ...state,
+      paidOffers: newPaidOffers
     };
   })
 );

@@ -51,7 +51,7 @@ export class InvoiceInformationComponent implements OnInit, OnDestroy {
     }
     this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[0])).
       subscribe((nodeInfo: GetInfo) => {
-        this.flgVersionCompatible = this.commonService.isVersionCompatible(nodeInfo.version, '0.5.0');
+        this.flgVersionCompatible = this.commonService.isVersionCompatible(nodeInfo.version, '0.11.0');
       });
     const invoiceToCompare = JSON.parse(JSON.stringify(this.invoice));
     this.store.select(invoices).pipe(takeUntil(this.unSubs[1])).

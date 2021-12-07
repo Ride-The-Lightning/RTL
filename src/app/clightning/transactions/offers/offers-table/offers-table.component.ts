@@ -7,7 +7,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum } from '../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, AlertTypeEnum } from '../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../../../shared/models/RTLconfig';
 import { GetInfo, Offer } from '../../../../shared/models/clModels';
@@ -17,8 +17,9 @@ import { CommonService } from '../../../../shared/services/common.service';
 import { CLCreateOfferComponent } from '../create-offer-modal/create-offer.component';
 import { CLOfferInformationComponent } from '../offer-information-modal/offer-information.component';
 
+import { RTLEffects } from '../../../../store/rtl.effects';
 import { RTLState } from '../../../../store/rtl.state';
-import { openAlert } from '../../../../store/rtl.actions';
+import { openAlert, openConfirmation } from '../../../../store/rtl.actions';
 import { disableOffer, saveNewOffer } from '../../../store/cl.actions';
 import { clNodeInformation, clNodeSettings, offers } from '../../../store/cl.selector';
 
@@ -60,11 +61,11 @@ export class CLOffersTableComponent implements OnInit, AfterViewInit, OnDestroy 
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private rtlEffects: RTLEffects) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['offer_id', 'single_use', 'used', 'actions'];
+      this.displayedColumns = ['offer_id', 'single_use', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['offer_id', 'single_use', 'used', 'actions'];
@@ -137,7 +138,22 @@ export class CLOffersTableComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   onDisableOffer(selOffer: Offer) {
-    this.store.dispatch(disableOffer({ payload: { offer_id: selOffer.offer_id } }));
+    this.store.dispatch(openConfirmation({
+      payload: {
+        data: {
+          type: AlertTypeEnum.CONFIRM,
+          alertTitle: 'Disable Offer',
+          titleMessage: 'Disabling Offer: ' + (selOffer.offer_id || selOffer.bolt12),
+          noBtnText: 'Cancel',
+          yesBtnText: 'Disable'
+        }
+      }
+    }));
+    this.rtlEffects.closeConfirm.pipe(takeUntil(this.unSubs[3])).subscribe((confirmRes) => {
+      if (confirmRes) {
+        this.store.dispatch(disableOffer({ payload: { offer_id: selOffer.offer_id } }));
+      }
+    });
   }
 
   onPrintOffer(selOffer: Offer) {
@@ -147,8 +163,8 @@ export class CLOffersTableComponent implements OnInit, AfterViewInit, OnDestroy 
     this.offers.filter = this.selFilter.trim().toLowerCase();
   }
 
-  loadOffersTable(invs: Offer[]) {
-    this.offers = (invs) ? new MatTableDataSource<Offer>([...invs]) : new MatTableDataSource([]);
+  loadOffersTable(offrs: Offer[]) {
+    this.offers = (offrs) ? new MatTableDataSource<Offer>([...offrs]) : new MatTableDataSource([]);
     this.offers.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.offers.sort = this.sort;
     this.offers.filterPredicate = (rowData: Offer, fltr: string) => {

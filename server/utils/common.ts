@@ -167,6 +167,8 @@ export class CommonService {
     req.session.selectedNode = this.findNode(req.session.selectedNode.index);
   };
 
+  public convertTimeToEpoch = (timeToConvert: Date) => Math.floor(timeToConvert.getTime() / 1000);
+
   public convertTimestampToTime = (num) => {
     const myDate = new Date(+num * 1000);
     let days = myDate.getDate().toString();
