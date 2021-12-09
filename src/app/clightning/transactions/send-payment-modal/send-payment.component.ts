@@ -57,8 +57,8 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public zeroAmtOffer = false;
   public offerInvoice: OfferInvoice = null;
   public offerAmount = null;
+  public offerUUID = null;
   public flgSaveToDB = false;
-  public hideSaveOption = false;
 
   public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
@@ -92,8 +92,8 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
         case PaymentTypes.OFFER:
           this.onPaymentRequestEntry(this.data.offerBolt12);
           this.offerTitle = this.data.offerTitle;
+          this.offerUUID = this.data.offerUUId;
           this.flgSaveToDB = false;
-          this.hideSaveOption = true;
           break;
         default:
           break;
@@ -223,7 +223,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
           this.store.dispatch(fetchOfferInvoice({ payload: { offer: this.offerRequest } }));
         }
       } else {
-        this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_OFFER, paymentType: PaymentTypes.OFFER, invoice: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, offerBolt12: this.offerRequest, amount: this.offerAmount * 1000, title: this.offerTitle, vendor: this.offerVendor, description: this.offerDescription, fromDialog: true } }));
+        this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_OFFER, paymentType: PaymentTypes.OFFER, invoice: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, offerUUID: this.offerUUID, offerBolt12: this.offerRequest, amount: this.offerAmount * 1000, title: this.offerTitle, vendor: this.offerVendor, description: this.offerDescription, fromDialog: true } }));
       }
     }
   }

@@ -9,13 +9,13 @@ import { MatTableDataSource } from '@angular/material/table';
 
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, PaymentTypes } from '../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
-import { Offer, PaidOffer } from '../../../../shared/models/clModels';
+import { PaidOffer } from '../../../../shared/models/clModels';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
 
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert } from '../../../../store/rtl.actions';
-import { getoffer, offers, paidOffers } from '../../../store/cl.selector';
+import { paidOffers } from '../../../store/cl.selector';
 import { CLOfferInformationComponent } from '../offer-information-modal/offer-information.component';
 import { CLLightningSendPaymentsComponent } from '../../send-payment-modal/send-payment.component';
 
@@ -50,16 +50,16 @@ export class CLPaidOffersTableComponent implements OnInit, AfterViewInit, OnDest
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['createdAt', 'title', 'amountmSat', 'actions'];
+      this.displayedColumns = ['updatedAt', 'title', 'amountmSat', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['createdAt', 'title', 'amountmSat', 'actions'];
+      this.displayedColumns = ['updatedAt', 'title', 'amountmSat', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['createdAt', 'title', 'amountmSat', 'description', 'actions'];
+      this.displayedColumns = ['updatedAt', 'title', 'amountmSat', 'description', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['createdAt', 'title', 'amountmSat', 'description', 'actions'];
+      this.displayedColumns = ['updatedAt', 'title', 'amountmSat', 'description', 'actions'];
     }
   }
 
@@ -104,6 +104,7 @@ export class CLPaidOffersTableComponent implements OnInit, AfterViewInit, OnDest
           paymentType: PaymentTypes.OFFER,
           offerBolt12: selOffer.offerBolt12,
           offerTitle: selOffer.title,
+          offerUUId: selOffer.id,
           component: CLLightningSendPaymentsComponent
         }
       }

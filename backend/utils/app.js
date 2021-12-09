@@ -24,6 +24,7 @@ export class ExpressApplication {
         this.logger = Logger;
         this.common = Common;
         this.config = Config;
+        this.DB = Database;
         this.eclWsClient = ECLWSClient;
         this.clWsClient = CLWSClient;
         this.lndWsClient = LNDWSClient;
@@ -33,7 +34,7 @@ export class ExpressApplication {
             this.config.setServerConfiguration();
         };
         this.loadDb = () => {
-            Database.rtlSequelize.sync().then(() => {
+            this.DB.rtlSequelize.sync().then(() => {
                 this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'DEBUG', fileName: 'App', msg: 'Database Connected' });
             });
         };

@@ -5,9 +5,10 @@ import { Database } from '../../utils/database.js';
 let options = null;
 const logger = Logger;
 const common = Common;
+const DB = Database;
 export const listPaidOffers = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Getting Paid Offers..' });
-    Database.offer.findAll().then((offers) => {
+    DB.rtlDB.offer.findAll().then((offers) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Paid Offers List Received', data: offers });
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Paid Offers Received' });
         res.status(200).json(offers);

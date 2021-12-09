@@ -4,7 +4,7 @@ import {
   addInvoice, addPeer, removeChannel, removePeer, resetCLStore, setBalance, setChannels,
   setChildNodeSettingsCL, setFailedForwardingHistory, setFeeRates, setFees, setForwardingHistory,
   setInfo, setInvoices, setLocalRemoteBalance, setOffers, addOffer, setPayments, setPeers, setUTXOs,
-  updateCLAPICallStatus, updateInvoice, updateOffer, setPaidOffers, addPaidOffer
+  updateCLAPICallStatus, updateInvoice, updateOffer, setPaidOffers, addUpdatePaidOffer
 } from './cl.actions';
 import { Channel } from '../../shared/models/clModels';
 
@@ -176,9 +176,18 @@ export const CLReducer = createReducer(initCLState,
     ...state,
     paidOffers: payload
   })),
-  on(addPaidOffer, (state, { payload }) => {
-    const newPaidOffers = state.paidOffers;
-    newPaidOffers.unshift(payload);
+  on(addUpdatePaidOffer, (state, { payload }) => {
+    const newPaidOffers = [...state.paidOffers];
+    const offerExistsIdx = newPaidOffers.findIndex((offer) => offer.id === payload.id);
+    if (offerExistsIdx < 0) {
+      newPaidOffers.unshift(payload);
+    } else {
+      let updatedOffer = { ...newPaidOffers[offerExistsIdx] };
+      updatedOffer.title = payload.title;
+      updatedOffer.amountmSat = payload.amountmSat;
+      updatedOffer.updatedAt = payload.updatedAt;
+      newPaidOffers.splice(offerExistsIdx, 1, updatedOffer);
+    }
     return {
       ...state,
       paidOffers: newPaidOffers

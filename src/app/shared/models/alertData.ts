@@ -97,6 +97,7 @@ export interface CLPaymentInformation {
   pubkeyKeysend?: string;
   offerBolt12?: string;
   offerTitle?: string;
+  offerUUId?: string;
   newlyAdded?: boolean;
   component?: any;
 }

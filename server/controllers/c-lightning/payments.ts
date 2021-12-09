@@ -2,11 +2,12 @@ import request from 'request-promise';
 import { v4 } from 'uuid';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
-import { Database } from '../../utils/database.js';
+import { Database, DatabaseService } from '../../utils/database.js';
 
 let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
+const DB: DatabaseService = Database;
 
 function paymentReducer(accumulator, currentPayment) {
   const currPayHash = currentPayment.payment_hash;
@@ -106,14 +107,27 @@ export const postPayment = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent' });
     if (req.body.paymentType === 'OFFER') {
       if (req.body.saveToDB) {
-        const offer = { id: v4(), offerBolt12: req.body.offerBolt12, amountmSat: req.body.amount, title: req.body.title, vendor: req.body.vendor, description: req.body.description };
-        return Database.offer.create(offer).then((savedOffer) => {
-          logger.log({ level: 'DEBUG', fileName: 'Offer', msg: 'Offer Saved', data: savedOffer });
-          return res.status(201).json({ paymentResponse: body, saveToDBResponse: savedOffer.dataValues });
-        }).catch((errDB) => {
-          logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Payments', msg: 'Offer DB save error', error: errDB });
-          return res.status(201).json({ paymentResponse: body, saveToDBError: errDB });
-        });
+        let offer = {};
+        if (req.body.offerUUID) {
+          let updatedOffer = { title: req.body.title, amountmSat: req.body.amount };
+          return DB.rtlDB.offer.update(updatedOffer, { where: { id: req.body.offerUUID } }).then((updatedOffer) => {
+            offer = { id: req.body.offerUUID, title: req.body.title, amountmSat: req.body.amount, updatedAt: new Date(Date.now()) };
+            logger.log({ level: 'DEBUG', fileName: 'Offer', msg: 'Offer Updated', data: updatedOffer });
+            return res.status(201).json({ paymentResponse: body, saveToDBResponse: offer });
+          }).catch((errDB) => {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Payments', msg: 'Offer DB update error', error: errDB });
+            return res.status(201).json({ paymentResponse: body, saveToDBError: errDB });
+          });
+        } else {
+          offer = { id: v4(), offerBolt12: req.body.offerBolt12, amountmSat: req.body.amount, title: req.body.title, vendor: req.body.vendor, description: req.body.description };
+          return DB.rtlDB.offer.create(offer).then((savedOffer) => {
+            logger.log({ level: 'DEBUG', fileName: 'Offer', msg: 'Offer Saved', data: savedOffer });
+            return res.status(201).json({ paymentResponse: body, saveToDBResponse: savedOffer.dataValues });
+          }).catch((errDB) => {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Payments', msg: 'Offer DB save error', error: errDB });
+            return res.status(201).json({ paymentResponse: body, saveToDBError: errDB });
+          });
+        }
       } else {
         return res.status(201).json({ paymentResponse: body, saveToDBResponse: 'NA' });
       }

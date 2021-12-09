@@ -99,6 +99,8 @@ export interface Offer {
 
 export interface PaidOffer {
   id?: string;
+  updatedAt?: string;
+  createdAt?: string;
   offerBolt12?: string;
   amountmSat?: number;
   title?: string;
@@ -415,6 +417,7 @@ export interface SendPayment {
   description?: string;
   saveToDB?: boolean;
   offerBolt12?: string;
+  offerUUID?: string;
   amount?: number;
   pubkey?: string;
 }
