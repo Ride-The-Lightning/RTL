@@ -169,6 +169,7 @@ export interface Payment {
 }
 
 export interface PayRequest {
+  type?: string;
   currency?: string;
   created_at?: number;
   expiry?: number;

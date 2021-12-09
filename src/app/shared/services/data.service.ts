@@ -15,7 +15,6 @@ import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpi
 import { fetchTransactions, fetchUTXOs } from '../../lnd/store/lnd.actions';
 
 import { RTLState } from '../../store/rtl.state';
-import { LNDState } from '../../lnd/store/lnd.state';
 import { allChannels } from '../../lnd/store/lnd.selector';
 
 @Injectable()
@@ -57,10 +56,7 @@ export class DataService implements OnDestroy {
   }
 
   decodePayment(payment: string, fromDialog: boolean) {
-    let url = this.childAPIUrl + environment.PAYREQUEST_API + '/' + payment;
-    if (this.getLnImplementation() === 'ECL') {
-      url = this.childAPIUrl + environment.PAYMENTS_API + '/' + payment;
-    }
+    let url = this.childAPIUrl + environment.PAYMENTS_API + '/decode/' + payment;
     this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DECODE_PAYMENT }));
     return this.httpClient.get(url).pipe(
       takeUntil(this.unSubs[0]),
@@ -72,7 +68,7 @@ export class DataService implements OnDestroy {
         if (fromDialog) {
           this.handleErrorWithoutAlert('Decode Payment', UI_MESSAGES.DECODE_PAYMENT, err);
         } else {
-          this.handleErrorWithAlert('decodePaymentData', UI_MESSAGES.DECODE_PAYMENT, 'Decode Payment Failed', this.childAPIUrl + environment.PAYREQUEST_API, err);
+          this.handleErrorWithAlert('decodePaymentData', UI_MESSAGES.DECODE_PAYMENT, 'Decode Payment Failed', this.childAPIUrl + environment.PAYMENTS_API + '/decode/', err);
         }
         return throwError(() => new Error(this.extractErrorMessage(err)));
       })
@@ -80,7 +76,7 @@ export class DataService implements OnDestroy {
   }
 
   decodePayments(payments: string) {
-    let url = this.childAPIUrl + environment.PAYREQUEST_API;
+    let url = this.childAPIUrl + environment.PAYMENTS_API;
     let msg = UI_MESSAGES.DECODE_PAYMENTS;
     if (this.getLnImplementation() === 'ECL') {
       url = this.childAPIUrl + environment.PAYMENTS_API + '/getsentinfos';

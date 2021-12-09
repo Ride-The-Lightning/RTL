@@ -3,7 +3,7 @@ import { createAction, props } from '@ngrx/store';
 import { CLActions } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Fees, Peer, Payment, PayRequest, QueryRoutes, Channel, FeeRates, ForwardingEvent, Invoice, ListInvoices, OnChain, UTXO, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, DecodePayment, SendPayment, GetQueryRoutes, ChannelLookup, OfferInvoice, Offer, PaidOffer } from '../../shared/models/clModels';
+import { GetInfo, Fees, Peer, Payment, PayRequest, QueryRoutes, Channel, FeeRates, ForwardingEvent, Invoice, ListInvoices, OnChain, UTXO, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, DecodePayment, SendPayment, GetQueryRoutes, ChannelLookup, OfferInvoice, Offer, PaidOffer, OfferRequest } from '../../shared/models/clModels';
 
 export const updateCLAPICallStatus = createAction(CLActions.UPDATE_API_CALL_STATUS_CL, props<{ payload: ApiCallStatusPayload }>());
 
@@ -52,10 +52,6 @@ export const removePeer = createAction(CLActions.REMOVE_PEER_CL, props<{ payload
 export const fetchPayments = createAction(CLActions.FETCH_PAYMENTS_CL);
 
 export const setPayments = createAction(CLActions.SET_PAYMENTS_CL, props<{ payload: Payment[] }>());
-
-export const decodePayment = createAction(CLActions.DECODE_PAYMENT_CL, props<{ payload: DecodePayment }>());
-
-export const setDecodedPayment = createAction(CLActions.SET_DECODED_PAYMENT_CL, props<{ payload: PayRequest }>());
 
 export const sendPayment = createAction(CLActions.SEND_PAYMENT_CL, props<{ payload: SendPayment }>());
 

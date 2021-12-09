@@ -1,16 +1,20 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
+import { DecimalPipe, DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { take, takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import * as pdfMake from 'pdfmake/build/pdfmake';
+import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, AlertTypeEnum } from '../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../../../shared/models/RTLconfig';
-import { GetInfo, Offer } from '../../../../shared/models/clModels';
+import { GetInfo, Offer, OfferRequest } from '../../../../shared/models/clModels';
+import { DataService } from '../../../../shared/services/data.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
 
@@ -20,7 +24,7 @@ import { CLOfferInformationComponent } from '../offer-information-modal/offer-in
 import { RTLEffects } from '../../../../store/rtl.effects';
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../../store/rtl.actions';
-import { disableOffer, saveNewOffer } from '../../../store/cl.actions';
+import { disableOffer } from '../../../store/cl.actions';
 import { clNodeInformation, clNodeSettings, offers } from '../../../store/cl.selector';
 
 @Component({
@@ -61,7 +65,7 @@ export class CLOffersTableComponent implements OnInit, AfterViewInit, OnDestroy 
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private rtlEffects: RTLEffects) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private rtlEffects: RTLEffects, private dataService: DataService, private decimalPipe: DecimalPipe, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -157,6 +161,35 @@ export class CLOffersTableComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   onPrintOffer(selOffer: Offer) {
+    this.dataService.decodePayment(selOffer.bolt12, false).
+      pipe(take(1)).subscribe((offerDecoded: OfferRequest) => {
+        if (offerDecoded.offer_id && !offerDecoded.amount_msat) {
+          offerDecoded.amount_msat = '0msat';
+          offerDecoded.amount = 0;
+        } else {
+          offerDecoded.amount = +(offerDecoded.amount || offerDecoded.amount_msat.slice(0, -4));
+        }
+        const documentDefinition = {
+          pageSize: 'A4',
+          pageOrientation: 'portrait',
+          pageMargins: [80, 60, 80, 60],
+          content: [
+            { qr: selOffer.bolt12, eccLevel: 'L', margin: [60, 0, 0, 30] },
+            { text: 'Amount: ' + (!offerDecoded?.amount_msat || offerDecoded?.amount === 0 ? 'Open Offer' : (this.decimalPipe.transform(offerDecoded.amount / 1000) + ' Sats')) },
+            { text: 'Description: ' + offerDecoded.description }
+          ],
+          defaultStyle: {
+            lineHeight: 1.5
+          }
+        };
+        if (offerDecoded.issuer || offerDecoded.vendor) {
+          documentDefinition.content.push({ text: 'Issuer: ' + (offerDecoded.issuer || offerDecoded.vendor) });
+        }
+        if (offerDecoded.absolute_expiry) {
+          documentDefinition.content.push({ text: 'Expiry: ' + (this.datePipe.transform(new Date(offerDecoded.absolute_expiry), 'dd/MMM/YYYY HH:mm')) });
+        }
+        pdfMake.createPdf(documentDefinition, null, null, pdfFonts.pdfMake.vfs).download(selOffer.offer_id);
+      });
   }
 
   applyFilter() {

@@ -14,9 +14,6 @@ import { mockDataService, mockLoggerService, mockMatDialogRef } from '../../../.
 import { SharedModule } from '../../../../shared/shared.module';
 import { DataService } from '../../../../shared/services/data.service';
 import { RTLState } from '../../../../store/rtl.state';
-import { listInvoices } from '../../../store/cl.selector';
-import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
-import { ListInvoices } from '../../../../shared/models/clModels';
 
 describe('CLOfferInformationComponent', () => {
   let component: CLOfferInformationComponent;

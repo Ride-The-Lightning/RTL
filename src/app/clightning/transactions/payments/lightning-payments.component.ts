@@ -11,6 +11,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { GetInfo, Payment, PayRequest } from '../../../shared/models/clModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, UI_MESSAGES, PaymentTypes } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
+import { DataService } from '../../../shared/services/data.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
@@ -21,7 +22,7 @@ import { CLEffects } from '../../store/cl.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
-import { decodePayment, sendPayment } from '../../store/cl.actions';
+import { sendPayment } from '../../store/cl.actions';
 import { clNodeInformation, clNodeSettings, payments } from '../../store/cl.selector';
 
 @Component({
@@ -60,7 +61,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects, private decimalPipe: DecimalPipe, private titleCasePipe: TitleCasePipe, private datePipe: DatePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects, private decimalPipe: DecimalPipe, private titleCasePipe: TitleCasePipe, private datePipe: DatePipe, private dataService: DataService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -120,18 +121,18 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
     if (this.paymentDecoded.created_at) {
       this.sendPayment();
     } else {
-      this.store.dispatch(decodePayment({ payload: { routeParam: this.paymentRequest, fromDialog: false } }));
-      this.clEffects.setDecodedPaymentCL.pipe(take(1)).subscribe((decodedPayment) => {
-        this.paymentDecoded = decodedPayment;
-        if (this.paymentDecoded.created_at) {
-          if (!this.paymentDecoded.msatoshi) {
-            this.paymentDecoded.msatoshi = 0;
+      this.dataService.decodePayment(this.paymentRequest, false).
+        pipe(takeUntil(this.unSubs[1])).subscribe((decodedPayment: PayRequest) => {
+          this.paymentDecoded = decodedPayment;
+          if (this.paymentDecoded.created_at) {
+            if (!this.paymentDecoded.msatoshi) {
+              this.paymentDecoded.msatoshi = 0;
+            }
+            this.sendPayment();
+          } else {
+            this.resetData();
           }
-          this.sendPayment();
-        } else {
-          this.resetData();
-        }
-      });
+        });
     }
   }
 
@@ -208,27 +209,27 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
     this.paymentRequest = event;
     this.paymentDecodedHint = '';
     if (this.paymentRequest && this.paymentRequest.length > 100) {
-      this.store.dispatch(decodePayment({ payload: { routeParam: this.paymentRequest, fromDialog: false } }));
-      this.clEffects.setDecodedPaymentCL.subscribe((decodedPayment) => {
-        this.paymentDecoded = decodedPayment;
-        if (this.paymentDecoded.msatoshi) {
-          if (this.selNode.fiatConversion) {
-            this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
-              pipe(takeUntil(this.unSubs[3])).
-              subscribe({
-                next: (data) => {
-                  this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
-                }, error: (error) => {
-                  this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
-                }
-              });
+      this.dataService.decodePayment(this.paymentRequest, false).
+        pipe(takeUntil(this.unSubs[1])).subscribe((decodedPayment: PayRequest) => {
+          this.paymentDecoded = decodedPayment;
+          if (this.paymentDecoded.msatoshi) {
+            if (this.selNode.fiatConversion) {
+              this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
+                pipe(takeUntil(this.unSubs[3])).
+                subscribe({
+                  next: (data) => {
+                    this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
+                  }, error: (error) => {
+                    this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
+                  }
+                });
+            } else {
+              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
+            }
           } else {
-            this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
+            this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
           }
-        } else {
-          this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
-        }
-      });
+        });
     }
   }
 

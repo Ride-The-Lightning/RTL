@@ -6,7 +6,7 @@ import { queryPaymentRoute, decodePayment, getSentPaymentsInformation, postPayme
 const router = Router();
 
 router.get('/route/', isAuthenticated, queryPaymentRoute);
-router.get('/:invoice', isAuthenticated, decodePayment);
+router.get('/decode/:invoice', isAuthenticated, decodePayment);
 router.post('/getsentinfos', isAuthenticated, getSentPaymentsInformation);
 router.post('/', isAuthenticated, postPayment);
 
