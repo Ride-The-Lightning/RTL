@@ -16,18 +16,8 @@ export class DatabaseService {
   public common: CommonService = Common;
   public rtlConfigPassword = '';
   public directoryName = dirname(fileURLToPath(import.meta.url));
-  public rtlSequelize = new Sequelize({
-    database: 'RTLStore',
-    username: '',
-    password: this.rtlConfigPassword,
-    storage: join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'database', 'rtl-db.sqlite'),
-    dialect: 'sqlite',
-    logging: messageToLog => this.logger.log({ level: 'DEBUG', fileName: 'DBLog', msg: messageToLog })
-  });
-  public rtlDB = {
-    Sequelize: this.rtlSequelize,
-    offer: Offer(this.rtlSequelize, Sequelize)
-  };
+  public rtlSequelize = null;
+  public rtlDB = null;
 
   constructor() {
     let confFilePath = ((process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH : join(this.directoryName, '../..')) + sep + 'RTL-Config.json';
@@ -39,6 +29,18 @@ export class DatabaseService {
         this.rtlConfigPassword = config.multiPassHashed;
       }
     }
+    this.rtlSequelize = new Sequelize({
+      database: 'RTLStore',
+      username: '',
+      password: this.rtlConfigPassword,
+      storage: join(this.directoryName, '..', '..', 'database', 'rtl-db.sqlite'),
+      dialect: 'sqlite',
+      logging: messageToLog => this.logger.log({ level: 'DEBUG', fileName: 'DBLog', msg: messageToLog })
+    });
+    this.rtlDB = {
+      Sequelize: this.rtlSequelize,
+      offer: Offer(this.rtlSequelize, Sequelize)
+    };
   }
 }
 
