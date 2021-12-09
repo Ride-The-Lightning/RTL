@@ -17,7 +17,6 @@ export const environment = {
   NETWORK_API: '/network',
   NEW_ADDRESS_API: '/newaddress',
   TRANSACTIONS_API: '/transactions',
-  PAYREQUEST_API: '/payreq',
   PAYMENTS_API: '/payments',
   INVOICES_API: '/invoices',
   SWITCH_API: '/switch',

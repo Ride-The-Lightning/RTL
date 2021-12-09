@@ -29,7 +29,9 @@
             "allowedCommonJsDependencies": [
               "sha256",
               "qrcode",
-              "otplib"
+              "otplib",
+              "pdfmake/build/pdfmake",
+              "pdfmake/build/vfs_fonts"
             ],
             "assets": [
               "src/assets"

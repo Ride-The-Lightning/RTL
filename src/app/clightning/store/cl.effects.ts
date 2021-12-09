@@ -453,46 +453,6 @@ export class CLEffects implements OnDestroy {
     })
   ));
 
-  decodePaymentCL = createEffect(() => this.actions.pipe(
-    ofType(CLActions.DECODE_PAYMENT_CL),
-    mergeMap((action: { type: string, payload: DecodePayment }) => {
-      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DECODE_PAYMENT }));
-      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'DecodePayment', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload.routeParam).
-        pipe(
-          map((decodedPayment) => {
-            this.logger.info(decodedPayment);
-            this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'DecodePayment', status: APICallStatusEnum.COMPLETED } }));
-            this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.DECODE_PAYMENT }));
-            return {
-              type: CLActions.SET_DECODED_PAYMENT_CL,
-              payload: decodedPayment ? decodedPayment : {}
-            };
-          }),
-          catchError((err: any) => {
-            if (action.payload.fromDialog) {
-              this.handleErrorWithoutAlert('DecodePayment', UI_MESSAGES.DECODE_PAYMENT, 'Decode Payment Failed.', err);
-            } else {
-              this.handleErrorWithAlert('DecodePayment', UI_MESSAGES.DECODE_PAYMENT, 'Decode Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload, err);
-            }
-            return of({ type: RTLActions.VOID });
-          })
-        );
-    })
-  ));
-
-
-  setDecodedPaymentCL = createEffect(
-    () => this.actions.pipe(
-      ofType(CLActions.SET_DECODED_PAYMENT_CL),
-      map((action: { type: string, payload: PayRequest | OfferRequest }) => {
-        this.logger.info(action.payload);
-        return action.payload;
-      })
-    ),
-    { dispatch: false }
-  );
-
   fetchOfferInvoiceCL = createEffect(() => this.actions.pipe(
     ofType(CLActions.FETCH_OFFER_INVOICE_CL),
     mergeMap((action: { type: string, payload: { offer: string, msatoshi?: string } }) => {

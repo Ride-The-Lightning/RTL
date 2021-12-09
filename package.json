@@ -53,6 +53,7 @@
     "ng-qrcode": "^6.0.0",
     "ngx-perfect-scrollbar": "^10.0.1",
     "otplib": "^12.0.1",
+    "pdfmake": "^0.2.4",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
     "roboto-fontface": "^0.10.0",

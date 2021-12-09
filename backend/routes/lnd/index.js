@@ -10,7 +10,6 @@ import walletRoutes from './wallet.js';
 import graphRoutes from './graph.js';
 import newAddressRoutes from './newAddress.js';
 import transactionsRoutes from './transactions.js';
-import payReqRoutes from './payReq.js';
 import paymentsRoutes from './payments.js';
 import invoiceRoutes from './invoices.js';
 import switchRoutes from './switch.js';
@@ -27,7 +26,6 @@ const lndRoutes = [
     { path: '/network', route: graphRoutes },
     { path: '/newaddress', route: newAddressRoutes },
     { path: '/transactions', route: transactionsRoutes },
-    { path: '/payreq', route: payReqRoutes },
     { path: '/payments', route: paymentsRoutes },
     { path: '/invoices', route: invoiceRoutes },
     { path: '/switch', route: switchRoutes },

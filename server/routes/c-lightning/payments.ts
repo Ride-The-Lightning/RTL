@@ -6,7 +6,7 @@ import { listPayments, decodePayment, postPayment } from '../../controllers/c-li
 const router = Router();
 
 router.get('/', isAuthenticated, listPayments);
-router.get('/:payReq', isAuthenticated, decodePayment);
+router.get('/decode/:payReq', isAuthenticated, decodePayment);
 router.post('/', isAuthenticated, postPayment);
 
 export default router;

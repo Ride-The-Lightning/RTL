@@ -11,11 +11,12 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { PayRequest, Channel, GetInfo, OfferRequest, OfferInvoice } from '../../../shared/models/clModels';
 import { APICallStatusEnum, CLActions, PaymentTypes, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
+import { DataService } from '../../../shared/services/data.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { RTLState } from '../../../store/rtl.state';
-import { decodePayment, fetchOfferInvoice, sendPayment } from '../../store/cl.actions';
+import { fetchOfferInvoice, sendPayment } from '../../store/cl.actions';
 import { channels, clNodeInformation, clNodeSettings } from '../../store/cl.selector';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { CLPaymentInformation } from '../../../shared/models/alertData';
@@ -75,9 +76,9 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public feeLimitTypes = FEE_LIMIT_TYPES;
   public paymentError = '';
   public isCompatibleVersion = false;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLLightningSendPaymentsComponent>, @Inject(MAT_DIALOG_DATA) public data: CLPaymentInformation, private store: Store<RTLState>, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions) { }
+  constructor(public dialogRef: MatDialogRef<CLLightningSendPaymentsComponent>, @Inject(MAT_DIALOG_DATA) public data: CLPaymentInformation, private store: Store<RTLState>, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions, private dataService: DataService) { }
 
   ngOnInit() {
     if (this.data && this.data.paymentType) {
@@ -114,29 +115,10 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       });
     this.actions.pipe(
       takeUntil(this.unSubs[3]),
-      filter((action) => action.type === CLActions.UPDATE_API_CALL_STATUS_CL || action.type === CLActions.SEND_PAYMENT_STATUS_CL || action.type === CLActions.SET_DECODED_PAYMENT_CL || action.type === CLActions.SET_OFFER_INVOICE_CL)).
+      filter((action) => action.type === CLActions.UPDATE_API_CALL_STATUS_CL || action.type === CLActions.SEND_PAYMENT_STATUS_CL || action.type === CLActions.SET_OFFER_INVOICE_CL)).
       subscribe((action: any) => {
         if (action.type === CLActions.SEND_PAYMENT_STATUS_CL) {
           this.dialogRef.close();
-        }
-        if (action.type === CLActions.SET_DECODED_PAYMENT_CL) {
-          if (this.paymentType === PaymentTypes.INVOICE) {
-            if (action.payload.type === 'bolt12 offer' && action.payload.offer_id) {
-              this.paymentDecodedHint = 'ERROR: Select Offer option to pay the bolt12 offer invoice.';
-              this.paymentReq.control.setErrors({ decodeError: true });
-            } else {
-              this.paymentDecoded = action.payload;
-              this.setPaymentDecodedDetails();
-            }
-          } else if (this.paymentType === PaymentTypes.OFFER) {
-            if (action.payload.type === 'bolt11 invoice' && action.payload.payment_hash) {
-              this.offerDecodedHint = 'ERROR: Select Invoice option to pay the bolt11 invoice.';
-              this.offerReq.control.setErrors({ decodeError: true });
-            } else {
-              this.offerDecoded = action.payload;
-              this.setOfferDecodedDetails();
-            }
-          }
         }
         if (action.type === CLActions.SET_OFFER_INVOICE_CL) {
           this.offerInvoice = action.payload;
@@ -181,7 +163,16 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
           this.sendPayment();
         } else {
           this.resetInvoiceDetails();
-          this.store.dispatch(decodePayment({ payload: { routeParam: this.paymentRequest, fromDialog: true } }));
+          this.dataService.decodePayment(this.paymentRequest, true).
+            pipe(takeUntil(this.unSubs[4])).subscribe((decodedPayment: PayRequest | OfferRequest) => {
+              if (decodedPayment.type === 'bolt12 offer' && (<OfferRequest>decodedPayment).offer_id) {
+                this.paymentDecodedHint = 'ERROR: Select Offer option to pay the bolt12 offer invoice.';
+                this.paymentReq.control.setErrors({ decodeError: true });
+              } else {
+                this.paymentDecoded = <PayRequest>decodedPayment;
+                this.setPaymentDecodedDetails();
+              }
+            });
         }
         break;
 
@@ -195,7 +186,16 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
           this.sendPayment();
         } else {
           this.resetOfferDetails();
-          this.store.dispatch(decodePayment({ payload: { routeParam: this.offerRequest, fromDialog: true } }));
+          this.dataService.decodePayment(this.offerRequest, true).
+            pipe(takeUntil(this.unSubs[5])).subscribe((decodedOffer: PayRequest | OfferRequest) => {
+              if (decodedOffer.type === 'bolt11 invoice' && (<PayRequest>decodedOffer).payment_hash) {
+                this.offerDecodedHint = 'ERROR: Select Invoice option to pay the bolt11 invoice.';
+                this.offerReq.control.setErrors({ decodeError: true });
+              } else {
+                this.offerDecoded = <OfferRequest>decodedOffer;
+                this.setOfferDecodedDetails();
+              }
+            });
         }
         break;
 
@@ -231,16 +231,31 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   onPaymentRequestEntry(event: any) {
     if (this.paymentType === PaymentTypes.INVOICE) {
       this.paymentRequest = event;
-      if (this.paymentRequest && this.paymentRequest.length > 100) {
-        this.resetInvoiceDetails();
-        this.store.dispatch(decodePayment({ payload: { routeParam: this.paymentRequest, fromDialog: true } }));
-      }
+      this.resetInvoiceDetails();
     } else if (this.paymentType === PaymentTypes.OFFER) {
       this.offerRequest = event;
-      if (this.offerRequest && this.offerRequest.length > 100) {
-        this.resetOfferDetails();
-        this.store.dispatch(decodePayment({ payload: { routeParam: this.offerRequest, fromDialog: true } }));
-      }
+      this.resetOfferDetails();
+    }
+    if (event.length > 100) {
+      this.dataService.decodePayment(event, true).pipe(takeUntil(this.unSubs[6])).subscribe((decodedRequest: PayRequest | OfferRequest) => {
+        if (this.paymentType === PaymentTypes.INVOICE) {
+          if (decodedRequest.type === 'bolt12 offer' && (<OfferRequest>decodedRequest).offer_id) {
+            this.paymentDecodedHint = 'ERROR: Select Offer option to pay the bolt12 offer invoice.';
+            this.paymentReq.control.setErrors({ decodeError: true });
+          } else {
+            this.paymentDecoded = <PayRequest>decodedRequest;
+            this.setPaymentDecodedDetails();
+          }
+        } else if (this.paymentType === PaymentTypes.OFFER) {
+          if (decodedRequest.type === 'bolt11 invoice' && (<PayRequest>decodedRequest).payment_hash) {
+            this.offerDecodedHint = 'ERROR: Select Invoice option to pay the bolt11 invoice.';
+            this.offerReq.control.setErrors({ decodeError: true });
+          } else {
+            this.offerDecoded = <OfferRequest>decodedRequest;
+            this.setOfferDecodedDetails();
+          }
+        }
+      });
     }
   }
 
@@ -296,7 +311,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.offerVendor = this.offerDecoded.vendor ? this.offerDecoded.vendor : this.offerDecoded.issuer ? this.offerDecoded.issuer : '';
       if (this.selNode.fiatConversion) {
         this.commonService.convertCurrency(this.offerAmount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
-          pipe(takeUntil(this.unSubs[5])).
+          pipe(takeUntil(this.unSubs[7])).
           subscribe({
             next: (data) => {
               this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.offerAmount) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Description: ' + this.offerDecoded.description;
@@ -319,7 +334,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.zeroAmtInvoice = false;
       if (this.selNode.fiatConversion) {
         this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
-          pipe(takeUntil(this.unSubs[6])).
+          pipe(takeUntil(this.unSubs[8])).
           subscribe({
             next: (data) => {
               this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
