@@ -47,5 +47,18 @@ When you are done you can destroy containers with:
 $ docker-compose down -v
 ```
 
+# Stand alone RTL Setup
+### This is suitable when you already have a LND node running and configured.
+
+```
+RTL_VERSION=0.11.2
+docker run --name rtl -d -it 
+-e RTL_CONFIG_PATH=/RTLConfig \
+-v /path/to/RTLConfig/dir:/RTLConfig \
+-v /path/to/macaroon/dir:/path/as/specified/in/RTLConfig \
+-p 3000:3000/tcp \
+shahanafarooqui/rtl:${RTL_VERSION}
+```
+
 ---
 @hashamadeus on Twitter
