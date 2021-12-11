@@ -188,7 +188,7 @@ export class CLOffersTableComponent implements OnInit, AfterViewInit, OnDestroy 
         if (offerDecoded.absolute_expiry) {
           documentDefinition.content.push({ text: 'Expiry: ' + (this.datePipe.transform(new Date(offerDecoded.absolute_expiry), 'dd/MMM/YYYY HH:mm')) });
         }
-        pdfMake.createPdf(documentDefinition, null, null, pdfFonts.pdfMake.vfs).download(selOffer.offer_id);
+        pdfMake.createPdf(documentDefinition, null, null, pdfFonts.pdfMake.vfs).download('Offer-' + (offerDecoded ? offerDecoded.description : selOffer.bolt12));
       });
   }
 

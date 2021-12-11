@@ -4,6 +4,7 @@ volumes:
   bitcoin_data:
   lightning_data:
   lightning_shared:
+  rtl_db:
 
 services:
   bitcoind:
@@ -107,6 +108,7 @@ services:
       - lnd
     volumes:
       - lightning_shared:/shared:ro
+      - rtl_db:/database
     ports:
       - "${RTL_PORT}:${RTL_PORT}"
     environment:
