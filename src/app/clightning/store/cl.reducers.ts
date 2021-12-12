@@ -4,7 +4,7 @@ import {
   addInvoice, addPeer, removeChannel, removePeer, resetCLStore, setBalance, setChannels,
   setChildNodeSettingsCL, setFailedForwardingHistory, setFeeRates, setFees, setForwardingHistory,
   setInfo, setInvoices, setLocalRemoteBalance, setOffers, addOffer, setPayments, setPeers, setUTXOs,
-  updateCLAPICallStatus, updateInvoice, updateOffer, setPaidOffers, addUpdatePaidOffer, removePaidOffer
+  updateCLAPICallStatus, updateInvoice, updateOffer, setOfferBookmarks, addUpdateOfferBookmark, removeOfferBookmark
 } from './cl.actions';
 import { Channel } from '../../shared/models/clModels';
 
@@ -172,36 +172,36 @@ export const CLReducer = createReducer(initCLState,
       offers: modifiedOffers
     };
   }),
-  on(setPaidOffers, (state, { payload }) => ({
+  on(setOfferBookmarks, (state, { payload }) => ({
     ...state,
-    paidOffers: payload
+    offersBookmarks: payload
   })),
-  on(addUpdatePaidOffer, (state, { payload }) => {
-    const newPaidOffers = [...state.paidOffers];
-    const offerExistsIdx = newPaidOffers.findIndex((offer) => offer.id === payload.id);
-    if (offerExistsIdx < 0) {
-      newPaidOffers.unshift(payload);
+  on(addUpdateOfferBookmark, (state, { payload }) => {
+    const newOfferBMs = [...state.offersBookmarks];
+    const offerBMExistsIdx = newOfferBMs.findIndex((offer) => offer.id === payload.id);
+    if (offerBMExistsIdx < 0) {
+      newOfferBMs.unshift(payload);
     } else {
-      let updatedOffer = { ...newPaidOffers[offerExistsIdx] };
+      let updatedOffer = { ...newOfferBMs[offerBMExistsIdx] };
       updatedOffer.title = payload.title;
       updatedOffer.amountmSat = payload.amountmSat;
       updatedOffer.updatedAt = payload.updatedAt;
-      newPaidOffers.splice(offerExistsIdx, 1, updatedOffer);
+      newOfferBMs.splice(offerBMExistsIdx, 1, updatedOffer);
     }
     return {
       ...state,
-      paidOffers: newPaidOffers
+      offersBookmarks: newOfferBMs
     };
   }),
-  on(removePaidOffer, (state, { payload }) => {
-    const modifiedPaidOffers = [...state.paidOffers];
-    const removePaidOfferIdx = state.paidOffers.findIndex((po) => po.id === payload.offer_uuid);
-    if (removePaidOfferIdx > -1) {
-      modifiedPaidOffers.splice(removePaidOfferIdx, 1);
+  on(removeOfferBookmark, (state, { payload }) => {
+    const modifiedOfferBookmarks = [...state.offersBookmarks];
+    const removeOfferBookmarkIdx = state.offersBookmarks.findIndex((ob) => ob.id === payload.offer_uuid);
+    if (removeOfferBookmarkIdx > -1) {
+      modifiedOfferBookmarks.splice(removeOfferBookmarkIdx, 1);
     }
     return {
       ...state,
-      paidOffers: modifiedPaidOffers
+      offersBookmarks: modifiedOfferBookmarks
     };
   })
 );

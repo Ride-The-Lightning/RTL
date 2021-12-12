@@ -223,7 +223,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
           this.store.dispatch(fetchOfferInvoice({ payload: { offer: this.offerRequest } }));
         }
       } else {
-        this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_OFFER, paymentType: PaymentTypes.OFFER, invoice: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, offerUUID: this.offerUUID, offerBolt12: this.offerRequest, amount: this.offerAmount * 1000, zeroAmtOffer: this.zeroAmtOffer, title: this.offerTitle, vendor: this.offerVendor, description: this.offerDescription, fromDialog: true } }));
+        this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.OFFER, invoice: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, offerUUID: this.offerUUID, offerBolt12: this.offerRequest, amount: this.offerAmount * 1000, zeroAmtOffer: this.zeroAmtOffer, title: this.offerTitle, vendor: this.offerVendor, description: this.offerDescription, fromDialog: true } }));
       }
     }
   }

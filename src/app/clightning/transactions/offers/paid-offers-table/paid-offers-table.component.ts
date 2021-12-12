@@ -9,17 +9,17 @@ import { MatTableDataSource } from '@angular/material/table';
 
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, PaymentTypes, AlertTypeEnum } from '../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
-import { PaidOffer } from '../../../../shared/models/clModels';
+import { OfferBookmark } from '../../../../shared/models/clModels';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
 
 import { RTLEffects } from '../../../../store/rtl.effects';
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../../store/rtl.actions';
-import { paidOffers } from '../../../store/cl.selector';
+import { offerBookmarks } from '../../../store/cl.selector';
 import { CLOfferInformationComponent } from '../offer-information-modal/offer-information.component';
 import { CLLightningSendPaymentsComponent } from '../../send-payment-modal/send-payment.component';
-import { deletePaidOffer } from '../../../store/cl.actions';
+import { deleteOfferBookmark } from '../../../store/cl.actions';
 
 @Component({
   selector: 'rtl-cl-paid-offers-table',
@@ -36,7 +36,7 @@ export class CLPaidOffersTableComponent implements OnInit, AfterViewInit, OnDest
   faHistory = faHistory;
   public displayedColumns: any[] = [];
   public paidOffers: any;
-  public paidOfferJSONArr: PaidOffer[] = [];
+  public paidOfferJSONArr: OfferBookmark[] = [];
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -66,18 +66,18 @@ export class CLPaidOffersTableComponent implements OnInit, AfterViewInit, OnDest
   }
 
   ngOnInit() {
-    this.store.select(paidOffers).pipe(takeUntil(this.unSubs[0])).
-      subscribe((paidOffersSeletor: { paidOffers: PaidOffer[], apiCallStatus: ApiCallStatusPayload }) => {
+    this.store.select(offerBookmarks).pipe(takeUntil(this.unSubs[0])).
+      subscribe((offerBMsSeletor: { offersBookmarks: OfferBookmark[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apiCallStatus = paidOffersSeletor.apiCallStatus;
+        this.apiCallStatus = offerBMsSeletor.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.paidOfferJSONArr = paidOffersSeletor.paidOffers || [];
+        this.paidOfferJSONArr = offerBMsSeletor.offersBookmarks || [];
         if (this.paidOfferJSONArr && this.paidOfferJSONArr.length > 0 && this.sort && this.paginator) {
           this.loadOffersTable(this.paidOfferJSONArr);
         }
-        this.logger.info(paidOffersSeletor);
+        this.logger.info(offerBMsSeletor);
       });
   }
 
@@ -87,7 +87,7 @@ export class CLPaidOffersTableComponent implements OnInit, AfterViewInit, OnDest
     }
   }
 
-  onPaidOfferClick(selOffer: PaidOffer) {
+  onPaidOfferClick(selOffer: OfferBookmark) {
     this.store.dispatch(openAlert({
       payload: {
         data: {
@@ -99,13 +99,13 @@ export class CLPaidOffersTableComponent implements OnInit, AfterViewInit, OnDest
     }));
   }
 
-  onDeleteOffer(selOffer: PaidOffer) {
+  onDeleteBookmark(selOffer: OfferBookmark) {
     this.store.dispatch(openConfirmation({
       payload: {
         data: {
           type: AlertTypeEnum.CONFIRM,
-          alertTitle: 'Delete Offer',
-          titleMessage: 'Deleting Offer: ' + (selOffer.title || selOffer.description),
+          alertTitle: 'Delete Bookmark',
+          titleMessage: 'Deleting Bookmark: ' + (selOffer.title || selOffer.description),
           noBtnText: 'Cancel',
           yesBtnText: 'Delete'
         }
@@ -113,12 +113,12 @@ export class CLPaidOffersTableComponent implements OnInit, AfterViewInit, OnDest
     }));
     this.rtlEffects.closeConfirm.pipe(takeUntil(this.unSubs[1])).subscribe((confirmRes) => {
       if (confirmRes) {
-        this.store.dispatch(deletePaidOffer({ payload: { offer_uuid: selOffer.id } }));
+        this.store.dispatch(deleteOfferBookmark({ payload: { offer_uuid: selOffer.id } }));
       }
     });
   }
 
-  onRePayOffer(selOffer: PaidOffer) {
+  onRePayOffer(selOffer: OfferBookmark) {
     this.store.dispatch(openAlert({
       payload: {
         data: {
@@ -136,11 +136,11 @@ export class CLPaidOffersTableComponent implements OnInit, AfterViewInit, OnDest
     this.paidOffers.filter = this.selFilter.trim().toLowerCase();
   }
 
-  loadOffersTable(paidOffrs: PaidOffer[]) {
-    this.paidOffers = (paidOffrs) ? new MatTableDataSource<PaidOffer>([...paidOffrs]) : new MatTableDataSource([]);
+  loadOffersTable(paidOffrs: OfferBookmark[]) {
+    this.paidOffers = (paidOffrs) ? new MatTableDataSource<OfferBookmark>([...paidOffrs]) : new MatTableDataSource([]);
     this.paidOffers.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.paidOffers.sort = this.sort;
-    this.paidOffers.filterPredicate = (paidOfr: PaidOffer, fltr: string) => JSON.stringify(paidOfr).toLowerCase().includes(fltr);
+    this.paidOffers.filterPredicate = (paidOfr: OfferBookmark, fltr: string) => JSON.stringify(paidOfr).toLowerCase().includes(fltr);
     this.paidOffers.paginator = this.paginator;
     this.applyFilter();
   }

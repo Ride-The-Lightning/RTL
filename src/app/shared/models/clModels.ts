@@ -97,7 +97,7 @@ export interface Offer {
   used?: boolean;
 }
 
-export interface PaidOffer {
+export interface OfferBookmark {
   id?: string;
   updatedAt?: string;
   createdAt?: string;

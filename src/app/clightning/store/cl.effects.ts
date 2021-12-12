@@ -19,7 +19,7 @@ import { AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLWSEventTypeEnum, CLAct
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 
 import { RTLState } from '../../store/rtl.state';
-import { addUpdatePaidOffer, fetchBalance, fetchChannels, fetchFeeRates, fetchFees, fetchInvoices, fetchLocalRemoteBalance, fetchPayments, fetchPeers, fetchUTXOs, getForwardingHistory, setFailedForwardingHistory, setLookup, setPeers, setQueryRoutes, updateCLAPICallStatus, updateInvoice } from './cl.actions';
+import { addUpdateOfferBookmark, fetchBalance, fetchChannels, fetchFeeRates, fetchFees, fetchInvoices, fetchLocalRemoteBalance, fetchPayments, fetchPeers, fetchUTXOs, getForwardingHistory, setFailedForwardingHistory, setLookup, setPeers, setQueryRoutes, updateCLAPICallStatus, updateInvoice } from './cl.actions';
 import { allAPIsCallStatus, clNodeInformation } from './cl.selector';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 import { CLOfferInformationComponent } from '../transactions/offers/offer-information-modal/offer-information.component';
@@ -502,7 +502,7 @@ export class CLEffects implements OnDestroy {
             snackBarMessageStr = 'Payment Sent Successfully but Offer Saving to Database Failed.';
           }
           if (sendRes.saveToDBResponse && sendRes.saveToDBResponse !== 'NA') {
-            this.store.dispatch(addUpdatePaidOffer({ payload: sendRes.saveToDBResponse }));
+            this.store.dispatch(addUpdateOfferBookmark({ payload: sendRes.saveToDBResponse }));
             snackBarMessageStr = 'Payment Sent Successfully and Offer Saved to Database.';
           }
           setTimeout(() => {
@@ -891,7 +891,7 @@ export class CLEffects implements OnDestroy {
   ));
 
   offersPaidFetchCL = createEffect(() => this.actions.pipe(
-    ofType(CLActions.FETCH_PAID_OFFERS_CL),
+    ofType(CLActions.FETCH_OFFER_BOOKMARKS_CL),
     mergeMap((action: { type: string, payload: any }) => {
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchPaidOffers', status: APICallStatusEnum.INITIATED } }));
       return this.httpClient.get(this.CHILD_API_URL + environment.OFFERS_API + '/paidoffers').
@@ -899,7 +899,7 @@ export class CLEffects implements OnDestroy {
           this.logger.info(res);
           this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchPaidOffers', status: APICallStatusEnum.COMPLETED } }));
           return {
-            type: CLActions.SET_PAID_OFFERS_CL,
+            type: CLActions.SET_OFFER_BOOKMARKS_CL,
             payload: res || []
           };
         }),
@@ -912,23 +912,23 @@ export class CLEffects implements OnDestroy {
   ));
 
   peidOffersDeleteCL = createEffect(() => this.actions.pipe(
-    ofType(CLActions.DELETE_PAID_OFFER_CL),
+    ofType(CLActions.DELETE_OFFER_BOOKMARK_CL),
     mergeMap((action: { type: string, payload: { offer_uuid: string } }) => {
-      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DELETE_PAID_OFFER }));
-      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'DeletePaidOffer', status: APICallStatusEnum.INITIATED } }));
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DELETE_OFFER_BOOKMARK }));
+      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'DeleteOfferBookmark', status: APICallStatusEnum.INITIATED } }));
       return this.httpClient.delete(this.CHILD_API_URL + environment.OFFERS_API + '/paidoffer/' + action.payload.offer_uuid).
         pipe(map((postRes: any) => {
           this.logger.info(postRes);
-          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'DeletePaidOffer', status: APICallStatusEnum.COMPLETED } }));
-          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.DELETE_PAID_OFFER }));
-          this.store.dispatch(openSnackBar({ payload: 'Paid Offer Deleted Successfully!' }));
+          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'DeleteOfferBookmark', status: APICallStatusEnum.COMPLETED } }));
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.DELETE_OFFER_BOOKMARK }));
+          this.store.dispatch(openSnackBar({ payload: 'Offer Bookmark Deleted Successfully!' }));
           return {
-            type: CLActions.REMOVE_PAID_OFFER_CL,
+            type: CLActions.REMOVE_OFFER_BOOKMARK_CL,
             payload: { offer_uuid: action.payload.offer_uuid }
           };
         }),
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('DeletePaidOffer', UI_MESSAGES.DELETE_PAID_OFFER, 'Deleting Paid Offer Failed.', err);
+            this.handleErrorWithoutAlert('DeleteOfferBookmark', UI_MESSAGES.DELETE_OFFER_BOOKMARK, 'Deleting Offer Bookmark Failed.', err);
             return of({ type: RTLActions.VOID });
           })
         );

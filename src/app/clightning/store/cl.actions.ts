@@ -3,7 +3,7 @@ import { createAction, props } from '@ngrx/store';
 import { CLActions } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Fees, Peer, Payment, PayRequest, QueryRoutes, Channel, FeeRates, ForwardingEvent, Invoice, ListInvoices, OnChain, UTXO, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, DecodePayment, SendPayment, GetQueryRoutes, ChannelLookup, OfferInvoice, Offer, PaidOffer, OfferRequest } from '../../shared/models/clModels';
+import { GetInfo, Fees, Peer, Payment, PayRequest, QueryRoutes, Channel, FeeRates, ForwardingEvent, Invoice, ListInvoices, OnChain, UTXO, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, DecodePayment, SendPayment, GetQueryRoutes, ChannelLookup, OfferInvoice, Offer, OfferBookmark } from '../../shared/models/clModels';
 
 export const updateCLAPICallStatus = createAction(CLActions.UPDATE_API_CALL_STATUS_CL, props<{ payload: ApiCallStatusPayload }>());
 
@@ -125,12 +125,12 @@ export const disableOffer = createAction(CLActions.DISABLE_OFFER_CL, props<{ pay
 
 export const updateOffer = createAction(CLActions.UPDATE_OFFER_CL, props<{ payload: { offer: Offer } }>());
 
-export const fetchPaidOffers = createAction(CLActions.FETCH_PAID_OFFERS_CL);
+export const fetchOfferBookmarks = createAction(CLActions.FETCH_OFFER_BOOKMARKS_CL);
 
-export const setPaidOffers = createAction(CLActions.SET_PAID_OFFERS_CL, props<{ payload: PaidOffer[] }>());
+export const setOfferBookmarks = createAction(CLActions.SET_OFFER_BOOKMARKS_CL, props<{ payload: OfferBookmark[] }>());
 
-export const addUpdatePaidOffer = createAction(CLActions.ADD_UPDATE_PAID_OFFER_CL, props<{ payload: PaidOffer }>());
+export const addUpdateOfferBookmark = createAction(CLActions.ADD_UPDATE_OFFER_BOOKMARK_CL, props<{ payload: OfferBookmark }>());
 
-export const deletePaidOffer = createAction(CLActions.DELETE_PAID_OFFER_CL, props<{ payload: { offer_uuid: string } }>());
+export const deleteOfferBookmark = createAction(CLActions.DELETE_OFFER_BOOKMARK_CL, props<{ payload: { offer_uuid: string } }>());
 
-export const removePaidOffer = createAction(CLActions.REMOVE_PAID_OFFER_CL, props<{ payload: { offer_uuid: string } }>());
+export const removeOfferBookmark = createAction(CLActions.REMOVE_OFFER_BOOKMARK_CL, props<{ payload: { offer_uuid: string } }>());

@@ -67,7 +67,7 @@ export const ClRoutes: Routes = [
           { path: 'payments', component: CLLightningPaymentsComponent, canActivate: [CLUnlockedGuard] },
           { path: 'invoices', component: CLLightningInvoicesTableComponent, canActivate: [CLUnlockedGuard] },
           { path: 'offers', component: CLOffersTableComponent, canActivate: [CLUnlockedGuard] },
-          { path: 'paidoffr', component: CLPaidOffersTableComponent, canActivate: [CLUnlockedGuard] }
+          { path: 'offrBookmarks', component: CLPaidOffersTableComponent, canActivate: [CLUnlockedGuard] }
         ]
       },
       {

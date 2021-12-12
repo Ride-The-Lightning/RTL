@@ -3,7 +3,7 @@
     <div fxLayout="column" fxLayoutAlign="start stretch" fxLayout.gt-sm="row wrap" class="page-sub-title-container mt-1">
       <div fxFlex="70" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="start center">
         <fa-icon [icon]="faHistory" class="page-title-img mr-1"></fa-icon>
-        <span class="page-title">Paid & Saved Offers</span>
+        <span class="page-title">Offer Bookmarks</span>
       </div>
       <mat-form-field fxFlex="30" fxLayoutAlign="start end">
         <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" placeholder="Filter">
@@ -42,7 +42,7 @@
               <mat-select placeholder="Actions" tabindex="4" class="mr-0">
                 <mat-select-trigger></mat-select-trigger>
                 <mat-option (click)="onPaidOfferClick(offer)">View Info</mat-option>
-                <mat-option (click)="onDeleteOffer(offer)">Delete Offer</mat-option>
+                <mat-option (click)="onDeleteBookmark(offer)">Delete Bookmark</mat-option>
                 <mat-option (click)="onRePayOffer(offer)">Pay Again</mat-option>
               </mat-select>
             </div>            
