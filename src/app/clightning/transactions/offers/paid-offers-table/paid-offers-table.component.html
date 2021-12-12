@@ -22,14 +22,14 @@
         </ng-container>
         <ng-container matColumnDef="amountmSat">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pr-2"> Amount (Sats) </th>
-          <td mat-cell *matCellDef="let paidoffer" class="pr-2"><span fxLayoutAlign="end center">{{(paidoffer.amountmSat / 1000) | number}}</span></td>
+          <td mat-cell *matCellDef="let paidoffer" class="pr-2"><span fxLayoutAlign="end center">{{(paidoffer.amountmSat === 0) ? 'Open' : (paidoffer.amountmSat / 1000) | number}}</span></td>
         </ng-container>
         <ng-container matColumnDef="description">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
           <td mat-cell *matCellDef="let paidoffer">{{paidoffer.description}}</td>
         </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="pr-3">
+          <th mat-header-cell *matHeaderCellDef class="px-3">
             <div class="bordered-box table-actions-select">
               <mat-select placeholder="Actions" tabindex="1" class="mr-0">
                 <mat-select-trigger></mat-select-trigger>
@@ -42,6 +42,7 @@
               <mat-select placeholder="Actions" tabindex="4" class="mr-0">
                 <mat-select-trigger></mat-select-trigger>
                 <mat-option (click)="onPaidOfferClick(offer)">View Info</mat-option>
+                <mat-option (click)="onDeleteOffer(offer)">Delete Offer</mat-option>
                 <mat-option (click)="onRePayOffer(offer)">Pay Again</mat-option>
               </mat-select>
             </div>            

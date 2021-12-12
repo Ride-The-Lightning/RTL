@@ -911,6 +911,30 @@ export class CLEffects implements OnDestroy {
     })
   ));
 
+  peidOffersDeleteCL = createEffect(() => this.actions.pipe(
+    ofType(CLActions.DELETE_PAID_OFFER_CL),
+    mergeMap((action: { type: string, payload: { offer_uuid: string } }) => {
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DELETE_PAID_OFFER }));
+      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'DeletePaidOffer', status: APICallStatusEnum.INITIATED } }));
+      return this.httpClient.delete(this.CHILD_API_URL + environment.OFFERS_API + '/paidoffer/' + action.payload.offer_uuid).
+        pipe(map((postRes: any) => {
+          this.logger.info(postRes);
+          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'DeletePaidOffer', status: APICallStatusEnum.COMPLETED } }));
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.DELETE_PAID_OFFER }));
+          this.store.dispatch(openSnackBar({ payload: 'Paid Offer Deleted Successfully!' }));
+          return {
+            type: CLActions.REMOVE_PAID_OFFER_CL,
+            payload: { offer_uuid: action.payload.offer_uuid }
+          };
+        }),
+          catchError((err: any) => {
+            this.handleErrorWithoutAlert('DeletePaidOffer', UI_MESSAGES.DELETE_PAID_OFFER, 'Deleting Paid Offer Failed.', err);
+            return of({ type: RTLActions.VOID });
+          })
+        );
+    })
+  ));
+
   SetChannelTransactionCL = createEffect(() => this.actions.pipe(
     ofType(CLActions.SET_CHANNEL_TRANSACTION_CL),
     mergeMap((action: { type: string, payload: OnChain }) => {
