@@ -1,5 +1,6 @@
 import request from 'request-promise';
-import { v4 } from 'uuid';
+import * as uuidModule from 'uuid';
+const { v4 } = uuidModule;
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { Database } from '../../utils/database.js';

@@ -20,7 +20,7 @@ import { RTLState } from '../../../../store/rtl.state';
 import { AlertTypeEnum, RTLActions, UI_MESSAGES, UserPersonaEnum } from '../../../services/consts-enums-functions';
 import { CommonService } from '../../../services/common.service';
 import { logout, openConfirmation, setSelectedNode, showPubkey } from '../../../../store/rtl.actions';
-import { rootAppConfig, rootNodeData, rootSelectedNode } from '../../../../store/rtl.selector';
+import { rootAppConfig, rootSelNodeAndNodeData } from '../../../../store/rtl.selector';
 
 @Component({
   selector: 'rtl-side-navigation',
@@ -73,48 +73,42 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     this.store.select(rootAppConfig).pipe(takeUntil(this.unSubs[0])).subscribe((appConfig) => {
       this.appConfig = appConfig;
     });
-    this.store.select(rootNodeData).pipe(takeUntil(this.unSubs[1])).subscribe((nodeData) => {
-      this.information = nodeData;
-      if (this.information.identity_pubkey) {
-        if (this.information.chains && typeof this.information.chains[0] === 'string') {
-          this.informationChain.chain = this.information.chains[0].toString();
-          this.informationChain.network = (this.information.testnet) ? 'Testnet' : 'Mainnet';
-        } else if (typeof this.information.chains[0] === 'object' && this.information.chains[0].hasOwnProperty('chain')) {
-          const getInfoChain = <GetInfoChain>this.information.chains[0];
-          this.informationChain.chain = getInfoChain.chain;
-          this.informationChain.network = getInfoChain.network;
+    this.store.select(rootSelNodeAndNodeData).pipe(takeUntil(this.unSubs[1])).
+      subscribe((rootData: { nodeDate: GetInfoRoot, selNode: ConfigSettingsNode }) => {
+        this.information = rootData.nodeDate;
+        if (this.information.identity_pubkey) {
+          if (this.information.chains && typeof this.information.chains[0] === 'string') {
+            this.informationChain.chain = this.information.chains[0].toString();
+            this.informationChain.network = (this.information.testnet) ? 'Testnet' : 'Mainnet';
+          } else if (typeof this.information.chains[0] === 'object' && this.information.chains[0].hasOwnProperty('chain')) {
+            const getInfoChain = <GetInfoChain>this.information.chains[0];
+            this.informationChain.chain = getInfoChain.chain;
+            this.informationChain.network = getInfoChain.network;
+          }
+        } else {
+          this.informationChain.chain = '';
+          this.informationChain.network = '';
         }
-      } else {
-        this.informationChain.chain = '';
-        this.informationChain.network = '';
-      }
-      this.flgLoading = !(this.information.identity_pubkey);
-      if (window.innerWidth <= 414) {
-        this.smallScreen = true;
-      }
-    });
-    this.store.select(rootSelectedNode).
-      pipe(takeUntil(this.unSubs[2])).
-      subscribe((selNode) => {
-        let previousSelNode: ConfigSettingsNode = this.selNode ? JSON.parse(JSON.stringify(this.selNode)) : null;
-        this.selNode = selNode;
+        this.flgLoading = !(this.information.identity_pubkey);
+        if (window.innerWidth <= 414) {
+          this.smallScreen = true;
+        }
+        this.selNode = rootData.selNode;
         this.settings = this.selNode.settings;
-        if (!previousSelNode || previousSelNode.index !== this.selNode.index) {
-          this.selConfigNodeIndex = +selNode.index;
-        }
-        if (this.selNode && this.selNode.lnImplementation && previousSelNode && previousSelNode.lnImplementation && this.selNode.lnImplementation !== previousSelNode.lnImplementation) {
+        this.selConfigNodeIndex = +rootData.selNode.index;
+        if (this.selNode && this.selNode.lnImplementation) {
           this.filterSideMenuNodes();
         }
-        this.logger.info(selNode);
+        this.logger.info(rootData);
       });
     this.sessionService.watchSession().
-      pipe(takeUntil(this.unSubs[3])).
+      pipe(takeUntil(this.unSubs[2])).
       subscribe((session) => {
         this.showLogout = !!session.token;
         this.flgLoading = !!session.token;
       });
     this.actions.pipe(
-      takeUntil(this.unSubs[4]),
+      takeUntil(this.unSubs[3]),
       filter((action) => action.type === RTLActions.LOGOUT)).
       subscribe((action: any) => {
         this.showLogout = false;
@@ -133,7 +127,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
         }
       }));
       this.rtlEffects.closeConfirm.
-        pipe(takeUntil(this.unSubs[5])).
+        pipe(takeUntil(this.unSubs[4])).
         subscribe((confirmRes) => {
           if (confirmRes) {
             this.showLogout = false;

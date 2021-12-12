@@ -20,7 +20,7 @@ const initNodeAuthentication = { configPath: '', swapMacaroonPath: '', boltzMaca
 export const initRootState: RootState = {
   apiURL: '',
   apisCallStatus: { Login: { status: APICallStatusEnum.UN_INITIATED }, IsAuthorized: { status: APICallStatusEnum.UN_INITIATED } },
-  selNode: { settings: initNodeSettings, authentication: initNodeAuthentication, lnImplementation: 'LND' },
+  selNode: { index: 1, lnNode: 'Node 1', settings: initNodeSettings, authentication: initNodeAuthentication, lnImplementation: 'LND' },
   appConfig: {
     defaultNodeIndex: -1,
     selectedNodeIndex: -1,

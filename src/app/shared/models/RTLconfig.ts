@@ -44,7 +44,7 @@ export class ConfigSettingsNode {
   constructor(
     public settings: Settings,
     public authentication: Authentication,
-    public index?: string,
+    public index?: number,
     public lnNode?: string,
     public lnImplementation?: string
   ) { }

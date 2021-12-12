@@ -131,7 +131,7 @@ export class LNDEffects implements OnDestroy {
           if (
             (typeof err.error.error === 'string' && err.error.error.includes('Not Found')) ||
             (typeof err.error.error === 'string' && err.error.error.includes('wallet locked')) ||
-            err.status === 502
+            (err.status === 502 && !err.error.message.includes('Bad or Missing Macaroon'))
           ) {
             this.sessionService.removeItem('lndUnlocked');
             this.logger.info('Redirecting to Unlock');

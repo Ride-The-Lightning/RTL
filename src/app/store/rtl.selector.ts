@@ -8,3 +8,4 @@ export const rootAppConfig = createSelector(rootState, (state: RootState) => sta
 export const rootNodeData = createSelector(rootState, (state: RootState) => state.nodeData);
 export const loginStatus = createSelector(rootState, (state: RootState) => state.apisCallStatus.Login);
 export const authorizedStatus = createSelector(rootState, (state: RootState) => state.apisCallStatus.IsAuthorized);
+export const rootSelNodeAndNodeData = createSelector(rootState, (state: RootState) => ({ nodeDate: state.nodeData, selNode: state.selNode }));

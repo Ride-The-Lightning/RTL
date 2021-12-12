@@ -18,7 +18,7 @@ export const getInfo = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'GetInfo', msg: 'Selected Node', data: req.session.selectedNode.ln_node });
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'GetInfo', msg: 'Calling Info from LND server url', data: options.url });
   if (!options.headers || !options.headers['Grpc-Metadata-macaroon']) {
-    const errMsg = 'LND Get info failed due to bad or missing macaroon!';
+    const errMsg = 'LND Get info failed due to bad or missing macaroon! Please check RTL-Config.json to verify the setup!';
     const err = common.handleError({ statusCode: 502, message: 'Bad or Missing Macaroon', error: errMsg }, 'GetInfo', errMsg, req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
   } else {

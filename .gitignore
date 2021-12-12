@@ -62,3 +62,5 @@ ECLDummyData.log
 _config.yml
 .vscode/launch.json
 RTL-Config-Docker.json
+dockerfiles/RTL-Config-Docker-Test.json
+dockerfiles/.env

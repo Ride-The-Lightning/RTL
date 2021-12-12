@@ -264,8 +264,8 @@ export class CommonService {
           (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error :
             (err.error && err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message :
               (err.error && err.error.message && typeof err.error.message === 'string') ? err.error.message :
-                (err.message && typeof err.message === 'string') ? err.message :
-                  (err.error) ? err.error : (typeof err === 'string') ? err : 'Unknown Error'
+                (err.error && typeof err.error === 'string') ? err.error :
+                  (err.message && typeof err.message === 'string') ? err.message : (typeof err === 'string') ? err : 'Unknown Error'
       )
     };
     return newErrorObj;

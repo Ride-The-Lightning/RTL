@@ -114,7 +114,7 @@ Example RTL-Config.json:
   ]
 }
 ```
-For details on all the configuration options refer to [this page](./Application_configurations).
+For details on all the configuration options refer to [this page](./Application_configurations.md).
 
 #### User Authentication on RTL
 RTL requires the user to be authenticated by the application first, before allowing access to LND functions.

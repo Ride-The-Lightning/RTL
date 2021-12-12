@@ -34,9 +34,11 @@ export class ExpressApplication {
             this.config.setServerConfiguration();
         };
         this.loadDb = () => {
-            this.DB.rtlSequelize.sync().then(() => {
-                this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'DEBUG', fileName: 'App', msg: 'Database Connected' });
-            });
+            if (this.DB.rtlSequelize) {
+                this.DB.rtlSequelize.sync().then(() => {
+                    this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'DEBUG', fileName: 'App', msg: 'Database Connected' });
+                });
+            }
         };
         this.setCORS = () => { CORS.mount(this.app); };
         this.setCSRF = () => { CSRF.mount(this.app); };
