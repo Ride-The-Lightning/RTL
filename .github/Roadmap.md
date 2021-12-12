@@ -1,4 +1,4 @@
-[Intro](../README.md) -- [Application Features](Application_features.md) -- **Road Map** -- [Application Configurations](Application_configurations)
+[Intro](../README.md) -- [Application Features](Application_features.md) -- **Road Map** -- [Application Configurations](Application_configurations.md)
 
 # Product Roadmap for RTL Application
 
