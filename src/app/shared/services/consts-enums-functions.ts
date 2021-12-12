@@ -289,7 +289,8 @@ export const UI_MESSAGES = {
   GET_RTL_CONFIG: 'Getting RTL Config...',
   VERIFY_TOKEN: 'Verify Token...',
   DISABLE_OFFER: 'Disabling Offer...',
-  CREATE_OFFER: 'Creating Offer...'
+  CREATE_OFFER: 'Creating Offer...',
+  DELETE_PAID_OFFER: 'Deleting Paid Offer...',
 };
 
 export enum PaymentTypes {
@@ -474,7 +475,9 @@ export enum CLActions {
   UPDATE_OFFER_CL = 'UPDATE_OFFER_CL',
   FETCH_PAID_OFFERS_CL = 'FETCH_PAID_OFFERS_CL',
   SET_PAID_OFFERS_CL = 'SET_PAID_OFFERS_CL',
-  ADD_UPDATE_PAID_OFFER_CL = 'ADD_UPDATE_PAID_OFFER_CL'
+  ADD_UPDATE_PAID_OFFER_CL = 'ADD_UPDATE_PAID_OFFER_CL',
+  DELETE_PAID_OFFER_CL = 'DELETE_PAID_OFFER_CL',
+  REMOVE_PAID_OFFER_CL = 'REMOVE_PAID_OFFER_CL'
 };
 
 export enum ECLActions {

@@ -130,3 +130,7 @@ export const fetchPaidOffers = createAction(CLActions.FETCH_PAID_OFFERS_CL);
 export const setPaidOffers = createAction(CLActions.SET_PAID_OFFERS_CL, props<{ payload: PaidOffer[] }>());
 
 export const addUpdatePaidOffer = createAction(CLActions.ADD_UPDATE_PAID_OFFER_CL, props<{ payload: PaidOffer }>());
+
+export const deletePaidOffer = createAction(CLActions.DELETE_PAID_OFFER_CL, props<{ payload: { offer_uuid: string } }>());
+
+export const removePaidOffer = createAction(CLActions.REMOVE_PAID_OFFER_CL, props<{ payload: { offer_uuid: string } }>());

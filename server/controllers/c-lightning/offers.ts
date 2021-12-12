@@ -20,6 +20,18 @@ export const listPaidOffers = (req, res, next) => {
   });
 };
 
+export const deletePaidOffer = (req, res, next) => {
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Deleting Paid Offer..' });
+  DB.rtlDB.offer.destroy({ where: { id: req.params.offerUUID } }).then((deleteRes) => {
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Paid Offer Deleted', data: deleteRes });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Paid Offer Deleted' });
+    res.status(204).json({ id: req.params.offerUUID });
+  }).catch((errRes) => {
+    const err = common.handleError(errRes, 'Offers', 'Paid Offer Delete Error', req.session.selectedNode);
+    return res.status(err.statusCode).json({ message: err.message, error: err.error });
+  });
+};
+
 export const listOffers = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Getting Offers..' });
   options = common.getOptions(req);

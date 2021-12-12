@@ -420,6 +420,7 @@ export interface SendPayment {
   offerBolt12?: string;
   offerUUID?: string;
   amount?: number;
+  zeroAmtOffer?: boolean;
   pubkey?: string;
 }
 

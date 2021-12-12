@@ -7,17 +7,19 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, PaymentTypes } from '../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, PaymentTypes, AlertTypeEnum } from '../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 import { PaidOffer } from '../../../../shared/models/clModels';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
 
+import { RTLEffects } from '../../../../store/rtl.effects';
 import { RTLState } from '../../../../store/rtl.state';
-import { openAlert } from '../../../../store/rtl.actions';
+import { openAlert, openConfirmation } from '../../../../store/rtl.actions';
 import { paidOffers } from '../../../store/cl.selector';
 import { CLOfferInformationComponent } from '../offer-information-modal/offer-information.component';
 import { CLLightningSendPaymentsComponent } from '../../send-payment-modal/send-payment.component';
+import { deletePaidOffer } from '../../../store/cl.actions';
 
 @Component({
   selector: 'rtl-cl-paid-offers-table',
@@ -46,7 +48,7 @@ export class CLPaidOffersTableComponent implements OnInit, AfterViewInit, OnDest
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private rtlEffects: RTLEffects) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -95,6 +97,25 @@ export class CLPaidOffersTableComponent implements OnInit, AfterViewInit, OnDest
         }
       }
     }));
+  }
+
+  onDeleteOffer(selOffer: PaidOffer) {
+    this.store.dispatch(openConfirmation({
+      payload: {
+        data: {
+          type: AlertTypeEnum.CONFIRM,
+          alertTitle: 'Delete Offer',
+          titleMessage: 'Deleting Offer: ' + (selOffer.title || selOffer.description),
+          noBtnText: 'Cancel',
+          yesBtnText: 'Delete'
+        }
+      }
+    }));
+    this.rtlEffects.closeConfirm.pipe(takeUntil(this.unSubs[1])).subscribe((confirmRes) => {
+      if (confirmRes) {
+        this.store.dispatch(deletePaidOffer({ payload: { offer_uuid: selOffer.id } }));
+      }
+    });
   }
 
   onRePayOffer(selOffer: PaidOffer) {
