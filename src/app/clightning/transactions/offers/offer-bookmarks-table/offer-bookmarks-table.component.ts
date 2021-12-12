@@ -22,21 +22,21 @@ import { CLLightningSendPaymentsComponent } from '../../send-payment-modal/send-
 import { deleteOfferBookmark } from '../../../store/cl.actions';
 
 @Component({
-  selector: 'rtl-cl-paid-offers-table',
-  templateUrl: './paid-offers-table.component.html',
-  styleUrls: ['./paid-offers-table.component.scss'],
+  selector: 'rtl-cl-offer-bookmarks-table',
+  templateUrl: './offer-bookmarks-table.component.html',
+  styleUrls: ['./offer-bookmarks-table.component.scss'],
   providers: [
-    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Paid Offers') }
+    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Offer Bookmarks') }
   ]
 })
-export class CLPaidOffersTableComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CLOfferBookmarksTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   faHistory = faHistory;
   public displayedColumns: any[] = [];
-  public paidOffers: any;
-  public paidOfferJSONArr: OfferBookmark[] = [];
+  public offersBookmarks: any;
+  public offersBookmarksJSONArr: OfferBookmark[] = [];
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -73,21 +73,21 @@ export class CLPaidOffersTableComponent implements OnInit, AfterViewInit, OnDest
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.paidOfferJSONArr = offerBMsSeletor.offersBookmarks || [];
-        if (this.paidOfferJSONArr && this.paidOfferJSONArr.length > 0 && this.sort && this.paginator) {
-          this.loadOffersTable(this.paidOfferJSONArr);
+        this.offersBookmarksJSONArr = offerBMsSeletor.offersBookmarks || [];
+        if (this.offersBookmarksJSONArr && this.offersBookmarksJSONArr.length > 0 && this.sort && this.paginator) {
+          this.loadOffersTable(this.offersBookmarksJSONArr);
         }
         this.logger.info(offerBMsSeletor);
       });
   }
 
   ngAfterViewInit() {
-    if (this.paidOfferJSONArr && this.paidOfferJSONArr.length > 0 && this.sort && this.paginator) {
-      this.loadOffersTable(this.paidOfferJSONArr);
+    if (this.offersBookmarksJSONArr && this.offersBookmarksJSONArr.length > 0 && this.sort && this.paginator) {
+      this.loadOffersTable(this.offersBookmarksJSONArr);
     }
   }
 
-  onPaidOfferClick(selOffer: OfferBookmark) {
+  onOfferBookmarkClick(selOffer: OfferBookmark) {
     this.store.dispatch(openAlert({
       payload: {
         data: {
@@ -133,21 +133,21 @@ export class CLPaidOffersTableComponent implements OnInit, AfterViewInit, OnDest
   }
 
   applyFilter() {
-    this.paidOffers.filter = this.selFilter.trim().toLowerCase();
+    this.offersBookmarks.filter = this.selFilter.trim().toLowerCase();
   }
 
-  loadOffersTable(paidOffrs: OfferBookmark[]) {
-    this.paidOffers = (paidOffrs) ? new MatTableDataSource<OfferBookmark>([...paidOffrs]) : new MatTableDataSource([]);
-    this.paidOffers.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    this.paidOffers.sort = this.sort;
-    this.paidOffers.filterPredicate = (paidOfr: OfferBookmark, fltr: string) => JSON.stringify(paidOfr).toLowerCase().includes(fltr);
-    this.paidOffers.paginator = this.paginator;
+  loadOffersTable(OffrBMs: OfferBookmark[]) {
+    this.offersBookmarks = (OffrBMs) ? new MatTableDataSource<OfferBookmark>([...OffrBMs]) : new MatTableDataSource([]);
+    this.offersBookmarks.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+    this.offersBookmarks.sort = this.sort;
+    this.offersBookmarks.filterPredicate = (Ofrbm: OfferBookmark, fltr: string) => JSON.stringify(Ofrbm).toLowerCase().includes(fltr);
+    this.offersBookmarks.paginator = this.paginator;
     this.applyFilter();
   }
 
   onDownloadCSV() {
-    if (this.paidOffers.data && this.paidOffers.data.length > 0) {
-      this.commonService.downloadFile(this.paidOffers.data, 'PaidSavedOffers');
+    if (this.offersBookmarks.data && this.offersBookmarks.data.length > 0) {
+      this.commonService.downloadFile(this.offersBookmarks.data, 'OfferBookmarks');
     }
   }
 

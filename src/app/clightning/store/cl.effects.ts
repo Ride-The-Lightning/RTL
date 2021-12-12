@@ -890,21 +890,21 @@ export class CLEffects implements OnDestroy {
     })
   ));
 
-  offersPaidFetchCL = createEffect(() => this.actions.pipe(
+  offerBookmarksFetchCL = createEffect(() => this.actions.pipe(
     ofType(CLActions.FETCH_OFFER_BOOKMARKS_CL),
     mergeMap((action: { type: string, payload: any }) => {
-      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchPaidOffers', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get(this.CHILD_API_URL + environment.OFFERS_API + '/paidoffers').
+      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchOfferBookmarks', status: APICallStatusEnum.INITIATED } }));
+      return this.httpClient.get(this.CHILD_API_URL + environment.OFFERS_API + '/offerbookmarks').
         pipe(map((res: any) => {
           this.logger.info(res);
-          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchPaidOffers', status: APICallStatusEnum.COMPLETED } }));
+          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchOfferBookmarks', status: APICallStatusEnum.COMPLETED } }));
           return {
             type: CLActions.SET_OFFER_BOOKMARKS_CL,
             payload: res || []
           };
         }),
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('FetchPaidOffers', UI_MESSAGES.NO_SPINNER, 'Fetching Paid Offers Failed.', err);
+            this.handleErrorWithoutAlert('FetchOfferBookmarks', UI_MESSAGES.NO_SPINNER, 'Fetching Offer Bookmarks Failed.', err);
             return of({ type: RTLActions.VOID });
           })
         );
@@ -916,7 +916,7 @@ export class CLEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: { offer_uuid: string } }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DELETE_OFFER_BOOKMARK }));
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'DeleteOfferBookmark', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.delete(this.CHILD_API_URL + environment.OFFERS_API + '/paidoffer/' + action.payload.offer_uuid).
+      return this.httpClient.delete(this.CHILD_API_URL + environment.OFFERS_API + '/offerbookmark/' + action.payload.offer_uuid).
         pipe(map((postRes: any) => {
           this.logger.info(postRes);
           this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'DeleteOfferBookmark', status: APICallStatusEnum.COMPLETED } }));

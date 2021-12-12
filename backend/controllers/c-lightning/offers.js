@@ -6,25 +6,25 @@ let options = null;
 const logger = Logger;
 const common = Common;
 const DB = Database;
-export const listPaidOffers = (req, res, next) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Getting Paid Offers..' });
+export const listOfferBookmarks = (req, res, next) => {
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Getting Offer Bookmarks..' });
     DB.rtlDB.offer.findAll().then((offers) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Paid Offers List Received', data: offers });
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Paid Offers Received' });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Offer Bookmarks Received', data: offers });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Bookmarks Received' });
         res.status(200).json(offers);
     }).catch((errRes) => {
-        const err = common.handleError(errRes, 'Offers', 'List Paid Offers Error', req.session.selectedNode);
+        const err = common.handleError(errRes, 'Offers', 'Offer Bookmarks Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-export const deletePaidOffer = (req, res, next) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Deleting Paid Offer..' });
+export const deleteOfferBookmark = (req, res, next) => {
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Deleting Offer Bookmark..' });
     DB.rtlDB.offer.destroy({ where: { id: req.params.offerUUID } }).then((deleteRes) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Paid Offer Deleted', data: deleteRes });
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Paid Offer Deleted' });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Offer Bookmark Deleted', data: deleteRes });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Bookmark Deleted' });
         res.status(204).json({ id: req.params.offerUUID });
     }).catch((errRes) => {
-        const err = common.handleError(errRes, 'Offers', 'Paid Offer Delete Error', req.session.selectedNode);
+        const err = common.handleError(errRes, 'Offers', 'Offer Bookmark Delete Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };

@@ -11,22 +11,22 @@
     </div>
     <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
       <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>      
-      <table mat-table #table fxFlex="100" [dataSource]="paidOffers" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
+      <table mat-table #table fxFlex="100" [dataSource]="offersBookmarks" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="updatedAt">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Updated At </th>
-          <td mat-cell *matCellDef="let paidoffer">{{paidoffer.updatedAt | date:'dd/MMM/YYYY HH:mm'}}</td>
+          <td mat-cell *matCellDef="let offersbookmark">{{offersbookmark.updatedAt | date:'dd/MMM/YYYY HH:mm'}}</td>
         </ng-container>
         <ng-container matColumnDef="title">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Title </th>
-          <td mat-cell *matCellDef="let paidoffer">{{paidoffer.title}}</td>
+          <td mat-cell *matCellDef="let offersbookmark">{{offersbookmark.title}}</td>
         </ng-container>
         <ng-container matColumnDef="amountmSat">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pr-2"> Amount (Sats) </th>
-          <td mat-cell *matCellDef="let paidoffer" class="pr-2"><span fxLayoutAlign="end center">{{(paidoffer.amountmSat === 0) ? 'Open' : (paidoffer.amountmSat / 1000) | number}}</span></td>
+          <td mat-cell *matCellDef="let offersbookmark" class="pr-2"><span fxLayoutAlign="end center">{{(offersbookmark.amountmSat === 0) ? 'Open' : (offersbookmark.amountmSat / 1000) | number}}</span></td>
         </ng-container>
         <ng-container matColumnDef="description">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
-          <td mat-cell *matCellDef="let paidoffer">{{paidoffer.description}}</td>
+          <td mat-cell *matCellDef="let offersbookmark">{{offersbookmark.description}}</td>
         </ng-container>
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef class="px-3">
@@ -41,7 +41,7 @@
             <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="4" class="mr-0">
                 <mat-select-trigger></mat-select-trigger>
-                <mat-option (click)="onPaidOfferClick(offer)">View Info</mat-option>
+                <mat-option (click)="onOfferBookmarkClick(offer)">View Info</mat-option>
                 <mat-option (click)="onDeleteBookmark(offer)">Delete Bookmark</mat-option>
                 <mat-option (click)="onRePayOffer(offer)">Pay Again</mat-option>
               </mat-select>
@@ -50,12 +50,12 @@
         </ng-container>
         <ng-container matColumnDef="no_offer">
           <td mat-footer-cell *matFooterCellDef colspan="4">
-            <p *ngIf="(!paidOffers?.data || paidOffers?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.COMPLETED">No paid offer saved.</p>
-            <p *ngIf="(!paidOffers?.data || paidOffers?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.INITIATED">Getting paid offers...</p>
-            <p *ngIf="(!paidOffers?.data || paidOffers?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+            <p *ngIf="(!offersBookmarks?.data || offersBookmarks?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.COMPLETED">No offer bookmark saved.</p>
+            <p *ngIf="(!offersBookmarks?.data || offersBookmarks?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.INITIATED">Getting offer bookmarks...</p>
+            <p *ngIf="(!offersBookmarks?.data || offersBookmarks?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
           </td>
         </ng-container>
-        <tr mat-footer-row *matFooterRowDef="['no_offer']" [ngClass]="{'display-none': paidOffers?.data && paidOffers?.data?.length>0}"></tr>
+        <tr mat-footer-row *matFooterRowDef="['no_offer']" [ngClass]="{'display-none': offersBookmarks?.data && offersBookmarks?.data?.length>0}"></tr>
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
