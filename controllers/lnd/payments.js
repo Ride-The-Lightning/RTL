@@ -26,8 +26,8 @@ exports.getAllLightningTransactions = (req, res, next) => {
   logger.log({level: 'INFO', fileName: 'Payments', msg: 'Getting All Lightning Transactions..'});
   const options1 = JSON.parse(JSON.stringify(common.getOptions()))
   const options2 = JSON.parse(JSON.stringify(common.getOptions()))
-  options1.url = common.getSelLNServerUrl() + '/v1/payments?max_payments=1000000&index_offset=0&reversed=true';
-  options2.url = common.getSelLNServerUrl() + '/v1/invoices?num_max_invoices=1000000&index_offset=0&reversed=true';
+  options1.url = common.getSelLNServerUrl() + '/v1/payments?max_payments=100000&index_offset=0&reversed=true';
+  options2.url = common.getSelLNServerUrl() + '/v1/invoices?num_max_invoices=100000&index_offset=0&reversed=true';
   logger.log({level: 'DEBUG', fileName: 'Payments', msg: 'All Payments Options', data: options1});
   logger.log({level: 'DEBUG', fileName: 'Payments', msg: 'All Invoices Options', data: options2});
   return Promise.all([request(options1), request(options2)]).then(function(values) {
