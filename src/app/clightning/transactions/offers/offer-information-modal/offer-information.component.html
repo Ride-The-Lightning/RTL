@@ -49,12 +49,12 @@
           </div>
         </div>
         <div *ngIf="showAdvanced">
-          <mat-divider class="w-100 my-1"></mat-divider>        
-          <div fxLayout="row">
+          <mat-divider *ngIf="offer?.used || offer?.single_use" class="w-100 my-1"></mat-divider>        
+          <div fxLayout="row" *ngIf="offer?.used || offer?.single_use">
             <div fxFlex="50">
               <h4 fxLayoutAlign="start" class="font-bold-500">Used</h4>
               <span class="foreground-secondary-text">
-                {{!offer?.used ? 'N/K' : offer?.used ? 'Yes' : 'No' }}
+                {{ !offer?.used ? 'N/K' : offer?.used ? 'Yes' : 'No' }}
               </span>
             </div>
             <div fxFlex="50">

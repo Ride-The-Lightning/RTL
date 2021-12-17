@@ -13,7 +13,6 @@ import eclRoutes from '../routes/eclair/index.js';
 import { Common } from './common.js';
 import { Logger } from './logger.js';
 import { Config } from './config.js';
-import { Database } from './database.js';
 import { CLWSClient } from '../controllers/c-lightning/webSocketClient.js';
 import { ECLWSClient } from '../controllers/eclair/webSocketClient.js';
 import { LNDWSClient } from '../controllers/lnd/webSocketClient.js';
@@ -24,7 +23,6 @@ export class ExpressApplication {
         this.logger = Logger;
         this.common = Common;
         this.config = Config;
-        this.DB = Database;
         this.eclWsClient = ECLWSClient;
         this.clWsClient = CLWSClient;
         this.lndWsClient = LNDWSClient;
@@ -32,13 +30,6 @@ export class ExpressApplication {
         this.getApp = () => this.app;
         this.loadConfiguration = () => {
             this.config.setServerConfiguration();
-        };
-        this.loadDb = () => {
-            if (this.DB.rtlSequelize) {
-                this.DB.rtlSequelize.sync().then(() => {
-                    this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'DEBUG', fileName: 'App', msg: 'Database Connected' });
-                });
-            }
         };
         this.setCORS = () => { CORS.mount(this.app); };
         this.setCSRF = () => { CSRF.mount(this.app); };
@@ -89,7 +80,6 @@ export class ExpressApplication {
         this.setCORS();
         this.setCSRF();
         this.setApplicationRoutes();
-        this.loadDb();
     }
 }
 export default ExpressApplication;

@@ -95,9 +95,8 @@ export interface CLPaymentInformation {
   paymentType: PaymentTypes;
   invoiceBolt11?: string;
   pubkeyKeysend?: string;
-  offerBolt12?: string;
+  bolt12?: string;
   offerTitle?: string;
-  offerUUId?: string;
   newlyAdded?: boolean;
   component?: any;
 }

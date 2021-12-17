@@ -131,6 +131,6 @@ export const setOfferBookmarks = createAction(CLActions.SET_OFFER_BOOKMARKS_CL, 
 
 export const addUpdateOfferBookmark = createAction(CLActions.ADD_UPDATE_OFFER_BOOKMARK_CL, props<{ payload: OfferBookmark }>());
 
-export const deleteOfferBookmark = createAction(CLActions.DELETE_OFFER_BOOKMARK_CL, props<{ payload: { offer_uuid: string } }>());
+export const deleteOfferBookmark = createAction(CLActions.DELETE_OFFER_BOOKMARK_CL, props<{ payload: { bolt12: string } }>());
 
-export const removeOfferBookmark = createAction(CLActions.REMOVE_OFFER_BOOKMARK_CL, props<{ payload: { offer_uuid: string } }>());
+export const removeOfferBookmark = createAction(CLActions.REMOVE_OFFER_BOOKMARK_CL, props<{ payload: { bolt12: string } }>());

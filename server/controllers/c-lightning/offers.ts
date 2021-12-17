@@ -2,15 +2,16 @@ import request from 'request-promise';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { Database, DatabaseService } from '../../utils/database.js';
+import { CollectionFieldsEnum, CollectionsEnum } from '../../models/database.model.js';
 
 let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
-const DB: DatabaseService = Database;
+const databaseService: DatabaseService = Database;
 
 export const listOfferBookmarks = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Getting Offer Bookmarks..' });
-  DB.rtlDB.offer.findAll().then((offers) => {
+  databaseService.find(req.session.selectedNode, CollectionsEnum.OFFERS).then((offers) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Offer Bookmarks Received', data: offers });
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Bookmarks Received' });
     res.status(200).json(offers);
@@ -22,10 +23,10 @@ export const listOfferBookmarks = (req, res, next) => {
 
 export const deleteOfferBookmark = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Deleting Offer Bookmark..' });
-  DB.rtlDB.offer.destroy({ where: { id: req.params.offerUUID } }).then((deleteRes) => {
+  databaseService.destroy(req.session.selectedNode, CollectionsEnum.OFFERS, CollectionFieldsEnum.BOLT12, req.params.offerStr).then((deleteRes) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Offer Bookmark Deleted', data: deleteRes });
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Bookmark Deleted' });
-    res.status(204).json({ id: req.params.offerUUID });
+    res.status(204).json(req.params.offerStr);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Offers', 'Offer Bookmark Delete Error', req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });

@@ -1,14 +1,17 @@
 import jwt from 'jsonwebtoken';
 import * as otplib from 'otplib';
 import * as crypto from 'crypto';
+import { Database, DatabaseService } from '../../utils/database.js';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
+
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
 const ONE_MINUTE = 60000;
 const LOCKING_PERIOD = 30 * ONE_MINUTE; // HALF AN HOUR
 const ALLOWED_LOGIN_ATTEMPTS = 5;
 const failedLoginAttempts = {};
+const databaseService: DatabaseService = Database;
 
 const loginInterval = setInterval(() => {
   for (const ip in failedLoginAttempts) {
@@ -117,6 +120,9 @@ export const resetPassword = (req, res, next) => {
 
 export const logoutUser = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'Logged out' });
+  if (req.session.selectedNode && req.session.selectedNode.index) {
+    databaseService.unloadDatabase(+req.session.selectedNode.index);
+  }
   req.session.destroy();
   res.status(200).json({ loggedout: true });
 };

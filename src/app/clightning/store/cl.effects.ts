@@ -398,11 +398,10 @@ export class CLEffects implements OnDestroy {
         return {
           type: CLActions.FETCH_CHANNELS_CL
         };
-      }),
-        catchError((err: any) => {
-          this.handleErrorWithAlert('UpdateChannel', UI_MESSAGES.UPDATE_CHAN_POLICY, 'Update Channel Failed', this.CHILD_API_URL + environment.CHANNELS_API, err);
-          return of({ type: RTLActions.VOID });
-        })
+      }), catchError((err: any) => {
+        this.handleErrorWithAlert('UpdateChannel', UI_MESSAGES.UPDATE_CHAN_POLICY, 'Update Channel Failed', this.CHILD_API_URL + environment.CHANNELS_API, err);
+        return of({ type: RTLActions.VOID });
+      })
       );
     })
   ));
@@ -811,11 +810,10 @@ export class CLEffects implements OnDestroy {
           type: CLActions.ADD_OFFER_CL,
           payload: postRes
         };
-      }),
-        catchError((err: any) => {
-          this.handleErrorWithoutAlert('SaveNewOffer', UI_MESSAGES.CREATE_OFFER, 'Create Offer Failed.', err);
-          return of({ type: RTLActions.VOID });
-        })
+      }), catchError((err: any) => {
+        this.handleErrorWithoutAlert('SaveNewOffer', UI_MESSAGES.CREATE_OFFER, 'Create Offer Failed.', err);
+        return of({ type: RTLActions.VOID });
+      })
       );
     })
   ));
@@ -857,12 +855,10 @@ export class CLEffects implements OnDestroy {
             type: CLActions.SET_OFFERS_CL,
             payload: res.offers ? res.offers : []
           };
-        }),
-          catchError((err: any) => {
-            this.handleErrorWithoutAlert('FetchOffers', UI_MESSAGES.NO_SPINNER, 'Fetching Offers Failed.', err);
-            return of({ type: RTLActions.VOID });
-          })
-        );
+        }), catchError((err: any) => {
+          this.handleErrorWithoutAlert('FetchOffers', UI_MESSAGES.NO_SPINNER, 'Fetching Offers Failed.', err);
+          return of({ type: RTLActions.VOID });
+        }));
     })
   ));
 
@@ -881,12 +877,10 @@ export class CLEffects implements OnDestroy {
             type: CLActions.UPDATE_OFFER_CL,
             payload: { offer: postRes }
           };
-        }),
-          catchError((err: any) => {
-            this.handleErrorWithoutAlert('DisableOffer', UI_MESSAGES.DISABLE_OFFER, 'Disabling Offer Failed.', err);
-            return of({ type: RTLActions.VOID });
-          })
-        );
+        }), catchError((err: any) => {
+          this.handleErrorWithoutAlert('DisableOffer', UI_MESSAGES.DISABLE_OFFER, 'Disabling Offer Failed.', err);
+          return of({ type: RTLActions.VOID });
+        }));
     })
   ));
 
@@ -902,21 +896,19 @@ export class CLEffects implements OnDestroy {
             type: CLActions.SET_OFFER_BOOKMARKS_CL,
             payload: res || []
           };
-        }),
-          catchError((err: any) => {
-            this.handleErrorWithoutAlert('FetchOfferBookmarks', UI_MESSAGES.NO_SPINNER, 'Fetching Offer Bookmarks Failed.', err);
-            return of({ type: RTLActions.VOID });
-          })
-        );
+        }), catchError((err: any) => {
+          this.handleErrorWithoutAlert('FetchOfferBookmarks', UI_MESSAGES.NO_SPINNER, 'Fetching Offer Bookmarks Failed.', err);
+          return of({ type: RTLActions.VOID });
+        }));
     })
   ));
 
   peidOffersDeleteCL = createEffect(() => this.actions.pipe(
     ofType(CLActions.DELETE_OFFER_BOOKMARK_CL),
-    mergeMap((action: { type: string, payload: { offer_uuid: string } }) => {
+    mergeMap((action: { type: string, payload: { bolt12: string } }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DELETE_OFFER_BOOKMARK }));
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'DeleteOfferBookmark', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.delete(this.CHILD_API_URL + environment.OFFERS_API + '/offerbookmark/' + action.payload.offer_uuid).
+      return this.httpClient.delete(this.CHILD_API_URL + environment.OFFERS_API + '/offerbookmark/' + action.payload.bolt12).
         pipe(map((postRes: any) => {
           this.logger.info(postRes);
           this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'DeleteOfferBookmark', status: APICallStatusEnum.COMPLETED } }));
@@ -924,14 +916,12 @@ export class CLEffects implements OnDestroy {
           this.store.dispatch(openSnackBar({ payload: 'Offer Bookmark Deleted Successfully!' }));
           return {
             type: CLActions.REMOVE_OFFER_BOOKMARK_CL,
-            payload: { offer_uuid: action.payload.offer_uuid }
+            payload: { bolt12: action.payload.bolt12 }
           };
-        }),
-          catchError((err: any) => {
-            this.handleErrorWithoutAlert('DeleteOfferBookmark', UI_MESSAGES.DELETE_OFFER_BOOKMARK, 'Deleting Offer Bookmark Failed.', err);
-            return of({ type: RTLActions.VOID });
-          })
-        );
+        }), catchError((err: any) => {
+          this.handleErrorWithAlert('DeleteOfferBookmark', UI_MESSAGES.DELETE_OFFER_BOOKMARK, 'Deleting Offer Bookmark Failed.', this.CHILD_API_URL + environment.OFFERS_API + '/offerbookmark/' + action.payload.bolt12, err);
+          return of({ type: RTLActions.VOID });
+        }));
     })
   ));
 

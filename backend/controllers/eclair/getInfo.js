@@ -1,4 +1,5 @@
 import request from 'request-promise';
+import { Database } from '../../utils/database.js';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { ECLWSClient } from './webSocketClient.js';
@@ -6,6 +7,7 @@ let options = null;
 const logger = Logger;
 const common = Common;
 const eclWsClient = ECLWSClient;
+const databaseService = Database;
 export const getInfo = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Getting Eclair Node Information..' });
     common.logEnvVariables(req);
@@ -38,9 +40,9 @@ export const getInfo = (req, res, next) => {
                 logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Eclair Node Information Received' });
                 req.session.selectedNode.ln_version = body.version.split('-')[0] || '';
                 eclWsClient.updateSelectedNode(req.session.selectedNode);
+                databaseService.loadDatabase(req.session.selectedNode);
                 res.status(200).json(body);
-            }).
-                catch((errRes) => {
+            }).catch((errRes) => {
                 const err = common.handleError(errRes, 'GetInfo', 'Get Info Error', req);
                 return res.status(err.statusCode).json({ message: err.message, error: err.error });
             });

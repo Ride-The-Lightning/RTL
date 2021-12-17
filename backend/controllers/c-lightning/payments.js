@@ -1,13 +1,12 @@
 import request from 'request-promise';
-import * as uuidModule from 'uuid';
-const { v4 } = uuidModule;
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { Database } from '../../utils/database.js';
+import { CollectionFieldsEnum, CollectionsEnum } from '../../models/database.model.js';
 let options = null;
 const logger = Logger;
 const common = Common;
-const DB = Database;
+const databaseService = Database;
 function paymentReducer(accumulator, currentPayment) {
     const currPayHash = currentPayment.payment_hash;
     if (!currentPayment.partid) {
@@ -113,31 +112,25 @@ export const postPayment = (req, res, next) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent' });
         if (req.body.paymentType === 'OFFER') {
             if (req.body.saveToDB) {
-                let offer = {};
-                if (req.body.offerUUID) {
-                    let updatedOffer = { title: req.body.title, amountmSat: (req.body.zeroAmtOffer ? 0 : req.body.amount) };
-                    return DB.rtlDB.offer.update(updatedOffer, { where: { id: req.body.offerUUID } }).then((updatedOffer) => {
-                        offer = { id: req.body.offerUUID, title: req.body.title, amountmSat: (req.body.zeroAmtOffer ? 0 : req.body.amount), updatedAt: new Date(Date.now()) };
+                if (req.body.bolt12) {
+                    const offerToUpdate = { bolt12: req.body.bolt12, amountmSat: (req.body.zeroAmtOffer ? 0 : req.body.amount), title: req.body.title, lastUpdatedAt: new Date(Date.now()).getTime() };
+                    if (req.body.vendor) {
+                        offerToUpdate['vendor'] = req.body.vendor;
+                    }
+                    if (req.body.description) {
+                        offerToUpdate['description'] = req.body.description;
+                    }
+                    return databaseService.update(req.session.selectedNode, CollectionsEnum.OFFERS, offerToUpdate, CollectionFieldsEnum.BOLT12, req.body.bolt12).then((updatedOffer) => {
                         logger.log({ level: 'DEBUG', fileName: 'Offer', msg: 'Offer Updated', data: updatedOffer });
-                        return res.status(201).json({ paymentResponse: body, saveToDBResponse: offer });
+                        return res.status(201).json({ paymentResponse: body, saveToDBResponse: updatedOffer });
                     }).catch((errDB) => {
                         logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Payments', msg: 'Offer DB update error', error: errDB });
                         return res.status(201).json({ paymentResponse: body, saveToDBError: errDB });
                     });
                 }
                 else {
-                    offer = { id: v4(), offerBolt12: req.body.offerBolt12, amountmSat: (req.body.zeroAmtOffer ? 0 : req.body.amount), title: req.body.title, vendor: req.body.vendor, description: req.body.description };
-                    return DB.rtlDB.offer.create(offer).then((savedOffer) => {
-                        logger.log({ level: 'DEBUG', fileName: 'Offer', msg: 'Offer Saved', data: savedOffer });
-                        return res.status(201).json({ paymentResponse: body, saveToDBResponse: savedOffer.dataValues });
-                    }).catch((errDB) => {
-                        logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Payments', msg: 'Offer DB save error', error: errDB });
-                        return res.status(201).json({ paymentResponse: body, saveToDBError: errDB });
-                    });
+                    return res.status(201).json({ paymentResponse: body, saveToDBResponse: 'NA' });
                 }
-            }
-            else {
-                return res.status(201).json({ paymentResponse: body, saveToDBResponse: 'NA' });
             }
         }
         if (req.body.paymentType === 'INVOICE') {

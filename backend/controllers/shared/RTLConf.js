@@ -3,6 +3,7 @@ import { sep } from 'path';
 import ini from 'ini';
 import parseHocon from 'hocon-parser';
 import request from 'request-promise';
+import { Database } from '../../utils/database.js';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { WSServer } from '../../utils/webSocketServer.js';
@@ -10,12 +11,16 @@ const options = { url: '' };
 const logger = Logger;
 const common = Common;
 const wsServer = WSServer;
+const databaseService = Database;
 export const updateSelectedNode = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Updating Selected Node..' });
     const selNodeIndex = req.body.currNodeIndex ? req.body.currNodeIndex : common.initSelectedNode ? common.initSelectedNode.index : 1;
     req.session.selectedNode = common.findNode(selNodeIndex);
     if (req.headers && req.headers.authorization && req.headers.authorization !== '') {
         wsServer.updateLNWSClientDetails(req.session.id, +req.session.selectedNode.index, +req.body.prevNodeIndex);
+        if (req.body.prevNodeIndex !== -1) {
+            databaseService.unloadDatabase(req.body.prevNodeIndex);
+        }
     }
     const responseVal = !req.session.selectedNode.ln_node ? '' : req.session.selectedNode.ln_node;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Selected Node Updated To', data: responseVal });
@@ -336,6 +341,7 @@ export const updateServiceSettings = (req, res, next) => {
             }
             common.replaceNode(req, selectedNode);
         }
+        return node;
     });
     try {
         fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');

@@ -58,7 +58,6 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public zeroAmtOffer = false;
   public offerInvoice: OfferInvoice = null;
   public offerAmount = null;
-  public offerUUID = null;
   public flgSaveToDB = false;
 
   public paymentDecoded: PayRequest = {};
@@ -91,9 +90,8 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
           this.pubkey = this.data.pubkeyKeysend;
           break;
         case PaymentTypes.OFFER:
-          this.onPaymentRequestEntry(this.data.offerBolt12);
+          this.onPaymentRequestEntry(this.data.bolt12);
           this.offerTitle = this.data.offerTitle;
-          this.offerUUID = this.data.offerUUId;
           this.flgSaveToDB = false;
           break;
         default:
@@ -209,6 +207,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   }
 
   sendPayment() {
+    this.paymentError = '';
     if (this.paymentType === PaymentTypes.INVOICE) {
       if (this.zeroAmtInvoice) {
         this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.INVOICE, invoice: this.paymentRequest, amount: this.paymentAmount * 1000, fromDialog: true } }));
@@ -223,7 +222,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
           this.store.dispatch(fetchOfferInvoice({ payload: { offer: this.offerRequest } }));
         }
       } else {
-        this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.OFFER, invoice: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, offerUUID: this.offerUUID, offerBolt12: this.offerRequest, amount: this.offerAmount * 1000, zeroAmtOffer: this.zeroAmtOffer, title: this.offerTitle, vendor: this.offerVendor, description: this.offerDescription, fromDialog: true } }));
+        this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.OFFER, invoice: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, bolt12: this.offerRequest, amount: this.offerAmount * 1000, zeroAmtOffer: this.zeroAmtOffer, title: this.offerTitle, vendor: this.offerVendor, description: this.offerDescription, fromDialog: true } }));
       }
     }
   }
@@ -264,7 +263,6 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
     this.offerAmount = null;
     this.offerDecodedHint = '';
     this.zeroAmtOffer = false;
-    this.flgSaveToDB = false;
     this.paymentError = '';
     if (this.offerReq) { this.offerReq.control.setErrors(null); }
   }
@@ -367,6 +365,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       case PaymentTypes.OFFER:
         this.offerRequest = '';
         this.offerDecoded = {};
+        this.flgSaveToDB = false;
         this.resetOfferDetails();
         break;
       default:

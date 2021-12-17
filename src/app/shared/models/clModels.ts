@@ -98,10 +98,8 @@ export interface Offer {
 }
 
 export interface OfferBookmark {
-  id?: string;
-  updatedAt?: string;
-  createdAt?: string;
-  offerBolt12?: string;
+  lastUpdatedAt?: string;
+  bolt12?: string;
   amountmSat?: number;
   title?: string;
   vendor?: string;
@@ -417,8 +415,7 @@ export interface SendPayment {
   invoice?: string;
   description?: string;
   saveToDB?: boolean;
-  offerBolt12?: string;
-  offerUUID?: string;
+  bolt12?: string;
   amount?: number;
   zeroAmtOffer?: boolean;
   pubkey?: string;

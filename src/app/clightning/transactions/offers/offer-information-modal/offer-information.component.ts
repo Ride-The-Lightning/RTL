@@ -33,7 +33,7 @@ export class CLOfferInformationComponent implements OnInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public flgOfferPaid = false;
-  public flgVersionCompatible: boolean = true;
+  public flgVersionCompatible = true;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<CLOfferInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOfferInformation, private logger: LoggerService, private commonService: CommonService, private snackBar: MatSnackBar, private store: Store<RTLState>, private dataService: DataService) { }

@@ -52,16 +52,16 @@ export class CLOfferBookmarksTableComponent implements OnInit, AfterViewInit, On
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['updatedAt', 'title', 'amountmSat', 'actions'];
+      this.displayedColumns = ['lastUpdatedAt', 'title', 'amountmSat', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['updatedAt', 'title', 'amountmSat', 'actions'];
+      this.displayedColumns = ['lastUpdatedAt', 'title', 'amountmSat', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['updatedAt', 'title', 'amountmSat', 'description', 'actions'];
+      this.displayedColumns = ['lastUpdatedAt', 'title', 'amountmSat', 'description', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['updatedAt', 'title', 'amountmSat', 'description', 'actions'];
+      this.displayedColumns = ['lastUpdatedAt', 'title', 'amountmSat', 'description', 'actions'];
     }
   }
 
@@ -91,7 +91,7 @@ export class CLOfferBookmarksTableComponent implements OnInit, AfterViewInit, On
     this.store.dispatch(openAlert({
       payload: {
         data: {
-          offer: { bolt12: selOffer.offerBolt12 },
+          offer: { bolt12: selOffer.bolt12 },
           newlyAdded: false,
           component: CLOfferInformationComponent
         }
@@ -113,7 +113,7 @@ export class CLOfferBookmarksTableComponent implements OnInit, AfterViewInit, On
     }));
     this.rtlEffects.closeConfirm.pipe(takeUntil(this.unSubs[1])).subscribe((confirmRes) => {
       if (confirmRes) {
-        this.store.dispatch(deleteOfferBookmark({ payload: { offer_uuid: selOffer.id } }));
+        this.store.dispatch(deleteOfferBookmark({ payload: { bolt12: selOffer.bolt12 } }));
       }
     });
   }
@@ -123,9 +123,8 @@ export class CLOfferBookmarksTableComponent implements OnInit, AfterViewInit, On
       payload: {
         data: {
           paymentType: PaymentTypes.OFFER,
-          offerBolt12: selOffer.offerBolt12,
+          bolt12: selOffer.bolt12,
           offerTitle: selOffer.title,
-          offerUUId: selOffer.id,
           component: CLLightningSendPaymentsComponent
         }
       }

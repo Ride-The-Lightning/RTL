@@ -290,6 +290,7 @@ export const UI_MESSAGES = {
   DISABLE_OFFER: 'Disabling Offer...',
   CREATE_OFFER: 'Creating Offer...',
   DELETE_OFFER_BOOKMARK: 'Deleting Bookmark...',
+  LOG_OUT: 'Logging Out...'
 };
 
 export enum PaymentTypes {

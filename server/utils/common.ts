@@ -341,7 +341,7 @@ export class CommonService {
       } catch (err) {
         if (err.code !== 'EEXIST') {
           if (err.code === 'ENOENT') {
-            throw new Error(`ENOENT: No such file or directory, mkdir '${directoryName}'. Ensure that channel backup path separator is '${sep}'`);
+            throw new Error(`ENOENT: No such file or directory, mkdir '${directoryName}'. Ensure that the path separator is '${sep}'`);
           } else {
             throw err;
           }

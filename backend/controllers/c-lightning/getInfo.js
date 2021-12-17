@@ -1,4 +1,5 @@
 import request from 'request-promise';
+import { Database } from '../../utils/database.js';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { CLWSClient } from './webSocketClient.js';
@@ -6,6 +7,7 @@ let options = null;
 const logger = Logger;
 const common = Common;
 const clWsClient = CLWSClient;
+const databaseService = Database;
 export const getInfo = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Getting CLightning Node Information..' });
     common.logEnvVariables(req);
@@ -67,6 +69,7 @@ export const getInfo = (req, res, next) => {
                 req.session.selectedNode.api_version = body.api_version || '';
                 req.session.selectedNode.ln_version = body.version || '';
                 clWsClient.updateSelectedNode(req.session.selectedNode);
+                databaseService.loadDatabase(req.session.selectedNode);
                 logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'CLightning Node Information Received' });
                 res.status(200).json(body);
             }

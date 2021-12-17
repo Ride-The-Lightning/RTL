@@ -47,7 +47,7 @@
         "curly": "error",
         "no-unused-expressions": "error",
         "strict": "error",
-        "max-len": ["error", { "code": 430 }],
+        "max-len": ["error", { "code": 450 }],
         "no-multiple-empty-lines": "error",
         "no-trailing-spaces": "error",
         "quote-props": ["error", "as-needed"],

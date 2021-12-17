@@ -6,7 +6,7 @@ import {
   setInfo, setInvoices, setLocalRemoteBalance, setOffers, addOffer, setPayments, setPeers, setUTXOs,
   updateCLAPICallStatus, updateInvoice, updateOffer, setOfferBookmarks, addUpdateOfferBookmark, removeOfferBookmark
 } from './cl.actions';
-import { Channel } from '../../shared/models/clModels';
+import { Channel, OfferBookmark } from '../../shared/models/clModels';
 
 export const CLReducer = createReducer(initCLState,
   on(updateCLAPICallStatus, (state, { payload }) => {
@@ -177,15 +177,15 @@ export const CLReducer = createReducer(initCLState,
     offersBookmarks: payload
   })),
   on(addUpdateOfferBookmark, (state, { payload }) => {
-    const newOfferBMs = [...state.offersBookmarks];
-    const offerBMExistsIdx = newOfferBMs.findIndex((offer) => offer.id === payload.id);
+    const newOfferBMs: OfferBookmark[] = [...state.offersBookmarks];
+    const offerBMExistsIdx = newOfferBMs.findIndex((offer: OfferBookmark) => offer.bolt12 === payload.bolt12);
     if (offerBMExistsIdx < 0) {
       newOfferBMs.unshift(payload);
     } else {
-      let updatedOffer = { ...newOfferBMs[offerBMExistsIdx] };
+      const updatedOffer = { ...newOfferBMs[offerBMExistsIdx] };
       updatedOffer.title = payload.title;
       updatedOffer.amountmSat = payload.amountmSat;
-      updatedOffer.updatedAt = payload.updatedAt;
+      updatedOffer.lastUpdatedAt = payload.lastUpdatedAt;
       newOfferBMs.splice(offerBMExistsIdx, 1, updatedOffer);
     }
     return {
@@ -195,7 +195,7 @@ export const CLReducer = createReducer(initCLState,
   }),
   on(removeOfferBookmark, (state, { payload }) => {
     const modifiedOfferBookmarks = [...state.offersBookmarks];
-    const removeOfferBookmarkIdx = state.offersBookmarks.findIndex((ob) => ob.id === payload.offer_uuid);
+    const removeOfferBookmarkIdx = state.offersBookmarks.findIndex((ob) => ob.bolt12 === payload.bolt12);
     if (removeOfferBookmarkIdx > -1) {
       modifiedOfferBookmarks.splice(removeOfferBookmarkIdx, 1);
     }

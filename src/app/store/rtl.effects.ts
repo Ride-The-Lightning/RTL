@@ -427,7 +427,7 @@ export class RTLEffects implements OnDestroy {
           pipe(
             map((postRes: any) => {
               this.logger.info(postRes);
-              this.store.dispatch(openSpinner({ payload: UI_MESSAGES.VERIFY_TOKEN }));
+              this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.VERIFY_TOKEN }));
               this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'VerifyToken', status: APICallStatusEnum.COMPLETED } }));
               this.logger.info('Token Successfully Verified!');
               this.setLoggedInDetails(false, action.payload.authResponse);
@@ -446,16 +446,18 @@ export class RTLEffects implements OnDestroy {
       ofType(RTLActions.LOGOUT),
       withLatestFrom(this.store.select(rootAppConfig)),
       mergeMap(([action, appConfig]) => {
-        if (+appConfig.sso.rtlSSO) {
-          window.location.href = appConfig.sso.logoutRedirectLink;
-        } else {
-          this.router.navigate(['./login']);
-        }
-        this.sessionService.clearAll();
-        this.store.dispatch(setNodeData({ payload: {} }));
+        this.store.dispatch(openSpinner({ payload: UI_MESSAGES.LOG_OUT }));
         return this.httpClient.get(environment.AUTHENTICATE_API + '/logout').
           pipe(map((postRes: any) => {
             this.logger.info(postRes);
+            this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.LOG_OUT }));
+            if (+appConfig.sso.rtlSSO) {
+              window.location.href = appConfig.sso.logoutRedirectLink;
+            } else {
+              this.router.navigate(['./login']);
+            }
+            this.sessionService.clearAll();
+            this.store.dispatch(setNodeData({ payload: {} }));
             this.logger.warn('LOGGED OUT');
           }));
       })),
