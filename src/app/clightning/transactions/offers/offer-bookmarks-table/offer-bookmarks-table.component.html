@@ -50,7 +50,7 @@
         </ng-container>
         <ng-container matColumnDef="no_offer">
           <td mat-footer-cell *matFooterCellDef colspan="4">
-            <p *ngIf="(!offersBookmarks?.data || offersBookmarks?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.COMPLETED">No offer bookmark saved.</p>
+            <p *ngIf="(!offersBookmarks?.data || offersBookmarks?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.COMPLETED">No offer bookmarked.</p>
             <p *ngIf="(!offersBookmarks?.data || offersBookmarks?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.INITIATED">Getting offer bookmarks...</p>
             <p *ngIf="(!offersBookmarks?.data || offersBookmarks?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
           </td>

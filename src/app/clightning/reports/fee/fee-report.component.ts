@@ -75,6 +75,8 @@ export class CLFeeReportComponent implements OnInit, OnDestroy {
           break;
       }
       this.view = [CONTAINER_SIZE.width - this.screenPaddingX, CONTAINER_SIZE.height / 2.2];
+      this.logger.info('Container Size: ' + JSON.stringify(CONTAINER_SIZE));
+      this.logger.info('View: ' + JSON.stringify(this.view));
     });
   }
 

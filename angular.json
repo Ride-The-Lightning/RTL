@@ -31,7 +31,8 @@
               "qrcode",
               "otplib",
               "pdfmake/build/pdfmake",
-              "pdfmake/build/vfs_fonts"
+              "pdfmake/build/vfs_fonts",
+              "clone-deep"
             ],
             "assets": [
               "src/assets"

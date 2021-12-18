@@ -11,6 +11,7 @@ import { fadeIn } from '../../../shared/animation/opacity-animation';
 
 import { RTLState } from '../../../store/rtl.state';
 import { lndNodeInformation } from '../../store/lnd.selector';
+import { LoggerService } from '../../../shared/services/logger.service';
 
 @Component({
   selector: 'rtl-fee-report',
@@ -39,7 +40,7 @@ export class FeeReportComponent implements OnInit, OnDestroy {
   public errorMessage = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private dataService: DataService, private commonService: CommonService, private store: Store<RTLState>) { }
+  constructor(private logger: LoggerService, private dataService: DataService, private commonService: CommonService, private store: Store<RTLState>) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
@@ -64,6 +65,8 @@ export class FeeReportComponent implements OnInit, OnDestroy {
           break;
       }
       this.view = [CONTAINER_SIZE.width - this.screenPaddingX, CONTAINER_SIZE.height / 2.2];
+      this.logger.info('Container Size: ' + JSON.stringify(CONTAINER_SIZE));
+      this.logger.info('View: ' + JSON.stringify(this.view));
     });
   }
 

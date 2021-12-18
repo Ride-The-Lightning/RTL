@@ -137,14 +137,18 @@ export class DatabaseService {
 
   saveDatabase(nodeIndex: number) {
     try {
+      const selNode = this.nodeDatabase[nodeIndex] && this.nodeDatabase[nodeIndex].adapter && this.nodeDatabase[nodeIndex].adapter.selNode ? this.nodeDatabase[nodeIndex].adapter.selNode : null;
       if (!this.nodeDatabase[nodeIndex]) {
-        this.logger.log({ selectedNode: this.nodeDatabase[nodeIndex].adapter.selNode, level: 'ERROR', fileName: 'Database', msg: 'Database Save Error: Selected Node Config Not Found.' });
+        this.logger.log({ selectedNode: selNode, level: 'ERROR', fileName: 'Database', msg: 'Database Save Error: Selected Node Setup Not Found.' });
+        throw new Error('Database Save Error: Selected Node Setup Not Found.');
       }
       this.nodeDatabase[nodeIndex].adapter.saveData(this.nodeDatabase[nodeIndex].data);
       this.logger.log({ selectedNode: this.nodeDatabase[nodeIndex].adapter.selNode, level: 'INFO', fileName: 'Database', msg: 'Database Saved' });
+      return true;
     } catch (err) {
-      this.logger.log({ selectedNode: this.nodeDatabase[nodeIndex].adapter.selNode, level: 'ERROR', fileName: 'Database', msg: 'Database Save Error', error: err });
-      throw new Error(err);
+      const selNode = this.nodeDatabase[nodeIndex] && this.nodeDatabase[nodeIndex].adapter && this.nodeDatabase[nodeIndex].adapter.selNode ? this.nodeDatabase[nodeIndex].adapter.selNode : null;
+      this.logger.log({ selectedNode: selNode, level: 'ERROR', fileName: 'Database', msg: 'Database Save Error', error: err });
+      return new Error(err);
     }
   }
 

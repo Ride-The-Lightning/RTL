@@ -11,6 +11,7 @@ import { fadeIn } from '../../../shared/animation/opacity-animation';
 import { RTLState } from '../../../store/rtl.state';
 import { invoices, payments } from '../../store/ecl.selector';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
+import { LoggerService } from '../../../shared/services/logger.service';
 
 @Component({
   selector: 'rtl-ecl-transactions-report',
@@ -42,7 +43,7 @@ export class ECLTransactionsReportComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private commonService: CommonService, private store: Store<RTLState>) { }
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
@@ -72,6 +73,8 @@ export class ECLTransactionsReportComponent implements OnInit, OnDestroy {
           break;
       }
       this.view = [CONTAINER_SIZE.width - this.screenPaddingX, CONTAINER_SIZE.height / 2.2];
+      this.logger.info('Container Size: ' + JSON.stringify(CONTAINER_SIZE));
+      this.logger.info('View: ' + JSON.stringify(this.view));
     });
   }
 
