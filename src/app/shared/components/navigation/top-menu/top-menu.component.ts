@@ -9,7 +9,7 @@ import { GetInfoRoot } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { SessionService } from '../../../services/session.service';
 import { GetInfoChain } from '../../../models/lndModels';
-import { environment } from '../../../../../environments/environment';
+import { VERSION } from '../../../../../environments/environment';
 import { AlertTypeEnum, RTLActions } from '../../../services/consts-enums-functions';
 import { RTLEffects } from '../../../../store/rtl.effects';
 
@@ -39,7 +39,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
   private unSubs = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private sessionService: SessionService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private actions: Actions) {
-    this.version = environment.VERSION;
+    this.version = VERSION;
   }
 
   ngOnInit() {

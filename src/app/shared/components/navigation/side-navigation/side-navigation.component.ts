@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { environment } from '../../../../../environments/environment';
+import { VERSION } from '../../../../../environments/environment';
 
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatTreeNestedDataSource, MatTree } from '@angular/material/tree';
@@ -57,7 +57,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   navMenusShowData = new MatTreeNestedDataSource<MenuChildNode>();
 
   constructor(private logger: LoggerService, private commonService: CommonService, private sessionService: SessionService, private store: Store<RTLState>, private actions: Actions, private rtlEffects: RTLEffects) {
-    this.version = environment.VERSION;
+    this.version = VERSION;
     if (MENU_DATA.LNDChildren[MENU_DATA.LNDChildren.length - 1].id === 200) {
       MENU_DATA.LNDChildren.pop();
     }

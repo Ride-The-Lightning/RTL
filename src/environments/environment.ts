@@ -1,4 +1,4 @@
-import { VERSION } from './version';
+export const VERSION = '0.12.0-beta';
 
 export const API_URL = 'http://localhost:3000/rtl/api';
 
@@ -25,6 +25,5 @@ export const environment = {
   OFFERS_API: '/offers',
   LOOP_API: '/loop',
   BOLTZ_API: '/boltz',
-  Web_SOCKET_API: '/ws',
-  VERSION: VERSION
+  Web_SOCKET_API: '/ws'
 };
