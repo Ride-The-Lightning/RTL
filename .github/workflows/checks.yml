@@ -15,7 +15,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
-          node-version: 12.x
+          node-version: 16.x
 
       - name: Cache node_modules
         uses: actions/cache@v2
@@ -39,7 +39,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
-          node-version: 12.x
+          node-version: 16.x
 
       - name: Cache node_modules
         uses: actions/cache@v2
@@ -69,7 +69,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
-          node-version: 12.x
+          node-version: 16.x
 
       - name: Cache node_modules
         uses: actions/cache@v2

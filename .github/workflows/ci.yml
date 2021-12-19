@@ -25,7 +25,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
-          node-version: 12.x
+          node-version: 16.x
 
       - name: Cache node_modules
         uses: actions/cache@v2
@@ -48,7 +48,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
-          node-version: 12.x
+          node-version: 16.x
 
       - name: Cache node_modules
         uses: actions/cache@v2
@@ -69,7 +69,7 @@ jobs:
           key: ${{ runner.os }}-angular-${{ github.sha }}
 
       - name: Run build production
-        run: npm run build:prod
+        run: npm run buildapp
 
   deploy:
     runs-on: ubuntu-latest
@@ -81,7 +81,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
-          node-version: 12.x
+          node-version: 16.x
 
       - name: Cache prod node_modules
         uses: actions/cache@v2
