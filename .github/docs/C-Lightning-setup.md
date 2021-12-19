@@ -1,6 +1,6 @@
-![](./screenshots/RTL-ECL-Dashboard.png)
+![](./screenshots/RTL-CLT-Dashboard.png)
 
-## RTL Eclair setup
+## RTL C-lightning setup
 
 * [Introduction](#intro)
 * [Pre-requisite](#prereq)
@@ -10,46 +10,57 @@
 * [Start the server and access the app](#start)
 
 ### <a name="intro"></a>Introduction
-RTL is now enabled to manage an Eclair node.
+RTL is now enabled to manage lightning nodes running C-Lightning.
 
-Follow the below steps to install and setup RTL to run on Eclair.
+Follow the below steps to install and setup RTL to run on C-Lightning.
 
 ### <a name="prereq"></a>Pre-requisites:
-1. Functioning Eclair node v0.4.1 or above. Follow install instructions on their [github](https://github.com/ACINQ/eclair) page.
-2. Bitcoin core v0.19.1 or above (this is an Eclair dependency).
-3. NodeJS - Can be downloaded [here](https://nodejs.org/en/download)
+1. Functioning C-Lightning node. Follow install instructions on their [github](https://github.com/ElementsProject/lightning)
+2. NodeJS - Can be downloaded [here](https://nodejs.org/en/download)
+3. Cl-REST - Ensure that `cl-rest` API server is installed and running. Install instructions [here](https://github.com/Ride-The-Lightning/c-lightning-REST)
+4. Copy the `access.macaroon` file from `cl-rest` to the device, on which RTL will be installed
+
+### <a name="arch"></a>Architecture
+![](./screenshots/RTL-CLT-Arch-2.png)
 
 ### <a name="install"></a>Installation:
-Eclair is integrated with RTL v0.8.0 and above.
 To download a specific RTL version follow the instructions on the [release page](https://github.com/Ride-The-Lightning/RTL/releases)
 
-To download from master (*not recommended*) follow the below instructions:
+To download from master (*not recommended*):
+
 #### First time setup
 ```
 $ git clone https://github.com/Ride-The-Lightning/RTL.git
 $ cd RTL
-$ npm install --only=prod
+$ npm install
+$ npm run buildapp
+$ npm run buildbackend
+$ npm prune --production
 ```
+
 #### Or: Update existing build
 ```
 $ cd RTL
 $ git reset --hard HEAD
 $ git clean -f -d
 $ git pull
-$ npm install --only=prod
+$ npm install
+$ npm run buildapp
+$ npm run buildbackend
+$ npm prune --production
 ```
 ### <a name="prep"></a>Prep for Execution
 RTL requires its own config file `RTL-Config.json`, to start the server and provide user authentication on the app. 
 * Copy the file `Sample-RTL-Config.json` from `./RTL/docs` to `./RTL` and rename it to `RTL-Config.json`.
-* Locate the complete path of the readable `eclair.conf` for your node.
+* Locate the complete path of the readable `access.macaroon` from `cl-rest` on your node.
 * Modify the RTL conf file per the example file below
 
 Ensure that the follow values are correct per your config:
-* `lnImplementation` - This should be `ECL`, indicating that RTL is connecting to an Eclair node.
-* `lnServerUrl` - complete url with ip address and port of the eclair server.
+* `lnImplementation` - This should be `CLT`, indicating that RTL is connecting to a c-lightning node.
+* `macaroonPath` - Path of the folder containing `access.macaroon` file from cl-rest server.
+* `lnServerUrl` - complete url with ip address and port of the cl-rest server.
 * `multiPass` - Specify the password (in plain text) to access RTL. This password will be hashed and not stored as plain text.
-* `configPath` (Optinal) - Full path of the folder containing `eclair.conf` including the file name. Can be used for the basic password authentication through `eclair.api.password`.
-* `lnApiPassword` (Mandatory if configPath is missing) - The same value from eclair.conf's eclair.api.password should be provided directly here. It will be used for Eclair API authentication. 
+* `configPath` (optional) - File path of the c-lightning config file, if RTL server is local to the c-lightning server.
 
 ```
 {
@@ -62,11 +73,11 @@ Ensure that the follow values are correct per your config:
   "nodes": [
     {
       "index": 1,
-      "lnNode": "Eclair Testnet # 1",
-      "lnImplementation": "ECL",
+      "lnNode": "c-lightning Testnet # 1",
+      "lnImplementation": "CLT",
       "Authentication": {
-        "configPath": "<Optional - Config file path, including .conf file>",
-        "lnApiPassword": "<Mandatory if the configPath is missing - Password used for API authentication>",
+        "macaroonPath": "<Modify to include the path of the folder with access.macaroon>",
+        "configPath": "<Optional - Config file path for c-lightning>"
       },
       "Settings": {
         "userPersona": "OPERATOR",
@@ -75,11 +86,11 @@ Ensure that the follow values are correct per your config:
         "bitcoindConfigPath": "",
         "logLevel": "INFO",
         "fiatConversion": false,
-        "lnServerUrl": "http://<eclair api server ip address>:port"
+        "lnServerUrl": "https://<cl-rest api server ip address>:3001"
       }
     }
   ],
-  "multiPass": "<password required for accessing RTL>"
+  "multiPass": <password required for accessing RTL>
 }
 ```
 ### <a name="start"></a>Start the server and access the app

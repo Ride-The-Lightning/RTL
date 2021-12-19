@@ -71,6 +71,16 @@ jobs:
       - name: Run build production
         run: npm run buildapp
 
+      - name: Cache build
+        uses: actions/cache@v2
+        id: cache-build
+        with:
+          path: backend
+          key: ${{ runner.os }}-backend-${{ github.sha }}
+
+      - name: Run build backend server
+        run: npm run buildbackend
+
   deploy:
     runs-on: ubuntu-latest
     needs: build
@@ -100,6 +110,13 @@ jobs:
         with:
           path: angular
           key: ${{ runner.os }}-angular-${{ github.sha }}
+
+      - name: Cache build
+        uses: actions/cache@v2
+        id: cache-build
+        with:
+          path: backend
+          key: ${{ runner.os }}-backend-${{ github.sha }}
 
       - name: Compress files
         run: tar -czf /tmp/build.tar.gz .

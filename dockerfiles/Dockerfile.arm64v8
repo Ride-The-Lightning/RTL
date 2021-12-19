@@ -1,4 +1,7 @@
-FROM node:16-stretch-slim as builder
+# ---------------
+# Install Dependencies
+# ---------------
+FROM node:16-stretch-slim as deps
 
 ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini-static-arm64 /tini
 RUN chmod +x /tini
@@ -8,18 +11,38 @@ WORKDIR /RTL
 COPY package.json /RTL/package.json
 COPY package-lock.json /RTL/package-lock.json
 
-RUN npm install --production
+RUN npm install
 
-COPY angular/ /RTL/angular/
-COPY backend/ /RTL/backend/
-COPY rtl.js /RTL/rtl.js
+# ---------------
+# Build App
+# ---------------
+FROM deps as build
 
+WORKDIR /RTL
+
+COPY . .
+
+# Build the Angular application
+RUN npm run buildapp
+
+# Build the Backend from typescript server
+RUN npm run buildbackend
+
+# Remove non production necessary modules
+RUN npm prune --production
+
+# ---------------
+# Release App
+# ---------------
 FROM arm64v8/node:16-stretch-slim
 
 WORKDIR /RTL
 
-COPY --from=builder "/RTL" .
-COPY --from=builder "/tini" /sbin/tini
+COPY --from=build /app/rtl.js ./rtl.js
+COPY --from=build /app/angular ./angular
+COPY --from=build /app/backend ./backend
+COPY --from=build /app/node_modules/ ./node_modules
+COPY --from=build "/tini" /sbin/tini
 
 EXPOSE 3000
 

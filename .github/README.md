@@ -4,7 +4,7 @@
 <a href="https://snyk.io/test/github/Ride-The-Lightning/RTL"><img src="https://snyk.io/test/github/Ride-The-Lightning/RTL/badge.svg" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/Ride-The-Lightning/RTL" style="max-width:100%;"></a>
 [![license](https://img.shields.io/github/license/DAVFoundation/captain-n3m0.svg?style=flat-square)](https://github.com/DAVFoundation/captain-n3m0/blob/master/LICENSE)
 
-**Intro** -- [Application Features](Application_features.md) -- [Road Map](Roadmap.md) -- [Application Configurations](Application_configurations.md) -- [C-Lightning](C-Lightning-setup.md) -- [Eclair](Eclair-setup.md) -- [Contribution](Contributing.md)
+**Intro** -- [Application Features](./docs/Application_features.md) -- [Road Map](./docs/Roadmap.md) -- [Application Configurations](./docs/Application_configurations.md) -- [C-Lightning](./docs/C-Lightning-setup.md) -- [Eclair](./docs/Eclair-setup.md) -- [Contribution](./docs/Contributing.md)
 
 * [Introduction](#intro)
 * [Architecture](#arch)
@@ -19,8 +19,8 @@
 RTL is a full function, device agnostic, web user interface to help manage lightning node operations.
 RTL is available on [LND](https://github.com/lightningnetwork/lnd), [C-Lightning](https://github.com/ElementsProject/lightning) and [Eclair](https://github.com/ACINQ/eclair) implementations.
 
-* C-Lightning users, refer to [this](C-Lightning-setup.md) page for install instructions.
-* Eclair users, refer to [this](Eclair-setup.md) page for install instructions.
+* C-Lightning users, refer to [this](./docs/C-Lightning-setup.md) page for install instructions.
+* Eclair users, refer to [this](./docs/Eclair-setup.md) page for install instructions.
 * LND users, follow the instructions below
 
 Lightning Network Daemon(LND) is an implementation of Lightning Network BOLT protocol by [Lightning Labs](https://lightning.engineering/).
@@ -56,7 +56,10 @@ To download from master (*not recommended*):
 ```
 $ git clone https://github.com/Ride-The-Lightning/RTL.git
 $ cd RTL
-$ npm install --only=prod
+$ npm install
+$ npm run buildapp
+$ npm run buildbackend
+$ npm prune --production
 ```
 #### Or: Update existing dependencies
 ```
@@ -64,12 +67,15 @@ $ cd RTL
 $ git reset --hard HEAD
 $ git clean -f -d
 $ git pull
-$ npm install --only=prod
+$ npm install
+$ npm run buildapp
+$ npm run buildbackend
+$ npm prune --production
 ```
 ### <a name="prep"></a>Prep for Execution
 RTL requires its own config file `RTL-Config.json`, to start the server and provide user authentication on the app.
 
-*Advanced users can refer to [this page](Multi-Node-setup.md), for config settings required to manage multiple nodes*
+*Advanced users can refer to [this page](./docs/Multi-Node-setup.md), for config settings required to manage multiple nodes*
 
 * Copy the file `Sample-RTL-Config.json` from `./RTL/docs` to `./RTL` and rename it to `RTL-Config.json`.
 * Locate the complete path of the readable macroon file (admin.macroon) on your node and the lnd.conf file.
@@ -114,7 +120,7 @@ Example RTL-Config.json:
   ]
 }
 ```
-For details on all the configuration options refer to [this page](./Application_configurations.md).
+For details on all the configuration options refer to [this page](./docs/Application_configurations.md).
 
 #### User Authentication on RTL
 RTL requires the user to be authenticated by the application first, before allowing access to LND functions.
@@ -172,11 +178,11 @@ Open your browser at the following address: http://localhost:3000 to access the 
 * Determine the IP address of your node to access the application.
 E.g. if the IP address of your node is 192.168.0.15 then open your browser at the following address: http://192.168.0.15:3000 to access RTL.
 
-3. Config tweaks for running RTL server and LND on separate devices on the same network can be found [here](RTL_setups.md).
+3. Config tweaks for running RTL server and LND on separate devices on the same network can be found [here](./docs/RTL_setups.md).
 
 4. Any Other setup: **Please be advised, if you are accessing your node remotely via RTL, its critical to encrypt the communication via use of https. You can use solutions like nginx and letsencrypt or TOR to setup secure access for RTL.** 
-- Sample SSL setup guide can be found [here](RTL_SSL_setup.md)
-- (For advanced users) A sample SSL guide to serve remote access over an encrypted Tor connection can be found [here](RTL_TOR_setup.md)
+- Sample SSL setup guide can be found [here](./docs/RTL_SSL_setup.md)
+- (For advanced users) A sample SSL guide to serve remote access over an encrypted Tor connection can be found [here](./docs/RTL_TOR_setup.md)
 
 ### <a name="trouble"></a>Troubleshooting
 In case you are running into issues with the application or if you have feedback, feel free to open issues on our github repo.
