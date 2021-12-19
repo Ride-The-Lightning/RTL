@@ -1,0 +1,110 @@
+name: Artifact
+
+on:
+  create:
+    tags: [ 'v*' ]
+  push:
+    branches: [ master, 'Release-*' ]
+    tags: [ 'v*' ]
+  release:
+    types: [released]
+  # Triggers the workflow only when merging pull request to the branches.
+  pull_request:
+    types: [closed]
+    branches: [ master, 'Release-*' ]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 12.x
+
+      - name: Cache node_modules
+        uses: actions/cache@v2
+        id: cache-npm-packages
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install NPM dependencies
+        if: steps.cache-npm-packages.outputs.cache-hit != 'true'
+        run: npm ci
+
+  build:
+    runs-on: ubuntu-latest
+    needs: prepare
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 12.x
+
+      - name: Cache node_modules
+        uses: actions/cache@v2
+        id: cache-npm-packages
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install NPM dependencies
+        if: steps.cache-npm-packages.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Cache build
+        uses: actions/cache@v2
+        id: cache-build
+        with:
+          path: angular
+          key: ${{ runner.os }}-angular-${{ github.sha }}
+
+      - name: Run build production
+        run: npm run build:prod
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 12.x
+
+      - name: Cache prod node_modules
+        uses: actions/cache@v2
+        id: cache-npm-packages
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-prod-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install NPM dependencies
+        if: steps.cache-npm-packages.outputs.cache-hit != 'true'
+        run: npm ci --production
+
+      - name: Cache build
+        uses: actions/cache@v2
+        id: cache-build
+        with:
+          path: angular
+          key: ${{ runner.os }}-angular-${{ github.sha }}
+
+      - name: Compress files
+        run: tar -czf /tmp/build.tar.gz .
+
+      - uses: actions/upload-artifact@master
+        with:
+          name: master
+          path: /tmp/build.tar.gz
