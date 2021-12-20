@@ -73,8 +73,8 @@ export const getAllLightningTransactions = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Getting All Lightning Transactions..' });
   const options1 = JSON.parse(JSON.stringify(common.getOptions(req)));
   const options2 = JSON.parse(JSON.stringify(common.getOptions(req)));
-  options1.url = req.session.selectedNode.ln_server_url + '/v1/payments?max_payments=1000000&index_offset=0&reversed=true';
-  options2.url = req.session.selectedNode.ln_server_url + '/v1/invoices?num_max_invoices=1000000&index_offset=0&reversed=true';
+  options1.url = req.session.selectedNode.ln_server_url + '/v1/payments?max_payments=100000&index_offset=0&reversed=true';
+  options2.url = req.session.selectedNode.ln_server_url + '/v1/invoices?num_max_invoices=100000&index_offset=0&reversed=true';
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'All Payments Options', data: options1 });
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'All Invoices Options', data: options2 });
   return Promise.all([request(options1), request(options2)]).then((values) => {
