@@ -45,33 +45,17 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v2
 
-      - name: Setup Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16.x
-
-      - name: Cache node_modules
-        uses: actions/cache@v2
-        id: cache-npm-packages
-        with:
-          path: node_modules
-          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
-
-      - name: Install NPM dependencies
-        if: steps.cache-npm-packages.outputs.cache-hit != 'true'
-        run: npm ci
-
-      - name: Cache build
+      - name: Cache build application
         uses: actions/cache@v2
         id: cache-build-app
         with:
           path: angular
           key: ${{ runner.os }}-angular-${{ github.sha }}
 
-      - name: Run build production
+      - name: Run build application
         run: npm run buildapp
 
-      - name: Cache build
+      - name: Cache build backend
         uses: actions/cache@v2
         id: cache-build-server
         with:
@@ -88,30 +72,14 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v2
 
-      - name: Setup Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16.x
-
-      - name: Cache prod node_modules
-        uses: actions/cache@v2
-        id: cache-npm-packages
-        with:
-          path: node_modules
-          key: ${{ runner.OS }}-prod-${{ hashFiles('**/package-lock.json') }}
-
-      - name: Install NPM dependencies
-        if: steps.cache-npm-packages.outputs.cache-hit != 'true'
-        run: npm ci --production
-
-      - name: Cache build
+      - name: Cache build application
         uses: actions/cache@v2
         id: cache-build-app
         with:
           path: angular
           key: ${{ runner.os }}-angular-${{ github.sha }}
 
-      - name: Cache build
+      - name: Cache build backend
         uses: actions/cache@v2
         id: cache-build-server
         with:
@@ -121,7 +89,7 @@ jobs:
       - name: Compress files
         run: tar -czf /tmp/build.tar.gz .
 
-      - uses: actions/upload-artifact@master
+      - uses: actions/upload-artifact@source
         with:
-          name: master
+          name: source
           path: /tmp/build.tar.gz

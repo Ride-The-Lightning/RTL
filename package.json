@@ -8,7 +8,6 @@
     "start": "ng serve --open",
     "prebuildapp": "node src/prebuild",
     "buildapp": "ng build --configuration production",
-    "buildapplication": "ng build --configuration production",
     "buildbackend": "tsc --project tsconfig.json",
     "watchbackend": "tsc --project tsconfig.json --watch",
     "server": "set NODE_ENV=development&&nodemon ./rtl.js",

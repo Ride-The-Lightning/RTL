@@ -31,7 +31,7 @@ export const RootReducer = createReducer(initRootState,
     selNode: payload.currentLnNode
   })),
   on(updateRootNodeSettings, (state, { payload }) => {
-    let updatedSelNode: ConfigSettingsNode = JSON.parse(JSON.stringify(state.selNode));
+    const updatedSelNode: ConfigSettingsNode = JSON.parse(JSON.stringify(state.selNode));
     switch (payload.service) {
       case ServicesEnum.BOLTZ:
         updatedSelNode.settings.boltzServerUrl = payload.settings.boltzServerUrl;

@@ -182,14 +182,18 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
       this.selUTXOs.forEach((utxo) => this.transaction.utxos.push(utxo.txid + ':' + utxo.output));
     }
     if (this.sweepAll) {
-      if ((!this.sendFundFormGroup.controls.transactionAddress.value || this.sendFundFormGroup.controls.transactionAddress.value === '') || (this.sendFundFormGroup.controls.flgMinConf.value && (!this.sendFundFormGroup.controls.minConfValue.value || this.sendFundFormGroup.controls.minConfValue.value <= 0) || (this.selFeeRate === 'customperkb' && !this.flgMinConf && !this.customFeeRate))) {
+      if (
+        (!this.sendFundFormGroup.controls.transactionAddress.value || this.sendFundFormGroup.controls.transactionAddress.value === '') ||
+        (this.sendFundFormGroup.controls.flgMinConf.value && (!this.sendFundFormGroup.controls.minConfValue.value || this.sendFundFormGroup.controls.minConfValue.value <= 0)) ||
+        (this.selFeeRate === 'customperkb' && !this.flgMinConf && !this.customFeeRate)
+      ) {
         return true;
       }
       this.transaction.satoshis = 'all';
       this.transaction.address = this.sendFundFormGroup.controls.transactionAddress.value;
       if (this.sendFundFormGroup.controls.flgMinConf.value) {
         delete this.transaction.feeRate;
-        this.transaction.minconf = this.sendFundFormGroup.controls.flgMinConf.value ? this.sendFundFormGroup.controls.minConfValue.value : null
+        this.transaction.minconf = this.sendFundFormGroup.controls.flgMinConf.value ? this.sendFundFormGroup.controls.minConfValue.value : null;
       } else {
         delete this.transaction.minconf;
         this.transaction.feeRate = (this.sendFundFormGroup.controls.selFeeRate.value === 'customperkb' && !this.sendFundFormGroup.controls.flgMinConf.value && this.sendFundFormGroup.controls.customFeeRate.value) ? ((this.sendFundFormGroup.controls.customFeeRate.value * 1000) + 'perkb') : this.sendFundFormGroup.controls.selFeeRate.value;

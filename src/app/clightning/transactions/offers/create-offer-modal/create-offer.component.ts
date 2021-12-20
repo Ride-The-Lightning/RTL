@@ -8,7 +8,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { CLOfferInformation } from '../../../../shared/models/alertData';
-import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, CLActions } from '../../../../shared/services/consts-enums-functions';
+import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, CLActions } from '../../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../../shared/models/RTLconfig';
 import { GetInfo } from '../../../../shared/models/clModels';
 import { CommonService } from '../../../../shared/services/common.service';
@@ -64,7 +64,7 @@ export class CLCreateOfferComponent implements OnInit, OnDestroy {
 
   onAddOffer() {
     this.offerError = '';
-    let offerAmt = !this.offerValue ? 'any' : this.offerValue + 'sats';
+    const offerAmt = !this.offerValue ? 'any' : this.offerValue + 'sats';
     this.store.dispatch(saveNewOffer({ payload: { amount: offerAmt, description: this.description, vendor: this.vendor } }));
   }
 

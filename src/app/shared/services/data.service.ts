@@ -56,7 +56,7 @@ export class DataService implements OnDestroy {
   }
 
   decodePayment(payment: string, fromDialog: boolean) {
-    let url = this.childAPIUrl + environment.PAYMENTS_API + '/decode/' + payment;
+    const url = this.childAPIUrl + environment.PAYMENTS_API + '/decode/' + payment;
     this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DECODE_PAYMENT }));
     return this.httpClient.get(url).pipe(
       takeUntil(this.unSubs[0]),

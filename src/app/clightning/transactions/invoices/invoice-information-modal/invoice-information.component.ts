@@ -32,7 +32,7 @@ export class CLInvoiceInformationComponent implements OnInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public flgInvoicePaid = false;
-  public flgVersionCompatible: boolean = true;
+  public flgVersionCompatible = true;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<CLInvoiceInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: CLInvoiceInformation, private logger: LoggerService, private commonService: CommonService, private snackBar: MatSnackBar, private store: Store<RTLState>) { }
@@ -50,7 +50,7 @@ export class CLInvoiceInformationComponent implements OnInit, OnDestroy {
       });
     this.store.select(listInvoices).pipe(takeUntil(this.unSubs[1])).
       subscribe((invoicesSelector: { listInvoices: ListInvoices, apiCallStatus: ApiCallStatusPayload }) => {
-        let invoiceStatus = this.invoice.status;
+        const invoiceStatus = this.invoice.status;
         const invoices = invoicesSelector.listInvoices.invoices || [];
         this.invoice = invoices.find((invoice) => invoice.payment_hash === this.invoice.payment_hash);
         if (invoiceStatus !== this.invoice.status && this.invoice.status === 'paid') {
