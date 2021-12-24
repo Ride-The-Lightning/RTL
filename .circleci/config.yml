@@ -68,7 +68,7 @@ jobs:
             sudo docker manifest annotate "$DOCKERHUB_REPO:$LATEST_TAG" "$DOCKERHUB_REPO:$LATEST_TAG-arm32v7" --os linux --arch arm --variant v7
             sudo docker manifest annotate "$DOCKERHUB_REPO:$LATEST_TAG" "$DOCKERHUB_REPO:$LATEST_TAG-arm64v8" --os linux --arch arm64 --variant v8
             sudo docker manifest push "$DOCKERHUB_REPO:$LATEST_TAG" -p
-          no_output_timeout: 20m
+          no_output_timeout: 25m
 
 workflows:
   version: 2
