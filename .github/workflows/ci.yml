@@ -84,5 +84,5 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: rtl-build
+          name: rtlbuild
           path: /tmp/rtlbuild.tar.gz
