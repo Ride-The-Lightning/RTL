@@ -79,10 +79,10 @@ jobs:
           path: backend
           key: ${{ runner.os }}-backend-${{ github.sha }}
 
-      - name: Compress files
-        run: zip -rv /tmp/rtlbuild.zip frontend backend rtl.js package.json package-lock.json
+      # - name: Compress files
+      #   run: zip -rv /tmp/rtlbuild.zip frontend backend rtl.js package.json package-lock.json
 
       - uses: actions/upload-artifact@v2
         with:
           name: rtl-build
-          path: /tmp/rtlbuild.zip
+          path: frontend backend rtl.js package.json package-lock.json
