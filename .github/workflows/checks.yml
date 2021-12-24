@@ -1,4 +1,4 @@
-name: Continuous Integration Check
+name: Lint & Test
 
 on:
   push:
