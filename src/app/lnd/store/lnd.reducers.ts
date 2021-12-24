@@ -123,7 +123,7 @@ export const LNDReducer = createReducer(initLNDState,
     }
     return {
       ...state,
-      allChannels: modifiedChannels
+      channels: modifiedChannels
     };
   }),
   on(setBalanceBlockchain, (state, { payload }) => ({

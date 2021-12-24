@@ -1,4 +1,5 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { Store, StoreModule } from '@ngrx/store';
 
@@ -13,7 +14,6 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../shared/services/data.service';
-import { MatDialogRef } from '@angular/material/dialog';
 import { EffectsModule } from '@ngrx/effects';
 import { FEE_LIMIT_TYPES, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { mockRTLStoreState } from '../../../shared/test-helpers/test-data';
@@ -42,7 +42,9 @@ describe('LightningSendPaymentsComponent', () => {
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: DataService, useClass: mockDataService }
+        { provide: DataService, useClass: mockDataService },
+        { provide: MatDialogRef, useClass: mockMatDialogRef },
+        { provide: MAT_DIALOG_DATA, useValue: {} }
       ]
     }).
       compileComponents();
