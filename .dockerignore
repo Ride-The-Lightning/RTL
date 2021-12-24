@@ -1,26 +1,25 @@
+.angular/
 .circleci/
 .git/
 .github/
 .settings/
 .vscode/
+frontend/
+backend/
 backup/
 cookies/
 coverage/
 dist/
 docker/
-docs/
+dockerfiles/
 logs/
 node_modules/
 node_modules_old/
 node_modules_prod/
 node_modules_dev/
 out-tsc/
-product management/
-screenshots/
-src/
 tmp/
 typings/
-
 .browserlistrc
 _config.yml
 .classpath
@@ -34,7 +33,6 @@ _config.yml
 .sass-cache
 *.sublime-workspace
 .vscode/*
-angular.json
 connect.lock
 ECLDummyData.log
 libpeerconnection.log
@@ -49,5 +47,4 @@ RTL-Multi-Node-Conf-1.json
 RTL-Config-for-BTC-Testing.json
 testem.log
 Thumbs.db
-tsconfig.json
 yarn-error.log

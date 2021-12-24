@@ -3,7 +3,7 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "baseUrl": "./",
-    "outDir": "../angular",
+    "outDir": "../frontend",
     "types": ["node"],
     "paths": {
       "crypto": ["../node_modules/crypto-browserify"],

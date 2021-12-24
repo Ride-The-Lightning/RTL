@@ -16,31 +16,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  prepare:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v2
-
-      - name: Setup Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16.x
-
-      - name: Cache node_modules
-        uses: actions/cache@v2
-        id: cache-npm-packages
-        with:
-          path: node_modules
-          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
-
-      - name: Install NPM dependencies
-        if: steps.cache-npm-packages.outputs.cache-hit != 'true'
-        run: npm ci
-
   build:
     runs-on: ubuntu-latest
-    needs: prepare
     steps:
       - name: Checkout source code
         uses: actions/checkout@v2
@@ -61,19 +38,19 @@ jobs:
         if: steps.cache-npm-packages.outputs.cache-hit != 'true'
         run: npm ci
 
-      - name: Cache build
+      - name: Cache build frontend
         uses: actions/cache@v2
-        id: cache-build-app
+        id: cache-build-frontend
         with:
-          path: angular
-          key: ${{ runner.os }}-angular-${{ github.sha }}
+          path: frontend
+          key: ${{ runner.os }}-frontend-${{ github.sha }}
 
       - name: Run build production application
-        run: npm run buildapp
+        run: npm run buildfrontend
 
-      - name: Cache build
+      - name: Cache build backend
         uses: actions/cache@v2
-        id: cache-build-server
+        id: cache-build-backend
         with:
           path: backend
           key: ${{ runner.os }}-backend-${{ github.sha }}
@@ -85,35 +62,16 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v2
-
-      - name: Setup Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16.x
-
-      - name: Cache prod node_modules
+      - name: Cache build frontend
         uses: actions/cache@v2
-        id: cache-npm-packages
+        id: cache-build-frontend
         with:
-          path: node_modules
-          key: ${{ runner.OS }}-prod-${{ hashFiles('**/package-lock.json') }}
+          path: frontend
+          key: ${{ runner.os }}-frontend-${{ github.sha }}
 
-      - name: Install NPM dependencies
-        if: steps.cache-npm-packages.outputs.cache-hit != 'true'
-        run: npm ci --production
-
-      - name: Cache build
+      - name: Cache build backend
         uses: actions/cache@v2
-        id: cache-build-app
-        with:
-          path: angular
-          key: ${{ runner.os }}-angular-${{ github.sha }}
-
-      - name: Cache build
-        uses: actions/cache@v2
-        id: cache-build-server
+        id: cache-build-backend
         with:
           path: backend
           key: ${{ runner.os }}-backend-${{ github.sha }}

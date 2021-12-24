@@ -1,7 +1,7 @@
 # ---------------
 # Install Dependencies
 # ---------------
-FROM node:16-alpine as deps
+FROM node:16-alpine as builder
 
 WORKDIR /RTL
 
@@ -13,14 +13,10 @@ RUN npm install
 # ---------------
 # Build App
 # ---------------
-FROM deps as build
-
-WORKDIR /RTL
-
 COPY . .
 
 # Build the Angular application
-RUN npm run buildapp
+RUN npm run buildfrontend
 
 # Build the Backend from typescript server
 RUN npm run buildbackend
@@ -31,16 +27,17 @@ RUN npm prune --production
 # ---------------
 # Release App
 # ---------------
-FROM node:16-alpine
+FROM node:16-alpine as runner
 
 WORKDIR /RTL
 
 RUN apk add --no-cache tini
 
-COPY --from=build /app/rtl.js ./rtl.js
-COPY --from=build /app/angular ./angular
-COPY --from=build /app/backend ./backend
-COPY --from=build /app/node_modules/ ./node_modules
+COPY --from=builder /RTL/rtl.js ./rtl.js
+COPY --from=builder /RTL/package.json ./package.json
+COPY --from=builder /RTL/frontend ./frontend
+COPY --from=builder /RTL/backend ./backend
+COPY --from=builder /RTL/node_modules/ ./node_modules
 
 EXPOSE 3000
 

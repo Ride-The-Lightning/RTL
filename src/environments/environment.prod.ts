@@ -1,5 +1,3 @@
-export const VERSION = '0.12.0-beta';
-
 export const API_URL = './api';
 
 export const environment = {
@@ -27,3 +25,5 @@ export const environment = {
   BOLTZ_API: '/boltz',
   Web_SOCKET_API: '/ws'
 };
+
+export const VERSION = '0.12.0-beta';

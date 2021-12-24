@@ -57,7 +57,7 @@ To download from master (*not recommended*):
 $ git clone https://github.com/Ride-The-Lightning/RTL.git
 $ cd RTL
 $ npm install
-$ npm run buildapp
+$ npm run buildfrontend
 $ npm run buildbackend
 $ npm prune --production
 ```
@@ -68,7 +68,7 @@ $ git reset --hard HEAD
 $ git clean -f -d
 $ git pull
 $ npm install
-$ npm run buildapp
+$ npm run buildfrontend
 $ npm run buildbackend
 $ npm prune --production
 ```

@@ -1,7 +1,7 @@
 # ---------------
 # Install Dependencies
 # ---------------
-FROM node:16-stretch-slim as deps
+FROM node:16-stretch-slim as builder
 
 ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini-static-armel /tini
 ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini-static-armel.asc /tini.asc
@@ -17,14 +17,10 @@ RUN npm install
 # ---------------
 # Build App
 # ---------------
-FROM deps as build
-
-WORKDIR /RTL
-
 COPY . .
 
 # Build the Angular application
-RUN npm run buildapp
+RUN npm run buildfrontend
 
 # Build the Backend from typescript server
 RUN npm run buildbackend
@@ -35,15 +31,16 @@ RUN npm prune --production
 # ---------------
 # Release App
 # ---------------
-FROM arm32v7/node:16-stretch-slim
+FROM arm32v7/node:16-stretch-slim as runner
 
 WORKDIR /RTL
 
-COPY --from=build /app/rtl.js ./rtl.js
-COPY --from=build /app/angular ./angular
-COPY --from=build /app/backend ./backend
-COPY --from=build /app/node_modules/ ./node_modules
-COPY --from=build "/tini" /sbin/tini
+COPY --from=builder /RTL/rtl.js ./rtl.js
+COPY --from=builder /RTL/package.json ./package.json
+COPY --from=builder /RTL/frontend ./frontend
+COPY --from=builder /RTL/backend ./backend
+COPY --from=builder /RTL/node_modules/ ./node_modules
+COPY --from=builder "/tini" /sbin/tini
 
 EXPOSE 3000
 
