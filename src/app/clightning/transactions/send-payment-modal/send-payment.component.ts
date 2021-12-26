@@ -301,6 +301,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.offerDecoded.amount = 0;
       this.zeroAmtOffer = true;
       this.offerDescription = this.offerDecoded.description;
+      this.offerVendor = this.offerDecoded.vendor ? this.offerDecoded.vendor : this.offerDecoded.issuer ? this.offerDecoded.issuer : '';
       this.offerDecodedHint = 'Zero Amount Offer | Description: ' + this.offerDecoded.description;
     } else {
       this.zeroAmtOffer = false;

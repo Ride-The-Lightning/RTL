@@ -1,6 +1,6 @@
-.mat-column-offer_id {
-  flex: 0 0 65%;
-  width: 65%;
+.mat-column-title, .mat-column-description {
+  flex: 0 0 30%;
+  width: 30%;
   & .ellipsis-parent {
     display: flex;
   }

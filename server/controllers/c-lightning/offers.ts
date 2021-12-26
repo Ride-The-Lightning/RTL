@@ -2,7 +2,7 @@ import request from 'request-promise';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { Database, DatabaseService } from '../../utils/database.js';
-import { CollectionFieldsEnum, CollectionsEnum } from '../../models/database.model.js';
+import { CollectionFieldsEnum, CollectionsEnum, Offer } from '../../models/database.model.js';
 
 let options = null;
 const logger: LoggerService = Logger;
@@ -11,9 +11,12 @@ const databaseService: DatabaseService = Database;
 
 export const listOfferBookmarks = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Getting Offer Bookmarks..' });
-  databaseService.find(req.session.selectedNode, CollectionsEnum.OFFERS).then((offers) => {
+  databaseService.find(req.session.selectedNode, CollectionsEnum.OFFERS).then((offers: Offer[]) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Offer Bookmarks Received', data: offers });
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Bookmarks Received' });
+    if (offers && offers.length > 0) {
+      offers = common.sortDescByKey(offers, 'lastUpdatedAt');
+    }
     res.status(200).json(offers);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Offers', 'Offer Bookmarks Error', req.session.selectedNode);

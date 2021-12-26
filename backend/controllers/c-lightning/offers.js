@@ -12,6 +12,9 @@ export const listOfferBookmarks = (req, res, next) => {
     databaseService.find(req.session.selectedNode, CollectionsEnum.OFFERS).then((offers) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Offer Bookmarks Received', data: offers });
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Bookmarks Received' });
+        if (offers && offers.length > 0) {
+            offers = common.sortDescByKey(offers, 'lastUpdatedAt');
+        }
         res.status(200).json(offers);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Offers', 'Offer Bookmarks Error', req.session.selectedNode);

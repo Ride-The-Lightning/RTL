@@ -187,6 +187,7 @@ export const CLReducer = createReducer(initCLState,
       updatedOffer.amountmSat = payload.amountmSat;
       updatedOffer.lastUpdatedAt = payload.lastUpdatedAt;
       updatedOffer.description = payload.description;
+      updatedOffer.vendor = payload.vendor;
       newOfferBMs.splice(offerBMExistsIdx, 1, updatedOffer);
     }
     return {

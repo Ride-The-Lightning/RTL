@@ -18,7 +18,7 @@
         <ng-container matColumnDef="offer_id">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Offer ID </th>
           <td mat-cell *matCellDef="let offer">
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '30rem' : ''}">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '25rem' : '45rem'}">
               <span class="ellipsis-child">
                 <span *ngIf="offer.active" class="dot green" matTooltip="Active" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
                 <span *ngIf="!offer.active" class="dot red" matTooltip="Inactive" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>

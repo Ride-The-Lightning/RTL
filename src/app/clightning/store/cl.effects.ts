@@ -19,7 +19,7 @@ import { AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLWSEventTypeEnum, CLAct
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 
 import { RTLState } from '../../store/rtl.state';
-import { addUpdateOfferBookmark, fetchBalance, fetchChannels, fetchFeeRates, fetchFees, fetchInvoices, fetchLocalRemoteBalance, fetchPayments, fetchPeers, fetchUTXOs, getForwardingHistory, setFailedForwardingHistory, setLookup, setPeers, setQueryRoutes, updateCLAPICallStatus, updateInvoice } from './cl.actions';
+import { addUpdateOfferBookmark, fetchBalance, fetchChannels, fetchFeeRates, fetchFees, fetchInvoices, fetchLocalRemoteBalance, fetchPayments, fetchPeers, fetchUTXOs, getForwardingHistory, setFailedForwardingHistory, setLookup, setPeers, setQueryRoutes, updateCLAPICallStatus, updateInvoice, setOfferInvoice } from './cl.actions';
 import { allAPIsCallStatus, clNodeInformation } from './cl.selector';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 import { CLOfferInformationComponent } from '../transactions/offers/offer-information-modal/offer-information.component';
@@ -452,29 +452,29 @@ export class CLEffects implements OnDestroy {
     })
   ));
 
-  fetchOfferInvoiceCL = createEffect(() => this.actions.pipe(
-    ofType(CLActions.FETCH_OFFER_INVOICE_CL),
-    mergeMap((action: { type: string, payload: { offer: string, msatoshi?: string } }) => {
-      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.FETCH_INVOICE }));
-      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchOfferInvoice', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.post(this.CHILD_API_URL + environment.OFFERS_API + '/fetchOfferInvoice', action.payload).
-        pipe(
-          map((fetchedInvoice: any) => {
-            this.logger.info(fetchedInvoice);
-            this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchOfferInvoice', status: APICallStatusEnum.COMPLETED } }));
-            this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.FETCH_INVOICE }));
-            return {
-              type: CLActions.SET_OFFER_INVOICE_CL,
-              payload: fetchedInvoice ? fetchedInvoice : {}
-            };
-          }),
-          catchError((err: any) => {
-            this.handleErrorWithoutAlert('FetchOfferInvoice', UI_MESSAGES.FETCH_INVOICE, 'Offer Invoice Fetch Failed', err);
-            return of({ type: RTLActions.VOID });
-          })
-        );
-    })
-  ))
+  fetchOfferInvoiceCL = createEffect(
+    () => this.actions.pipe(
+      ofType(CLActions.FETCH_OFFER_INVOICE_CL),
+      mergeMap((action: { type: string, payload: { offer: string, msatoshi?: string } }) => {
+        this.store.dispatch(openSpinner({ payload: UI_MESSAGES.FETCH_INVOICE }));
+        this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchOfferInvoice', status: APICallStatusEnum.INITIATED } }));
+        return this.httpClient.post(this.CHILD_API_URL + environment.OFFERS_API + '/fetchOfferInvoice', action.payload).
+          pipe(
+            map((fetchedInvoice: any) => {
+              this.logger.info(fetchedInvoice);
+              setTimeout(() => {
+                this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchOfferInvoice', status: APICallStatusEnum.COMPLETED } }));
+                this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.FETCH_INVOICE }));
+                this.store.dispatch(setOfferInvoice({ payload: (fetchedInvoice ? fetchedInvoice : {}) }));
+              }, 500);
+            }),
+            catchError((err: any) => {
+              this.handleErrorWithoutAlert('FetchOfferInvoice', UI_MESSAGES.FETCH_INVOICE, 'Offer Invoice Fetch Failed', err);
+              return of({ type: RTLActions.VOID });
+            }));
+      })),
+    { dispatch: false }
+  );
 
   setOfferInvoiceCL = createEffect(
     () => this.actions.pipe(
@@ -485,7 +485,7 @@ export class CLEffects implements OnDestroy {
       })
     ),
     { dispatch: false }
-  )
+  );
 
   sendPaymentCL = createEffect(() => this.actions.pipe(
     ofType(CLActions.SEND_PAYMENT_CL),
