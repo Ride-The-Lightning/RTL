@@ -393,9 +393,7 @@ export class CommonService {
     }, (err) => {
       console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Channel Backup Response Error: ' + JSON.stringify(err));
       fs.writeFile(channel_backup_file, '', (writeErr) => {
-        if (writeErr) {
-          console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Channel Backup Response Empty File Write Error: ' + JSON.stringify(writeErr));
-        }
+        console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Channel Backup Response Empty File Write Error: ' + JSON.stringify(writeErr));
       });
     });
   };

@@ -300,6 +300,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.offerDecoded.amount_msat = '0msat';
       this.offerDecoded.amount = 0;
       this.zeroAmtOffer = true;
+      this.offerDescription = this.offerDecoded.description;
       this.offerDecodedHint = 'Zero Amount Offer | Description: ' + this.offerDecoded.description;
     } else {
       this.zeroAmtOffer = false;

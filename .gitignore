@@ -1,10 +1,8 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 # compiled output
-/frontend
 /dist
 /tmp
 /out-tsc
-/backend
 
 # dependencies
 /node_modules
@@ -50,7 +48,6 @@ Thumbs.db
 /logs/*
 /cookies/*
 /backup/*
-/database/rtl-db.sqlite
 cookies
 .env
 RTL-Config.json

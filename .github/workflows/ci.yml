@@ -1,10 +1,9 @@
 name: Artifact
 
 on:
-  create:
-    tags: [ 'v*' ]
   push:
     branches: [ master, 'Release-*' ]
+    tags: [ 'v*' ]
   release:
     types: [released]
   # Triggers the workflow only when merging pull request to the branches.
@@ -83,5 +82,5 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: rtlbuild${{ github.event.release.tag_name }}
+          name: rtl-build-${{ github.event.release.tag_name }}
           path: /tmp/rtlbuild.tar.gz
