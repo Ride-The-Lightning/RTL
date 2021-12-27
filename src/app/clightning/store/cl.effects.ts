@@ -19,7 +19,7 @@ import { AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLWSEventTypeEnum, CLAct
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 
 import { RTLState } from '../../store/rtl.state';
-import { addUpdateOfferBookmark, fetchBalance, fetchChannels, fetchFeeRates, fetchFees, fetchInvoices, fetchLocalRemoteBalance, fetchPayments, fetchPeers, fetchUTXOs, getForwardingHistory, setFailedForwardingHistory, setLookup, setPeers, setQueryRoutes, updateCLAPICallStatus, updateInvoice, setOfferInvoice } from './cl.actions';
+import { addUpdateOfferBookmark, fetchBalance, fetchChannels, fetchFeeRates, fetchFees, fetchInvoices, fetchLocalRemoteBalance, fetchPayments, fetchPeers, fetchUTXOs, getForwardingHistory, setFailedForwardingHistory, setLookup, setPeers, setQueryRoutes, updateCLAPICallStatus, updateInvoice, setOfferInvoice, sendPaymentStatus } from './cl.actions';
 import { allAPIsCallStatus, clNodeInformation } from './cl.selector';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 import { CLOfferInformationComponent } from '../transactions/offers/offer-information-modal/offer-information.component';
@@ -487,47 +487,46 @@ export class CLEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  sendPaymentCL = createEffect(() => this.actions.pipe(
-    ofType(CLActions.SEND_PAYMENT_CL),
-    mergeMap((action: { type: string, payload: SendPayment }) => {
-      this.store.dispatch(openSpinner({ payload: action.payload.uiMessage }));
-      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'SendPayment', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.post(this.CHILD_API_URL + environment.PAYMENTS_API, action.payload).pipe(
-        map((sendRes: any) => {
-          this.logger.info(sendRes);
-          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'SendPayment', status: APICallStatusEnum.COMPLETED } }));
-          let snackBarMessageStr = 'Payment Sent Successfully!';
-          if (sendRes.saveToDBError) {
-            snackBarMessageStr = 'Payment Sent Successfully but Offer Saving to Database Failed.';
-          }
-          if (sendRes.saveToDBResponse && sendRes.saveToDBResponse !== 'NA') {
-            this.store.dispatch(addUpdateOfferBookmark({ payload: sendRes.saveToDBResponse }));
-            snackBarMessageStr = 'Payment Sent Successfully and Offer Saved to Database.';
-          }
-          setTimeout(() => {
-            this.store.dispatch(fetchChannels());
-            this.store.dispatch(fetchBalance());
-            this.store.dispatch(fetchPayments());
-            this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
-            this.store.dispatch(openSnackBar({ payload: snackBarMessageStr }));
-          }, 1000);
-          return {
-            type: CLActions.SEND_PAYMENT_STATUS_CL,
-            payload: sendRes.paymentResponse
-          };
-        }),
-        catchError((err: any) => {
-          this.logger.error('Error: ' + JSON.stringify(err));
-          if (action.payload.fromDialog) {
-            this.handleErrorWithoutAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed.', err);
-          } else {
-            this.handleErrorWithAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, err);
-          }
-          return of({ type: RTLActions.VOID });
-        })
-      );
-    })
-  ));
+  sendPaymentCL = createEffect(
+    () => this.actions.pipe(
+      ofType(CLActions.SEND_PAYMENT_CL),
+      mergeMap((action: { type: string, payload: SendPayment }) => {
+        this.store.dispatch(openSpinner({ payload: action.payload.uiMessage }));
+        this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'SendPayment', status: APICallStatusEnum.INITIATED } }));
+        return this.httpClient.post(this.CHILD_API_URL + environment.PAYMENTS_API, action.payload).pipe(
+          map((sendRes: any) => {
+            this.logger.info(sendRes);
+            this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'SendPayment', status: APICallStatusEnum.COMPLETED } }));
+            let snackBarMessageStr = 'Payment Sent Successfully!';
+            if (sendRes.saveToDBError) {
+              snackBarMessageStr = 'Payment Sent Successfully but Offer Saving to Database Failed.';
+            }
+            if (sendRes.saveToDBResponse && sendRes.saveToDBResponse !== 'NA') {
+              this.store.dispatch(addUpdateOfferBookmark({ payload: sendRes.saveToDBResponse }));
+              snackBarMessageStr = 'Payment Sent Successfully and Offer Saved to Database.';
+            }
+            setTimeout(() => {
+              this.store.dispatch(fetchChannels());
+              this.store.dispatch(fetchBalance());
+              this.store.dispatch(fetchPayments());
+              this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
+              this.store.dispatch(openSnackBar({ payload: snackBarMessageStr }));
+              this.store.dispatch(sendPaymentStatus({ payload: sendRes.paymentResponse }));
+            }, 1000);
+          }),
+          catchError((err: any) => {
+            this.logger.error('Error: ' + JSON.stringify(err));
+            if (action.payload.fromDialog) {
+              this.handleErrorWithoutAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed.', err);
+            } else {
+              this.handleErrorWithAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, err);
+            }
+            return of({ type: RTLActions.VOID });
+          })
+        );
+      })),
+    { dispatch: false }
+  );
 
   queryRoutesFetchCL = createEffect(() => this.actions.pipe(
     ofType(CLActions.GET_QUERY_ROUTES_CL),
