@@ -46,22 +46,24 @@ Contributions via code is the most sought after contribution and something we en
 * Assuming that nodejs (v12 & above) and npm are already installed on your local machine. Go into your RTL root folder and run `npm install`. 
 * Sometimes after installation, user receives a message from npm to fix dependency vulnerability by running `npm audit fix`. Please do not follow this step as it can break some of the working RTL code on your machine. We audit and fix these vulnerabilities as soon as possible at our end.
 	
-##### Node Server for Development
-* The RTL server code has been written in typescript and `npm run watchserver` script can be used to compile and generate their javascript equivalents. Keep the script running to watch for realtime changes and compilation. `watchserver` and `buildserver` scripts get the configuration options from tsconfig, read .ts files from the `./server` folder and save the compiled .js and .map files in `./backend` folder.
+##### Node Backend Server for Development
+* The RTL server code has been written in typescript and `npm run watchbackend` script can be used to compile and generate their javascript equivalents. Keep the script running to watch for realtime changes and compilation. `watchbackend` and `buildbackend` scripts get the configuration options from tsconfig, read .ts files from the `./server` folder and save the compiled .js and .map files in `./backend` folder.
 * To run RTL node server in development mode, open another command window, go to workspace/RTL and excute `npm run server`. This will run the script named `server` defined in package.json. This script sets the node environment as development and starts the server from rtl.js. Nodemon restarts the node application when file changes in the directory are detected.
 * This `server` script has been written for windows machine. Please update the script to set the `NODE_ENV=development` according to your machine's OS.
 * To check all available scripts for the project, explore the `scripts` section of package.json. 
 ![](./screenshots/node-server-dev.jpg)
 
-##### Angular Server for Development
+##### Angular Frontend Server for Development
 * The last step starts the node server but it cannot detect and update the code written in Angular. We run the angular development server separately while working on the frontend of the project and package the final build once the development is finished. 
 * To run the angular development server, go to workspace/RTL and run `npm run start`. It will start the angular server at default '4200' port and serve the application on localhost:4200.
 ![](./screenshots/angular-server-dev.jpg)
 ![](./screenshots/localhost-ui-dev.jpg)
 	
 ##### Package Angular Build
-* If the change/update were only made for the backend, you can directly move to the next step.
-* In case the code was updated for the frontend (in the src folder), the Angular application code needs to be compiled into the output directory named `angular` at workspace/RTL. It can be done by running `npm run build` command in the RTL root.
+* Run `npm run test` script to verify and fix, if needed, automated test cases.
+* Execute `npm run lint` to lint the code before final compilation.
+* To compile the backend code, `npm run buildbackend` script should be used. It will compile the code written in typescript in `server` folder and create a folder named `backend` with final compiled javascript code.
+* The Angular application code needs to be compiled into the output directory named `frontend` at workspace/RTL. It can be done by running `npm run buildfrontend` command in the RTL root.
 * Please make sure to remove all linting and other errors thrown by the build command before moving to the next step.
 ![](./screenshots/angular-build.jpg)
 	

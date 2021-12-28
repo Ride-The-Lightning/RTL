@@ -75,6 +75,7 @@ export interface Peer {
 export interface Invoice {
   label?: string;
   bolt11?: string;
+  bolt12?: string;
   payment_hash?: string;
   msatoshi?: number;
   amount_msat?: string;
@@ -83,9 +84,11 @@ export interface Invoice {
   msatoshi_received?: number;
   amount_received_msat?: string;
   paid_at?: number;
+  payment_preimage?: string;
   description?: string;
   expires_at?: number;
   warning_capacity?: string;
+  local_offer_id?: string;
 }
 
 export interface Offer {
@@ -152,6 +155,7 @@ export interface Payment {
   amount_msat?: string;
   amount_sent_msat?: string;
   bolt11?: string;
+  bolt12?: string;
   created_at?: number;
   destination?: string;
   id?: number;
@@ -160,6 +164,8 @@ export interface Payment {
   payment_hash?: string;
   payment_preimage?: string;
   status?: string;
+  memo?: string;
+  partid?: string;
   is_group?: boolean;
   is_expanded?: boolean;
   total_parts?: number;

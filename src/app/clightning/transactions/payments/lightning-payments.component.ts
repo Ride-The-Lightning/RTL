@@ -73,12 +73,12 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
       this.mppColumns = ['groupTotal', 'groupAmtRecv', 'groupAction'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['created_at', 'msatoshi_sent', 'msatoshi', 'actions'];
-      this.mppColumns = ['groupTotal', 'groupAmtSent', 'groupAmtRecv', 'groupAction'];
+      this.displayedColumns = ['created_at', 'type', 'msatoshi_sent', 'msatoshi', 'actions'];
+      this.mppColumns = ['groupTotal', 'groupType', 'groupAmtSent', 'groupAmtRecv', 'groupAction'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['created_at', 'payment_hash', 'msatoshi_sent', 'msatoshi', 'actions'];
-      this.mppColumns = ['groupTotal', 'groupHash', 'groupAmtSent', 'groupAmtRecv', 'groupAction'];
+      this.displayedColumns = ['created_at', 'type', 'payment_hash', 'msatoshi_sent', 'msatoshi', 'actions'];
+      this.mppColumns = ['groupTotal', 'groupType', 'groupHash', 'groupAmtSent', 'groupAmtRecv', 'groupAction'];
     }
   }
 
@@ -249,9 +249,8 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
     this.form.resetForm();
   }
 
-  onPaymentClick(selPayment) {
+  onPaymentClick(selPayment: Payment) {
     const reorderedPayment = [
-      [{ key: 'bolt11', value: selPayment.bolt11, title: 'Bolt 11', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'payment_preimage', value: selPayment.payment_preimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'id', value: selPayment.id, title: 'ID', width: 20, type: DataTypeEnum.STRING },
       { key: 'destination', value: selPayment.destination, title: 'Destination', width: 80, type: DataTypeEnum.STRING }],
@@ -260,6 +259,12 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
       [{ key: 'msatoshi', value: selPayment.msatoshi, title: 'Amount (mSats)', width: 50, type: DataTypeEnum.NUMBER },
       { key: 'msatoshi_sent', value: selPayment.msatoshi_sent, title: 'Amount Sent (mSats)', width: 50, type: DataTypeEnum.NUMBER }]
     ];
+    if (selPayment.bolt11 && selPayment.bolt11 !== '') {
+      reorderedPayment.unshift([{ key: 'bolt11', value: selPayment.bolt11, title: 'Bolt 11', width: 100, type: DataTypeEnum.STRING }]);
+    }
+    if (selPayment.bolt12 && selPayment.bolt12 !== '') {
+      reorderedPayment.unshift([{ key: 'bolt12', value: selPayment.bolt12, title: 'Bolt 12', width: 100, type: DataTypeEnum.STRING }]);
+    }
     if (selPayment.memo && selPayment.memo !== '') {
       reorderedPayment.splice(2, 0, [{ key: 'memo', value: selPayment.memo, title: 'Memo', width: 100, type: DataTypeEnum.STRING }]);
     }

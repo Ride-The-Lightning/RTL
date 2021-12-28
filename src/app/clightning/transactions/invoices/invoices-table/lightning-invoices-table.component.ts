@@ -74,10 +74,10 @@ export class CLLightningInvoicesTableComponent implements OnInit, AfterViewInit,
       this.displayedColumns = ['expires_at', 'description', 'msatoshi', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['expires_at', 'description', 'msatoshi', 'msatoshi_received', 'actions'];
+      this.displayedColumns = ['expires_at', 'type', 'description', 'msatoshi', 'msatoshi_received', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['expires_at', 'paid_at', 'description', 'msatoshi', 'msatoshi_received', 'actions'];
+      this.displayedColumns = ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received', 'actions'];
     }
   }
 
@@ -222,7 +222,7 @@ export class CLLightningInvoicesTableComponent implements OnInit, AfterViewInit,
     this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.invoices.sort = this.sort;
     this.invoices.filterPredicate = (rowData: Invoice, fltr: string) => {
-      const newRowData = ((rowData.paid_at) ? this.datePipe.transform(new Date(rowData.paid_at * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + ((rowData.expires_at) ? this.datePipe.transform(new Date(rowData.expires_at * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      const newRowData = ((rowData.paid_at) ? this.datePipe.transform(new Date(rowData.paid_at * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + ((rowData.expires_at) ? this.datePipe.transform(new Date(rowData.expires_at * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + ((rowData.bolt12) ? 'bolt12' : 'bolt11') + JSON.stringify(rowData).toLowerCase();
       return newRowData.includes(fltr);
     };
     this.invoices.paginator = this.paginator;

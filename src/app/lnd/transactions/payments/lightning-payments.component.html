@@ -37,7 +37,11 @@
           </ng-container>
           <ng-container matColumnDef="payment_hash">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Hash</th>
-            <td mat-cell *matCellDef="let payment" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '35rem'}">{{payment?.payment_hash}}</td>
+            <td mat-cell *matCellDef="let payment">
+              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">
+                <span class="ellipsis-child">{{payment?.payment_hash}}</span>
+              </span>
+            </td>
           </ng-container>
           <ng-container matColumnDef="fee">
             <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Fee (Sats)</th>
@@ -90,7 +94,9 @@
           </ng-container>
           <ng-container matColumnDef="groupHash">
             <td mat-cell *matCellDef="let payment">
-              <span fxLayoutAlign="start center" class="htlc-row-span">{{payment?.payment_hash}}</span>
+              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">
+                <span class="ellipsis-child">{{payment?.payment_hash}}</span>
+              </span>
               <span *ngIf="payment.is_expanded">
                 <span *ngFor="let htlc of payment?.htlcs; index as i" fxLayoutAlign="start center" class="htlc-row-span">
                   HTLC {{i + 1}}

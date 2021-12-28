@@ -53,7 +53,7 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
           this.flgLoading[0] = true;
           switch (this.selectedFieldId) {
             case 0:
-              this.nodeLookupValue = JSON.parse(JSON.stringify(resLookup.payload[0])) || { nodeid: '' };
+              this.nodeLookupValue = resLookup.payload[0] ? JSON.parse(JSON.stringify(resLookup.payload[0])) : { nodeid: '' };
               break;
             case 1:
               this.channelLookupValue = JSON.parse(JSON.stringify(resLookup.payload)) || [];
