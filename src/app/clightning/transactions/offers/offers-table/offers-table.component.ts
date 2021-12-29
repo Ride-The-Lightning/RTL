@@ -173,7 +173,7 @@ export class CLOffersTableComponent implements OnInit, AfterViewInit, OnDestroy 
         const documentDefinition = {
           pageSize: 'A5',
           pageOrientation: 'portrait',
-          pageMargins: [10, 30, 10, 50],
+          pageMargins: [10, 50, 10, 50],
           background: {
             svg: `
               <svg width="249" height="333" viewBox="0 0 249 333" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -186,15 +186,15 @@ export class CLOffersTableComponent implements OnInit, AfterViewInit, OnDestroy 
             height: 333,
             absolutePosition: { x: 84, y: 160 }
           },
-          header: { text: (offerDecoded.vendor || offerDecoded.issuer || ''), alignment: 'center', fontSize: 25, color: '#272727' },
+          header: { text: (offerDecoded.vendor || offerDecoded.issuer || ''), alignment: 'center', fontSize: 25, color: '#272727', margin: [0, 20, 0, 0] },
           content: [
             {
               svg: '<svg width="249" height="2" viewBox="0 0 249 2" fill="none" xmlns="http://www.w3.org/2000/svg"><rect y="0.283203" width="249" height="1" fill="#EAEAEA"/></svg>',
               width: 249,
-              height: 50,
+              height: 40,
               alignment: 'center'
             },
-            { text: offerDecoded.description ? offerDecoded.description.substring(0, 220) : '', alignment: 'center', fontSize: 16, color: '#5C5C5C' },
+            { text: offerDecoded.description ? offerDecoded.description.substring(0, 165) : '', alignment: 'center', fontSize: 16, color: '#5C5C5C' },
             { qr: selOffer.bolt12, eccLevel: 'M', fit: '259', alignment: 'center', absolutePosition: { x: 7, y: 195 } },
             { text: (!offerDecoded?.amount_msat || offerDecoded?.amount === 0 ? 'Open amount' : (this.decimalPipe.transform(offerDecoded.amount / 1000) + ' SATS')), fontSize: 20, bold: false, color: 'white', alignment: 'center', absolutePosition: { x: 0, y: 430 } },
             { text: 'SCAN TO PAY', fontSize: 22, bold: true, color: 'white', alignment: 'center', absolutePosition: { x: 0, y: 455 } }
