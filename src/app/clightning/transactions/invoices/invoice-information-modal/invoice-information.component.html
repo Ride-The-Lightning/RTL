@@ -66,36 +66,36 @@
             <span class="foreground-secondary-text">{{((invoice?.paid_at * 1000) | date:'dd/MMM/YYYY HH:mm') || '-'}}</span>
           </div>
         </div>
-        <mat-divider class="w-100 my-1"></mat-divider>        
+        <mat-divider class="w-100 my-1"></mat-divider>
       <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Description</h4>
             <span class="foreground-secondary-text">{{invoice?.description || '-'}}</span>
           </div>
         </div>
-        <mat-divider class="w-100 my-1"></mat-divider>        
+        <mat-divider class="w-100 my-1"></mat-divider>
         <div fxLayout="row">
           <div fxFlex="100">
-            <h4 fxLayoutAlign="start" class="font-bold-500">{{ invoice?.bolt12 ? 'Bolt12' : 'Bolt11' }} Invoice</h4>
+            <h4 fxLayoutAlign="start" class="font-bold-500">{{ invoice?.bolt12 ? 'Bolt12' : (invoice?.bolt11 && !invoice.label.includes('keysend-')) ? 'Bolt11' : 'Keysend' }} Invoice</h4>
             <span class="overflow-wrap foreground-secondary-text">{{invoice?.bolt11 || invoice?.bolt12}}</span>
           </div>
         </div>
         <div *ngIf="showAdvanced">
-          <mat-divider class="w-100 my-1"></mat-divider>        
+          <mat-divider class="w-100 my-1"></mat-divider>
           <div fxLayout="row">
             <div fxFlex="100">
               <h4 fxLayoutAlign="start" class="font-bold-500">Payment Hash</h4>
               <span class="overflow-wrap foreground-secondary-text">{{invoice?.payment_hash}}</span>
             </div>
           </div>
-          <mat-divider class="w-100 my-1"></mat-divider>        
+          <mat-divider class="w-100 my-1"></mat-divider>
           <div fxLayout="row">
             <div fxFlex="100">
               <h4 fxLayoutAlign="start" class="font-bold-500">Label</h4>
               <span class="overflow-wrap foreground-secondary-text">{{invoice?.label}}</span>
             </div>
           </div>
-          <mat-divider class="w-100 my-1"></mat-divider>        
+          <mat-divider class="w-100 my-1"></mat-divider>
         </div>
         <div [ngClass]="{'mt-2': !showAdvanced, 'mt-1': showAdvanced}" fxLayout="row" fxLayoutAlign="end center">
           <button class="mr-1" mat-button color="primary" type="reset" (click)="onShowAdvanced()" tabindex="1">

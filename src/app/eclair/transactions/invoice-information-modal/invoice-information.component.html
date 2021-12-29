@@ -60,7 +60,7 @@
             <span class="foreground-secondary-text">{{invoice?.description || '-'}}</span>
           </div>
         </div>
-        <mat-divider class="w-100 my-1"></mat-divider>        
+        <mat-divider class="w-100 my-1"></mat-divider>
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Invoice</h4>
@@ -68,7 +68,7 @@
           </div>
         </div>
         <div *ngIf="showAdvanced">
-          <mat-divider class="w-100 my-1"></mat-divider>        
+          <mat-divider class="w-100 my-1"></mat-divider>
           <div fxLayout="row">
             <div fxFlex="40">
               <h4 fxLayoutAlign="start" class="font-bold-500">Date Expiry</h4>
@@ -79,21 +79,21 @@
               <span class="overflow-wrap foreground-secondary-text">{{(invoice?.receivedAt * 1000) | date:'dd/MMM/YYYY HH:mm'}}</span>
             </div>
           </div>
-          <mat-divider class="w-100 my-1"></mat-divider>        
+          <mat-divider class="w-100 my-1"></mat-divider>
           <div fxLayout="row">
             <div fxFlex="100">
               <h4 fxLayoutAlign="start" class="font-bold-500">Payment Hash</h4>
               <span class="overflow-wrap foreground-secondary-text">{{invoice?.paymentHash}}</span>
             </div>
           </div>
-          <mat-divider class="w-100 my-1"></mat-divider>        
+          <mat-divider class="w-100 my-1"></mat-divider>
           <div fxLayout="row">
             <div fxFlex="100">
               <h4 fxLayoutAlign="start" class="font-bold-500">Node Id</h4>
               <span class="overflow-wrap foreground-secondary-text">{{invoice?.nodeId}}</span>
             </div>
           </div>
-          <mat-divider class="w-100 my-1"></mat-divider>        
+          <mat-divider class="w-100 my-1"></mat-divider>
         </div>
         <div [ngClass]="{'mt-2': !showAdvanced, 'mt-1': showAdvanced}" fxLayout="row" fxLayoutAlign="end center">
           <button class="mr-1" mat-button color="primary" type="reset" (click)="onShowAdvanced()" tabindex="1">

@@ -294,9 +294,8 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
     this.payments.data = this.paymentJSONArr;
     this.payments.sort = this.sort;
     this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    this.payments.filterPredicate = (payment: Payment, fltr: string) => JSON.stringify(payment).toLowerCase().includes(fltr);
     this.payments.filterPredicate = (rowData: Payment, fltr: string) => {
-      const newRowData = ((rowData.created_at) ? this.datePipe.transform(new Date(rowData.created_at * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      const newRowData = ((rowData.created_at) ? this.datePipe.transform(new Date(rowData.created_at * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + ((rowData.bolt12) ? 'bolt12' : (rowData.bolt11) ? 'bolt11' : 'keysend') + JSON.stringify(rowData).toLowerCase();
       return newRowData.includes(fltr);
     };
     this.payments.paginator = this.paginator;

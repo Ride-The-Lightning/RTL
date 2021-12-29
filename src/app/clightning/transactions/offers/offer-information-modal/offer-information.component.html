@@ -49,7 +49,7 @@
           </div>
         </div>
         <div *ngIf="showAdvanced">
-          <mat-divider *ngIf="offer?.used || offer?.single_use" class="w-100 my-1"></mat-divider>        
+          <mat-divider *ngIf="offer?.used || offer?.single_use" class="w-100 my-1"></mat-divider>
           <div fxLayout="row" *ngIf="offer?.used || offer?.single_use">
             <div fxFlex="50">
               <h4 fxLayoutAlign="start" class="font-bold-500">Used</h4>
@@ -71,7 +71,7 @@
               <span class="overflow-wrap foreground-secondary-text">{{offerDecoded?.vendor || offerDecoded?.issuer}}</span>
             </div>
           </div>
-          <mat-divider class="w-100 my-1"></mat-divider>        
+          <mat-divider class="w-100 my-1"></mat-divider>
           <div fxLayout="row">
             <div fxFlex="100">
               <h4 fxLayoutAlign="start" class="font-bold-500">Offer ID</h4>

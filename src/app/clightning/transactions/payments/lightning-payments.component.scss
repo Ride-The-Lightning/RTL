@@ -25,6 +25,8 @@
 
 .mpp-row-span {
   min-height: 4.2rem;
+  place-content: center flex-start;
+  align-items: center;
 }
 
 .mat-column-groupTotal {

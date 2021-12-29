@@ -10,7 +10,7 @@
       <span class="foreground-secondary-text w-100">{{lookupResult?.nodeId}}</span>
     </div>
   </div>
-  <mat-divider [inset]="true" class="my-1"></mat-divider>        
+  <mat-divider [inset]="true" class="my-1"></mat-divider>
   <div fxLayout="row">
     <div fxFlex="30">
       <h4 fxLayoutAlign="start" class="font-bold-500">Date/Time</h4>
@@ -21,14 +21,14 @@
       <span class="foreground-secondary-text w-100" *ngFor="let activeFeature of lookupResult?.features.activated | keyvalue"><div>{{nodeFeaturesEnum[activeFeature.key] || activeFeature.key}}: {{activeFeature.value | titlecase}}</div></span>
     </div>
   </div>
-  <mat-divider [inset]="true" class="my-1"></mat-divider>        
+  <mat-divider [inset]="true" class="my-1"></mat-divider>
   <div fxLayout="row">
     <div fxFlex="100">
       <h4 fxLayoutAlign="start" class="font-bold-500">Signature</h4>
       <span class="foreground-secondary-text">{{lookupResult?.signature}}</span>
     </div>
   </div>
-  <mat-divider [inset]="true" class="my-1"></mat-divider>        
+  <mat-divider [inset]="true" class="my-1"></mat-divider>
   <div fxLayout="column">
     <h4 fxFlex="100" fxLayoutAlign="start" class="font-bold-500 mb-1">Addresses</h4>
     <div [perfectScrollbar] fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container">

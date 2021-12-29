@@ -45,7 +45,7 @@
         </ng-container>
         <ng-container matColumnDef="type">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
-          <td mat-cell *matCellDef="let invoice">{{ invoice?.bolt12 ? 'Bolt12' : 'Bolt11' }}</td>
+          <td mat-cell *matCellDef="let invoice">{{ invoice?.bolt12 ? 'Bolt12' : (invoice?.bolt11 && !invoice.label.includes('keysend-')) ? 'Bolt11' : 'Keysend' }}</td>
         </ng-container>
         <ng-container matColumnDef="description">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>

@@ -21,14 +21,14 @@
             <span class="foreground-secondary-text">{{addressType}}</span>
           </div>
         </div>
-        <mat-divider class="w-100 my-1" *ngIf="addressType!==''"></mat-divider>        
+        <mat-divider class="w-100 my-1" *ngIf="addressType!==''"></mat-divider>
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Address</h4>
             <span class="overflow-wrap foreground-secondary-text">{{address}}</span>
           </div>
         </div>
-        <mat-divider class="w-100 my-1"></mat-divider>        
+        <mat-divider class="w-100 my-1"></mat-divider>
         <div class="mt-1" fxLayout="row" fxLayoutAlign="end center">
           <button autoFocus mat-button color="primary" tabindex="1" type="submit" rtlClipboard [payload]="address" (copied)="onCopyAddress($event)">Copy Address</button>
         </div>

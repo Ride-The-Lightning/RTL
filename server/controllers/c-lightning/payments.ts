@@ -26,6 +26,8 @@ function summaryReducer(accumulator, mpp) {
     accumulator.msatoshi_sent = accumulator.msatoshi_sent + mpp.msatoshi_sent;
     accumulator.status = mpp.status;
   }
+  if (mpp.bolt11) { accumulator.bolt11 = mpp.bolt11; }
+  if (mpp.bolt12) { accumulator.bolt12 = mpp.bolt12; }
   return accumulator;
 }
 
@@ -47,6 +49,8 @@ function groupBy(payments) {
         destination: curr[0].destination, msatoshi: paySummary.msatoshi, msatoshi_sent: paySummary.msatoshi_sent, created_at: curr[0].created_at,
         mpps: curr
       };
+      if (paySummary.bolt11) { temp.bolt11 = paySummary.bolt11; }
+      if (paySummary.bolt12) { temp.bolt12 = paySummary.bolt12; }
     }
     return acc.concat(temp);
   }, []);
