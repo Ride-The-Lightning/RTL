@@ -21,7 +21,7 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "baseHref": "/rtl/",
-            "outputPath": "angular",
+            "outputPath": "frontend",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -29,7 +29,10 @@
             "allowedCommonJsDependencies": [
               "sha256",
               "qrcode",
-              "otplib"
+              "otplib",
+              "pdfmake/build/pdfmake",
+              "pdfmake/build/vfs_fonts",
+              "clone-deep"
             ],
             "assets": [
               "src/assets"
@@ -68,8 +71,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "5mb",
-                  "maximumError": "10mb"
+                  "maximumWarning": "20mb",
+                  "maximumError": "50mb"
                 }
               ]
             }
@@ -98,7 +101,7 @@
             "main": "src/test.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
-            "karmaConfig": "src/karma.conf.js",
+            "karmaConfig": "src/karma.conf.cjs",
             "assets": [
               "src/assets"
             ],

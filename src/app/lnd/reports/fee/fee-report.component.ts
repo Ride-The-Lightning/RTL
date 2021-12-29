@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener, AfterContentInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -9,8 +9,9 @@ import { MONTHS, ScreenSizeEnum, SCROLL_RANGES, UI_MESSAGES } from '../../../sha
 import { DataService } from '../../../shared/services/data.service';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
-import * as fromRTLReducer from '../../../store/rtl.reducers';
-import * as fromLNDReducer from '../../store/lnd.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { lndNodeInformation } from '../../store/lnd.selector';
+import { LoggerService } from '../../../shared/services/logger.service';
 
 @Component({
   selector: 'rtl-fee-report',
@@ -18,7 +19,7 @@ import * as fromLNDReducer from '../../store/lnd.reducers';
   styleUrls: ['./fee-report.component.scss'],
   animations: [fadeIn]
 })
-export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
+export class FeeReportComponent implements OnInit, OnDestroy {
 
   public reportPeriod = SCROLL_RANGES[0];
   public secondsInADay = 24 * 60 * 60;
@@ -39,34 +40,34 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
   public errorMessage = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private dataService: DataService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private logger: LoggerService, private dataService: DataService, private commonService: CommonService, private store: Store<RTLState>) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select(fromLNDReducer.getInformation).pipe(takeUntil(this.unSubs[0])).subscribe((info) => {
+    this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[0])).subscribe((info) => {
       if (info.identity_pubkey) {
         this.fetchEvents(this.startDate, this.endDate);
       }
     });
-  }
+    this.commonService.containerSizeUpdated.pipe(takeUntil(this.unSubs[1])).subscribe((CONTAINER_SIZE) => {
+      switch (this.screenSize) {
+        case ScreenSizeEnum.MD:
+          this.screenPaddingX = CONTAINER_SIZE.width / 10;
+          break;
 
-  ngAfterContentInit() {
-    const CONTAINER_SIZE = this.commonService.getContainerSize();
-    switch (this.screenSize) {
-      case ScreenSizeEnum.MD:
-        this.screenPaddingX = CONTAINER_SIZE.width / 10;
-        break;
+        case ScreenSizeEnum.LG:
+          this.screenPaddingX = CONTAINER_SIZE.width / 16;
+          break;
 
-      case ScreenSizeEnum.LG:
-        this.screenPaddingX = CONTAINER_SIZE.width / 16;
-        break;
-
-      default:
-        this.screenPaddingX = CONTAINER_SIZE.width / 20;
-        break;
-    }
-    this.view = [CONTAINER_SIZE.width - this.screenPaddingX, CONTAINER_SIZE.height / 2.2];
+        default:
+          this.screenPaddingX = CONTAINER_SIZE.width / 20;
+          break;
+      }
+      this.view = [CONTAINER_SIZE.width - this.screenPaddingX, CONTAINER_SIZE.height / 2.2];
+      this.logger.info('Container Size: ' + JSON.stringify(CONTAINER_SIZE));
+      this.logger.info('View: ' + JSON.stringify(this.view));
+    });
   }
 
   fetchEvents(start: Date, end: Date) {
@@ -74,19 +75,21 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
     const startDateInSeconds = Math.round(start.getTime() / 1000).toString();
     const endDateInSeconds = Math.round(end.getTime() / 1000).toString();
     this.dataService.getForwardingHistory(startDateInSeconds, endDateInSeconds).
-      pipe(takeUntil(this.unSubs[1])).subscribe({ next: (res) => {
-        this.errorMessage = '';
-        if (res.forwarding_events && res.forwarding_events.length) {
-          res.forwarding_events = res.forwarding_events.reverse();
-          this.events = res;
-          this.feeReportData = this.prepareFeeReport(start);
-        } else {
-          this.events = {};
-          this.feeReportData = [];
+      pipe(takeUntil(this.unSubs[2])).subscribe({
+        next: (res) => {
+          this.errorMessage = '';
+          if (res.forwarding_events && res.forwarding_events.length) {
+            res.forwarding_events = res.forwarding_events.reverse();
+            this.events = res;
+            this.feeReportData = this.prepareFeeReport(start);
+          } else {
+            this.events = {};
+            this.feeReportData = [];
+          }
+        }, error: (err) => {
+          this.errorMessage = err;
         }
-      }, error: (err) => {
-        this.errorMessage = err;
-      } });
+      });
   }
 
   @HostListener('mouseup', ['$event']) onChartMouseUp(e) {
@@ -108,7 +111,7 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
     const feeReport = [];
     if (this.reportPeriod === SCROLL_RANGES[1]) {
       for (let i = 0; i < 12; i++) {
-        feeReport.push({ name: MONTHS[i].name, value: 0.000000001, extra: { totalEvents: 0 } });
+        feeReport.push({ name: MONTHS[i].name, value: 0.0, extra: { totalEvents: 0 } });
       }
       this.events.forwarding_events.map((event) => {
         const monthNumber = new Date((+event.timestamp) * 1000).getMonth();
@@ -119,7 +122,7 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
       });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
-        feeReport.push({ name: i + 1, value: 0.000000001, extra: { totalEvents: 0 } });
+        feeReport.push({ name: i + 1, value: 0.0, extra: { totalEvents: 0 } });
       }
       this.events.forwarding_events.map((event) => {
         const dateNumber = Math.floor((+event.timestamp - startDateInSeconds) / this.secondsInADay);
@@ -132,7 +135,7 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
     return feeReport;
   }
 
-  onSelectionChange(selectedValues: {selDate: Date, selScrollRange: string}) {
+  onSelectionChange(selectedValues: { selDate: Date, selScrollRange: string }) {
     const selMonth = selectedValues.selDate.getMonth();
     const selYear = selectedValues.selDate.getFullYear();
     this.reportPeriod = selectedValues.selScrollRange;

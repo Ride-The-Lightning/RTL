@@ -1,29 +1,33 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { Store, StoreModule } from '@ngrx/store';
 
 import { CommonService } from '../../../shared/services/common.service';
-import { RTLReducer } from '../../../store/rtl.reducers';
+import { RootReducer } from '../../../store/rtl.reducers';
+import { LNDReducer } from '../../../lnd/store/lnd.reducers';
+import { CLReducer } from '../../../clightning/store/cl.reducers';
+import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { LightningSendPaymentsComponent } from './send-payment.component';
 import { mockCLEffects, mockDataService, mockLoggerService, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/test-helpers/mock-services';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../shared/services/data.service';
-import { MatDialogRef } from '@angular/material/dialog';
 import { EffectsModule } from '@ngrx/effects';
 import { FEE_LIMIT_TYPES, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { mockRTLStoreState } from '../../../shared/test-helpers/test-data';
 
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
-import * as LNDActions from '../../store/lnd.actions';
+import { RTLState } from '../../../store/rtl.state';
+import { sendPayment } from '../../store/lnd.actions';
+import { SelNodeChild } from '../../../shared/models/RTLconfig';
+import { channels } from '../../store/lnd.selector';
 
 describe('LightningSendPaymentsComponent', () => {
   let component: LightningSendPaymentsComponent;
   let fixture: ComponentFixture<LightningSendPaymentsComponent>;
   let commonService: CommonService;
-  let store: Store<fromRTLReducer.RTLState>;
+  let store: Store<RTLState>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -31,19 +35,16 @@ describe('LightningSendPaymentsComponent', () => {
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot(RTLReducer, {
-          runtimeChecks: {
-            strictStateImmutability: false,
-            strictActionImmutability: false
-          }
-        }),
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: DataService, useClass: mockDataService }
+        { provide: DataService, useClass: mockDataService },
+        { provide: MatDialogRef, useClass: mockMatDialogRef },
+        { provide: MAT_DIALOG_DATA, useValue: {} }
       ]
     }).
       compileComponents();
@@ -54,6 +55,7 @@ describe('LightningSendPaymentsComponent', () => {
     component = fixture.componentInstance;
     commonService = fixture.debugElement.injector.get(CommonService);
     store = fixture.debugElement.injector.get(Store);
+    component.activeChannels = [];
     fixture.detectChanges();
   });
 
@@ -62,10 +64,10 @@ describe('LightningSendPaymentsComponent', () => {
   });
 
   it('should get lnd store value on ngOnInit', () => {
-    const storeSpy = spyOn(store, 'select').and.returnValue(of(mockRTLStoreState.lnd));
+    const storeSpy = spyOn(store, 'select').and.returnValue(of(mockRTLStoreState.lnd.nodeSettings));
     component.ngOnInit();
     expect(component.selNode.lnImplementation).toBe('LND');
-    expect(storeSpy).toHaveBeenCalledTimes(1);
+    expect(storeSpy).toHaveBeenCalledTimes(2);
   });
 
   it('should send payment buttons work as expected', () => {
@@ -78,13 +80,13 @@ describe('LightningSendPaymentsComponent', () => {
       description: 'Testing ngrx Effects 4', description_hash: '', fallback_addr: '', cltv_expiry: '10', route_hints: [{ hop_hints: [{ node_id: '028ec70462207b57e3d4d9332d9e0aee676c92d89b7c9fb0850fc2a24814d4d83c', chan_id: '2166413939696009216', fee_base_msat: 1000, fee_proportional_millionths: 1, cltv_expiry_delta: 40 }] }],
       payment_addr: 'NIXNBEqCTmqw89joe0m71Z9MrkkBcF1t1ri+9BZehKw=', num_msat: '400000', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true }, 15: { name: 'payment-addr', is_required: false, is_known: true }, 17: { name: 'multi-path-payments', is_required: false, is_known: true } }
     };
-    const sendButton = fixture.debugElement.nativeElement.querySelector('.mat-flat-button');
+    const sendButton = fixture.debugElement.nativeElement.querySelector('#sendBtn');
     sendButton.click();
     const expectedSendPaymentPayload = {
-      uiMessage: UI_MESSAGES.SEND_PAYMENT, outgoingChannel: null, feeLimitType: { id: 'none', name: 'No Fee Limit' }, feeLimit: null, fromDialog: true,
+      uiMessage: UI_MESSAGES.SEND_PAYMENT, outgoingChannel: null, feeLimitType: 'none', feeLimit: null, fromDialog: true,
       paymentReq: 'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3'
     };
-    expect(storeSpy.calls.all()[0].args[0]).toEqual(new LNDActions.SendPayment(expectedSendPaymentPayload));
+    expect(storeSpy.calls.all()[0].args[0]).toEqual(sendPayment({ payload: expectedSendPaymentPayload }));
     expect(storeSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -147,14 +149,15 @@ describe('LightningSendPaymentsComponent', () => {
   });
 
   it('should decode payment when pay request changed and fiat conversion is true', () => {
-    component.selNode.fiatConversion = true;
-    component.selNode.currencyUnits[2] = 'USD';
+    const updatedSelNode: SelNodeChild = JSON.parse(JSON.stringify(component.selNode));
+    updatedSelNode.fiatConversion = true;
+    updatedSelNode.currencyUnits[2] = 'USD';
+    Object.defineProperty(component, 'selNode', { value: updatedSelNode });
     component.onPaymentRequestEntry('lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3');
     expect(component.paymentDecodedHint).toEqual('Sending: 400 Sats (USD 0.13) | Memo: Testing ngrx Effects 4');
   });
 
   it('should decode payment when pay request changed and fiat conversion is false', () => {
-    component.selNode.fiatConversion = false;
     component.onPaymentRequestEntry('lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3');
     expect(component.paymentDecodedHint).toEqual('Sending: 400 Sats | Memo: Testing ngrx Effects 4');
   });

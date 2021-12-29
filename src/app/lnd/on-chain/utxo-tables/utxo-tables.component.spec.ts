@@ -1,7 +1,10 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { StoreModule } from '@ngrx/store';
 
-import { RTLReducer } from '../../../store/rtl.reducers';
+import { RootReducer } from '../../../store/rtl.reducers';
+import { LNDReducer } from '../../../lnd/store/lnd.reducers';
+import { CLReducer } from '../../../clightning/store/cl.reducers';
+import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { UTXOTablesComponent } from './utxo-tables.component';
@@ -24,12 +27,7 @@ describe('UTXOTablesComponent', () => {
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot(RTLReducer, {
-          runtimeChecks: {
-            strictStateImmutability: false,
-            strictActionImmutability: false
-          }
-        })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
       ],
       providers: [
         CommonService,

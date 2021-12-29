@@ -5,11 +5,11 @@
       <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="page-sub-title-container w-100" [ngClass]="{'mt-2': screenSize === screenSizeEnum.XS, 'mt-1': screenSize === screenSizeEnum.SM}">
         <div fxFlex="70">Incoming</div>
         <mat-form-field fxFlex="30">
-          <input matInput (keyup)="applyIncomingFilter($event.target)" placeholder="Filter">
+          <input matInput (keyup)="applyIncomingFilter()" [(ngModel)]="filterIn" placeholder="Filter">
         </mat-form-field>
       </div>
       <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start start" fxFlex="100" class="table-container">
-        <mat-progress-bar *ngIf="apisCallStatus?.FetchPayments.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+        <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
         <table mat-table #tableIn [dataSource]="RoutingPeersIncoming" matSort class="overflow-auto incoming-table">
           <ng-container matColumnDef="channelId">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel ID</th>
@@ -34,9 +34,9 @@
           </ng-container>
           <ng-container matColumnDef="no_incoming_event">
             <td mat-footer-cell *matFooterCellDef colspan="4">
-              <p *ngIf="(!RoutingPeersIncoming?.data || RoutingPeersIncoming?.data?.length<1) && apisCallStatus?.FetchPayments.status === apiCallStatusEnum.COMPLETED">No incoming routing peer available.</p>
-              <p *ngIf="(!RoutingPeersIncoming?.data || RoutingPeersIncoming?.data?.length<1) && apisCallStatus?.FetchPayments.status === apiCallStatusEnum.INITIATED">Getting incoming routing peers...</p>
-              <p *ngIf="(!RoutingPeersIncoming?.data || RoutingPeersIncoming?.data?.length<1) && apisCallStatus?.FetchPayments.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+              <p *ngIf="(!RoutingPeersIncoming?.data || RoutingPeersIncoming?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No incoming routing peer available.</p>
+              <p *ngIf="(!RoutingPeersIncoming?.data || RoutingPeersIncoming?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting incoming routing peers...</p>
+              <p *ngIf="(!RoutingPeersIncoming?.data || RoutingPeersIncoming?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
             </td>
           </ng-container>
           <tr mat-footer-row *matFooterRowDef="['no_incoming_event']" [ngClass]="{'display-none': RoutingPeersIncoming?.data && RoutingPeersIncoming?.data?.length>0}"></tr>
@@ -50,11 +50,11 @@
       <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="page-sub-title-container w-100" [ngClass]="{'mt-2': screenSize !== screenSizeEnum.LG}">
         <div fxFlex="70">Outgoing</div>
         <mat-form-field fxFlex="30">
-          <input matInput (keyup)="applyOutgoingFilter($event.target)" placeholder="Filter">
+          <input matInput (keyup)="applyOutgoingFilter()" [(ngModel)]="filterOut" placeholder="Filter">
         </mat-form-field>
       </div>
       <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container">
-        <mat-progress-bar *ngIf="apisCallStatus?.FetchPayments.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+        <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
         <table mat-table #tableOut [dataSource]="RoutingPeersOutgoing" matSort class="overflow-auto outgoing-table">
           <ng-container matColumnDef="channelId">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel ID</th>
@@ -79,9 +79,9 @@
           </ng-container>
           <ng-container matColumnDef="no_outgoing_event">
             <td mat-footer-cell *matFooterCellDef colspan="4">
-              <p *ngIf="(!RoutingPeersOutgoing?.data || RoutingPeersOutgoing?.data?.length<1) && apisCallStatus?.FetchPayments.status === apiCallStatusEnum.COMPLETED">No outgoing routing peer available.</p>
-              <p *ngIf="(!RoutingPeersOutgoing?.data || RoutingPeersOutgoing?.data?.length<1) && apisCallStatus?.FetchPayments.status === apiCallStatusEnum.INITIATED">Getting outgoing routing peers...</p>
-              <p *ngIf="(!RoutingPeersOutgoing?.data || RoutingPeersOutgoing?.data?.length<1) && apisCallStatus?.FetchPayments.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+              <p *ngIf="(!RoutingPeersOutgoing?.data || RoutingPeersOutgoing?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No outgoing routing peer available.</p>
+              <p *ngIf="(!RoutingPeersOutgoing?.data || RoutingPeersOutgoing?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting outgoing routing peers...</p>
+              <p *ngIf="(!RoutingPeersOutgoing?.data || RoutingPeersOutgoing?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
             </td>
           </ng-container>
           <tr mat-footer-row *matFooterRowDef="['no_outgoing_event']" [ngClass]="{'display-none': RoutingPeersOutgoing?.data && RoutingPeersOutgoing?.data?.length>0}"></tr>

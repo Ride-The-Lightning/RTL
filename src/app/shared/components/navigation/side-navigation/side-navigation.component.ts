@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { environment } from '../../../../../environments/environment';
+import { VERSION } from '../../../../../environments/environment';
 
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatTreeNestedDataSource, MatTree } from '@angular/material/tree';
@@ -16,10 +16,11 @@ import { GetInfoChain } from '../../../models/lndModels';
 import { MenuChildNode, MENU_DATA } from '../../../models/navMenu';
 
 import { RTLEffects } from '../../../../store/rtl.effects';
-import * as RTLActions from '../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
-import { AlertTypeEnum, UI_MESSAGES, UserPersonaEnum } from '../../../services/consts-enums-functions';
+import { RTLState } from '../../../../store/rtl.state';
+import { AlertTypeEnum, RTLActions, UI_MESSAGES, UserPersonaEnum } from '../../../services/consts-enums-functions';
 import { CommonService } from '../../../services/common.service';
+import { logout, openConfirmation, setSelectedNode, showPubkey } from '../../../../store/rtl.actions';
+import { rootAppConfig, rootSelNodeAndNodeData } from '../../../../store/rtl.selector';
 
 @Component({
   selector: 'rtl-side-navigation',
@@ -33,6 +34,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   faEject = faEject;
   faEye = faEye;
   public appConfig: RTLConfiguration;
+  public selConfigNodeIndex: Number;
   public selNode: ConfigSettingsNode;
   public settings: Settings;
   public version = '';
@@ -46,7 +48,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   public smallScreen = false;
   public childRootRoute = '';
   public userPersonaEnum = UserPersonaEnum;
-  private unSubs = [new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
   treeControlNested = new NestedTreeControl<MenuChildNode>((node) => node.children);
   treeControlLogout = new NestedTreeControl<MenuChildNode>((node) => node.children);
   treeControlShowData = new NestedTreeControl<MenuChildNode>((node) => node.children);
@@ -54,8 +56,8 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   navMenusLogout = new MatTreeNestedDataSource<MenuChildNode>();
   navMenusShowData = new MatTreeNestedDataSource<MenuChildNode>();
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private sessionService: SessionService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private rtlEffects: RTLEffects) {
-    this.version = environment.VERSION;
+  constructor(private logger: LoggerService, private commonService: CommonService, private sessionService: SessionService, private store: Store<RTLState>, private actions: Actions, private rtlEffects: RTLEffects) {
+    this.version = VERSION;
     if (MENU_DATA.LNDChildren[MENU_DATA.LNDChildren.length - 1].id === 200) {
       MENU_DATA.LNDChildren.pop();
     }
@@ -68,13 +70,12 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     const token = this.sessionService.getItem('token');
     this.showLogout = !!token;
     this.flgLoading = !!token;
-    this.store.select('root').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        this.appConfig = rtlStore.appConfig;
-        this.selNode = rtlStore.selNode;
-        this.settings = this.selNode.settings;
-        this.information = rtlStore.nodeData;
+    this.store.select(rootAppConfig).pipe(takeUntil(this.unSubs[0])).subscribe((appConfig) => {
+      this.appConfig = appConfig;
+    });
+    this.store.select(rootSelNodeAndNodeData).pipe(takeUntil(this.unSubs[1])).
+      subscribe((rootData: { nodeDate: GetInfoRoot, selNode: ConfigSettingsNode }) => {
+        this.information = rootData.nodeDate;
         if (this.information.identity_pubkey) {
           if (this.information.chains && typeof this.information.chains[0] === 'string') {
             this.informationChain.chain = this.information.chains[0].toString();
@@ -88,26 +89,28 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
           this.informationChain.chain = '';
           this.informationChain.network = '';
         }
-
         this.flgLoading = !(this.information.identity_pubkey);
         if (window.innerWidth <= 414) {
           this.smallScreen = true;
         }
+        this.selNode = rootData.selNode;
+        this.settings = this.selNode.settings;
+        this.selConfigNodeIndex = +rootData.selNode.index;
         if (this.selNode && this.selNode.lnImplementation) {
           this.filterSideMenuNodes();
         }
-        this.logger.info(rtlStore);
+        this.logger.info(rootData);
       });
     this.sessionService.watchSession().
-      pipe(takeUntil(this.unSubs[1])).
+      pipe(takeUntil(this.unSubs[2])).
       subscribe((session) => {
         this.showLogout = !!session.token;
         this.flgLoading = !!session.token;
       });
     this.actions.pipe(
-      takeUntil(this.unSubs[2]),
+      takeUntil(this.unSubs[3]),
       filter((action) => action.type === RTLActions.LOGOUT)).
-      subscribe((action: RTLActions.Logout) => {
+      subscribe((action: any) => {
         this.showLogout = false;
       });
   }
@@ -116,17 +119,19 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
 
   onClick(node: MenuChildNode) {
     if (node.name === 'Logout') {
-      this.store.dispatch(new RTLActions.OpenConfirmation({
-        data: {
-          type: AlertTypeEnum.CONFIRM, alertTitle: 'Logout', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
+      this.store.dispatch(openConfirmation({
+        payload: {
+          data: {
+            type: AlertTypeEnum.CONFIRM, alertTitle: 'Logout', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
+          }
         }
       }));
       this.rtlEffects.closeConfirm.
-        pipe(takeUntil(this.unSubs[3])).
+        pipe(takeUntil(this.unSubs[4])).
         subscribe((confirmRes) => {
           if (confirmRes) {
             this.showLogout = false;
-            this.store.dispatch(new RTLActions.Logout());
+            this.store.dispatch(logout());
           }
         });
     }
@@ -159,8 +164,8 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     this.navMenus.data = clonedMenu.filter((navMenuData) => {
       if (navMenuData.children && navMenuData.children.length) {
         navMenuData.children = navMenuData.children.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona) && navMenuChild.link !== '/services/loop' && navMenuChild.link !== '/services/boltz') ||
-            (navMenuChild.link === '/services/loop' && this.settings.swapServerUrl && this.settings.swapServerUrl.trim() !== '') ||
-            (navMenuChild.link === '/services/boltz' && this.settings.boltzServerUrl && this.settings.boltzServerUrl.trim() !== ''));
+          (navMenuChild.link === '/services/loop' && this.settings.swapServerUrl && this.settings.swapServerUrl.trim() !== '') ||
+          (navMenuChild.link === '/services/boltz' && this.settings.boltzServerUrl && this.settings.boltzServerUrl.trim() !== ''));
         return navMenuData.children.length > 0;
       }
       return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings.userPersona;
@@ -173,7 +178,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     this.navMenus.data = clonedMenu.filter((navMenuData) => {
       if (navMenuData.children && navMenuData.children.length) {
         navMenuData.children = navMenuData.children.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona) && navMenuChild.link !== '/cl/messages') ||
-            (navMenuChild.link === '/cl/messages' && this.information.api_version && this.commonService.isVersionCompatible(this.information.api_version, '0.2.2')));
+          (navMenuChild.link === '/cl/messages' && this.information.api_version && this.commonService.isVersionCompatible(this.information.api_version, '0.2.2')));
       }
       return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings.userPersona;
     });
@@ -184,13 +189,15 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   }
 
   onShowData(node: MenuChildNode) {
-    this.store.dispatch(new RTLActions.ShowPubkey());
+    this.store.dispatch(showPubkey());
     this.ChildNavClicked.emit('showData');
   }
 
-  onNodeSelectionChange(selNodeValue: ConfigSettingsNode) {
-    this.selNode = selNodeValue;
-    this.store.dispatch(new RTLActions.SetSelelectedNode({ uiMessage: UI_MESSAGES.UPDATE_SELECTED_NODE, lnNode: selNodeValue, isInitialSetup: false }));
+  onNodeSelectionChange(selNodeValue: Number) {
+    const prevIndex = this.selConfigNodeIndex;
+    this.selConfigNodeIndex = selNodeValue;
+    const foundNode = this.appConfig.nodes.find((node) => +node.index === selNodeValue);
+    this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.UPDATE_SELECTED_NODE, prevLnNodeIndex: +prevIndex, currentLnNode: foundNode, isInitialSetup: false } }));
     this.ChildNavClicked.emit('selectNode');
   }
 

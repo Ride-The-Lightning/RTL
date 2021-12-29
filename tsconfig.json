@@ -2,18 +2,21 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "outDir": "./angular/out-tsc",
+    "outDir": "./backend",
+    "esModuleInterop": true,
+    "allowJs": false,
     "forceConsistentCasingInFileNames": true,
     "strict": false,
+    "noImplicitAny": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "declaration": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2015",
+    "target": "es6",
     "module": "es2020",
     "typeRoots": [
       "node_modules/@types"
@@ -23,6 +26,13 @@
       "dom"
     ]
   },
+  "include": [
+    "./server/**/*"
+  ],
+  "exclude": [
+    "typings/*",
+    "node_modules"
+  ],
   "angularCompilerOptions": {
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,

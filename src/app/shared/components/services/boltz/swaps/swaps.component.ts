@@ -13,8 +13,8 @@ import { LoggerService } from '../../../../services/logger.service';
 import { CommonService } from '../../../../services/common.service';
 import { BoltzService } from '../../../../services/boltz.service';
 
-import * as RTLActions from '../../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../../store/rtl.reducers';
+import { openAlert } from '../../../../../store/rtl.actions';
+import { RTLState } from '../../../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-boltz-swaps',
@@ -37,6 +37,7 @@ export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy 
   public swapCaption = 'Swap Out';
   public displayedColumns: any[] = [];
   public listSwaps: any;
+  public selFilter = '';
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -44,7 +45,7 @@ export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy 
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private boltzService: BoltzService) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private boltzService: BoltzService) {
     this.screenSize = this.commonService.getScreenSize();
     this.setTableColumns();
   }
@@ -85,9 +86,9 @@ export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy 
     }
   }
 
-  applyFilter(selFilter: any) {
-    if (this.listSwaps) {
-      this.listSwaps.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    if (this.listSwaps && this.selFilter !== '') {
+      this.listSwaps.filter = this.selFilter.trim().toLowerCase();
     }
   }
 
@@ -97,23 +98,25 @@ export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy 
         fetchedSwap = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? fetchedSwap.swap : fetchedSwap.reverseSwap;
         const reorderedSwap = [
           [{ key: 'status', value: SwapStateEnum[fetchedSwap.status], title: 'Status', width: 50, type: DataTypeEnum.STRING },
-            { key: 'id', value: fetchedSwap.id, title: 'ID', width: 50, type: DataTypeEnum.STRING }],
+          { key: 'id', value: fetchedSwap.id, title: 'ID', width: 50, type: DataTypeEnum.STRING }],
           [{ key: 'amount', value: fetchedSwap.onchainAmount ? fetchedSwap.onchainAmount : fetchedSwap.expectedAmount ? fetchedSwap.expectedAmount : 0, title: fetchedSwap.onchainAmount ? 'Onchain Amount (Sats)' : fetchedSwap.expectedAmount ? 'Expected Amount (Sats)' : 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER },
-            { key: 'timeoutBlockHeight', value: fetchedSwap.timeoutBlockHeight, title: 'Timeout Block Height', width: 50, type: DataTypeEnum.NUMBER }],
+          { key: 'timeoutBlockHeight', value: fetchedSwap.timeoutBlockHeight, title: 'Timeout Block Height', width: 50, type: DataTypeEnum.NUMBER }],
           [{ key: 'address', value: fetchedSwap.claimAddress ? fetchedSwap.claimAddress : fetchedSwap.lockupAddress ? fetchedSwap.lockupAddress : '', title: fetchedSwap.claimAddress ? 'Claim Address' : fetchedSwap.lockupAddress ? 'Lockup Address' : 'Address', width: 100, type: DataTypeEnum.STRING }],
           [{ key: 'invoice', value: fetchedSwap.invoice, title: 'Invoice', width: 100, type: DataTypeEnum.STRING }],
           [{ key: 'privateKey', value: fetchedSwap.privateKey, title: 'Private Key', width: 100, type: DataTypeEnum.STRING }],
           [{ key: 'preimage', value: fetchedSwap.preimage, title: 'Preimage', width: 100, type: DataTypeEnum.STRING }],
           [{ key: 'redeemScript', value: fetchedSwap.redeemScript, title: 'Redeem Script', width: 100, type: DataTypeEnum.STRING }],
           [{ key: 'lockupTransactionId', value: fetchedSwap.lockupTransactionId, title: 'Lockup Transaction ID', width: 50, type: DataTypeEnum.STRING },
-            { key: 'transactionId', value: fetchedSwap.claimTransactionId ? fetchedSwap.claimTransactionId : fetchedSwap.refundTransactionId ? fetchedSwap.refundTransactionId : '', title: fetchedSwap.claimTransactionId ? 'Claim Transaction ID' : fetchedSwap.refundTransactionId ? 'Refund Transaction ID' : 'Transaction ID', width: 50, type: DataTypeEnum.STRING }]
+          { key: 'transactionId', value: fetchedSwap.claimTransactionId ? fetchedSwap.claimTransactionId : fetchedSwap.refundTransactionId ? fetchedSwap.refundTransactionId : '', title: fetchedSwap.claimTransactionId ? 'Claim Transaction ID' : fetchedSwap.refundTransactionId ? 'Refund Transaction ID' : 'Transaction ID', width: 50, type: DataTypeEnum.STRING }]
         ];
-        this.store.dispatch(new RTLActions.OpenAlert({
-          data: {
-            type: AlertTypeEnum.INFORMATION,
-            alertTitle: this.swapCaption + ' Status',
-            message: reorderedSwap,
-            openedBy: 'SWAP'
+        this.store.dispatch(openAlert({
+          payload: {
+            data: {
+              type: AlertTypeEnum.INFORMATION,
+              alertTitle: this.swapCaption + ' Status',
+              message: reorderedSwap,
+              openedBy: 'SWAP'
+            }
           }
         }));
       });
@@ -128,6 +131,7 @@ export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy 
       this.paginator.firstPage();
     }
     this.listSwaps.paginator = this.paginator;
+    this.applyFilter();
     this.logger.info(this.listSwaps);
   }
 

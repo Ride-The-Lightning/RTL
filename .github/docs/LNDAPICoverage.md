@@ -1,0 +1,57 @@
+[Intro](../README.md) -- [Application Features](Application_features.md) -- [Road Map](Roadmap.md) -- **LND API Coverage** -- [Application Configurations](Application_configurations.md)
+
+- [x] GenSeed
+- [x] InitWallet
+- [x] UnlockWallet
+- [ ] ChangePassword
+- [x] WalletBalance
+- [x] ChannelBalance
+- [x] GetTransactions
+- [ ] EstimateFee
+- [x] SendCoins
+- [ ] ListUnspent
+- [ ] SubscribeTransactions
+- [ ] SendMany
+- [x] NewAddress
+- [x] SignMessage
+- [x] VerifyMessage
+- [x] ConnectPeer
+- [x] DisconnectPeer
+- [x] ListPeers
+- [x] GetInfo
+- [x] PendingChannels
+- [x] ListChannels
+- [ ] SubscribeChannelEvents
+- [x] ClosedChannels
+- [ ] OpenChannelSync
+- [x] OpenChannel
+- [x] CloseChannel
+- [ ] AbandonChannel
+- [x] SendPayment
+- [ ] SendPaymentSync
+- [ ] SendToRoute
+- [ ] SendToRouteSync
+- [x] AddInvoice
+- [x] ListInvoices
+- [ ] LookupInvoice
+- [ ] SubscribeInvoices
+- [x] DecodePayReq
+- [x] ListPayments
+- [ ] DeleteAllPayments
+- [ ] DescribeGraph
+- [x] GetChanInfo
+- [x] GetNodeInfo
+- [x] QueryRoutes
+- [x] GetNetworkInfo
+- [ ] StopDaemon
+- [ ] SubscribeChannelGraph
+- [ ] DebugLevel
+- [x] FeeReport
+- [x] UpdateChannelPolicy
+- [x] ForwardingHistory
+- [x] ExportChannelBackup
+- [x] ExportAllChannelBackups
+- [x] VerifyChanBackup
+- [x] RestoreChannelBackups
+- [ ] SubscribeChannelBackups
+- [ ] Messages

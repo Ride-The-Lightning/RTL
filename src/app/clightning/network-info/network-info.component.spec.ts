@@ -6,8 +6,12 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { mockDataService, mockLoggerService } from '../../shared/test-helpers/mock-services';
 import { SharedModule } from '../../shared/shared.module';
 
-import { RTLReducer } from '../../store/rtl.reducers';
+import { RootReducer } from '../../store/rtl.reducers';
+import { LNDReducer } from '../../lnd/store/lnd.reducers';
+import { CLReducer } from '../../clightning/store/cl.reducers';
+import { ECLReducer } from '../../eclair/store/ecl.reducers';
 import { CLFeeRatesComponent } from './fee-rates/fee-rates.component';
+import { CLOnChainFeeEstimatesComponent } from './on-chain-fee-estimates/on-chain-fee-estimates.component';
 import { CLNetworkInfoComponent } from './network-info.component';
 
 describe('CLNetworkInfoComponent', () => {
@@ -16,15 +20,10 @@ describe('CLNetworkInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLNetworkInfoComponent, CLFeeRatesComponent],
+      declarations: [CLNetworkInfoComponent, CLFeeRatesComponent, CLOnChainFeeEstimatesComponent],
       imports: [
         SharedModule,
-        StoreModule.forRoot(RTLReducer, {
-          runtimeChecks: {
-            strictStateImmutability: false,
-            strictActionImmutability: false
-          }
-        })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
       ],
       providers: [
         CommonService,

@@ -1,5 +1,5 @@
 export interface ChannelStatus {
-  channels?: number;
+  num_channels?: number;
   capacity?: number;
 }
 
@@ -16,12 +16,16 @@ export interface AddressType {
   addressDetails?: string;
 }
 
-export interface Balance {
-  balance?: number;
-  pending_open_balance?: number;
+export interface LightningBalance {
+  local?: number;
+  remote?: number;
+}
+
+export interface BlockchainBalance {
   total_balance?: number;
   confirmed_balance?: number;
   unconfirmed_balance?: number;
+  account_balance?: any;
 }
 
 export interface ChannelFeeReport {
@@ -36,6 +40,17 @@ export interface ChannelHTLC {
   amount?: string;
   hash_lock?: string;
   expiration_height?: number;
+}
+
+export interface ChannelsSummary {
+  active?: {
+    num_channels?: number;
+    capacity?: number;
+  };
+  inactive?: {
+    num_channels?: number;
+    capacity?: number;
+  };
 }
 
 export interface Channel {
@@ -147,6 +162,7 @@ export interface LightningNode {
   alias?: string;
   addresses?: NodeAddress[];
   color?: string;
+  features?: any;
 }
 
 export interface RoutingPolicy {
@@ -248,6 +264,7 @@ export interface GetInfo {
 
 export interface GraphNode {
   node?: LightningNode;
+  channels: any[];
   num_channels?: number;
   total_capacity?: string;
 }
@@ -340,16 +357,9 @@ export interface Invoice {
 
 export interface ListInvoices {
   invoices?: Invoice[];
+  total_invoices?: number;
   last_index_offset?: string;
   first_index_offset?: string;
-}
-
-export interface LightningNode {
-  last_update?: number;
-  pub_key?: string;
-  alias?: string;
-  addresses?: NodeAddress[];
-  color?: string;
 }
 
 export interface NetworkInfo {
@@ -362,11 +372,6 @@ export interface NetworkInfo {
   total_network_capacity?: string;
   avg_out_degree?: number;
   min_channel_size?: string;
-}
-
-export interface NodeAddress {
-  network?: string;
-  address?: string;
 }
 
 export interface Payment {
@@ -487,11 +492,117 @@ export interface PendingChannelsData {
   limbo_balance: number;
 }
 
-export interface PendingChannelsGroup {
+export interface PendingChannelsSummary {
   open?: PendingChannelsData;
   closing?: PendingChannelsData;
   force_closing?: PendingChannelsData;
   waiting_close?: PendingChannelsData;
   total_channels?: number;
   total_limbo_balance?: number;
+}
+
+export interface SavePeer {
+  pubkey: string;
+  host: string;
+  perm: boolean;
+}
+
+export interface SaveInvoice {
+  uiMessage: string;
+  memo: string;
+  invoiceValue: number;
+  private: boolean;
+  expiry: number;
+  pageSize: number;
+  openModal: boolean;
+}
+
+export interface SaveChannel {
+  selectedPeerPubkey: string;
+  fundingAmount: number;
+  private: boolean;
+  transType: string;
+  transTypeValue: string;
+  spendUnconfirmed: boolean;
+}
+
+export interface CloseChannel {
+  channelPoint: string;
+  forcibly: boolean;
+  targetConf?: number;
+  satPerByte?: number;
+}
+
+export interface FetchInvoices {
+  num_max_invoices?: number;
+  index_offset?: number;
+  reversed?: boolean;
+}
+
+export interface FetchPayments {
+  max_payments?: number;
+  index_offset?: number;
+  reversed?: boolean;
+}
+
+export interface SendPayment {
+  uiMessage: string;
+  fromDialog: boolean;
+  paymentReq: string;
+  paymentAmount?: number;
+  outgoingChannel?: Channel;
+  feeLimitType?: string;
+  feeLimit?: number;
+  allowSelfPayment?: boolean;
+  lastHopPubkey?: string;
+}
+
+export interface GetNewAddress {
+  addressId?: string;
+  addressCode?: string;
+  addressTp?: string;
+  addressDetails?: string;
+}
+
+export interface GetQueryRoutes {
+  destPubkey: string;
+  amount: number;
+  outgoingChanId?: string;
+}
+
+export interface InitWallet {
+  pwd: string;
+  cipher?: Array<string>;
+  passphrase?: string;
+}
+
+export interface ChannelLookup {
+  uiMessage: string;
+  channelID: string;
+}
+
+export interface SetRestoreChannelsList {
+  all_restore_exists: boolean;
+  files: [];
+}
+
+export interface NewlyAddedPeer {
+  peer: Peer;
+  balance: number;
+}
+
+export interface SetPendingChannels {
+  pendingChannels: PendingChannels;
+  pendingChannelsSummary: PendingChannelsSummary;
+}
+
+export interface BackupChannels {
+  uiMessage: string;
+  channelPoint: string;
+  showMessage: string;
+}
+
+export interface SetAllLightningTransactions {
+  listPaymentsAll: ListPayments;
+  listInvoicesAll: ListInvoices;
 }

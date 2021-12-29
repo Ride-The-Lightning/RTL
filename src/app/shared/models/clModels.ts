@@ -1,3 +1,5 @@
+import { PaymentTypes } from '../services/consts-enums-functions';
+
 export enum feeRateStyle {
   KB = 'KB',
   KW = 'KW'
@@ -9,10 +11,9 @@ export interface ChannelStatus {
 }
 
 export interface ChannelsStatus {
-  active?: ChannelStatus;
-  inactive?: ChannelStatus;
-  pending?: ChannelStatus;
-  closing?: ChannelStatus;
+  active: ChannelStatus;
+  inactive: ChannelStatus;
+  pending: ChannelStatus;
 }
 
 export interface Address {
@@ -74,6 +75,7 @@ export interface Peer {
 export interface Invoice {
   label?: string;
   bolt11?: string;
+  bolt12?: string;
   payment_hash?: string;
   msatoshi?: number;
   amount_msat?: string;
@@ -82,9 +84,29 @@ export interface Invoice {
   msatoshi_received?: number;
   amount_received_msat?: string;
   paid_at?: number;
+  payment_preimage?: string;
   description?: string;
   expires_at?: number;
   warning_capacity?: string;
+  local_offer_id?: string;
+}
+
+export interface Offer {
+  offer_id?: string;
+  active?: boolean;
+  single_use?: boolean;
+  bolt12?: string;
+  bolt12_unsigned?: string;
+  used?: boolean;
+}
+
+export interface OfferBookmark {
+  lastUpdatedAt?: string;
+  bolt12?: string;
+  amountmSat?: number;
+  title?: string;
+  vendor?: string;
+  description?: string;
 }
 
 export interface ListInvoices {
@@ -133,6 +155,7 @@ export interface Payment {
   amount_msat?: string;
   amount_sent_msat?: string;
   bolt11?: string;
+  bolt12?: string;
   created_at?: number;
   destination?: string;
   id?: number;
@@ -141,6 +164,8 @@ export interface Payment {
   payment_hash?: string;
   payment_preimage?: string;
   status?: string;
+  memo?: string;
+  partid?: string;
   is_group?: boolean;
   is_expanded?: boolean;
   total_parts?: number;
@@ -148,6 +173,7 @@ export interface Payment {
 }
 
 export interface PayRequest {
+  type?: string;
   currency?: string;
   created_at?: number;
   expiry?: number;
@@ -158,6 +184,75 @@ export interface PayRequest {
   min_final_cltv_expiry?: number;
   payment_hash?: string;
   signature?: string;
+}
+
+interface HopObj {
+  node_id: string;
+  enctlv: string;
+}
+interface Paths {
+  blinding: string;
+  path: HopObj[];
+}
+interface PayWindow {
+  seconds_before: number;
+  seconds_after: number;
+  proportional_amount?: boolean;
+}
+interface Recurrence {
+  time_unit: number;
+  period: number;
+  time_unit_name?: string;
+  basetime?: number;
+  start_any_period?: number;
+  limit?: number;
+  paywindow?: PayWindow;
+}
+
+export interface OfferRequest {
+  type?: string;
+  valid?: boolean;
+  offer_id?: string;
+  node_id?: string;
+  description?: string;
+  signature?: string;
+  chains?: string[];
+  issuer?: string;
+  currency?: string;
+  minor_unit?: number;
+  amount?: number;
+  amount_msat?: string;
+  send_invoice?: boolean;
+  refund_for?: string;
+  vendor?: string;
+  features?: string;
+  absolute_expiry?: string;
+  paths?: Paths[];
+  quantity_min?: number;
+  quantity_max?: number;
+  recurrence?: Recurrence;
+}
+
+interface Changes {
+  description_appended?: string;
+  description?: string;
+  vendor_removed?: string;
+  vendor?: string;
+  msat?: string;
+}
+
+interface NextPeriod {
+  counter: string;
+  starttime: string;
+  endtime: string;
+  paywindow_start: string;
+  paywindow_end: string;
+}
+
+export interface OfferInvoice {
+  invoice: string;
+  changes: Changes;
+  next_period?: NextPeriod;
 }
 
 export interface ForwardingEvent {
@@ -277,4 +372,74 @@ export interface RoutingPeer {
   events?: number;
   total_amount?: number;
   total_fee?: number;
+}
+
+export interface SaveChannel {
+  peerId: string;
+  satoshis: string;
+  announce?: boolean;
+  feeRate?: string;
+  minconf?: number;
+  utxos?: string[];
+}
+
+export interface GetNewAddress {
+  addressId?: string;
+  addressCode?: string;
+  addressTp?: string;
+  addressDetails?: string;
+}
+
+export interface DetachPeer {
+  id: string;
+  force: boolean;
+}
+
+export interface UpdateChannel {
+  channelId: string;
+  baseFeeMsat: number;
+  feeRate: number;
+}
+
+export interface CloseChannel {
+  id: string;
+  channelId: string;
+  force: boolean;
+}
+
+export interface DecodePayment {
+  routeParam: string;
+  fromDialog: boolean;
+}
+
+export interface SendPayment {
+  uiMessage: string;
+  fromDialog: boolean;
+  paymentType: PaymentTypes;
+  title?: string;
+  vendor?: string;
+  invoice?: string;
+  description?: string;
+  saveToDB?: boolean;
+  bolt12?: string;
+  amount?: number;
+  zeroAmtOffer?: boolean;
+  pubkey?: string;
+}
+
+export interface GetQueryRoutes {
+  destPubkey: string;
+  amount: number;
+}
+
+export interface ChannelLookup {
+  uiMessage: string;
+  shortChannelID: string;
+  showError: boolean;
+}
+
+export interface FetchInvoices {
+  num_max_invoices?: number;
+  index_offset?: number;
+  reversed?: boolean;
 }

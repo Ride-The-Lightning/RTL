@@ -1,12 +1,12 @@
 <div [perfectScrollbar] fxLayout="column" fxFlex="100" fxLayoutAlign="space-between start">
   <div fxLayout="column" fxFlex="90" fxLayoutAlign="start stretch" class="w-100">
-    <mat-select *ngIf="appConfig.nodes.length > 1" [value]="selNode" (selectionChange)="onNodeSelectionChange($event.value)" class="m-2 multi-node-select">
-      <mat-option *ngFor="let node of appConfig.nodes" [value]="node" tabindex="1">
+    <mat-select *ngIf="appConfig.nodes.length > 1" [value]="selConfigNodeIndex" (selectionChange)="onNodeSelectionChange($event.value)" class="m-2 multi-node-select">
+      <mat-option *ngFor="let node of appConfig.nodes" [value]="node.index" tabindex="1">
         {{node.lnNode}} ({{node.lnImplementation}})
       </mat-option>
     </mat-select>
     <mat-divider class="w-100"></mat-divider>
-    <mat-tree #tree [dataSource]="navMenus" [treeControl]="treeControlNested" *ngIf="settings.lnServerUrl">
+    <mat-tree #tree [dataSource]="navMenus" [treeControl]="treeControlNested" *ngIf="settings?.lnServerUrl">
       <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle routerLinkActive="active-link" routerLink="{{node.link}}">
         <div (click)="onChildNavClicked(node)">
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
@@ -44,7 +44,7 @@
       </mat-tree-node>
     </mat-tree>
   </div>
-  <div fxLayout="column" fxFlex="10" fxLayoutAlign="end stretch" class="w-100">
+  <div fxLayout="column" fxLayoutAlign="end stretch" class="w-100">
     <mat-tree [dataSource]="navMenusLogout" [treeControl]="treeControlLogout" *ngIf="showLogout">
       <mat-tree-node *matTreeNodeDef="let node" (click)="onClick(node)">
         <span *ngIf="node.iconType === 'SVG'" class="mr-2"><ng-container [ngTemplateOutlet]="node.icon"></ng-container></span>

@@ -9,21 +9,22 @@ import { CLHomeComponent } from './home/home.component';
 import { CLConnectionsComponent } from './peers-channels/connections.component';
 import { CLChannelsTablesComponent } from './peers-channels/channels/channels-tables/channels-tables.component';
 import { CLPeersComponent } from './peers-channels/peers/peers.component';
-import { CLLightningInvoicesComponent } from './transactions/invoices/lightning-invoices.component';
+import { CLLightningInvoicesTableComponent } from './transactions/invoices/invoices-table/lightning-invoices-table.component';
 import { CLOnChainReceiveComponent } from './on-chain/on-chain-receive/on-chain-receive.component';
 import { CLUTXOTablesComponent } from './on-chain/utxo-tables/utxo-tables.component';
 import { CLOnChainUtxosComponent } from './on-chain/utxo-tables/utxos/utxos.component';
 import { CLOnChainComponent } from './on-chain/on-chain.component';
 import { CLLightningPaymentsComponent } from './transactions/payments/lightning-payments.component';
 import { CLTransactionsComponent } from './transactions/transactions.component';
-import { CLLookupsComponent } from './lookups/lookups.component';
+import { CLLookupsComponent } from './graph/lookups/lookups.component';
 import { CLRoutingComponent } from './routing/routing.component';
 import { CLForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
 import { CLFailedTransactionsComponent } from './routing/failed-transactions/failed-transactions.component';
 import { CLRoutingPeersComponent } from './routing/routing-peers/routing-peers.component';
-import { CLChannelLookupComponent } from './lookups/channel-lookup/channel-lookup.component';
-import { CLNodeLookupComponent } from './lookups/node-lookup/node-lookup.component';
-import { CLQueryRoutesComponent } from './transactions/query-routes/query-routes.component';
+import { CLChannelLookupComponent } from './graph/lookups/channel-lookup/channel-lookup.component';
+import { CLNodeLookupComponent } from './graph/lookups/node-lookup/node-lookup.component';
+import { CLQueryRoutesComponent } from './graph/query-routes/query-routes.component';
+import { CLGraphComponent } from './graph/graph.component';
 import { CLChannelOpenTableComponent } from './peers-channels/channels/channels-tables/channel-open-table/channel-open-table.component';
 import { CLChannelPendingTableComponent } from './peers-channels/channels/channels-tables/channel-pending-table/channel-pending-table.component';
 import { CLBumpFeeComponent } from './peers-channels/channels/bump-fee-modal/bump-fee.component';
@@ -45,11 +46,15 @@ import { CLTransactionsReportComponent } from './reports/transactions/transactio
 import { CLOnChainSendComponent } from './on-chain/on-chain-send/on-chain-send.component';
 import { CLOpenChannelComponent } from './peers-channels/channels/open-channel-modal/open-channel.component';
 import { CLChannelInformationComponent } from './peers-channels/channels/channel-information-modal/channel-information.component';
-import { CLInvoiceInformationComponent } from './transactions/invoice-information-modal/invoice-information.component';
+import { CLInvoiceInformationComponent } from './transactions/invoices/invoice-information-modal/invoice-information.component';
 import { CLConnectPeerComponent } from './peers-channels/connect-peer/connect-peer.component';
 import { CLLightningSendPaymentsComponent } from './transactions/send-payment-modal/send-payment.component';
-import { CLCreateInvoiceComponent } from './transactions/create-invoice-modal/create-invoice.component';
+import { CLCreateInvoiceComponent } from './transactions/invoices/create-invoice-modal/create-invoice.component';
 import { CLOnChainSendModalComponent } from './on-chain/on-chain-send-modal/on-chain-send-modal.component';
+import { CLCreateOfferComponent } from './transactions/offers/create-offer-modal/create-offer.component';
+import { CLOfferInformationComponent } from './transactions/offers/offer-information-modal/offer-information.component';
+import { CLOffersTableComponent } from './transactions/offers/offers-table/offers-table.component';
+import { CLOfferBookmarksTableComponent } from './transactions/offers/offer-bookmarks-table/offer-bookmarks-table.component';
 
 import { CLUnlockedGuard } from '../shared/services/auth.guard';
 
@@ -64,7 +69,7 @@ import { CLUnlockedGuard } from '../shared/services/auth.guard';
     CLHomeComponent,
     CLPeersComponent,
     CLConnectionsComponent,
-    CLLightningInvoicesComponent,
+    CLLightningInvoicesTableComponent,
     CLLightningPaymentsComponent,
     CLTransactionsComponent,
     CLLookupsComponent,
@@ -75,6 +80,7 @@ import { CLUnlockedGuard } from '../shared/services/auth.guard';
     CLChannelLookupComponent,
     CLNodeLookupComponent,
     CLQueryRoutesComponent,
+    CLGraphComponent,
     CLOnChainReceiveComponent,
     CLUTXOTablesComponent,
     CLOnChainUtxosComponent,
@@ -105,11 +111,15 @@ import { CLUnlockedGuard } from '../shared/services/auth.guard';
     CLLightningSendPaymentsComponent,
     CLCreateInvoiceComponent,
     CLOnChainSendModalComponent,
-    CLChannelInformationComponent
+    CLChannelInformationComponent,
+    CLCreateOfferComponent,
+    CLOfferInformationComponent,
+    CLOffersTableComponent,
+    CLOfferBookmarksTableComponent
   ],
   providers: [
     CLUnlockedGuard
   ],
   bootstrap: [CLRootComponent]
 })
-export class CLModule {}
+export class CLModule { }

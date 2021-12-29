@@ -19,14 +19,14 @@
             <span class="foreground-secondary-text">{{channel.remote_alias}}</span>
           </div>
         </div>
-        <mat-divider [inset]="true" class="my-1"></mat-divider>        
+        <mat-divider [inset]="true" class="my-1"></mat-divider>
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Channel Point</h4>
             <span class="foreground-secondary-text">{{channel.channel_point}}</span>
           </div>
         </div>
-        <mat-divider [inset]="true" class="my-1"></mat-divider>        
+        <mat-divider [inset]="true" class="my-1"></mat-divider>
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Peer Public Key</h4>
@@ -132,12 +132,12 @@
           <mat-divider [inset]="true" class="my-1"></mat-divider>
         </div>
         <div class="mt-1" fxLayout="row" fxLayoutAlign="end center" fxFlex="100">
-          <button mat-stroked-button color="primary" type="reset" (click)="onShowAdvanced()" tabindex="1" class="mr-1">
+          <button mat-button color="primary" type="reset" (click)="onShowAdvanced()" tabindex="1" class="mr-1">
             <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
             <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
           </button>
-          <button *ngIf="showCopy" autoFocus mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="channel.chan_id" (copied)="onCopyChanID($event)">Copy Channel ID</button>
-          <button *ngIf="!showCopy" autoFocus mat-flat-button color="primary" tabindex="2" type="button" (click)="onClose()">OK</button>
+          <button *ngIf="showCopy" autoFocus mat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="channel.chan_id" (copied)="onCopyChanID($event)">Copy Channel ID</button>
+          <button *ngIf="!showCopy" autoFocus mat-button color="primary" tabindex="2" type="button" (click)="onClose()">OK</button>
         </div>
       </div>
     </mat-card-content>

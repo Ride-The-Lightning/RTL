@@ -1,12 +1,12 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="padding-gap-x-large">
   <div fxLayout="column" fxLayout.gt-xs="row wrap" fxLayoutAlign.gt-xs="end stretch" fxLayoutAlign="start stretch" class="page-sub-title-container">
     <mat-form-field fxFlex="30">
-      <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
+      <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" placeholder="Filter">
     </mat-form-field>
   </div>
   <div fxLayout="row" fxLayoutAlign="start start">
     <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container">
-      <mat-progress-bar *ngIf="apisCallStatus?.FetchTransactions.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+      <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table fxFlex="100" [dataSource]="listTransactions" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="time_stamp">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Date/Time </th>
@@ -51,9 +51,9 @@
         </ng-container>
         <ng-container matColumnDef="no_transaction">
           <td mat-footer-cell *matFooterCellDef colspan="4">
-            <p *ngIf="(!listTransactions?.data || listTransactions?.data?.length<1) && apisCallStatus?.FetchTransactions.status === apiCallStatusEnum.COMPLETED">No transaction available.</p>
-            <p *ngIf="(!listTransactions?.data || listTransactions?.data?.length<1) && apisCallStatus?.FetchTransactions.status === apiCallStatusEnum.INITIATED">Getting transactions...</p>
-            <p *ngIf="(!listTransactions?.data || listTransactions?.data?.length<1) && apisCallStatus?.FetchTransactions.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+            <p *ngIf="(!listTransactions?.data || listTransactions?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No transaction available.</p>
+            <p *ngIf="(!listTransactions?.data || listTransactions?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting transactions...</p>
+            <p *ngIf="(!listTransactions?.data || listTransactions?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
           </td>
         </ng-container>
         <tr mat-footer-row *matFooterRowDef="['no_transaction']" [ngClass]="{'display-none': listTransactions?.data && listTransactions?.data?.length>0}"></tr>

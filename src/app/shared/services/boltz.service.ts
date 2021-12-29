@@ -10,9 +10,9 @@ import { CommonService } from './common.service';
 import { LoggerService } from './logger.service';
 import { AlertTypeEnum, UI_MESSAGES } from './consts-enums-functions';
 import { ListSwaps } from '../models/boltzModels';
+import { closeSpinner, logout, openAlert, openSpinner } from '../../store/rtl.actions';
 
-import * as RTLActions from '../../store/rtl.actions';
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import { RTLState } from '../../store/rtl.state';
 
 @Injectable()
 export class BoltzService implements OnDestroy {
@@ -22,20 +22,20 @@ export class BoltzService implements OnDestroy {
   public swapsChanged = new BehaviorSubject<ListSwaps>({});
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private httpClient: HttpClient, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) { }
+  constructor(private httpClient: HttpClient, private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService) { }
 
   getSwapsList() {
     return this.swaps;
   }
 
   listSwaps() {
-    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_BOLTZ_SWAPS));
+    this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_BOLTZ_SWAPS }));
     this.swapUrl = API_URL + environment.BOLTZ_API + '/listSwaps';
     this.httpClient.get(this.swapUrl).
       pipe(takeUntil(this.unSubs[0])).
       subscribe({
         next: (swapResponse: ListSwaps) => {
-          this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_BOLTZ_SWAPS));
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_BOLTZ_SWAPS }));
           this.swaps = swapResponse;
           this.swapsChanged.next(this.swaps);
         }, error: (err) => this.handleErrorWithAlert(UI_MESSAGES.GET_BOLTZ_SWAPS, this.swapUrl, err)
@@ -48,12 +48,12 @@ export class BoltzService implements OnDestroy {
   }
 
   serviceInfo() {
-    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_SERVICE_INFO));
+    this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_SERVICE_INFO }));
     this.swapUrl = API_URL + environment.BOLTZ_API + '/serviceInfo';
     return this.httpClient.get(this.swapUrl).pipe(
       takeUntil(this.unSubs[1]),
       map((res) => {
-        this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_SERVICE_INFO));
+        this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_SERVICE_INFO }));
         return res;
       }),
       catchError((err) => this.handleErrorWithAlert(UI_MESSAGES.GET_SERVICE_INFO, this.swapUrl, err))
@@ -75,19 +75,21 @@ export class BoltzService implements OnDestroy {
   handleErrorWithoutAlert(actionName: string, uiMessage: string, err: { status: number, error: any }) {
     let errMsg = '';
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
-    this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
+    this.store.dispatch(closeSpinner({ payload: uiMessage }));
     if (err.status === 401) {
       errMsg = 'Unauthorized User.';
       this.logger.info('Redirecting to Login');
-      this.store.dispatch(new RTLActions.Logout());
+      this.store.dispatch(logout());
     } else if (err.status === 503) {
       errMsg = 'Unable to Connect to Boltz Server.';
-      this.store.dispatch(new RTLActions.OpenAlert({
-        data: {
-          type: 'ERROR',
-          alertTitle: 'Boltz Not Connected',
-          message: { code: err.status, message: 'Unable to Connect to Boltz Server', URL: actionName },
-          component: ErrorMessageComponent
+      this.store.dispatch(openAlert({
+        payload: {
+          data: {
+            type: 'ERROR',
+            alertTitle: 'Boltz Not Connected',
+            message: { code: err.status, message: 'Unable to Connect to Boltz Server', URL: actionName },
+            component: ErrorMessageComponent
+          }
         }
       }));
     } else {
@@ -100,33 +102,37 @@ export class BoltzService implements OnDestroy {
     let errMsg = '';
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
-      this.store.dispatch(new RTLActions.Logout());
+      this.store.dispatch(logout());
     }
     this.logger.error(err);
-    this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
+    this.store.dispatch(closeSpinner({ payload: uiMessage }));
     if (err.status === 401) {
       errMsg = 'Unauthorized User.';
       this.logger.info('Redirecting to Login');
-      this.store.dispatch(new RTLActions.Logout());
+      this.store.dispatch(logout());
     } else if (err.status === 503) {
       errMsg = 'Unable to Connect to Boltz Server.';
-      this.store.dispatch(new RTLActions.OpenAlert({
-        data: {
-          type: 'ERROR',
-          alertTitle: 'Boltz Not Connected',
-          message: { code: err.status, message: 'Unable to Connect to Boltz Server', URL: errURL },
-          component: ErrorMessageComponent
+      this.store.dispatch(openAlert({
+        payload: {
+          data: {
+            type: 'ERROR',
+            alertTitle: 'Boltz Not Connected',
+            message: { code: err.status, message: 'Unable to Connect to Boltz Server', URL: errURL },
+            component: ErrorMessageComponent
+          }
         }
       }));
     } else {
       errMsg = this.commonService.extractErrorMessage(err);
       const errCode = (err.error && err.error.error && err.error.error.code) ? err.error.error.code : (err.error && err.error.code) ? err.error.code : err.code ? err.code : err.status;
-      this.store.dispatch(new RTLActions.OpenAlert({
-        data: {
-          type: AlertTypeEnum.ERROR,
-          alertTitle: 'ERROR',
-          message: { code: errCode, message: errMsg, URL: errURL },
-          component: ErrorMessageComponent
+      this.store.dispatch(openAlert({
+        payload: {
+          data: {
+            type: AlertTypeEnum.ERROR,
+            alertTitle: 'ERROR',
+            message: { code: errCode, message: errMsg, URL: errURL },
+            component: ErrorMessageComponent
+          }
         }
       }));
     }

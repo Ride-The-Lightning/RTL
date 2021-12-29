@@ -37,17 +37,17 @@ export class BumpFeeComponent implements OnInit, OnDestroy {
   public bumpFeeError = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<BumpFeeComponent>, @Inject(MAT_DIALOG_DATA) public data: PendingOpenChannelInformation, private logger: LoggerService, private dataService: DataService, private snackBar: MatSnackBar) {}
+  constructor(public dialogRef: MatDialogRef<BumpFeeComponent>, @Inject(MAT_DIALOG_DATA) public data: PendingOpenChannelInformation, private logger: LoggerService, private dataService: DataService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.transTypes = this.transTypes.splice(1);
     this.bumpFeeChannel = this.data.pendingChannel;
-    const channelPointArr = this.bumpFeeChannel.channel && this.bumpFeeChannel.channel.channel_point ? this.bumpFeeChannel.channel.channel_point.split(':') : [];
-    this.bumpFeeChannel.channel.txid_str = channelPointArr[0] ? channelPointArr[0] : (this.bumpFeeChannel.channel && this.bumpFeeChannel.channel.channel_point ? this.bumpFeeChannel.channel.channel_point : '');
-    this.bumpFeeChannel.channel.output_index = channelPointArr[1] ? +channelPointArr[1] : null;
+    const channelPointArr = this.bumpFeeChannel.channel.channel_point.split(':') || [];
+    this.bumpFeeChannel.channel.txid_str = channelPointArr[0] || (this.bumpFeeChannel.channel && this.bumpFeeChannel.channel.channel_point ? this.bumpFeeChannel.channel.channel_point : '');
+    this.bumpFeeChannel.channel.output_index = +channelPointArr[1] || null;
   }
 
-  onBumpFee(): boolean|void {
+  onBumpFee(): boolean | void {
     if (this.outputIndex === this.bumpFeeChannel.channel.output_index) {
       this.outputIdx.control.setErrors({ pendingChannelOutputIndex: true });
       return true;
@@ -56,12 +56,14 @@ export class BumpFeeComponent implements OnInit, OnDestroy {
       return true;
     }
     this.dataService.bumpFee(this.bumpFeeChannel.channel.txid_str, this.outputIndex, this.blocks, this.fees).pipe(takeUntil(this.unSubs[0])).
-      subscribe({ next: (res) => {
-        this.dialogRef.close(false);
-      }, error: (err) => {
-        this.logger.error(err);
-        this.bumpFeeError = err.message ? err.message : err;
-      } });
+      subscribe({
+        next: (res) => {
+          this.dialogRef.close(false);
+        }, error: (err) => {
+          this.logger.error(err);
+          this.bumpFeeError = err.message ? err.message : err;
+        }
+      });
   }
 
   onCopyID(payload: string) {

@@ -1,17 +1,18 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faBolt, faServer, faNetworkWired, faLink } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Fees, ChannelsStatus, FeeRates } from '../../shared/models/clModels';
+import { GetInfo, Fees, ChannelsStatus, FeeRates, ForwardingEvent, LocalRemoteBalance, Channel } from '../../shared/models/clModels';
 import { APICallStatusEnum, ScreenSizeEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
-import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import { RTLState } from '../../store/rtl.state';
+import { channels, feeRatesPerKB, feeRatesPerKW, fees, forwardingHistory, localRemoteBalance, nodeInfoAndNodeSettingsAndAPIsStatus } from '../store/cl.selector';
 
 @Component({
   selector: 'rtl-cl-network-info',
@@ -27,7 +28,7 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
   public selNode: SelNodeChild = {};
   public information: GetInfo = {};
   public fees: Fees;
-  public channelsStatus: ChannelsStatus = {};
+  public channelsStatus: ChannelsStatus = { active: {}, pending: {}, inactive: {} };
   public feeRatesPerKB: FeeRates = {};
   public feeRatesPerKW: FeeRates = {};
   public nodeCardsOperator = [];
@@ -36,11 +37,17 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   public userPersonaEnum = UserPersonaEnum;
   public errorMessages = ['', '', '', '', '', '', ''];
-  public apisCallStatus: ApiCallsListCL = null;
+  public apiCallStatusNodeInfo: ApiCallStatusPayload = null;
+  public apiCallStatusLRBal: ApiCallStatusPayload = null;
+  public apiCallStatusChannels: ApiCallStatusPayload = null;
+  public apiCallStatusFees: ApiCallStatusPayload = null;
+  public apiCallStatusFHistory: ApiCallStatusPayload = null;
+  public apiCallStatusPerKB: ApiCallStatusPayload = null;
+  public apiCallStatusPerKW: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.nodeCardsMerchant = [
@@ -74,52 +81,74 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('cl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        this.errorMessages = ['', '', '', '', '', '', ''];
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[0] = (typeof (this.apisCallStatus.FetchInfo.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchInfo.message) : this.apisCallStatus.FetchInfo.message;
+    this.store.select(nodeInfoAndNodeSettingsAndAPIsStatus).pipe(takeUntil(this.unSubs[0])).
+      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: SelNodeChild, apisCallStatus: ApiCallStatusPayload[] }) => {
+        this.errorMessages[0] = '';
+        this.apiCallStatusNodeInfo = infoSettingsStatusSelector.apisCallStatus[0];
+        if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[0] = (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message;
         }
-        if (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[1] = (typeof (this.apisCallStatus.FetchFees.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchFees.message) : this.apisCallStatus.FetchFees.message;
+        this.selNode = infoSettingsStatusSelector.nodeSettings;
+        this.information = infoSettingsStatusSelector.information;
+        this.logger.info(infoSettingsStatusSelector);
+      });
+    this.store.select(channels).pipe(takeUntil(this.unSubs[1]),
+      withLatestFrom(this.store.select(localRemoteBalance))).
+      subscribe(([channelsSeletor, lrBalanceSeletor]: [{ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }, { localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }]) => {
+        this.errorMessages[2] = '';
+        this.errorMessages[3] = '';
+        this.apiCallStatusLRBal = channelsSeletor.apiCallStatus;
+        this.apiCallStatusChannels = lrBalanceSeletor.apiCallStatus;
+        if (this.apiCallStatusLRBal.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[2] = (typeof (this.apiCallStatusLRBal.message) === 'object') ? JSON.stringify(this.apiCallStatusLRBal.message) : this.apiCallStatusLRBal.message;
         }
-        if (rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[2] = (typeof (this.apisCallStatus.FetchLocalRemoteBalance.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchLocalRemoteBalance.message) : this.apisCallStatus.FetchLocalRemoteBalance.message;
+        if (this.apiCallStatusChannels.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[3] = (typeof (this.apiCallStatusChannels.message) === 'object') ? JSON.stringify(this.apiCallStatusChannels.message) : this.apiCallStatusChannels.message;
         }
-        if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[3] = (typeof (this.apisCallStatus.FetchChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchChannels.message) : this.apisCallStatus.FetchChannels.message;
+        this.channelsStatus.active.channels = channelsSeletor.activeChannels.length || 0;
+        this.channelsStatus.pending.channels = channelsSeletor.pendingChannels.length || 0;
+        this.channelsStatus.inactive.channels = channelsSeletor.inactiveChannels.length || 0;
+        this.channelsStatus.active.capacity = lrBalanceSeletor.localRemoteBalance.localBalance || 0;
+        this.channelsStatus.pending.capacity = lrBalanceSeletor.localRemoteBalance.pendingBalance || 0;
+        this.channelsStatus.inactive.capacity = lrBalanceSeletor.localRemoteBalance.inactiveBalance || 0;
+      });
+    this.store.select(fees).pipe(takeUntil(this.unSubs[2])).
+      subscribe((feesSeletor: { fees: Fees, apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessages[1] = '';
+        this.apiCallStatusFees = feesSeletor.apiCallStatus;
+        if (this.apiCallStatusFees.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[1] = (typeof (this.apiCallStatusFees.message) === 'object') ? JSON.stringify(this.apiCallStatusFees.message) : this.apiCallStatusFees.message;
         }
-        if (rtlStore.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[4] = (typeof (this.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(this.apisCallStatus.GetForwardingHistory.message) : this.apisCallStatus.GetForwardingHistory.message;
+        this.fees = feesSeletor.fees;
+      });
+    this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[3])).
+      subscribe((fhSeletor: { forwardingHistory: ForwardingEvent[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessages[4] = '';
+        this.apiCallStatusFHistory = fhSeletor.apiCallStatus;
+        if (this.apiCallStatusFHistory.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[4] = (typeof (this.apiCallStatusFHistory.message) === 'object') ? JSON.stringify(this.apiCallStatusFHistory.message) : this.apiCallStatusFHistory.message;
         }
-        if (rtlStore.apisCallStatus.FetchFeeRatesperkb.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[5] = (typeof (this.apisCallStatus.FetchFeeRatesperkb.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchFeeRatesperkb.message) : this.apisCallStatus.FetchFeeRatesperkb.message;
+        if (fhSeletor.forwardingHistory && fhSeletor.forwardingHistory.length) {
+          this.fees.totalTxCount = fhSeletor.forwardingHistory.length;
         }
-        if (rtlStore.apisCallStatus.FetchFeeRatesperkw.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[6] = (typeof (this.apisCallStatus.FetchFeeRatesperkw.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchFeeRatesperkw.message) : this.apisCallStatus.FetchFeeRatesperkw.message;
+      });
+    this.store.select(feeRatesPerKB).pipe(takeUntil(this.unSubs[4])).
+      subscribe((frbSeletor: { feeRatesPerKB: FeeRates, apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessages[5] = '';
+        this.apiCallStatusPerKB = frbSeletor.apiCallStatus;
+        if (this.apiCallStatusPerKB.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[5] = (typeof (this.apiCallStatusPerKB.message) === 'object') ? JSON.stringify(this.apiCallStatusPerKB.message) : this.apiCallStatusPerKB.message;
         }
-
-        this.selNode = rtlStore.nodeSettings;
-        this.information = rtlStore.information;
-        this.fees = rtlStore.fees;
-        this.fees.totalTxCount = 0;
-
-        if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.length) {
-          this.fees.totalTxCount = rtlStore.forwardingHistory.length;
+        this.feeRatesPerKB = frbSeletor.feeRatesPerKB;
+      });
+    this.store.select(feeRatesPerKW).pipe(takeUntil(this.unSubs[5])).
+      subscribe((frwSeletor: { feeRatesPerKW: FeeRates, apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessages[6] = '';
+        this.apiCallStatusPerKW = frwSeletor.apiCallStatus;
+        if (this.apiCallStatusPerKW.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[6] = (typeof (this.apiCallStatusPerKW.message) === 'object') ? JSON.stringify(this.apiCallStatusPerKW.message) : this.apiCallStatusPerKW.message;
         }
-
-        this.channelsStatus = {
-          active: { channels: rtlStore.information.num_active_channels, capacity: 0 },
-          inactive: { channels: rtlStore.information.num_inactive_channels, capacity: 0 },
-          pending: { channels: rtlStore.information.num_pending_channels, capacity: 0 }
-        };
-
-        this.feeRatesPerKB = rtlStore.feeRatesPerKB;
-        this.feeRatesPerKW = rtlStore.feeRatesPerKW;
-
-        this.logger.info(rtlStore);
+        this.feeRatesPerKW = frwSeletor.feeRatesPerKW;
       });
   }
 

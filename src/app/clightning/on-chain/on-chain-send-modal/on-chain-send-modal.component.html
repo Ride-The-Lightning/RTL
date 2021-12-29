@@ -23,23 +23,30 @@
             <mat-option *ngFor="let amountUnit of amountUnits" [value]="amountUnit">{{amountUnit}}</mat-option>
           </mat-select>
         </mat-form-field>
-        <div fxFlex="60" fxLayoutAlign="space-between stretch" fxLayout="row wrap">
-          <mat-form-field fxFlex="48" fxLayoutAlign="start end">
-            <mat-select tabindex="6" placeholder="Fee Rate" [(value)]="transaction.feeRate" [disabled]="flgMinConf">
-              <mat-option *ngFor="let feeRateType of feeRateTypes" [value]="feeRateType.feeRateId">
-                {{feeRateType.feeRateType}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-          <div fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
-            <mat-checkbox fxFlex="2" tabindex="7" color="primary" [(ngModel)]="flgMinConf" (change)="flgMinConf ? transaction.feeRate=null : transaction.minconf=null" name="flgMinConf" fxLayoutAlign="stretch start" class="mr-2"></mat-checkbox>
-            <mat-form-field fxFlex="98">
-              <input matInput [(ngModel)]="transaction.minconf" placeholder="Min Confirmation Blocks" type="number" name="blocks" [step]="1" [min]="0" tabindex="8" #blocks="ngModel" [required]="flgMinConf" [disabled]="!flgMinConf">
-              <mat-error *ngIf="flgMinConf && !transaction.minconf">Min Confirmation Blocks is required.</mat-error>
-            </mat-form-field>
+        <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
+          <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-sm="space-between center" fxLayout.gt-sm="row wrap">
+            <div fxFlex="48" fxLayoutAlign="space-between end">
+              <mat-form-field [fxFlex]="selFeeRate === 'customperkb' && !flgMinConf ? '48' : '100'" fxLayoutAlign="start center">
+                <mat-select tabindex="4" placeholder="Fee Rate" [(value)]="selFeeRate" (selectionChange)="customFeeRate=null" [disabled]="flgMinConf">
+                  <mat-option *ngFor="let feeRateType of feeRateTypes" [value]="feeRateType.feeRateId">
+                    {{feeRateType.feeRateType}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field *ngIf="selFeeRate === 'customperkb' && !flgMinConf" fxFlex="48" fxLayoutAlign="end center">
+                <input matInput [(ngModel)]="customFeeRate" placeholder="Fee Rate (Sats/vB)" type="number" name="custFeeRate" [step]="0.1" [min]="0" tabindex="4" #custFeeRate="ngModel" [required]="selFeeRate === 'customperkb' && !flgMinConf">
+                <mat-error *ngIf="selFeeRate === 'customperkb' && !flgMinConf && !customFeeRate">Fee Rate is required.</mat-error>
+              </mat-form-field>
+            </div>
+            <div fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
+              <mat-checkbox fxFlex="2" tabindex="5" color="primary" [(ngModel)]="flgMinConf" (change)="flgMinConf ? selFeeRate=null : minConfValue=null" name="flgMinConf" fxLayoutAlign="stretch start" [ngClass]="{'mr-6': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mr-2': screenSize === screenSizeEnum.MD || screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}"></mat-checkbox>
+              <mat-form-field fxFlex="98">
+                <input matInput [(ngModel)]="minConfValue" placeholder="Min Confirmation Blocks" type="number" name="blocks" [step]="1" [min]="0" tabindex="8" #blocks="ngModel" [required]="flgMinConf" [disabled]="!flgMinConf">
+                <mat-error *ngIf="flgMinConf && !minConfValue">Min Confirmation Blocks is required.</mat-error>
+              </mat-form-field>
+            </div>
           </div>
-        </div>
-        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch" *ngIf="isCompatibleVersion">
+          <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-sm="space-between center" fxLayout.gt-sm="row wrap" *ngIf="isCompatibleVersion">
           <mat-expansion-panel fxLayout="column" fxFlex="100" class="flat-expansion-panel mt-2" expanded="false" (closed)="onAdvancedPanelToggle(true)" (opened)="onAdvancedPanelToggle(false)">
             <mat-expansion-panel-header>
               <mat-panel-title>
@@ -67,9 +74,10 @@
           <span *ngIf="sendFundError !== ''">{{sendFundError}}</span>
         </div>
         <div class="mt-2" fxLayout="row" fxFlex="100" fxLayoutAlign="end center">
-          <button class="mr-1" mat-stroked-button color="primary" tabindex="7" type="reset">Clear Fields</button>
-          <button mat-flat-button color="primary" type="submit" tabindex="8">Send Funds</button>
+          <button class="mr-1" mat-button color="primary" tabindex="7" type="reset">Clear Fields</button>
+          <button mat-button color="primary" type="submit" tabindex="8">Send Funds</button>
         </div>
+      </div>
       </form>
     </mat-card-content>
   </div>
@@ -88,7 +96,7 @@
             </mat-form-field>
           </div>
           <div class="mt-2" fxLayout="row">
-            <button mat-stroked-button color="primary" tabindex="3" type="default" (click)="onAuthenticate()">Confirm</button>
+            <button mat-button color="primary" tabindex="3" type="default" (click)="onAuthenticate()">Confirm</button>
           </div>
         </form>
       </mat-step>
@@ -100,26 +108,31 @@
               <input matInput formControlName="transactionAddress" placeholder="Bitcoin Address" tabindex="4" name="address" required>
               <mat-error *ngIf="sendFundFormGroup.controls.transactionAddress.errors?.required">Bitcoin address is required.</mat-error>
             </mat-form-field>
-            <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
-              <mat-form-field fxFlex.gt-sm="48" fxLayoutAlign="start end">
-                <mat-select tabindex="5" placeholder="Fee Rate" formControlName="transactionFeeRate">
-                  <mat-option *ngFor="let feeRateType of feeRateTypes" [value]="feeRateType.feeRateId">
-                    {{feeRateType.feeRateType}}
-                  </mat-option>
-                </mat-select>
-                <mat-error *ngIf="sendFundFormGroup.controls.transactionFeeRate.errors?.required">Fees Rate is required.</mat-error>
-              </mat-form-field>
-              <div fxFlex.gt-sm="48" fxLayout="row" fxLayoutAlign="start center">
-                <mat-checkbox fxFlex="2" tabindex="6" color="primary" formControlName="flgMinConf" name="flgMinCon" class="mr-2"></mat-checkbox>
+            <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign.gt-sm="space-between center">
+              <div fxFlex="48" fxLayoutAlign="space-between end">
+                <mat-form-field [fxFlex]="sendFundFormGroup.controls.selFeeRate.value === 'customperkb' && !sendFundFormGroup.controls.flgMinConf.value ? '48' : '100'" fxLayoutAlign="start center">
+                  <mat-select tabindex="4" placeholder="Fee Rate" formControlName="selFeeRate">
+                    <mat-option *ngFor="let feeRateType of feeRateTypes" [value]="feeRateType.feeRateId">
+                      {{feeRateType.feeRateType}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field *ngIf="sendFundFormGroup.controls.selFeeRate.value === 'customperkb' && !sendFundFormGroup.controls.flgMinConf.value" fxFlex="48" fxLayoutAlign="end center">
+                  <input matInput formControlName="customFeeRate" placeholder="Fee Rate (Sats/vB)" type="number" name="custFeeRate" [step]="0.1" [min]="0" tabindex="4">
+                  <mat-error *ngIf="sendFundFormGroup.controls.selFeeRate.value === 'customperkb' && !sendFundFormGroup.controls.flgMinConf.value && !sendFundFormGroup.controls.customFeeRate.value">Fee Rate is required.</mat-error>
+                </mat-form-field>
+              </div>
+              <div fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
+                <mat-checkbox fxFlex="2" tabindex="5" color="primary" formControlName="flgMinConf" fxLayoutAlign="stretch start" [ngClass]="{'mr-6': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mr-2': screenSize === screenSizeEnum.MD || screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}"></mat-checkbox>
                 <mat-form-field fxFlex="98">
-                  <input matInput formControlName="transactionBlocks" placeholder="Min Confirmation Blocks" type="number" name="blocks" [step]="1" [min]="0" tabindex="7" required>
-                  <mat-error *ngIf="sendFundFormGroup.controls.transactionBlocks.errors?.required">Min confirmation blocks is required.</mat-error>
+                  <input matInput formControlName="minConfValue" placeholder="Min Confirmation Blocks" type="number" name="blocks" [step]="1" [min]="0" tabindex="8" [required]="sendFundFormGroup.controls.flgMinConf.value">
+                  <mat-error *ngIf="sendFundFormGroup.controls.flgMinConf.value && !sendFundFormGroup.controls.minConfValue.value">Min Confirmation Blocks is required.</mat-error>
                 </mat-form-field>
               </div>
             </div>
           </div>
           <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-            <button mat-stroked-button color="primary" tabindex="8" type="default" matStepperNext>Next</button>
+            <button mat-button color="primary" tabindex="8" type="default" matStepperNext>Next</button>
           </div>
         </form>
       </mat-step>
@@ -136,14 +149,14 @@
               <span *ngIf="sendFundError !== ''">{{sendFundError}}</span>
             </div>
             <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-              <button mat-stroked-button color="primary" tabindex="9" type="button" (click)="onSendFunds()">Sweep All Funds</button>
+              <button mat-button color="primary" tabindex="9" type="button" (click)="onSendFunds()">Sweep All Funds</button>
             </div>
           </div>
         </form>
       </mat-step>
     </mat-vertical-stepper>
-    <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">        
-      <button mat-stroked-button color="primary" tabindex="12" type="button" [mat-dialog-close]="false" default>{{flgValidated ? 'Close' : 'Cancel'}}</button>
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">
+      <button mat-button color="primary" tabindex="12" type="button" [mat-dialog-close]="false" default>{{flgValidated ? 'Close' : 'Cancel'}}</button>
     </div>
   </div>
 </ng-template>

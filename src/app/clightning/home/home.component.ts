@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { takeUntil, filter, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faSmile, faFrown } from '@fortawesome/free-regular-svg-icons';
@@ -9,13 +9,13 @@ import { faAngleDoubleDown, faAngleDoubleUp, faChartPie, faBolt, faServer, faNet
 
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { UserPersonaEnum, ScreenSizeEnum, APICallStatusEnum } from '../../shared/services/consts-enums-functions';
-import { ChannelsStatus, GetInfo, Fees, Channel, Balance } from '../../shared/models/clModels';
-import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
+import { ChannelsStatus, GetInfo, Fees, Channel, Balance, LocalRemoteBalance } from '../../shared/models/clModels';
+import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 
-import * as CLActions from '../store/cl.actions';
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import { RTLState } from '../../store/rtl.state';
+import { balance, channels, fees, localRemoteBalance, nodeInfoAndNodeSettingsAndAPIsStatus } from '../store/cl.selector';
 
 @Component({
   selector: 'rtl-cl-home',
@@ -32,7 +32,6 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   public faBolt = faBolt;
   public faServer = faServer;
   public faNetworkWired = faNetworkWired;
-  public flgChildInfoUpdated = false;
   public userPersonaEnum = UserPersonaEnum;
   public channelBalances = { localBalance: 0, remoteBalance: 0, balancedness: 0 };
   public selNode: SelNodeChild = {};
@@ -40,9 +39,9 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   public information: GetInfo = {};
   public totalBalance: Balance = {};
   public balances = { onchain: -1, lightning: -1, total: 0 };
-  public allChannels: Channel[] = [];
-  public channelsStatus: ChannelsStatus = {};
-  public allChannelsCapacity: Channel[] = [];
+  public activeChannels: Channel[] = [];
+  public channelsStatus: ChannelsStatus = { active: {}, pending: {}, inactive: {} };
+  public activeChannelsCapacity: Channel[] = [];
   public allInboundChannels: Channel[] = [];
   public allOutboundChannels: Channel[] = [];
   public totalInboundLiquidity = 0;
@@ -54,11 +53,16 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   public merchantCardHeight = '65px';
   public sortField = 'Balance Score';
   public errorMessages = ['', '', '', '', '', ''];
-  public apisCallStatus: ApiCallsListCL = null;
+  public apiCallStatusNodeInfo: ApiCallStatusPayload = null;
+  public apiCallStatusFees: ApiCallStatusPayload = null;
+  public apiCallStatusBalance: ApiCallStatusPayload = null;
+  public apiCallStatusLRBal: ApiCallStatusPayload = null;
+  public apiCallStatusChannels: ApiCallStatusPayload = null;
+  public apiCallStatusFHistory: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private commonService: CommonService, private router: Router) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private actions: Actions, private commonService: CommonService, private router: Router) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.operatorCards = [
@@ -89,8 +93,6 @@ export class CLHomeComponent implements OnInit, OnDestroy {
         { id: 'outboundLiq', goTo: 'Channels', link: '/cl/connections', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 3, rows: 8 }
       ];
     } else {
-      this.operatorCardHeight = ((window.screen.height * 0.77) / 2) + 'px';
-      this.merchantCardHeight = ((window.screen.height * 0.76) / 10) + 'px';
       this.operatorCards = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 3, rows: 1 },
         { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 1 },
@@ -108,79 +110,81 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('cl').
-      pipe(takeUntil(this.unSubs[1])).
-      subscribe((rtlStore) => {
-        this.errorMessages = ['', '', '', '', '', ''];
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[0] = (typeof (this.apisCallStatus.FetchInfo.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchInfo.message) : this.apisCallStatus.FetchInfo.message;
+    this.store.select(nodeInfoAndNodeSettingsAndAPIsStatus).pipe(takeUntil(this.unSubs[0])).
+      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: SelNodeChild, apisCallStatus: ApiCallStatusPayload[] }) => {
+        this.errorMessages[0] = '';
+        this.errorMessages[5] = '';
+        this.apiCallStatusNodeInfo = infoSettingsStatusSelector.apisCallStatus[0];
+        this.apiCallStatusFHistory = infoSettingsStatusSelector.apisCallStatus[1];
+        if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[0] = (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message;
         }
-        if (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[1] = (typeof (this.apisCallStatus.FetchFees.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchFees.message) : this.apisCallStatus.FetchFees.message;
+        if (this.apiCallStatusFHistory.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[5] = (typeof (this.apiCallStatusFHistory.message) === 'object') ? JSON.stringify(this.apiCallStatusFHistory.message) : this.apiCallStatusFHistory.message;
         }
-        if (rtlStore.apisCallStatus.FetchBalance.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[2] = (typeof (this.apisCallStatus.FetchBalance.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchBalance.message) : this.apisCallStatus.FetchBalance.message;
+        this.selNode = infoSettingsStatusSelector.nodeSettings;
+        this.information = infoSettingsStatusSelector.information;
+      });
+    this.store.select(fees).pipe(takeUntil(this.unSubs[1])).
+      subscribe((feesSeletor: { fees: Fees, apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessages[1] = '';
+        this.apiCallStatusFees = feesSeletor.apiCallStatus;
+        if (this.apiCallStatusFees.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[1] = (typeof (this.apiCallStatusFees.message) === 'object') ? JSON.stringify(this.apiCallStatusFees.message) : this.apiCallStatusFees.message;
         }
-        if (rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[3] = (typeof (this.apisCallStatus.FetchLocalRemoteBalance.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchLocalRemoteBalance.message) : this.apisCallStatus.FetchLocalRemoteBalance.message;
+        this.fees = feesSeletor.fees;
+        this.logger.info(feesSeletor);
+      });
+    this.store.select(channels).pipe(takeUntil(this.unSubs[2])).
+      subscribe((channelsSeletor: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessages[4] = '';
+        this.apiCallStatusChannels = channelsSeletor.apiCallStatus;
+        if (this.apiCallStatusChannels.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[4] = (typeof (this.apiCallStatusChannels.message) === 'object') ? JSON.stringify(this.apiCallStatusChannels.message) : this.apiCallStatusChannels.message;
         }
-        if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[4] = (typeof (this.apisCallStatus.FetchChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchChannels.message) : this.apisCallStatus.FetchChannels.message;
-        }
-        if (rtlStore.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[5] = (typeof (this.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(this.apisCallStatus.GetForwardingHistory.message) : this.apisCallStatus.GetForwardingHistory.message;
-        }
-
-        this.selNode = rtlStore.nodeSettings;
-        this.information = rtlStore.information;
-
-        this.fees = rtlStore.fees;
-
-        this.totalBalance = rtlStore.balance;
-        this.balances.onchain = rtlStore.balance.totalBalance;
-        this.balances.lightning = rtlStore.localRemoteBalance.localBalance;
-        this.balances.total = this.balances.lightning + this.balances.onchain;
-        this.balances = Object.assign({}, this.balances);
-
-        const local = (rtlStore.localRemoteBalance.localBalance) ? +rtlStore.localRemoteBalance.localBalance : 0;
-        const remote = (rtlStore.localRemoteBalance.remoteBalance) ? +rtlStore.localRemoteBalance.remoteBalance : 0;
-        const total = local + remote;
-        this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: +(1 - Math.abs((local - remote) / total)).toFixed(3) };
-
-        this.channelsStatus = {
-          active: { channels: rtlStore.information.num_active_channels, capacity: rtlStore.localRemoteBalance.localBalance },
-          pending: { channels: rtlStore.information.num_pending_channels, capacity: rtlStore.localRemoteBalance.pendingBalance || 0 },
-          inactive: { channels: rtlStore.information.num_inactive_channels, capacity: rtlStore.localRemoteBalance.inactiveBalance || 0 }
-        };
         this.totalInboundLiquidity = 0;
         this.totalOutboundLiquidity = 0;
-        this.allChannels = rtlStore.allChannels.filter((channel) => channel.state === 'CHANNELD_NORMAL' && channel.connected);
-        this.allChannelsCapacity = this.allChannels.length > 0 ? JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'balancedness'))) : [];
-        this.allInboundChannels = this.allChannels.length > 0 ? JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter((channel) => channel.msatoshi_to_them > 0), 'msatoshi_to_them'))) : [];
-        this.allOutboundChannels = this.allChannels.length > 0 ? JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter((channel) => channel.msatoshi_to_us > 0), 'msatoshi_to_us'))) : [];
-        this.allChannels.forEach((channel) => {
+        this.activeChannels = channelsSeletor.activeChannels;
+        this.activeChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels, 'balancedness'))) || [];
+        this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels.filter((channel) => channel.msatoshi_to_them > 0), 'msatoshi_to_them'))) || [];
+        this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels.filter((channel) => channel.msatoshi_to_us > 0), 'msatoshi_to_us'))) || [];
+        this.activeChannels.forEach((channel) => {
           this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil(channel.msatoshi_to_them / 1000);
           this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor(channel.msatoshi_to_us / 1000);
         });
-
-        if (this.balances.lightning >= 0 && this.balances.onchain >= 0 && this.fees.feeCollected >= 0) {
-          this.flgChildInfoUpdated = true;
-        } else {
-          this.flgChildInfoUpdated = false;
-        }
-        this.logger.info(rtlStore);
+        this.channelsStatus.active.channels = channelsSeletor.activeChannels.length || 0;
+        this.channelsStatus.pending.channels = channelsSeletor.pendingChannels.length || 0;
+        this.channelsStatus.inactive.channels = channelsSeletor.inactiveChannels.length || 0;
+        this.logger.info(channelsSeletor);
       });
-    this.actions.pipe(
-      takeUntil(this.unSubs[2]),
-      filter((action) => action.type === CLActions.FETCH_FEES_CL || action.type === CLActions.SET_FEES_CL)).
-      subscribe((action) => {
-        if (action.type === CLActions.FETCH_FEES_CL) {
-          this.flgChildInfoUpdated = false;
+    this.store.select(balance).pipe(takeUntil(this.unSubs[3]),
+      withLatestFrom(this.store.select(localRemoteBalance))).
+      subscribe(([balanceSeletor, lrBalanceSeletor]: [{ balance: Balance, apiCallStatus: ApiCallStatusPayload }, { localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }]) => {
+        this.errorMessages[2] = '';
+        this.apiCallStatusBalance = balanceSeletor.apiCallStatus;
+        if (this.apiCallStatusBalance.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[2] = (typeof (this.apiCallStatusBalance.message) === 'object') ? JSON.stringify(this.apiCallStatusBalance.message) : this.apiCallStatusBalance.message;
         }
-        if (action.type === CLActions.SET_FEES_CL) {
-          this.flgChildInfoUpdated = true;
+        this.errorMessages[3] = '';
+        this.apiCallStatusLRBal = lrBalanceSeletor.apiCallStatus;
+        if (this.apiCallStatusLRBal.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[3] = (typeof (this.apiCallStatusLRBal.message) === 'object') ? JSON.stringify(this.apiCallStatusLRBal.message) : this.apiCallStatusLRBal.message;
         }
+        this.totalBalance = balanceSeletor.balance;
+        this.balances.onchain = balanceSeletor.balance.totalBalance;
+        this.balances.lightning = lrBalanceSeletor.localRemoteBalance.localBalance;
+        this.balances.total = this.balances.lightning + this.balances.onchain;
+        this.balances = Object.assign({}, this.balances);
+
+        const local = (lrBalanceSeletor.localRemoteBalance.localBalance) ? +lrBalanceSeletor.localRemoteBalance.localBalance : 0;
+        const remote = (lrBalanceSeletor.localRemoteBalance.remoteBalance) ? +lrBalanceSeletor.localRemoteBalance.remoteBalance : 0;
+        const total = local + remote;
+        this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: +(1 - Math.abs((local - remote) / total)).toFixed(3) };
+        this.channelsStatus.active.capacity = lrBalanceSeletor.localRemoteBalance.localBalance || 0;
+        this.channelsStatus.pending.capacity = lrBalanceSeletor.localRemoteBalance.pendingBalance || 0;
+        this.channelsStatus.inactive.capacity = lrBalanceSeletor.localRemoteBalance.inactiveBalance || 0;
+        this.logger.info(balanceSeletor);
+        this.logger.info(lrBalanceSeletor);
       });
   }
 
@@ -191,14 +195,14 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   onsortChannelsBy() {
     if (this.sortField === 'Balance Score') {
       this.sortField = 'Capacity';
-      this.allChannelsCapacity = this.allChannels.sort((a, b) => {
+      this.activeChannelsCapacity = this.activeChannels.sort((a, b) => {
         const x = +a.msatoshi_to_us + +a.msatoshi_to_them;
         const y = +b.msatoshi_to_them + +b.msatoshi_to_them;
         return ((x > y) ? -1 : ((x < y) ? 1 : 0));
       });
     } else {
       this.sortField = 'Balance Score';
-      this.allChannelsCapacity = this.allChannels.length > 0 ? JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'balancedness'))) : [];
+      this.activeChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels, 'balancedness'))) || [];
     }
   }
 

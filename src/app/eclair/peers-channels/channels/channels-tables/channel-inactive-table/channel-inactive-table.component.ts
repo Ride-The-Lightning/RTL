@@ -7,17 +7,18 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
-import { Channel, GetInfo } from '../../../../../shared/models/eclModels';
+import { Channel, ChannelsStatus, GetInfo, LightningBalance, OnChainBalance, Peer } from '../../../../../shared/models/eclModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum, APICallStatusEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 
 import { ECLChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { RTLEffects } from '../../../../../store/rtl.effects';
-import * as ECLActions from '../../../../store/ecl.actions';
-import * as RTLActions from '../../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../../store/rtl.reducers';
-import { ApiCallsListECL } from '../../../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
+import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
+import { RTLState } from '../../../../../store/rtl.state';
+import { closeChannel } from '../../../../store/ecl.actions';
+import { allChannelsInfo, eclNodeInformation, onchainBalance, peers } from '../../../../store/ecl.selector';
 
 @Component({
   selector: 'rtl-ecl-channel-inactive-table',
@@ -29,8 +30,8 @@ import { ApiCallsListECL } from '../../../../../shared/models/apiCallsPayload';
 })
 export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faEye = faEye;
   public faEyeSlash = faEyeSlash
   public inactiveChannels: Channel[];
@@ -48,11 +49,11 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListECL = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -70,20 +71,28 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
   }
 
   ngOnInit() {
-    this.store.select('ecl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[0])).
+      subscribe((allChannelsSelector: ({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload })) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchChannels.message) : this.apisCallStatus.FetchChannels.message;
+        this.apiCallStatus = allChannelsSelector.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.information = rtlStore.information;
-        this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
-        this.totalBalance = rtlStore.onchainBalance.total;
-        this.inactiveChannels = rtlStore.inactiveChannels;
+        this.inactiveChannels = allChannelsSelector.inactiveChannels;
         this.loadChannelsTable();
-        this.logger.info(rtlStore);
+        this.logger.info(allChannelsSelector);
+      });
+    this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[1])).
+      subscribe((nodeInfo: GetInfo) => {
+        this.information = nodeInfo;
+      });
+    this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
+      subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.numPeers = (peersSelector.peers && peersSelector.peers.length) ? peersSelector.peers.length : 0;
+      });
+    this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[3])).
+      subscribe((ocBalSelector: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.totalBalance = ocBalSelector.onchainBalance.total;
       });
   }
 
@@ -95,20 +104,26 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
 
   onChannelClose(channelToClose: Channel, forceClose: boolean) {
     const alertTitle = (forceClose) ? 'Force Close Channel' : 'Close Channel';
-    const titleMessage = (forceClose) ? ('Force closing channel: ' + channelToClose.channelId) : ('Closing channel: ' + channelToClose.channelId);
     const yesBtnText = (forceClose) ? 'Force Close' : 'Close Channel';
-    this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-      type: AlertTypeEnum.CONFIRM,
-      alertTitle: alertTitle,
-      titleMessage: titleMessage,
-      noBtnText: 'Cancel',
-      yesBtnText: yesBtnText
-    } }));
+    const titleMessage = (forceClose) ?
+      ('Force closing channel: ' + ((!channelToClose.alias && !channelToClose.shortChannelId) ? channelToClose.channelId : (channelToClose.alias && channelToClose.shortChannelId) ? channelToClose.alias + ' (' + channelToClose.shortChannelId + ')' : channelToClose.alias ? channelToClose.alias : channelToClose.shortChannelId)) :
+      ('Closing channel: ' + ((!channelToClose.alias && !channelToClose.shortChannelId) ? channelToClose.channelId : (channelToClose.alias && channelToClose.shortChannelId) ? channelToClose.alias + ' (' + channelToClose.shortChannelId + ')' : channelToClose.alias ? channelToClose.alias : channelToClose.shortChannelId));
+    this.store.dispatch(openConfirmation({
+      payload: {
+        data: {
+          type: AlertTypeEnum.CONFIRM,
+          alertTitle: alertTitle,
+          titleMessage: titleMessage,
+          noBtnText: 'Cancel',
+          yesBtnText: yesBtnText
+        }
+      }
+    }));
     this.rtlEffects.closeConfirm.
-      pipe(takeUntil(this.unSubs[1])).
+      pipe(takeUntil(this.unSubs[4])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.store.dispatch(new ECLActions.CloseChannel({ channelId: channelToClose.channelId, force: forceClose }));
+          this.store.dispatch(closeChannel({ payload: { channelId: channelToClose.channelId, force: forceClose } }));
         }
       });
   }
@@ -118,11 +133,15 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
   }
 
   onChannelClick(selChannel: Channel, event: any) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      channel: selChannel,
-      channelsType: 'inactive',
-      component: ECLChannelInformationComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          channel: selChannel,
+          channelsType: 'inactive',
+          component: ECLChannelInformationComponent
+        }
+      }
+    }));
   }
 
   loadChannelsTable() {
@@ -132,6 +151,7 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
     this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.channels.filterPredicate = (channel: Channel, fltr: string) => JSON.stringify(channel).toLowerCase().includes(fltr);
     this.channels.paginator = this.paginator;
+    this.applyFilter();
     this.logger.info(this.channels);
   }
 

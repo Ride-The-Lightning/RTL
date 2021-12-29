@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -6,14 +6,14 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 
-import { ForwardingEvent, RoutingPeers } from '../../../shared/models/lndModels';
+import { ForwardingEvent, RoutingPeers, SwitchRes } from '../../../shared/models/lndModels';
 import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, getPaginatorLabel, PAGE_SIZE, PAGE_SIZE_OPTIONS, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
-import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
-
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { openAlert } from '../../../store/rtl.actions';
+import { RTLState } from '../../../store/rtl.state';
+import { forwardingHistory } from '../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-routing-peers',
@@ -23,16 +23,16 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') }
   ]
 })
-export class RoutingPeersComponent implements OnInit, OnDestroy {
+export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('tableIn', { read: MatSort, static: false }) sortIn: MatSort;
   @ViewChild('tableOut', { read: MatSort, static: false }) sortOut: MatSort;
-  @ViewChild('paginatorIn', { static: false }) paginatorIn: MatPaginator|undefined;
-  @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator|undefined;
+  @ViewChild('paginatorIn', { static: false }) paginatorIn: MatPaginator | undefined;
+  @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator | undefined;
   public routingPeersData = [];
   public displayedColumns: any[] = [];
-  public RoutingPeersIncoming: any;
-  public RoutingPeersOutgoing: any;
+  public RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>([]);
+  public RoutingPeersOutgoing = new MatTableDataSource<RoutingPeers>([]);
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -41,11 +41,11 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
   public errorMessage = '';
   public filterIn = '';
   public filterOut = '';
-  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -63,24 +63,30 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[0])).
+      subscribe((fhSelector: { forwardingHistory: SwitchRes, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(this.apisCallStatus.GetForwardingHistory.message) : this.apisCallStatus.GetForwardingHistory.message;
+        this.apiCallStatus = fhSelector.apiCallStatus;
+        if (fhSelector.apiCallStatus?.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events) {
-          this.routingPeersData = rtlStore.forwardingHistory.forwarding_events;
+        if (fhSelector.forwardingHistory.forwarding_events) {
+          this.routingPeersData = fhSelector.forwardingHistory.forwarding_events;
         } else {
           this.routingPeersData = [];
         }
         if (this.routingPeersData.length > 0 && this.sortIn && this.paginatorIn && this.sortOut && this.paginatorOut) {
           this.loadRoutingPeersTable(this.routingPeersData);
         }
-        this.logger.info(rtlStore);
+        this.logger.info(fhSelector.apiCallStatus);
+        this.logger.info(fhSelector.forwardingHistory);
       });
+  }
+
+  ngAfterViewInit() {
+    if (this.routingPeersData.length > 0) {
+      this.loadRoutingPeersTable(this.routingPeersData);
+    }
   }
 
   onRoutingPeerClick(selRPeer: RoutingPeers, event: any, direction: string) {
@@ -92,20 +98,22 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
     }
     const reorderedRoutingPeer = [
       [{ key: 'chan_id', value: selRPeer.chan_id, title: 'Channel ID', width: 50, type: DataTypeEnum.STRING },
-        { key: 'alias', value: selRPeer.alias, title: 'Peer Alias', width: 50, type: DataTypeEnum.STRING }],
+      { key: 'alias', value: selRPeer.alias, title: 'Peer Alias', width: 50, type: DataTypeEnum.STRING }],
       [{ key: 'events', value: selRPeer.events, title: 'Events', width: 50, type: DataTypeEnum.NUMBER },
-        { key: 'total_amount', value: selRPeer.total_amount, title: 'Total Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }]
+      { key: 'total_amount', value: selRPeer.total_amount, title: 'Total Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: alertTitle,
-      message: reorderedRoutingPeer
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: alertTitle,
+          message: reorderedRoutingPeer
+        }
+      }
+    }));
   }
 
   loadRoutingPeersTable(forwardingEvents: ForwardingEvent[]) {
-    this.filterIn = '';
-    this.filterOut = '';
     if (forwardingEvents.length > 0) {
       const results = this.groupRoutingPeers(forwardingEvents);
       this.RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>(results[0]);
@@ -123,6 +131,8 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
       this.RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>([]);
       this.RoutingPeersOutgoing = new MatTableDataSource<RoutingPeers>([]);
     }
+    this.applyIncomingFilter();
+    this.applyOutgoingFilter();
   }
 
   groupRoutingPeers(forwardingEvents: ForwardingEvent[]) {
@@ -147,12 +157,12 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
     return [this.commonService.sortDescByKey(incomingResults, 'total_amount'), this.commonService.sortDescByKey(outgoingResults, 'total_amount')];
   }
 
-  applyIncomingFilter(selFilter: any) {
-    this.RoutingPeersIncoming.filter = selFilter.value.trim().toLowerCase();
+  applyIncomingFilter() {
+    this.RoutingPeersIncoming.filter = this.filterIn.toLowerCase();
   }
 
-  applyOutgoingFilter(selFilter: any) {
-    this.RoutingPeersOutgoing.filter = selFilter.value.trim().toLowerCase();
+  applyOutgoingFilter() {
+    this.RoutingPeersOutgoing.filter = this.filterOut.toLowerCase();
   }
 
   ngOnDestroy() {

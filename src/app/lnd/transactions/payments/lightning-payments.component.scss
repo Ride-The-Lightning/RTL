@@ -3,10 +3,11 @@
 }
 
 .mat-column-payment_hash {
-  flex: 1 1 20%;
-  white-space: nowrap;
-  overflow: hidden;  
-  text-overflow: ellipsis;
+  flex: 0 0 20%;
+  width: 20%;
+  & .ellipsis-parent {
+    display: flex;
+  }
 }
 
 .mat-column-groupAction {
@@ -24,6 +25,8 @@
 
 .htlc-row-span {
   min-height: 4.2rem;
+  place-content: center flex-start;
+  align-items: center;
 }
 
 .mat-column-groupTotal {

@@ -1,7 +1,7 @@
-<div fxLayout="column" *ngIf="selNode.userPersona === userPersonaEnum.OPERATOR; else merchantDashboard">
+<div fxLayout="column" *ngIf="selNode?.userPersona === userPersonaEnum.OPERATOR; else merchantDashboard">
   <div fxLayout="row" fxLayoutAlign="start start" class="page-title-container mb-0">
-    <fa-icon [icon]="apisCallStatus?.FetchInfo.status === apiCallStatusEnum.ERROR ? faFrown : faSmile" class="page-title-img mr-1"></fa-icon>
-    <span class="page-title">{{apisCallStatus?.FetchInfo.status === apiCallStatusEnum.COMPLETED ? 'Welcome ' + information.alias + '! Your node is up and running.' : apisCallStatus?.FetchInfo.status === apiCallStatusEnum.INITIATED ? 'Wait! Getting your node information...' : 'Error! Please check the server connection.'}}</span>
+    <fa-icon [icon]="apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR ? faFrown : faSmile" class="page-title-img mr-1"></fa-icon>
+    <span class="page-title">{{apiCallStatusNodeInfo.status === apiCallStatusEnum.COMPLETED ? 'Welcome ' + information.alias + '! Your node is up and running.' : apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED ? 'Wait! Getting your node information...' : 'Error! Please check the server connection.'}}</span>
   </div>
   <mat-grid-list cols="10" [rowHeight]="operatorCardHeight">
     <mat-grid-tile *ngFor="let card of operatorCards" [colspan]="card.cols" [rowspan]="card.rows">
@@ -26,17 +26,17 @@
         </mat-card-header>
         <mat-card-content fxLayout="column" fxFlex="{{card.id === 'node' || card.id === 'balance' ? 70 : card.id === 'fee' || card.id === 'status' ? 78 : 90}}"
           [ngClass]="{'dashboard-card-content': true, 
-          'error-border': (card.id === 'node' && apisCallStatus?.FetchInfo.status === apiCallStatusEnum.ERROR) ||
-                          (card.id === 'balance' && (apisCallStatus?.FetchAllChannels.status === apiCallStatusEnum.ERROR || apisCallStatus.FetchBalanceBlockchain.status === apiCallStatusEnum.ERROR)) ||
-                          (card.id === 'capacity' && apisCallStatus?.FetchAllChannels.status === apiCallStatusEnum.ERROR) ||
-                          (card.id === 'fee' && apisCallStatus?.FetchFees.status === apiCallStatusEnum.ERROR) ||
-                          (card.id === 'status' && (apisCallStatus?.FetchAllChannels.status === apiCallStatusEnum.ERROR || apisCallStatus?.FetchPendingChannels.status === apiCallStatusEnum.ERROR))}">
+          'error-border': (card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR) ||
+                          (card.id === 'balance' && (apiCallStatusChannels.status === apiCallStatusEnum.ERROR || apiCallStatusBlockchainBalance.status === apiCallStatusEnum.ERROR)) ||
+                          (card.id === 'capacity' && apiCallStatusChannels.status === apiCallStatusEnum.ERROR) ||
+                          (card.id === 'fee' && apiCallStatusFees.status === apiCallStatusEnum.ERROR) ||
+                          (card.id === 'status' && (apiCallStatusChannels.status === apiCallStatusEnum.ERROR || apiCallStatusPendingChannels.status === apiCallStatusEnum.ERROR))}">
           <mat-progress-bar mode="indeterminate"
-            *ngIf="(card.id === 'node' && apisCallStatus?.FetchInfo.status === apiCallStatusEnum.INITIATED) ||
-            (card.id === 'balance' && (apisCallStatus?.FetchAllChannels.status === apiCallStatusEnum.INITIATED || apisCallStatus.FetchBalanceBlockchain.status === apiCallStatusEnum.INITIATED)) ||
-            (card.id === 'capacity' && apisCallStatus?.FetchAllChannels.status === apiCallStatusEnum.INITIATED) ||
-            (card.id === 'fee' && apisCallStatus?.FetchFees.status === apiCallStatusEnum.INITIATED) ||
-            (card.id === 'status' && (apisCallStatus?.FetchAllChannels.status === apiCallStatusEnum.INITIATED || apisCallStatus?.FetchPendingChannels.status === apiCallStatusEnum.INITIATED))"
+            *ngIf="(card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED) ||
+            (card.id === 'balance' && (apiCallStatusChannels.status === apiCallStatusEnum.INITIATED || apiCallStatusBlockchainBalance.status === apiCallStatusEnum.INITIATED)) ||
+            (card.id === 'capacity' && apiCallStatusChannels.status === apiCallStatusEnum.INITIATED) ||
+            (card.id === 'fee' && apiCallStatusFees.status === apiCallStatusEnum.INITIATED) ||
+            (card.id === 'status' && (apiCallStatusChannels.status === apiCallStatusEnum.INITIATED || apiCallStatusPendingChannels.status === apiCallStatusEnum.INITIATED))"
           ></mat-progress-bar>
           <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
             <rtl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="false"></rtl-node-info>
@@ -77,13 +77,13 @@
         </mat-card-header>
         <mat-card-content fxLayout="column" fxLayoutAlign="start stretch"  fxFlex="{{card.id === 'transactions' ? 100 : card.id === 'balance' ? 70: 90}}"
           [ngClass]="{'dashboard-card-content': true, 
-          'error-border': (card.id === 'node' && apisCallStatus?.FetchInfo.status === apiCallStatusEnum.ERROR) ||
-                          (card.id === 'balance' && (apisCallStatus?.FetchAllChannels.status === apiCallStatusEnum.ERROR || apisCallStatus.FetchBalanceBlockchain.status === apiCallStatusEnum.ERROR)) ||
-                          ((card.id === 'inboundLiq' || card.id === 'outboundLiq') && apisCallStatus?.FetchAllChannels.status === apiCallStatusEnum.ERROR)}">
+          'error-border': (card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR) ||
+                          (card.id === 'balance' && (apiCallStatusChannels.status === apiCallStatusEnum.ERROR || apiCallStatusBlockchainBalance.status === apiCallStatusEnum.ERROR)) ||
+                          ((card.id === 'inboundLiq' || card.id === 'outboundLiq') && apiCallStatusChannels.status === apiCallStatusEnum.ERROR)}">
           <mat-progress-bar mode="indeterminate"
-            *ngIf="(card.id === 'node' && apisCallStatus?.FetchInfo.status === apiCallStatusEnum.INITIATED) ||
-            (card.id === 'balance' && (apisCallStatus?.FetchAllChannels.status === apiCallStatusEnum.INITIATED || apisCallStatus.FetchBalanceBlockchain.status === apiCallStatusEnum.INITIATED)) ||
-            ((card.id === 'inboundLiq' || card.id === 'outboundLiq') && apisCallStatus?.FetchAllChannels.status === apiCallStatusEnum.INITIATED)"
+            *ngIf="(card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED) ||
+            (card.id === 'balance' && (apiCallStatusChannels.status === apiCallStatusEnum.INITIATED || apiCallStatusBlockchainBalance.status === apiCallStatusEnum.INITIATED)) ||
+            ((card.id === 'inboundLiq' || card.id === 'outboundLiq') && apiCallStatusChannels.status === apiCallStatusEnum.INITIATED)"
           ></mat-progress-bar>
           <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
             <rtl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information"></rtl-node-info>

@@ -1,4 +1,4 @@
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 @import "constants";
 @import "mixins";
 
@@ -25,7 +25,7 @@
   .mat-expansion-panel.flat-expansion-panel {
     box-shadow: none;
     padding: 0;
-    border-radius: 4px;
+    border-radius: 2px;
     background: none;
   }
 
@@ -142,6 +142,16 @@
     }
   }
 
+  .mat-dialog-container {
+    padding: 0;
+    overflow: hidden;
+    border-radius: 2px;
+  }
+  
+  .mat-button, .mat-icon-button, .mat-stroked-button, .mat-flat-button {
+    border-radius: 2px;
+  }
+  
   .cc-data-block {
     & .cc-data-title {
       font-size: 80%;
@@ -162,7 +172,7 @@
 
   table.mat-table {
     border: 1px solid $foreground-divider;
-    border-radius: 4px;
+    border-radius: 2px;
     background: none;
     thead tr th {
       color: $foreground-base;
@@ -175,7 +185,7 @@
 
   .bordered-box {
     border: 1px solid $foreground-divider;
-    border-radius: 4px;
+    border-radius: 2px;
     background: none;
     &.read-only {
       background-color: $hover-background;
@@ -368,6 +378,7 @@
       border: 1px solid $red-color;
       background-color: $red-background-color;
       color: $red-color;
+      overflow-wrap: break-word;
       & .alert-icon.ng-fa-icon {
         color: $red-color;
       }
@@ -438,4 +449,643 @@
   .mat-paginator-container {
     padding: 0;
   }
+
+  .invoice-animation-container {
+    position: relative;
+    width: 100%;
+    -moz-transform: translateY(0%);
+    -ms-transform: translateY(0%);
+    -webkit-transform: translateY(0%);
+    transform: translateY(0%);
+  }
+
+  .invoice-animation-div {
+    position: relative;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .invoice-animation-div .particles-circle {
+    position: absolute;
+    background-color: $primary-color;
+    width: 30px;
+    height: 30px;
+    top: 10px;
+    left: 50%;
+    margin-top: -13px;
+    margin-left: -45%;
+    z-index: -1;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    -moz-transform: scale(0);
+    -ms-transform: scale(0);
+    -webkit-transform: scale(0);
+    transform: scale(0);
+    visibility: hidden;
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(odd) {
+    border: solid 2px $primary-color;
+    background-color: transparent;
+  }
+  @keyframes particles-1 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: 199px;
+      top: 201px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(1) {
+    animation: particles-1 2.5s 0.025s;
+  }
+  @keyframes particles-2 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: -40px;
+      top: 82px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(2) {
+    animation: particles-2 2.5s 0.05s;
+  }
+  @keyframes particles-3 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: 162px;
+      top: 109px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(3) {
+    animation: particles-3 2.5s 0.075s;
+  }
+  @keyframes particles-4 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: 223px;
+      top: 78px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(4) {
+    animation: particles-4 2.5s 0.1s;
+  }
+  @keyframes particles-5 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: 184px;
+      top: 113px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(5) {
+    animation: particles-5 2.5s 0.125s;
+  }
+  @keyframes particles-6 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: -42px;
+      top: -238px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(6) {
+    animation: particles-6 2.5s 0.15s;
+  }
+  @keyframes particles-7 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: 150px;
+      top: -98px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(7) {
+    animation: particles-7 2.5s 0.175s;
+  }
+  @keyframes particles-8 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: 62px;
+      top: 225px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(8) {
+    animation: particles-8 2.5s 0.2s;
+  }
+  @keyframes particles-9 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: 113px;
+      top: 86px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(9) {
+    animation: particles-9 2.5s 0.225s;
+  }
+  @keyframes particles-10 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: 229px;
+      top: -127px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(10) {
+    animation: particles-10 2.5s 0.25s;
+  }
+  @keyframes particles-11 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: 243px;
+      top: -106px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(11) {
+    animation: particles-11 2.5s 0.275s;
+  }
+  @keyframes particles-12 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: -168px;
+      top: 138px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(12) {
+    animation: particles-12 2.5s 0.3s;
+  }
+  @keyframes particles-13 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: -124px;
+      top: 62px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(13) {
+    animation: particles-13 2.5s 0.325s;
+  }
+  @keyframes particles-14 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: 246px;
+      top: 30px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(14) {
+    animation: particles-14 2.5s 0.35s;
+  }
+  @keyframes particles-15 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: -22px;
+      top: -171px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(15) {
+    animation: particles-15 2.5s 0.375s;
+  }
+  @keyframes particles-16 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: -144px;
+      top: 115px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(16) {
+    animation: particles-16 2.5s 0.4s;
+  }
+  @keyframes particles-17 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: 209px;
+      top: 84px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(17) {
+    animation: particles-17 2.5s 0.425s;
+  }
+  @keyframes particles-18 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: 84px;
+      top: -190px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(18) {
+    animation: particles-18 2.5s 0.45s;
+  }
+  @keyframes particles-19 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: -94px;
+      top: 208px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(19) {
+    animation: particles-19 2.5s 0.475s;
+  }
+  @keyframes particles-20 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: 147px;
+      top: 203px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(20) {
+    animation: particles-20 2.5s 0.5s;
+  }
+  @keyframes particles-21 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: 178px;
+      top: 206px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(21) {
+    animation: particles-21 2.5s 0.525s;
+  }
+  @keyframes particles-22 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: -10px;
+      top: -226px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(22) {
+    animation: particles-22 2.5s 0.55s;
+  }
+  @keyframes particles-23 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: 3px;
+      top: 222px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(23) {
+    animation: particles-23 2.5s 0.575s;
+  }
+  @keyframes particles-24 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: -182px;
+      top: -44px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(24) {
+    animation: particles-24 2.5s 0.6s;
+  }
+  @keyframes particles-25 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: -146px;
+      top: 166px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(25) {
+    animation: particles-25 2.5s 0.625s;
+  }
+  @keyframes particles-26 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: 144px;
+      top: 218px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(26) {
+    animation: particles-26 2.5s 0.65s;
+  }
+  @keyframes particles-27 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: 48px;
+      top: 222px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(27) {
+    animation: particles-27 2.5s 0.675s;
+  }
+  @keyframes particles-28 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: -48px;
+      top: 50px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(28) {
+    animation: particles-28 2.5s 0.7s;
+  }
+  @keyframes particles-29 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: -228px;
+      top: -15px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(29) {
+    animation: particles-29 2.5s 0.725s;
+  }
+  @keyframes particles-30 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: 91px;
+      top: -199px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(30) {
+    animation: particles-30 2.5s 0.75s;
+  }
+  @keyframes particles-31 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: -40px;
+      top: 104px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(31) {
+    animation: particles-31 2.5s 0.775s;
+  }
+  @keyframes particles-32 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: -102px;
+      top: 4px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(32) {
+    animation: particles-32 2.5s 0.8s;
+  }
+  @keyframes particles-33 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: -26px;
+      top: -89px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(33) {
+    animation: particles-33 2.5s 0.825s;
+  }
+  @keyframes particles-34 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: -151px;
+      top: -149px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(34) {
+    animation: particles-34 2.5s 0.85s;
+  }
+  @keyframes particles-35 {
+    from {
+      transform: scale(1);
+      visibility: visible;
+    }
+    to {
+      left: 186px;
+      top: 200px;
+      transform: scale(0);
+      visibility: hidden;
+    }
+  }
+  .invoice-animation-div .particles-circle:nth-of-type(35) {
+    animation: particles-35 2.5s 0.875s;
+  }
+
+  .wiggle {
+    animation: 0.5s wiggle ease-in-out infinite;
+  }
+
+  @keyframes wiggle {
+    0% {
+      transform: rotate(-3deg);
+    }
+    20% {
+      transform: rotate(20deg);
+    }
+    40% {
+      transform: rotate(-15deg);
+    }
+    60% {
+      transform: rotate(5deg);;
+    }
+    90% {
+      transform: rotate(-1deg);;
+    }
+    100% {
+      transform: rotate(0deg);;
+    }
+  }
+
+  .shockwave {
+    animation: shockwaveJump 1s ease-out infinite;
+    
+    &:after {
+      @include afterBg;
+      animation: shockwave 1s .65s ease-out infinite;
+    }
+    
+    &:before {
+      @include afterBg;
+      animation: shockwave 1s .5s ease-out infinite;
+    }
+  }
+
+  @keyframes shockwaveJump {
+    0% {
+      transform: scale(1);
+    }
+    40% {
+      transform: scale(1.08);
+    }
+    50% {
+      transform: scale(0.98);
+    }
+    55% {
+      transform: scale(1.02);
+    }
+    60% {
+      transform: scale(0.98);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes shockwave {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 0 2px rgba(0,0,0,0.15), inset 0 0 1px rgba(0,0,0,0.15);
+    }
+    95% {
+      box-shadow: 0 0 50px rgba(0,0,0,0), inset 0 0 30px rgba(0,0,0,0);
+    }
+    100% {
+      transform: scale(2.25);
+
+    }
+  }
+
 }

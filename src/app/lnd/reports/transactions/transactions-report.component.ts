@@ -1,15 +1,17 @@
-import { Component, OnInit, OnDestroy, HostListener, AfterContentInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { Payment, Invoice } from '../../../shared/models/lndModels';
+import { Payment, Invoice, ListInvoices, ListPayments } from '../../../shared/models/lndModels';
 import { CommonService } from '../../../shared/services/common.service';
+import { LoggerService } from '../../../shared/services/logger.service';
 import { APICallStatusEnum, MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
-import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { allLightningTransactions } from '../../store/lnd.selector';
 
 
 @Component({
@@ -18,7 +20,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./transactions-report.component.scss'],
   animations: [fadeIn]
 })
-export class TransactionsReportComponent implements OnInit, AfterContentInit, OnDestroy {
+export class TransactionsReportComponent implements OnInit, OnDestroy {
 
   public scrollRanges = SCROLL_RANGES;
   public reportPeriod = SCROLL_RANGES[0];
@@ -41,48 +43,48 @@ export class TransactionsReportComponent implements OnInit, AfterContentInit, On
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) { }
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(allLightningTransactions).pipe(takeUntil(this.unSubs[0])).
+      subscribe((allLTSelector: { allLightningTransactions: { listPaymentsAll: ListPayments, listInvoicesAll: ListInvoices }, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchLightningTransactions.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchLightningTransactions.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchLightningTransactions.message) : this.apisCallStatus.FetchLightningTransactions.message;
+        this.apiCallStatus = allLTSelector.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.payments = rtlStore.allLightningTransactions.paymentsAll ? rtlStore.allLightningTransactions.paymentsAll.payments : [];
-        this.invoices = rtlStore.allLightningTransactions.invoicesAll ? rtlStore.allLightningTransactions.invoicesAll.invoices : [];
+        this.payments = allLTSelector.allLightningTransactions.listPaymentsAll.payments || [];
+        this.invoices = allLTSelector.allLightningTransactions.listInvoicesAll.invoices || [];
         if (this.payments.length > 0 || this.invoices.length > 0) {
           this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
           this.transactionsNonZeroReportData = this.prepareTableData();
         }
+        this.logger.info(allLTSelector);
       });
-  }
+    this.commonService.containerSizeUpdated.pipe(takeUntil(this.unSubs[1])).subscribe((CONTAINER_SIZE) => {
+      switch (this.screenSize) {
+        case ScreenSizeEnum.MD:
+          this.screenPaddingX = CONTAINER_SIZE.width / 10;
+          break;
 
-  ngAfterContentInit() {
-    const CONTAINER_SIZE = this.commonService.getContainerSize();
-    switch (this.screenSize) {
-      case ScreenSizeEnum.MD:
-        this.screenPaddingX = CONTAINER_SIZE.width / 10;
-        break;
+        case ScreenSizeEnum.LG:
+          this.screenPaddingX = CONTAINER_SIZE.width / 16;
+          break;
 
-      case ScreenSizeEnum.LG:
-        this.screenPaddingX = CONTAINER_SIZE.width / 16;
-        break;
-
-      default:
-        this.screenPaddingX = CONTAINER_SIZE.width / 20;
-        break;
-    }
-    this.view = [CONTAINER_SIZE.width - this.screenPaddingX, CONTAINER_SIZE.height / 2.2];
+        default:
+          this.screenPaddingX = CONTAINER_SIZE.width / 20;
+          break;
+      }
+      this.view = [CONTAINER_SIZE.width - this.screenPaddingX, CONTAINER_SIZE.height / 2.2];
+      this.logger.info('Container Size: ' + JSON.stringify(CONTAINER_SIZE));
+      this.logger.info('View: ' + JSON.stringify(this.view));
+    });
   }
 
   @HostListener('mouseup', ['$event']) onChartMouseUp(e) {

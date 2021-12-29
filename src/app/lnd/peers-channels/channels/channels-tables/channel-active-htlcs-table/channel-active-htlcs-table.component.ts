@@ -7,14 +7,15 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { ChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
-import { Channel, ChannelHTLC } from '../../../../../shared/models/lndModels';
+import { Channel, ChannelHTLC, ChannelsSummary, LightningBalance } from '../../../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../../../shared/services/consts-enums-functions';
-import { ApiCallsListLND } from '../../../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 
-import * as RTLActions from '../../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../../store/rtl.reducers';
+import { openAlert } from '../../../../../store/rtl.actions';
+import { RTLState } from '../../../../../store/rtl.state';
+import { channels } from '../../../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-channel-active-htlcs-table',
@@ -26,8 +27,8 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 })
 export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public channels: any;
   public channelsJSONArr: Channel[] = [];
   public displayedColumns: any[] = [];
@@ -38,11 +39,12 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListLND = null;
+  public selFilter = '';
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -60,17 +62,16 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
   }
 
   ngOnInit() {
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(channels).pipe(takeUntil(this.unSubs[0])).
+      subscribe((channelsSelector: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchAllChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchAllChannels.message) : this.apisCallStatus.FetchAllChannels.message;
+        this.apiCallStatus = channelsSelector.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.channelsJSONArr = (rtlStore.allChannels && rtlStore.allChannels.length > 0) ? rtlStore.allChannels.filter((channel) => channel.pending_htlcs && channel.pending_htlcs.length > 0) : [];
+        this.channelsJSONArr = channelsSelector.channels.filter((channel) => channel.pending_htlcs && channel.pending_htlcs.length > 0) || [];
         this.loadHTLCsTable(this.channelsJSONArr);
-        this.logger.info(rtlStore);
+        this.logger.info(channelsSelector);
       });
   }
 
@@ -82,27 +83,35 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
     const reorderedHTLC = [
       [{ key: 'remote_alias', value: selChannel.remote_alias, title: 'Alias', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'amount', value: selHtlc.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER },
-        { key: 'incoming', value: (selHtlc.incoming ? 'Yes' : 'No'), title: 'Incoming', width: 50, type: DataTypeEnum.STRING }],
+      { key: 'incoming', value: (selHtlc.incoming ? 'Yes' : 'No'), title: 'Incoming', width: 50, type: DataTypeEnum.STRING }],
       [{ key: 'expiration_height', value: selHtlc.expiration_height, title: 'Expiration Height', width: 50, type: DataTypeEnum.NUMBER },
-        { key: 'hash_lock', value: selHtlc.hash_lock, title: 'Hash Lock', width: 50, type: DataTypeEnum.STRING }]
+      { key: 'hash_lock', value: selHtlc.hash_lock, title: 'Hash Lock', width: 50, type: DataTypeEnum.STRING }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'HTLC Information',
-      message: reorderedHTLC
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'HTLC Information',
+          message: reorderedHTLC
+        }
+      }
+    }));
   }
 
   onChannelClick(selChannel: Channel, event: any) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      channel: selChannel,
-      showCopy: true,
-      component: ChannelInformationComponent
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          channel: selChannel,
+          showCopy: true,
+          component: ChannelInformationComponent
+        }
+      }
+    }));
   }
 
-  applyFilter(selFilter: any) {
-    this.channels.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    this.channels.filter = this.selFilter.trim().toLowerCase();
   }
 
   loadHTLCsTable(channels: Channel[]) {
@@ -136,6 +145,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
         channel.pending_htlcs.map((htlc) => JSON.stringify(htlc) + (htlc.incoming ? 'yes' : 'no'));
       return newChannel.includes(fltr);
     };
+    this.applyFilter();
   }
 
   onDownloadCSV() {

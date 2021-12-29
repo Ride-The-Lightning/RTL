@@ -13,8 +13,9 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { LNDEffects } from '../../store/lnd.effects';
-import * as LNDActions from '../../store/lnd.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { restoreChannels, restoreChannelsList } from '../../store/lnd.actions';
+import { lndNodeSettings } from '../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-channel-restore-table',
@@ -26,8 +27,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public selNode: SelNodeChild = {};
@@ -38,24 +39,19 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
   public allRestoreExists = false;
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: channels
   public flgSticky = false;
+  public selFilter = '';
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private lndEffects: LNDEffects, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private lndEffects: LNDEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
   ngOnInit() {
-    this.store.dispatch(new LNDActions.RestoreChannelsList());
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        this.selNode = rtlStore.nodeSettings;
-        this.logger.info(rtlStore);
-      });
-    this.lndEffects.setRestoreChannelList.
-      pipe(takeUntil(this.unSubs[0])).
+    this.store.dispatch(restoreChannelsList());
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => { this.selNode = nodeSettings; });
+    this.lndEffects.setRestoreChannelList.pipe(takeUntil(this.unSubs[1])).
       subscribe((resRCList) => {
         this.allRestoreExists = resRCList.all_restore_exists;
         this.channelsData = resRCList.files;
@@ -76,11 +72,11 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   onRestoreChannels(selChannel: Channel) {
-    this.store.dispatch(new LNDActions.RestoreChannels({ channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL' }));
+    this.store.dispatch(restoreChannels({ payload: { channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL' } }));
   }
 
-  applyFilter(selFilter: any) {
-    this.channels.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    this.channels.filter = this.selFilter.trim().toLowerCase();
   }
 
   loadRestoreTable(channels: any[]) {
@@ -89,6 +85,7 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
     this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.channels.filterPredicate = (channel: Channel, fltr: string) => JSON.stringify(channel).toLowerCase().includes(fltr);
     this.channels.paginator = this.paginator;
+    this.applyFilter();
   }
 
   ngOnDestroy() {

@@ -5,8 +5,9 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faLayerGroup } from '@fortawesome/free-solid-svg-icons';
 
-import { ConfigSettingsNode, RTLConfiguration } from '../../models/RTLconfig';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { ConfigSettingsNode } from '../../models/RTLconfig';
+import { RTLState } from '../../../store/rtl.state';
+import { rootSelectedNode } from '../../../store/rtl.selector';
 
 @Component({
   selector: 'rtl-services',
@@ -19,28 +20,26 @@ export class ServicesComponent implements OnInit, OnDestroy {
   public showLnConfig = false;
   public showBitcoind = false;
   public selNode: ConfigSettingsNode;
-  public appConfig: RTLConfiguration;
   public lnImplementationStr = '';
   public links = [{ link: 'layout', name: 'Layout' }, { link: 'auth', name: 'Authentication' }, { link: 'lnconfig', name: this.lnImplementationStr }, { link: 'bconfig', name: 'BitcoinD Config' }];
   public activeLink = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private router: Router) { }
+  constructor(private store: Store<RTLState>, private router: Router) { }
 
   ngOnInit() {
     const linkFound = this.links.find((link) => this.router.url.includes(link.link));
     this.activeLink = linkFound ? linkFound.link : this.links[0].link;
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe((value: ResolveEnd) => {
+      subscribe((value: any) => {
         const linkFound = this.links.find((link) => value.urlAfterRedirects.includes(link.link));
         this.activeLink = linkFound ? linkFound.link : this.links[0].link;
       });
-    this.store.select('root').pipe(takeUntil(this.unSubs[1])).
-      subscribe((rtlStore) => {
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).
+      subscribe((selNode) => {
         this.showLnConfig = false;
         this.showBitcoind = false;
-        this.appConfig = rtlStore.appConfig;
-        this.selNode = rtlStore.selNode;
+        this.selNode = selNode;
         switch (this.selNode.lnImplementation.toUpperCase()) {
           case 'CLT':
             this.lnImplementationStr = 'C-Lightning Config';

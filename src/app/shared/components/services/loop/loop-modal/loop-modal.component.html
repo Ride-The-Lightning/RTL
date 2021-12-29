@@ -44,7 +44,7 @@
                 <mat-slide-toggle matTooltip="Swap immediately (Might end up paying a higher on-chain fee)" *ngIf="direction === LoopTypeEnum.LOOP_OUT" fxFlex="15" tabindex="4" color="primary" formControlName="fast">Fast</mat-slide-toggle>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="5" type="button" (click)="onEstimateQuote()">Estimate Quote</button>
+                <button mat-button color="primary" tabindex="5" type="button" (click)="onEstimateQuote()">Estimate Quote</button>
               </div>
             </form>
           </mat-step>
@@ -54,8 +54,8 @@
               <rtl-loop-quote [quote]="quote" [showPanel]="false"></rtl-loop-quote>
               <p *ngIf="inputFormGroup.controls.amount.value > localBalanceToCompare" fxFlex="100" class="color-warn mt-2" fxLayoutAlign="start center"><mat-icon class="mr-1 icon-small">close</mat-icon>Local balance amount is insufficient for swap.</p>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button *ngIf="direction === LoopTypeEnum.LOOP_OUT" mat-stroked-button color="primary" tabindex="6" type="button" (click)="onValidateAmount()">Next</button>
-                <button *ngIf="direction === LoopTypeEnum.LOOP_IN" mat-stroked-button color="primary" tabindex="7" type="button" (click)="onLoop()">Initiate {{loopDirectionCaption}}</button>
+                <button *ngIf="direction === LoopTypeEnum.LOOP_OUT" mat-button color="primary" tabindex="6" type="button" (click)="onValidateAmount()">Next</button>
+                <button *ngIf="direction === LoopTypeEnum.LOOP_IN" mat-button color="primary" tabindex="7" type="button" (click)="onLoop()">Initiate {{loopDirectionCaption}}</button>
               </div>
             </form>
           </mat-step>
@@ -73,7 +73,7 @@
                 </mat-form-field>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="11" type="button" (click)="onLoop()">Initiate {{loopDirectionCaption}}</button>
+                <button mat-button color="primary" tabindex="11" type="button" (click)="onLoop()">Initiate {{loopDirectionCaption}}</button>
               </div>
             </form>
           </mat-step>
@@ -93,14 +93,14 @@
               </div>
               <h4 *ngIf="loopStatus" fxLayoutAlign="start" class="font-bold-500 mt-2">{{(loopStatus && loopStatus.error) ? (loopDirectionCaption + ' failed.') : (loopStatus && loopStatus.id_bytes && channel) ? (loopDirectionCaption + ' request placed successfully. You can check the status of the request on the \'Loop\' menu.') : (loopDirectionCaption + ' request placed successfully.')}}</h4>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button *ngIf="loopStatus && loopStatus.id_bytes && channel" mat-flat-button color="primary" tabindex="12" type="button" (click)="goToLoop()">Check Status</button>
-                <button *ngIf="loopStatus && (loopStatus.error || !loopStatus.id_bytes)" mat-flat-button color="primary" tabindex="13" type="button" (click)="onRestart()">Start Again</button>
+                <button *ngIf="loopStatus && loopStatus.id_bytes && channel" mat-button color="primary" tabindex="12" type="button" (click)="goToLoop()">Check Status</button>
+                <button *ngIf="loopStatus && (loopStatus.error || !loopStatus.id_bytes)" mat-button color="primary" tabindex="13" type="button" (click)="onRestart()">Start Again</button>
               </div>
             </form>
           </mat-step>
         </mat-vertical-stepper>
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="end end">        
-          <button mat-stroked-button color="primary" tabindex="14" type="button" [mat-dialog-close]="false" default>Close</button>
+          <button mat-button color="primary" tabindex="14" type="button" [mat-dialog-close]="false" default>Close</button>
         </div>
       </div>
     </mat-card-content>
@@ -127,12 +127,12 @@
       </span>
     </div>
     <div fxLayout="row" fxFlex="10" fxLayoutAlign="end end" class="padding-gap-x-large padding-gap-bottom-large">
-      <button *ngIf="stepNumber === 5" mat-stroked-button class="mr-1" color="primary" tabindex="15" type="button" (click)="onReadMore()">Read More</button>
-      <button *ngIf="stepNumber === 5" mat-flat-button class="mr-1" color="primary" tabindex="16" type="button" (click)="onStepChanged(4)">Back</button>
-      <button *ngIf="stepNumber === 5" mat-flat-button color="primary" tabindex="17" type="button" (click)="flgShowInfo=false;stepNumber=1;">Close</button>
-      <button *ngIf="stepNumber < 5" mat-stroked-button class="mr-1" color="primary" tabindex="18" type="button" (click)="flgShowInfo=false;stepNumber=1;">Close</button>
-      <button *ngIf="stepNumber > 1 && stepNumber < 5" mat-flat-button class="mr-1" color="primary" tabindex="19" type="button" (click)="onStepChanged(stepNumber - 1)">Back</button>
-      <button *ngIf="stepNumber < 5" mat-flat-button color="primary" tabindex="20" type="button" (click)="onStepChanged(stepNumber + 1)">Next</button>
+      <button *ngIf="stepNumber === 5" mat-button class="mr-1" color="primary" tabindex="15" type="button" (click)="onReadMore()">Read More</button>
+      <button *ngIf="stepNumber === 5" mat-button class="mr-1" color="primary" tabindex="16" type="button" (click)="onStepChanged(4)">Back</button>
+      <button *ngIf="stepNumber === 5" mat-button color="primary" tabindex="17" type="button" (click)="flgShowInfo=false;stepNumber=1;">Close</button>
+      <button *ngIf="stepNumber < 5" mat-button class="mr-1" color="primary" tabindex="18" type="button" (click)="flgShowInfo=false;stepNumber=1;">Close</button>
+      <button *ngIf="stepNumber > 1 && stepNumber < 5" mat-button class="mr-1" color="primary" tabindex="19" type="button" (click)="onStepChanged(stepNumber - 1)">Back</button>
+      <button *ngIf="stepNumber < 5" mat-button color="primary" tabindex="20" type="button" (click)="onStepChanged(stepNumber + 1)">Next</button>
     </div>
   </div>
 </div>

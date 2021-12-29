@@ -41,7 +41,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
 
 import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { QRCodeModule } from 'angularx-qrcode';
+import { QrCodeModule } from 'ng-qrcode';
 import { PerfectScrollbarModule, PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 
 import { ThemeOverlay } from './theme/overlay-container/theme-overlay';
@@ -64,6 +64,7 @@ import { NodeSettingsComponent } from './components/node-config/node-settings/no
 import { ServicesSettingsComponent } from './components/node-config/services-settings/services-settings.component';
 import { LoopServiceSettingsComponent } from './components/node-config/services-settings/loop-service-settings/loop-service-settings.component';
 import { BoltzServiceSettingsComponent } from './components/node-config/services-settings/boltz-service-settings/boltz-service-settings.component';
+import { ExperimentalSettingsComponent } from './components/node-config/experimental-settings/experimental-settings.component';
 import { ErrorComponent } from './components/error/error.component';
 import { CurrencyUnitConverterComponent } from './components/currency-unit-converter/currency-unit-converter.component';
 import { HorizontalScrollerComponent } from './components/horizontal-scroller/horizontal-scroller.component';
@@ -98,7 +99,7 @@ import { AutoFocusDirective } from './directive/auto-focus.directive';
 import { MonthlyDateDirective, YearlyDateDirective } from './directive/date-formats.directive';
 import { MaxValidator } from './directive/max-amount.directive';
 import { MinValidator } from './directive/min-amount.directive';
-import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
+import { RemoveLeadingZerosPipe, CamelCasePipe } from './pipes/app.pipe';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: false,
@@ -170,7 +171,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     MatSnackBarModule,
     MatAutocompleteModule,
     NgxChartsModule,
-    QRCodeModule,
+    QrCodeModule,
     RouterModule,
     HttpClientModule,
     PerfectScrollbarModule
@@ -213,13 +214,14 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     MatSnackBarModule,
     MatAutocompleteModule,
     NgxChartsModule,
-    QRCodeModule,
+    QrCodeModule,
     PerfectScrollbarModule,
     ClipboardDirective,
     AutoFocusDirective,
     MonthlyDateDirective,
     YearlyDateDirective,
     RemoveLeadingZerosPipe,
+    CamelCasePipe,
     MaxValidator,
     MinValidator,
     AppSettingsComponent,
@@ -239,6 +241,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     ServicesSettingsComponent,
     LoopServiceSettingsComponent,
     BoltzServiceSettingsComponent,
+    ExperimentalSettingsComponent,
     CurrencyUnitConverterComponent,
     HorizontalScrollerComponent,
     TransactionsReportTableComponent,
@@ -276,6 +279,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     ServicesSettingsComponent,
     LoopServiceSettingsComponent,
     BoltzServiceSettingsComponent,
+    ExperimentalSettingsComponent,
     CurrencyUnitConverterComponent,
     HorizontalScrollerComponent,
     ErrorComponent,
@@ -286,6 +290,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     MaxValidator,
     MinValidator,
     RemoveLeadingZerosPipe,
+    CamelCasePipe,
     AuthSettingsComponent,
     TransactionsReportTableComponent,
     OnChainGeneratedAddressComponent,
@@ -317,7 +322,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     { provide: LoggerService, useClass: ConsoleLoggerService },
     { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG },
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2000, verticalPosition: 'bottom', panelClass: 'rtl-snack-bar' } },
-    { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '55%' } },
+    { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '45%' } },
     { provide: DateAdapter, useClass: DefaultDateAdapter },
     { provide: MAT_DATE_FORMATS, useValue: DEFAULT_DATE_FORMAT },
     { provide: OverlayContainer, useClass: ThemeOverlay },

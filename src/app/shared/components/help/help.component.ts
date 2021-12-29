@@ -7,7 +7,8 @@ import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 import { HelpTopic, ConfigSettingsNode } from '../../models/RTLconfig';
 import { SessionService } from '../../services/session.service';
 
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { rootSelectedNode } from '../../../store/rtl.selector';
 
 @Component({
   selector: 'rtl-help',
@@ -23,7 +24,7 @@ export class HelpComponent implements OnInit, OnDestroy {
   public flgLoggedIn = false;
   private unSubs = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private sessionService: SessionService) {
+  constructor(private store: Store<RTLState>, private sessionService: SessionService) {
     this.helpTopics.push(new HelpTopic({
       question: 'Getting started',
       answer: 'Funding your node is the first step to get started.\n' +
@@ -188,24 +189,22 @@ export class HelpComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('root').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        this.selNode = rtlStore.selNode;
-        switch (this.selNode.lnImplementation.toUpperCase()) {
-          case 'CLT':
-            this.LNPLink = '/cl/';
-            break;
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((selNode) => {
+      this.selNode = selNode;
+      switch (this.selNode.lnImplementation.toUpperCase()) {
+        case 'CLT':
+          this.LNPLink = '/cl/';
+          break;
 
-          case 'ECL':
-            this.LNPLink = '/ecl/';
-            break;
+        case 'ECL':
+          this.LNPLink = '/ecl/';
+          break;
 
-          default:
-            this.LNPLink = '/lnd/';
-            break;
-        }
-      });
+        default:
+          this.LNPLink = '/lnd/';
+          break;
+      }
+    });
     this.sessionService.watchSession().
       pipe(takeUntil(this.unSubs[1])).
       subscribe((session) => {

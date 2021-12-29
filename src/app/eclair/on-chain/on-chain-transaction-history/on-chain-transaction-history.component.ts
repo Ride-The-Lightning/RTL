@@ -9,14 +9,15 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { Transaction } from '../../../shared/models/eclModels';
-import { ApiCallsListECL } from '../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
-import * as ECLActions from '../../store/ecl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { openAlert } from '../../../store/rtl.actions';
+import { fetchTransactions } from '../../store/ecl.actions';
+import { transactions } from '../../store/ecl.selector';
 
 @Component({
   selector: 'rtl-ecl-on-chain-transaction-history',
@@ -28,8 +29,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   faHistory = faHistory;
   public displayedColumns: any[] = [];
   public listTransactions: any;
@@ -39,11 +40,12 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListECL = null;
+  public selFilter = '';
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -61,24 +63,23 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
   }
 
   ngOnInit() {
-    this.store.dispatch(new ECLActions.FetchTransactions());
-    this.store.select('ecl').
-      pipe(takeUntil(this.unsub[0])).
-      subscribe((rtlStore) => {
+    this.store.dispatch(fetchTransactions());
+    this.store.select(transactions).pipe(takeUntil(this.unsub[0])).
+      subscribe((transactionsSelector: { transactions: Transaction[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchTransactions.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchPayments.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPayments.message) : this.apisCallStatus.FetchPayments.message;
+        this.apiCallStatus = transactionsSelector.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        if (rtlStore.transactions) {
-          this.loadTransactionsTable(rtlStore.transactions);
+        if (transactionsSelector.transactions) {
+          this.loadTransactionsTable(transactionsSelector.transactions);
         }
-        this.logger.info(rtlStore);
+        this.logger.info(transactionsSelector);
       });
   }
 
-  applyFilter(selFilter: any) {
-    this.listTransactions.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    this.listTransactions.filter = this.selFilter.trim().toLowerCase();
   }
 
   onTransactionClick(selTransaction: Transaction, event: any) {
@@ -86,16 +87,20 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
       [{ key: 'blockHash', value: selTransaction.blockHash, title: 'Block Hash', width: 100 }],
       [{ key: 'txid', value: selTransaction.txid, title: 'Transaction ID', width: 100 }],
       [{ key: 'timestamp', value: selTransaction.timestamp, title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME },
-        { key: 'confirmations', value: selTransaction.confirmations, title: 'Number of Confirmations', width: 50, type: DataTypeEnum.NUMBER }],
+      { key: 'confirmations', value: selTransaction.confirmations, title: 'Number of Confirmations', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'fees', value: selTransaction.fees, title: 'Fees (Sats)', width: 50, type: DataTypeEnum.NUMBER },
-        { key: 'amount', value: selTransaction.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
+      { key: 'amount', value: selTransaction.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'address', value: selTransaction.address, title: 'Address', width: 100, type: DataTypeEnum.STRING }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Transaction Information',
-      message: reorderedTransactions
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Transaction Information',
+          message: reorderedTransactions
+        }
+      }
+    }));
   }
 
   loadTransactionsTable(transactions: Transaction[]) {
@@ -107,6 +112,7 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
       return newRowData.includes(fltr);
     };
     this.listTransactions.paginator = this.paginator;
+    this.applyFilter();
     this.logger.info(this.listTransactions);
   }
 

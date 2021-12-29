@@ -1,21 +1,21 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="padding-gap-x-large">
   <div fxLayout="column" fxLayout.gt-xs="row wrap" fxLayoutAlign.gt-xs="end stretch" fxLayoutAlign="start stretch" class="page-sub-title-container">
     <mat-form-field fxFlex="30">
-      <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
+      <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" placeholder="Filter">
     </mat-form-field>
   </div>
   <div fxLayout="row" fxLayoutAlign="start start">
     <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container">
-      <mat-progress-bar *ngIf="apisCallStatus?.FetchUTXOs.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+      <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table fxFlex="100" [dataSource]="listUTXOs" matSort
         [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="tx_id">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Transaction ID </th>
           <td mat-cell *matCellDef="let utxo" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '12rem' : '25rem'}">
             <span fxLayout="row">
-              <span *ngIf="utxos.length > 0 && !isDustUTXO">
+              <span *ngIf="utxos.length > 0 && dustUtxos.length > 0 && !isDustUTXO">
                 <span *ngIf="utxo.amount_sat < 1000; else emptySpace" matTooltip="Risk of dust attack" matTooltipPosition="right">
-                  <mat-icon fxLayoutAlign="start center" color="warn" class="mr-1">warning</mat-icon>
+                  <mat-icon fxLayoutAlign="start center" color="warn" class="small-icon">warning</mat-icon>
                 </span>
               </span>
               <span class="ellipsis-child">{{utxo.outpoint.txid_str}}</span>
@@ -64,9 +64,9 @@
         </ng-container>
         <ng-container matColumnDef="no_utxo">
           <td mat-footer-cell *matFooterCellDef colspan="4">
-            <p *ngIf="(!listUTXOs?.data || listUTXOs?.data?.length<1) && apisCallStatus?.FetchUTXOs.status === apiCallStatusEnum.COMPLETED">No UTXO available.</p>
-            <p *ngIf="(!listUTXOs?.data || listUTXOs?.data?.length<1) && apisCallStatus?.FetchUTXOs.status === apiCallStatusEnum.INITIATED">Getting UTXOs...</p>
-            <p *ngIf="(!listUTXOs?.data || listUTXOs?.data?.length<1) && apisCallStatus?.FetchUTXOs.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+            <p *ngIf="(!listUTXOs?.data || listUTXOs?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No UTXO available.</p>
+            <p *ngIf="(!listUTXOs?.data || listUTXOs?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting UTXOs...</p>
+            <p *ngIf="(!listUTXOs?.data || listUTXOs?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
           </td>
         </ng-container>
         <tr mat-footer-row *matFooterRowDef="['no_utxo']" [ngClass]="{'display-none': listUTXOs?.data && listUTXOs?.data?.length>0}"></tr>
@@ -78,5 +78,5 @@
   </div>
 </div>
 <ng-template #emptySpace>
-  <mat-icon fxLayoutAlign="start center" color="warn" class="mr-1"></mat-icon>
+  <mat-icon fxLayoutAlign="start center" color="warn" class="small-icon"></mat-icon>
 </ng-template>

@@ -8,20 +8,20 @@ import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { MatStepper } from '@angular/material/stepper';
 
 import { LNDEffects } from '../../store/lnd.effects';
-import * as LNDActions from '../../store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { updateSelectedNodeOptions } from '../../../store/rtl.actions';
+import { fetchInfoLND, genSeed, initWallet } from '../../store/lnd.actions';
 
-export const matchedPasswords: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
+export function matchedPasswords(control: FormGroup): ValidationErrors | null {
   const initWalletPassword = control.get('initWalletPassword');
   const initWalletConfirmPassword = control.get('initWalletConfirmPassword');
   return initWalletPassword && initWalletConfirmPassword && initWalletPassword.value !== initWalletConfirmPassword.value ? { unmatchedPasswords: true } : null;
-};
+}
 
-export const cipherSeedLength: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
-  const cipherArr = control.value ? control.value.toString().trim().split(',') : [];
+export function cipherSeedLength(control: FormGroup): ValidationErrors | null {
+  const cipherArr = control.value.toString().trim().split(',') || [];
   return cipherArr && cipherArr.length !== 24 ? { invalidCipher: true } : null;
-};
+}
 
 @Component({
   selector: 'rtl-initialize-wallet',
@@ -44,7 +44,7 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
   warnRes = false;
   private unsubs = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private formBuilder: FormBuilder, private lndEffects: LNDEffects) {}
+  constructor(private store: Store<RTLState>, private formBuilder: FormBuilder, private lndEffects: LNDEffects) { }
 
   ngOnInit() {
     this.passwordFormGroup = this.formBuilder.group({
@@ -82,62 +82,66 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
 
     this.insecureLND = !window.location.protocol.includes('https:');
 
-    this.lndEffects.initWalletRes.
-      pipe(takeUntil(this.unsubs[2])).
-      subscribe((initWalletResponse) => {
-        this.initWalletResponse = initWalletResponse;
-      });
+    this.lndEffects.initWalletRes.pipe(takeUntil(this.unsubs[2])).subscribe((initWalletResponse) => {
+      this.initWalletResponse = initWalletResponse;
+    });
 
-    this.lndEffects.genSeedResponse.
-      pipe(takeUntil(this.unsubs[3])).
-      subscribe((genSeedRes) => {
-        this.genSeedResponse = genSeedRes;
-        if (this.passphraseFormGroup.controls.enterPassphrase.value) {
-          this.store.dispatch(new LNDActions.InitWallet({
+    this.lndEffects.genSeedResponse.pipe(takeUntil(this.unsubs[3])).subscribe((genSeedRes) => {
+      this.genSeedResponse = genSeedRes;
+      if (this.passphraseFormGroup.controls.enterPassphrase.value) {
+        this.store.dispatch(initWallet({
+          payload: {
             pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
             cipher: this.genSeedResponse,
             passphrase: window.btoa(this.passphraseFormGroup.controls.passphrase.value)
-          }));
-        } else {
-          this.store.dispatch(new LNDActions.InitWallet({
+          }
+        }));
+      } else {
+        this.store.dispatch(initWallet({
+          payload: {
             pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
             cipher: this.genSeedResponse
-          }));
-        }
-      });
+          }
+        }));
+      }
+    });
   }
 
-  onInitWallet(): boolean|void {
+  onInitWallet(): boolean | void {
     if (this.passwordFormGroup.invalid || this.cipherFormGroup.invalid || this.passphraseFormGroup.invalid) {
       return true;
     }
     if (this.cipherFormGroup.controls.existingCipher.value) {
       const cipherArr = this.cipherFormGroup.controls.cipherSeed.value.toString().trim().split(',');
       if (this.passphraseFormGroup.controls.enterPassphrase.value) {
-        this.store.dispatch(new LNDActions.InitWallet({
-          pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
-          cipher: cipherArr,
-          passphrase: window.btoa(this.passphraseFormGroup.controls.passphrase.value)
+        this.store.dispatch(initWallet({
+          payload: {
+            pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
+            cipher: cipherArr,
+            passphrase: window.btoa(this.passphraseFormGroup.controls.passphrase.value)
+          }
         }));
       } else {
-        this.store.dispatch(new LNDActions.InitWallet({
-          pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
-          cipher: cipherArr
+        this.store.dispatch(initWallet({
+          payload: {
+            pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
+            cipher: cipherArr
+          }
         }));
       }
     } else {
       if (this.passphraseFormGroup.controls.enterPassphrase.value) {
-        this.store.dispatch(new LNDActions.GenSeed(window.btoa(this.passphraseFormGroup.controls.passphrase.value)));
+        this.store.dispatch(genSeed({ payload: window.btoa(this.passphraseFormGroup.controls.passphrase.value) }));
       } else {
-        this.store.dispatch(new LNDActions.GenSeed(''));
+        this.store.dispatch(genSeed({ payload: '' }));
       }
     }
   }
 
   onGoToHome() {
     setTimeout(() => {
-      this.store.dispatch(new RTLActions.UpdateSelectedNodeOptions());
-      this.store.dispatch(new LNDActions.FetchInfo({ loadPage: 'HOME' }));
+      this.store.dispatch(updateSelectedNodeOptions());
+      this.store.dispatch(fetchInfoLND({ payload: { loadPage: 'HOME' } }));
     }, 1000 * 1);
   }
 

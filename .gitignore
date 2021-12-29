@@ -27,19 +27,24 @@
 !.vscode/extensions.json
 
 # misc
+/.angular/cache
 /.sass-cache
 /connect.lock
 /coverage
+/db
 /libpeerconnection.log
 npm-debug.log
 yarn-error.log
 testem.log
 /typings
+channels-backup
+logs
+cookies
 
 # System Files
 .DS_Store
 Thumbs.db
-
+/database/*
 /logs/*
 /cookies/*
 /backup/*
@@ -53,3 +58,8 @@ RTL-1.conf
 RTL-Multi-Node-Conf-1.json
 RTL-Config-for-BTC-Testing.json
 ECLDummyData.log
+_config.yml
+.vscode/launch.json
+RTL-Config-Docker.json
+dockerfiles/RTL-Config.json
+dockerfiles/.env

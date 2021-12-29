@@ -1,8 +1,8 @@
 import { APICallStatusEnum } from '../services/consts-enums-functions';
 
 export interface ApiCallStatusPayload {
-  action: string;
   status: APICallStatusEnum;
+  action?: string;
   statusCode?: string;
   message?: string;
   URL?: string;
@@ -10,53 +10,64 @@ export interface ApiCallStatusPayload {
 }
 
 export interface ApiCallsListRoot {
-  Login: any;
-  IsAuthorized: any;
+  Login: ApiCallStatusPayload;
+  IsAuthorized: ApiCallStatusPayload;
+  FetchRTLConfig?: ApiCallStatusPayload;
+  UpdateSettings?: ApiCallStatusPayload;
+  UpdateServiceSettings?: ApiCallStatusPayload;
+  Update2FASettings?: ApiCallStatusPayload;
+  fetchConfig?: ApiCallStatusPayload;
+  VerifyToken?: ApiCallStatusPayload;
+  ResetPassword?: ApiCallStatusPayload;
+  UpdateSelNode?: ApiCallStatusPayload;
+  FetchFile?: ApiCallStatusPayload;
 }
 
 export interface ApiCallsListLND {
-  FetchInfo: any;
-  FetchFees: any;
-  FetchPendingChannels: any;
-  FetchAllChannels: any;
-  FetchBalanceBlockchain: any;
+  FetchInfo: ApiCallStatusPayload;
+  FetchFees: ApiCallStatusPayload;
+  FetchPendingChannels: ApiCallStatusPayload;
+  FetchAllChannels: ApiCallStatusPayload;
+  FetchBalanceBlockchain: ApiCallStatusPayload;
   // Non-initial calls
-  FetchPeers: any;
-  FetchClosedChannels: any;
-  FetchInvoices: any;
-  FetchPayments: any;
-  GetForwardingHistory: any;
-  FetchUTXOs: any;
-  FetchTransactions: any;
-  FetchNetwork: any;
-  FetchLightningTransactions: any;
+  FetchPeers: ApiCallStatusPayload;
+  FetchClosedChannels: ApiCallStatusPayload;
+  FetchInvoices: ApiCallStatusPayload;
+  FetchPayments: ApiCallStatusPayload;
+  FetchForwardingHistory: ApiCallStatusPayload;
+  FetchUTXOs: ApiCallStatusPayload;
+  FetchTransactions: ApiCallStatusPayload;
+  FetchNetwork: ApiCallStatusPayload;
+  FetchLightningTransactions: ApiCallStatusPayload;
 }
 
 export interface ApiCallsListCL {
-  FetchInfo: any;
-  FetchFees: any;
-  FetchChannels: any;
-  FetchBalance: any;
-  FetchLocalRemoteBalance: any;
+  FetchInfo: ApiCallStatusPayload;
+  FetchFees: ApiCallStatusPayload;
+  FetchChannels: ApiCallStatusPayload;
+  FetchBalance: ApiCallStatusPayload;
+  FetchLocalRemoteBalance: ApiCallStatusPayload;
   // Non-initial calls
-  FetchInvoices: any;
-  FetchFeeRatesperkb: any;
-  FetchFeeRatesperkw: any;
-  FetchPeers: any;
-  FetchUTXOs: any;
-  FetchPayments: any;
-  GetForwardingHistory: any;
-  GetFailedForwardingHistory: any;
+  FetchInvoices: ApiCallStatusPayload;
+  FetchFeeRatesperkb: ApiCallStatusPayload;
+  FetchFeeRatesperkw: ApiCallStatusPayload;
+  FetchPeers: ApiCallStatusPayload;
+  FetchUTXOs: ApiCallStatusPayload;
+  FetchPayments: ApiCallStatusPayload;
+  FetchForwardingHistory: ApiCallStatusPayload;
+  FetchFailedForwardingHistory: ApiCallStatusPayload;
+  FetchOffers: ApiCallStatusPayload;
+  FetchOfferBookmarks: ApiCallStatusPayload;
 }
 
 export interface ApiCallsListECL {
-  FetchInfo: any;
-  FetchFees: any;
-  FetchChannels: any;
+  FetchInfo: ApiCallStatusPayload;
+  FetchFees: ApiCallStatusPayload;
+  FetchChannels: ApiCallStatusPayload;
   // Non-initial calls
-  FetchOnchainBalance: any;
-  FetchPeers: any;
-  FetchPayments: any;
-  FetchInvoices: any;
-  FetchTransactions: any;
+  FetchOnchainBalance: ApiCallStatusPayload;
+  FetchPeers: ApiCallStatusPayload;
+  FetchPayments: ApiCallStatusPayload;
+  FetchInvoices: ApiCallStatusPayload;
+  FetchTransactions: ApiCallStatusPayload;
 }

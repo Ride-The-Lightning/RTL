@@ -3,8 +3,8 @@ import { Store } from '@ngrx/store';
 import { MatDialogRef } from '@angular/material/dialog';
 import { faUserClock } from '@fortawesome/free-solid-svg-icons';
 
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
-import * as RTLActions from '../../../../store/rtl.actions';
+import { RTLState } from '../../../../store/rtl.state';
+import { closeAlert } from '../../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-login-token',
@@ -16,7 +16,7 @@ export class LoginTokenComponent {
   public faUserClock = faUserClock;
   public token = '';
 
-  constructor(public dialogRef: MatDialogRef<LoginTokenComponent>, private store: Store<fromRTLReducer.RTLState>) { }
+  constructor(public dialogRef: MatDialogRef<LoginTokenComponent>, private store: Store<RTLState>) { }
 
   onClose() {
     this.dialogRef.close(null);
@@ -27,7 +27,7 @@ export class LoginTokenComponent {
       return true;
     }
     this.dialogRef.close();
-    this.store.dispatch(new RTLActions.CloseAlert({ twoFAToken: this.token }));
+    this.store.dispatch(closeAlert({ payload: { twoFAToken: this.token } }));
   }
 
 }

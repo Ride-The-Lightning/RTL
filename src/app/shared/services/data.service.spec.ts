@@ -5,12 +5,12 @@ import { DataService } from './data.service';
 import { LoggerService } from './logger.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { mockResponseData } from '../test-helpers/test-data';
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import { RTLState } from '../../store/rtl.state';
 
 describe('DataService', () => {
   let httpClientSpy: { get: jasmine.Spy };
   let dataService: DataService;
-  let store: Store<fromRTLReducer.RTLState>;
+  let store: Store<RTLState>;
   let logger: LoggerService;
   let snackbar: MatSnackBar;
   let titleCasePipe: TitleCasePipe;

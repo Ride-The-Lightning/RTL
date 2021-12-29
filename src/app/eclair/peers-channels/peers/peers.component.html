@@ -10,12 +10,12 @@
       </div>
       <mat-form-field fxFlex="30">
         <div fxLayout="row" fxLayoutAlign="start start">
-          <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
+          <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" placeholder="Filter">
         </div>
       </mat-form-field>
     </div>
     <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
-      <mat-progress-bar *ngIf="apisCallStatus?.FetchPeers.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+      <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table fxFlex="100" [dataSource]="peers" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="nodeId">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
@@ -66,14 +66,14 @@
         </ng-container>
         <ng-container matColumnDef="no_peer">
           <td mat-footer-cell *matFooterCellDef colspan="4">
-            <p *ngIf="(!peers?.data || peers?.data?.length<1) && apisCallStatus?.FetchPeers.status === apiCallStatusEnum.COMPLETED">No connected peer.</p>
-            <p *ngIf="(!peers?.data || peers?.data?.length<1) && apisCallStatus?.FetchPeers.status === apiCallStatusEnum.INITIATED">Getting peers...</p>
-            <p *ngIf="(!peers?.data || peers?.data?.length<1) && apisCallStatus?.FetchPeers.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+            <p *ngIf="(!peers?.data || peers?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No connected peer.</p>
+            <p *ngIf="(!peers?.data || peers?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting peers...</p>
+            <p *ngIf="(!peers?.data || peers?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
           </td>
         </ng-container>
         <tr mat-footer-row *matFooterRowDef="['no_peer']" [ngClass]="{'display-none': peers?.data && peers?.data?.length>0}"></tr>
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.pub_key === newlyAddedPeer && flgAnimate) ? 'added' : 'notAdded'"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
     </div>
     <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>

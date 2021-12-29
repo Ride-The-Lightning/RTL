@@ -1,5 +1,3 @@
-import { VERSION } from './version';
-
 export const API_URL = './api';
 
 export const environment = {
@@ -17,13 +15,15 @@ export const environment = {
   NETWORK_API: '/network',
   NEW_ADDRESS_API: '/newaddress',
   TRANSACTIONS_API: '/transactions',
-  PAYREQUEST_API: '/payreq',
   PAYMENTS_API: '/payments',
   INVOICES_API: '/invoices',
   SWITCH_API: '/switch',
   ON_CHAIN_API: '/onchain',
   MESSAGE_API: '/message',
+  OFFERS_API: '/offers',
   LOOP_API: '/loop',
   BOLTZ_API: '/boltz',
-  VERSION: VERSION
+  Web_SOCKET_API: '/ws'
 };
+
+export const VERSION = '0.12.0-beta';

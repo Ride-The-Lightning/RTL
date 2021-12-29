@@ -9,7 +9,11 @@
     <mat-card-content class="padding-gap-x-large">
       <form fxLayout="column">
         <div fxLayout="column" class="bordered-box mb-1 p-2">
-          <p fxLayoutAlign="start center" class="pb-1 word-break">{{channelToClose.active ? ('Closing channel: ' + channelToClose.channel_point) : ('Force closing channel: ' + channelToClose.channel_point)}}</p>
+          <p fxLayoutAlign="start center" class="pb-1 word-break">{{
+            channelToClose.active ? 
+            ('Closing channel: ' + ((!channelToClose.remote_alias && !channelToClose.chan_id) ? channelToClose.channel_point : (channelToClose.remote_alias && channelToClose.chan_id) ? channelToClose.remote_alias + ' (' + channelToClose.chan_id + ')' : channelToClose.remote_alias ? channelToClose.remote_alias : channelToClose.chan_id)) : 
+            ('Force closing channel: ' + ((!channelToClose.remote_alias && !channelToClose.chan_id) ? channelToClose.channel_point : (channelToClose.remote_alias && channelToClose.chan_id) ? channelToClose.remote_alias + ' (' + channelToClose.chan_id + ')' : channelToClose.remote_alias ? channelToClose.remote_alias : channelToClose.chan_id))}}
+          </p>
           <div *ngIf="flgPendingHtlcs" fxLayoutAlign="start center">
             <p fxFlex="100" fxLayoutAlign="start center" class="color-warn"><mat-icon class="mr-1 icon-small">close</mat-icon>{{errorMsg}}</p>
           </div>
@@ -43,9 +47,9 @@
           </div>        
         </div>
         <div fxLayout="row" fxLayoutAlign="end center">
-          <button *ngIf="channelToClose.active && !flgPendingHtlcs" mat-stroked-button color="primary" type="reset" class="mr-1" (click)="resetData()" tabindex="3" default>Clear</button>
-          <button *ngIf="!flgPendingHtlcs" mat-flat-button color="primary" type="submit" tabindex="4" (click)="onCloseChannel()">{{channelToClose.active ? 'Close Channel' : 'Force Close'}}</button>
-          <button *ngIf="flgPendingHtlcs" mat-flat-button color="primary" type="submit" tabindex="5" (click)="onClose()">Ok</button>
+          <button *ngIf="channelToClose.active && !flgPendingHtlcs" mat-button color="primary" type="reset" class="mr-1" (click)="resetData()" tabindex="3" default>Clear</button>
+          <button *ngIf="!flgPendingHtlcs" mat-button color="primary" type="submit" tabindex="4" (click)="onCloseChannel()">{{channelToClose.active ? 'Close Channel' : 'Force Close'}}</button>
+          <button *ngIf="flgPendingHtlcs" mat-button color="primary" type="submit" tabindex="5" (click)="onClose()">Ok</button>
         </div>
       </form>
     </mat-card-content>

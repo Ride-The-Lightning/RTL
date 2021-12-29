@@ -1,88 +1,62 @@
-import { ActionReducerMap } from '@ngrx/store';
+import { createReducer, on } from '@ngrx/store';
+import { initRootState } from './rtl.state';
 
-import { ApiCallsListRoot } from '../shared/models/apiCallsPayload';
-import { APICallStatusEnum } from '../shared/services/consts-enums-functions';
-import { RTLConfiguration, ConfigSettingsNode, GetInfoRoot } from '../shared/models/RTLconfig';
+import { resetRootStore, setNodeData, setRTLConfig, setSelectedNode, updateRootAPICallStatus, updateRootNodeSettings } from './rtl.actions';
+import { ServicesEnum } from '../shared/services/consts-enums-functions';
+import { ConfigSettingsNode } from '../shared/models/RTLconfig';
 
-import * as fromECL from '../eclair/store/ecl.reducers';
-import * as fromCL from '../clightning/store/cl.reducers';
-import * as fromLND from '../lnd/store/lnd.reducers';
-import * as RTLActions from './rtl.actions';
+export const RootReducer = createReducer(initRootState,
+  on(updateRootAPICallStatus, (state, { payload }) => {
+    const updatedApisCallStatus = JSON.parse(JSON.stringify(state.apisCallStatus));
+    updatedApisCallStatus[payload.action] = {
+      status: payload.status,
+      statusCode: payload.statusCode,
+      message: payload.message,
+      URL: payload.URL,
+      filePath: payload.filePath
+    };
+    return {
+      ...state,
+      apisCallStatus: updatedApisCallStatus
+    };
+  }),
+  on(resetRootStore, (state, { payload }) => ({
+    ...initRootState,
+    apisCallStatus: state.apisCallStatus,
+    appConfig: state.appConfig,
+    selNode: payload
+  })),
+  on(setSelectedNode, (state, { payload }) => ({
+    ...state,
+    selNode: payload.currentLnNode
+  })),
+  on(updateRootNodeSettings, (state, { payload }) => {
+    const updatedSelNode: ConfigSettingsNode = JSON.parse(JSON.stringify(state.selNode));
+    switch (payload.service) {
+      case ServicesEnum.BOLTZ:
+        updatedSelNode.settings.boltzServerUrl = payload.settings.boltzServerUrl;
+        break;
+      case ServicesEnum.LOOP:
+        updatedSelNode.settings.swapServerUrl = payload.settings.swapServerUrl;
+        break;
+      case ServicesEnum.OFFERS:
+        updatedSelNode.settings.enableOffers = payload.settings.enableOffers;
+        break;
 
-export interface RootState {
-  apisCallStatus: ApiCallsListRoot;
-  selNode: ConfigSettingsNode;
-  appConfig: RTLConfiguration;
-  nodeData: GetInfoRoot;
-}
-
-const initNodeSettings = { userPersona: 'OPERATOR', themeMode: 'DAY', themeColor: 'PURPLE', channelBackupPath: '', selCurrencyUnit: 'USD', fiatConversion: false, currencyUnits: ['Sats', 'BTC', 'USD'], bitcoindConfigPath: '' };
-const initNodeAuthentication = { configPath: '', swapMacaroonPath: '', boltzMacaroonPath: '' };
-
-export const initRootState: RootState = {
-  apisCallStatus: { Login: { status: APICallStatusEnum.UN_INITIATED }, IsAuthorized: { status: APICallStatusEnum.UN_INITIATED } },
-  selNode: { settings: initNodeSettings, authentication: initNodeAuthentication, lnImplementation: 'LND' },
-  appConfig: {
-    defaultNodeIndex: -1,
-    selectedNodeIndex: -1,
-    sso: { rtlSSO: 0, logoutRedirectLink: '' },
-    enable2FA: false,
-    nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication }]
-  },
-  nodeData: {}
-};
-
-export function RootReducer(state = initRootState, action: RTLActions.RTLActions) {
-  switch (action.type) {
-    case RTLActions.UPDATE_API_CALL_STATUS_ROOT:
-      const updatedApisCallStatus = state.apisCallStatus;
-      updatedApisCallStatus[action.payload.action] = {
-        status: action.payload.status,
-        statusCode: action.payload.statusCode,
-        message: action.payload.message,
-        URL: action.payload.URL,
-        filePath: action.payload.filePath
-      };
-      return {
-        ...state,
-        apisCallStatus: updatedApisCallStatus
-      };
-    case RTLActions.RESET_ROOT_STORE:
-      return {
-        ...initRootState,
-        appConfig: state.appConfig,
-        selNode: action.payload
-      };
-    case RTLActions.SET_SELECTED_NODE:
-      return {
-        ...state,
-        selNode: action.payload.lnNode
-      };
-    case RTLActions.SET_NODE_DATA:
-      return {
-        ...state,
-        nodeData: action.payload
-      };
-    case RTLActions.SET_RTL_CONFIG:
-      return {
-        ...state,
-        appConfig: action.payload
-      };
-    default:
-      return state;
-  }
-}
-
-export interface RTLState {
-  root: RootState;
-  lnd: fromLND.LNDState;
-  cl: fromCL.CLState;
-  ecl: fromECL.ECLState;
-}
-
-export const RTLReducer: ActionReducerMap<RTLState> = {
-  root: RootReducer,
-  lnd: fromLND.LNDReducer,
-  cl: fromCL.CLReducer,
-  ecl: fromECL.ECLReducer
-};
+      default:
+        break;
+    }
+    return {
+      ...state,
+      selNode: updatedSelNode
+    };
+  }),
+  on(setNodeData, (state, { payload }) => ({
+    ...state,
+    nodeData: payload
+  })),
+  on(setRTLConfig, (state, { payload }) => ({
+    ...state,
+    appConfig: payload
+  }))
+);

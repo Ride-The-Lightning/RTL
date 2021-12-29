@@ -2,7 +2,10 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { StoreModule } from '@ngrx/store';
 import { mockECLEffects } from '../../../shared/test-helpers/mock-services';
 
-import { RTLReducer } from '../../../store/rtl.reducers';
+import { RootReducer } from '../../../store/rtl.reducers';
+import { LNDReducer } from '../../../lnd/store/lnd.reducers';
+import { CLReducer } from '../../../clightning/store/cl.reducers';
+import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { ECLEffects } from '../../store/ecl.effects';
 import { ECLOnChainReceiveComponent } from './on-chain-receive.component';
 
@@ -14,12 +17,7 @@ describe('ECLOnChainReceiveComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ECLOnChainReceiveComponent],
       imports: [
-        StoreModule.forRoot(RTLReducer, {
-          runtimeChecks: {
-            strictStateImmutability: false,
-            strictActionImmutability: false
-          }
-        })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
       ],
       providers: [
         { provide: ECLEffects, useClass: mockECLEffects }

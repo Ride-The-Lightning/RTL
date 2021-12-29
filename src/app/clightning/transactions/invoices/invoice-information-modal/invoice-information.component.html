@@ -1,0 +1,111 @@
+<div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
+  <div fxFlex="35" [fxLayoutAlign]="((invoice?.bolt11 && invoice?.bolt11 !== '') || (invoice?.bolt12 && invoice?.bolt12 !== '')) ? 'center start' : 'center center'" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
+    <qr-code *ngIf="((invoice?.bolt11 && invoice?.bolt11 !== '') || (invoice?.bolt12 && invoice?.bolt12 !== ''))" [value]="invoice?.bolt11 || invoice?.bolt12" [size]="qrWidth" [errorCorrectionLevel]="'L'"></qr-code>
+    <span *ngIf="!invoice?.bolt11 && !invoice?.bolt12" class="font-size-300">N/A</span>
+  </div>
+  <div fxFlex="65">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
+      <div fxFlex="95" fxLayoutAlign="start start">
+        <fa-icon [icon]="faReceipt" class="page-title-img mr-1"></fa-icon>
+        <span class="page-title">
+          {{screenSize === screenSizeEnum.XS ?  (newlyAdded ? 'Created' : 'Invoice') : (newlyAdded ? 'Invoice Created' : 'Invoice Information')}}
+          <span *ngIf="invoice?.status === 'paid'" class="dot green ml-1" matTooltip="Paid" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+          <span *ngIf="invoice?.status === 'unpaid'" class="dot yellow ml-1" matTooltip="Unpaid" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+          <span *ngIf="invoice?.status === 'expired'" class="dot red ml-1" matTooltip="Expired" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+        </span>
+      </div>
+      <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+    </mat-card-header>
+    <mat-card-content class="padding-gap-x-large" [ngClass]="{'xs-scroll-y': screenSize === screenSizeEnum.XS}">
+      <div fxLayout="column">
+        <div fxFlex="30" [fxLayoutAlign]="((invoice?.bolt11 && invoice?.bolt11 !== '') || (invoice?.bolt12 && invoice?.bolt12 !== '')) ? 'center start' : 'center center'" class="modal-qr-code-container padding-gap" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
+          <qr-code *ngIf="((invoice?.bolt11 && invoice?.bolt11 !== '') || (invoice?.bolt12 && invoice?.bolt12 !== ''))" [value]="invoice?.bolt11 || invoice?.bolt12" [size]="qrWidth" [errorCorrectionLevel]="'L'"></qr-code>
+          <span *ngIf="!invoice?.bolt11 && !invoice?.bolt12" class="font-size-120">QR Code Not Applicable</span>
+        </div>
+        <mat-divider *ngIf="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM" [inset]="true" class="my-1"></mat-divider>
+        <div fxLayout="row" *ngIf="invoice?.warning_capacity">
+          <div fxFlex="100" class="alert alert-warn">
+            <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+            <span>{{invoice?.warning_capacity}}</span>
+          </div>
+        </div>
+        <div fxLayout="row">
+          <div fxFlex="50">
+            <h4 fxLayoutAlign="start" class="font-bold-500">{{screenSize === screenSizeEnum.XS ? 'Amount' : 'Amount Requested'}}</h4>
+            <span class="foreground-secondary-text">
+              {{(invoice?.msatoshi/1000 || 0) | number}} Sats<ng-container *ngIf="!invoice?.msatoshi || invoice?.msatoshi === '0'"> (zero amount) </ng-container>
+            </span>
+          </div>
+          <div fxFlex="50">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Amount Received</h4>
+            <span class="overflow-wrap foreground-secondary-text">
+              <ng-container *ngIf="invoice?.status === 'paid'">
+                <div *ngIf="flgInvoicePaid" class="invoice-animation-container">
+                  <div class="invoice-animation-div">
+                    <span class="wiggle">{{invoice?.msatoshi_received/1000 | number}} Sats</span>
+                    <span *ngFor="let i of [].constructor(35)" class="particles-circle"></span>
+                  </div>
+                </div>
+                <div *ngIf="!flgInvoicePaid">{{invoice?.msatoshi_received/1000 | number}} Sats</div>
+              </ng-container>
+              <ng-container *ngIf="invoice?.status !== 'paid'">
+                <span *ngIf="invoice?.status !== 'unpaid' || !flgVersionCompatible">-</span>
+                <mat-spinner [diameter]="20" *ngIf="invoice?.status === 'unpaid' && flgVersionCompatible"></mat-spinner>
+              </ng-container>
+            </span>
+          </div>
+        </div>
+        <mat-divider class="w-100 my-1"></mat-divider>   
+        <div fxLayout="row">
+          <div fxFlex="50">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Date Expiry</h4>
+            <span class="foreground-secondary-text">{{(invoice?.expires_at * 1000) | date:'dd/MMM/YYYY HH:mm'}}</span>
+          </div>
+          <div fxFlex="50">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Date Settled</h4>
+            <span class="foreground-secondary-text">{{((invoice?.paid_at * 1000) | date:'dd/MMM/YYYY HH:mm') || '-'}}</span>
+          </div>
+        </div>
+        <mat-divider class="w-100 my-1"></mat-divider>
+      <div fxLayout="row">
+          <div fxFlex="100">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Description</h4>
+            <span class="foreground-secondary-text">{{invoice?.description || '-'}}</span>
+          </div>
+        </div>
+        <mat-divider class="w-100 my-1"></mat-divider>
+        <div fxLayout="row">
+          <div fxFlex="100">
+            <h4 fxLayoutAlign="start" class="font-bold-500">{{ invoice?.bolt12 ? 'Bolt12' : (invoice?.bolt11 && !invoice.label.includes('keysend-')) ? 'Bolt11' : 'Keysend' }} Invoice</h4>
+            <span class="overflow-wrap foreground-secondary-text">{{invoice?.bolt11 || invoice?.bolt12}}</span>
+          </div>
+        </div>
+        <div *ngIf="showAdvanced">
+          <mat-divider class="w-100 my-1"></mat-divider>
+          <div fxLayout="row">
+            <div fxFlex="100">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Payment Hash</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{invoice?.payment_hash}}</span>
+            </div>
+          </div>
+          <mat-divider class="w-100 my-1"></mat-divider>
+          <div fxLayout="row">
+            <div fxFlex="100">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Label</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{invoice?.label}}</span>
+            </div>
+          </div>
+          <mat-divider class="w-100 my-1"></mat-divider>
+        </div>
+        <div [ngClass]="{'mt-2': !showAdvanced, 'mt-1': showAdvanced}" fxLayout="row" fxLayoutAlign="end center">
+          <button class="mr-1" mat-button color="primary" type="reset" (click)="onShowAdvanced()" tabindex="1">
+            <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
+            <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
+          </button>
+          <button *ngIf="((invoice?.bolt11 && invoice?.bolt11 !== '') || (invoice?.bolt12 && invoice?.bolt12 !== ''))" autoFocus mat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="invoice?.bolt11 || invoice?.bolt12" (copied)="onCopyPayment($event)">Copy Invoice</button>
+          <button *ngIf="!invoice?.bolt11 && !invoice?.bolt12" autoFocus mat-button color="primary" tabindex="2" type="button" (click)="onClose()">OK</button>
+        </div>
+      </div>
+      </mat-card-content>
+  </div>
+</div>

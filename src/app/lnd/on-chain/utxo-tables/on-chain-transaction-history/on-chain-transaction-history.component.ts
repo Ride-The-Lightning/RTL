@@ -10,12 +10,13 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Transaction } from '../../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../../shared/services/consts-enums-functions';
-import { ApiCallsListLND } from '../../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
 
-import * as RTLActions from '../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { RTLState } from '../../../../store/rtl.state';
+import { openAlert } from '../../../../store/rtl.actions';
+import { transactions } from '../../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-on-chain-transaction-history',
@@ -27,8 +28,8 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
 })
 export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator|undefined;
+  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public transactions: Transaction[];
   faHistory = faHistory;
   public displayedColumns: any[] = [];
@@ -39,11 +40,12 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListLND = null;
+  public selFilter = '';
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -61,19 +63,18 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
   }
 
   ngOnInit() {
-    this.store.select('lnd').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(transactions).pipe(takeUntil(this.unSubs[0])).
+      subscribe((transactionsSelector: { transactions: Transaction[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchTransactions.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apisCallStatus.FetchTransactions.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchTransactions.message) : this.apisCallStatus.FetchTransactions.message;
+        this.apiCallStatus = transactionsSelector.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        if (rtlStore.transactions && rtlStore.transactions.length > 0) {
-          this.transactions = rtlStore.transactions;
+        if (transactionsSelector.transactions && transactionsSelector.transactions.length > 0) {
+          this.transactions = transactionsSelector.transactions;
           this.loadTransactionsTable(this.transactions);
         }
-        this.logger.info(rtlStore);
+        this.logger.info(transactionsSelector);
       });
   }
 
@@ -83,8 +84,8 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
     }
   }
 
-  applyFilter(selFilter: any) {
-    this.listTransactions.filter = selFilter.value.trim().toLowerCase();
+  applyFilter() {
+    this.listTransactions.filter = this.selFilter.trim().toLowerCase();
   }
 
   onTransactionClick(selTransaction: Transaction) {
@@ -93,18 +94,22 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
       [{ key: 'tx_hash', value: selTransaction.tx_hash, title: 'Transaction Hash', width: 100 }],
       [{ key: 'label', value: selTransaction.label, title: 'Label', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'time_stamp', value: selTransaction.time_stamp, title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME },
-        { key: 'block_height', value: selTransaction.block_height, title: 'Block Height', width: 50, type: DataTypeEnum.NUMBER }],
+      { key: 'block_height', value: selTransaction.block_height, title: 'Block Height', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'num_confirmations', value: selTransaction.num_confirmations, title: 'Number of Confirmations', width: 34, type: DataTypeEnum.NUMBER },
-        { key: 'total_fees', value: selTransaction.total_fees, title: 'Total Fees (Sats)', width: 33, type: DataTypeEnum.NUMBER },
-        { key: 'amount', value: selTransaction.amount, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.NUMBER }],
+      { key: 'total_fees', value: selTransaction.total_fees, title: 'Total Fees (Sats)', width: 33, type: DataTypeEnum.NUMBER },
+      { key: 'amount', value: selTransaction.amount, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.NUMBER }],
       [{ key: 'dest_addresses', value: selTransaction.dest_addresses, title: 'Destination Addresses', width: 100, type: DataTypeEnum.ARRAY }]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Transaction Information',
-      message: reorderedTransactions,
-      scrollable: selTransaction.dest_addresses && selTransaction.dest_addresses.length > 5
-    } }));
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Transaction Information',
+          message: reorderedTransactions,
+          scrollable: selTransaction.dest_addresses && selTransaction.dest_addresses.length > 5
+        }
+      }
+    }));
   }
 
   loadTransactionsTable(transactions) {
@@ -116,6 +121,7 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
       return newRowData.includes(fltr);
     };
     this.listTransactions.paginator = this.paginator;
+    this.applyFilter();
     this.logger.info(this.listTransactions);
   }
 

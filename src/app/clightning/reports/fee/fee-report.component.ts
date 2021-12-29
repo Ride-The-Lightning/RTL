@@ -1,16 +1,17 @@
-import { Component, OnInit, OnDestroy, HostListener, AfterContentInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { ForwardingEvent } from '../../../shared/models/clModels';
 import { APICallStatusEnum, MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
-import { ApiCallsListCL } from '../../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { forwardingHistory } from '../../store/cl.selector';
 
 @Component({
   selector: 'rtl-cl-fee-report',
@@ -18,7 +19,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./fee-report.component.scss'],
   animations: [fadeIn]
 })
-export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
+export class CLFeeReportComponent implements OnInit, OnDestroy {
 
   public reportPeriod = SCROLL_RANGES[0];
   public secondsInADay = 24 * 60 * 60;
@@ -39,45 +40,44 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsListCL = null;
+  public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select('cl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
+    this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[0])).
+      subscribe((fhSeletor: { forwardingHistory: ForwardingEvent[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (rtlStore.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(rtlStore.apisCallStatus.GetForwardingHistory.message) : rtlStore.apisCallStatus.GetForwardingHistory.message;
+        this.apiCallStatus = fhSeletor.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.events = rtlStore.forwardingHistory ? rtlStore.forwardingHistory : [];
+        this.events = fhSeletor.forwardingHistory || [];
         this.filterForwardingEvents(this.startDate, this.endDate);
-        this.logger.info(rtlStore);
+        this.logger.info(fhSeletor);
       });
-  }
+    this.commonService.containerSizeUpdated.pipe(takeUntil(this.unSubs[1])).subscribe((CONTAINER_SIZE) => {
+      switch (this.screenSize) {
+        case ScreenSizeEnum.MD:
+          this.screenPaddingX = CONTAINER_SIZE.width / 10;
+          break;
 
-  ngAfterContentInit() {
-    const CONTAINER_SIZE = this.commonService.getContainerSize();
-    switch (this.screenSize) {
-      case ScreenSizeEnum.MD:
-        this.screenPaddingX = CONTAINER_SIZE.width / 10;
-        break;
+        case ScreenSizeEnum.LG:
+          this.screenPaddingX = CONTAINER_SIZE.width / 16;
+          break;
 
-      case ScreenSizeEnum.LG:
-        this.screenPaddingX = CONTAINER_SIZE.width / 16;
-        break;
-
-      default:
-        this.screenPaddingX = CONTAINER_SIZE.width / 20;
-        break;
-    }
-    this.view = [CONTAINER_SIZE.width - this.screenPaddingX, CONTAINER_SIZE.height / 2.2];
+        default:
+          this.screenPaddingX = CONTAINER_SIZE.width / 20;
+          break;
+      }
+      this.view = [CONTAINER_SIZE.width - this.screenPaddingX, CONTAINER_SIZE.height / 2.2];
+      this.logger.info('Container Size: ' + JSON.stringify(CONTAINER_SIZE));
+      this.logger.info('View: ' + JSON.stringify(this.view));
+    });
   }
 
   filterForwardingEvents(start: Date, end: Date) {
@@ -115,7 +115,7 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
     const feeReport = [];
     if (this.reportPeriod === SCROLL_RANGES[1]) {
       for (let i = 0; i < 12; i++) {
-        feeReport.push({ name: MONTHS[i].name, value: 0.000000001, extra: { totalEvents: 0 } });
+        feeReport.push({ name: MONTHS[i].name, value: 0.0, extra: { totalEvents: 0 } });
       }
       this.filteredEventsBySelectedPeriod.map((event) => {
         const monthNumber = new Date((+event.received_time) * 1000).getMonth();
@@ -126,7 +126,7 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
       });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
-        feeReport.push({ name: i + 1, value: 0.000000001, extra: { totalEvents: 0 } });
+        feeReport.push({ name: i + 1, value: 0.0, extra: { totalEvents: 0 } });
       }
       this.filteredEventsBySelectedPeriod.map((event) => {
         const dateNumber = Math.floor((+event.received_time - startDateInSeconds) / this.secondsInADay);
@@ -139,7 +139,7 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
     return feeReport;
   }
 
-  onSelectionChange(selectedValues: {selDate: Date, selScrollRange: string}) {
+  onSelectionChange(selectedValues: { selDate: Date, selScrollRange: string }) {
     const selMonth = selectedValues.selDate.getMonth();
     const selYear = selectedValues.selDate.getFullYear();
     this.reportPeriod = selectedValues.selScrollRange;

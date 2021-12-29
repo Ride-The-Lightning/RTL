@@ -11,11 +11,11 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { Peer } from '../../../shared/models/lndModels';
 import { OpenChannelAlert } from '../../../shared/models/alertData';
-import { APICallStatusEnum, TRANS_TYPES } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, LNDActions, TRANS_TYPES } from '../../../shared/services/consts-enums-functions';
 
 import { LNDEffects } from '../../store/lnd.effects';
-import * as LNDActions from '../../store/lnd.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { fetchGraphNode, saveNewChannel, saveNewPeer } from '../../store/lnd.actions';
 
 @Component({
   selector: 'rtl-connect-peer',
@@ -43,7 +43,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   statusFormGroup: FormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private lndEffects: LNDEffects, private formBuilder: FormBuilder, private actions: Actions, private logger: LoggerService) {}
+  constructor(public dialogRef: MatDialogRef<ConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<RTLState>, private lndEffects: LNDEffects, private formBuilder: FormBuilder, private actions: Actions, private logger: LoggerService) { }
 
   ngOnInit() {
     this.totalBalance = this.data.message.balance;
@@ -75,7 +75,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
     this.actions.pipe(
       takeUntil(this.unSubs[1]),
       filter((action) => action.type === LNDActions.NEWLY_ADDED_PEER_LND || action.type === LNDActions.FETCH_PENDING_CHANNELS_LND || action.type === LNDActions.UPDATE_API_CALL_STATUS_LND)).
-      subscribe((action: (LNDActions.NewlyAddedPeer | LNDActions.FetchPendingChannels | LNDActions.UpdateAPICallStatus)) => {
+      subscribe((action: any) => {
         if (action.type === LNDActions.NEWLY_ADDED_PEER_LND) {
           this.logger.info(action.payload);
           this.flgEditable = false;
@@ -96,7 +96,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       });
   }
 
-  onConnectPeer(): boolean|void {
+  onConnectPeer(): boolean | void {
     if (!this.peerFormGroup.controls.peerAddress.value) {
       return true;
     }
@@ -109,28 +109,28 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       host = this.peerFormGroup.controls.peerAddress.value.substring(deviderIndex + 1);
       this.connectPeerWithParams(pubkey, host);
     } else {
-      this.store.dispatch(new LNDActions.FetchGraphNode({ pubkey: this.peerFormGroup.controls.peerAddress.value }));
-      this.lndEffects.setGraphNode.
-        pipe(take(1)).
-        subscribe((graphNode) => {
-          host = (graphNode.node.addresses && graphNode.node.addresses.length && graphNode.node.addresses.length > 0 && graphNode.node.addresses[0].addr) ? graphNode.node.addresses[0].addr : '';
-          this.connectPeerWithParams(this.peerFormGroup.controls.peerAddress.value, host);
-        });
+      this.store.dispatch(fetchGraphNode({ payload: { pubkey: this.peerFormGroup.controls.peerAddress.value } }));
+      this.lndEffects.setGraphNode.pipe(take(1)).subscribe((graphNode) => {
+        host = (graphNode.node.addresses && graphNode.node.addresses.length && graphNode.node.addresses.length > 0 && graphNode.node.addresses[0].addr) ? graphNode.node.addresses[0].addr : '';
+        this.connectPeerWithParams(this.peerFormGroup.controls.peerAddress.value, host);
+      });
     }
   }
 
   connectPeerWithParams(pubkey: string, host: string) {
-    this.store.dispatch(new LNDActions.SaveNewPeer({ pubkey: pubkey, host: host, perm: false }));
+    this.store.dispatch(saveNewPeer({ payload: { pubkey: pubkey, host: host, perm: false } }));
   }
 
-  onOpenChannel(): boolean|void {
+  onOpenChannel(): boolean | void {
     if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) || (this.channelFormGroup.controls.selTransType.value === '1' && !this.channelFormGroup.controls.transTypeValue.value) || (this.channelFormGroup.controls.selTransType.value === '2' && !this.channelFormGroup.controls.transTypeValue.value)) {
       return true;
     }
     this.channelConnectionError = '';
-    this.store.dispatch(new LNDActions.SaveNewChannel({
-      selectedPeerPubkey: this.newlyAddedPeer.pub_key, fundingAmount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value,
-      transType: this.channelFormGroup.controls.selTransType.value, transTypeValue: this.channelFormGroup.controls.transTypeValue.value, spendUnconfirmed: this.channelFormGroup.controls.spendUnconfirmed.value
+    this.store.dispatch(saveNewChannel({
+      payload: {
+        selectedPeerPubkey: this.newlyAddedPeer.pub_key, fundingAmount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value,
+        transType: this.channelFormGroup.controls.selTransType.value, transTypeValue: this.channelFormGroup.controls.transTypeValue.value, spendUnconfirmed: this.channelFormGroup.controls.spendUnconfirmed.value
+      }
     }));
   }
 

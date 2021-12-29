@@ -67,6 +67,8 @@ export interface PaymentRelayed {
   toShortChannelId?: string;
   toChannelAlias?: string;
   timestamp?: number;
+  incoming?: Array<{ amount: number, channelId?: string, channelAlias?: string, shortChannelId?: string }>;
+  outgoing?: Array<{ amount: number, channelId?: string, channelAlias?: string, shortChannelId?: string }>;
 }
 
 export interface Payments {
@@ -92,6 +94,14 @@ export interface PayRequest {
   amount?: number;
 }
 
+export interface ChannelsRearranged {
+  activeChannels?: Channel[];
+  pendingChannels?: Channel[];
+  inactiveChannels?: Channel[];
+  lightningBalances?: LightningBalance;
+  channelStatus?: ChannelsStatus;
+}
+
 export interface Channel {
   alias?: string;
   nodeId?: string;
@@ -108,14 +118,6 @@ export interface Channel {
   feeRatePerKwRemote?: number;
   feeProportionalMillionths?: number;
   balancedness?: number;
-}
-
-export interface ChannelStats {
-  channelId?: string;
-  avgPaymentAmount?: number;
-  paymentCount?: number;
-  relayFee?: number;
-  networkFee?: number;
 }
 
 export interface OnChainBalance {
@@ -208,4 +210,50 @@ export interface RoutingPeers {
   events?: number;
   totalAmount?: number;
   totalFee?: number;
+}
+
+export interface ChannelStateUpdate {
+  channelId?: string;
+  currentState?: string;
+  previousState?: string;
+  remoteNodeId?: string;
+  type?: string;
+}
+
+export interface SaveChannel {
+  nodeId: string;
+  amount: number;
+  private: boolean;
+  feeRate?: number;
+}
+
+export interface UpdateChannel {
+  baseFeeMsat: number;
+  feeRate: number;
+  channelId?: string;
+  channelIds?: string;
+  nodeId?: string;
+  nodeIds?: string;
+}
+
+export interface CloseChannel {
+  channelId: string;
+  force: boolean;
+}
+
+export interface GetQueryRoutes {
+  nodeId: string;
+  amount: number;
+}
+
+export interface SendPayment {
+  fromDialog: boolean;
+  invoice: string;
+  amountMsat?: number;
+}
+
+export interface CreateInvoice {
+  description: string;
+  expireIn: number;
+  amountMsat?: number;
 }

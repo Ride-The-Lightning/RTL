@@ -1,15 +1,17 @@
-import { Component, OnInit, OnDestroy, HostListener, AfterContentInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { PaymentRelayed } from '../../../shared/models/eclModels';
+import { PaymentRelayed, Payments } from '../../../shared/models/eclModels';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { payments } from '../../store/ecl.selector';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-ecl-fee-report',
@@ -17,7 +19,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./fee-report.component.scss'],
   animations: [fadeIn]
 })
-export class ECLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
+export class ECLFeeReportComponent implements OnInit, OnDestroy {
 
   public reportPeriod = SCROLL_RANGES[0];
   public secondsInADay = 24 * 60 * 60;
@@ -39,36 +41,35 @@ export class ECLFeeReportComponent implements OnInit, AfterContentInit, OnDestro
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select('ecl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        this.events = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
+    this.store.select(payments).pipe(takeUntil(this.unSubs[0])).
+      subscribe((paymentsSelector: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
+        this.events = paymentsSelector.payments && paymentsSelector.payments.relayed ? paymentsSelector.payments.relayed : [];
         this.filterForwardingEvents(this.startDate, this.endDate);
-        this.logger.info(rtlStore);
+        this.logger.info(paymentsSelector);
       });
-  }
+    this.commonService.containerSizeUpdated.pipe(takeUntil(this.unSubs[1])).subscribe((CONTAINER_SIZE) => {
+      switch (this.screenSize) {
+        case ScreenSizeEnum.MD:
+          this.screenPaddingX = CONTAINER_SIZE.width / 10;
+          break;
 
-  ngAfterContentInit() {
-    const CONTAINER_SIZE = this.commonService.getContainerSize();
-    switch (this.screenSize) {
-      case ScreenSizeEnum.MD:
-        this.screenPaddingX = CONTAINER_SIZE.width / 10;
-        break;
+        case ScreenSizeEnum.LG:
+          this.screenPaddingX = CONTAINER_SIZE.width / 16;
+          break;
 
-      case ScreenSizeEnum.LG:
-        this.screenPaddingX = CONTAINER_SIZE.width / 16;
-        break;
-
-      default:
-        this.screenPaddingX = CONTAINER_SIZE.width / 20;
-        break;
-    }
-    this.view = [CONTAINER_SIZE.width - this.screenPaddingX, CONTAINER_SIZE.height / 2.2];
+        default:
+          this.screenPaddingX = CONTAINER_SIZE.width / 20;
+          break;
+      }
+      this.view = [CONTAINER_SIZE.width - this.screenPaddingX, CONTAINER_SIZE.height / 2.2];
+      this.logger.info('Container Size: ' + JSON.stringify(CONTAINER_SIZE));
+      this.logger.info('View: ' + JSON.stringify(this.view));
+    });
   }
 
   filterForwardingEvents(start: Date, end: Date) {
@@ -109,7 +110,7 @@ export class ECLFeeReportComponent implements OnInit, AfterContentInit, OnDestro
     this.logger.info('Fee Report Prepare Starting at ' + new Date(Date.now()).toLocaleString() + ' From ' + start.toLocaleString());
     if (this.reportPeriod === SCROLL_RANGES[1]) {
       for (let i = 0; i < 12; i++) {
-        feeReport.push({ name: MONTHS[i].name, value: 0.000000001, extra: { totalEvents: 0 } });
+        feeReport.push({ name: MONTHS[i].name, value: 0.0, extra: { totalEvents: 0 } });
       }
       this.filteredEventsBySelectedPeriod.map((event) => {
         const monthNumber = new Date(event.timestamp).getMonth();
@@ -120,7 +121,7 @@ export class ECLFeeReportComponent implements OnInit, AfterContentInit, OnDestro
       });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
-        feeReport.push({ name: i + 1, value: 0.000000001, extra: { totalEvents: 0 } });
+        feeReport.push({ name: i + 1, value: 0.0, extra: { totalEvents: 0 } });
       }
       this.filteredEventsBySelectedPeriod.map((event) => {
         const dateNumber = Math.floor((Math.floor(event.timestamp / 1000) - startDateInSeconds) / this.secondsInADay);
@@ -134,7 +135,7 @@ export class ECLFeeReportComponent implements OnInit, AfterContentInit, OnDestro
     return feeReport;
   }
 
-  onSelectionChange(selectedValues: {selDate: Date, selScrollRange: string}) {
+  onSelectionChange(selectedValues: { selDate: Date, selScrollRange: string }) {
     const selMonth = selectedValues.selDate.getMonth();
     const selYear = selectedValues.selDate.getFullYear();
     this.reportPeriod = selectedValues.selScrollRange;

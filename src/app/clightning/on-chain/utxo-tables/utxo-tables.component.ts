@@ -6,7 +6,9 @@ import { Store } from '@ngrx/store';
 import { UTXO } from '../../../shared/models/clModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLState } from '../../../store/rtl.state';
+import { utxos } from '../../store/cl.selector';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-cl-utxo-tables',
@@ -21,25 +23,24 @@ export class CLUTXOTablesComponent implements OnInit, OnDestroy {
   public numUtxos = 0;
   public dustUtxos: UTXO[] = [];
   public numDustUtxos = 0;
-  private unSubs: Array<Subject<void>> = [new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private logger: LoggerService, private store: Store<RTLState>) { }
 
   ngOnInit() {
-    this.store.select('cl').
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        if (rtlStore.utxos && rtlStore.utxos.length > 0) {
-          this.utxos = rtlStore.utxos;
+    this.store.select(utxos).pipe(takeUntil(this.unSubs[0])).
+      subscribe((utxosSeletor: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
+        if (utxosSeletor.utxos && utxosSeletor.utxos.length > 0) {
+          this.utxos = utxosSeletor.utxos;
           this.numUtxos = this.utxos.length;
-          this.dustUtxos = rtlStore.utxos.filter((utxo) => +utxo.value < 1000);
+          this.dustUtxos = utxosSeletor.utxos.filter((utxo) => +utxo.value < 1000);
           this.numDustUtxos = this.dustUtxos.length;
         }
-        if (rtlStore.utxos && rtlStore.utxos.length > 0) {
-          this.utxos = rtlStore.utxos;
+        if (utxosSeletor.utxos && utxosSeletor.utxos.length > 0) {
+          this.utxos = utxosSeletor.utxos;
           this.numUtxos = this.utxos.length;
         }
-        this.logger.info(rtlStore);
+        this.logger.info(utxosSeletor);
       });
   }
 

@@ -1,0 +1,44 @@
+<div [perfectScrollbar] fxLayout="column" fxFlex="100">
+  <div fxFlex="100" class="alert alert-info mt-1">
+    <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
+    <span>Experimental features should be enabled with caution. Many such features may be implementation specific and not ratified for the BOLT spec. Enabling these may still result in a broken experience. Referencing relevant feature documentation is highly advised before enabling.</span>
+  </div>
+  <form fxLayout="column" fxLayoutAlign="start stretch" class="page-sub-title-container mt-1" #form="ngForm">
+    <div fxLayout="row">
+      <fa-icon [icon]="faCode" class="page-title-img mr-1"></fa-icon>
+      <span class="page-title">Features</span>
+    </div>
+    <mat-accordion>
+      <mat-expansion-panel [expanded]="false" class="flat-expansion-panel my-1" *ngFor="let feature of features; index as i">
+        <mat-expansion-panel-header>
+          <mat-panel-title fxFlex="100" fxLayoutAlign="space-between center">
+            <h4 class="font-bold-500">{{feature.name}}</h4>
+            <h4 class="font-bold-500">
+              <span *ngIf="feature.enabled" class="dot green"></span>
+              <span *ngIf="!feature.enabled" class="dot yellow"></span>
+              {{feature.enabled ? 'Enabled' : 'Disabled'}}
+            </h4>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
+          <form *ngIf="i === 0" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="page-sub-title-container" #form="ngForm">
+            <div fxFlex="100" class="alert alert-info">
+              <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
+              <span>Please ensure that <strong>experimental-offers</strong> flag is set to true in the CLightning config before enabling it in RTL. Click <strong><a href="http://bolt12.org" target="_blank">here</a></strong> to learn more about CLightning offers.</span>
+            </div>
+            <h4 class="mt-2">Description</h4>
+            <span>Offers is a draft specification (also referred as BOLT12) for Lightning nodes and wallets, with experimental support in C-Lightning.</span>
+            <h4 class="mt-2">Links</h4>
+            <span><a href="https://github.com/lightningnetwork/lightning-rfc/pull/798 " target="blank">Clightning Bolt12</a></span>
+            <mat-divider [inset]="true" class="my-2"></mat-divider>
+            <div class="alert alert-warn">
+              <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+              <span>Do not get an Offer tattoo until spec is fully ratified!</span>
+            </div>
+            <mat-slide-toggle autoFocus class="my-1" tabindex="1" color="primary" name="enableOfr" [(ngModel)]="enableOffers" (change)="onUpdateFeature()">Enable Offers {{enableOffers ? '(You can find Offers under Lightning -> Transactions -> Offers)' : ''}}</mat-slide-toggle>
+          </form>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>      
+  </form>
+</div>

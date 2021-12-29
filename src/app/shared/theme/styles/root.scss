@@ -1,5 +1,6 @@
-@import "constants";
-@import "mixins";
+@use 'sass:math' as math;
+@import 'constants';
+@import 'mixins';
 
 html {
   width: 100%;
@@ -88,10 +89,10 @@ body {
   min-height: calc(100% - (#{$toolbar-height} + #{$gap}*4));
   max-height: 90vh;
   @include for_screensize(tab-port) {
-    padding: $gap $gap/2;
+    padding: $gap math.div($gap, 2);
   }
   @include for_screensize(phone) {
-    padding: $gap/2 $gap/4;
+    padding: math.div($gap, 2) math.div($gap, 4);
   }
 }
 
@@ -124,23 +125,23 @@ body {
 .padding-gap {
   padding: $gap !important;
   @include for_screensize(tab-port) {
-    padding: $gap/2 !important;
+    padding: math.div($gap, 2) !important;
   }
   @include for_screensize(phone) {
-    padding: $gap/4 !important;
+    padding: math.div($gap, 4) !important;
   }
 }
 
 .padding-gap-x {
   padding: 0 $gap 0 $gap !important;
   @include for_screensize(tab-land) {
-    padding: 0 $gap/2 0 $gap/2 !important;
+    padding: 0 math.div($gap, 2) 0 math.div($gap, 2) !important;
   }
   @include for_screensize(tab-port) {
-    padding: 0 $gap/2 0 $gap/2 !important;
+    padding: 0 math.div($gap, 2) 0 math.div($gap, 2) !important;
   }
   @include for_screensize(phone) {
-    padding: 0 $gap/4 0 $gap/4 !important;
+    padding: 0 math.div($gap, 4) 0 math.div($gap, 4) !important;
   }
 }
 
@@ -150,23 +151,23 @@ body {
     padding: $gap !important;
   }
   @include for_screensize(tab-port) {
-    padding: $gap/2 !important;
+    padding: math.div($gap, 2) !important;
   }
   @include for_screensize(phone) {
-    padding: $gap/4 !important;
+    padding: math.div($gap, 4) !important;
   }
 }
 
 .padding-gap-x-large {
   padding: 0 ($gap*2) 0 ($gap*2) !important;
   @include for_screensize(tab-land) {
-    padding: 0 $gap 0 $gap !important;
+    padding: 0 ($gap) 0 ($gap) !important;
   }
   @include for_screensize(tab-port) {
-    padding: 0 $gap/2 0 $gap/2 !important;
+    padding: 0 math.div($gap, 2) 0 math.div($gap, 2) !important;
   }
   @include for_screensize(phone) {
-    padding: 0 $gap/4 0 $gap/4 !important;
+    padding: 0 math.div($gap, 4) 0 math.div($gap, 4) !important;
   }
 }
 
@@ -176,7 +177,7 @@ body {
     padding-bottom: $gap !important;
   }
   @include for_screensize(phone) {
-    padding-bottom: $gap/4 !important;
+    padding-bottom: math.div($gap, 4) !important;
   }
 }
 
@@ -203,27 +204,27 @@ body {
     padding: $gap $gap !important;
   }
   @include for_screensize(phone) {
-    padding: $gap/2 $gap/4 !important;
+    padding: math.div($gap, 2) math.div($gap, 4) !important;
   }
 }
 
 th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type,
 mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-type {
   @include for_screensize(tab-port) {
-    padding-left: $gap/2 !important;
+    padding-left: math.div($gap, 2) !important;
   }
   @include for_screensize(phone) {
-    padding-left: $gap/4 !important;
+    padding-left: math.div($gap, 4) !important;
   }
 }
 
 th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:last-of-type,
 mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-type {
   @include for_screensize(tab-port) {
-    padding-right: $gap/2 !important;
+    padding-right: math.div($gap, 2) !important;
   }
   @include for_screensize(phone) {
-    padding-right: $gap/4 !important;
+    padding-right: math.div($gap, 4) !important;
   }
 }
 
@@ -271,11 +272,6 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
 
 .grey {
   color: #CCCCCC !important;
-}
-
-.mat-dialog-container {
-  padding: 0 !important;
-  overflow: hidden !important;
 }
 
 .mt-1px {
@@ -1417,7 +1413,7 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
 .alert {
   margin-bottom: 1rem;
   padding: 0.6rem 1rem;
-  border-radius: 4px;
+  border-radius: 2px;
 }
 
 .dashboard-vert-menu.mat-menu-panel {
@@ -1534,7 +1530,7 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
 .mat-expansion-panel.flat-expansion-panel {
   box-shadow: none;
   padding: 0;
-  border-radius: 4px;
+  border-radius: 2px;
   background: none;
   & .mat-expansion-panel-header {
     padding: 0 $gap*3 0 $gap*3;
@@ -1542,7 +1538,10 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
       padding: 0 $gap 0 $gap;
     }
     @include for_screensize(phone) {
-      padding: 0 $gap/2 0 $gap/2;
+      padding: 0 math.div($gap, 2) 0 math.div($gap, 2);
+    }
+    & .mat-expansion-indicator {
+      margin-top: -5px;
     }
   }
   & .mat-expansion-panel-body {
@@ -1551,14 +1550,14 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
       padding: 0 $gap $gap $gap;
     }
     @include for_screensize(phone) {
-      padding: 0 $gap/2 $gap/4 $gap/2;
+      padding: 0 math.div($gap, 2) math.div($gap, 4) math.div($gap, 2);
     }
     & .mat-expansion-panel-header-title, .mat-expansion-panel-header-description {
       @include for_screensize(tab-port) {
         margin-right: $gap;
       }
       @include for_screensize(phone) {
-        margin-right: $gap/2;
+        margin-right: math.div($gap, 2);
       }
     }
   }

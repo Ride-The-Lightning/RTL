@@ -1,0 +1,11 @@
+.mat-column-title, .mat-column-description {
+  flex: 0 0 30%;
+  width: 30%;
+  & .ellipsis-parent {
+    display: flex;
+  }
+}
+
+.mat-column-actions {
+  min-height: 4.8rem;
+}

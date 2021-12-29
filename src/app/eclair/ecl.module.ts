@@ -22,14 +22,15 @@ import { ECLChannelOpenTableComponent } from './peers-channels/channels/channels
 import { ECLChannelPendingTableComponent } from './peers-channels/channels/channels-tables/channel-pending-table/channel-pending-table.component';
 import { ECLChannelInactiveTableComponent } from './peers-channels/channels/channels-tables/channel-inactive-table/channel-inactive-table.component';
 import { ECLTransactionsComponent } from './transactions/transactions.component';
-import { ECLQueryRoutesComponent } from './transactions/query-routes/query-routes.component';
+import { ECLQueryRoutesComponent } from './graph/query-routes/query-routes.component';
 import { ECLLightningPaymentsComponent } from './transactions/payments/lightning-payments.component';
 import { ECLLightningInvoicesComponent } from './transactions/invoices/lightning-invoices.component';
 import { ECLRoutingComponent } from './routing/routing.component';
 import { ECLForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
 import { ECLRoutingPeersComponent } from './routing/routing-peers/routing-peers.component';
-import { ECLLookupsComponent } from './lookups/lookups.component';
-import { ECLNodeLookupComponent } from './lookups/node-lookup/node-lookup.component';
+import { ECLLookupsComponent } from './graph/lookups/lookups.component';
+import { ECLNodeLookupComponent } from './graph/lookups/node-lookup/node-lookup.component';
+import { ECLGraphComponent } from './graph/graph.component';
 import { ECLReportsComponent } from './reports/reports.component';
 import { ECLFeeReportComponent } from './reports/fee/fee-report.component';
 import { ECLTransactionsReportComponent } from './reports/transactions/transactions-report.component';
@@ -78,6 +79,7 @@ import { ECLUnlockedGuard } from '../shared/services/auth.guard';
     ECLLightningInvoicesComponent,
     ECLLookupsComponent,
     ECLNodeLookupComponent,
+    ECLGraphComponent,
     ECLReportsComponent,
     ECLFeeReportComponent,
     ECLTransactionsReportComponent,
@@ -96,4 +98,4 @@ import { ECLUnlockedGuard } from '../shared/services/auth.guard';
   ],
   bootstrap: [ECLRootComponent]
 })
-export class ECLModule {}
+export class ECLModule { }

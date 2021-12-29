@@ -3,18 +3,19 @@ import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { faCodeBranch, faCog, faLifeRing, faEject, faUserCog } from '@fortawesome/free-solid-svg-icons';
+import { faCodeBranch, faCode, faCog, faLifeRing, faEject, faUserCog } from '@fortawesome/free-solid-svg-icons';
 
-import { GetInfoRoot, ConfigSettingsNode } from '../../../models/RTLconfig';
+import { GetInfoRoot } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { SessionService } from '../../../services/session.service';
 import { GetInfoChain } from '../../../models/lndModels';
-import { environment } from '../../../../../environments/environment';
-import { AlertTypeEnum } from '../../../services/consts-enums-functions';
+import { VERSION } from '../../../../../environments/environment';
+import { AlertTypeEnum, RTLActions } from '../../../services/consts-enums-functions';
 import { RTLEffects } from '../../../../store/rtl.effects';
 
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
-import * as RTLActions from '../../../../store/rtl.actions';
+import { RTLState } from '../../../../store/rtl.state';
+import { logout, openConfirmation } from '../../../../store/rtl.actions';
+import { rootNodeData } from '../../../../store/rtl.selector';
 
 @Component({
   selector: 'rtl-top-menu',
@@ -24,9 +25,9 @@ import * as RTLActions from '../../../../store/rtl.actions';
 })
 export class TopMenuComponent implements OnInit, OnDestroy {
 
-  public selNode: ConfigSettingsNode;
   public faUserCog = faUserCog;
   public faCodeBranch = faCodeBranch;
+  public faCode = faCode;
   public faCog = faCog;
   public faLifeRing = faLifeRing;
   public faEject = faEject;
@@ -37,16 +38,15 @@ export class TopMenuComponent implements OnInit, OnDestroy {
   public showLogout = false;
   private unSubs = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private sessionService: SessionService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions: Actions) {
-    this.version = environment.VERSION;
+  constructor(private logger: LoggerService, private sessionService: SessionService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private actions: Actions) {
+    this.version = VERSION;
   }
 
   ngOnInit() {
-    this.store.select('root').
+    this.store.select(rootNodeData).
       pipe(takeUntil(this.unSubs[0])).
-      subscribe((rtlStore) => {
-        this.selNode = rtlStore.selNode;
-        this.information = rtlStore.nodeData;
+      subscribe((nodeData: GetInfoRoot) => {
+        this.information = nodeData;
         this.flgLoading = !(this.information.identity_pubkey);
         if (this.information.identity_pubkey) {
           if (this.information.chains && typeof this.information.chains[0] === 'string') {
@@ -61,7 +61,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
           this.informationChain.chain = '';
           this.informationChain.network = '';
         }
-        this.logger.info(rtlStore);
+        this.logger.info(nodeData);
       });
     this.sessionService.watchSession().
       pipe(takeUntil(this.unSubs[1])).
@@ -79,9 +79,11 @@ export class TopMenuComponent implements OnInit, OnDestroy {
   }
 
   onClick() {
-    this.store.dispatch(new RTLActions.OpenConfirmation({
-      data: {
-        type: AlertTypeEnum.CONFIRM, alertTitle: 'Logout', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
+    this.store.dispatch(openConfirmation({
+      payload: {
+        data: {
+          type: AlertTypeEnum.CONFIRM, alertTitle: 'Logout', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
+        }
       }
     }));
     this.rtlEffects.closeConfirm.
@@ -89,7 +91,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
       subscribe((confirmRes) => {
         if (confirmRes) {
           this.showLogout = false;
-          this.store.dispatch(new RTLActions.Logout());
+          this.store.dispatch(logout());
         }
       });
   }

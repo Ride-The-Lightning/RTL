@@ -55,8 +55,8 @@
           </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="end center">
-          <button mat-stroked-button color="primary" type="reset" class="mr-1" (click)="resetData()" tabindex="5" default>Clear</button>
-          <button mat-flat-button color="primary" type="submit" tabindex="6" (click)="onBumpFee()">{{bumpFeeError !== '' ? 'Retry Bump Fee' : 'Bump Fee'}}</button>
+          <button mat-button color="primary" type="reset" class="mr-1" (click)="resetData()" tabindex="5" default>Clear</button>
+          <button mat-button color="primary" type="submit" tabindex="6" (click)="onBumpFee()">{{bumpFeeError !== '' ? 'Retry Bump Fee' : 'Bump Fee'}}</button>
         </div>
       </form>
     </mat-card-content>

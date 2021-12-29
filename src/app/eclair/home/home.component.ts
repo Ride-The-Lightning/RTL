@@ -1,21 +1,20 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { takeUntil, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { Actions } from '@ngrx/effects';
 import { faSmile, faFrown } from '@fortawesome/free-regular-svg-icons';
 import { faAngleDoubleDown, faAngleDoubleUp, faChartPie, faBolt, faServer, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 import { UserPersonaEnum, ScreenSizeEnum, APICallStatusEnum } from '../../shared/services/consts-enums-functions';
-import { GetInfo, Channel, Fees, OnChainBalance, ChannelsStatus } from '../../shared/models/eclModels';
-import { ApiCallsListECL } from '../../shared/models/apiCallsPayload';
+import { GetInfo, Channel, Fees, OnChainBalance, ChannelsStatus, LightningBalance } from '../../shared/models/eclModels';
+import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 
-import * as fromRTLReducer from '../../store/rtl.reducers';
-import * as ECLActions from '../store/ecl.actions';
+import { RTLState } from '../../store/rtl.state';
+import { allChannelsInfo, eclNodeSettings, fees, nodeInfoStatus, onchainBalance } from '../store/ecl.selector';
 
 @Component({
   selector: 'rtl-ecl-home',
@@ -53,11 +52,14 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
   public merchantCardHeight = '65px';
   public sortField = 'Balance Score';
   public errorMessages = ['', '', '', ''];
-  public apisCallStatus: ApiCallsListECL = null;
+  public apiCallStatusNodeInfo: ApiCallStatusPayload = { status: APICallStatusEnum.COMPLETED };
+  public apiCallStatusFees: ApiCallStatusPayload = { status: APICallStatusEnum.COMPLETED };
+  public apiCallStatusOCBal: ApiCallStatusPayload = { status: APICallStatusEnum.COMPLETED };
+  public apiCallStatusAllChannels: ApiCallStatusPayload = { status: APICallStatusEnum.COMPLETED };
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private commonService: CommonService, private router: Router) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private router: Router) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.operatorCards = [
@@ -88,8 +90,6 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
         { id: 'outboundLiq', goTo: 'Channels', link: '/ecl/connections', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 3, rows: 8 }
       ];
     } else {
-      this.operatorCardHeight = ((window.screen.height - 200) / 2) + 'px';
-      this.merchantCardHeight = ((window.screen.height - 210) / 10) + 'px';
       this.operatorCards = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 3, rows: 1 },
         { id: 'balance', goTo: 'On-Chain', link: '/ecl/onchain', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 1 },
@@ -107,37 +107,53 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('ecl').
-      pipe(takeUntil(this.unSubs[1])).
-      subscribe((rtlStore) => {
-        this.errorMessages = ['', '', '', ''];
-        this.apisCallStatus = rtlStore.apisCallStatus;
-        if (rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[0] = (typeof (this.apisCallStatus.FetchInfo.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchInfo.message) : this.apisCallStatus.FetchInfo.message;
+    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeSettings) => {
+        this.selNode = nodeSettings;
+      });
+    this.store.select(nodeInfoStatus).pipe(takeUntil(this.unSubs[1])).
+      subscribe((selNodeInfoStatusSelector: { information: GetInfo, apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessages[0] = '';
+        this.apiCallStatusNodeInfo = selNodeInfoStatusSelector.apiCallStatus;
+        if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[0] = (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message;
         }
-        if (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[1] = (typeof (this.apisCallStatus.FetchFees.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchFees.message) : this.apisCallStatus.FetchFees.message;
+        this.information = selNodeInfoStatusSelector.information;
+      });
+
+    this.store.select(fees).pipe(takeUntil(this.unSubs[2])).
+      subscribe((feesSelector: { fees: Fees, apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessages[1] = '';
+        this.apiCallStatusFees = feesSelector.apiCallStatus;
+        if (this.apiCallStatusFees.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[1] = (typeof (this.apiCallStatusFees.message) === 'object') ? JSON.stringify(this.apiCallStatusFees.message) : this.apiCallStatusFees.message;
         }
-        if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[2] = (typeof (this.apisCallStatus.FetchChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchChannels.message) : this.apisCallStatus.FetchChannels.message;
+        this.fees = feesSelector.fees;
+      });
+    this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[3]),
+      withLatestFrom(this.store.select(onchainBalance))).
+      subscribe(([allChannelsSelector, oCBalanceSelector]: [({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload }), ({ onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload })]) => {
+        this.errorMessages[2] = '';
+        this.errorMessages[3] = '';
+        this.apiCallStatusAllChannels = allChannelsSelector.apiCallStatus;
+        this.apiCallStatusOCBal = oCBalanceSelector.apiCallStatus;
+        if (this.apiCallStatusAllChannels.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[2] = (typeof (this.apiCallStatusAllChannels.message) === 'object') ? JSON.stringify(this.apiCallStatusAllChannels.message) : this.apiCallStatusAllChannels.message;
         }
-        if (rtlStore.apisCallStatus.FetchOnchainBalance.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[3] = (typeof (this.apisCallStatus.FetchOnchainBalance.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchOnchainBalance.message) : this.apisCallStatus.FetchOnchainBalance.message;
+        if (this.apiCallStatusOCBal.status === APICallStatusEnum.ERROR) {
+          this.errorMessages[3] = (typeof (this.apiCallStatusOCBal.message) === 'object') ? JSON.stringify(this.apiCallStatusOCBal.message) : this.apiCallStatusOCBal.message;
         }
-        this.selNode = rtlStore.nodeSettings;
-        this.information = rtlStore.information;
-        this.fees = rtlStore.fees;
-        this.channels = rtlStore.activeChannels;
-        this.onchainBalance = rtlStore.onchainBalance;
+        this.channels = allChannelsSelector.activeChannels;
+        this.onchainBalance = oCBalanceSelector.onchainBalance;
         this.balances.onchain = this.onchainBalance.total;
-        this.balances.lightning = rtlStore.lightningBalance.localBalance;
+        this.balances.lightning = allChannelsSelector.lightningBalance.localBalance;
         this.balances.total = this.balances.lightning + this.balances.onchain;
         this.balances = Object.assign({}, this.balances);
-        const local = (rtlStore.lightningBalance.localBalance) ? +rtlStore.lightningBalance.localBalance : 0;
-        const remote = (rtlStore.lightningBalance.remoteBalance) ? +rtlStore.lightningBalance.remoteBalance : 0;
+        const local = (allChannelsSelector.lightningBalance.localBalance) ? +allChannelsSelector.lightningBalance.localBalance : 0;
+        const remote = (allChannelsSelector.lightningBalance.remoteBalance) ? +allChannelsSelector.lightningBalance.remoteBalance : 0;
         const total = local + remote;
         this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: +(1 - Math.abs((local - remote) / total)).toFixed(3) };
-        this.channelsStatus = rtlStore.channelsStatus;
+        this.channelsStatus = allChannelsSelector.channelsStatus;
         this.totalInboundLiquidity = 0;
         this.totalOutboundLiquidity = 0;
         this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels, 'balancedness')));
@@ -147,7 +163,7 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
           this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil(channel.toRemote);
           this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor(channel.toLocal);
         });
-        this.logger.info(rtlStore);
+        this.logger.info(allChannelsSelector);
       });
   }
 

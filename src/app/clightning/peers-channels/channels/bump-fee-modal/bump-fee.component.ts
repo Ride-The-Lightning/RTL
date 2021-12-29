@@ -10,12 +10,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { Channel } from '../../../../shared/models/clModels';
 import { CLChannelInformation } from '../../../../shared/models/alertData';
-import { ADDRESS_TYPES, APICallStatusEnum } from '../../../../shared/services/consts-enums-functions';
+import { ADDRESS_TYPES, APICallStatusEnum, CLActions } from '../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../shared/services/logger.service';
 
-import * as CLActions from '../../../store/cl.actions';
-import * as RTLActions from '../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { RTLState } from '../../../../store/rtl.state';
+import { openSnackBar } from '../../../../store/rtl.actions';
+import { getNewAddress, setChannelTransaction } from '../../../store/cl.actions';
 
 @Component({
   selector: 'rtl-cl-bump-fee',
@@ -41,7 +41,7 @@ export class CLBumpFeeComponent implements OnInit, OnDestroy {
   public bumpFeeError = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private actions: Actions, public dialogRef: MatDialogRef<CLBumpFeeComponent>, @Inject(MAT_DIALOG_DATA) public data: CLChannelInformation, private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private snackBar: MatSnackBar) { }
+  constructor(private actions: Actions, public dialogRef: MatDialogRef<CLBumpFeeComponent>, @Inject(MAT_DIALOG_DATA) public data: CLChannelInformation, private store: Store<RTLState>, private logger: LoggerService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.bumpFeeChannel = this.data.channel;
@@ -52,23 +52,25 @@ export class CLBumpFeeComponent implements OnInit, OnDestroy {
       return true;
     }
     this.bumpFeeError = '';
-    this.store.dispatch(new CLActions.GetNewAddress(ADDRESS_TYPES[0]));
+    this.store.dispatch(getNewAddress({ payload: ADDRESS_TYPES[0] }));
     this.actions.pipe(filter((action) => action.type === CLActions.SET_NEW_ADDRESS_CL), take(1)).
-      subscribe((action: CLActions.SetNewAddress) => {
-        this.store.dispatch(new CLActions.SetChannelTransaction({
-          address: action.payload,
-          satoshis: 'all',
-          feeRate: this.fees,
-          utxos: [this.bumpFeeChannel.funding_txid + ':' + this.outputIndex.toString()]
+      subscribe((action: any) => {
+        this.store.dispatch(setChannelTransaction({
+          payload: {
+            address: action.payload,
+            satoshis: 'all',
+            feeRate: this.fees,
+            utxos: [this.bumpFeeChannel.funding_txid + ':' + this.outputIndex.toString()]
+          }
         }));
       });
     this.actions.pipe(filter((action) => action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL), take(1)).
-      subscribe((action: CLActions.SetChannelTransactionRes) => {
-        this.store.dispatch(new RTLActions.OpenSnackBar('Successfully bumped the fee. Use the block explorer to verify transaction.'));
+      subscribe((action: any) => {
+        this.store.dispatch(openSnackBar({ payload: 'Successfully bumped the fee. Use the block explorer to verify transaction.' }));
         this.dialogRef.close();
       });
     this.actions.pipe(filter((action) => action.type === CLActions.UPDATE_API_CALL_STATUS_CL), takeUntil(this.unSubs[0])).
-      subscribe((action: CLActions.UpdateAPICallStatus) => {
+      subscribe((action: any) => {
         if (action.payload.status === APICallStatusEnum.ERROR && (action.payload.action === 'SetChannelTransaction' || action.payload.action === 'GenerateNewAddress')) {
           this.logger.error(action.payload.message);
           this.bumpFeeError = action.payload.message;

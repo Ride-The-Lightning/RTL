@@ -13,18 +13,14 @@ export class ClipboardDirective {
   @HostListener('click', ['$event'])
   public onClick(event: MouseEvent): void {
     event.preventDefault();
-    if (!this.payload) {
+    if (!this.payload || !navigator.clipboard) {
       return;
     }
-    const listener = (e: ClipboardEvent) => {
-      const clipboard = e.clipboardData || window['clipboardData'];
-      clipboard.setData('text', this.payload.toString());
-      e.preventDefault();
-      this.copied.emit(this.payload);
-    };
-    document.addEventListener('copy', listener, false);
-    document.execCommand('copy');
-    document.removeEventListener('copy', listener, false);
+    navigator.clipboard.writeText(this.payload.toString()).then(() => {
+      this.copied.emit(this.payload.toString());
+    }, (err) => {
+      this.copied.emit('Error could not copy text: ' + JSON.stringify(err));
+    });
   }
 
 }

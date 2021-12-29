@@ -1,6 +1,6 @@
 <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
   <div fxFlex="30" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': showQRField === '' || screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
-    <qrcode *ngIf="showQRField !== ''" [qrdata]="showQRField" [margin]="2" [width]="240" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
+    <qr-code *ngIf="showQRField !== ''" [value]="showQRField" [size]="240" [errorCorrectionLevel]="'L'"></qr-code>
   </div>
   <div [fxFlex]="showQRField === '' || screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '100' : '70'">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
@@ -26,11 +26,11 @@
       </button>
     </div>
     <div fxLayout="row" fxLayoutAlign="end center" class="padding-gap-x-large padding-gap-bottom-large">
-      <button *ngIf="(!showQRField || showQRField === '') && (showCopyName === '')" tabindex="1" autoFocus mat-flat-button color="primary" type="submit" [mat-dialog-close]="false" default>OK</button>
-      <button *ngIf="showCopyName !== ''" class="mr-1" fxLayoutAlign="center center" tabindex="1" mat-stroked-button color="primary" type="button" [mat-dialog-close]="false" default>Close</button>
-      <button *ngIf="showCopyName !== ''" autoFocus mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="showCopyField" (copied)="onCopyField($event)">Copy {{showCopyName}}</button>
-      <button *ngIf="showQRField !== ''" class="mr-1" fxLayoutAlign="center center" tabindex="1" mat-stroked-button color="primary" type="button" [mat-dialog-close]="false" default>Close</button>
-      <button *ngIf="showQRField !== ''" autoFocus mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="showQRField" (copied)="onCopyField($event)">Copy {{showQRName}}</button>
+      <button *ngIf="(!showQRField || showQRField === '') && (showCopyName === '')" tabindex="1" autoFocus mat-button color="primary" type="submit" [mat-dialog-close]="false" default>OK</button>
+      <button *ngIf="showCopyName !== ''" class="mr-1" fxLayoutAlign="center center" tabindex="1" mat-button color="primary" type="button" [mat-dialog-close]="false" default>Close</button>
+      <button *ngIf="showCopyName !== ''" autoFocus mat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="showCopyField" (copied)="onCopyField($event)">Copy {{showCopyName}}</button>
+      <button *ngIf="showQRField !== ''" class="mr-1" fxLayoutAlign="center center" tabindex="1" mat-button color="primary" type="button" [mat-dialog-close]="false" default>Close</button>
+      <button *ngIf="showQRField !== ''" autoFocus mat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="showQRField" (copied)="onCopyField($event)">Copy {{showQRName}}</button>
     </div>
   </div>
 </div>
@@ -38,10 +38,10 @@
 <ng-template #contentBlock>
   <div fxLayout="column">
     <div fxFlex="50" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large mb-1" [ngClass]="{'display-none': showQRField === '' || (screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM)}">
-      <qrcode *ngIf="showQRField !== ''" [qrdata]="showQRField" [margin]="2" [width]="240" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
+      <qr-code *ngIf="showQRField !== ''" [value]="showQRField" [size]="240" [errorCorrectionLevel]="'L'"></qr-code>
     </div>
-    <div fxLayout="row" fxFlex="100">
-      <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="pb-1">{{data.titleMessage}}</p>
+    <div fxLayout="column" fxFlex="100">
+      <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="pb-2">{{data.titleMessage}}</p>
       <div *ngIf="messageObjs?.length>0" fxFlex="100">
         <div *ngFor="let objs of messageObjs; index as i;">
           <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="start center" fxLayoutAlign.gt-md="space-between start">

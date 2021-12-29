@@ -1,9 +1,9 @@
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 @import './color-swatches/light-dull-theme.scss';
 @import './color-swatches/dark-bright-theme.scss';
 @import './color-swatches/red-warn.swatch.scss';
 @import './color-swatches/white.swatch.scss';
-@import '~@angular/material/theming';
+@import '@angular/material/theming';
 
 $teal-primary: mat.define-palette(mat.$teal-palette, 800, 300, A200);
 $teal-accent:  mat.define-palette(mat.$gray-palette, 800, 600, 900);
