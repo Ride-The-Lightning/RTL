@@ -306,7 +306,9 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         pipe(take(1)).
         subscribe({
           next: (sentPaymentInfo) => {
-            this.showPaymentView(selPayment, (sentPaymentInfo.length && sentPaymentInfo.length > 0) ? sentPaymentInfo[0] : []);
+            setTimeout(() => {
+              this.showPaymentView(selPayment, (sentPaymentInfo.length && sentPaymentInfo.length > 0) ? sentPaymentInfo[0] : []);
+            }, 0);
           }, error: (error) => {
             this.showPaymentView(selPayment, []);
           }
@@ -334,7 +336,9 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         pipe(take(1)).
         subscribe({
           next: (sentPaymentInfo) => {
-            this.showPartView(selPart, selPayment, sentPaymentInfo);
+            setTimeout(() => {
+              this.showPartView(selPart, selPayment, (sentPaymentInfo.length && sentPaymentInfo.length > 0) ? sentPaymentInfo[0] : []);
+            }, 0);
           }, error: (error) => {
             this.showPartView(selPart, selPayment, []);
           }
