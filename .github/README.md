@@ -23,8 +23,6 @@ RTL is available on [LND](https://github.com/lightningnetwork/lnd), [C-Lightning
 * Eclair users, refer to [this](./docs/Eclair-setup.md) page for install instructions.
 * LND users, follow the instructions below
 
-Lightning Network Daemon(LND) is an implementation of Lightning Network BOLT protocol by [Lightning Labs](https://lightning.engineering/).
-
 Pre-requisite for running RTL is a functioning and synced LND node. If you are a Raspberry Pi or a Linux user, you can follow the famous Stadicus's [guide](https://stadicus.github.io/RaspiBolt/) to setup a Bitcoin + Lighting node.
 
 RTL is available on the below platforms/services:
