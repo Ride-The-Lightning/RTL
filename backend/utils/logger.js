@@ -29,8 +29,25 @@ export class LoggerService {
                         }
                     }
                     break;
-                case 'DEBUG':
                 case 'INFO':
+                    if (!msgJSON.selectedNode) {
+                        console.log(prepMsgData(msgJSON, msgStr));
+                    }
+                    else if (msgJSON.selectedNode && (msgJSON.selectedNode.log_level === 'INFO')) {
+                        if (typeof msgJSON.data !== 'string' && msgJSON.data && msgJSON.data.length && msgJSON.data.length > 0) {
+                            msgStr = msgJSON.data.reduce((accumulator, dataEle) => accumulator + (typeof dataEle === 'object' ? JSON.stringify(dataEle) : (typeof dataEle === 'string') ? dataEle : '') + ', ', msgStr + ': [');
+                            msgStr = msgStr.slice(0, -2) + ']';
+                        }
+                        else {
+                            msgStr = prepMsgData(msgJSON, msgStr);
+                        }
+                        console.log(msgStr);
+                        if (msgJSON.selectedNode && msgJSON.selectedNode.log_file) {
+                            fs.appendFile(msgJSON.selectedNode.log_file, msgStr, () => { });
+                        }
+                    }
+                    break;
+                case 'DEBUG':
                     if (!msgJSON.selectedNode) {
                         console.log(prepMsgData(msgJSON, msgStr));
                     }
