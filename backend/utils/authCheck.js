@@ -28,17 +28,38 @@ export const verifyWSUser = (info, next) => {
                 next(false, 401, 'Authentication Failed! Please Login First!');
             }
             else {
-                const updatedReq = JSON.parse(JSON.stringify(info.req));
-                updatedReq['cookies'] = !headers || !headers.cookie ? {} : '{"' + headers.cookie.replace(/ /g, '').replace(/;/g, '","').trim().replace(/[=]/g, '":"') + '"}';
-                updatedReq['cookies'] = JSON.parse(updatedReq['cookies']);
-                csurfProtection(updatedReq, null, (err) => {
-                    if (err) {
-                        next(false, 403, 'Invalid CSRF token!');
+                try {
+                    let updatedReq = null;
+                    try {
+                        updatedReq = JSON.parse(JSON.stringify(info.req));
                     }
-                    else {
-                        next(true);
+                    catch (err) {
+                        updatedReq = info.req;
                     }
-                });
+                    let cookies = null;
+                    try {
+                        cookies = '{"' + headers.cookie.replace(/ /g, '').replace(/;/g, '","').trim().replace(/[=]/g, '":"') + '"}';
+                        updatedReq['cookies'] = JSON.parse(cookies);
+                    }
+                    catch (err) {
+                        cookies = {};
+                        updatedReq['cookies'] = JSON.parse(cookies);
+                        common.handleError({ statusCode: 403, message: 'Unable to read CSRF token cookie', error: JSON.stringify(err) }, 'AuthCheck', 'Unable to read CSRF token cookie', null);
+                    }
+                    csurfProtection(updatedReq, null, (err) => {
+                        if (err) {
+                            next(false, 403, 'Invalid CSRF token!');
+                        }
+                        else {
+                            next(true);
+                        }
+                    });
+                }
+                catch (err) {
+                    const errMsg = 'Unable to verify CSRF token for Web Server!';
+                    common.handleError({ statusCode: 403, message: 'Unable to verify CSRF token', error: errMsg }, 'AuthCheck', errMsg, null);
+                    next(true);
+                }
             }
         });
     }

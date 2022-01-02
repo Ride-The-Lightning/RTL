@@ -110,7 +110,8 @@ export class CLWebSocketClient {
 
   public updateSelectedNode = (newSelectedNode: CommonSelectedNode) => {
     const clientIdx = this.webSocketClients.findIndex((wsc) => +wsc.selectedNode.index === +newSelectedNode.index);
-    const newClient = this.webSocketClients[clientIdx];
+    let newClient = this.webSocketClients[clientIdx];
+    if (!newClient) { newClient = { selectedNode: null, reConnect: true, webSocketClient: null }; }
     newClient.selectedNode = JSON.parse(JSON.stringify(newSelectedNode));
     this.webSocketClients[clientIdx] = newClient;
   }

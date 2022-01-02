@@ -85,7 +85,10 @@ export class LNDWebSocketClient {
         };
         this.updateSelectedNode = (newSelectedNode) => {
             const clientIdx = this.webSocketClients.findIndex((wsc) => +wsc.selectedNode.index === +newSelectedNode.index);
-            const newClient = this.webSocketClients[clientIdx];
+            let newClient = this.webSocketClients[clientIdx];
+            if (!newClient) {
+                newClient = { selectedNode: null };
+            }
             newClient.selectedNode = JSON.parse(JSON.stringify(newSelectedNode));
             this.webSocketClients[clientIdx] = newClient;
             if (this.webSocketClients[clientIdx].selectedNode.ln_version === '' || !this.webSocketClients[clientIdx].selectedNode.ln_version || this.common.isVersionCompatible(this.webSocketClients[clientIdx].selectedNode.ln_version, '0.11.0')) {
