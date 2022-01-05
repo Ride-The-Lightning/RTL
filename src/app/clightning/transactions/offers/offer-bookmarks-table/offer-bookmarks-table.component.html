@@ -15,7 +15,7 @@
       <table mat-table #table fxFlex="100" [dataSource]="offersBookmarks" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="lastUpdatedAt">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Updated At </th>
-          <td mat-cell *matCellDef="let offersbookmark">{{offersbookmark.lastUpdatedAt | date:'dd/MMM/YYYY HH:mm'}}</td>
+          <td mat-cell *matCellDef="let offersbookmark">{{offersbookmark.lastUpdatedAt | date:'dd/MMM/y HH:mm'}}</td>
         </ng-container>
         <ng-container matColumnDef="title">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Title </th>

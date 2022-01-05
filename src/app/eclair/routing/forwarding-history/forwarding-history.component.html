@@ -13,7 +13,7 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Date/Time</th>
         <td mat-cell *matCellDef="let fhEvent">
           <span *ngIf="fhEvent?.type !== 'payment-relayed'" class="dot yellow" matTooltip="{{fhEvent?.type | camelcase}}" matTooltipPosition="right" [ngClass]="{'ml-0': screenSize === screenSizeEnum.XS}"></span>
-          {{fhEvent?.timestamp | date:'dd/MMM/YYYY HH:mm'}}
+          {{fhEvent?.timestamp | date:'dd/MMM/y HH:mm'}}
         </td>
       </ng-container>
       <ng-container matColumnDef="fromChannelAlias">

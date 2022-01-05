@@ -32,21 +32,21 @@
         <ng-container matColumnDef="creation_date">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Created </th>
           <td mat-cell *matCellDef="let invoice">
-            <span *ngIf="invoice.state === 'OPEN'" class="dot grey" matTooltip="Open" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-            <span *ngIf="invoice.state === 'SETTLED'" class="dot green" matTooltip="Settled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-            <span *ngIf="invoice.state === 'ACCEPTED'" class="dot yellow" matTooltip="Accepted" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-            <span *ngIf="invoice.state === 'CANCELED'" class="dot red" matTooltip="Cancelled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-            {{(invoice.creation_date * 1000) | date:'dd/MMM/YYYY HH:mm'}}</td>
+            <span *ngIf="invoice?.state === 'OPEN'" class="dot grey" matTooltip="Open" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+            <span *ngIf="invoice?.state === 'SETTLED'" class="dot green" matTooltip="Settled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+            <span *ngIf="invoice?.state === 'ACCEPTED'" class="dot yellow" matTooltip="Accepted" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+            <span *ngIf="invoice?.state === 'CANCELED'" class="dot red" matTooltip="Cancelled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+            {{(invoice?.creation_date * 1000) | date:'dd/MMM/y HH:mm'}}</td>
         </ng-container>
         <ng-container matColumnDef="settle_date">
           <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-4"> Date Settled </th>
-          <td mat-cell *matCellDef="let invoice" class="pl-4">{{(+invoice.settle_date !== 0 ? ((+invoice.settle_date * 1000) | date:'dd/MMM/YYYY HH:mm') : '-')}}</td>
+          <td mat-cell *matCellDef="let invoice" class="pl-4">{{(+invoice?.settle_date !== 0 ? ((+invoice?.settle_date * 1000) | date:'dd/MMM/y HH:mm') : '-')}}</td>
         </ng-container>
         <ng-container matColumnDef="memo">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Memo </th>
           <td mat-cell *matCellDef="let invoice">
             <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '22rem'}">
-              <span class="ellipsis-child">{{invoice.memo}}</span>
+              <span class="ellipsis-child">{{invoice?.memo}}</span>
             </div>
           </td>
         </ng-container>
