@@ -27,7 +27,7 @@ export class LNDWebSocketClient {
             const options = this.setOptionsForSelNode(selectedNode);
             options.url = selectedNode.ln_server_url + '/v1/invoices?pending_only=true';
             return request(options).then((body) => {
-                this.logger.log({ selectedNode: selectedNode, level: 'DEBUG', fileName: 'WebSocketClient', msg: 'Pending Invoices Received', data: body });
+                this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Pending Invoices', data: body });
                 if (body.invoices && body.invoices.length > 0) {
                     body.invoices.forEach((invoice) => {
                         if (invoice.state === 'OPEN') {
@@ -57,7 +57,7 @@ export class LNDWebSocketClient {
                 msg['type'] = 'invoice';
                 msg['source'] = 'LND';
                 const msgStr = JSON.stringify(msg);
-                this.logger.log({ selectedNode: selectedNode, level: 'DEBUG', fileName: 'WebSocketClient', msg: 'Invoice Info Received', data: msgStr });
+                this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Invoice Info Received', data: msgStr });
                 this.wsServer.sendEventsToAllLNClients(msgStr, selectedNode);
             }).catch((errRes) => {
                 const err = this.common.handleError(errRes, 'Invoices', 'Subscribe to Invoice Error for ' + rHash, selectedNode);

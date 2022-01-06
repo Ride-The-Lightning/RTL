@@ -1,11 +1,12 @@
 import request from 'request-promise';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
+import { CommonSelectedNode } from '../../models/config.model.js';
 let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
 
-export const simplifyAllChannels = (lnServerUrl, channels) => {
+export const simplifyAllChannels = (selNode: CommonSelectedNode, channels) => {
   let channelNodeIds = '';
   const simplifiedChannels = [];
   channels.forEach((channel) => {
@@ -27,11 +28,11 @@ export const simplifyAllChannels = (lnServerUrl, channels) => {
     });
   });
   channelNodeIds = channelNodeIds.substring(1);
-  options.url = lnServerUrl + '/nodes';
+  options.url = selNode.ln_server_url + '/nodes';
   options.form = { nodeIds: channelNodeIds };
-  logger.log({ selectedNode: null, level: 'DEBUG', fileName: 'Channels', msg: 'Node Ids to find alias', data: channelNodeIds });
+  logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Channels', msg: 'Node Ids to find alias', data: channelNodeIds });
   return request.post(options).then((nodes) => {
-    logger.log({ selectedNode: null, level: 'DEBUG', fileName: 'Channels', msg: 'Filtered Nodes', data: nodes });
+    logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Channels', msg: 'Filtered Nodes', data: nodes });
     let foundPeer = null;
     simplifiedChannels.map((channel) => {
       foundPeer = nodes.find((channelWithAlias) => channel.nodeId === channelWithAlias.nodeId);
@@ -50,18 +51,17 @@ export const getChannels = (req, res, next) => {
   options.form = {};
   if (req.query && req.query.nodeId) {
     options.form = req.query;
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Channels Node Id', data: options.form });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channels Node Id', data: options.form });
   }
-  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Options', data: options });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Options', data: options });
   if (common.read_dummy_data) {
     common.getDummyData('Channels', req.session.selectedNode.ln_implementation).then((data) => { res.status(200).json(data); });
   } else {
     request.post(options).then((body) => {
-      logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'All Channels', data: body });
+      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'All Channels', data: body });
       if (body && body.length) {
-        return simplifyAllChannels(req.session.selectedNode.ln_server_url, body).then((simplifiedChannels) => {
-          logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Simplified Channels with Alias', data: simplifiedChannels });
-          logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channels List Received' });
+        return simplifyAllChannels(req.session.selectedNode, body).then((simplifiedChannels) => {
+          logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Simplified Channels with Alias', data: simplifiedChannels });
           res.status(200).json(simplifiedChannels);
         });
       } else {
@@ -83,8 +83,7 @@ export const getChannelStats = (req, res, next) => {
   options.url = req.session.selectedNode.ln_server_url + '/channelstats';
   options.form = {};
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Channel Stats Response', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel States Received' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel States', data: body });
     res.status(201).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Channels', 'Get Channel Stats Error', req.session.selectedNode);
@@ -98,10 +97,9 @@ export const openChannel = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/open';
   options.form = req.body;
-  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Open Channel Params', data: options.form });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Open Channel Params', data: options.form });
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Open Channel Response', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Opened' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Opened', data: body });
     res.status(201).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Channels', 'Open Channel Error', req.session.selectedNode);
@@ -115,10 +113,9 @@ export const updateChannelRelayFee = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/updaterelayfee';
   options.form = req.query;
-  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Update Relay Fee Params', data: options.form });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Update Relay Fee Params', data: options.form });
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Update Relay Fee Response', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Relay Fee Updated' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Relay Fee Updated', data: body });
     res.status(201).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Channels', 'Update Relay Fee Error', req.session.selectedNode);
@@ -137,10 +134,10 @@ export const closeChannel = (req, res, next) => {
     options.url = req.session.selectedNode.ln_server_url + '/forceclose';
   }
   options.form = { channelId: req.query.channelId };
-  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: '[Close URL, Close Params]', data: [options.url, options.form] });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Close URL', data: options.url });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Close Params', data: options.form });
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Close Channel Response', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Closed' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Closed', data: body });
     res.status(204).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Channels', 'Close Channel Error', req.session.selectedNode);

@@ -27,10 +27,9 @@ export const onChainWithdraw = (req, res, next) => {
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/withdraw';
     options.body = req.body;
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'OnChain', msg: 'OnChain Withdraw Options', data: options.body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'OnChain Withdraw Options', data: options.body });
     request.post(options).then((body) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'OnChain', msg: 'OnChain Withdraw Response', data: body });
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'Withdraw Finished' });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'Withdraw Finished', data: body });
         res.status(201).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'OnChain', 'Withdraw Error', req.session.selectedNode);
@@ -48,7 +47,7 @@ export const getUTXOs = (req, res, next) => {
         if (body.outputs) {
             body.outputs = common.sortDescByStrKey(body.outputs, 'status');
         }
-        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'OnChain', msg: 'List Funds Received', data: body });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'List Funds', data: body });
         res.status(200).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'OnChain', 'List Funds Error', req.session.selectedNode);

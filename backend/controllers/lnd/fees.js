@@ -13,7 +13,7 @@ export const getFees = (req, res, next) => {
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/fees';
     request(options).then((body) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Fees', msg: 'Fee Received', data: body });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Fee', data: body });
         const today = new Date(Date.now());
         const start_date = new Date(today.getFullYear(), today.getMonth(), 1, 0, 0, 0);
         const current_time = (Math.round(today.getTime() / 1000));
@@ -21,13 +21,13 @@ export const getFees = (req, res, next) => {
         const week_start_time = current_time - 604800;
         const day_start_time = current_time - 86400;
         return getAllForwardingEvents(req, month_start_time, current_time, 0, (history) => {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Fees', msg: 'Forwarding History Received', data: history });
+            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Forwarding History Received', data: history });
             const daily_sum = history.forwarding_events.reduce((acc, curr) => ((curr.timestamp >= day_start_time) ? [(acc[0] + 1), (acc[1] + +curr.fee_msat)] : acc), [0, 0]);
             const weekly_sum = history.forwarding_events.reduce((acc, curr) => ((curr.timestamp >= week_start_time) ? [(acc[0] + 1), (acc[1] + +curr.fee_msat)] : acc), [0, 0]);
             const monthly_sum = history.forwarding_events.reduce((acc, curr) => [(acc[0] + 1), (acc[1] + +curr.fee_msat)], [0, 0]);
-            logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Fees', msg: 'Daily Sum (Transactions, Fee)', data: daily_sum });
-            logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Fees', msg: 'Weekly Sum (Transactions, Fee)', data: weekly_sum });
-            logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Fees', msg: 'Monthly Sum (Transactions, Fee)', data: monthly_sum });
+            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Daily Sum (Transactions, Fee)', data: daily_sum });
+            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Weekly Sum (Transactions, Fee)', data: weekly_sum });
+            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Monthly Sum (Transactions, Fee)', data: monthly_sum });
             body.daily_tx_count = daily_sum[0];
             body.weekly_tx_count = weekly_sum[0];
             body.monthly_tx_count = monthly_sum[0];

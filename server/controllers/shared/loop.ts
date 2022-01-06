@@ -27,10 +27,9 @@ export const loopOut = (req, res, next) => {
   };
   if (req.body.chanId !== '') { options.body['loop_out_channel'] = req.body.chanId; }
   if (req.body.destAddress !== '') { options.body['dest'] = req.body.destAddress; }
-  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Body', data: options.body });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Out Body', data: options.body });
   request.post(options).then((loopOutRes) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out', data: loopOutRes });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Out Finished' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Out', data: loopOutRes });
     res.status(201).json(loopOutRes);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Loop', 'Loop Out Error', req.session.selectedNode);
@@ -48,8 +47,7 @@ export const loopOutTerms = (req, res, next) => {
   }
   options.url = options.url + '/v1/loop/out/terms';
   request(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Terms', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Out Terms Received' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Out Terms', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Loop', 'Loop Out Terms Error', req.session.selectedNode);
@@ -66,9 +64,9 @@ export const loopOutQuote = (req, res, next) => {
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
   }
   options.url = options.url + '/v1/loop/out/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
-  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Quote URL', data: options.url });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Out Quote URL', data: options.url });
   request(options).then((quoteRes) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Quote', data: quoteRes });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Out Quote', data: quoteRes });
     quoteRes.amount = +req.params.amount;
     quoteRes.swap_payment_dest = quoteRes.swap_payment_dest ? Buffer.from(quoteRes.swap_payment_dest, 'base64').toString('hex') : '';
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Out Quotes Received' });
@@ -89,20 +87,19 @@ export const loopOutTermsAndQuotes = (req, res, next) => {
   }
   options.url = options.url + '/v1/loop/out/terms';
   request(options).then((terms) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Terms', data: terms });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Out Terms', data: terms });
     const options1 = common.getSwapServerOptions(req); const options2 = common.getSwapServerOptions(req);
     options1.url = options1.url + '/v1/loop/out/quote/' + terms.min_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
     options2.url = options2.url + '/v1/loop/out/quote/' + terms.max_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Min Quote Options', data: options1 });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Max Quote Options', data: options2 });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Out Min Quote Options', data: options1 });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Out Max Quote Options', data: options2 });
     return Promise.all([request(options1), request(options2)]).then((values) => {
       values[0].amount = +terms.min_swap_amount;
       values[1].amount = +terms.max_swap_amount;
       values[0].swap_payment_dest = values[0].swap_payment_dest ? Buffer.from(values[0].swap_payment_dest, 'base64').toString('hex') : '';
       values[1].swap_payment_dest = values[1].swap_payment_dest ? Buffer.from(values[1].swap_payment_dest, 'base64').toString('hex') : '';
-      logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Quotes 1', data: values[0] });
-      logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Quotes 2', data: values[1] });
-      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Out Terms & Quotes Received' });
+      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Out Quotes 1', data: values[0] });
+      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Out Quotes 2', data: values[1] });
       res.status(200).json(values);
     }).catch((errRes) => {
       const err = common.handleError(errRes, 'Loop', 'Loop Out Terms & Quotes Error', req.session.selectedNode);
@@ -129,10 +126,9 @@ export const loopIn = (req, res, next) => {
     max_miner_fee: req.body.minerFee,
     initiator: 'RTL'
   };
-  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Body', data: options.body });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop In Body', data: options.body });
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop In Finished' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop In', data: body });
     res.status(201).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Loop', 'Loop In Error', req.session.selectedNode);
@@ -150,8 +146,7 @@ export const loopInTerms = (req, res, next) => {
   }
   options.url = options.url + '/v1/loop/in/terms';
   request(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Terms', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop In Terms Received' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop In Terms', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Loop', 'Loop In Terms Error', req.session.selectedNode);
@@ -168,12 +163,11 @@ export const loopInQuote = (req, res, next) => {
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
   }
   options.url = options.url + '/v1/loop/in/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
-  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Quote Options', data: options.url });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop In Quote Options', data: options.url });
   request(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Quote', data: body });
     body.amount = +req.params.amount;
     body.swap_payment_dest = body.swap_payment_dest ? Buffer.from(body.swap_payment_dest, 'base64').toString('hex') : '';
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop In Qoutes Received' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop In Qoutes', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Loop', 'Loop In Quote Error', req.session.selectedNode);
@@ -191,20 +185,19 @@ export const loopInTermsAndQuotes = (req, res, next) => {
   }
   options.url = options.url + '/v1/loop/in/terms';
   request(options).then((terms) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Terms', data: terms });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop In Terms', data: terms });
     const options1 = common.getSwapServerOptions(req); const options2 = common.getSwapServerOptions(req);
     options1.url = options1.url + '/v1/loop/in/quote/' + terms.min_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
     options2.url = options2.url + '/v1/loop/in/quote/' + terms.max_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Min Quote Options', data: options1 });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Max Quote Options', data: options2 });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop In Min Quote Options', data: options1 });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop In Max Quote Options', data: options2 });
     return Promise.all([request(options1), request(options2)]).then((values) => {
       values[0].amount = +terms.min_swap_amount;
       values[1].amount = +terms.max_swap_amount;
       values[0].swap_payment_dest = values[0].swap_payment_dest ? Buffer.from(values[0].swap_payment_dest, 'base64').toString('hex') : '';
       values[1].swap_payment_dest = values[1].swap_payment_dest ? Buffer.from(values[1].swap_payment_dest, 'base64').toString('hex') : '';
-      logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Quotes 1', data: values[0] });
-      logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Quotes 2', data: values[1] });
-      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop In Terms & Qoutes Received' });
+      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop In Quotes 1', data: values[0] });
+      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop In Quotes 2', data: values[1] });
       res.status(200).json(values);
     }).catch((errRes) => {
       const err = common.handleError(errRes, 'Loop', 'Loop In Terms & Quotes Error', req.session.selectedNode);
@@ -226,12 +219,11 @@ export const swaps = (req, res, next) => {
   }
   options.url = options.url + '/v1/loop/swaps';
   request(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Swaps', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Swaps', data: body });
     if (body.swaps && body.swaps.length > 0) {
       body.swaps = common.sortDescByKey(body.swaps, 'initiation_time');
-      logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Swaps after Sort', data: body });
+      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Swaps after Sort', data: body });
     }
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'List Swaps Received' });
     res.status(200).json(body.swaps);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Loop', 'List Swaps Error', req.session.selectedNode);
@@ -249,8 +241,7 @@ export const swap = (req, res, next) => {
   }
   options.url = options.url + '/v1/loop/swap/' + req.params.id;
   request(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Swap', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Swap Information Received' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Swap Information', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Loop', 'Get Swap Error', req.session.selectedNode);

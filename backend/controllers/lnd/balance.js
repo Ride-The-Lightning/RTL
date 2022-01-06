@@ -13,7 +13,9 @@ export const getBlockchainBalance = (req, res, next) => {
     options.url = req.session.selectedNode.ln_server_url + '/v1/balance/blockchain';
     options.qs = req.query;
     request(options).then((body) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Balance', msg: '[Request params, Request Query, Balance Received]', data: [req.params, req.query, body] });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Balance', msg: 'Request params', data: req.params });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Balance', msg: 'Request Query', data: req.query });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Balance', msg: 'Balance', data: body });
         if (body) {
             if (!body.total_balance) {
                 body.total_balance = 0;

@@ -5,13 +5,14 @@ import { LogJSONObj } from '../models/config.model.js';
 export class LoggerService {
 
   log = (msgJSON: LogJSONObj) => {
-    let msgStr = '\r\n[' + new Date().toLocaleString() + '] ' + msgJSON.level + ': ' + msgJSON.fileName + ' => ' + msgJSON.msg;
+    let msgStr = '[' + new Date().toLocaleString() + '] ' + msgJSON.level + ': ' + msgJSON.fileName + ' => ' + msgJSON.msg;
     switch (msgJSON.level) {
       case 'ERROR':
         if (msgJSON.error) {
-          msgStr = msgStr + ': ' + ((msgJSON.error.error && msgJSON.error.error.message && typeof msgJSON.error.error.message === 'string') ? msgJSON.error.error.message : (typeof msgJSON.error === 'object' && msgJSON.error.stack) ? JSON.stringify(msgJSON.error.stack) : (typeof msgJSON.error === 'object') ? JSON.stringify(msgJSON.error) : (typeof msgJSON.error === 'string') ? msgJSON.error : '');
+          msgStr = msgStr + ': ' + ((msgJSON.error.error && msgJSON.error.error.message && typeof msgJSON.error.error.message === 'string') ? msgJSON.error.error.message : (typeof msgJSON.error === 'object' && msgJSON.error.message && typeof msgJSON.error.message === 'string') ? msgJSON.error.message : (typeof msgJSON.error === 'object' && msgJSON.error.stack && typeof msgJSON.error.stack === 'string') ?
+            msgJSON.error.stack : (typeof msgJSON.error === 'object') ? JSON.stringify(msgJSON.error) : (typeof msgJSON.error === 'string') ? msgJSON.error : '') + '\r\n';
         } else {
-          msgStr = msgStr + '.';
+          msgStr = msgStr + '.\r\n';
         }
         console.error(msgStr);
         if (msgJSON.selectedNode && msgJSON.selectedNode.log_file) {
@@ -20,10 +21,8 @@ export class LoggerService {
         break;
 
       case 'WARN':
-        if (!msgJSON.selectedNode) {
-          console.warn(prepMsgData(msgJSON, msgStr));
-        } else if (msgJSON.selectedNode && (msgJSON.selectedNode.log_level === 'INFO' || msgJSON.selectedNode.log_level === 'WARN' || msgJSON.selectedNode.log_level === 'DEBUG')) {
-          msgStr = prepMsgData(msgJSON, msgStr);
+        msgStr = prepMsgData(msgJSON, msgStr);
+        if (!msgJSON.selectedNode || msgJSON.selectedNode.log_level === 'WARN' || msgJSON.selectedNode.log_level === 'INFO' || msgJSON.selectedNode.log_level === 'DEBUG') {
           console.warn(msgStr);
           if (msgJSON.selectedNode && msgJSON.selectedNode.log_file) {
             fs.appendFile(msgJSON.selectedNode.log_file, msgStr, () => { });
@@ -32,34 +31,18 @@ export class LoggerService {
         break;
 
       case 'INFO':
-        if (!msgJSON.selectedNode) {
-          console.log(prepMsgData(msgJSON, msgStr));
-        } else if (msgJSON.selectedNode && (msgJSON.selectedNode.log_level === 'INFO')) {
-          if (typeof msgJSON.data !== 'string' && msgJSON.data && msgJSON.data.length && msgJSON.data.length > 0) {
-            msgStr = msgJSON.data.reduce((accumulator, dataEle) => accumulator + (typeof dataEle === 'object' ? JSON.stringify(dataEle) : (typeof dataEle === 'string') ? dataEle : '') + ', ', msgStr + ': [');
-            msgStr = msgStr.slice(0, -2) + ']';
-          } else {
-            msgStr = prepMsgData(msgJSON, msgStr);
-          }
+        if (!msgJSON.selectedNode && msgJSON.fileName === 'RTL') {
+          console.log(msgStr + '.\r\n');
+        } else if (msgJSON.selectedNode && msgJSON.selectedNode.log_level === 'INFO') {
+          msgStr = msgStr + '.\r\n';
           console.log(msgStr);
-          if (msgJSON.selectedNode && msgJSON.selectedNode.log_file) {
+          if (msgJSON.selectedNode.log_file) {
             fs.appendFile(msgJSON.selectedNode.log_file, msgStr, () => { });
           }
-        }
-        break;
-
-      case 'DEBUG':
-        if (!msgJSON.selectedNode) {
-          console.log(prepMsgData(msgJSON, msgStr));
-        } else if (msgJSON.selectedNode && (msgJSON.selectedNode.log_level === 'DEBUG')) {
-          if (typeof msgJSON.data !== 'string' && msgJSON.data && msgJSON.data.length && msgJSON.data.length > 0) {
-            msgStr = msgJSON.data.reduce((accumulator, dataEle) => accumulator + (typeof dataEle === 'object' ? JSON.stringify(dataEle) : (typeof dataEle === 'string') ? dataEle : '') + ', ', msgStr + ': [');
-            msgStr = msgStr.slice(0, -2) + ']';
-          } else {
-            msgStr = prepMsgData(msgJSON, msgStr);
-          }
+        } else if (msgJSON.selectedNode && msgJSON.selectedNode.log_level === 'DEBUG') {
+          msgStr = prepMsgData(msgJSON, msgStr);
           console.log(msgStr);
-          if (msgJSON.selectedNode && msgJSON.selectedNode.log_file) {
+          if (msgJSON.selectedNode.log_file) {
             fs.appendFile(msgJSON.selectedNode.log_file, msgStr, () => { });
           }
         }
@@ -75,9 +58,9 @@ export class LoggerService {
 
 const prepMsgData = (msgJSON, msgStr) => {
   if (msgJSON.data) {
-    msgStr = msgStr + ': ' + (typeof msgJSON.data === 'object' ? JSON.stringify(msgJSON.data) : (typeof msgJSON.data === 'string') ? msgJSON.data : '');
+    msgStr = msgStr + ': ' + (typeof msgJSON.data === 'object' ? (msgJSON.data.message && typeof msgJSON.data.message === 'string') ? msgJSON.data.message : (msgJSON.data.stack && typeof msgJSON.data.stack === 'string') ? msgJSON.data.stack : JSON.stringify(msgJSON.data) : (typeof msgJSON.data === 'string') ? msgJSON.data : '') + '\r\n';
   } else {
-    msgStr = msgStr + '.';
+    msgStr = msgStr + '.\r\n';
   }
   return msgStr;
 };

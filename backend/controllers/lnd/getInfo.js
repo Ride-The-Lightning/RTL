@@ -17,8 +17,8 @@ export const getInfo = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/getinfo';
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'GetInfo', msg: 'Selected Node', data: req.session.selectedNode.ln_node });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'GetInfo', msg: 'Calling Info from LND server url', data: options.url });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Selected Node ' + req.session.selectedNode.ln_node });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Calling Info from LND server url ' + options.url });
     if (!options.headers || !options.headers['Grpc-Metadata-macaroon']) {
         const errMsg = 'LND Get info failed due to bad or missing macaroon! Please check RTL-Config.json to verify the setup!';
         const err = common.handleError({ statusCode: 502, message: 'Bad or Missing Macaroon', error: errMsg }, 'GetInfo', errMsg, req.session.selectedNode);
@@ -31,8 +31,8 @@ export const getInfo = (req, res, next) => {
             }
             return node;
         });
-        request(options).then((body) => {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'GetInfo', msg: 'Node Information', data: body });
+        return request(options).then((body) => {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Node Information', data: body });
             const body_str = (!body) ? '' : JSON.stringify(body);
             const search_idx = (!body) ? -1 : body_str.search('Not Found');
             if (!body || search_idx > -1 || body.error) {
@@ -47,7 +47,7 @@ export const getInfo = (req, res, next) => {
                 req.session.selectedNode.ln_version = body.version.split('-')[0] || '';
                 lndWsClient.updateSelectedNode(req.session.selectedNode);
                 databaseService.loadDatabase(req.session.selectedNode);
-                res.status(200).json(body);
+                return res.status(200).json(body);
             }
         }).catch((errRes) => {
             const err = common.handleError(errRes, 'GetInfo', 'Get Info Error', req.session.selectedNode);

@@ -11,11 +11,11 @@ export const getTransactions = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/transactions';
   request(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Transactions', msg: 'Transaction Received', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Transactions', msg: 'Transactions List', data: body });
     if (body.transactions && body.transactions.length > 0) {
       body.transactions = common.sortDescByKey(body.transactions, 'time_stamp');
     }
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Transactions', msg: 'Transactions Received' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Transactions', msg: 'Transactions Sorted List', data: body.transactions });
     res.status(200).json(body.transactions);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Transactions', 'List Transactions Error', req.session.selectedNode);
@@ -39,8 +39,7 @@ export const postTransactions = (req, res, next) => {
   }
   options.form = JSON.stringify(options.form);
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Transactions', msg: 'Transaction Post Response', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Transactions', msg: 'Transaction Sent' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Transactions', msg: 'Transaction Sent', data: body });
     res.status(201).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Transactions', 'Send Transaction Error', req.session.selectedNode);

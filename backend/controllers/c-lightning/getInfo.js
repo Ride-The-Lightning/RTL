@@ -17,16 +17,15 @@ export const getInfo = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/getinfo';
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'GetInfo', msg: 'Selected Node', data: req.session.selectedNode.ln_node });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'GetInfo', msg: 'Calling Info from C-Lightning server url', data: options.url });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Selected Node ' + req.session.selectedNode.ln_node });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Calling Info from C-Lightning server url ' + options.url });
     if (!options.headers || !options.headers.macaroon) {
         const errMsg = 'C-Lightning get info failed due to bad or missing macaroon!';
         const err = common.handleError({ statusCode: 502, message: 'Bad Macaroon', error: errMsg }, 'GetInfo', errMsg, req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     }
     else {
-        request(options).then((body) => {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'GetInfo', msg: 'Node Information', data: body });
+        return request(options).then((body) => {
             const body_str = (!body) ? '' : JSON.stringify(body);
             const search_idx = (!body) ? -1 : body_str.search('Not Found');
             if (!body || search_idx > -1 || body.error) {
@@ -70,8 +69,8 @@ export const getInfo = (req, res, next) => {
                 req.session.selectedNode.ln_version = body.version || '';
                 clWsClient.updateSelectedNode(req.session.selectedNode);
                 databaseService.loadDatabase(req.session.selectedNode);
-                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'CLightning Node Information Received' });
-                res.status(200).json(body);
+                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Node Information', data: body });
+                return res.status(200).json(body);
             }
         }).catch((errRes) => {
             const err = common.handleError(errRes, 'GetInfo', 'Get Info Error', req.session.selectedNode);
