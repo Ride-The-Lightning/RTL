@@ -1,8 +1,10 @@
 import jwt from 'jsonwebtoken';
 import csurf from 'csurf/index.js';
 import { Common, CommonService } from './common.js';
+import { Logger, LoggerService } from './logger.js';
 
 const common: CommonService = Common;
+const logger: LoggerService = Logger;
 const csurfProtection = csurf({ cookie: true });
 
 export const isAuthenticated = (req, res, next) => {
@@ -42,7 +44,7 @@ export const verifyWSUser = (info, next) => {
           } catch (err) {
             cookies = {};
             updatedReq['cookies'] = JSON.parse(cookies);
-            common.handleError({ statusCode: 403, message: 'Unable to read CSRF token cookie', error: JSON.stringify(err) }, 'AuthCheck', 'Unable to read CSRF token cookie', null);
+            logger.log({ selectedNode: common.initSelectedNode, level: 'WARN', fileName: 'AuthCheck', msg: '403 Unable to read CSRF token cookie', data: err });
           }
           csurfProtection(updatedReq, null, (err) => {
             if (err) {
@@ -52,8 +54,7 @@ export const verifyWSUser = (info, next) => {
             }
           });
         } catch (err) {
-          const errMsg = 'Unable to verify CSRF token for Web Server!';
-          common.handleError({ statusCode: 403, message: 'Unable to verify CSRF token', error: errMsg }, 'AuthCheck', errMsg, null);
+          logger.log({ selectedNode: common.initSelectedNode, level: 'WARN', fileName: 'AuthCheck', msg: '403 Unable to verify CSRF token', data: err });
           next(true);
         }
       }

@@ -4,11 +4,11 @@ import { Common } from '../../utils/common.js';
 let options = null;
 const logger = Logger;
 const common = Common;
-export const getSentInfoFromPaymentRequest = (lnServerUrl, payment) => {
-    options.url = lnServerUrl + '/getsentinfo';
+export const getSentInfoFromPaymentRequest = (selNode, payment) => {
+    options.url = selNode.ln_server_url + '/getsentinfo';
     options.form = { paymentHash: payment };
     return request.post(options).then((body) => {
-        logger.log({ selectedNode: null, level: 'DEBUG', fileName: 'Payments', msg: 'Payment Sent Information Received', data: body });
+        logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment Sent Information Received', data: body });
         body.forEach((sentPayment) => {
             if (sentPayment.amount) {
                 sentPayment.amount = Math.round(sentPayment.amount / 1000);
@@ -20,11 +20,11 @@ export const getSentInfoFromPaymentRequest = (lnServerUrl, payment) => {
         return body;
     }).catch((err) => err);
 };
-export const getQueryNodes = (lnServerUrl, nodeIds) => {
-    options.url = lnServerUrl + '/nodes';
+export const getQueryNodes = (selNode, nodeIds) => {
+    options.url = selNode.ln_server_url + '/nodes';
     options.form = { nodeIds: nodeIds };
     return request.post(options).then((nodes) => {
-        logger.log({ selectedNode: null, level: 'DEBUG', fileName: 'Payments', msg: 'Query Nodes', data: nodes });
+        logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Payments', msg: 'Query Nodes Received', data: nodes });
         return nodes;
     }).catch((err) => []);
 };
@@ -37,11 +37,10 @@ export const decodePayment = (req, res, next) => {
     options.url = req.session.selectedNode.ln_server_url + '/parseinvoice';
     options.form = { invoice: req.params.invoice };
     request.post(options).then((body) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment Decode Received', data: body });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Decoded', data: body });
         if (body.amount) {
             body.amount = Math.round(body.amount / 1000);
         }
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Decoded' });
         res.status(200).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Payments', 'Decode Payment Error', req.session.selectedNode);
@@ -58,8 +57,7 @@ export const postPayment = (req, res, next) => {
     options.form = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Send Payment Options', data: options.form });
     request.post(options).then((body) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Send Payment Response', data: body });
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Invoice Paid' });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Invoice Paid', data: body });
         res.status(201).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Payments', 'Send Payment Error', req.session.selectedNode);
@@ -82,15 +80,14 @@ export const queryPaymentRoute = (req, res, next) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Query Payment Route Received', data: body });
         if (body && body.length) {
             const queryRoutes = [];
-            return getQueryNodes(req.session.selectedNode.ln_server_url, body).then((hopsWithAlias) => {
+            return getQueryNodes(req.session.selectedNode, body).then((hopsWithAlias) => {
                 let foundPeer = null;
                 body.map((hop) => {
                     foundPeer = hopsWithAlias.find((hopWithAlias) => hop === hopWithAlias.nodeId);
                     queryRoutes.push({ nodeId: hop, alias: foundPeer ? foundPeer.alias : '' });
                     return hop;
                 });
-                logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Query Routes with Alias', data: queryRoutes });
-                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Route Information Received' });
+                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Query Routes with Alias Received', data: queryRoutes });
                 res.status(200).json(queryRoutes);
             });
         }
@@ -111,10 +108,9 @@ export const getSentPaymentsInformation = (req, res, next) => {
     }
     if (req.body.payments) {
         const paymentsArr = req.body.payments.split(',');
-        return Promise.all(paymentsArr.map((payment) => getSentInfoFromPaymentRequest(req.session.selectedNode.ln_server_url, payment))).
+        return Promise.all(paymentsArr.map((payment) => getSentInfoFromPaymentRequest(req.session.selectedNode, payment))).
             then((values) => {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment Sent Informations', data: values });
-            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Sent Payment Information Received' });
+            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent Information Received', data: values });
             return res.status(200).json(values);
         }).
             catch((errRes) => {

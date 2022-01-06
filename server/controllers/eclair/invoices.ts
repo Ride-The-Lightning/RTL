@@ -39,7 +39,7 @@ export const getInvoice = (req, res, next) => {
   options.url = req.session.selectedNode.ln_server_url + '/getinvoice';
   options.form = { paymentHash: req.params.paymentHash };
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Invoice Found', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Invoice Found', data: body });
     const current_time = (Math.round(new Date(Date.now()).getTime() / 1000));
     body.amount = body.amount ? body.amount / 1000 : 0;
     body.expiresAt = body.expiresAt ? body.expiresAt : (body.timestamp + body.expiry);
@@ -82,8 +82,7 @@ export const listInvoices = (req, res, next) => {
           return Promise.all(invoices.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.ln_server_url, invoice))).
             then((values) => {
               body = common.sortDescByKey(invoices, 'expiresAt');
-              logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Final Invoices List', data: invoices });
-              logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'List Invoices Received' });
+              logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Sorted Invoices List Received', data: invoices });
               return res.status(200).json(invoices);
             }).
             catch((errRes) => {
@@ -109,9 +108,8 @@ export const createInvoice = (req, res, next) => {
   options.url = req.session.selectedNode.ln_server_url + '/createinvoice';
   options.form = req.body;
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Create Invoice Response', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Invoice Created', data: body });
     if (body.amount) { body.amount = Math.round(body.amount / 1000); }
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Invoice Created' });
     res.status(201).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Invoices', 'Create Invoice Error', req.session.selectedNode);

@@ -75,7 +75,7 @@ export class ECLWebSocketClient {
     };
 
     eclWsClt.webSocketClient.onmessage = (msg) => {
-      this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'INFO', fileName: 'ECLWebSocket', msg: 'Received message from the server..', data: msg.data });
+      this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Received message from the server..', data: msg.data });
       msg = (typeof msg.data === 'string') ? JSON.parse(msg.data) : msg.data;
       msg['source'] = 'ECL';
       const msgStr = JSON.stringify(msg);

@@ -1,12 +1,14 @@
 import { Application } from 'express';
 import { Logger, LoggerService } from './logger.js';
+import { Common, CommonService } from './common.js';
 
 class CORS {
 
   public logger: LoggerService = Logger;
+  public common: CommonService = Common;
 
   public mount(app: Application): Application {
-    this.logger.log({ selectedNode: null, level: 'DEBUG', fileName: 'CORS', msg: 'Setting up CORS.' });
+    this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'CORS', msg: 'Setting up CORS..' });
     app.use((req, res, next) => {
       res.setHeader('Cache-Control', 'no-cache');
       res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, filePath');
@@ -17,7 +19,7 @@ class CORS {
       }
       next();
     });
-
+    this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'CORS', msg: 'CORS Set' });
     return app;
   };
 

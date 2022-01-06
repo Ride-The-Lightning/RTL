@@ -33,7 +33,7 @@ export class WebSocketServer {
   }, 1000 * 60 * 60); // Terminate broken connections every hour
 
   public mount = (httpServer: Application): Application => {
-    this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'DEBUG', fileName: 'WebSocketServer', msg: 'Connecting Websocket Server.' });
+    this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Connecting Websocket Server..' });
     this.webSocketServer = new WebSocket.Server({ noServer: true, path: this.common.baseHref + '/api/ws', verifyClient: (process.env.NODE_ENV === 'development') ? null : verifyWSUser });
     httpServer.on('upgrade', (request, socket, head) => {
       if (request.headers['upgrade'] !== 'websocket') {
@@ -50,6 +50,7 @@ export class WebSocketServer {
     });
     this.webSocketServer.on('connection', this.mountEventsOnConnection);
     this.webSocketServer.on('close', () => clearInterval(this.pingInterval));
+    this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Websocket Server Connected' });
   }
 
   public upgradeCallback = (websocket, request) => {
@@ -168,7 +169,7 @@ export class WebSocketServer {
     try {
       this.webSocketServer.clients.forEach((client) => {
         if (+client.clientNodeIndex === +selectedNode.index) {
-          this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Broadcasting message to client...: ' + client.clientId });
+          this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'DEBUG', fileName: 'WebSocketServer', msg: 'Broadcasting message to client...: ' + client.clientId });
           client.send(newMessage);
         }
       });

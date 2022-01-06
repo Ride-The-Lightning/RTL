@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import * as fs from 'fs';
 import { join, dirname, isAbsolute, resolve, sep } from 'path';
 import { fileURLToPath } from 'url';
@@ -37,10 +36,10 @@ export class CommonService {
                     swapOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(req.session.selectedNode.swap_macaroon_path, 'loop.macaroon')).toString('hex') };
                 }
                 catch (err) {
-                    console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Loop macaroon Error: ' + JSON.stringify(err));
+                    this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Loop macaroon Error', error: err });
                 }
             }
-            console.log('\r\n[' + new Date().toLocaleString() + '] INFO: Common => Swap Options: ' + JSON.stringify(swapOptions));
+            this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Swap Options', data: swapOptions });
             return swapOptions;
         };
         this.getBoltzServerOptions = (req) => {
@@ -55,10 +54,10 @@ export class CommonService {
                     boltzOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(req.session.selectedNode.boltz_macaroon_path, 'admin.macaroon')).toString('hex') };
                 }
                 catch (err) {
-                    console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Boltz macaroon Error: ' + JSON.stringify(err));
+                    this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Boltz macaroon Error', error: err });
                 }
             }
-            console.log('\r\n[' + new Date().toLocaleString() + '] INFO: Common => Boltz Options: ' + JSON.stringify(boltzOptions));
+            this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Boltz Options', data: boltzOptions });
             return boltzOptions;
         };
         this.getOptions = (req) => {
@@ -68,7 +67,7 @@ export class CommonService {
                 req.session.selectedNode.options.qs = {};
                 return req.session.selectedNode.options;
             }
-            return this.handleError({ statusCode: 401, message: 'Session expired after a day\'s inactivity.' }, 'Session Expired', 'Session Expiry Error', this.initSelectedNode);
+            return this.handleError({ statusCode: 401, message: 'Session expired after a day\'s inactivity' }, 'Session Expired', 'Session Expiry Error', this.initSelectedNode);
         };
         this.updateSelectedNodeOptions = (req) => {
             if (!req.session.selectedNode) {
@@ -95,9 +94,9 @@ export class CommonService {
                     }
                 }
                 if (req.session.selectedNode) {
-                    console.log('\r\n[' + new Date().toLocaleString() + '] INFO: Common => Updated Node Options: ' + JSON.stringify(req.session.selectedNode.options));
+                    this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Updated Node Options for ' + req.session.selectedNode.ln_node, data: req.session.selectedNode.options });
                 }
-                return { status: 200, message: 'Updated Successfully!' };
+                return { status: 200, message: 'Updated Successfully' };
             }
             catch (err) {
                 req.session.selectedNode.options = {
@@ -106,7 +105,7 @@ export class CommonService {
                     json: true,
                     form: null
                 };
-                console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Common Update Selected Node Options Error:' + JSON.stringify(err));
+                this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Update Selected Node Options Error', error: err });
                 return { status: 502, message: err };
             }
         };
@@ -138,7 +137,7 @@ export class CommonService {
                         }
                     }
                     catch (err) {
-                        console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Common Set Options Error:' + JSON.stringify(err));
+                        this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Common Set Options Error', error: err });
                         node.options = {
                             url: '',
                             rejectUnauthorized: false,
@@ -146,7 +145,7 @@ export class CommonService {
                             form: ''
                         };
                     }
-                    console.log('\r\n[' + new Date().toLocaleString() + '] INFO: Common => Set Node Options: ' + JSON.stringify(node.options));
+                    this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Set Node Options for ' + node.ln_node, data: node.options });
                 });
                 this.updateSelectedNodeOptions(req);
             }
@@ -204,7 +203,7 @@ export class CommonService {
         this.handleError = (errRes, fileName, errMsg, selectedNode) => {
             const err = JSON.parse(JSON.stringify(errRes));
             if (!selectedNode) {
-                selectedNode = { ln_implementation: '' };
+                selectedNode = this.initSelectedNode;
             }
             switch (selectedNode.ln_implementation) {
                 case 'LND':
@@ -237,11 +236,7 @@ export class CommonService {
                     }
                     break;
             }
-            const msgStr = '\r\n[' + new Date().toLocaleString() + '] ERROR: ' + fileName + ' => ' + errMsg + ': ' + (typeof err === 'object' ? JSON.stringify(err) : (typeof err === 'string') ? err : 'Unknown Error');
-            console.error(msgStr);
-            if (selectedNode.log_file && selectedNode.log_file !== '') {
-                fs.appendFile(selectedNode.log_file, msgStr, () => { });
-            }
+            this.logger.log({ selectedNode: selectedNode, level: 'ERROR', fileName: fileName, msg: errMsg, error: (typeof err === 'object' ? JSON.stringify(err) : (typeof err === 'string') ? err : 'Unknown Error') });
             const newErrorObj = {
                 statusCode: err.statusCode ? err.statusCode : err.status ? err.status : (err.error && err.error.code && err.error.code === 'ECONNREFUSED') ? 503 : 500,
                 message: (err.error && err.error.message) ? err.error.message : err.message ? err.message : errMsg,
@@ -266,10 +261,10 @@ export class CommonService {
                     fs.readFile(dummyDataFile, 'utf8', (err, data) => {
                         if (err) {
                             if (err.code === 'ENOENT') {
-                                console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Dummy data file does not exist!');
+                                this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Dummy data file does not exist' });
                             }
                             else {
-                                console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Getting dummy data failed!');
+                                this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Getting dummy data failed' });
                             }
                         }
                         else {
@@ -312,7 +307,7 @@ export class CommonService {
                 fs.writeFileSync(this.rtl_cookie_path, crypto.randomBytes(64).toString('hex'));
             }
             catch (err) {
-                console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Something went wrong while refreshing cookie: \n' + err);
+                this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Something went wrong while refreshing cookie', error: err });
                 throw new Error(err);
             }
         };
@@ -346,11 +341,11 @@ export class CommonService {
                 config.multiPassHashed = multiPassHashed;
                 delete config.multiPass;
                 fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
-                console.log('\r\n[' + new Date().toLocaleString() + '] INFO: Common => Please note that, RTL has encrypted the plaintext password into its corresponding hash.');
+                this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Please note that, RTL has encrypted the plaintext password into its corresponding hash' });
                 return config.multiPassHashed;
             }
             catch (err) {
-                console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Password hashing failed!');
+                this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Password hashing failed', error: err });
             }
         };
         this.getAllNodeAllChannelBackup = (node) => {
@@ -361,30 +356,29 @@ export class CommonService {
                 json: true,
                 headers: { 'Grpc-Metadata-macaroon': fs.readFileSync(node.macaroon_path + '/admin.macaroon').toString('hex') }
             };
+            this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Getting Channel Backup for Node ' + node.ln_node + '..' });
             request(options).then((body) => {
                 fs.writeFile(channel_backup_file, JSON.stringify(body), (err) => {
                     if (err) {
                         if (node.ln_node) {
-                            console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Channel Backup Failed for Node ' + node.ln_node + ': ' + JSON.stringify(err));
+                            this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Error in Channel Backup for Node ' + node.ln_node, error: err });
                         }
                         else {
-                            console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Channel Backup Error: ' + JSON.stringify(err));
+                            this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Error in Channel Backup for File ' + channel_backup_file, error: err });
                         }
                     }
                     else {
                         if (node.ln_node) {
-                            console.log('\r\n[' + new Date().toLocaleString() + '] INFO: Common => Channel Backup Successful for Node: ' + JSON.stringify(node.ln_node));
+                            this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Successful in Channel Backup for Node ' + node.ln_node, data: body });
                         }
                         else {
-                            console.log('\r\n[' + new Date().toLocaleString() + '] INFO: Common => Channel Backup Successful');
+                            this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Successful in Channel Backup for File ' + channel_backup_file, data: body });
                         }
                     }
                 });
             }, (err) => {
-                console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Channel Backup Response Error: ' + JSON.stringify(err));
-                fs.writeFile(channel_backup_file, '', (writeErr) => {
-                    console.error('\r\n[' + new Date().toLocaleString() + '] ERROR: Common => Channel Backup Response Empty File Write Error: ' + JSON.stringify(writeErr));
-                });
+                this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Error in Channel Backup for Node ' + node.ln_node, error: err });
+                fs.writeFile(channel_backup_file, '', () => { });
             });
         };
         this.isVersionCompatible = (currentVersion, checkVersion) => {
@@ -401,20 +395,17 @@ export class CommonService {
         this.logEnvVariables = (req) => {
             const selNode = req.session.selectedNode;
             if (selNode && selNode.index) {
-                if (fs.existsSync(selNode.log_file)) {
-                    fs.writeFile(selNode.log_file, '', () => { });
-                }
-                this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'PORT: ' + this.port });
-                this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'HOST: ' + this.host });
-                this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'SSO: ' + this.rtl_sso });
-                this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + selNode.index });
-                this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'INDEX: ' + selNode.index });
-                this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN NODE: ' + selNode.ln_node });
-                this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + selNode.ln_implementation });
-                this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + selNode.fiat_conversion });
-                this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + selNode.currency_unit });
-                this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + selNode.ln_server_url });
-                this.logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + this.logout_redirect_link + '\r\n' });
+                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'PORT: ' + this.port });
+                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'HOST: ' + this.host });
+                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'SSO: ' + this.rtl_sso });
+                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + selNode.index });
+                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'INDEX: ' + selNode.index });
+                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LN NODE: ' + selNode.ln_node });
+                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + selNode.ln_implementation });
+                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + selNode.fiat_conversion });
+                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + selNode.currency_unit });
+                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + selNode.ln_server_url });
+                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + this.logout_redirect_link + '\r\n' });
             }
         };
         this.filterData = (dataKey, lnImplementation) => {
