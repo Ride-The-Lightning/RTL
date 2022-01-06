@@ -19,7 +19,7 @@ class CORS {
       }
       next();
     });
-
+    this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'CORS', msg: 'CORS Set' });
     return app;
   };
 

@@ -71,7 +71,7 @@ export const listPayments = (req, res, next) => {
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/pay/listPayments';
     request(options).then((body) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment List Received', data: body.payments });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body.payments });
         if (body && body.payments && body.payments.length > 0) {
             body.payments = common.sortDescByKey(body.payments, 'created_at');
         }

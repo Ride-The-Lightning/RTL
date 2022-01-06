@@ -12,7 +12,7 @@ export const getNewAddress = (req, res, next) => {
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/newaddress?type=' + req.query.type;
     request(options).then((body) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'NewAddress', msg: 'New Address', data: body });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'NewAddress', msg: 'New Address Generated', data: body });
         res.status(200).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'NewAddress', 'New Address Error', req.session.selectedNode);

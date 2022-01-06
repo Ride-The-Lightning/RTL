@@ -27,7 +27,7 @@ export class LNDWebSocketClient {
             const options = this.setOptionsForSelNode(selectedNode);
             options.url = selectedNode.ln_server_url + '/v1/invoices?pending_only=true';
             return request(options).then((body) => {
-                this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Pending Invoices', data: body });
+                this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Unpaid Invoices Received', data: body });
                 if (body.invoices && body.invoices.length > 0) {
                     body.invoices.forEach((invoice) => {
                         if (invoice.state === 'OPEN') {

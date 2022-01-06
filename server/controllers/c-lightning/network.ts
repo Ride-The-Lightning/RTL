@@ -11,7 +11,7 @@ export const getRoute = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/network/getRoute/' + req.params.destPubkey + '/' + req.params.amount;
   request(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Network Routes', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Network Routes Received', data: body });
     res.status(200).json({ routes: body });
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Network', 'Query Routes Error', req.session.selectedNode);

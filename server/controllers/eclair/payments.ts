@@ -10,7 +10,7 @@ export const getSentInfoFromPaymentRequest = (selNode: CommonSelectedNode, payme
   options.url = selNode.ln_server_url + '/getsentinfo';
   options.form = { paymentHash: payment };
   return request.post(options).then((body) => {
-    logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent Information', data: body });
+    logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment Sent Information Received', data: body });
     body.forEach((sentPayment) => {
       if (sentPayment.amount) { sentPayment.amount = Math.round(sentPayment.amount / 1000); }
       if (sentPayment.recipientAmount) { sentPayment.recipientAmount = Math.round(sentPayment.recipientAmount / 1000); }
@@ -23,7 +23,7 @@ export const getQueryNodes = (selNode: CommonSelectedNode, nodeIds) => {
   options.url = selNode.ln_server_url + '/nodes';
   options.form = { nodeIds: nodeIds };
   return request.post(options).then((nodes) => {
-    logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Payments', msg: 'Query Nodes', data: nodes });
+    logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Payments', msg: 'Query Nodes Received', data: nodes });
     return nodes;
   }).catch((err) => []);
 };
@@ -50,7 +50,7 @@ export const postPayment = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/payinvoice';
   options.form = req.body;
-  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Send Payment Options', data: options.form });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Send Payment Options', data: options.form });
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Invoice Paid', data: body });
     res.status(201).json(body);
@@ -69,9 +69,9 @@ export const queryPaymentRoute = (req, res, next) => {
     nodeId: req.query.nodeId,
     amountMsat: req.query.amountMsat
   };
-  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Query Payment Route Options', data: options.form });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Query Payment Route Options', data: options.form });
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Query Payment Route', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Query Payment Route Received', data: body });
     if (body && body.length) {
       const queryRoutes = [];
       return getQueryNodes(req.session.selectedNode, body).then((hopsWithAlias) => {
@@ -81,7 +81,7 @@ export const queryPaymentRoute = (req, res, next) => {
           queryRoutes.push({ nodeId: hop, alias: foundPeer ? foundPeer.alias : '' });
           return hop;
         });
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Query Routes with Alias', data: queryRoutes });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Query Routes with Alias Received', data: queryRoutes });
         res.status(200).json(queryRoutes);
       });
     } else {
@@ -102,7 +102,7 @@ export const getSentPaymentsInformation = (req, res, next) => {
     const paymentsArr = req.body.payments.split(',');
     return Promise.all(paymentsArr.map((payment) => getSentInfoFromPaymentRequest(req.session.selectedNode, payment))).
       then((values) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent Information', data: values });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent Information Received', data: values });
         return res.status(200).json(values);
       }).
       catch((errRes) => {

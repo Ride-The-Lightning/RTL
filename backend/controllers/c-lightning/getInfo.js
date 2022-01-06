@@ -67,9 +67,10 @@ export const getInfo = (req, res, next) => {
                 }
                 req.session.selectedNode.api_version = body.api_version || '';
                 req.session.selectedNode.ln_version = body.version || '';
+                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Connecting to the C-Lightning\'s Websocket Server.' });
                 clWsClient.updateSelectedNode(req.session.selectedNode);
                 databaseService.loadDatabase(req.session.selectedNode);
-                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Node Information', data: body });
+                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Node Information Received', data: body });
                 return res.status(200).json(body);
             }
         }).catch((errRes) => {

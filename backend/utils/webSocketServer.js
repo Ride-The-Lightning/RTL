@@ -47,6 +47,7 @@ export class WebSocketServer {
             });
             this.webSocketServer.on('connection', this.mountEventsOnConnection);
             this.webSocketServer.on('close', () => clearInterval(this.pingInterval));
+            this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Websocket Server Connected' });
         };
         this.upgradeCallback = (websocket, request) => {
             this.webSocketServer.emit('connection', websocket, request);
@@ -163,7 +164,7 @@ export class WebSocketServer {
             try {
                 this.webSocketServer.clients.forEach((client) => {
                     if (+client.clientNodeIndex === +selectedNode.index) {
-                        this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Broadcasting message to client...: ' + client.clientId });
+                        this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'DEBUG', fileName: 'WebSocketServer', msg: 'Broadcasting message to client...: ' + client.clientId });
                         client.send(newMessage);
                     }
                 });

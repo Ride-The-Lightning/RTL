@@ -48,6 +48,18 @@ export class LoggerService {
         }
         break;
 
+      case 'DEBUG':
+        if (!msgJSON.selectedNode) {
+          console.log(msgStr + '.\r\n');
+        } else if (msgJSON.selectedNode && msgJSON.selectedNode.log_level === 'DEBUG') {
+          msgStr = prepMsgData(msgJSON, msgStr);
+          console.log(msgStr);
+          if (msgJSON.selectedNode.log_file) {
+            fs.appendFile(msgJSON.selectedNode.log_file, msgStr, () => { });
+          }
+        }
+        break;
+
       default:
         console.log(msgStr);
         break;

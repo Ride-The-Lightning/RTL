@@ -7,7 +7,7 @@ const common = Common;
 export const decodePaymentFromPaymentRequest = (selNode, payment) => {
     options.url = selNode.ln_server_url + '/v1/payreq/' + payment;
     return request(options).then((res) => {
-        logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'PayReq', msg: 'Description', data: res.description });
+        logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'PayReq', msg: 'Description Received', data: res.description });
         return res;
     }).catch((err) => { });
 };
@@ -57,11 +57,11 @@ export const getPayments = (req, res, next) => {
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/payments?max_payments=' + req.query.max_payments + '&index_offset=' + req.query.index_offset + '&reversed=' + req.query.reversed;
     request(options).then((body) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment List', data: body });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body });
         if (body.payments && body.payments.length > 0) {
             body.payments = common.sortDescByKey(body.payments, 'creation_date');
         }
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payments Sorted List', data: body });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Sorted Payments List Received', data: body });
         res.status(200).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Payments', 'List Payments Error', req.session.selectedNode);
@@ -74,10 +74,10 @@ export const getAllLightningTransactions = (req, res, next) => {
     const options2 = JSON.parse(JSON.stringify(common.getOptions(req)));
     options1.url = req.session.selectedNode.ln_server_url + '/v1/payments?max_payments=100000&index_offset=0&reversed=true';
     options2.url = req.session.selectedNode.ln_server_url + '/v1/invoices?num_max_invoices=100000&index_offset=0&reversed=true';
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'All Payments Options', data: options1 });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'All Invoices Options', data: options2 });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'All Payments Options', data: options1 });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'All Invoices Options', data: options2 });
     return Promise.all([request(options1), request(options2)]).then((values) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payments & Invoices Received' });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'All Lightning Transactions Received', data: ({ totalPayments: values[0].length || 0, totalInvoices: values[1].length || 0 }) });
         res.status(200).json({ listPaymentsAll: values[0], listInvoicesAll: values[1] });
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Payments', 'All Lightning Transactions Error', req.session.selectedNode);

@@ -10,7 +10,7 @@ export const getAliasForChannel = (selNode: CommonSelectedNode, channel) => {
   const pubkey = (channel.remote_pubkey) ? channel.remote_pubkey : (channel.remote_node_pub) ? channel.remote_node_pub : '';
   options.url = selNode.ln_server_url + '/v1/graph/node/' + pubkey;
   return request(options).then((aliasBody) => {
-    logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Channels', msg: 'Alias', data: aliasBody.node.alias });
+    logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Channels', msg: 'Alias Received', data: aliasBody.node.alias });
     channel.remote_alias = aliasBody.node.alias;
     return aliasBody.node.alias;
   }).catch((err) => {
@@ -29,7 +29,7 @@ export const getAllChannels = (req, res, next) => {
   let remote = 0;
   let total = 0;
   request(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'All Channels', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Channels List Received', data: body });
     if (body.channels) {
       return Promise.all(
         body.channels.map((channel) => {
@@ -41,7 +41,7 @@ export const getAllChannels = (req, res, next) => {
         })
       ).then((values) => {
         body.channels = common.sortDescByKey(body.channels, 'balancedness');
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channels', data: body });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Sorted Channels List Received', data: body });
         return res.status(200).json(body);
       }).catch((errRes) => {
         const err = common.handleError(errRes, 'Channels', 'Get All Channel Aliases Error', req.session.selectedNode);
@@ -49,7 +49,7 @@ export const getAllChannels = (req, res, next) => {
       });
     } else {
       body.channels = [];
-      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Empty Channels Received' });
+      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Empty Channels List Received' });
       return res.status(200).json(body);
     }
   }).catch((errRes) => {
@@ -82,7 +82,7 @@ export const getPendingChannels = (req, res, next) => {
       body.waiting_close_channels.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
     }
     return Promise.all(promises).then((values) => {
-      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Pending Channels', data: body });
+      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Pending Channels List Received', data: body });
       return res.status(200).json(body);
     }).
       catch((errRes) => {
@@ -110,7 +110,7 @@ export const getClosedChannels = (req, res, next) => {
         })
       ).then((values) => {
         body.channels = common.sortDescByKey(body.channels, 'close_height');
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Closed Channels', data: body });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Closed Channels List Received', data: body });
         return res.status(200).json(body);
       }).catch((errRes) => {
         const err = common.handleError(errRes, 'Channels', 'Get Closed Channel Aliases Error', req.session.selectedNode);
@@ -144,7 +144,7 @@ export const postChannel = (req, res, next) => {
   }
   options.form = JSON.stringify(options.form);
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channels Opened', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Opened', data: body });
     res.status(201).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Channels', 'Open Channel Error', req.session.selectedNode);
@@ -166,13 +166,13 @@ export const postTransactions = (req, res, next) => {
   if (req.body.allowSelfPayment) { options.form.allow_self_payment = req.body.allowSelfPayment; }
   if (req.body.lastHopPubkey) { options.form.last_hop_pubkey = Buffer.from(req.body.lastHopPubkey, 'hex').toString('base64'); }
   options.form = JSON.stringify(options.form);
-  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Send Payment Options', data: options.form });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Send Payment Options', data: options.form });
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Payment Sent', data: body });
     if (body.payment_error) {
       const err = common.handleError(body.payment_error, 'Channels', 'Send Payment Error', req.session.selectedNode);
       return res.status(err.statusCode).json({ message: err.message, error: err.error });
     } else {
+      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Payment Sent', data: body });
       res.status(201).json(body);
     }
   }).catch((errRes) => {
@@ -194,8 +194,9 @@ export const closeChannel = (req, res, next) => {
     options.url = req.session.selectedNode.ln_server_url + '/v1/channels/' + channelpoint + '?force=' + req.query.force;
     if (req.query.target_conf) { options.url = options.url + '&target_conf=' + req.query.target_conf; }
     if (req.query.sat_per_byte) { options.url = options.url + '&sat_per_byte=' + req.query.sat_per_byte; }
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Closing Channel Options URL', data: options.url });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Closing Channel Options URL', data: options.url });
     request.delete(options);
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Close Requested' });
     res.status(202).json({ message: 'Close channel request has been submitted.' });
   } catch (error) {
     logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Channels', msg: 'Close Channel Error', error: error.message });
@@ -226,7 +227,7 @@ export const postChanPolicy = (req, res, next) => {
       chan_point: { funding_txid_str: txid_str, output_index: parseInt(output_idx) }
     });
   }
-  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Update Channel Policy Options', data: options.form });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Update Channel Policy Options', data: options.form });
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Policy Updated', data: body });
     res.status(201).json(body);

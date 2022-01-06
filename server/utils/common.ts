@@ -363,7 +363,7 @@ export class CommonService {
     }
   }
 
-  public getAllNodeAllChannelBackup = (node) => {
+  public getAllNodeAllChannelBackup = (node: CommonSelectedNode) => {
     const channel_backup_file = node.channel_backup_path + sep + 'channel-all.bak';
     const options = {
       url: node.ln_server_url + '/v1/channels/backup',
@@ -371,27 +371,26 @@ export class CommonService {
       json: true,
       headers: { 'Grpc-Metadata-macaroon': fs.readFileSync(node.macaroon_path + '/admin.macaroon').toString('hex') }
     };
+    this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Getting Channel Backup for Node ' + node.ln_node + '..' });
     request(options).then((body) => {
       fs.writeFile(channel_backup_file, JSON.stringify(body), (err) => {
         if (err) {
           if (node.ln_node) {
-            this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Channel Backup Failed for Node ' + node.ln_node, error: err });
+            this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Error in Channel Backup for Node ' + node.ln_node, error: err });
           } else {
-            this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Channel Backup Error', error: err });
+            this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Error in Channel Backup for File ' + channel_backup_file, error: err });
           }
         } else {
           if (node.ln_node) {
-            this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Channel Backup Successful for Node ' + JSON.stringify(node.ln_node), data: node });
+            this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Successful in Channel Backup for Node ' + node.ln_node, data: body });
           } else {
-            this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Channel Backup Successful' });
+            this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Successful in Channel Backup for File ' + channel_backup_file, data: body });
           }
         }
       });
     }, (err) => {
-      this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Channel Backup Response Error', error: err });
-      fs.writeFile(channel_backup_file, '', (writeErr) => {
-        this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Channel Backup Response Empty File Write Error', error: writeErr });
-      });
+      this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Error in Channel Backup for Node ' + node.ln_node, error: err });
+      fs.writeFile(channel_backup_file, '', () => { });
     });
   };
 

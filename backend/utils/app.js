@@ -45,6 +45,7 @@ export class ExpressApplication {
                 res.sendFile(join(this.directoryName, '../..', 'frontend', 'index.html'));
             });
             this.app.use((err, req, res, next) => this.handleApplicationErrors(err, res));
+            this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'App', msg: 'Application Routes Set' });
         };
         this.handleApplicationErrors = (err, res) => {
             switch (err.code) {

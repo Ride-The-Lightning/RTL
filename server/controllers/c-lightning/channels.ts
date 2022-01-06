@@ -19,7 +19,7 @@ export const listChannels = (req, res, next) => {
       channel.balancedness = (total === 0) ? 1 : (1 - Math.abs((local - remote) / total)).toFixed(3);
       return channel;
     });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channels', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channels List Received', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Channels', 'List Channels Error', req.session.selectedNode);
@@ -33,7 +33,7 @@ export const openChannel = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/channel/openChannel';
   options.body = req.body;
-  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Open Channel Options', data: options.body });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Open Channel Options', data: options.body });
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Opened', data: body });
     res.status(201).json(body);
@@ -49,7 +49,7 @@ export const setChannelFee = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/channel/setChannelFee';
   options.body = req.body;
-  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Update Channel Policy Options', data: options.body });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Update Channel Policy Options', data: options.body });
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Updated Channel Policy', data: body });
     res.status(201).json(body);
@@ -66,7 +66,7 @@ export const closeChannel = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   const unilateralTimeoutQuery = req.query.force ? '?unilateralTimeout=1' : '';
   options.url = req.session.selectedNode.ln_server_url + '/v1/channel/closeChannel/' + req.params.channelId + unilateralTimeoutQuery;
-  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Closing Channel', data: options.url });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Closing Channel', data: options.url });
   request.delete(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Closed', data: body });
     res.status(204).json(body);
@@ -84,7 +84,7 @@ export const getLocalRemoteBalance = (req, res, next) => {
   request(options).then((body) => {
     if (!body.localBalance) { body.localBalance = 0; }
     if (!body.remoteBalance) { body.remoteBalance = 0; }
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Local Remote Balance', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Local Remote Balance Received', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Channels', 'Local Remote Balance Error', req.session.selectedNode);

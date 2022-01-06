@@ -57,7 +57,6 @@ export class ExpressApplication {
 
   public setApplicationRoutes = () => {
     this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'App', msg: 'Setting up Application Routes..' });
-
     this.app.use(this.common.baseHref + '/api', sharedRoutes);
     this.app.use(this.common.baseHref + '/api/lnd', lndRoutes);
     this.app.use(this.common.baseHref + '/api/cl', clRoutes);
@@ -68,6 +67,7 @@ export class ExpressApplication {
       res.sendFile(join(this.directoryName, '../..', 'frontend', 'index.html'));
     });
     this.app.use((err, req, res, next) => this.handleApplicationErrors(err, res));
+    this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'App', msg: 'Application Routes Set' });
   }
 
   public handleApplicationErrors = (err, res) => {

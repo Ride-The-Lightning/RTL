@@ -61,13 +61,13 @@ export const getBackup = (req, res, next) => {
     }
   }
   request(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelsBackup', msg: 'Channel Backup', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'ChannelsBackup', msg: 'Channel Backup Received', data: body });
     fs.writeFile(channel_backup_file, JSON.stringify(body), (errRes) => {
       if (errRes) {
         const err = common.handleError(errRes, 'ChannelsBackup', 'Backup Channels Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
       } else {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Channel Backup Finished' });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Channel Backed up and Saved', data: body });
         res.status(200).json({ message: message });
       }
     });
@@ -187,7 +187,7 @@ export const postRestore = (req, res, next) => {
   }
   if (restore_backup !== '') {
     request.post(options).then((body) => {
-      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Channel Backup Restore', data: body });
+      logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'ChannelBackup', msg: 'Channel Restored', data: body });
       if (req.params.channelPoint === 'ALL') { channel_restore_file = channel_restore_file + 'channel-all.bak'; }
       fs.rename(channel_restore_file, channel_restore_file + '.restored', () => {
         getFilesList(req.session.selectedNode.channel_backup_path, (getFilesListRes) => {
@@ -196,7 +196,7 @@ export const postRestore = (req, res, next) => {
             const err = common.handleError({ statusCode: 500, message: 'Restore Channel Error', error: errMsg }, 'ChannelBackup', errMsg, req.session.selectedNode);
             return res.status(err.statusCode).json({ message: err.error, list: getFilesListRes });
           } else {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Channel Restored' });
+            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Channel Restored and Saved' });
             return res.status(201).json({ message: message, list: getFilesListRes });
           }
         });

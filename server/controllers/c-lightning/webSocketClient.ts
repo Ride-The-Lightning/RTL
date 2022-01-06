@@ -77,7 +77,7 @@ export class CLWebSocketClient {
     };
 
     clWsClt.webSocketClient.onmessage = (msg) => {
-      this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Received message from the server..', data: msg.data });
+      this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'DEBUG', fileName: 'CLWebSocket', msg: 'Received message from the server..', data: msg.data });
       msg = (typeof msg.data === 'string') ? JSON.parse(msg.data) : msg.data;
       msg['source'] = 'CLT';
       const msgStr = JSON.stringify(msg);

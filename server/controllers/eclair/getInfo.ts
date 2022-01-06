@@ -37,7 +37,7 @@ export const getInfo = (req, res, next) => {
         req.session.selectedNode.ln_version = body.version.split('-')[0] || '';
         eclWsClient.updateSelectedNode(req.session.selectedNode);
         databaseService.loadDatabase(req.session.selectedNode);
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Get Info', data: body });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Node Information Received', data: body });
         return res.status(200).json(body);
       }).catch((errRes) => {
         const err = common.handleError(errRes, 'GetInfo', 'Get Info Error', req);

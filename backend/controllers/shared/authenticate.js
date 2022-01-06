@@ -60,7 +60,7 @@ export const authenticateUser = (req, res, next) => {
                     req.session.selectedNode = common.initSelectedNode;
                 }
                 const token = jwt.sign({ user: 'SSO_USER' }, common.secret_key);
-                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated.' });
+                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated' });
                 res.status(200).json({ token: token });
             }
             else {

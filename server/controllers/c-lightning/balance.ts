@@ -14,7 +14,7 @@ export const getBalance = (req, res, next) => {
     if (!body.totalBalance) { body.totalBalance = 0; }
     if (!body.confBalance) { body.confBalance = 0; }
     if (!body.unconfBalance) { body.unconfBalance = 0; }
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Balance', msg: 'Balance', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Balance', msg: 'Balance Received', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Balance', 'Get Balance Error', req.session.selectedNode);

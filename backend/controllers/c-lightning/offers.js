@@ -43,9 +43,9 @@ export const listOffers = (req, res, next) => {
     if (req.query.active_only) {
         options.url = options.url + '?active_only=' + req.query.active_only;
     }
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offers List URL', data: options.url });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Offers List URL', data: options.url });
     request(options).then((body) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offers List', data: body });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offers List Received', data: body });
         res.status(200).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Offers', 'List Offers Error', req.session.selectedNode);
@@ -76,9 +76,9 @@ export const fetchOfferInvoice = (req, res, next) => {
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/offers/fetchInvoice';
     options.body = req.body;
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Invoice Body', data: options.body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Offer Invoice Body', data: options.body });
     request.post(options).then((body) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Invoice', data: body });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Invoice Received', data: body });
         res.status(201).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Offers', 'Get Offer Invoice Error', req.session.selectedNode);
