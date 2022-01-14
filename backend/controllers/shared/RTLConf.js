@@ -169,8 +169,13 @@ export const update2FASettings = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Updating 2FA Settings..' });
     const RTLConfFile = common.rtl_conf_file_path + sep + 'RTL-Config.json';
     const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
-    config.secret2fa = req.body.secret2fa;
-    const message = req.body.secret2fa.trim() === '' ? 'Two factor authentication disabled sucessfully.' : 'Two factor authentication enabled sucessfully.';
+    if (req.body.secret2fa && req.body.secret2fa.trim() !== '') {
+        config.secret2fa = req.body.secret2fa;
+    }
+    else {
+        delete config.secret2fa;
+    }
+    const message = req.body.secret2fa.trim() === '' ? 'Two factor authentication disabled successfully.' : 'Two factor authentication enabled successfully.';
     try {
         fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
         common.rtl_secret2fa = config.secret2fa;

@@ -27,7 +27,7 @@ import { ErrorMessageComponent } from '../shared/components/data-modal/error-mes
 import { ShowPubkeyComponent } from '../shared/components/data-modal/show-pubkey/show-pubkey.component';
 
 import { RTLState } from './rtl.state';
-import { resetRootStore, setNodeData, setSelectedNode, updateRootAPICallStatus, closeSpinner, openAlert, openSpinner, openSnackBar, fetchRTLConfig, closeAllDialogs, logout, updateRootNodeSettings } from './rtl.actions';
+import { resetRootStore, setNodeData, setSelectedNode, updateRootAPICallStatus, closeSpinner, openAlert, openSpinner, openSnackBar, fetchRTLConfig, closeAllDialogs, logout, updateRootNodeSettings, setRTLConfig } from './rtl.actions';
 import { fetchInfoLND, resetLNDStore } from '../lnd/store/lnd.actions';
 import { fetchInfoCL, resetCLStore } from '../clightning/store/cl.actions';
 import { fetchInfoECL, resetECLStore } from '../eclair/store/ecl.actions';
@@ -311,16 +311,19 @@ export class RTLEffects implements OnDestroy {
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'Update2FASettings', status: APICallStatusEnum.INITIATED } }));
         return this.httpClient.post(environment.CONF_API + '/update2FA', { secret2fa: action.payload.secret2fa });
       }),
-      map((updateStatus: any) => {
+      withLatestFrom(this.store.select(rootAppConfig)),
+      map(([updateStatus, appConfig]: [any, RTLConfiguration]) => {
         this.logger.info(updateStatus);
+        appConfig.enable2FA = !appConfig.enable2FA;
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'Update2FASettings', status: APICallStatusEnum.COMPLETED } }));
         this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_UI_SETTINGS }));
-        return { type: RTLActions.VOID };
+        this.store.dispatch(setRTLConfig({ payload: appConfig }));
       }),
       catchError((err) => {
         this.handleErrorWithAlert('Update2FASettings', UI_MESSAGES.UPDATE_UI_SETTINGS, 'Update 2FA Settings Failed!', environment.CONF_API, err);
         return of({ type: RTLActions.VOID });
-      }))
+      })),
+    { dispatch: false }
   );
 
   configFetch = createEffect(
