@@ -231,14 +231,18 @@ export const getConfig = (req, res, next) => {
         jsonConfig = JSON.parse(data);
       } else {
         fileFormat = 'INI';
+        data = data.replace('\r\ncolor=#', '\r\ncolor=');
         jsonConfig = ini.parse(data);
+        if (jsonConfig['Application Options'] && jsonConfig['Application Options'].color) {
+          jsonConfig['Application Options'].color = '#' + jsonConfig['Application Options'].color;
+        }
         if (req.session.selectedNode.ln_implementation === 'ECL' && !jsonConfig['eclair.api.password']) {
           fileFormat = 'HOCON';
           jsonConfig = parseHocon(data);
         }
       }
       jsonConfig = maskPasswords(jsonConfig);
-      const responseJSON = (fileFormat === 'JSON') ? jsonConfig : ini.stringify(jsonConfig);
+      const responseJSON = (fileFormat === 'JSON') ? jsonConfig : ini.stringify(jsonConfig).replace('color=\\#', 'color=#');
       logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Configuration File Data Received', data: responseJSON });
       res.status(200).json({ format: fileFormat, data: responseJSON });
     }
