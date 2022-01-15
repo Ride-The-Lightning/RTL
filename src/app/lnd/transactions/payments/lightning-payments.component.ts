@@ -310,7 +310,9 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       this.dataService.decodePayment(selPayment.payment_request, false).
         pipe(take(1)).subscribe({
           next: (decodedPayment: PayRequest) => {
-            this.showHTLCView(selHtlc, selPayment, decodedPayment);
+            setTimeout(() => {
+              this.showHTLCView(selHtlc, selPayment, decodedPayment);
+            }, 0);
           }, error: (error) => {
             this.showHTLCView(selHtlc, selPayment, null);
           }
