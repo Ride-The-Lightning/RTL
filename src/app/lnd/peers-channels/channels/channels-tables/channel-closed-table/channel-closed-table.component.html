@@ -12,7 +12,7 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Close Type </th>
         <td mat-cell *matCellDef="let channel">
           <div fxLayout="row" class='mt-4px'>
-            <mat-icon [matTooltip]="channelClosureType[channel.close_type].tooltip" class='info-icon'>info_outline</mat-icon>
+            <mat-icon [matTooltip]="channelClosureType[channel.close_type].tooltip" class="info-icon">info_outline</mat-icon>
             {{channelClosureType[channel.close_type].name}} 
           </div>
         </td>
