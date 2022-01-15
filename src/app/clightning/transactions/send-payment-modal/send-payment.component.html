@@ -62,7 +62,8 @@
     <mat-error *ngIf="!offerAmount">Offer amount is required.</mat-error>
   </mat-form-field>
   <div fxFlex="100">
-    <mat-checkbox fxFlex="30" tabindex="6" class="mt-1" color="primary" [(ngModel)]="flgSaveToDB" matTooltip="Save offer in database for future payments" [matTooltipPosition]="'above'">Bookmark Offer</mat-checkbox>
+    <mat-checkbox fxFlex="none" tabindex="6" class="mt-1" color="primary" [(ngModel)]="flgSaveToDB">Bookmark Offer</mat-checkbox>
+    <mat-icon matTooltip="Save offer in database for future payments" matTooltipPosition="below" fxFlex="none" class="info-icon" style="margin-top: 1.2rem !important">info_outline</mat-icon>
   </div>    
   <mat-form-field fxFlex="100" *ngIf="flgSaveToDB || offerTitle !== ''" class="mt-1">
     <input matInput placeholder="Title to Save" [(ngModel)]="offerTitle" tabindex="7">

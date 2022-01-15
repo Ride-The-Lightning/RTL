@@ -1,37 +1,61 @@
 <div fxLayout="row" fxFlex="100" fxLayoutAlign="stretch" class="h-100" *ngIf="errorMessage?.trim() === ''; else errorBlock">
   <div fxLayout="column" fxFlex="50" fxLayoutAlign="space-between stretch">
-    <div matTooltip="Default feerate for fundchannel and withdraw" matTooltipPosition="below">
-      <h4 fxLayoutAlign="start" class="dashboard-info-title">Opening</h4>
+    <div>
+      <h4 fxLayoutAlign="start" class="dashboard-info-title">
+          Opening
+          <mat-icon matTooltip="Default feerate for fundchannel and withdraw" matTooltipPosition="below" class='info-icon'>info_outline</mat-icon>
+      </h4>
       <div class="overflow-wrap dashboard-info-value">{{perkbw?.opening | number}}</div>
     </div>
-    <div matTooltip="Feerate to aim for in cooperative shutdown. Note that since mutual close is a negotiation, the actual feerate used in mutual close will be somewhere between this and the corresponding mutual close feerate of the peer" matTooltipPosition="below">
-      <h4 fxLayoutAlign="start" class="dashboard-info-title">Mutual Close</h4>
+    <div>
+      <h4 fxLayoutAlign="start" class="dashboard-info-title">
+          Mutual Close
+          <mat-icon matTooltip="Feerate to aim for in cooperative shutdown. Note that since mutual close is a negotiation, the actual feerate used in mutual close will be somewhere between this and the corresponding mutual close feerate of the peer" matTooltipPosition="below" class='info-icon'>info_outline</mat-icon>
+      </h4>
       <div class="overflow-wrap dashboard-info-value">{{perkbw?.mutual_close | number}}</div>
     </div>
-    <div matTooltip="Feerate for commitment_transaction in a live channel which we originally funded" matTooltipPosition="below">
-      <h4 fxLayoutAlign="start" class="dashboard-info-title">Unilateral Close</h4>
+    <div>
+      <h4 fxLayoutAlign="start" class="dashboard-info-title">
+          Unilateral Close
+          <mat-icon matTooltip="Feerate for commitment_transaction in a live channel which we originally funded" matTooltipPosition="below" class='info-icon'>info_outline</mat-icon>
+      </h4>
       <div class="overflow-wrap dashboard-info-value">{{perkbw?.unilateral_close | number}}</div>
     </div>
-    <div matTooltip="Feerate for returning unilateral close funds to our wallet" matTooltipPosition="below">
-      <h4 fxLayoutAlign="start" class="dashboard-info-title">Delayed To Us</h4>
+    <div>
+      <h4 fxLayoutAlign="start" class="dashboard-info-title">
+          Delayed To Us
+          <mat-icon matTooltip="Feerate for returning unilateral close funds to our wallet" matTooltipPosition="below" class='info-icon'>info_outline</mat-icon>
+      </h4>
       <div class="overflow-wrap dashboard-info-value">{{perkbw?.delayed_to_us | number}}</div>
     </div>
   </div>
   <div fxLayout="column" fxFlex="50" fxLayoutAlign="space-between stretch">
-    <div matTooltip="The smallest feerate that you can use, usually the minimum relayed feerate of the backend" matTooltipPosition="below">
-      <h4 fxLayoutAlign="start" class="dashboard-info-title">Minimum Acceptable</h4>
+    <div>
+      <h4 fxLayoutAlign="start" class="dashboard-info-title">
+          Minimum Acceptable
+          <mat-icon matTooltip="The smallest feerate that you can use, usually the minimum relayed feerate of the backend" matTooltipPosition="below" class='info-icon'>info_outline</mat-icon>
+      </h4>
       <div class="overflow-wrap dashboard-info-value">{{perkbw?.min_acceptable | number}}</div>
     </div>
-    <div matTooltip="The largest feerate we will accept from remote negotiations. If a peer attempts to set the feerate higher than this we will unilaterally close the channel (or simply forget it if it's not open yet)" matTooltipPosition="below">
-      <h4 fxLayoutAlign="start" class="dashboard-info-title">Maximum Acceptable</h4>
+    <div>
+      <h4 fxLayoutAlign="start" class="dashboard-info-title">
+          Maximum Acceptable
+          <mat-icon matTooltip="The largest feerate we will accept from remote negotiations. If a peer attempts to set the feerate higher than this we will unilaterally close the channel (or simply forget it if it's not open yet)" matTooltipPosition="below" class='info-icon'>info_outline</mat-icon>
+      </h4>
       <div class="overflow-wrap dashboard-info-value">{{perkbw?.max_acceptable | number}}</div>
     </div>
-    <div matTooltip="Feerate for returning unilateral close HTLC outputs to our wallet" matTooltipPosition="below">
-      <h4 fxLayoutAlign="start" class="dashboard-info-title">HTLC Resolution</h4>
+    <div>
+      <h4 fxLayoutAlign="start" class="dashboard-info-title">
+          HTLC Resolution
+          <mat-icon matTooltip="Feerate for returning unilateral close HTLC outputs to our wallet" matTooltipPosition="below" class='info-icon'>info_outline</mat-icon>
+      </h4>
       <div class="overflow-wrap dashboard-info-value">{{perkbw?.htlc_resolution | number}}</div>
     </div>
-    <div matTooltip="Feerate to start at when penalizing a cheat attempt" matTooltipPosition="below">
-      <h4 fxLayoutAlign="start" class="dashboard-info-title">Penalty</h4>
+    <div>
+      <h4 fxLayoutAlign="start" class="dashboard-info-title">
+          Penalty
+          <mat-icon matTooltip="Feerate to start at when penalizing a cheat attempt" matTooltipPosition="below" class='info-icon'>info_outline</mat-icon>
+      </h4>
       <div class="overflow-wrap dashboard-info-value">{{perkbw?.penalty | number}}</div>
     </div>
   </div>

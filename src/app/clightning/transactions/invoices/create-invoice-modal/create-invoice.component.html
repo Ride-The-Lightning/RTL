@@ -28,7 +28,8 @@
           </mat-form-field>
         </div>
         <div fxFlex="50" fxLayoutAlign="start center" class="mt-2">
-          <mat-slide-toggle tabindex="6" color="primary" [(ngModel)]="private" matTooltip="Include routing hints for private channels" [matTooltipPosition]="'above'" name="private">Private Routing Hints</mat-slide-toggle>
+          <mat-slide-toggle tabindex="6" color="primary" [(ngModel)]="private" name="private">Private Routing Hints</mat-slide-toggle>
+          <mat-icon matTooltip="Include routing hints for private channels" matTooltipPosition="above" class='info-icon mt-4px'>info_outline</mat-icon>
         </div>
         <div fxFlex="100" class="alert alert-danger mt-1" *ngIf="invoiceError !== ''">
           <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>

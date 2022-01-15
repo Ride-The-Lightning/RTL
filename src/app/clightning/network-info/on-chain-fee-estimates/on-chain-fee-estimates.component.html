@@ -1,15 +1,24 @@
 <div fxLayout="row" fxFlex="100" fxLayoutAlign="stretch" class="h-100" *ngIf="errorMessage?.trim() === ''; else errorBlock">
   <div fxLayout="column" fxFlex="50" fxLayoutAlign="space-between stretch">
-    <div matTooltip="Estimated cost of typical channel open" matTooltipPosition="below">
-      <h4 fxLayoutAlign="start" class="dashboard-info-title">Opening Channel</h4>
+    <div>
+      <h4 fxLayoutAlign="start" class="dashboard-info-title">
+        Opening Channel
+        <mat-icon matTooltip="Estimated cost of typical channel open" matTooltipPosition="below" class='info-icon'>info_outline</mat-icon>
+      </h4>
       <div class="overflow-wrap dashboard-info-value">{{feeRates?.onchain_fee_estimates?.opening_channel_satoshis | number}}</div>
     </div>
-    <div matTooltip="Estimated cost of typical channel close" matTooltipPosition="below">
-      <h4 fxLayoutAlign="start" class="dashboard-info-title">Mutual Close</h4>
+    <div>
+      <h4 fxLayoutAlign="start" class="dashboard-info-title">
+        Mutual Close
+        <mat-icon matTooltip="Estimated cost of typical channel close" matTooltipPosition="below" class='info-icon'>info_outline</mat-icon>
+      </h4>
       <div class="overflow-wrap dashboard-info-value">{{feeRates?.onchain_fee_estimates?.mutual_close_satoshis | number}}</div>
     </div>
-    <div matTooltip="Estimated cost of typical unilateral close (without HTLCs)" matTooltipPosition="below">
-      <h4 fxLayoutAlign="start" class="dashboard-info-title">Unilateral Close</h4>
+    <div>
+      <h4 fxLayoutAlign="start" class="dashboard-info-title">
+        Unilateral Close
+        <mat-icon matTooltip="Estimated cost of typical unilateral close (without HTLCs)" matTooltipPosition="below" class='info-icon'>info_outline</mat-icon>
+      </h4>
       <div class="overflow-wrap dashboard-info-value">{{feeRates?.onchain_fee_estimates?.unilateral_close_satoshis | number}}</div>
     </div>
     <div fxFlex="12">
@@ -18,12 +27,18 @@
     </div>
   </div>
   <div fxLayout="column" fxFlex="50" fxLayoutAlign="space-between stretch">
-    <div matTooltip="Estimated cost of typical HTLC timeout transaction" matTooltipPosition="below">
-      <h4 fxLayoutAlign="start" class="dashboard-info-title">HTLC Timeout</h4>
+    <div>
+      <h4 fxLayoutAlign="start" class="dashboard-info-title">
+        HTLC Timeout
+        <mat-icon matTooltip="Estimated cost of typical HTLC timeout transaction" matTooltipPosition="below" class='info-icon'>info_outline</mat-icon>
+      </h4>
       <div class="overflow-wrap dashboard-info-value">{{feeRates?.onchain_fee_estimates?.htlc_timeout_satoshis | number}}</div>
     </div>
-    <div matTooltip="Estimated cost of typical HTLC fulfillment transaction" matTooltipPosition="below">
-      <h4 fxLayoutAlign="start" class="dashboard-info-title">HTLC Success</h4>
+    <div>
+      <h4 fxLayoutAlign="start" class="dashboard-info-title">
+        HTLC Success
+        <mat-icon matTooltip="Estimated cost of typical HTLC fulfillment transaction" matTooltipPosition="below" class='info-icon'>info_outline</mat-icon>
+      </h4>
       <div class="overflow-wrap dashboard-info-value">{{feeRates?.onchain_fee_estimates?.htlc_success_satoshis | number}}</div>
     </div>
     <div fxFlex="12">

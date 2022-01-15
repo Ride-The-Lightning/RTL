@@ -23,7 +23,7 @@
                 <rtl-loop-quote [quote]="maxQuote" [termCaption]="'max'" [panelExpanded]="false" [showPanel]="true"></rtl-loop-quote>
               </div>
               <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">              
-                <mat-form-field [fxFlex]="direction === LoopTypeEnum.LOOP_OUT ? '30' : '48'">
+                <mat-form-field [fxFlex]="direction === LoopTypeEnum.LOOP_OUT ? '35' : '48'">
                   <input autoFocus matInput placeholder="Amount" type="number" [step]="1000" tabindex="1" formControlName="amount" required>
                   <mat-hint>Range: {{minQuote.amount | number}}-{{maxQuote.amount | number}}</mat-hint>
                   <span matSuffix>Sats</span>
@@ -31,7 +31,7 @@
                   <mat-error *ngIf="inputFormGroup.controls.amount.errors?.min">Amount must be greater than or equal to {{minQuote.amount | number}}.</mat-error>
                   <mat-error *ngIf="inputFormGroup.controls.amount.errors?.max">Amount must be less than or equal to {{maxQuote.amount | number}}.</mat-error>
                 </mat-form-field>
-                <mat-form-field [fxFlex]="direction === LoopTypeEnum.LOOP_OUT ? '20' : '48'">
+                <mat-form-field [fxFlex]="direction === LoopTypeEnum.LOOP_OUT ? '30' : '48'">
                   <input matInput placeholder="Sweep Confirmation Target" type="number" [step]="1" tabindex="2" formControlName="sweepConfTarget" required>
                   <mat-error *ngIf="inputFormGroup.controls.sweepConfTarget.errors?.required">Confirmation target is required.</mat-error>
                   <mat-error *ngIf="inputFormGroup.controls.sweepConfTarget.errors?.min">Confirmation target must be a positive number.</mat-error>
@@ -41,7 +41,10 @@
                   <mat-error *ngIf="inputFormGroup.controls.routingFeePercent.errors?.required">Percentage is required.</mat-error>
                   <mat-error *ngIf="inputFormGroup.controls.routingFeePercent.errors?.min">Percentage must be a positive number.</mat-error>
                 </mat-form-field>
-                <mat-slide-toggle matTooltip="Swap immediately (Might end up paying a higher on-chain fee)" *ngIf="direction === LoopTypeEnum.LOOP_OUT" fxFlex="15" tabindex="4" color="primary" formControlName="fast">Fast</mat-slide-toggle>
+              </div>
+              <div fxLayout="row wrap" fxFlex="100" *ngIf="direction === LoopTypeEnum.LOOP_OUT" fxLayoutAlign="start center" class="mt-1">              
+                <mat-slide-toggle tabindex="4" color="primary" formControlName="fast" fxFlex="none">Fast</mat-slide-toggle>
+                <mat-icon matTooltip="Swap immediately (Might end up paying a higher on-chain fee)" matTooltipPosition="above" class="info-icon mt-4px" fxFlex="none">info_outline</mat-icon>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
                 <button mat-button color="primary" tabindex="5" type="button" (click)="onEstimateQuote()">Estimate Quote</button>

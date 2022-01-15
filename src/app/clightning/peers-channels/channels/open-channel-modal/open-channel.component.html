@@ -68,9 +68,12 @@
                     <mat-option *ngFor="let utxo of utxos" [value]="utxo">{{utxo.value | number}} Sats</mat-option>
                   </mat-select>
                 </mat-form-field>
-                <mat-slide-toggle fxFlex="48" tabindex="7" color="primary" [(ngModel)]="flgUseAllBalance" (change)="onUTXOAllBalanceChange()" name="flgUseAllBalance" matTooltip="Use selected UTXOs balance as the amount to be sent. Final amount sent will be less the mining fee." matTooltipPosition="above" [disabled]="selUTXOs.length < 1">
-                  Use selected UTXOs balance
-                </mat-slide-toggle>
+                <div fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
+                  <mat-slide-toggle tabindex="7" color="primary" [(ngModel)]="flgUseAllBalance" (change)="onUTXOAllBalanceChange()" name="flgUseAllBalance" [disabled]="selUTXOs.length < 1">
+                    Use selected UTXOs balance
+                  </mat-slide-toggle>
+                  <mat-icon matTooltip="Use selected UTXOs balance as the amount to be sent. Final amount sent will be less the mining fee." matTooltipPosition="above" class='info-icon mt-4px'>info_outline</mat-icon>
+                </div>
               </div>
             </div>
           </mat-expansion-panel>    

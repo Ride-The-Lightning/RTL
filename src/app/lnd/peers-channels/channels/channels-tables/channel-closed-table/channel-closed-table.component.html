@@ -10,7 +10,12 @@
     <table mat-table #table fxFlex="100" [dataSource]="closedChannels" matSort [ngClass]="{'error-border': errorMessage !== '', 'overflow-auto': true}">
       <ng-container matColumnDef="close_type">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Close Type </th>
-        <td mat-cell *matCellDef="let channel" [matTooltip]="channelClosureType[channel.close_type].tooltip">{{channelClosureType[channel.close_type].name}} </td>
+        <td mat-cell *matCellDef="let channel">
+          <div fxLayout="row" class='mt-4px'>
+            <mat-icon [matTooltip]="channelClosureType[channel.close_type].tooltip" class='info-icon'>info_outline</mat-icon>
+            {{channelClosureType[channel.close_type].name}} 
+          </div>
+        </td>
       </ng-container>
       <ng-container matColumnDef="remote_alias">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Peer </th>
