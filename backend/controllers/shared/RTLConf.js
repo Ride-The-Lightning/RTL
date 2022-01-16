@@ -238,7 +238,7 @@ export const getConfig = (req, res, next) => {
             }
             else {
                 fileFormat = 'INI';
-                data = data.replace('\r\ncolor=#', '\r\ncolor=');
+                data = data.replace('color=#', 'color=');
                 jsonConfig = ini.parse(data);
                 if (jsonConfig['Application Options'] && jsonConfig['Application Options'].color) {
                     jsonConfig['Application Options'].color = '#' + jsonConfig['Application Options'].color;
