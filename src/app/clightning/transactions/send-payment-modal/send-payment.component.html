@@ -63,7 +63,7 @@
   </mat-form-field>
   <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center" class="mt-1">
     <mat-checkbox fxFlex="none" tabindex="6" color="primary" [(ngModel)]="flgSaveToDB">Bookmark Offer</mat-checkbox>
-    <mat-icon matTooltip="Save offer in database for future payments" matTooltipPosition="below" fxFlex="none" class="info-icon mt-2px">info_outline</mat-icon>
+    <mat-icon matTooltip="Save offer in database for future payments" matTooltipPosition="below" fxFlex="none" class="info-icon">info_outline</mat-icon>
   </div>    
   <mat-form-field fxFlex="100" *ngIf="flgSaveToDB || offerTitle !== ''" class="mt-1">
     <input matInput placeholder="Title to Save" [(ngModel)]="offerTitle" tabindex="7">

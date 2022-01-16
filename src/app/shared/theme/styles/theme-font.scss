@@ -123,13 +123,10 @@
     .material-icons {
       font-size: $medium-font-size * 2;
       &.info-icon {
-        font-size: $medium-font-size * 1.4;
-        place-content: flex-end;
-        align-items: center;
-        display: flex;
-        &.info-icon-start {
-          place-content: flex-start;
-        }
+        font-size: $medium-font-size;
+        margin: 0 2px;
+        width: $medium-font-size;
+        height: $medium-font-size;
       }
     }
     .material-icons.mat-icon.small-icon {

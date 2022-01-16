@@ -44,7 +44,7 @@
               </div>
               <div fxLayout="row wrap" fxFlex="100" *ngIf="direction === LoopTypeEnum.LOOP_OUT" fxLayoutAlign="start center" class="mt-1">              
                 <mat-slide-toggle tabindex="4" color="primary" formControlName="fast" fxFlex="none">Fast</mat-slide-toggle>
-                <mat-icon matTooltip="Swap immediately (Might end up paying a higher on-chain fee)" matTooltipPosition="above" class="info-icon mt-4px" fxFlex="none">info_outline</mat-icon>
+                <mat-icon matTooltip="Swap immediately (Might end up paying a higher on-chain fee)" matTooltipPosition="above" class="info-icon" fxFlex="none">info_outline</mat-icon>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
                 <button mat-button color="primary" tabindex="5" type="button" (click)="onEstimateQuote()">Estimate Quote</button>
