@@ -10,3 +10,13 @@
     cursor: default !important;
   }
 }
+
+.top-toolbar-icon {
+  & .mat-button-wrapper img {
+    width:3.2rem;
+  }
+  & .mat-button-wrapper .material-icons.mat-icon.logo-icon {
+    font-size: 2rem;
+    text-align: start;
+  }
+}

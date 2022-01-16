@@ -1,11 +1,20 @@
 <mat-tab-group>
   <mat-tab *ngFor="let currencyUnit of currencyUnits" label="{{ currencyUnit }}">
     <div fxLayout="row" fxFlex="100" fxLayoutAlign="start start">
-      <div fxLayout="column" fxLayoutAlign="start start" *ngFor="let value of values" [matTooltip]="value.tooltip" [matTooltipPosition]="'below'" class="cc-data-block">
+      <div fxLayout="column" fxLayoutAlign="start start" *ngFor="let value of values" class="cc-data-block">
         <div class="cc-data-title">{{value.title}}</div>
-        <span class="cc-data-value" *ngIf="currencyUnit === currencyUnitEnum.SATS">{{value.dataValue | number}}</span>
-        <span class="cc-data-value" *ngIf="currencyUnit === currencyUnitEnum.BTC">{{value[currencyUnitEnum.BTC] | number:currencyUnitFormats.BTC}}</span>
-        <span class="cc-data-value" *ngIf="fiatConversion && currencyUnit !== currencyUnitEnum.SATS && currencyUnit !== currencyUnitEnum.BTC && conversionErrorMsg === ''">{{value[currencyUnitEnum.OTHER] | number:currencyUnitFormats.OTHER}}</span>
+        <span fxLayout="row" class="cc-data-value" *ngIf="currencyUnit === currencyUnitEnum.SATS">
+          {{value.dataValue | number}}
+          <mat-icon *ngIf="value.tooltip" [matTooltip]="value.tooltip" matTooltipPosition="below" class="info-icon">info_outline</mat-icon>
+        </span>
+        <span class="cc-data-value" *ngIf="currencyUnit === currencyUnitEnum.BTC">
+          {{value[currencyUnitEnum.BTC] | number:currencyUnitFormats.BTC}}
+          <mat-icon *ngIf="value.tooltip" [matTooltip]="value.tooltip" matTooltipPosition="below" class="info-icon">info_outline</mat-icon>
+        </span>
+        <span class="cc-data-value" *ngIf="fiatConversion && currencyUnit !== currencyUnitEnum.SATS && currencyUnit !== currencyUnitEnum.BTC && conversionErrorMsg === ''">
+          {{value[currencyUnitEnum.OTHER] | number:currencyUnitFormats.OTHER}}
+          <mat-icon *ngIf="value.tooltip" [matTooltip]="value.tooltip" matTooltipPosition="below" class="info-icon">info_outline</mat-icon>
+        </span>
       </div>
     </div>
     <div fxLayout="row" fxFlex="100" *ngIf="fiatConversion && currencyUnit !== currencyUnitEnum.SATS && currencyUnit !== currencyUnitEnum.BTC && conversionErrorMsg !== ''" class="p-1 error-border mt-1">

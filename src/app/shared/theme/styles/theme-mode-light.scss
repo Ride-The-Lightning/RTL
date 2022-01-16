@@ -234,10 +234,21 @@
       background-color: $hover-background;
     }
     & .mat-slide-toggle-label {
+      color: $foreground-secondary-text;
       cursor: not-allowed !important;
     }
   }
-  
+  .material-icons {
+    &.info-icon {
+      color: $foreground-secondary-text;
+      &.info-icon-primary {
+        color: $primary-color;
+      }
+      &.info-icon-text {
+        color: $foreground-secondary-text;
+      }
+    }
+  }
   ngx-charts-bar-vertical, ngx-charts-bar-vertical-2d {
     & text {
       fill: $foreground-text;

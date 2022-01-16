@@ -282,6 +282,10 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
   margin-top: 2px !important;
 }
 
+.mt-4px {
+  margin-top: 4px !important;
+}
+
 .mt-5px {
   margin-top: 5px !important;
 }
@@ -1562,4 +1566,3 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
     }
   }
 }
-
