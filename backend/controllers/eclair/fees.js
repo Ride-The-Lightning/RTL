@@ -4,7 +4,7 @@ import { Common } from '../../utils/common.js';
 let options = null;
 const logger = Logger;
 const common = Common;
-export const arrangeFees = (body, current_time) => {
+export const arrangeFees = (selNode, body, current_time) => {
     const fees = { daily_fee: 0, daily_txs: 0, weekly_fee: 0, weekly_txs: 0, monthly_fee: 0, monthly_txs: 0 };
     const week_start_time = current_time - 604800000;
     const day_start_time = current_time - 86400000;
@@ -22,10 +22,10 @@ export const arrangeFees = (body, current_time) => {
         fees.monthly_fee = fees.monthly_fee + fee;
         fees.monthly_txs = fees.monthly_txs + 1;
     });
-    logger.log({ selectedNode: null, level: 'DEBUG', fileName: 'Fees', msg: 'Arranged Fee', data: fees });
+    logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Fees', msg: 'Arranged Fee Received', data: fees });
     return fees;
 };
-export const arrangePayments = (body) => {
+export const arrangePayments = (selNode, body) => {
     const payments = {
         sent: body && body.sent ? body.sent : [],
         received: body && body.received ? body.received : [],
@@ -68,7 +68,7 @@ export const arrangePayments = (body) => {
     payments.sent = common.sortDescByKey(payments.sent, 'firstPartTimestamp');
     payments.received = common.sortDescByKey(payments.received, 'firstPartTimestamp');
     payments.relayed = common.sortDescByKey(payments.relayed, 'timestamp');
-    logger.log({ selectedNode: null, level: 'DEBUG', fileName: 'Fees', msg: 'Arranged Payments', data: payments });
+    logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Fees', msg: 'Arranged Payments Received', data: payments });
     return payments;
 };
 export const getFees = (req, res, next) => {
@@ -87,13 +87,12 @@ export const getFees = (req, res, next) => {
     };
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Fees', msg: 'Fee Audit Options', data: options.form });
     if (common.read_dummy_data) {
-        common.getDummyData('Fees', req.session.selectedNode.ln_implementation).then((data) => { res.status(200).json(arrangeFees(data, Math.round((new Date().getTime())))); });
+        common.getDummyData('Fees', req.session.selectedNode.ln_implementation).then((data) => { res.status(200).json(arrangeFees(req.session.selectedNode, data, Math.round((new Date().getTime())))); });
     }
     else {
         request.post(options).then((body) => {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Fees', msg: 'Fee Response', data: body });
-            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Fee Received' });
-            res.status(200).json(arrangeFees(body, Math.round((new Date().getTime()))));
+            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Fee Received', data: body });
+            res.status(200).json(arrangeFees(req.session.selectedNode, body, Math.round((new Date().getTime()))));
         }).catch((errRes) => {
             const err = common.handleError(errRes, 'Fees', 'Get Fees Error', req.session.selectedNode);
             return res.status(err.statusCode).json({ message: err.message, error: err.error });
@@ -109,13 +108,12 @@ export const getPayments = (req, res, next) => {
     options.url = req.session.selectedNode.ln_server_url + '/audit';
     options.form = null;
     if (common.read_dummy_data) {
-        common.getDummyData('Payments', req.session.selectedNode.ln_implementation).then((data) => { res.status(200).json(arrangePayments(data)); });
+        common.getDummyData('Payments', req.session.selectedNode.ln_implementation).then((data) => { res.status(200).json(arrangePayments(req.session.selectedNode, data)); });
     }
     else {
         request.post(options).then((body) => {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Fees', msg: 'Payments Response', data: body });
-            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Payments Received' });
-            res.status(200).json(arrangePayments(body));
+            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Payments Received', data: body });
+            res.status(200).json(arrangePayments(req.session.selectedNode, body));
         }).
             catch((errRes) => {
             const err = common.handleError(errRes, 'Fees', 'Get Payments Error', req.session.selectedNode);

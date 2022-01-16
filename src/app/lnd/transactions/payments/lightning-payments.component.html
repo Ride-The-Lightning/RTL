@@ -30,9 +30,9 @@
           <ng-container matColumnDef="creation_date">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Creation Date</th>
             <td mat-cell *matCellDef="let payment">
-              <span *ngIf="payment.status === 'SUCCEEDED'" class="dot green" matTooltip="Succeeded" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-              <span *ngIf="payment.status !== 'SUCCEEDED'" class="dot red" matTooltip="Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-              {{(payment?.creation_date * 1000) | date:'dd/MMM/YYYY HH:mm'}}
+              <span *ngIf="payment?.status === 'SUCCEEDED'" class="dot green" matTooltip="Succeeded" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+              <span *ngIf="payment?.status !== 'SUCCEEDED'" class="dot red" matTooltip="Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+              {{(payment?.creation_date * 1000) | date:'dd/MMM/y HH:mm'}}
             </td>
           </ng-container>
           <ng-container matColumnDef="payment_hash">
@@ -79,15 +79,15 @@
           <ng-container matColumnDef="groupTotal">
             <td mat-cell *matCellDef="let payment">
               <span fxLayoutAlign="start center" class="htlc-row-span">
-                <span *ngIf="payment.status === 'SUCCEEDED'" class="dot green" matTooltip="Succeeded" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-                <span *ngIf="payment.status !== 'SUCCEEDED'" class="dot red" matTooltip="Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+                <span *ngIf="payment?.status === 'SUCCEEDED'" class="dot green" matTooltip="Succeeded" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+                <span *ngIf="payment?.status !== 'SUCCEEDED'" class="dot red" matTooltip="Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
                 Total Attempts: {{payment?.htlcs?.length}}
               </span>
-              <ng-container *ngIf="payment.is_expanded">
+              <ng-container *ngIf="payment?.is_expanded">
                 <span *ngFor="let htlc of payment?.htlcs" fxLayoutAlign="start center" class="htlc-row-span pl-3">
                   <span *ngIf="htlc.status === 'SUCCEEDED'" class="dot green" matTooltip="Succeeded" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
                   <span *ngIf="htlc.status !== 'SUCCEEDED'" class="dot red" matTooltip="Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-                  {{(htlc.attempt_time * 1000) | date:'dd/MMM/YYYY HH:mm'}}
+                  {{(htlc.attempt_time * 1000) | date:'dd/MMM/y HH:mm'}}
                 </span>
               </ng-container>
             </td>
@@ -97,7 +97,7 @@
               <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">
                 <span class="ellipsis-child">{{payment?.payment_hash}}</span>
               </span>
-              <span *ngIf="payment.is_expanded">
+              <span *ngIf="payment?.is_expanded">
                 <span *ngFor="let htlc of payment?.htlcs; index as i" fxLayoutAlign="start center" class="htlc-row-span">
                   HTLC {{i + 1}}
                 </span>
@@ -107,7 +107,7 @@
           <ng-container matColumnDef="groupFee">
             <td mat-cell *matCellDef="let payment">
               <span fxLayoutAlign="end center" class="htlc-row-span">{{payment?.fee | number:'1.0-0'}}</span>
-              <span *ngIf="payment.is_expanded">
+              <span *ngIf="payment?.is_expanded">
                 <span *ngFor="let htlc of payment?.htlcs" fxLayoutAlign="end center" class="htlc-row-span">
                   {{htlc.route?.total_fees | number:'1.0-0'}}
                 </span>
@@ -117,7 +117,7 @@
           <ng-container matColumnDef="groupValue">
             <td mat-cell *matCellDef="let payment">
               <span fxLayoutAlign="end center" class="htlc-row-span">{{payment?.value | number:'1.0-0'}}</span>
-              <span *ngIf="payment.is_expanded">
+              <span *ngIf="payment?.is_expanded">
                 <span *ngFor="let htlc of payment?.htlcs" fxLayoutAlign="end center" class="htlc-row-span">
                   {{htlc.route?.total_amt | number:'1.0-0'}}
                 </span>
@@ -127,7 +127,7 @@
           <ng-container matColumnDef="groupHops">
             <td mat-cell *matCellDef="let payment">
               <span fxLayoutAlign="end center" class="htlc-row-span">-</span>
-              <span *ngIf="payment.is_expanded">
+              <span *ngIf="payment?.is_expanded">
                 <span *ngFor="let htlc of payment?.htlcs" fxLayoutAlign="end center" class="htlc-row-span">
                   {{(htlc.route?.hops?.length || 0) | number:'1.0-0'}}
                 </span>
@@ -137,9 +137,9 @@
           <ng-container matColumnDef="groupAction">
             <td mat-cell *matCellDef="let payment" class="px-2">
               <span fxLayoutAlign="end center">
-                <button mat-flat-button class="btn-htlc-expand" color="primary" type="button" tabindex="5" (click)="payment.is_expanded = !payment.is_expanded">{{payment.is_expanded ? 'Hide' : 'Show'}}</button>
+                <button mat-flat-button class="btn-htlc-expand" color="primary" type="button" tabindex="5" (click)="payment.is_expanded = !payment?.is_expanded">{{payment?.is_expanded ? 'Hide' : 'Show'}}</button>
               </span>
-              <div *ngIf="payment.is_expanded">
+              <div *ngIf="payment?.is_expanded">
                 <div *ngFor="let htlc of payment?.htlcs; index as i" fxLayoutAlign="end center">
                   <button mat-stroked-button class="btn-htlc-info" color="primary" type="button" tabindex="6" (click)="onHTLCClick(htlc, payment)">View {{i + 1}}</button>
                 </div>

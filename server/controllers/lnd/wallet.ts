@@ -16,7 +16,7 @@ export const genSeed = (req, res, next) => {
     options.url = req.session.selectedNode.ln_server_url + '/v1/genseed';
   }
   request(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Seed Generated' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Seed Generated', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Wallet', 'Gen Seed Error', req.session.selectedNode);
@@ -54,7 +54,6 @@ export const operateWallet = (req, res, next) => {
     err_message = 'Initializing wallet failed!';
   }
   request(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Wallet', msg: 'Wallet Response', data: body });
     const body_str = (!body) ? '' : JSON.stringify(body);
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
     if (!body) {
@@ -72,7 +71,7 @@ export const operateWallet = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.error, error: err.error });
       }
     } else {
-      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Wallet Unlocked/Initialized' });
+      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Wallet Unlocked/Initialized', data: body });
       res.status(201).json('Successful');
     }
   }).catch((errRes) => {
@@ -101,8 +100,7 @@ export const getUTXOs = (req, res, next) => {
     options.url = options.url + '?max_confs=' + req.query.max_confs;
   }
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Wallet', msg: 'UTXO List Response', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'UTXOs Received' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'UTXOs List Received', data: body });
     res.status(200).json(body.utxos ? body.utxos : []);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Wallet', 'List UTXOs Error', req.session.selectedNode);
@@ -127,8 +125,7 @@ export const bumpFee = (req, res, next) => {
   }
   options.form = JSON.stringify(options.form);
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Wallet', msg: 'Bump Fee Response', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Fee Bumped' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Fee Bumped', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Wallet', 'Bump Fee Error', req.session.selectedNode);
@@ -148,8 +145,7 @@ export const labelTransaction = (req, res, next) => {
   options.form = JSON.stringify(options.form);
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Wallet', msg: 'Label Transaction Options', data: options.form });
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Wallet', msg: 'Label Transaction Post Response', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Transaction Labelled' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Transaction Labelled', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Wallet', 'Label Transaction Error', req.session.selectedNode);
@@ -171,8 +167,7 @@ export const leaseUTXO = (req, res, next) => {
   options.form = JSON.stringify(options.form);
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Wallet', msg: 'UTXO Lease Options', data: options.form });
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Wallet', msg: 'UTXO Lease Response', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'UTXO Leased' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'UTXO Leased', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Wallet', 'Lease UTXO Error', req.session.selectedNode);
@@ -193,8 +188,7 @@ export const releaseUTXO = (req, res, next) => {
   };
   options.form = JSON.stringify(options.form);
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Wallet', msg: 'UTXO Release Response', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'UTXO Released' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'UTXO Released', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Wallet', 'Release UTXO Error', req.session.selectedNode);

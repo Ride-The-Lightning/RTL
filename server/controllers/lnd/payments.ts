@@ -1,14 +1,15 @@
 import request from 'request-promise';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
+import { CommonSelectedNode } from '../../models/config.model.js';
 let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
 
-export const decodePaymentFromPaymentRequest = (lnServerUrl, payment) => {
-  options.url = lnServerUrl + '/v1/payreq/' + payment;
+export const decodePaymentFromPaymentRequest = (selNode: CommonSelectedNode, payment) => {
+  options.url = selNode.ln_server_url + '/v1/payreq/' + payment;
   return request(options).then((res) => {
-    logger.log({ selectedNode: null, level: 'DEBUG', fileName: 'PayReq', msg: 'Description', data: res.description });
+    logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'PayReq', msg: 'Description Received', data: res.description });
     return res;
   }).catch((err) => { });
 };
@@ -19,8 +20,7 @@ export const decodePayment = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/payreq/' + req.params.payRequest;
   request(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'PayReq', msg: 'Payment Decode Received', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'PayRequest', msg: 'Payment Decoded' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'PayRequest', msg: 'Payment Decoded', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'PayRequest', 'Decode Payment Error', req.session.selectedNode);
@@ -34,10 +34,9 @@ export const decodePayments = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   if (req.body.payments) {
     const paymentsArr = req.body.payments.split(',');
-    return Promise.all(paymentsArr.map((payment) => decodePaymentFromPaymentRequest(req.session.selectedNode.ln_server_url, payment))).
+    return Promise.all(paymentsArr.map((payment) => decodePaymentFromPaymentRequest(req.session.selectedNode, payment))).
       then((values) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'PayReq', msg: 'Decoded Payments', data: values });
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'PayRequest', msg: 'Payment List Decoded' });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'PayRequest', msg: 'Payment List Decoded', data: values });
         res.status(200).json(values);
       }).
       catch((errRes) => {
@@ -60,8 +59,7 @@ export const getPayments = (req, res, next) => {
     if (body.payments && body.payments.length > 0) {
       body.payments = common.sortDescByKey(body.payments, 'creation_date');
     }
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payments After Sort', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payments List Received' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Sorted Payments List Received', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Payments', 'List Payments Error', req.session.selectedNode);
@@ -78,7 +76,7 @@ export const getAllLightningTransactions = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'All Payments Options', data: options1 });
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'All Invoices Options', data: options2 });
   return Promise.all([request(options1), request(options2)]).then((values) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payments & Invoices Received' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'All Lightning Transactions Received', data: ({ totalPayments: values[0].length || 0, totalInvoices: values[1].length || 0 }) });
     res.status(200).json({ listPaymentsAll: values[0], listInvoicesAll: values[1] });
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Payments', 'All Lightning Transactions Error', req.session.selectedNode);

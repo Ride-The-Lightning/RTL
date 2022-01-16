@@ -12,8 +12,7 @@ export const getNodes = (req, res, next) => {
   options.url = req.session.selectedNode.ln_server_url + '/nodes';
   options.form = { nodeIds: req.params.id };
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Network', msg: 'Node Lookup', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Node Lookup Finished' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Node Lookup Finished', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Network', 'Node Lookup Error', req.session.selectedNode);

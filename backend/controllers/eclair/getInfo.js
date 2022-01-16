@@ -18,12 +18,12 @@ export const getInfo = (req, res, next) => {
     }
     options.url = req.session.selectedNode.ln_server_url + '/getinfo';
     options.form = {};
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'GetInfo', msg: 'Selected Node', data: req.session.selectedNode.ln_node });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'GetInfo', msg: 'Calling Info from Eclair server url', data: options.url });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Selected Node ' + req.session.selectedNode.ln_node });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Calling Info from Eclair server url ' + options.url });
     if (common.read_dummy_data) {
         common.getDummyData('GetInfo', req.session.selectedNode.ln_implementation).then((data) => {
             data.lnImplementation = 'Eclair';
-            res.status(200).json(data);
+            return res.status(200).json(data);
         });
     }
     else {
@@ -33,15 +33,14 @@ export const getInfo = (req, res, next) => {
             return res.status(err.statusCode).json({ message: err.message, error: err.error });
         }
         else {
-            request.post(options).then((body) => {
+            return request.post(options).then((body) => {
                 logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Connecting to the Eclair\'s Websocket Server.' });
-                logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'GetInfo', msg: 'Get Info Response', data: body });
                 body.lnImplementation = 'Eclair';
-                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Eclair Node Information Received' });
                 req.session.selectedNode.ln_version = body.version.split('-')[0] || '';
                 eclWsClient.updateSelectedNode(req.session.selectedNode);
                 databaseService.loadDatabase(req.session.selectedNode);
-                res.status(200).json(body);
+                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Node Information Received', data: body });
+                return res.status(200).json(body);
             }).catch((errRes) => {
                 const err = common.handleError(errRes, 'GetInfo', 'Get Info Error', req);
                 return res.status(err.statusCode).json({ message: err.message, error: err.error });

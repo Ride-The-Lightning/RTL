@@ -111,8 +111,10 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
     } else {
       this.store.dispatch(fetchGraphNode({ payload: { pubkey: this.peerFormGroup.controls.peerAddress.value } }));
       this.lndEffects.setGraphNode.pipe(take(1)).subscribe((graphNode) => {
-        host = (graphNode.node.addresses && graphNode.node.addresses.length && graphNode.node.addresses.length > 0 && graphNode.node.addresses[0].addr) ? graphNode.node.addresses[0].addr : '';
-        this.connectPeerWithParams(this.peerFormGroup.controls.peerAddress.value, host);
+        setTimeout(() => {
+          host = (graphNode.node.addresses && graphNode.node.addresses.length && graphNode.node.addresses.length > 0 && graphNode.node.addresses[0].addr) ? graphNode.node.addresses[0].addr : '';
+          this.connectPeerWithParams(this.peerFormGroup.controls.peerAddress.value, host);
+        }, 0);
       });
     }
   }

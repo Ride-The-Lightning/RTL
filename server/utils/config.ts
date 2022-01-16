@@ -243,7 +243,7 @@ export class ConfigService {
           this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while creating the backup directory: \n' + err });
         }
         this.common.nodes[idx].log_file = this.common.rtl_conf_file_path + '/logs/RTL-Node-' + node.index + '.log';
-        this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'DEBUG', fileName: 'Config', msg: 'Node Information', data: this.common.nodes[idx] });
+        this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'Config', msg: 'Node Config: ' + JSON.stringify(this.common.nodes[idx]) });
         const log_file = this.common.nodes[idx].log_file;
         if (fs.existsSync(log_file)) {
           fs.writeFile(log_file, '', () => { });

@@ -1,6 +1,6 @@
 <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
-  <div fxFlex="30" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': showQRField === '' || screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
-    <qr-code *ngIf="showQRField !== ''" [value]="showQRField" [size]="240" [errorCorrectionLevel]="'L'"></qr-code>
+  <div fxFlex="30" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large ml-1" [ngClass]="{'display-none': showQRField === '' || screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
+    <qr-code *ngIf="showQRField !== ''" [value]="showQRField" [size]="200" [errorCorrectionLevel]="'L'"></qr-code>
   </div>
   <div [fxFlex]="showQRField === '' || screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '100' : '70'">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
@@ -38,7 +38,7 @@
 <ng-template #contentBlock>
   <div fxLayout="column">
     <div fxFlex="50" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large mb-1" [ngClass]="{'display-none': showQRField === '' || (screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM)}">
-      <qr-code *ngIf="showQRField !== ''" [value]="showQRField" [size]="240" [errorCorrectionLevel]="'L'"></qr-code>
+      <qr-code *ngIf="showQRField !== ''" [value]="showQRField" [size]="200" [errorCorrectionLevel]="'L'"></qr-code>
     </div>
     <div fxLayout="column" fxFlex="100">
       <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="pb-2">{{data.titleMessage}}</p>
@@ -52,7 +52,7 @@
                   <ng-container *ngSwitchCase="dataTypeEnum.ARRAY">
                     <span *ngFor="let arrayObj of obj.value" class="display-block w-100" [innerHTML]="arrayObj"></span>
                   </ng-container>
-                  <ng-container *ngSwitchCase="dataTypeEnum.DATE_TIME">{{(obj.value * 1000) | date:'dd/MMM/YYYY HH:mm'}}</ng-container>
+                  <ng-container *ngSwitchCase="dataTypeEnum.DATE_TIME">{{(obj.value * 1000) | date:'dd/MMM/y HH:mm'}}</ng-container>
                   <ng-container *ngSwitchCase="dataTypeEnum.NUMBER">{{obj.value | number: obj.digitsInfo ? obj.digitsInfo : '1.0-3'}}</ng-container>
                   <ng-container *ngSwitchCase="dataTypeEnum.BOOLEAN">{{obj.value ? 'True' : 'False'}}</ng-container>
                   <ng-container *ngSwitchDefault>
