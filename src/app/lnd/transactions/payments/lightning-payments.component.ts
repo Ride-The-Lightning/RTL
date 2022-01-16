@@ -353,8 +353,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   onPaymentClick(selPayment: Payment) {
     if (selPayment.htlcs && selPayment.htlcs[0] && selPayment.htlcs[0].route && selPayment.htlcs[0].route.hops && selPayment.htlcs[0].route.hops.length > 0) {
       const nodePubkeys = selPayment.htlcs[0].route.hops.reduce((pubkeys, hop) => (pubkeys === '' ? hop.pub_key : pubkeys + ',' + hop.pub_key), '');
-      this.dataService.getAliasesFromPubkeys(nodePubkeys, true).
-        pipe(takeUntil(this.unSubs[7])).
+      this.dataService.getAliasesFromPubkeys(nodePubkeys, true).pipe(takeUntil(this.unSubs[7])).
         subscribe((nodes: any) => {
           this.showPaymentView(selPayment, nodes.reduce((pathAliases, node) => (pathAliases === '' ? node : pathAliases + '\n' + node), ''));
         });
@@ -380,7 +379,9 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
           if (decodedPayment && decodedPayment.description && decodedPayment.description !== '') {
             reorderedPayment.splice(3, 0, [{ key: 'description', value: decodedPayment.description, title: 'Description', width: 100, type: DataTypeEnum.STRING }]);
           }
-          this.openPaymentAlert(reorderedPayment, (selPayment.htlcs && selPayment.htlcs[0] && selPayment.htlcs[0].route && selPayment.htlcs[0].route.hops && selPayment.htlcs[0].route.hops.length > 1));
+          setTimeout(() => {
+            this.openPaymentAlert(reorderedPayment, (selPayment.htlcs && selPayment.htlcs[0] && selPayment.htlcs[0].route && selPayment.htlcs[0].route.hops && selPayment.htlcs[0].route.hops.length > 1));
+          }, 0);
         });
     } else {
       this.openPaymentAlert(reorderedPayment, false);
