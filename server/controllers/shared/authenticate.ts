@@ -61,7 +61,7 @@ export const authenticateUser = (req, res, next) => {
         common.refreshCookie();
         if (!req.session.selectedNode) { req.session.selectedNode = common.initSelectedNode; }
         const token = jwt.sign({ user: 'SSO_USER' }, common.secret_key);
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated.' });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated' });
         res.status(200).json({ token: token });
       } else {
         const errMsg = 'SSO Authentication Failed! Access key too short or does not match.';

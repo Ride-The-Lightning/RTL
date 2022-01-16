@@ -11,7 +11,7 @@
     <table mat-table #table fxFlex="100" [dataSource]="forwardingHistoryEvents" matSort class="overflow-auto">
     <ng-container matColumnDef="timestamp">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Timestamp</th>
-      <td mat-cell *matCellDef="let fhEvent">{{(fhEvent.timestamp * 1000) | date:'dd/MMM/YYYY HH:mm'}}</td>
+      <td mat-cell *matCellDef="let fhEvent">{{(fhEvent.timestamp * 1000) | date:'dd/MMM/y HH:mm'}}</td>
     </ng-container>
     <ng-container matColumnDef="alias_in">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Inbound Channel</th>

@@ -66,7 +66,7 @@ export const listPayments = (req, res, next) => {
     if (body && body.payments && body.payments.length > 0) {
       body.payments = common.sortDescByKey(body.payments, 'created_at');
     }
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'List Payments Received' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Sorted Payments List Received', data: body.payments });
     res.status(200).json(groupBy(body.payments));
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Payments', 'List Payments Error', req.session.selectedNode);
@@ -80,8 +80,7 @@ export const decodePayment = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/utility/decode/' + req.params.payReq;
   request(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment Decode Received', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Decoded' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Decoded', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Payments', 'Decode Payment Error', req.session.selectedNode);
@@ -107,8 +106,7 @@ export const postPayment = (req, res, next) => {
     options.url = req.session.selectedNode.ln_server_url + '/v1/pay';
   }
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Send Payment Response', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent', data: body });
     if (req.body.paymentType === 'OFFER') {
       if (req.body.saveToDB && req.body.bolt12) {
         const offerToUpdate: Offer = { bolt12: req.body.bolt12, amountmSat: (req.body.zeroAmtOffer ? 0 : req.body.amount), title: req.body.title, lastUpdatedAt: new Date(Date.now()).getTime() };

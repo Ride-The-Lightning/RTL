@@ -17,8 +17,7 @@ export const getPeers = (req, res, next) => {
       }
     });
     const peers = (body) ? common.sortDescByStrKey(body, 'alias') : [];
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peers with Alias', data: peers });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peers Received' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peers with Alias Received', data: peers });
     res.status(200).json(peers);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Peers', 'List Peers Error', req.session.selectedNode);
@@ -33,14 +32,12 @@ export const postPeer = (req, res, next) => {
   options.url = req.session.selectedNode.ln_server_url + '/v1/peer/connect';
   options.body = req.body;
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peer Added', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peer Connected', data: body });
     options.url = req.session.selectedNode.ln_server_url + '/v1/peer/listPeers';
     request(options).then((body) => {
       let peers = (body) ? common.sortDescByStrKey(body, 'alias') : [];
       peers = common.newestOnTop(peers, 'id', req.body.id);
-      logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peer with Newest On Top', data: peers });
-      logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peer Added Successfully' });
-      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peer Connected' });
+      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peers List after Connect Received', data: peers });
       res.status(201).json(peers);
     }).catch((errRes) => {
       const err = common.handleError(errRes, 'Peers', 'Connect Peer Error', req.session.selectedNode);
@@ -58,9 +55,7 @@ export const deletePeer = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/peer/disconnect/' + req.params.peerId + '?force=' + req.query.force;
   request.delete(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Detach Peer Response', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peer Detached', data: req.params.peerId });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peer Disconnected' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peer Disconnected', data: body });
     res.status(204).json({});
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Peers', 'Detach Peer Error', req.session.selectedNode);

@@ -34,7 +34,7 @@ export class ExpressApplication {
         this.setCORS = () => { CORS.mount(this.app); };
         this.setCSRF = () => { CSRF.mount(this.app); };
         this.setApplicationRoutes = () => {
-            this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'DEBUG', fileName: 'App', msg: 'Setting up Application Routes.' });
+            this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'App', msg: 'Setting up Application Routes..' });
             this.app.use(this.common.baseHref + '/api', sharedRoutes);
             this.app.use(this.common.baseHref + '/api/lnd', lndRoutes);
             this.app.use(this.common.baseHref + '/api/cl', clRoutes);
@@ -45,6 +45,7 @@ export class ExpressApplication {
                 res.sendFile(join(this.directoryName, '../..', 'frontend', 'index.html'));
             });
             this.app.use((err, req, res, next) => this.handleApplicationErrors(err, res));
+            this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'App', msg: 'Application Routes Set' });
         };
         this.handleApplicationErrors = (err, res) => {
             switch (err.code) {
@@ -70,7 +71,7 @@ export class ExpressApplication {
                     break;
             }
         };
-        this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'DEBUG', fileName: 'App', msg: 'Starting Express Application.' });
+        this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'App', msg: 'Starting Express Application..' });
         this.app.set('trust proxy', true);
         this.app.use(sessions({ secret: this.common.secret_key, saveUninitialized: true, cookie: { secure: false, maxAge: ONE_DAY }, resave: false }));
         this.app.use(cookieParser(this.common.secret_key));

@@ -12,7 +12,7 @@ export const getFees = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/fees';
   request(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Fees', msg: 'Fee Received', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Fee Received', data: body });
     const today = new Date(Date.now());
     const start_date = new Date(today.getFullYear(), today.getMonth(), 1, 0, 0, 0);
     const current_time = (Math.round(today.getTime() / 1000));
@@ -37,7 +37,7 @@ export const getFees = (req, res, next) => {
       if (history.error) {
         logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Fees', msg: 'Fetch Forwarding Events Error', error: history.error });
       }
-      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Fees Received' });
+      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Fees Received', data: body });
       res.status(200).json(body);
     });
   }).catch((errRes) => {

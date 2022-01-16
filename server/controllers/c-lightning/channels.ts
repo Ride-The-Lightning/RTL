@@ -11,7 +11,6 @@ export const listChannels = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/channel/listChannels';
   request(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'List Channels', data: body });
     body.map((channel) => {
       if (!channel.alias || channel.alias === '') { channel.alias = channel.id.substring(0, 20); }
       const local = (channel.msatoshi_to_us) ? channel.msatoshi_to_us : 0;
@@ -20,7 +19,7 @@ export const listChannels = (req, res, next) => {
       channel.balancedness = (total === 0) ? 1 : (1 - Math.abs((local - remote) / total)).toFixed(3);
       return channel;
     });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channels Received' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channels List Received', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Channels', 'List Channels Error', req.session.selectedNode);
@@ -36,8 +35,7 @@ export const openChannel = (req, res, next) => {
   options.body = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Open Channel Options', data: options.body });
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Open Channel Response', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Opened' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Opened', data: body });
     res.status(201).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Channels', 'Open Channel Error', req.session.selectedNode);
@@ -53,8 +51,7 @@ export const setChannelFee = (req, res, next) => {
   options.body = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Update Channel Policy Options', data: options.body });
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Update Channel Policy', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Fee Set' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Updated Channel Policy', data: body });
     res.status(201).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Channels', 'Update Channel Policy Error', req.session.selectedNode);
@@ -71,8 +68,7 @@ export const closeChannel = (req, res, next) => {
   options.url = req.session.selectedNode.ln_server_url + '/v1/channel/closeChannel/' + req.params.channelId + unilateralTimeoutQuery;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Closing Channel', data: options.url });
   request.delete(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Close Channel Response', data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Closed' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Closed', data: body });
     res.status(204).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Channels', 'Close Channel Error', req.session.selectedNode);
@@ -86,10 +82,9 @@ export const getLocalRemoteBalance = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/channel/localremotebal';
   request(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Local Remote Balance', data: body });
     if (!body.localBalance) { body.localBalance = 0; }
     if (!body.remoteBalance) { body.remoteBalance = 0; }
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Local & Remote Balances Received' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Local Remote Balance Received', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Channels', 'Local Remote Balance Error', req.session.selectedNode);
@@ -103,10 +98,8 @@ export const listForwards = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/channel/listForwards?status=' + req.query.status;
   request.get(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Forwarding History Response For Status ' + req.query.status, data: body });
     if (body && body.length > 0) { body = common.sortDescByKey(body, 'received_time'); }
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Forwarding History Received For Status' + req.query.status, data: body });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel List Forwards Received For Status ' + req.query.status });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Forwarding History Received For Status' + req.query.status, data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Channels', 'Forwarding History Error', req.session.selectedNode);

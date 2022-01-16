@@ -194,8 +194,8 @@ export class CLOffersTableComponent implements OnInit, AfterViewInit, OnDestroy 
               height: 40,
               alignment: 'center'
             },
-            { text: offerDecoded.description ? offerDecoded.description.substring(0, 165) : '', alignment: 'center', fontSize: 16, color: '#5C5C5C' },
-            { qr: selOffer.bolt12, eccLevel: 'M', fit: '259', alignment: 'center', absolutePosition: { x: 7, y: 195 } },
+            { text: offerDecoded.description ? offerDecoded.description.substring(0, 160) : '', alignment: 'center', fontSize: 16, color: '#5C5C5C' },
+            { qr: selOffer.bolt12, eccLevel: 'M', fit: '227', alignment: 'center', absolutePosition: { x: 7, y: 205 } },
             { text: (!offerDecoded?.amount_msat || offerDecoded?.amount === 0 ? 'Open amount' : (this.decimalPipe.transform(offerDecoded.amount / 1000) + ' SATS')), fontSize: 20, bold: false, color: 'white', alignment: 'center', absolutePosition: { x: 0, y: 430 } },
             { text: 'SCAN TO PAY', fontSize: 22, bold: true, color: 'white', alignment: 'center', absolutePosition: { x: 0, y: 455 } }
           ],

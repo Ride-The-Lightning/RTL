@@ -47,11 +47,11 @@
           <div fxLayout="row">
             <div fxFlex="50">
               <h4 fxLayoutAlign="start" class="font-bold-500">Date Created</h4>
-              <span class="foreground-secondary-text">{{invoice?.creation_date * 1000 | date:'dd/MMM/YYYY HH:mm'}}</span>
+              <span class="foreground-secondary-text">{{invoice?.creation_date * 1000 | date:'dd/MMM/y HH:mm'}}</span>
             </div>
             <div fxFlex="50">
               <h4 fxLayoutAlign="start" class="font-bold-500">Date Settled</h4>
-              <span class="foreground-secondary-text">{{(+invoice?.settle_date !== 0 ? ((+invoice?.settle_date * 1000) | date:'dd/MMM/YYYY HH:mm') : '-')}}</span>
+              <span class="foreground-secondary-text">{{(+invoice?.settle_date !== 0 ? ((+invoice?.settle_date * 1000) | date:'dd/MMM/y HH:mm') : '-')}}</span>
             </div>
           </div>
           <mat-divider [inset]="true" class="my-1"></mat-divider>

@@ -77,7 +77,7 @@ export class CLWebSocketClient {
     };
 
     clWsClt.webSocketClient.onmessage = (msg) => {
-      this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Received message from the server..', data: msg.data });
+      this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'DEBUG', fileName: 'CLWebSocket', msg: 'Received message from the server..', data: msg.data });
       msg = (typeof msg.data === 'string') ? JSON.parse(msg.data) : msg.data;
       msg['source'] = 'CLT';
       const msgStr = JSON.stringify(msg);
@@ -110,7 +110,8 @@ export class CLWebSocketClient {
 
   public updateSelectedNode = (newSelectedNode: CommonSelectedNode) => {
     const clientIdx = this.webSocketClients.findIndex((wsc) => +wsc.selectedNode.index === +newSelectedNode.index);
-    const newClient = this.webSocketClients[clientIdx];
+    let newClient = this.webSocketClients[clientIdx];
+    if (!newClient) { newClient = { selectedNode: null, reConnect: true, webSocketClient: null }; }
     newClient.selectedNode = JSON.parse(JSON.stringify(newSelectedNode));
     this.webSocketClients[clientIdx] = newClient;
   }

@@ -15,8 +15,7 @@ export const signMessage = (req, res, next) => {
         msg: Buffer.from(req.body.message).toString('base64')
     });
     request.post(options).then((body) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Messages', msg: 'Message Signed', data: body });
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Message', msg: 'Message Signed' });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Message', msg: 'Message Signed', data: body });
         res.status(201).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Messages', 'Sign Message Error', req.session.selectedNode);
@@ -35,8 +34,7 @@ export const verifyMessage = (req, res, next) => {
         signature: req.body.signature
     });
     request.post(options).then((body) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Messages', msg: 'Message Verified', data: body });
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Message', msg: 'Message Verified' });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Message', msg: 'Message Verified', data: body });
         res.status(201).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Messages', 'Verify Message Error', req.session.selectedNode);

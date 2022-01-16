@@ -37,10 +37,9 @@ export const getAllForwardingEvents = (req, start, end, offset, callback) => {
     options.form.num_max_events = num_max_events;
     options.form.index_offset = offset;
     options.form = JSON.stringify(options.form);
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Switch', msg: 'Forwarding History Params', data: options.form });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Switch', msg: 'Forwarding Events Params', data: options.form });
     return request.post(options).then((body) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Switch', msg: 'Forwarding History', data: body });
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Switch', msg: 'Forwarding Events Received' });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Switch', msg: 'Forwarding Events Received', data: body });
         if (body.forwarding_events) {
             responseData.forwarding_events.push(...body.forwarding_events);
         }
