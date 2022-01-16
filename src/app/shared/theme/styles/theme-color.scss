@@ -216,8 +216,9 @@
       padding-right: 0;
       & .more-button {
         position: absolute;
-        right: 0;
+        right: 0.4rem;
         top: 0.4rem;
+        max-width: 2rem;
       }
     }
   }
@@ -275,7 +276,7 @@
 
   .mat-tab-label {
     opacity: 1;
-    padding: 0 $gap*4;
+    padding: 0;
     min-width: 18rem;
   }
 
@@ -334,6 +335,7 @@
     }
     & .mat-icon-button.more-button {
       width: 2rem;
+      max-width: 2rem;
     }
   }
 
@@ -393,7 +395,6 @@
       }
     }
   }
-
   .help-expansion {
     & .mat-expansion-panel-header, & .mat-expansion-panel-header-title {
       font-weight: 500;

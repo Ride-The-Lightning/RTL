@@ -99,7 +99,7 @@
     }
     .modal-info-header {
       font-size: $medium-font-size * 1.3;
-      padding: $gap math.div($gap, 2) $gap $gap * 2 !important;
+      padding: $gap $gap * 2 $gap $gap * 2 !important;
       @include for_screensize(tab-port) {
         padding: math.div($gap, 2) math.div($gap, 2) math.div($gap, 2) $gap !important;
       }
@@ -122,6 +122,15 @@
     }
     .material-icons {
       font-size: $medium-font-size * 2;
+      &.info-icon {
+        font-size: $medium-font-size * 1.4;
+        place-content: flex-end;
+        align-items: center;
+        display: flex;
+        &.info-icon-start {
+          place-content: flex-start;
+        }
+      }
     }
     .material-icons.mat-icon.small-icon {
       font-size: $medium-font-size * 1.2;

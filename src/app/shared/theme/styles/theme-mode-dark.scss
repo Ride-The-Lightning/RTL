@@ -270,7 +270,17 @@
       color: $yellow-alert-color;
     }
   }
-
+  .material-icons {
+    &.info-icon {
+      color: $primary-darker;
+      &.info-icon-primary {
+        color: $primary-darker;
+      }
+      &.info-icon-text {
+        color: $foreground-text;
+      }
+    }
+  }
   ngx-charts-bar-vertical, ngx-charts-bar-vertical-2d {
     & text {
       fill: $foreground-text;
