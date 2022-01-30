@@ -115,17 +115,17 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
         }
         this.logger.info(channelsSelector);
       });
-
-    const channelId = this.route.snapshot.queryParamMap.get('channelId');
-    if (channelId) {
-      this.selFilter = this.route.snapshot.queryParamMap.get('channelId');
-      this.applyFilter();
-    }
   }
 
   ngAfterViewInit() {
     if (this.channelsData.length > 0) {
       this.loadChannelsTable(this.channelsData);
+    }
+
+    const channelId = this.route.snapshot.queryParamMap.get('channelId');
+    if (channelId) {
+      this.selFilter = this.route.snapshot.queryParamMap.get('channelId');
+      this.applyFilter();
     }
   }
 
