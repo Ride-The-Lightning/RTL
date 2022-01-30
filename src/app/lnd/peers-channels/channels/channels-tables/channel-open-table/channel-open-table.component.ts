@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
@@ -64,7 +65,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<RTLState>, private lndEffects: LNDEffects, private commonService: CommonService, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private loopService: LoopService) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private lndEffects: LNDEffects, private commonService: CommonService, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private loopService: LoopService, private route: ActivatedRoute) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -114,6 +115,12 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
         }
         this.logger.info(channelsSelector);
       });
+
+    const channelId = this.route.snapshot.queryParamMap.get('channelId');
+    if (channelId) {
+      this.selFilter = this.route.snapshot.queryParamMap.get('channelId');
+      this.applyFilter();
+    }
   }
 
   ngAfterViewInit() {
