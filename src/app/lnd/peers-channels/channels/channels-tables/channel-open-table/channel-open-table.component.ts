@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
@@ -63,9 +63,10 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   public errorMessage = '';
   public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public channelId = null;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<RTLState>, private lndEffects: LNDEffects, private commonService: CommonService, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private loopService: LoopService, private route: ActivatedRoute) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private lndEffects: LNDEffects, private commonService: CommonService, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private loopService: LoopService, private router: Router) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -80,6 +81,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
       this.flgSticky = true;
       this.displayedColumns = ['remote_alias', 'uptime', 'total_satoshis_sent', 'total_satoshis_received', 'local_balance', 'remote_balance', 'balancedness', 'actions'];
     }
+    this.channelId = this.router.getCurrentNavigation().extras?.state?.channelId;
   }
 
   ngOnInit() {
@@ -122,9 +124,8 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
       this.loadChannelsTable(this.channelsData);
     }
 
-    const channelId = this.route.snapshot.queryParamMap.get('channelId');
-    if (channelId) {
-      this.selFilter = this.route.snapshot.queryParamMap.get('channelId');
+    if (this.channelId) {
+      this.selFilter = this.channelId;
       this.applyFilter();
     }
   }

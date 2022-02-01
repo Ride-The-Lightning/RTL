@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -52,9 +52,10 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   public errorMessage = '';
   public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public channelId = null;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private route: ActivatedRoute) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private router: Router) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -69,6 +70,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       this.flgSticky = true;
       this.displayedColumns = ['shortChannelId', 'alias', 'feeBaseMsat', 'feeProportionalMillionths', 'toLocal', 'toRemote', 'balancedness', 'actions'];
     }
+    this.channelId = this.router.getCurrentNavigation().extras?.state?.channelId;
   }
 
   ngOnInit() {
@@ -98,9 +100,8 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
         this.totalBalance = ocBalSelector.onchainBalance.total;
       });
 
-    const channelId = this.route.snapshot.queryParamMap.get('channelId');
-    if (channelId) {
-      this.selFilter = this.route.snapshot.queryParamMap.get('channelId');
+    if (this.channelId) {
+      this.selFilter = this.channelId;
       this.applyFilter();
     }
   }
