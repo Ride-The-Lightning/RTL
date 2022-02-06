@@ -55,7 +55,7 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
       this.displayedColumns = ['status', 'received_time', 'in_msatoshi', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['status', 'received_time', 'in_channel', 'in_msatoshi', 'actions'];
+      this.displayedColumns = ['status', 'received_time', 'in_channel', 'out_channel', 'in_msatoshi', 'actions'];
     }
   }
 
@@ -90,6 +90,7 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
       [{ key: 'status', value: selFEvent.status === 'local_failed' ? 'Local Failed' : this.commonService.titleCase(selFEvent.status), title: 'Status', width: 50, type: DataTypeEnum.STRING },
       { key: 'received_time', value: selFEvent.received_time, title: 'Received Time', width: 50, type: DataTypeEnum.DATE_TIME }],
       [{ key: 'in_channel', value: selFEvent.in_channel_alias, title: 'Inbound Channel', width: 50, type: DataTypeEnum.STRING },
+      { key: 'out_channel', value: selFEvent.out_channel_alias, title: 'Outbound Channel', width: 50, type: DataTypeEnum.STRING },
       { key: 'in_msatoshi', value: selFEvent.in_msatoshi, title: 'In (mSats)', width: 50, type: DataTypeEnum.NUMBER }]
     ];
     this.store.dispatch(openAlert({
