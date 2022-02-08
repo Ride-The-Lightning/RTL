@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -54,10 +53,9 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
   public errorMessage = '';
   public apiCallStatus: ApiCallStatusPayload = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  public channelId = null;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects, private commonService: CommonService, private router: Router) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -72,7 +70,6 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
       this.flgSticky = true;
       this.displayedColumns = ['short_channel_id', 'alias', 'msatoshi_to_us', 'msatoshi_to_them', 'balancedness', 'actions'];
     }
-    this.channelId = this.router.getCurrentNavigation().extras?.state?.channelId;
   }
 
   ngOnInit() {
@@ -96,11 +93,6 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
         }
         this.logger.info(channelsSeletor);
       });
-
-    if (this.channelId) {
-      this.selFilter = this.channelId;
-      this.applyFilter();
-    }
   }
 
   ngAfterViewInit() {

@@ -15,9 +15,7 @@
   <div class="channels-capacity-scroll" [perfectScrollbar]>
     <div fxLayout="column" fxFlex="100" *ngIf="activeChannels && activeChannels.length > 0; else noChannelBlock">
       <div *ngFor="let channel of activeChannels" class="mt-2">
-        <a [routerLink]="['../connections/channels/open']" [state]="{channelId: channel.id}" class="dashboard-capacity-header" matTooltip="{{channel.alias || channel.id}}" matTooltipDisabled="{{(channel.alias || channel.id).length < 26}}">
-          {{(channel.alias || channel.id) | slice:0:24}}{{(channel.alias || channel.id).length > 25 ? '...' : ''}}
-        </a>
+        <span class="dashboard-capacity-header" matTooltip="{{channel.alias || channel.id}}" matTooltipDisabled="{{(channel.alias || channel.id).length < 26}}">{{(channel.alias || channel.id) | slice:0:24}}{{(channel.alias || channel.id).length > 25 ? '...' : ''}}</span>
         <div fxLayout="row" fxLayoutAlign="space-between start" class="w-100">
           <mat-hint fxFlex="40" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Local:</strong>{{channel.msatoshi_to_us/1000 || 0 | number:'1.0-0'}} Sats</mat-hint>
           <mat-hint fxFlex="20" fxLayoutAlign="center center" class="font-size-90 color-primary">

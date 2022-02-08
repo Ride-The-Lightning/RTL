@@ -8,9 +8,7 @@
   <div [perfectScrollbar] fxLayout="column" fxFlex.gt-sm="88" fxFlex="84" fxLayoutAlign="start start">
     <div fxLayout="column" fxFlex="100" class="w-100" *ngIf="allChannels && allChannels.length > 0; else noChannelBlock">
       <div *ngFor="let channel of allChannels" class="mt-2">
-        <a [routerLink]="['../connections/channels/open']" [state]="{channelId: channel.channelId}" class="dashboard-capacity-header" matTooltip="{{channel.alias || channel.shortChannelId}}" matTooltipDisabled="{{(channel.alias || channel.shortChannelId).length < 26}}">
-          {{(channel.alias || channel.shortChannelId) | slice:0:24}}{{(channel.alias || channel.shortChannelId).length > 25 ? '...' : ''}}
-        </a>
+        <span class="dashboard-capacity-header" matTooltip="{{channel.alias || channel.shortChannelId}}" matTooltipDisabled="{{(channel.alias || channel.shortChannelId).length < 26}}">{{(channel.alias || channel.shortChannelId) | slice:0:24}}{{(channel.alias || channel.shortChannelId).length > 25 ? '...' : ''}}</span>
         <div fxLayout="row" fxLayoutAlign="space-between start" class="w-100">
           <mat-hint *ngIf="direction === 'In'" fxFlex="100" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.toRemote || 0 | number:'1.0-0'}} Sats</mat-hint>
           <mat-hint *ngIf="direction === 'Out'" fxFlex="100" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.toLocal || 0 | number:'1.0-0'}} Sats</mat-hint>
