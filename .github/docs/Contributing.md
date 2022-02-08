@@ -40,7 +40,7 @@ Design suggestions are always welcome and helpful. Design suggestion can range f
 Contributions via code is the most sought after contribution and something we enthusiastically encourage. Follow the below guideline to be able to contribute code to RTL.
 
 ##### Pull Code
-* Pull the code from the release (current eg Release-0.11.1) or [master](https://github.com/Ride-The-Lightning/RTL/tree/master) branch into your local workspace via github commandline/GUI.
+* Pull the code from the latest release branch (current eg Release-0.12.1) into your local workspace via github commandline/GUI.
 
 ##### Install Dependencies
 * Assuming that nodejs (v12 & above) and npm are already installed on your local machine. Go into your RTL root folder and run `npm install`. 
@@ -70,7 +70,7 @@ Contributions via code is the most sought after contribution and something we en
 ##### Create a Pull Request
 * Create a new branch on the github to push your updated code.
 * Commit your updates into the newly created branch.
-* Create a new pull request once you are satisfied with your updates to be merged into the `release`/`master` branch with details of your updates and submit it for the review.
+* Create a new pull request once you are satisfied with your updates to be merged into the `release` branch with details of your updates and submit it for the review.
 
 ##### Caution about adding new libraries
 * We are conservative in adding new dependencies to the repository. Do your best to not add any new libraries on RTL. We believe this is the best strategy to keep the software safe from vulnerabilites.
