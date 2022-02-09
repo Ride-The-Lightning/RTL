@@ -35,9 +35,6 @@ export const arrangePayments = (selNode, body) => {
         if (sentEle.recipientAmount) {
             sentEle.recipientAmount = Math.round(sentEle.recipientAmount / 1000);
         }
-        if (sentEle.parts && sentEle.parts.length > 0) {
-            sentEle.firstPartTimestamp = sentEle.parts[0].timestamp;
-        }
         sentEle.parts.forEach((part) => {
             if (part.amount) {
                 part.amount = Math.round(part.amount / 1000);
@@ -45,19 +42,31 @@ export const arrangePayments = (selNode, body) => {
             if (part.feesPaid) {
                 part.feesPaid = Math.round(part.feesPaid / 1000);
             }
+            if (part.timestamp.unix) {
+                part.timestamp = part.timestamp.unix * 1000;
+            }
         });
+        if (sentEle.parts && sentEle.parts.length > 0) {
+            sentEle.firstPartTimestamp = sentEle.parts[0].timestamp;
+        }
     });
     payments.received.forEach((receivedEle) => {
-        if (receivedEle.parts && receivedEle.parts.length > 0) {
-            receivedEle.firstPartTimestamp = receivedEle.parts[0].timestamp;
-        }
         receivedEle.parts.forEach((part) => {
             if (part.amount) {
                 part.amount = Math.round(part.amount / 1000);
             }
+            if (part.timestamp.unix) {
+                part.timestamp = part.timestamp.unix * 1000;
+            }
         });
+        if (receivedEle.parts && receivedEle.parts.length > 0) {
+            receivedEle.firstPartTimestamp = receivedEle.parts[0].timestamp;
+        }
     });
     payments.relayed.forEach((relayedEle) => {
+        if (relayedEle.timestamp.unix) {
+            relayedEle.timestamp = relayedEle.timestamp.unix * 1000;
+        }
         if (relayedEle.amountIn) {
             relayedEle.amountIn = Math.round(relayedEle.amountIn / 1000);
         }
