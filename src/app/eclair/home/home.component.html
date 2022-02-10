@@ -13,13 +13,12 @@
               <span>{{card.title}}</span>
             </div>
             <div>
-              <button *ngIf="card.link" mat-icon-button class="more-button" [matMenuTriggerFor]="menuOperator"
+              <button *ngIf="card.links[0]" mat-icon-button class="more-button" [matMenuTriggerFor]="menuOperator"
                 aria-label="Toggle menu">
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #menuOperator="matMenu" class="dashboard-vert-menu" xPosition="before">
-                <button mat-menu-item (click)="onNavigateTo(card.link)">Go To {{card.goTo}}</button>
-                <button *ngIf="card.id === 'fee'" (click)="onNavigateTo('/ecl/reports')" mat-menu-item>Fees Summary</button>
+                <button mat-menu-item *ngFor="let goToOption of card.goToOptions; index as i" (click)="onNavigateTo(card.links[i])">{{goToOption}}</button>
                 <button *ngIf="card.id === 'capacity'" (click)="onsortChannelsBy()" mat-menu-item>Sort By
                   {{sortField === 'Balance Score' ? 'Capacity' : 'Balance Score'}}</button>
               </mat-menu>
@@ -66,12 +65,12 @@
               <span>{{card.title}}</span>
             </div>
             <div>
-              <button *ngIf="card.link" mat-icon-button class="more-button" [matMenuTriggerFor]="menuMerchant"
+              <button *ngIf="card.links[0]" mat-icon-button class="more-button" [matMenuTriggerFor]="menuMerchant"
                 aria-label="Toggle menu">
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #menuMerchant="matMenu" class="dashboard-vert-menu" xPosition="before">
-                <button mat-menu-item (click)="onNavigateTo(card.link)">Go To {{card.goTo}}</button>
+                <button mat-menu-item *ngFor="let goToOption of card.goToOptions; index as i" (click)="onNavigateTo(card.links[i])">{{goToOption}}</button>
               </mat-menu>
             </div>
           </mat-card-title>
@@ -105,8 +104,7 @@
                       <mat-icon>more_vert</mat-icon>
                     </button>
                     <mat-menu #menuTransactions="matMenu" class="dashboard-vert-menu" xPosition="before">
-                      <button mat-menu-item (click)="onNavigateTo(card.link)">Go To {{card.goTo}}</button>
-                      <button mat-menu-item (click)="onNavigateTo('/ecl/reports/transactions')">Transactions Summary</button>
+                      <button mat-menu-item *ngFor="let goToOption of card.goToOptions; index as i" (click)="onNavigateTo(card.links[i])">{{goToOption}}</button>
                     </mat-menu>
                   </ng-template>
                 </mat-tab>
