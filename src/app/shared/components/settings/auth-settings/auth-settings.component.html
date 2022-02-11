@@ -5,20 +5,20 @@
       <span class="page-title">Password</span>
     </div>
     <mat-form-field>
-      <input autoFocus matInput placeholder="Current Password" type="password" id="currpassword" name="currpassword" [(ngModel)]="currPassword" tabindex="1" required>
+      <input matInput placeholder="Current Password" type="password" id="currpassword" name="currpassword" [(ngModel)]="currPassword" tabindex="6" required>
       <mat-error *ngIf="!currPassword">Current password is required.</mat-error>
     </mat-form-field>
     <mat-form-field>
-      <input matInput placeholder="New Password" type="password" id="newpassword" name="newpassword" [(ngModel)]="newPassword" tabindex="2" required>
+      <input matInput placeholder="New Password" type="password" id="newpassword" name="newpassword" [(ngModel)]="newPassword" tabindex="7" required>
       <mat-error *ngIf="matchOldAndNewPasswords()">{{errorMsg}}</mat-error>
     </mat-form-field>
     <mat-form-field>
-      <input matInput placeholder="Confirm New Password" type="password" id="confirmpassword" name="confirmpassword" [(ngModel)]="confirmPassword" tabindex="3" required>
+      <input matInput placeholder="Confirm New Password" type="password" id="confirmpassword" name="confirmpassword" [(ngModel)]="confirmPassword" tabindex="8" required>
       <mat-error *ngIf="matchNewPasswords()">{{errorConfirmMsg}}</mat-error>
     </mat-form-field>
     <div fxLayout="row" fxLayoutAlign="start start" class="mt-1">
-      <button class="mr-1" mat-stroked-button color="primary" type="reset" (click)="onResetPassword()" tabindex="4">Reset</button>
-      <button mat-flat-button color="primary" tabindex="5" type="submit" (click)="onChangePassword()">Change Password</button>
+      <button class="mr-1" mat-stroked-button color="primary" type="reset" (click)="onResetPassword()" tabindex="9">Reset</button>
+      <button mat-flat-button color="primary" tabindex="10" type="button" (click)="onChangePassword()">Change Password</button>
     </div>
     <div fxLayout="column" fxFlex="100" fxLayoutAlign="end stretch" class="my-2">
       <mat-divider [inset]="true"></mat-divider>
@@ -34,7 +34,7 @@
       <span>Protect your account from unauthorized access by requiring a second authentication method in addition to your password.</span>
     </div>
     <div class="mt-1">
-      <button mat-flat-button color="primary" tabindex="6" (click)="on2FAuth()" class="mb-2">{{appConfig.enable2FA ? 'Disable 2FA' : 'Enable 2FA'}}</button>
+      <button mat-flat-button color="primary" tabindex="11" (click)="on2FAuth()" class="mb-2">{{appConfig.enable2FA ? 'Disable 2FA' : 'Enable 2FA'}}</button>
     </div>
   </div>
 </div>
