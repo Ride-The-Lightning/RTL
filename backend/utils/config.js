@@ -42,8 +42,7 @@ export class ConfigService {
                     channelBackupPath = '';
                     break;
             }
-            return {
-                multiPass: 'password',
+            const configData = {
                 port: '3000',
                 defaultNodeIndex: 1,
                 SSO: {
@@ -72,6 +71,10 @@ export class ConfigService {
                     }
                 ]
             };
+            if (+process.env.RTL_SSO === 0) {
+                configData['multiPass'] = 'password';
+            }
+            return configData;
         };
         this.normalizePort = (val) => {
             const port = parseInt(val, 10);

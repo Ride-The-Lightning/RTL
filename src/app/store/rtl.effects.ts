@@ -596,12 +596,12 @@ export class RTLEffects implements OnDestroy {
   setLoggedInDetails(defaultPassword: boolean, postRes: any) {
     this.logger.info('Successfully Authorized!');
     this.SetToken(postRes.token);
-    this.store.dispatch(fetchRTLConfig());
     this.sessionService.setItem('defaultPassword', defaultPassword);
     if (defaultPassword) {
-      this.sessionService.setItem('defaultPassword', 'true');
       this.store.dispatch(openSnackBar({ payload: 'Reset your password.' }));
       this.router.navigate(['/settings/auth']);
+    } else {
+      this.store.dispatch(fetchRTLConfig());
     }
   }
 
