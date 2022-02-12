@@ -125,7 +125,7 @@ export class ConfigService {
                 this.common.rtl_secret2fa = config.secret2fa;
             }
             else {
-                if ((process.env.APP_PASSWORD && process.env.APP_PASSWORD.trim() !== '') || (config.multiPass && config.multiPass.trim() !== '') || (config.multiPassHashed && config.multiPassHashed.trim() !== '')) {
+                if (process.env.APP_PASSWORD && process.env.APP_PASSWORD.trim() !== '') {
                     this.errMsg = this.errMsg + '\nRTL Password cannot be set with SSO. Please set SSO as 0 or remove password.';
                 }
             }
