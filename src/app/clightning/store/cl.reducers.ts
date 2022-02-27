@@ -2,7 +2,7 @@ import { createReducer, on } from '@ngrx/store';
 import { initCLState } from './cl.state';
 import {
   addInvoice, addPeer, removeChannel, removePeer, resetCLStore, setBalance, setChannels,
-  setChildNodeSettingsCL, setFailedForwardingHistory, setFeeRates, setFees, setForwardingHistory,
+  setChildNodeSettingsCL, setFailedForwardingHistory, setLocalFailedForwardingHistory, setFeeRates, setFees, setForwardingHistory,
   setInfo, setInvoices, setLocalRemoteBalance, setOffers, addOffer, setPayments, setPeers, setUTXOs,
   updateCLAPICallStatus, updateInvoice, updateOffer, setOfferBookmarks, addUpdateOfferBookmark, removeOfferBookmark
 } from './cl.actions';
@@ -125,6 +125,14 @@ export const CLReducer = createReducer(initCLState,
       failedForwardingHistory: payload
     };
   }),
+  on(setLocalFailedForwardingHistory, (state, { payload }) => {
+    const storedChannels = [...state.activeChannels, ...state.pendingChannels, ...state.inactiveChannels];
+    payload = mapAliases(payload, storedChannels);
+    return {
+      ...state,
+      localFailedForwardingHistory: payload
+    };
+  }),
   on(addInvoice, (state, { payload }) => {
     const newInvoices = state.invoices;
     newInvoices.invoices.unshift(payload);
@@ -222,13 +230,13 @@ const mapAliases = (payload: any, storedChannels: Channel[]) => {
             if (fhEvent.in_channel_alias) { return; }
           }
           if (idx === storedChannels.length - 1) {
-            if (!fhEvent.in_channel_alias) { fhEvent.in_channel_alias = fhEvent.in_channel; }
-            if (!fhEvent.out_channel_alias) { fhEvent.out_channel_alias = fhEvent.out_channel; }
+            if (!fhEvent.in_channel_alias) { fhEvent.in_channel_alias = fhEvent.in_channel ? fhEvent.in_channel : '-'; }
+            if (!fhEvent.out_channel_alias) { fhEvent.out_channel_alias = fhEvent.out_channel ? fhEvent.out_channel : '-'; }
           }
         }
       } else {
-        fhEvent.in_channel_alias = fhEvent.in_channel;
-        fhEvent.out_channel_alias = fhEvent.out_channel;
+        fhEvent.in_channel_alias = fhEvent.in_channel ? fhEvent.in_channel : '-';
+        fhEvent.out_channel_alias = fhEvent.out_channel ? fhEvent.out_channel : '-';
       }
     });
   } else {

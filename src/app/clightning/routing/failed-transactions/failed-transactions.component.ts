@@ -24,7 +24,7 @@ import { failedForwardingHistory } from '../../store/cl.selector';
   templateUrl: './failed-transactions.component.html',
   styleUrls: ['./failed-transactions.component.scss'],
   providers: [
-    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Events') }
+    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Failed Events') }
   ]
 })
 export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -49,13 +49,13 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['status', 'received_time', 'in_msatoshi', 'actions'];
+      this.displayedColumns = ['received_time', 'in_channel', 'in_msatoshi', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['status', 'received_time', 'in_msatoshi', 'actions'];
+      this.displayedColumns = ['received_time', 'in_channel', 'out_channel', 'in_msatoshi', 'out_msatoshi', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['status', 'received_time', 'in_channel', 'out_channel', 'in_msatoshi', 'actions'];
+      this.displayedColumns = ['received_time', 'resolved_time', 'in_channel', 'out_channel', 'in_msatoshi', 'out_msatoshi', 'fee', 'actions'];
     }
   }
 
@@ -86,18 +86,22 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
 
   onFailedEventClick(selFEvent: ForwardingEvent) {
     const reorderedFHEvent = [
-      [{ key: 'payment_hash', value: selFEvent.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }],
-      [{ key: 'status', value: selFEvent.status === 'local_failed' ? 'Local Failed' : this.commonService.titleCase(selFEvent.status), title: 'Status', width: 50, type: DataTypeEnum.STRING },
-      { key: 'received_time', value: selFEvent.received_time, title: 'Received Time', width: 50, type: DataTypeEnum.DATE_TIME }],
-      [{ key: 'in_channel', value: selFEvent.in_channel_alias, title: 'Inbound Channel', width: 50, type: DataTypeEnum.STRING },
-      { key: 'out_channel', value: selFEvent.out_channel_alias, title: 'Outbound Channel', width: 50, type: DataTypeEnum.STRING },
-      { key: 'in_msatoshi', value: selFEvent.in_msatoshi, title: 'In (mSats)', width: 50, type: DataTypeEnum.NUMBER }]
+      [{ key: 'received_time', value: selFEvent.received_time, title: 'Received Time', width: 50, type: DataTypeEnum.DATE_TIME },
+      { key: 'resolved_time', value: selFEvent.resolved_time, title: 'Resolved Time', width: 50, type: DataTypeEnum.DATE_TIME }],
+      [{ key: 'in_channel_alias', value: selFEvent.in_channel_alias, title: 'Inbound Channel', width: 50, type: DataTypeEnum.STRING },
+      { key: 'out_channel_alias', value: selFEvent.out_channel_alias, title: 'Outbound Channel', width: 50, type: DataTypeEnum.STRING }],
+      [{ key: 'in_msatoshi', value: selFEvent.in_msatoshi, title: 'Amount In (mSats)', width: 33, type: DataTypeEnum.NUMBER },
+      { key: 'out_msatoshi', value: selFEvent.out_msatoshi, title: 'Amount Out (mSats)', width: 33, type: DataTypeEnum.NUMBER },
+      { key: 'fee', value: selFEvent.fee, title: 'Fee (mSats)', width: 34, type: DataTypeEnum.NUMBER }]
     ];
+    if (selFEvent.payment_hash) {
+      reorderedFHEvent.unshift([{ key: 'payment_hash', value: selFEvent.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }]);
+    }
     this.store.dispatch(openAlert({
       payload: {
         data: {
           type: AlertTypeEnum.INFORMATION,
-          alertTitle: 'Event Information',
+          alertTitle: 'Failed Event Information',
           message: reorderedFHEvent
         }
       }
@@ -110,11 +114,12 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
     this.failedForwardingEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.failedForwardingEvents.paginator = this.paginator;
     this.failedForwardingEvents.filterPredicate = (event: ForwardingEvent, fltr: string) => {
-      const newEvent = (event.status ? (event.status === 'local_failed') ? 'local failed' : event.status.toLowerCase() : '') +
-        (event.received_time ? this.datePipe.transform(new Date(event.received_time * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') +
+      const newEvent = ((event.received_time ? this.datePipe.transform(new Date(event.received_time * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') +
         (event.resolved_time ? this.datePipe.transform(new Date(event.resolved_time * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') +
+        (event.payment_hash ? event.payment_hash.toLowerCase() : '') +
         (event.in_channel ? event.in_channel.toLowerCase() : '') + (event.out_channel ? event.out_channel.toLowerCase() : '') +
-        (event.in_msatoshi ? (event.in_msatoshi / 1000) : '') + (event.out_msatoshi ? (event.out_msatoshi / 1000) : '') + (event.fee ? event.fee : '');
+        (event.in_channel_alias ? event.in_channel_alias.toLowerCase() : '') + (event.out_channel_alias ? event.out_channel_alias.toLowerCase() : '') +
+        (event.in_msatoshi ? (event.in_msatoshi / 1000) : '') + (event.out_msatoshi ? (event.out_msatoshi / 1000) : '') + (event.fee ? event.fee : ''));
       return newEvent.includes(fltr);
     };
     this.applyFilter();

@@ -20,6 +20,7 @@ import { CLLookupsComponent } from './graph/lookups/lookups.component';
 import { CLRoutingComponent } from './routing/routing.component';
 import { CLForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
 import { CLFailedTransactionsComponent } from './routing/failed-transactions/failed-transactions.component';
+import { CLLocalFailedTransactionsComponent } from './routing/local-failed-transactions/local-failed-transactions.component';
 import { CLRoutingPeersComponent } from './routing/routing-peers/routing-peers.component';
 import { CLChannelLookupComponent } from './graph/lookups/channel-lookup/channel-lookup.component';
 import { CLNodeLookupComponent } from './graph/lookups/node-lookup/node-lookup.component';
@@ -76,6 +77,7 @@ import { CLUnlockedGuard } from '../shared/services/auth.guard';
     CLRoutingComponent,
     CLForwardingHistoryComponent,
     CLFailedTransactionsComponent,
+    CLLocalFailedTransactionsComponent,
     CLRoutingPeersComponent,
     CLChannelLookupComponent,
     CLNodeLookupComponent,

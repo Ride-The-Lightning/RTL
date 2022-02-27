@@ -663,17 +663,25 @@ export class CLEffects implements OnDestroy {
             this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchForwardingHistory', status: APICallStatusEnum.COMPLETED } }));
             const isNewerVersion = (nodeInfo.api_version) ? this.commonService.isVersionCompatible(nodeInfo.api_version, '0.5.0') : false;
             if (!isNewerVersion) {
+              const filteredLocalFailedEvents = [];
               const filteredFailedEvents = [];
               const filteredSuccesfulEvents = [];
               fhRes.forEach((event: ForwardingEvent) => {
                 if (event.status === 'settled') {
                   filteredSuccesfulEvents.push(event);
-                } else if (event.status === 'failed' || event.status === 'local_failed') {
+                } else if (event.status === 'failed') {
                   filteredFailedEvents.push(event);
+                } else if (event.status === 'local_failed') {
+                  filteredLocalFailedEvents.push(event);
                 }
               });
               fhRes = JSON.parse(JSON.stringify(filteredSuccesfulEvents));
-              this.store.dispatch(setFailedForwardingHistory({ payload: filteredFailedEvents }));
+              if (action.payload.status === 'failed') {
+                this.store.dispatch(setFailedForwardingHistory({ payload: filteredFailedEvents }));
+              }
+              if (action.payload.status === 'local_failed') {
+                this.store.dispatch(setFailedForwardingHistory({ payload: filteredLocalFailedEvents }));
+              }
             }
             return {
               type: CLActions.SET_FORWARDING_HISTORY_CL,
@@ -699,21 +707,44 @@ export class CLEffects implements OnDestroy {
         this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchFailedForwardingHistory', status: APICallStatusEnum.COMPLETED } }));
         return of({ type: RTLActions.VOID });
       } // For backwards compatibility < 0.5.0 END
-      let failedEventsReq = new Observable();
-      const failedRes = this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=failed');
-      const localFailedRes = this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=local_failed');
-      failedEventsReq = forkJoin([failedRes, localFailedRes]);
-      return failedEventsReq.pipe(map((ffhRes: any) => {
-        this.logger.info(ffhRes);
-        this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchFailedForwardingHistory', status: APICallStatusEnum.COMPLETED } }));
-        return {
-          type: CLActions.SET_FAILED_FORWARDING_HISTORY_CL,
-          payload: this.commonService.sortDescByKey([...ffhRes[0], ...ffhRes[1]], 'received_time')
-        };
-      }), catchError((err) => {
-        this.handleErrorWithAlert('FetchFailedForwardingHistory', UI_MESSAGES.NO_SPINNER, 'Get Failed Forwarding History Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=failed', err);
+      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=failed').
+        pipe(map((ffhRes: any) => {
+          this.logger.info(ffhRes);
+          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchFailedForwardingHistory', status: APICallStatusEnum.COMPLETED } }));
+          return {
+            type: CLActions.SET_FAILED_FORWARDING_HISTORY_CL,
+            payload: ffhRes
+          };
+        }), catchError((err) => {
+          this.handleErrorWithAlert('FetchFailedForwardingHistory', UI_MESSAGES.NO_SPINNER, 'Get Failed Forwarding History Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=failed', err);
+          return of({ type: RTLActions.VOID });
+        }));
+    }))
+  );
+
+  fetchLocalFailedForwardingHistoryCL = createEffect(() => this.actions.pipe(
+    ofType(CLActions.GET_LOCAL_FAILED_FORWARDING_HISTORY_CL),
+    withLatestFrom(this.store.select(clNodeInformation)),
+    mergeMap(([action, nodeInfo]: [{ type: string, payload: any }, GetInfo]) => {
+      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchLocalFailedForwardingHistory', status: APICallStatusEnum.INITIATED } }));
+      // For backwards compatibility < 0.5.0 START
+      const isNewerVersion = (nodeInfo.api_version) ? this.commonService.isVersionCompatible(nodeInfo.api_version, '0.5.0') : false;
+      if (!isNewerVersion) {
+        this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchLocalFailedForwardingHistory', status: APICallStatusEnum.COMPLETED } }));
         return of({ type: RTLActions.VOID });
-      }));
+      } // For backwards compatibility < 0.5.0 END
+      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=local_failed').
+        pipe(map((lffhRes: any) => {
+          this.logger.info(lffhRes);
+          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchLocalFailedForwardingHistory', status: APICallStatusEnum.COMPLETED } }));
+          return {
+            type: CLActions.SET_LOCAL_FAILED_FORWARDING_HISTORY_CL,
+            payload: lffhRes
+          };
+        }), catchError((err) => {
+          this.handleErrorWithAlert('FetchLocalFailedForwardingHistory', UI_MESSAGES.NO_SPINNER, 'Get Local Failed Forwarding History Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=local_failed', err);
+          return of({ type: RTLActions.VOID });
+        }));
     }))
   );
 

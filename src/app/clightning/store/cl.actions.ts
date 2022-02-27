@@ -3,7 +3,7 @@ import { createAction, props } from '@ngrx/store';
 import { CLActions } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Fees, Peer, Payment, PayRequest, QueryRoutes, Channel, FeeRates, ForwardingEvent, Invoice, ListInvoices, OnChain, UTXO, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, DecodePayment, SendPayment, GetQueryRoutes, ChannelLookup, OfferInvoice, Offer, OfferBookmark } from '../../shared/models/clModels';
+import { GetInfo, Fees, Peer, Payment, QueryRoutes, Channel, FeeRates, ForwardingEvent, Invoice, ListInvoices, OnChain, UTXO, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, OfferInvoice, Offer, OfferBookmark, LocalFailedEvent } from '../../shared/models/clModels';
 
 export const updateCLAPICallStatus = createAction(CLActions.UPDATE_API_CALL_STATUS_CL, props<{ payload: ApiCallStatusPayload }>());
 
@@ -88,6 +88,10 @@ export const setForwardingHistory = createAction(CLActions.SET_FORWARDING_HISTOR
 export const getFailedForwardingHistory = createAction(CLActions.GET_FAILED_FORWARDING_HISTORY_CL);
 
 export const setFailedForwardingHistory = createAction(CLActions.SET_FAILED_FORWARDING_HISTORY_CL, props<{ payload: ForwardingEvent[] }>());
+
+export const getLocalFailedForwardingHistory = createAction(CLActions.GET_LOCAL_FAILED_FORWARDING_HISTORY_CL);
+
+export const setLocalFailedForwardingHistory = createAction(CLActions.SET_LOCAL_FAILED_FORWARDING_HISTORY_CL, props<{ payload: LocalFailedEvent[] }>());
 
 export const fetchInvoices = createAction(CLActions.FETCH_INVOICES_CL, props<{ payload: { num_max_invoices?: number, index_offset?: number, reversed?: boolean } }>());
 
