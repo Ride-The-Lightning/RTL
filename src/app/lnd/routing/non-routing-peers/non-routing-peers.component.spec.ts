@@ -1,5 +1,6 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { StoreModule } from '@ngrx/store';
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../store/lnd.reducers';
@@ -24,6 +25,7 @@ describe('NonRoutingPeersComponent', () => {
       imports: [
         BrowserAnimationsModule,
         SharedModule,
+        RouterTestingModule,
         StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
       ],
       providers: [
