@@ -28,6 +28,7 @@ import { TransactionsReportComponent } from './reports/transactions/transactions
 import { RoutingComponent } from './routing/routing.component';
 import { ForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
 import { RoutingPeersComponent } from './routing/routing-peers/routing-peers.component';
+import { NonRoutingPeersComponent } from './routing/non-routing-peers/non-routing-peers.component';
 import { ChannelLookupComponent } from './graph/lookups/channel-lookup/channel-lookup.component';
 import { NodeLookupComponent } from './graph/lookups/node-lookup/node-lookup.component';
 import { BackupComponent } from './backup/backup.component';
@@ -85,6 +86,7 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     RoutingComponent,
     ForwardingHistoryComponent,
     RoutingPeersComponent,
+    NonRoutingPeersComponent,
     ChannelLookupComponent,
     NodeLookupComponent,
     BackupComponent,

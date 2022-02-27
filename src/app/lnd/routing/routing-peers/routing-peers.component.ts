@@ -20,7 +20,7 @@ import { forwardingHistory } from '../../store/lnd.selector';
   templateUrl: './routing-peers.component.html',
   styleUrls: ['./routing-peers.component.scss'],
   providers: [
-    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') }
+    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Routing peers') }
   ]
 })
 export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {

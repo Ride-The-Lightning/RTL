@@ -2,6 +2,7 @@ import { createReducer, on } from '@ngrx/store';
 
 import { initLNDState } from './lnd.state';
 import { addInvoice, removeChannel, removePeer, resetLNDStore, setChannels, setAllLightningTransactions, setBalanceBlockchain, setChildNodeSettingsLND, setClosedChannels, setFees, setForwardingHistory, setInfo, setInvoices, setNetwork, setPayments, setPeers, setPendingChannels, setTransactions, setUTXOs, updateLNDAPICallStatus, updateInvoice } from './lnd.actions';
+import { Channel, ClosedChannel } from '../../shared/models/lndModels';
 
 let flgTransactionsSet = false;
 let flgUTXOsSet = false;
@@ -185,38 +186,10 @@ export const LNDReducer = createReducer(initLNDState,
     allLightningTransactions: payload
   })),
   on(setForwardingHistory, (state, { payload }) => {
-    const updatedPayload = !payload.forwarding_events ? {} : JSON.parse(JSON.stringify(payload));
+    const storedChannels = [...state.channels, ...state.closedChannels];
+    let updatedPayload = !payload.forwarding_events ? {} : JSON.parse(JSON.stringify(payload));
     if (updatedPayload.forwarding_events) {
-      const storedChannels = [...state.channels, ...state.closedChannels];
-      updatedPayload.forwarding_events.forEach((fhEvent) => {
-        if (storedChannels && storedChannels.length > 0) {
-          for (let idx = 0; idx < storedChannels.length; idx++) {
-            if (storedChannels[idx].chan_id.toString() === fhEvent.chan_id_in) {
-              fhEvent.alias_in = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : fhEvent.chan_id_in;
-              if (fhEvent.alias_out) {
-                return;
-              }
-            }
-            if (storedChannels[idx].chan_id.toString() === fhEvent.chan_id_out) {
-              fhEvent.alias_out = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : fhEvent.chan_id_out;
-              if (fhEvent.alias_in) {
-                return;
-              }
-            }
-            if (idx === storedChannels.length - 1) {
-              if (!fhEvent.alias_in) {
-                fhEvent.alias_in = fhEvent.chan_id_in;
-              }
-              if (!fhEvent.alias_out) {
-                fhEvent.alias_out = fhEvent.chan_id_out;
-              }
-            }
-          }
-        } else {
-          fhEvent.alias_in = fhEvent.chan_id_in;
-          fhEvent.alias_out = fhEvent.chan_id_out;
-        }
-      });
+      updatedPayload = mapAliases(updatedPayload, storedChannels);
     }
     return {
       ...state,
@@ -224,3 +197,36 @@ export const LNDReducer = createReducer(initLNDState,
     };
   })
 );
+
+const mapAliases = (payload: any, storedChannels: (Channel | ClosedChannel)[]) => {
+  payload.forwarding_events.forEach((fhEvent) => {
+    if (storedChannels && storedChannels.length > 0) {
+      for (let idx = 0; idx < storedChannels.length; idx++) {
+        if (storedChannels[idx].chan_id.toString() === fhEvent.chan_id_in) {
+          fhEvent.alias_in = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : fhEvent.chan_id_in;
+          if (fhEvent.alias_out) {
+            return;
+          }
+        }
+        if (storedChannels[idx].chan_id.toString() === fhEvent.chan_id_out) {
+          fhEvent.alias_out = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : fhEvent.chan_id_out;
+          if (fhEvent.alias_in) {
+            return;
+          }
+        }
+        if (idx === storedChannels.length - 1) {
+          if (!fhEvent.alias_in) {
+            fhEvent.alias_in = fhEvent.chan_id_in;
+          }
+          if (!fhEvent.alias_out) {
+            fhEvent.alias_out = fhEvent.chan_id_out;
+          }
+        }
+      }
+    } else {
+      fhEvent.alias_in = fhEvent.chan_id_in;
+      fhEvent.alias_out = fhEvent.chan_id_out;
+    }
+  });
+  return payload;
+};
