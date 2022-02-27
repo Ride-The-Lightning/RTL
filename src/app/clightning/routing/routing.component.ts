@@ -12,11 +12,11 @@ import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
 export class CLRoutingComponent implements OnInit, OnDestroy {
 
   public faMapSigns = faMapSigns;
-  public links = [{ link: 'forwardinghistory', name: 'Forwarding History' }, { link: 'routingpeers', name: 'Routing Peers' }, { link: 'failedtransactions', name: 'Failed Transactions' }];
+  public links = [{ link: 'forwardinghistory', name: 'Forwarding History' }, { link: 'routingpeers', name: 'Routing Peers' }, { link: 'failedtransactions', name: 'Failed Transactions' }, { link: 'localfail', name: 'Local Failed Transactions' }];
   public activeLink = this.links[0].link;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   ngOnInit() {
     const linkFound = this.links.find((link) => this.router.url.includes(link.link));

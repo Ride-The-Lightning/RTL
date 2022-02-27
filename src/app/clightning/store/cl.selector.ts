@@ -1,6 +1,4 @@
-import { createFeatureSelector, createSelector, select } from '@ngrx/store';
-import { pipe, filter, map, take, find } from 'rxjs';
-import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
+import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { Offer } from '../../shared/models/clModels';
 import { CLState } from './cl.state';
 
@@ -21,6 +19,7 @@ export const balance = createSelector(clState, (state: CLState) => ({ balance: s
 export const localRemoteBalance = createSelector(clState, (state: CLState) => ({ localRemoteBalance: state.localRemoteBalance, apiCallStatus: state.apisCallStatus.FetchLocalRemoteBalance }));
 export const forwardingHistory = createSelector(clState, (state: CLState) => ({ forwardingHistory: state.forwardingHistory, apiCallStatus: state.apisCallStatus.FetchForwardingHistory }));
 export const failedForwardingHistory = createSelector(clState, (state: CLState) => ({ failedForwardingHistory: state.failedForwardingHistory, apiCallStatus: state.apisCallStatus.FetchFailedForwardingHistory }));
+export const localFailedForwardingHistory = createSelector(clState, (state: CLState) => ({ localFailedForwardingHistory: state.localFailedForwardingHistory, apiCallStatus: state.apisCallStatus.FetchLocalFailedForwardingHistory }));
 export const nodeInfoAndNodeSettingsAndBalance = createSelector(clState, (state: CLState) => ({ information: state.information, nodeSettings: state.nodeSettings, balance: state.balance }));
 export const nodeInfoAndBalanceAndNumPeers = createSelector(clState, (state: CLState) => ({ information: state.information, balance: state.balance, numPeers: state.peers.length }));
 export const nodeInfoAndBalance = createSelector(clState, (state: CLState) => ({ information: state.information, balance: state.balance }));
