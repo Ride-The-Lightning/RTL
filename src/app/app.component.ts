@@ -156,9 +156,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.commonService.setContainerSize(this.sideNavContent.elementRef.nativeElement.clientWidth, this.sideNavContent.elementRef.nativeElement.clientHeight);
     } else {
       setTimeout(() => {
-        if (this.flgLoggedIn) {
-          this.renderer.setStyle(this.sideNavContent.elementRef.nativeElement, 'marginLeft', '22rem'); // $regular-sidenav-width
-        }
+        this.renderer.setStyle(this.sideNavContent.elementRef.nativeElement, 'marginLeft', '22rem'); // $regular-sidenav-width
         this.commonService.setContainerSize(this.sideNavContent.elementRef.nativeElement.clientWidth, this.sideNavContent.elementRef.nativeElement.clientHeight);
       }, 100);
     }
