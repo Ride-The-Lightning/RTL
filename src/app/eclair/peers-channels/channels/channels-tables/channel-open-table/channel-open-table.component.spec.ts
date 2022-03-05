@@ -1,4 +1,6 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterTestingModule } from '@angular/router/testing';
 import { StoreModule } from '@ngrx/store';
 
 import { RootReducer } from '../../../../../store/rtl.reducers';
@@ -9,11 +11,11 @@ import { CommonService } from '../../../../../shared/services/common.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 
 import { ECLChannelOpenTableComponent } from './channel-open-table.component';
-import { mockDataService, mockLoggerService, mockRTLEffects } from '../../../../../shared/test-helpers/mock-services';
+import { mockDataService, mockLoggerService, mockRouter, mockRTLEffects } from '../../../../../shared/test-helpers/mock-services';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import { SharedModule } from '../../../../../shared/shared.module';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../../../shared/services/data.service';
+import { Router } from '@angular/router';
 
 describe('ECLChannelOpenTableComponent', () => {
   let component: ECLChannelOpenTableComponent;
@@ -25,10 +27,12 @@ describe('ECLChannelOpenTableComponent', () => {
       imports: [
         BrowserAnimationsModule,
         SharedModule,
+        RouterTestingModule,
         StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
       ],
       providers: [
         CommonService,
+        { provide: Router, useClass: mockRouter },
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: RTLEffects, useClass: mockRTLEffects }

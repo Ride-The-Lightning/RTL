@@ -1,6 +1,6 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { APICallStatusEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ForwardingEvent, ListInvoices, UTXO, Offer, OfferBookmark } from '../../shared/models/clModels';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ForwardingEvent, ListInvoices, UTXO, Offer, OfferBookmark, LocalFailedEvent } from '../../shared/models/clModels';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 
 export interface CLState {
@@ -19,6 +19,7 @@ export interface CLState {
   payments: Payment[];
   forwardingHistory: ForwardingEvent[];
   failedForwardingHistory: ForwardingEvent[];
+  localFailedForwardingHistory: LocalFailedEvent[];
   invoices: ListInvoices;
   utxos: UTXO[];
   offers: Offer[];
@@ -40,6 +41,7 @@ export const initCLState: CLState = {
     FetchPayments: { status: APICallStatusEnum.UN_INITIATED },
     FetchForwardingHistory: { status: APICallStatusEnum.UN_INITIATED },
     FetchFailedForwardingHistory: { status: APICallStatusEnum.UN_INITIATED },
+    FetchLocalFailedForwardingHistory: { status: APICallStatusEnum.UN_INITIATED },
     FetchOffers: { status: APICallStatusEnum.UN_INITIATED },
     FetchOfferBookmarks: { status: APICallStatusEnum.UN_INITIATED }
   },
@@ -57,6 +59,7 @@ export const initCLState: CLState = {
   payments: [],
   forwardingHistory: [],
   failedForwardingHistory: [],
+  localFailedForwardingHistory: [],
   invoices: { invoices: [] },
   utxos: [],
   offers: [],

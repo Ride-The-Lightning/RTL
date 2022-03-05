@@ -33,6 +33,7 @@ import { NotFoundComponent } from '../shared/components/not-found/not-found.comp
 import { CLGraphComponent } from './graph/graph.component';
 import { CLOffersTableComponent } from './transactions/offers/offers-table/offers-table.component';
 import { CLOfferBookmarksTableComponent } from './transactions/offers/offer-bookmarks-table/offer-bookmarks-table.component';
+import { CLLocalFailedTransactionsComponent } from './routing/local-failed-transactions/local-failed-transactions.component';
 
 export const ClRoutes: Routes = [
   {
@@ -82,6 +83,7 @@ export const ClRoutes: Routes = [
           { path: '', pathMatch: 'full', redirectTo: 'forwardinghistory' },
           { path: 'forwardinghistory', component: CLForwardingHistoryComponent, canActivate: [CLUnlockedGuard] },
           { path: 'failedtransactions', component: CLFailedTransactionsComponent, canActivate: [CLUnlockedGuard] },
+          { path: 'localfail', component: CLLocalFailedTransactionsComponent, canActivate: [CLUnlockedGuard] },
           { path: 'routingpeers', component: CLRoutingPeersComponent, canActivate: [CLUnlockedGuard] }
         ]
       },

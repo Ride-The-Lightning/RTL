@@ -1166,16 +1166,16 @@ export class LNDEffects implements OnDestroy {
       newRoute = '/lnd/home';
     }
     this.router.navigate([newRoute]);
-    this.store.dispatch(fetchFees()); // Fetches monthly forwarding history as well, to count total number of events
     this.store.dispatch(fetchBalanceBlockchain());
     this.store.dispatch(fetchChannels());
     this.store.dispatch(fetchPendingChannels());
     this.store.dispatch(fetchClosedChannels());
     this.store.dispatch(fetchPeers());
     this.store.dispatch(fetchNetwork());
-    this.store.dispatch(getAllLightningTransactions());
     this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: 10, reversed: true } }));
     this.store.dispatch(fetchPayments({ payload: { max_payments: 10, reversed: true } }));
+    this.store.dispatch(fetchFees()); // Fetches monthly forwarding history as well, to count total number of events
+    this.store.dispatch(getAllLightningTransactions());
   }
 
   handleErrorWithoutAlert(actionName: string, uiMessage: string, genericErrorMessage: string, err: { status: number, error: any }) {

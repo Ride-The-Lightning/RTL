@@ -214,7 +214,11 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   sendPayment(payReq: string) {
     this.flgInvoiceGenerated = true;
     this.paymentRequest = payReq;
-    this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, paymentReq: payReq, outgoingChannel: this.selChannel, feeLimitType: this.feeFormGroup.controls.selFeeLimitType.value.id, feeLimit: this.feeFormGroup.controls.feeLimit.value, allowSelfPayment: true, lastHopPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, fromDialog: true } }));
+    if (this.feeFormGroup.controls.selFeeLimitType.value.id === 'percent' && !(+this.feeFormGroup.controls.feeLimit.value % 1 === 0)) {
+      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, paymentReq: payReq, outgoingChannel: this.selChannel, feeLimitType: 'fixed', feeLimit: Math.ceil((+this.feeFormGroup.controls.feeLimit.value * +this.inputFormGroup.controls.rebalanceAmount.value) / 100), allowSelfPayment: true, lastHopPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, fromDialog: true } }));
+    } else {
+      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, paymentReq: payReq, outgoingChannel: this.selChannel, feeLimitType: this.feeFormGroup.controls.selFeeLimitType.value.id, feeLimit: this.feeFormGroup.controls.feeLimit.value, allowSelfPayment: true, lastHopPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, fromDialog: true } }));
+    }
   }
 
   filterActiveChannels() {

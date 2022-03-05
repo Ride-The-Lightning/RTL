@@ -1,0 +1,59 @@
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="padding-gap-x-large">
+  <div class="p-2 error-border my-2" *ngIf="errorMessage !== ''">{{errorMessage}}</div>
+  <div *ngIf="errorMessage === ''" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
+    <div *ngIf="errorMessage === ''" fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container">
+      <div fxFlex="70">Non Routing Peers</div>
+      <mat-form-field fxFlex="30">
+        <input matInput (keyup)="applyFilter()" [(ngModel)]="filter" placeholder="Filter">
+      </mat-form-field>
+    </div>
+    <div *ngIf="errorMessage === ''" [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+      <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+      <table mat-table #table [dataSource]="NonRoutingPeers" matSort class="overflow-auto">
+        <ng-container matColumnDef="chan_id">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel ID</th>
+          <td mat-cell *matCellDef="let nonRPeer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '28rem'}">{{nonRPeer.chan_id}}</td>
+        </ng-container>
+        <ng-container matColumnDef="remote_alias">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer Alias</th>
+          <td mat-cell *matCellDef="let nonRPeer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '28rem'}">{{nonRPeer.remote_alias}}</td>
+        </ng-container>
+        <ng-container matColumnDef="total_satoshis_sent">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Sent</th>
+          <td mat-cell *matCellDef="let nonRPeer"><span fxLayoutAlign="end center">{{nonRPeer.total_satoshis_sent | number}}</span></td>
+        </ng-container>
+        <ng-container matColumnDef="total_satoshis_received">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Received</th>
+          <td mat-cell *matCellDef="let nonRPeer"><span fxLayoutAlign="end center">{{nonRPeer.total_satoshis_received | number}}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="local_balance">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Local Balance (Sats)</th>
+          <td mat-cell *matCellDef="let nonRPeer"><span fxLayoutAlign="end center">{{nonRPeer.local_balance | number}}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="remote_balance">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Remote Balance (Sats)</th>
+          <td mat-cell *matCellDef="let nonRPeer"><span fxLayoutAlign="end center">{{nonRPeer.remote_balance | number}}</span></td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="pr-3"><span fxLayoutAlign="end center">Actions</span></th>
+          <td mat-cell *matCellDef="let nonRPeer" class="pl-2" fxLayoutAlign="end center">
+            <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onManagePeer(nonRPeer)">Manage</button>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="no_non_routing_event">
+          <td mat-footer-cell *matFooterCellDef colspan="4">
+            <p *ngIf="(!NonRoutingPeers?.data || NonRoutingPeers?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">All peers are routing.</p>
+            <p *ngIf="(!NonRoutingPeers?.data || NonRoutingPeers?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting non routing peers...</p>
+            <p *ngIf="(!NonRoutingPeers?.data || NonRoutingPeers?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+          </td>
+        </ng-container>
+        <tr mat-footer-row *matFooterRowDef="['no_non_routing_event']" [ngClass]="{'display-none': NonRoutingPeers?.data?.length>0}"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+    <mat-paginator #paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
+  </div>
+</div>

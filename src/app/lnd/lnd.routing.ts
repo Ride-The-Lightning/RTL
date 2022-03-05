@@ -36,6 +36,7 @@ import { VerifyComponent } from './sign-verify-message/verify/verify.component';
 import { NotFoundComponent } from '../shared/components/not-found/not-found.component';
 
 import { AuthGuard, LNDUnlockedGuard } from '../shared/services/auth.guard';
+import { NonRoutingPeersComponent } from './routing/non-routing-peers/non-routing-peers.component';
 
 export const LndRoutes: Routes = [
   {
@@ -92,7 +93,8 @@ export const LndRoutes: Routes = [
         path: 'routing', component: RoutingComponent, canActivate: [LNDUnlockedGuard], children: [
           { path: '', pathMatch: 'full', redirectTo: 'forwardinghistory' },
           { path: 'forwardinghistory', component: ForwardingHistoryComponent, canActivate: [LNDUnlockedGuard] },
-          { path: 'peers', component: RoutingPeersComponent, canActivate: [LNDUnlockedGuard] }
+          { path: 'peers', component: RoutingPeersComponent, canActivate: [LNDUnlockedGuard] },
+          { path: 'nonroutingprs', component: NonRoutingPeersComponent, canActivate: [LNDUnlockedGuard] }
         ]
       },
       {

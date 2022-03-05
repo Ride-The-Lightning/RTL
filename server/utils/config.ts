@@ -46,8 +46,7 @@ export class ConfigService {
         channelBackupPath = '';
         break;
     }
-    return {
-      multiPass: 'password',
+    const configData = {
       port: '3000',
       defaultNodeIndex: 1,
       SSO: {
@@ -76,6 +75,10 @@ export class ConfigService {
         }
       ]
     };
+    if (+process.env.RTL_SSO === 0) {
+      configData['multiPass'] = 'password';
+    }
+    return configData;
   };
 
   private normalizePort = (val) => {
@@ -124,7 +127,7 @@ export class ConfigService {
       }
       this.common.rtl_secret2fa = config.secret2fa;
     } else {
-      if ((process.env.APP_PASSWORD && process.env.APP_PASSWORD.trim() !== '') || (config.multiPass && config.multiPass.trim() !== '') || (config.multiPassHashed && config.multiPassHashed.trim() !== '')) {
+      if (process.env.APP_PASSWORD && process.env.APP_PASSWORD.trim() !== '') {
         this.errMsg = this.errMsg + '\nRTL Password cannot be set with SSO. Please set SSO as 0 or remove password.';
       }
     }

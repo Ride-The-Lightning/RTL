@@ -1,11 +1,12 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterTestingModule } from '@angular/router/testing';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { CommonService } from '../../../../../shared/services/common.service';
 import { DataService } from '../../../../../shared/services/data.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
-import { mockCLEffects, mockDataService, mockLoggerService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../../../shared/test-helpers/mock-services';
+import { mockCLEffects, mockDataService, mockLoggerService, mockECLEffects, mockLNDEffects, mockRTLEffects, mockRouter } from '../../../../../shared/test-helpers/mock-services';
 import { SharedModule } from '../../../../../shared/shared.module';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 
@@ -15,6 +16,7 @@ import { CLReducer } from '../../../../../clightning/store/cl.reducers';
 import { ECLReducer } from '../../../../../eclair/store/ecl.reducers';
 import { CLEffects } from '../../../../store/cl.effects';
 import { CLChannelOpenTableComponent } from './channel-open-table.component';
+import { ExtraOptions, Route, Router } from '@angular/router';
 
 describe('CLChannelOpenTableComponent', () => {
   let component: CLChannelOpenTableComponent;
@@ -26,11 +28,13 @@ describe('CLChannelOpenTableComponent', () => {
       imports: [
         BrowserAnimationsModule,
         SharedModule,
+        RouterTestingModule,
         StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
         CommonService,
+        { provide: Router, useClass: mockRouter },
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: RTLEffects, useClass: mockRTLEffects },

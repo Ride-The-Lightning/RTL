@@ -272,6 +272,17 @@ export interface ForwardingEvent {
   resolved_time?: number;
 }
 
+export interface LocalFailedEvent {
+  in_channel?: string;
+  in_channel_alias?: string;
+  in_msatoshi?: number;
+  in_msat?: string;
+  status?: string;
+  received_time?: number;
+  failcode?: number;
+  failreason?: string;
+}
+
 export interface Routes {
   id?: string;
   channel?: string;

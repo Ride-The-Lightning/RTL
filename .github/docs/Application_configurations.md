@@ -59,7 +59,7 @@ CONFIG_PATH (Full path of the LNP .conf file including the file name) (Optional 
 MACAROON_PATH (Path for the folder containing 'admin.macaroon' (LND)/'access.macaroon' (CLT) file, Required for LND & CLT)<br />
 SWAP_MACAROON_PATH (Path for the folder containing Loop's 'loop.macaroon', optional)<br />
 BOLTZ_MACAROON_PATH (Path for the folder containing Boltz's 'admin.macaroon', optional)<br />
-RTL_SSO (1 - single sign on via an external cookie, 0 - stand alone RTL authentication, Optional)<br />
+RTL_SSO (1 - single sign on via an external cookie, 0 - stand alone RTL authentication, Required)<br />
 RTL_COOKIE_PATH (Full path of the cookie file including the file name, Required if RTL_SSO=1 else Optional)<br />
 LOGOUT_REDIRECT_LINK (URL to re-direct to after logout/timeout from RTL, Required if RTL_SSO=1 else Optional)<br />
 RTL_CONFIG_PATH (Path for the folder containing 'RTL-Config.json' file, Required)<br />
