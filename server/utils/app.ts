@@ -62,7 +62,7 @@ export class ExpressApplication {
     this.app.use(this.common.baseHref + '/api/cl', clRoutes);
     this.app.use(this.common.baseHref + '/api/ecl', eclRoutes);
     this.app.use(this.common.baseHref, express.static(join(this.directoryName, '../..', 'frontend')));
-    this.app.use((req, res, next) => {
+    this.app.use((req: any, res, next) => {
       res.cookie('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : '');
       res.sendFile(join(this.directoryName, '../..', 'frontend', 'index.html'));
     });

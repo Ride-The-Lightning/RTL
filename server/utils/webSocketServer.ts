@@ -32,7 +32,7 @@ export class WebSocketServer {
     }
   }, 1000 * 60 * 60); // Terminate broken connections every hour
 
-  public mount = (httpServer: Application): Application => {
+  public mount = (httpServer) => {
     this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Connecting Websocket Server..' });
     this.webSocketServer = new WebSocket.Server({ noServer: true, path: this.common.baseHref + '/api/ws', verifyClient: (process.env.NODE_ENV === 'development') ? null : verifyWSUser });
     httpServer.on('upgrade', (request, socket, head) => {
@@ -45,7 +45,6 @@ export class WebSocketServer {
       const responseHeaders = ['HTTP/1.1 101 Web Socket Protocol Handshake', 'Upgrade: WebSocket', 'Connection: Upgrade', 'Sec-WebSocket-Accept: ' + hash];
       const protocols = !request.headers['sec-websocket-protocol'] ? [] : request.headers['sec-websocket-protocol'].split(',').map((s) => s.trim());
       if (protocols.includes('json')) { responseHeaders.push('Sec-WebSocket-Protocol: json'); }
-      // socket.write(responseHeaders.join('\r\n') + '\r\n\r\n');
       this.webSocketServer.handleUpgrade(request, socket, head, this.upgradeCallback);
     });
     this.webSocketServer.on('connection', this.mountEventsOnConnection);
