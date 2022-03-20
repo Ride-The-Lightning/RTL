@@ -40,4 +40,4 @@ jobs:
                 docker buildx build \
                 --platform linux/amd64,linux/arm64,linux/arm/v7 \
                 --tag ghcr.io/$IMAGE_NAME:$BRANCH \
-                --output "type=registry" ./dockerfiles
+                --output "type=registry" .
