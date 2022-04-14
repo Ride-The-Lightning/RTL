@@ -1,6 +1,6 @@
 {
   "name": "rtl",
-  "version": "0.12.2-beta",
+  "version": "0.12.3-beta",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -64,7 +64,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^13.0.3",
-    "@angular-eslint/builder": "13.0.1",
+    "@angular-eslint/builder": "^12.2.1",
     "@angular-eslint/eslint-plugin": "13.0.1",
     "@angular-eslint/eslint-plugin-template": "13.0.1",
     "@angular-eslint/schematics": "13.0.1",
