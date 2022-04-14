@@ -1,5 +1,5 @@
-<div fxLayout="row">
-  <div fxFlex="100">
+<div fxLayout="row" fxLayoutAlign="start center">
+  <div fxLayout="column" fxFlex="100">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">{{alertTitle}}</span>
@@ -32,7 +32,7 @@
               <mat-slide-toggle tabindex="2" color="primary" [(ngModel)]="isPrivate" name="isPrivate">Private Channel</mat-slide-toggle>
             </div>
           </div>
-          <mat-expansion-panel class="flat-expansion-panel mt-2" expanded="false" (closed)="onAdvancedPanelToggle(true)" (opened)="onAdvancedPanelToggle(false)">
+          <mat-expansion-panel fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="flat-expansion-panel mt-2" expanded="false" (closed)="onAdvancedPanelToggle(true)" (opened)="onAdvancedPanelToggle(false)">
             <mat-expansion-panel-header>
               <mat-panel-title>
                 <span>{{advancedTitle}}</span>
