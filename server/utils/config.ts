@@ -287,8 +287,12 @@ export class ConfigService {
       this.common.logout_redirect_link = config.SSO.logoutRedirectLink;
     }
 
-    if (+this.common.rtl_sso && (!this.common.rtl_cookie_path || this.common.rtl_cookie_path.trim() === '')) {
-      this.errMsg = 'Please set rtlCookiePath value for single sign on option!';
+    if (+this.common.rtl_sso) {
+      if (!this.common.rtl_cookie_path || this.common.rtl_cookie_path.trim() === '') {
+        this.errMsg = 'Please set rtlCookiePath value for single sign on option!';
+      } else {
+        this.common.readCookie();
+      }
     }
   };
 

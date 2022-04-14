@@ -53,8 +53,7 @@ export const authenticateUser = (req, res, next) => {
             res.status(406).json({ message: 'SSO Authentication Error', error: 'Login with Password is not allowed with SSO.' });
         }
         else if (req.body.authenticateWith === 'PASSWORD') {
-            const cookieValue = common.readCookie();
-            if (cookieValue.trim().length >= 32 && crypto.timingSafeEqual(Buffer.from(crypto.createHash('sha256').update(cookieValue).digest('hex'), 'utf-8'), Buffer.from(req.body.authenticationValue, 'utf-8'))) {
+            if (common.cookie_value.trim().length >= 32 && crypto.timingSafeEqual(Buffer.from(crypto.createHash('sha256').update(common.cookie_value).digest('hex'), 'utf-8'), Buffer.from(req.body.authenticationValue, 'utf-8'))) {
                 common.refreshCookie();
                 if (!req.session.selectedNode) {
                     req.session.selectedNode = common.initSelectedNode;
