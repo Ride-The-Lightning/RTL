@@ -13,13 +13,26 @@ export const arrangeFees = (selNode: CommonSelectedNode, body, current_time) => 
   let fee = 0;
   body.relayed.forEach((relayedEle) => {
     fee = Math.round((relayedEle.amountIn - relayedEle.amountOut) / 1000);
-    if (relayedEle.timestamp >= day_start_time) {
-      fees.daily_fee = fees.daily_fee + fee;
-      fees.daily_txs = fees.daily_txs + 1;
-    }
-    if (relayedEle.timestamp >= week_start_time) {
-      fees.weekly_fee = fees.weekly_fee + fee;
-      fees.weekly_txs = fees.weekly_txs + 1;
+    if (relayedEle.timestamp) {
+      if (relayedEle.timestamp.unix) {
+        if ((relayedEle.timestamp.unix * 1000) >= day_start_time) {
+          fees.daily_fee = fees.daily_fee + fee;
+          fees.daily_txs = fees.daily_txs + 1;
+        }
+        if ((relayedEle.timestamp.unix * 1000) >= week_start_time) {
+          fees.weekly_fee = fees.weekly_fee + fee;
+          fees.weekly_txs = fees.weekly_txs + 1;
+        }
+      } else {
+        if (relayedEle.timestamp >= day_start_time) {
+          fees.daily_fee = fees.daily_fee + fee;
+          fees.daily_txs = fees.daily_txs + 1;
+        }
+        if (relayedEle.timestamp >= week_start_time) {
+          fees.weekly_fee = fees.weekly_fee + fee;
+          fees.weekly_txs = fees.weekly_txs + 1;
+        }
+      }
     }
     fees.monthly_fee = fees.monthly_fee + fee;
     fees.monthly_txs = fees.monthly_txs + 1;
