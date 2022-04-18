@@ -9,7 +9,7 @@ import { RTLEffects } from '../../../../store/rtl.effects';
 
 import { RootReducer } from '../../../../store/rtl.reducers';
 import { LNDReducer } from '../../../../lnd/store/lnd.reducers';
-import { CLReducer } from '../../../../clightning/store/cl.reducers';
+import { CLReducer } from '../../../../cln/store/cl.reducers';
 import { ECLReducer } from '../../../../eclair/store/ecl.reducers';
 import { OpenChannelComponent } from './open-channel.component';
 

@@ -83,7 +83,7 @@ export class CommonService {
             try {
                 if (req.session.selectedNode && req.session.selectedNode.ln_implementation) {
                     switch (req.session.selectedNode.ln_implementation.toUpperCase()) {
-                        case 'CLT':
+                        case 'CLN':
                             req.session.selectedNode.options.headers = { macaroon: Buffer.from(fs.readFileSync(join(req.session.selectedNode.macaroon_path, 'access.macaroon'))).toString('base64') };
                             break;
                         case 'ECL':
@@ -125,7 +125,7 @@ export class CommonService {
                     try {
                         if (node.ln_implementation) {
                             switch (node.ln_implementation.toUpperCase()) {
-                                case 'CLT':
+                                case 'CLN':
                                     node.options.headers = { macaroon: Buffer.from(fs.readFileSync(join(node.macaroon_path, 'access.macaroon'))).toString('base64') };
                                     break;
                                 case 'ECL':
@@ -215,7 +215,7 @@ export class CommonService {
                         delete err.response.request.headers['Grpc-Metadata-macaroon'];
                     }
                     break;
-                case 'CLT':
+                case 'CLN':
                     if (err.options && err.options.headers && err.options.headers.macaroon) {
                         delete err.options.headers.macaroon;
                     }
@@ -440,7 +440,7 @@ export class CommonService {
                         break;
                 }
             }
-            else if (lnImplementation === 'CLT') {
+            else if (lnImplementation === 'CLN') {
                 switch (dataKey) {
                     case 'GetInfo':
                         search_string = 'DEBUG: GetInfo => Node Information. ';

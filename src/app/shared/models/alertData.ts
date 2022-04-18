@@ -1,7 +1,7 @@
 import { DataTypeEnum, LoopTypeEnum, PaymentTypes, SwapTypeEnum } from '../services/consts-enums-functions';
 import { GetInfoRoot, RTLConfiguration } from './RTLconfig';
 import { GetInfo, Invoice, Channel, Peer, PendingOpenChannel, UTXO } from './lndModels';
-import { Invoice as InvoiceCL, GetInfo as GetInfoCL, Peer as PeerCL, Channel as ChannelCL, UTXO as UTXOCL, Offer as OfferCL } from './clModels';
+import { Invoice as InvoiceCLN, GetInfo as GetInfoCLN, Peer as PeerCLN, Channel as ChannelCLN, UTXO as UTXOCLN, Offer as OfferCLN } from './clModels';
 import { GetInfo as GetInfoECL, Peer as PeerECL, Channel as ChannelECL, Invoice as InvoiceECL, PaymentSent as PaymentSentECL } from './eclModels';
 import { LoopQuote } from './loopModels';
 import { ServiceInfo } from './boltzModels';
@@ -42,7 +42,7 @@ export interface OnChainSendFunds {
   component?: any;
 }
 
-export interface CLOnChainSendFunds {
+export interface CLNOnChainSendFunds {
   sweepAll: boolean;
   component?: any;
 }
@@ -61,10 +61,10 @@ export interface OpenChannelAlert {
   component?: any;
 }
 
-export interface CLOpenChannelAlert {
+export interface CLNOpenChannelAlert {
   alertTitle?: string;
   titleMessage?: string;
-  message?: { information: GetInfoCL, balance: number, utxos: UTXOCL[], peer?: PeerCL, peers?: PeerCL[], isCompatibleVersion: boolean };
+  message?: { information: GetInfoCLN, balance: number, utxos: UTXOCLN[], peer?: PeerCLN, peers?: PeerCLN[], isCompatibleVersion: boolean };
   newlyAdded?: boolean;
   component?: any;
 }
@@ -84,14 +84,14 @@ export interface InvoiceInformation {
   component?: any;
 }
 
-export interface CLInvoiceInformation {
-  invoice: InvoiceCL;
+export interface CLNInvoiceInformation {
+  invoice: InvoiceCLN;
   newlyAdded?: boolean;
   pageSize: number;
   component?: any;
 }
 
-export interface CLPaymentInformation {
+export interface CLNPaymentInformation {
   paymentType: PaymentTypes;
   invoiceBolt11?: string;
   pubkeyKeysend?: string;
@@ -101,8 +101,8 @@ export interface CLPaymentInformation {
   component?: any;
 }
 
-export interface CLOfferInformation {
-  offer: OfferCL;
+export interface CLNOfferInformation {
+  offer: OfferCLN;
   newlyAdded?: boolean;
   pageSize: number;
   component?: any;
@@ -127,8 +127,8 @@ export interface ChannelInformation {
   component?: any;
 }
 
-export interface CLChannelInformation {
-  channel: ChannelCL;
+export interface CLNChannelInformation {
+  channel: ChannelCLN;
   showCopy?: boolean;
   component?: any;
 }
@@ -218,8 +218,8 @@ export interface DialogConfig {
   width?: string;
   maxWidth?: string;
   minHeight?: string;
-  data: AlertData | ConfirmationData | ErrorData | ChannelRebalanceAlert | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation |
-  CLPaymentInformation | CLInvoiceInformation | CLOfferInformation | ECLInvoiceInformation | ECLPaymentInformation | ChannelInformation | CLChannelInformation |
+  data: AlertData | ConfirmationData | ErrorData | ChannelRebalanceAlert | OpenChannelAlert | CLNOpenChannelAlert | InvoiceInformation |
+  CLNPaymentInformation | CLNInvoiceInformation | CLNOfferInformation | ECLInvoiceInformation | ECLPaymentInformation | ChannelInformation | CLNChannelInformation |
   PendingOpenChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | SwapAlert | AuthConfig |
-  OnChainLabelUTXO | OnChainSendFunds | CLOnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert;
+  OnChainLabelUTXO | OnChainSendFunds | CLNOnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert;
 }

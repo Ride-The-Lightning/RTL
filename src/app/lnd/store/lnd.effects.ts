@@ -1157,8 +1157,8 @@ export class LNDEffects implements OnDestroy {
     this.store.dispatch(openSpinner({ payload: UI_MESSAGES.INITALIZE_NODE_DATA }));
     this.store.dispatch(setNodeData({ payload: node_data }));
     let newRoute = this.location.path();
-    if (newRoute.includes('/cl/')) {
-      newRoute = newRoute.replace('/cl/', '/lnd/');
+    if (newRoute.includes('/cln/')) {
+      newRoute = newRoute.replace('/cln/', '/lnd/');
     } else if (newRoute.includes('/ecl/')) {
       newRoute = newRoute.replace('/ecl/', '/lnd/');
     }

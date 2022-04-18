@@ -17,7 +17,7 @@ export class MenuChildNode {
 export class MenuRootNode {
 
   LNDChildren?: MenuChildNode[];
-  CLChildren?: MenuChildNode[];
+  CLNChildren?: MenuChildNode[];
   ECLChildren?: MenuChildNode[];
 
 }
@@ -48,19 +48,19 @@ export const MENU_DATA: MenuRootNode = {
     { id: 5, parentId: 0, name: 'Node Config', iconType: 'FA', icon: faTools, link: '/config', userPersona: UserPersonaEnum.ALL },
     { id: 6, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help', userPersona: UserPersonaEnum.ALL }
   ],
-  CLChildren: [
-    { id: 1, parentId: 0, name: 'Dashboard', iconType: 'FA', icon: faTachometerAlt, link: '/cl/home', userPersona: UserPersonaEnum.ALL },
-    { id: 2, parentId: 0, name: 'On-chain', iconType: 'FA', icon: faLink, link: '/cl/onchain', userPersona: UserPersonaEnum.ALL },
+  CLNChildren: [
+    { id: 1, parentId: 0, name: 'Dashboard', iconType: 'FA', icon: faTachometerAlt, link: '/cln/home', userPersona: UserPersonaEnum.ALL },
+    { id: 2, parentId: 0, name: 'On-chain', iconType: 'FA', icon: faLink, link: '/cln/onchain', userPersona: UserPersonaEnum.ALL },
     {
-      id: 3, parentId: 0, name: 'Lightning', iconType: 'FA', icon: faBolt, link: '/cl/connections', userPersona: UserPersonaEnum.ALL, children: [
-        { id: 31, parentId: 3, name: 'Peers/Channels', iconType: 'FA', icon: faUsers, link: '/cl/connections', userPersona: UserPersonaEnum.ALL },
-        { id: 32, parentId: 3, name: 'Transactions', iconType: 'FA', icon: faExchangeAlt, link: '/cl/transactions', userPersona: UserPersonaEnum.ALL },
-        { id: 33, parentId: 3, name: 'Routing', iconType: 'FA', icon: faMapSigns, link: '/cl/routing', userPersona: UserPersonaEnum.ALL },
-        { id: 34, parentId: 3, name: 'Reports', iconType: 'FA', icon: faChartBar, link: '/cl/reports', userPersona: UserPersonaEnum.ALL },
-        { id: 35, parentId: 3, name: 'Graph Lookup', iconType: 'FA', icon: faSearch, link: '/cl/graph', userPersona: UserPersonaEnum.ALL },
-        { id: 36, parentId: 3, name: 'Sign/Verify', iconType: 'FA', icon: faUserCheck, link: '/cl/messages', userPersona: UserPersonaEnum.ALL },
-        { id: 37, parentId: 3, name: 'Fee Rates', iconType: 'FA', icon: faPercentage, link: '/cl/rates', userPersona: UserPersonaEnum.OPERATOR },
-        { id: 38, parentId: 3, name: 'Node/Fee Rates', iconType: 'FA', icon: faServer, link: '/cl/rates', userPersona: UserPersonaEnum.MERCHANT }
+      id: 3, parentId: 0, name: 'Lightning', iconType: 'FA', icon: faBolt, link: '/cln/connections', userPersona: UserPersonaEnum.ALL, children: [
+        { id: 31, parentId: 3, name: 'Peers/Channels', iconType: 'FA', icon: faUsers, link: '/cln/connections', userPersona: UserPersonaEnum.ALL },
+        { id: 32, parentId: 3, name: 'Transactions', iconType: 'FA', icon: faExchangeAlt, link: '/cln/transactions', userPersona: UserPersonaEnum.ALL },
+        { id: 33, parentId: 3, name: 'Routing', iconType: 'FA', icon: faMapSigns, link: '/cln/routing', userPersona: UserPersonaEnum.ALL },
+        { id: 34, parentId: 3, name: 'Reports', iconType: 'FA', icon: faChartBar, link: '/cln/reports', userPersona: UserPersonaEnum.ALL },
+        { id: 35, parentId: 3, name: 'Graph Lookup', iconType: 'FA', icon: faSearch, link: '/cln/graph', userPersona: UserPersonaEnum.ALL },
+        { id: 36, parentId: 3, name: 'Sign/Verify', iconType: 'FA', icon: faUserCheck, link: '/cln/messages', userPersona: UserPersonaEnum.ALL },
+        { id: 37, parentId: 3, name: 'Fee Rates', iconType: 'FA', icon: faPercentage, link: '/cln/rates', userPersona: UserPersonaEnum.OPERATOR },
+        { id: 38, parentId: 3, name: 'Node/Fee Rates', iconType: 'FA', icon: faServer, link: '/cln/rates', userPersona: UserPersonaEnum.MERCHANT }
       ]
     },
     { id: 4, parentId: 0, name: 'Node Config', iconType: 'FA', icon: faTools, link: '/config', userPersona: UserPersonaEnum.ALL },

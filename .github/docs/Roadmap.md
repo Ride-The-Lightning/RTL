@@ -16,7 +16,7 @@ As the functional complexity increases, we need to add automated testing to ensu
 Active node monitoring may be required to ensure reliability of routing nodes. Monitoring can include generating alerts for out-of-balance channels, inactive channels, disconnected peers, low activity channels etc. This feature will be required for professional node operaters running commercial routing nodes with a need to react to signals, requiring specific action to be taken.
 
 ### Advanced Multi-node Management
-RTL currently allows managing multiple nodes (LND or C-Lightning), via single UI. More sophistication can be built on multi-node management, with advanced top level dashboards, which summarize node level summary in a single dashboard. This feature may be required for professional node operators, who are running commercial routing nodes.
+RTL currently allows managing multiple nodes (LND or Core Lightning or Eclair), via single UI. More sophistication can be built on multi-node management, with advanced top level dashboards, which summarize node level summary in a single dashboard. This feature may be required for professional node operators, who are running commercial routing nodes.
 
 ### RTL installer
 Automate RTL setup so that installation process is simpler than the current method of following the steps provided in the Readme file. This should also help with configuration of nginx and letsencrypt, to enable access via https. Contribution on this is more than welcome.

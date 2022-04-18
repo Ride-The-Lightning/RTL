@@ -11,7 +11,7 @@ import { SelNodeChild } from '../../../../shared/models/RTLconfig';
 
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert } from '../../../../store/rtl.actions';
-import { allChannelsInfo, eclNodeInformation, eclNodeSettings, onchainBalance, peers } from '../../../store/ecl.selector';
+import { allChannelsInfo, eclNodeInformation, eclnNodeSettings, onchainBalance, peers } from '../../../store/ecl.selector';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 
 @Component({
@@ -47,7 +47,7 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
         this.numOfInactiveChannels = (allChannelsSelector.channelsStatus && allChannelsSelector.channelsStatus.inactive && allChannelsSelector.channelsStatus.inactive.channels) ? allChannelsSelector.channelsStatus.inactive.channels : 0;
         this.logger.info(allChannelsSelector);
       });
-    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[2])).
+    this.store.select(eclnNodeSettings).pipe(takeUntil(this.unSubs[2])).
       subscribe((nodeSettings: SelNodeChild) => {
         this.selNode = nodeSettings;
       });

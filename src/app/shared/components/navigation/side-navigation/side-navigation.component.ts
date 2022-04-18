@@ -144,8 +144,8 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
 
   filterSideMenuNodes() {
     switch (this.selNode.lnImplementation.toUpperCase()) {
-      case 'CLT':
-        this.loadCLTMenu();
+      case 'CLN':
+        this.loadCLNMenu();
         break;
 
       case 'ECL':
@@ -172,13 +172,13 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadCLTMenu() {
+  loadCLNMenu() {
     let clonedMenu = [];
-    clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.CLChildren));
+    clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.CLNChildren));
     this.navMenus.data = clonedMenu.filter((navMenuData) => {
       if (navMenuData.children && navMenuData.children.length) {
-        navMenuData.children = navMenuData.children.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona) && navMenuChild.link !== '/cl/messages') ||
-          (navMenuChild.link === '/cl/messages' && this.information.api_version && this.commonService.isVersionCompatible(this.information.api_version, '0.2.2')));
+        navMenuData.children = navMenuData.children.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona) && navMenuChild.link !== '/cln/messages') ||
+          (navMenuChild.link === '/cln/messages' && this.information.api_version && this.commonService.isVersionCompatible(this.information.api_version, '0.2.2')));
       }
       return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings.userPersona;
     });

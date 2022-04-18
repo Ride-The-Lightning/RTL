@@ -10,7 +10,7 @@ import { rootSelectedNode } from '../../../../store/rtl.selector';
 import { ConfigSettingsNode } from '../../../models/RTLconfig';
 import { updateServiceSettings } from '../../../../store/rtl.actions';
 import { setChildNodeSettingsLND } from '../../../../lnd/store/lnd.actions';
-import { setChildNodeSettingsCL } from '../../../../clightning/store/cl.actions';
+import { setChildNodeSettingsCL } from '../../../../cln/store/cln.actions';
 import { setChildNodeSettingsECL } from '../../../../eclair/store/ecl.actions';
 import { ServicesEnum, UI_MESSAGES } from '../../../services/consts-enums-functions';
 

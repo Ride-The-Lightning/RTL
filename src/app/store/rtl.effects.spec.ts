@@ -28,7 +28,7 @@ import { RTLEffects } from './rtl.effects';
 import { RTLState } from './rtl.state';
 import { updateRootAPICallStatus, openSpinner, closeSpinner, openAlert, resetRootStore } from './rtl.actions';
 import { resetLNDStore, fetchInfoLND } from '../lnd/store/lnd.actions';
-import { resetCLStore } from '../clightning/store/cl.actions';
+import { resetCLStore } from '../cln/store/cln.actions';
 import { resetECLStore } from '../eclair/store/ecl.actions';
 
 describe('RTL Root Effects', () => {

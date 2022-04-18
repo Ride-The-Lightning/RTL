@@ -12,7 +12,7 @@ There are multiple ways you can contribute towards the development and not all o
 
 #### <a name="bug"></a>Bug Report
 Bug reports are reports of technical or functional issues with the software. Bug reports help with the removal of defects from the software and improve its quality. Guidelines for submitting a bug report:
-* Label the bug with the correct Lightning implementation (LND/C-Lightning/Eclair).
+* Label the bug with the correct Lightning implementation (LND/Core Lightning/Eclair).
 * Add the `Bug` label to the issue
 * Provide details of your configuration like Device, Operating system, Bitcoin version, Lightning implementation version, RTL version etc.
 * Attempt to explain the scenario in detail, so that the developer can try to replicate the issue at their end.
@@ -22,7 +22,7 @@ Bug reports are reports of technical or functional issues with the software. Bug
 
 #### <a name="feature"></a>Feature Request
 Feature Requests are requests raised to add new features to the application. The features requests can range from technical to functional, making the application better for everyone. Guidelines to follow for create a feature request:
-* Label the feature request with the correct Lightning implementation (LND/C-Lightning/Eclair).
+* Label the feature request with the correct Lightning implementation (LND/Core Lightning/Eclair).
 * Add the `Enhancement Request` label to the issue
 * If the feature relates to an existing aspect of the application, indicate clearly which part of the application the feature request relates to. E.g. Transactions page under Lightning menu.
 * Provide the justification for the feature request. E.g. Privacy/Security/Usability benefit.
