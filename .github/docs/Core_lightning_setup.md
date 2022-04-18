@@ -21,7 +21,7 @@ Follow the below steps to install and setup RTL to run on Core Lightning.
 4. Copy the `access.macaroon` file from `cl-rest` to the device, on which RTL will be installed
 
 ### <a name="arch"></a>Architecture
-![](./screenshots/RTL-CLT-Arch-2.png)
+![](./screenshots/RTL-CLN-Arch-2.png)
 
 ### <a name="install"></a>Installation:
 To download a specific RTL version follow the instructions on the [release page](https://github.com/Ride-The-Lightning/RTL/releases)
@@ -67,8 +67,8 @@ Ensure that the follow values are correct per your config:
   "nodes": [
     {
       "index": 1,
-      "lnNode": "core lightning Testnet # 1",
-      "lnImplementation": "CLT",
+      "lnNode": "Core Lightning Testnet # 1",
+      "lnImplementation": "CLN",
       "Authentication": {
         "macaroonPath": "<Modify to include the path of the folder with access.macaroon>",
         "configPath": "<Optional - Config file path for core lightning>"
