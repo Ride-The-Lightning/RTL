@@ -2,7 +2,7 @@ import { HttpResponse } from '@angular/common/http';
 import { BehaviorSubject, of, throwError } from 'rxjs';
 
 import { API_URL } from '../../../environments/environment';
-import { CLActions } from '../services/consts-enums-functions';
+import { CLNActions } from '../services/consts-enums-functions';
 import { mockResponseData } from './test-data';
 
 export class mockMatDialogRef {
@@ -58,8 +58,8 @@ export class mockDataService {
   setChildAPIUrl(lnImplementation: string) {
     this.lnImplementation = lnImplementation;
     switch (lnImplementation) {
-      case 'CLT':
-        this.childAPIUrl = API_URL + '/cl';
+      case 'CLN':
+        this.childAPIUrl = API_URL + '/cln';
         break;
 
       case 'ECL':

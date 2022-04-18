@@ -9,12 +9,12 @@ import CSRF from './csrf.js';
 
 import sharedRoutes from '../routes/shared/index.js';
 import lndRoutes from '../routes/lnd/index.js';
-import clRoutes from '../routes/c-lightning/index.js';
+import clRoutes from '../routes/cln/index.js';
 import eclRoutes from '../routes/eclair/index.js';
 import { Common, CommonService } from './common.js';
 import { Logger, LoggerService } from './logger.js';
 import { Config, ConfigService } from './config.js';
-import { CLWSClient, CLWebSocketClient } from '../controllers/c-lightning/webSocketClient.js';
+import { CLWSClient, CLWebSocketClient } from '../controllers/cln/webSocketClient.js';
 import { ECLWSClient, ECLWebSocketClient } from '../controllers/eclair/webSocketClient.js';
 import { LNDWSClient, LNDWebSocketClient } from '../controllers/lnd/webSocketClient.js';
 

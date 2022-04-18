@@ -151,7 +151,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    if (this.smallScreen) {
+    if (this.smallScreen || !this.flgLoggedIn) {
       this.sideNavigation.close();
       this.commonService.setContainerSize(this.sideNavContent.elementRef.nativeElement.clientWidth, this.sideNavContent.elementRef.nativeElement.clientHeight);
     } else {

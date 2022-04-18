@@ -25,11 +25,11 @@ import { BoltzService } from './shared/services/boltz.service';
 
 import { RTLEffects } from './store/rtl.effects';
 import { LNDEffects } from './lnd/store/lnd.effects';
-import { CLEffects } from './clightning/store/cl.effects';
+import { CLNEffects } from './cln/store/cln.effects';
 import { ECLEffects } from './eclair/store/ecl.effects';
 import { RootReducer } from './store/rtl.reducers';
 import { LNDReducer } from './lnd/store/lnd.reducers';
-import { CLReducer } from './clightning/store/cl.reducers';
+import { CLNReducer } from './cln/store/cln.reducers';
 import { ECLReducer } from './eclair/store/ecl.reducers';
 
 @NgModule({
@@ -41,14 +41,14 @@ import { ECLReducer } from './eclair/store/ecl.reducers';
     HammerModule,
     UserIdleModule.forRoot({ idle: 3590, timeout: 10, ping: 12000 }), // One hour
     StoreModule.forRoot(
-      { root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer },
+      { root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer },
       {
         runtimeChecks: {
           strictStateImmutability: false,
           strictActionImmutability: false
         }
       }),
-    EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects, ECLEffects]),
+    EffectsModule.forRoot([RTLEffects, LNDEffects, CLNEffects, ECLEffects]),
     !environment.production ? StoreDevtoolsModule.instrument() : []
   ],
   declarations: [AppComponent],

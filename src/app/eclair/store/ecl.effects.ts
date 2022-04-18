@@ -712,8 +712,8 @@ export class ECLEffects implements OnDestroy {
     let newRoute = this.location.path();
     if (newRoute.includes('/lnd/')) {
       newRoute = newRoute.replace('/lnd/', '/ecl/');
-    } else if (newRoute.includes('/cl/')) {
-      newRoute = newRoute.replace('/cl/', '/ecl/');
+    } else if (newRoute.includes('/cln/')) {
+      newRoute = newRoute.replace('/cln/', '/ecl/');
     }
     if (newRoute.includes('/login') || newRoute.includes('/error') || newRoute === '' || landingPage === 'HOME' || newRoute.includes('?access-key=')) {
       newRoute = '/ecl/home';

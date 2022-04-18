@@ -139,6 +139,7 @@ export class ConfigService {
         this.common.nodes[idx].index = node.index;
         this.common.nodes[idx].ln_node = node.lnNode;
         this.common.nodes[idx].ln_implementation = (process.env.LN_IMPLEMENTATION) ? process.env.LN_IMPLEMENTATION : node.lnImplementation ? node.lnImplementation : 'LND';
+        if (this.common.nodes[idx].ln_implementation === 'CLT') { this.common.nodes[idx].ln_implementation = 'CLN'; }
         if (this.common.nodes[idx].ln_implementation !== 'ECL' && process.env.MACAROON_PATH && process.env.MACAROON_PATH.trim() !== '') {
           this.common.nodes[idx].macaroon_path = process.env.MACAROON_PATH;
         } else if (this.common.nodes[idx].ln_implementation !== 'ECL' && node.Authentication && node.Authentication.macaroonPath && node.Authentication.macaroonPath.trim() !== '') {

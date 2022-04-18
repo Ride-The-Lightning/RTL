@@ -8,7 +8,7 @@ import { map } from 'rxjs/operators';
 @Injectable()
 export class AuthGuard implements CanActivate {
 
-  constructor(private router: Router, private sessionService: SessionService) {}
+  constructor(private router: Router, private sessionService: SessionService) { }
 
   canActivate(route: ActivatedRouteSnapshot): boolean | Observable<boolean> | Promise<boolean> {
     if (!this.sessionService.getItem('token')) {
@@ -26,7 +26,7 @@ export class AuthGuard implements CanActivate {
 @Injectable()
 export class LNDUnlockedGuard implements CanActivate {
 
-  constructor(private sessionService: SessionService) {}
+  constructor(private sessionService: SessionService) { }
 
   canActivate(): boolean | Observable<boolean> | Promise<boolean> {
     return !!this.sessionService.watchSession().pipe(map((session) => session.lndUnlocked));
@@ -35,9 +35,9 @@ export class LNDUnlockedGuard implements CanActivate {
 }
 
 @Injectable()
-export class CLUnlockedGuard implements CanActivate {
+export class CLNUnlockedGuard implements CanActivate {
 
-  constructor(private sessionService: SessionService) {}
+  constructor(private sessionService: SessionService) { }
 
   canActivate(): boolean | Observable<boolean> | Promise<boolean> {
     return !!this.sessionService.watchSession().pipe(map((session) => session.clUnlocked));
@@ -48,7 +48,7 @@ export class CLUnlockedGuard implements CanActivate {
 @Injectable()
 export class ECLUnlockedGuard implements CanActivate {
 
-  constructor(private sessionService: SessionService) {}
+  constructor(private sessionService: SessionService) { }
 
   canActivate(): boolean | Observable<boolean> | Promise<boolean> {
     return !!this.sessionService.watchSession().pipe(map((session) => session.eclUnlocked));

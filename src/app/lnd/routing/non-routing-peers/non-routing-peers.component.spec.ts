@@ -4,7 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../store/lnd.reducers';
-import { CLReducer } from '../../../clightning/store/cl.reducers';
+import { CLReducer } from '../../../cln/store/cl.reducers';
 import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';

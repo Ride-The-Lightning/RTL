@@ -5,7 +5,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { RootReducer } from '../../../../store/rtl.reducers';
 import { LNDReducer } from '../../../../lnd/store/lnd.reducers';
-import { CLReducer } from '../../../../clightning/store/cl.reducers';
+import { CLReducer } from '../../../../cln/store/cl.reducers';
 import { ECLReducer } from '../../../../eclair/store/ecl.reducers';
 import { ChannelLookupComponent } from './channel-lookup.component';
 

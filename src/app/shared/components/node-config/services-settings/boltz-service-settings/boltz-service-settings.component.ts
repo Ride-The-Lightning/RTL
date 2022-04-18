@@ -10,7 +10,7 @@ import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { updateServiceSettings } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
 import { setChildNodeSettingsLND } from '../../../../../lnd/store/lnd.actions';
-import { setChildNodeSettingsCL } from '../../../../../clightning/store/cl.actions';
+import { setChildNodeSettingsCL } from '../../../../../cln/store/cln.actions';
 import { setChildNodeSettingsECL } from '../../../../../eclair/store/ecl.actions';
 import { rootSelectedNode } from '../../../../../store/rtl.selector';
 

@@ -872,7 +872,7 @@ export const mockRTLStoreState = {
         {
           index: 2,
           lnNode: 'Ubuntu Testnet',
-          lnImplementation: 'CLT',
+          lnImplementation: 'CLN',
           settings: {
             userPersona: 'MERCHANT',
             themeMode: 'DAY',
@@ -892,7 +892,7 @@ export const mockRTLStoreState = {
             ]
           },
           authentication: {
-            configPath: '../Nodes/CLightning/config',
+            configPath: '../Nodes/cln/config',
             swapMacaroonPath: '',
             boltzMacaroonPath: ''
           }
@@ -46585,7 +46585,7 @@ export const mockRTLStoreState = {
             payment_addr: 'Gv6Zl2VZzJg6sbcXSzQ8bchLNfwGJ5zVsA2tXxs9nl8='
           },
           {
-            memo: 'Testing CLT Payment from dashboard',
+            memo: 'Testing CLN Payment from dashboard',
             r_preimage: '3nxNAeFfmiV76poFm9OciSzaWMjMVOT3r9PPkEs2WUY=',
             r_hash: '/+DVYc3CWIKDP6+JnEibtSXe4ZetocWTglRWng6+lHw=',
             value: '100',
@@ -46641,7 +46641,7 @@ export const mockRTLStoreState = {
             payment_addr: 'aMPCUHEOJ2KFYSC9IBEdQBRKDPwhQHwK+pfTq4Hc7so='
           },
           {
-            memo: 'Testing CLT Empty Payment from dashboard',
+            memo: 'Testing CLN Empty Payment from dashboard',
             r_preimage: 'qK2l7IPinAF78OQu2xtEQj9xDd08H7NuymBcfVa2gjE=',
             r_hash: '/Y4VG1zLOGvZCrKS9PUj2lTKH1NS6ppLqJUfaN2PWNk=',
             value: '0',
@@ -46697,7 +46697,7 @@ export const mockRTLStoreState = {
             payment_addr: 'sU/DPLYbmL+LBIpIVLcoAwvwoS/6PS0jCoCMybz1+DE='
           },
           {
-            memo: 'Testing CLT Payment from dashboard',
+            memo: 'Testing CLN Payment from dashboard',
             r_preimage: 'KCmhNQOy4dnLWc7nA5MiQCunQu267mvwbDjsxuw9+Xg=',
             r_hash: 'Ky2/lEBr+HypygpU2B1rjuR9H7HQfIOzJRFHgA/8AFM=',
             value: '400',

@@ -14,7 +14,7 @@ export class WebSocketServer {
   public logger: LoggerService = Logger;
   public common: CommonService = Common;
   public clientDetails: Array<{ index: number, sessionIds: Array<string> }> = [];
-  public eventEmitterCLT = new EventEmitter();
+  public eventEmitterCLN = new EventEmitter();
   public eventEmitterECL = new EventEmitter();
   public eventEmitterLND = new EventEmitter();
   public webSocketServer = null;
@@ -108,8 +108,8 @@ export class WebSocketServer {
             case 'LND':
               this.eventEmitterLND.emit('DISCONNECT', prevNodeIndex);
               break;
-            case 'CLT':
-              this.eventEmitterCLT.emit('DISCONNECT', prevNodeIndex);
+            case 'CLN':
+              this.eventEmitterCLN.emit('DISCONNECT', prevNodeIndex);
               break;
             case 'ECL':
               this.eventEmitterECL.emit('DISCONNECT', prevNodeIndex);
@@ -138,8 +138,8 @@ export class WebSocketServer {
           case 'LND':
             this.eventEmitterLND.emit('CONNECT', currNodeIndex);
             break;
-          case 'CLT':
-            this.eventEmitterCLT.emit('CONNECT', currNodeIndex);
+          case 'CLN':
+            this.eventEmitterCLN.emit('CONNECT', currNodeIndex);
             break;
           case 'ECL':
             this.eventEmitterECL.emit('CONNECT', currNodeIndex);
