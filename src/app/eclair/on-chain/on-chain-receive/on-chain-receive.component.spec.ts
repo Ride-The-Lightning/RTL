@@ -4,7 +4,7 @@ import { mockECLEffects } from '../../../shared/test-helpers/mock-services';
 
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../../lnd/store/lnd.reducers';
-import { CLReducer } from '../../../cln/store/cl.reducers';
+import { CLNReducer } from '../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { ECLEffects } from '../../store/ecl.effects';
 import { ECLOnChainReceiveComponent } from './on-chain-receive.component';
@@ -17,7 +17,7 @@ describe('ECLOnChainReceiveComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ECLOnChainReceiveComponent],
       imports: [
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer })
       ],
       providers: [
         { provide: ECLEffects, useClass: mockECLEffects }

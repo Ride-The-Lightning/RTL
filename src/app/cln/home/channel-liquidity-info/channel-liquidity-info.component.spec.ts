@@ -8,13 +8,13 @@ import { mockDataService } from '../../../shared/test-helpers/mock-services';
 import { CLNChannelLiquidityInfoComponent } from './channel-liquidity-info.component';
 import { DataService } from '../../../shared/services/data.service';
 
-describe('CLChannelLiquidityInfoComponent', () => {
-  let component: CLChannelLiquidityInfoComponent;
-  let fixture: ComponentFixture<CLChannelLiquidityInfoComponent>;
+describe('CLNChannelLiquidityInfoComponent', () => {
+  let component: CLNChannelLiquidityInfoComponent;
+  let fixture: ComponentFixture<CLNChannelLiquidityInfoComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLChannelLiquidityInfoComponent],
+      declarations: [CLNChannelLiquidityInfoComponent],
       imports: [SharedModule, RouterTestingModule],
       providers: [
         CommonService,
@@ -25,7 +25,7 @@ describe('CLChannelLiquidityInfoComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLChannelLiquidityInfoComponent);
+    fixture = TestBed.createComponent(CLNChannelLiquidityInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

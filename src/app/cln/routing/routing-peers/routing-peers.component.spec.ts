@@ -3,7 +3,7 @@ import { StoreModule } from '@ngrx/store';
 
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../../lnd/store/lnd.reducers';
-import { CLNReducer } from '../../../cln/store/cl.reducers';
+import { CLNReducer } from '../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -13,17 +13,17 @@ import { SharedModule } from '../../../shared/shared.module';
 import { DataService } from '../../../shared/services/data.service';
 import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/mock-services';
 
-describe('CLRoutingPeersComponent', () => {
-  let component: CLRoutingPeersComponent;
-  let fixture: ComponentFixture<CLRoutingPeersComponent>;
+describe('CLNRoutingPeersComponent', () => {
+  let component: CLNRoutingPeersComponent;
+  let fixture: ComponentFixture<CLNRoutingPeersComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLRoutingPeersComponent],
+      declarations: [CLNRoutingPeersComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer })
       ],
       providers: [
         CommonService,
@@ -35,7 +35,7 @@ describe('CLRoutingPeersComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLRoutingPeersComponent);
+    fixture = TestBed.createComponent(CLNRoutingPeersComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

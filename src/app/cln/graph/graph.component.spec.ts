@@ -5,7 +5,7 @@ import { StoreModule } from '@ngrx/store';
 
 import { RootReducer } from '../../store/rtl.reducers';
 import { LNDReducer } from '../../lnd/store/lnd.reducers';
-import { CLNReducer } from '../../cln/store/cl.reducers';
+import { CLNReducer } from '../../cln/store/cln.reducers';
 import { ECLReducer } from '../../eclair/store/ecl.reducers';
 import { LoggerService } from '../../shared/services/logger.service';
 
@@ -15,18 +15,18 @@ import { mockDataService, mockLoggerService } from '../../shared/test-helpers/mo
 import { CommonService } from '../../shared/services/common.service';
 import { DataService } from '../../shared/services/data.service';
 
-describe('CLGraphComponent', () => {
-  let component: CLGraphComponent;
-  let fixture: ComponentFixture<CLGraphComponent>;
+describe('CLNGraphComponent', () => {
+  let component: CLNGraphComponent;
+  let fixture: ComponentFixture<CLNGraphComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLGraphComponent],
+      declarations: [CLNGraphComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer })
       ],
       providers: [
         CommonService,
@@ -38,7 +38,7 @@ describe('CLGraphComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLGraphComponent);
+    fixture = TestBed.createComponent(CLNGraphComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

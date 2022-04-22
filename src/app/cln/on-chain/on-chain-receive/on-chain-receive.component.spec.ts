@@ -7,22 +7,22 @@ import { SharedModule } from '../../../shared/shared.module';
 
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../../lnd/store/lnd.reducers';
-import { CLNReducer } from '../../../cln/store/cl.reducers';
+import { CLNReducer } from '../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../eclair/store/ecl.reducers';
-import { CLNEffects } from '../../store/cl.effects';
+import { CLNEffects } from '../../store/cln.effects';
 import { CLNOnChainReceiveComponent } from './on-chain-receive.component';
 
-describe('CLOnChainReceiveComponent', () => {
-  let component: CLOnChainReceiveComponent;
-  let fixture: ComponentFixture<CLOnChainReceiveComponent>;
+describe('CLNOnChainReceiveComponent', () => {
+  let component: CLNOnChainReceiveComponent;
+  let fixture: ComponentFixture<CLNOnChainReceiveComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLOnChainReceiveComponent],
+      declarations: [CLNOnChainReceiveComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer }),
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
@@ -33,7 +33,7 @@ describe('CLOnChainReceiveComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLOnChainReceiveComponent);
+    fixture = TestBed.createComponent(CLNOnChainReceiveComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

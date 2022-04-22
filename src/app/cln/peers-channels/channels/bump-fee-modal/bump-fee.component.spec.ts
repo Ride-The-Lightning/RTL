@@ -10,21 +10,21 @@ import { mockCLEffects, mockDataService, mockECLEffects, mockLNDEffects, mockLog
 
 import { RootReducer } from '../../../../store/rtl.reducers';
 import { LNDReducer } from '../../../../lnd/store/lnd.reducers';
-import { CLNReducer } from '../../../../cln/store/cl.reducers';
+import { CLNReducer } from '../../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../../eclair/store/ecl.reducers';
 import { CLNBumpFeeComponent } from './bump-fee.component';
 
-describe('CLBumpFeeComponent', () => {
-  let component: CLBumpFeeComponent;
-  let fixture: ComponentFixture<CLBumpFeeComponent>;
+describe('CLNBumpFeeComponent', () => {
+  let component: CLNBumpFeeComponent;
+  let fixture: ComponentFixture<CLNBumpFeeComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CLBumpFeeComponent],
+      declarations: [CLNBumpFeeComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer }),
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
@@ -38,7 +38,7 @@ describe('CLBumpFeeComponent', () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLBumpFeeComponent);
+    fixture = TestBed.createComponent(CLNBumpFeeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

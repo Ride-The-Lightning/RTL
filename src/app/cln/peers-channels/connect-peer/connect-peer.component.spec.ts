@@ -4,7 +4,7 @@ import { StoreModule } from '@ngrx/store';
 
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../../lnd/store/lnd.reducers';
-import { CLNReducer } from '../../../cln/store/cl.reducers';
+import { CLNReducer } from '../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { SharedModule } from '../../../shared/shared.module';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -16,17 +16,17 @@ import { mockCLEffects, mockDataService, mockECLEffects, mockLNDEffects, mockMat
 import { EffectsModule } from '@ngrx/effects';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-describe('CLConnectPeerComponent', () => {
-  let component: CLConnectPeerComponent;
-  let fixture: ComponentFixture<CLConnectPeerComponent>;
+describe('CLNConnectPeerComponent', () => {
+  let component: CLNConnectPeerComponent;
+  let fixture: ComponentFixture<CLNConnectPeerComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLConnectPeerComponent],
+      declarations: [CLNConnectPeerComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer }),
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
@@ -40,7 +40,7 @@ describe('CLConnectPeerComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLConnectPeerComponent);
+    fixture = TestBed.createComponent(CLNConnectPeerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

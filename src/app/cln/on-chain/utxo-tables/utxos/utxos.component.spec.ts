@@ -9,21 +9,21 @@ import { SharedModule } from '../../../../shared/shared.module';
 
 import { RootReducer } from '../../../../store/rtl.reducers';
 import { LNDReducer } from '../../../../lnd/store/lnd.reducers';
-import { CLNReducer } from '../../../../cln/store/cl.reducers';
+import { CLNReducer } from '../../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../../eclair/store/ecl.reducers';
 import { CLNOnChainUtxosComponent } from './utxos.component';
 
-describe('CLOnChainUtxosComponent', () => {
-  let component: CLOnChainUtxosComponent;
-  let fixture: ComponentFixture<CLOnChainUtxosComponent>;
+describe('CLNOnChainUtxosComponent', () => {
+  let component: CLNOnChainUtxosComponent;
+  let fixture: ComponentFixture<CLNOnChainUtxosComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLOnChainUtxosComponent],
+      declarations: [CLNOnChainUtxosComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer })
       ],
       providers: [
         CommonService,
@@ -35,7 +35,7 @@ describe('CLOnChainUtxosComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLOnChainUtxosComponent);
+    fixture = TestBed.createComponent(CLNOnChainUtxosComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

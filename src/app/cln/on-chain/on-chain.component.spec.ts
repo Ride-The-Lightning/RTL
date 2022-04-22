@@ -5,7 +5,7 @@ import { SharedModule } from '../../shared/shared.module';
 
 import { RootReducer } from '../../store/rtl.reducers';
 import { LNDReducer } from '../../lnd/store/lnd.reducers';
-import { CLNReducer } from '../../cln/store/cl.reducers';
+import { CLNReducer } from '../../cln/store/cln.reducers';
 import { ECLReducer } from '../../eclair/store/ecl.reducers';
 import { CLNOnChainComponent } from './on-chain.component';
 import { CLNOnChainUtxosComponent } from './utxo-tables/utxos/utxos.component';
@@ -18,18 +18,18 @@ import { CLNUTXOTablesComponent } from './utxo-tables/utxo-tables.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../shared/services/data.service';
 
-describe('CLOnChainComponent', () => {
-  let component: CLOnChainComponent;
-  let fixture: ComponentFixture<CLOnChainComponent>;
+describe('CLNOnChainComponent', () => {
+  let component: CLNOnChainComponent;
+  let fixture: ComponentFixture<CLNOnChainComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLOnChainComponent, CurrencyUnitConverterComponent, CLUTXOTablesComponent, CLOnChainUtxosComponent, CLOnChainSendComponent, CLOnChainReceiveComponent],
+      declarations: [CLNOnChainComponent, CurrencyUnitConverterComponent, CLNUTXOTablesComponent, CLNOnChainUtxosComponent, CLNOnChainSendComponent, CLNOnChainReceiveComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer })
       ],
       providers: [
         CommonService,
@@ -40,7 +40,7 @@ describe('CLOnChainComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLOnChainComponent);
+    fixture = TestBed.createComponent(CLNOnChainComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

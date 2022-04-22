@@ -5,7 +5,7 @@ import { SharedModule } from '../../../shared/shared.module';
 
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../../lnd/store/lnd.reducers';
-import { CLReducer } from '../../../cln/store/cl.reducers';
+import { CLNReducer } from '../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { LNDEffects } from '../../store/lnd.effects';
 import { InitializeWalletComponent } from './initialize.component';
@@ -19,7 +19,7 @@ describe('InitializeWalletComponent', () => {
       declarations: [InitializeWalletComponent],
       imports: [
         SharedModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer })
       ],
       providers: [
         { provide: LNDEffects, useClass: mockLNDEffects }

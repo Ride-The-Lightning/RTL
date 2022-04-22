@@ -15,17 +15,17 @@ import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../shared/services/data.service';
 
-describe('CLQueryRoutesComponent', () => {
-  let component: CLQueryRoutesComponent;
-  let fixture: ComponentFixture<CLQueryRoutesComponent>;
+describe('CLNQueryRoutesComponent', () => {
+  let component: CLNQueryRoutesComponent;
+  let fixture: ComponentFixture<CLNQueryRoutesComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLQueryRoutesComponent],
+      declarations: [CLNQueryRoutesComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer }),
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
@@ -38,7 +38,7 @@ describe('CLQueryRoutesComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLQueryRoutesComponent);
+    fixture = TestBed.createComponent(CLNQueryRoutesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

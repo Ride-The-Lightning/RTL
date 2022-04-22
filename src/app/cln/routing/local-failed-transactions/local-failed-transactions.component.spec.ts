@@ -4,7 +4,7 @@ import { StoreModule } from '@ngrx/store';
 
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../../lnd/store/lnd.reducers';
-import { CLNReducer } from '../../store/cl.reducers';
+import { CLNReducer } from '../../store/cln.reducers';
 import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -15,18 +15,18 @@ import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../shared/services/data.service';
 
-describe('CLLocalFailedTransactionsComponent', () => {
-  let component: CLLocalFailedTransactionsComponent;
-  let fixture: ComponentFixture<CLLocalFailedTransactionsComponent>;
+describe('CLNLocalFailedTransactionsComponent', () => {
+  let component: CLNLocalFailedTransactionsComponent;
+  let fixture: ComponentFixture<CLNLocalFailedTransactionsComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLLocalFailedTransactionsComponent],
+      declarations: [CLNLocalFailedTransactionsComponent],
       imports: [
         BrowserAnimationsModule,
         RouterTestingModule,
         SharedModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer })
       ],
       providers: [
         CommonService,
@@ -38,7 +38,7 @@ describe('CLLocalFailedTransactionsComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLLocalFailedTransactionsComponent);
+    fixture = TestBed.createComponent(CLNLocalFailedTransactionsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

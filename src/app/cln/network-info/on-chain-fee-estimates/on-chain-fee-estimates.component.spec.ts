@@ -2,19 +2,19 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CLNOnChainFeeEstimatesComponent } from './on-chain-fee-estimates.component';
 
-describe('CLOnChainFeeEstimatesComponent', () => {
-  let component: CLOnChainFeeEstimatesComponent;
-  let fixture: ComponentFixture<CLOnChainFeeEstimatesComponent>;
+describe('CLNOnChainFeeEstimatesComponent', () => {
+  let component: CLNOnChainFeeEstimatesComponent;
+  let fixture: ComponentFixture<CLNOnChainFeeEstimatesComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLOnChainFeeEstimatesComponent]
+      declarations: [CLNOnChainFeeEstimatesComponent]
     }).
       compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLOnChainFeeEstimatesComponent);
+    fixture = TestBed.createComponent(CLNOnChainFeeEstimatesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

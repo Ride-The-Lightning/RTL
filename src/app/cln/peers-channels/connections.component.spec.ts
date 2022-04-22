@@ -11,22 +11,22 @@ import { SharedModule } from '../../shared/shared.module';
 
 import { RootReducer } from '../../store/rtl.reducers';
 import { LNDReducer } from '../../lnd/store/lnd.reducers';
-import { CLNReducer } from '../../cln/store/cl.reducers';
+import { CLNReducer } from '../../cln/store/cln.reducers';
 import { ECLReducer } from '../../eclair/store/ecl.reducers';
 import { CLNConnectionsComponent } from './connections.component';
 
-describe('CLConnectionsComponent', () => {
-  let component: CLConnectionsComponent;
-  let fixture: ComponentFixture<CLConnectionsComponent>;
+describe('CLNConnectionsComponent', () => {
+  let component: CLNConnectionsComponent;
+  let fixture: ComponentFixture<CLNConnectionsComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLConnectionsComponent, CurrencyUnitConverterComponent],
+      declarations: [CLNConnectionsComponent, CurrencyUnitConverterComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer })
       ],
       providers: [
         CommonService,
@@ -38,7 +38,7 @@ describe('CLConnectionsComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLConnectionsComponent);
+    fixture = TestBed.createComponent(CLNConnectionsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

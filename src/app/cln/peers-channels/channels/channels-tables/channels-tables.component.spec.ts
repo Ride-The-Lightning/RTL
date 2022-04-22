@@ -10,22 +10,22 @@ import { SharedModule } from '../../../../shared/shared.module';
 
 import { RootReducer } from '../../../../store/rtl.reducers';
 import { LNDReducer } from '../../../../lnd/store/lnd.reducers';
-import { CLNReducer } from '../../../../cln/store/cl.reducers';
+import { CLNReducer } from '../../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../../eclair/store/ecl.reducers';
 import { CLNChannelsTablesComponent } from './channels-tables.component';
 
-describe('CLChannelsTablesComponent', () => {
-  let component: CLChannelsTablesComponent;
-  let fixture: ComponentFixture<CLChannelsTablesComponent>;
+describe('CLNChannelsTablesComponent', () => {
+  let component: CLNChannelsTablesComponent;
+  let fixture: ComponentFixture<CLNChannelsTablesComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLChannelsTablesComponent],
+      declarations: [CLNChannelsTablesComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer })
       ],
       providers: [
         CommonService,
@@ -37,7 +37,7 @@ describe('CLChannelsTablesComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLChannelsTablesComponent);
+    fixture = TestBed.createComponent(CLNChannelsTablesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

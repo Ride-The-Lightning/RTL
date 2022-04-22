@@ -3,20 +3,20 @@ import { SharedModule } from '../../../shared/shared.module';
 
 import { CLNBalancesInfoComponent } from './balances-info.component';
 
-describe('CLBalancesInfoComponent', () => {
-  let component: CLBalancesInfoComponent;
-  let fixture: ComponentFixture<CLBalancesInfoComponent>;
+describe('CLNBalancesInfoComponent', () => {
+  let component: CLNBalancesInfoComponent;
+  let fixture: ComponentFixture<CLNBalancesInfoComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLBalancesInfoComponent],
+      declarations: [CLNBalancesInfoComponent],
       imports: [SharedModule]
     }).
       compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLBalancesInfoComponent);
+    fixture = TestBed.createComponent(CLNBalancesInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

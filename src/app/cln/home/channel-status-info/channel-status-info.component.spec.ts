@@ -3,20 +3,20 @@ import { SharedModule } from '../../../shared/shared.module';
 
 import { CLNChannelStatusInfoComponent } from './channel-status-info.component';
 
-describe('CLChannelStatusInfoComponent', () => {
-  let component: CLChannelStatusInfoComponent;
-  let fixture: ComponentFixture<CLChannelStatusInfoComponent>;
+describe('CLNChannelStatusInfoComponent', () => {
+  let component: CLNChannelStatusInfoComponent;
+  let fixture: ComponentFixture<CLNChannelStatusInfoComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLChannelStatusInfoComponent],
+      declarations: [CLNChannelStatusInfoComponent],
       imports: [SharedModule]
     }).
       compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLChannelStatusInfoComponent);
+    fixture = TestBed.createComponent(CLNChannelStatusInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -8,14 +8,14 @@ import { mockDataService, mockLoggerService } from '../../../shared/test-helpers
 
 import { CLNNodeInfoComponent } from './node-info.component';
 
-describe('CLNodeInfoComponent', () => {
-  let component: CLNodeInfoComponent;
-  let fixture: ComponentFixture<CLNodeInfoComponent>;
+describe('CLNNodeInfoComponent', () => {
+  let component: CLNNodeInfoComponent;
+  let fixture: ComponentFixture<CLNNodeInfoComponent>;
   let commonService: CommonService;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLNodeInfoComponent],
+      declarations: [CLNNodeInfoComponent],
       imports: [SharedModule],
       providers: [
         CommonService,
@@ -27,7 +27,7 @@ describe('CLNodeInfoComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLNodeInfoComponent);
+    fixture = TestBed.createComponent(CLNNodeInfoComponent);
     commonService = TestBed.inject(CommonService);
     component = fixture.componentInstance;
     fixture.detectChanges();

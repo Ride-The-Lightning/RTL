@@ -12,24 +12,24 @@ import { RTLEffects } from '../../../../../store/rtl.effects';
 
 import { RootReducer } from '../../../../../store/rtl.reducers';
 import { LNDReducer } from '../../../../../lnd/store/lnd.reducers';
-import { CLNReducer } from '../../../../../cln/store/cl.reducers';
+import { CLNReducer } from '../../../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../../../eclair/store/ecl.reducers';
-import { CLNEffects } from '../../../../store/cl.effects';
+import { CLNEffects } from '../../../../store/cln.effects';
 import { CLNChannelOpenTableComponent } from './channel-open-table.component';
 import { ExtraOptions, Route, Router } from '@angular/router';
 
-describe('CLChannelOpenTableComponent', () => {
-  let component: CLChannelOpenTableComponent;
-  let fixture: ComponentFixture<CLChannelOpenTableComponent>;
+describe('CLNChannelOpenTableComponent', () => {
+  let component: CLNChannelOpenTableComponent;
+  let fixture: ComponentFixture<CLNChannelOpenTableComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLChannelOpenTableComponent],
+      declarations: [CLNChannelOpenTableComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer }),
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
@@ -45,7 +45,7 @@ describe('CLChannelOpenTableComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLChannelOpenTableComponent);
+    fixture = TestBed.createComponent(CLNChannelOpenTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -48580,7 +48580,7 @@ export const mockRTLStoreState = {
       last_offset_index: 0
     }
   },
-  cl: {
+  cln: {
     nodeSettings: {
       userPersona: 'OPERATOR',
       channelBackupPath: '..\\\\RTL\\\\backup\\\\node-1',

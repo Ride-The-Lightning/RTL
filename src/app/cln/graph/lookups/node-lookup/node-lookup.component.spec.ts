@@ -5,13 +5,13 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { CLNNodeLookupComponent } from './node-lookup.component';
 
-describe('CLNodeLookupComponent', () => {
-  let component: CLNodeLookupComponent;
-  let fixture: ComponentFixture<CLNodeLookupComponent>;
+describe('CLNNodeLookupComponent', () => {
+  let component: CLNNodeLookupComponent;
+  let fixture: ComponentFixture<CLNNodeLookupComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLNodeLookupComponent],
+      declarations: [CLNNodeLookupComponent],
       imports: [
         SharedModule,
         BrowserAnimationsModule
@@ -22,7 +22,7 @@ describe('CLNodeLookupComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLNodeLookupComponent);
+    fixture = TestBed.createComponent(CLNNodeLookupComponent);
     component = fixture.componentInstance;
     component.lookupResult = {};
     fixture.detectChanges();

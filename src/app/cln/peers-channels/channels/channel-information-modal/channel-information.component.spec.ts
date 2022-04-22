@@ -8,13 +8,13 @@ import { SharedModule } from '../../../../shared/shared.module';
 
 import { CLNChannelInformationComponent } from './channel-information.component';
 
-describe('CLChannelInformationComponent', () => {
-  let component: CLChannelInformationComponent;
-  let fixture: ComponentFixture<CLChannelInformationComponent>;
+describe('CLNChannelInformationComponent', () => {
+  let component: CLNChannelInformationComponent;
+  let fixture: ComponentFixture<CLNChannelInformationComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLChannelInformationComponent],
+      declarations: [CLNChannelInformationComponent],
       imports: [
         SharedModule
       ],
@@ -30,7 +30,7 @@ describe('CLChannelInformationComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLChannelInformationComponent);
+    fixture = TestBed.createComponent(CLNChannelInformationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

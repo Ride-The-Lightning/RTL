@@ -8,13 +8,13 @@ import { mockDataService, mockLoggerService } from '../../../shared/test-helpers
 import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-describe('CLSignComponent', () => {
-  let component: CLSignComponent;
-  let fixture: ComponentFixture<CLSignComponent>;
+describe('CLNSignComponent', () => {
+  let component: CLNSignComponent;
+  let fixture: ComponentFixture<CLNSignComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLSignComponent],
+      declarations: [CLNSignComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule
@@ -28,7 +28,7 @@ describe('CLSignComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLSignComponent);
+    fixture = TestBed.createComponent(CLNSignComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
