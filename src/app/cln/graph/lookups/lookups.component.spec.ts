@@ -5,7 +5,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../../lnd/store/lnd.reducers';
-import { CLNReducer } from '../../../cln/store/cl.reducers';
+import { CLNReducer } from '../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { CLNLookupsComponent } from './lookups.component';
 import { SharedModule } from '../../../shared/shared.module';
@@ -16,17 +16,17 @@ import { EffectsModule } from '@ngrx/effects';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../shared/services/data.service';
 
-describe('CLLookupsComponent', () => {
-  let component: CLLookupsComponent;
-  let fixture: ComponentFixture<CLLookupsComponent>;
+describe('CLNLookupsComponent', () => {
+  let component: CLNLookupsComponent;
+  let fixture: ComponentFixture<CLNLookupsComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLLookupsComponent, CLNodeLookupComponent, CLChannelLookupComponent],
+      declarations: [CLNLookupsComponent, CLNNodeLookupComponent, CLNChannelLookupComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer }),
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
@@ -39,7 +39,7 @@ describe('CLLookupsComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLLookupsComponent);
+    fixture = TestBed.createComponent(CLNLookupsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

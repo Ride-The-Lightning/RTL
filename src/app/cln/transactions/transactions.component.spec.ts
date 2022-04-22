@@ -4,7 +4,7 @@ import { StoreModule } from '@ngrx/store';
 
 import { RootReducer } from '../../store/rtl.reducers';
 import { LNDReducer } from '../../lnd/store/lnd.reducers';
-import { CLNReducer } from '../../cln/store/cl.reducers';
+import { CLNReducer } from '../../cln/store/cln.reducers';
 import { ECLReducer } from '../../eclair/store/ecl.reducers';
 import { LoggerService } from '../../shared/services/logger.service';
 
@@ -16,18 +16,18 @@ import { CommonService } from '../../shared/services/common.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../shared/services/data.service';
 
-describe('CLTransactionsComponent', () => {
-  let component: CLTransactionsComponent;
-  let fixture: ComponentFixture<CLTransactionsComponent>;
+describe('CLNTransactionsComponent', () => {
+  let component: CLNTransactionsComponent;
+  let fixture: ComponentFixture<CLNTransactionsComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLTransactionsComponent, CLQueryRoutesComponent],
+      declarations: [CLNTransactionsComponent, CLNQueryRoutesComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer })
       ],
       providers: [
         CommonService,
@@ -39,7 +39,7 @@ describe('CLTransactionsComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLTransactionsComponent);
+    fixture = TestBed.createComponent(CLNTransactionsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

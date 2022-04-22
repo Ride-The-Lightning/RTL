@@ -4,20 +4,20 @@ import { SharedModule } from '../../../shared/shared.module';
 
 import { CLNChannelCapacityInfoComponent } from './channel-capacity-info.component';
 
-describe('CLChannelCapacityInfoComponent', () => {
-  let component: CLChannelCapacityInfoComponent;
-  let fixture: ComponentFixture<CLChannelCapacityInfoComponent>;
+describe('CLNChannelCapacityInfoComponent', () => {
+  let component: CLNChannelCapacityInfoComponent;
+  let fixture: ComponentFixture<CLNChannelCapacityInfoComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLChannelCapacityInfoComponent],
+      declarations: [CLNChannelCapacityInfoComponent],
       imports: [SharedModule, RouterTestingModule]
     }).
       compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLChannelCapacityInfoComponent);
+    fixture = TestBed.createComponent(CLNChannelCapacityInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

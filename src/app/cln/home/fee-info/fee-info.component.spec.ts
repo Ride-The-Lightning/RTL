@@ -3,20 +3,20 @@ import { SharedModule } from '../../../shared/shared.module';
 
 import { CLNFeeInfoComponent } from './fee-info.component';
 
-describe('CLFeeInfoComponent', () => {
-  let component: CLFeeInfoComponent;
-  let fixture: ComponentFixture<CLFeeInfoComponent>;
+describe('CLNFeeInfoComponent', () => {
+  let component: CLNFeeInfoComponent;
+  let fixture: ComponentFixture<CLNFeeInfoComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLFeeInfoComponent],
+      declarations: [CLNFeeInfoComponent],
       imports: [SharedModule]
     }).
       compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLFeeInfoComponent);
+    fixture = TestBed.createComponent(CLNFeeInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -4,20 +4,20 @@ import { SharedModule } from '../../shared/shared.module';
 
 import { CLNReportsComponent } from './reports.component';
 
-describe('CLReportsComponent', () => {
-  let component: CLReportsComponent;
-  let fixture: ComponentFixture<CLReportsComponent>;
+describe('CLNReportsComponent', () => {
+  let component: CLNReportsComponent;
+  let fixture: ComponentFixture<CLNReportsComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLReportsComponent],
+      declarations: [CLNReportsComponent],
       imports: [SharedModule, RouterTestingModule]
     }).
       compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLReportsComponent);
+    fixture = TestBed.createComponent(CLNReportsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

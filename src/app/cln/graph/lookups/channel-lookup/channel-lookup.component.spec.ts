@@ -4,27 +4,27 @@ import { SharedModule } from '../../../../shared/shared.module';
 
 import { RootReducer } from '../../../../store/rtl.reducers';
 import { LNDReducer } from '../../../../lnd/store/lnd.reducers';
-import { CLNReducer } from '../../../../cln/store/cl.reducers';
+import { CLNReducer } from '../../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../../eclair/store/ecl.reducers';
 import { CLNChannelLookupComponent } from './channel-lookup.component';
 
-describe('CLChannelLookupComponent', () => {
-  let component: CLChannelLookupComponent;
-  let fixture: ComponentFixture<CLChannelLookupComponent>;
+describe('CLNChannelLookupComponent', () => {
+  let component: CLNChannelLookupComponent;
+  let fixture: ComponentFixture<CLNChannelLookupComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLChannelLookupComponent],
+      declarations: [CLNChannelLookupComponent],
       imports: [
         SharedModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer })
       ]
     }).
       compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLChannelLookupComponent);
+    fixture = TestBed.createComponent(CLNChannelLookupComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

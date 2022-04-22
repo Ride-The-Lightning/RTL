@@ -3,7 +3,7 @@ import { StoreModule } from '@ngrx/store';
 
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../../lnd/store/lnd.reducers';
-import { CLNReducer } from '../../../cln/store/cl.reducers';
+import { CLNReducer } from '../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -16,17 +16,17 @@ import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../shared/services/data.service';
 
-describe('CLPeersComponent', () => {
-  let component: CLPeersComponent;
-  let fixture: ComponentFixture<CLPeersComponent>;
+describe('CLNPeersComponent', () => {
+  let component: CLNPeersComponent;
+  let fixture: ComponentFixture<CLNPeersComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLPeersComponent],
+      declarations: [CLNPeersComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer }),
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
@@ -40,7 +40,7 @@ describe('CLPeersComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLPeersComponent);
+    fixture = TestBed.createComponent(CLNPeersComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

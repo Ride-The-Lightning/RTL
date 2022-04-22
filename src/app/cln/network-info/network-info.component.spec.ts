@@ -8,22 +8,22 @@ import { SharedModule } from '../../shared/shared.module';
 
 import { RootReducer } from '../../store/rtl.reducers';
 import { LNDReducer } from '../../lnd/store/lnd.reducers';
-import { CLNReducer } from '../../cln/store/cl.reducers';
+import { CLNReducer } from '../../cln/store/cln.reducers';
 import { ECLReducer } from '../../eclair/store/ecl.reducers';
 import { CLNFeeRatesComponent } from './fee-rates/fee-rates.component';
 import { CLNOnChainFeeEstimatesComponent } from './on-chain-fee-estimates/on-chain-fee-estimates.component';
 import { CLNNetworkInfoComponent } from './network-info.component';
 
-describe('CLNetworkInfoComponent', () => {
-  let component: CLNetworkInfoComponent;
-  let fixture: ComponentFixture<CLNetworkInfoComponent>;
+describe('CLNNetworkInfoComponent', () => {
+  let component: CLNNetworkInfoComponent;
+  let fixture: ComponentFixture<CLNNetworkInfoComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLNetworkInfoComponent, CLFeeRatesComponent, CLOnChainFeeEstimatesComponent],
+      declarations: [CLNNetworkInfoComponent, CLNFeeRatesComponent, CLNOnChainFeeEstimatesComponent],
       imports: [
         SharedModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer })
       ],
       providers: [
         CommonService,
@@ -35,7 +35,7 @@ describe('CLNetworkInfoComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLNetworkInfoComponent);
+    fixture = TestBed.createComponent(CLNNetworkInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

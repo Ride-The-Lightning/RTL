@@ -4,20 +4,20 @@ import { SharedModule } from '../../shared/shared.module';
 
 import { CLNSignVerifyMessageComponent } from './sign-verify-message.component';
 
-describe('CLSignVerifyMessageComponent', () => {
-  let component: CLSignVerifyMessageComponent;
-  let fixture: ComponentFixture<CLSignVerifyMessageComponent>;
+describe('CLNSignVerifyMessageComponent', () => {
+  let component: CLNSignVerifyMessageComponent;
+  let fixture: ComponentFixture<CLNSignVerifyMessageComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLSignVerifyMessageComponent],
+      declarations: [CLNSignVerifyMessageComponent],
       imports: [SharedModule, RouterTestingModule]
     }).
       compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLSignVerifyMessageComponent);
+    fixture = TestBed.createComponent(CLNSignVerifyMessageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

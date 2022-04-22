@@ -6,7 +6,7 @@ import { Store, StoreModule } from '@ngrx/store';
 import { CommonService } from '../../../shared/services/common.service';
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../../lnd/store/lnd.reducers';
-import { CLReducer } from '../../../cln/store/cl.reducers';
+import { CLNReducer } from '../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { LightningSendPaymentsComponent } from './send-payment.component';
 import { mockCLEffects, mockDataService, mockLoggerService, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/test-helpers/mock-services';
@@ -35,7 +35,7 @@ describe('LightningSendPaymentsComponent', () => {
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer }),
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [

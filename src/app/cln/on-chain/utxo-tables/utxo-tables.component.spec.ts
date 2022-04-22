@@ -9,22 +9,22 @@ import { SharedModule } from '../../../shared/shared.module';
 
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../../lnd/store/lnd.reducers';
-import { CLNReducer } from '../../../cln/store/cl.reducers';
+import { CLNReducer } from '../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { CLNUTXOTablesComponent } from './utxo-tables.component';
 import { CLNOnChainUtxosComponent } from './utxos/utxos.component';
 
-describe('CLUTXOTablesComponent', () => {
-  let component: CLUTXOTablesComponent;
-  let fixture: ComponentFixture<CLUTXOTablesComponent>;
+describe('CLNUTXOTablesComponent', () => {
+  let component: CLNUTXOTablesComponent;
+  let fixture: ComponentFixture<CLNUTXOTablesComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLUTXOTablesComponent, CLOnChainUtxosComponent],
+      declarations: [CLNUTXOTablesComponent, CLNOnChainUtxosComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer })
       ],
       providers: [
         CommonService,
@@ -36,7 +36,7 @@ describe('CLUTXOTablesComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLUTXOTablesComponent);
+    fixture = TestBed.createComponent(CLNUTXOTablesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

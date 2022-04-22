@@ -9,7 +9,7 @@ import { RTLEffects } from '../../../../store/rtl.effects';
 
 import { RootReducer } from '../../../../store/rtl.reducers';
 import { LNDReducer } from '../../../../lnd/store/lnd.reducers';
-import { CLReducer } from '../../../../cln/store/cl.reducers';
+import { CLNReducer } from '../../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../../eclair/store/ecl.reducers';
 import { OpenChannelComponent } from './open-channel.component';
 
@@ -23,7 +23,7 @@ describe('OpenChannelComponent', () => {
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer }),
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [

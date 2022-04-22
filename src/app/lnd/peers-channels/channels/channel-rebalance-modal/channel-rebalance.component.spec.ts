@@ -4,9 +4,10 @@ import { StoreModule } from '@ngrx/store';
 
 import { RootReducer } from '../../../../store/rtl.reducers';
 import { LNDReducer } from '../../../../lnd/store/lnd.reducers';
-import { CLReducer } from '../../../../cln/store/cl.reducers';
+import { CLNReducer } from '../../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../../eclair/store/ecl.reducers';
 import { LoggerService } from '../../../../shared/services/logger.service';
+import { CommonService } from '../../../../shared/services/common.service';
 
 import { ChannelRebalanceComponent } from './channel-rebalance.component';
 import { mockCLEffects, mockECLEffects, mockLNDEffects, mockLoggerService, mockMatDialogRef, mockRTLEffects } from '../../../../shared/test-helpers/mock-services';
@@ -24,10 +25,11 @@ describe('ChannelRebalanceComponent', () => {
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer }),
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
+        CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: { message: { selChannel: {}, channels: [] } } }

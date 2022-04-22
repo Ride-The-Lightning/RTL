@@ -4,20 +4,20 @@ import { SharedModule } from '../../shared/shared.module';
 
 import { CLNRoutingComponent } from './routing.component';
 
-describe('CLRoutingComponent', () => {
-  let component: CLRoutingComponent;
-  let fixture: ComponentFixture<CLRoutingComponent>;
+describe('CLNRoutingComponent', () => {
+  let component: CLNRoutingComponent;
+  let fixture: ComponentFixture<CLNRoutingComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLRoutingComponent],
+      declarations: [CLNRoutingComponent],
       imports: [SharedModule, RouterTestingModule]
     }).
       compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLRoutingComponent);
+    fixture = TestBed.createComponent(CLNRoutingComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

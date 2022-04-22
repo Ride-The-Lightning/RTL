@@ -5,28 +5,28 @@ import { SharedModule } from '../../../shared/shared.module';
 
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../../lnd/store/lnd.reducers';
-import { CLNReducer } from '../../../cln/store/cl.reducers';
+import { CLNReducer } from '../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { CLNOnChainSendComponent } from './on-chain-send.component';
 
-describe('CLOnChainSendComponent', () => {
-  let component: CLOnChainSendComponent;
-  let fixture: ComponentFixture<CLOnChainSendComponent>;
+describe('CLNOnChainSendComponent', () => {
+  let component: CLNOnChainSendComponent;
+  let fixture: ComponentFixture<CLNOnChainSendComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLOnChainSendComponent],
+      declarations: [CLNOnChainSendComponent],
       imports: [
         SharedModule,
         RouterTestingModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer })
       ]
     }).
       compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLOnChainSendComponent);
+    fixture = TestBed.createComponent(CLNOnChainSendComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

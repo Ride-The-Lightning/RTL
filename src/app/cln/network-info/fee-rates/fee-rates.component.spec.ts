@@ -2,19 +2,19 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CLNFeeRatesComponent } from './fee-rates.component';
 
-describe('CLFeeRatesComponent', () => {
-  let component: CLFeeRatesComponent;
-  let fixture: ComponentFixture<CLFeeRatesComponent>;
+describe('CLNFeeRatesComponent', () => {
+  let component: CLNFeeRatesComponent;
+  let fixture: ComponentFixture<CLNFeeRatesComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLFeeRatesComponent]
+      declarations: [CLNFeeRatesComponent]
     }).
       compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLFeeRatesComponent);
+    fixture = TestBed.createComponent(CLNFeeRatesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

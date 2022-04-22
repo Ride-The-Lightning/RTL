@@ -3,7 +3,7 @@ import { StoreModule } from '@ngrx/store';
 
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../../lnd/store/lnd.reducers';
-import { CLNReducer } from '../../../cln/store/cl.reducers';
+import { CLNReducer } from '../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
 
@@ -13,17 +13,17 @@ import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../shared/services/data.service';
 
-describe('CLTransactionsReportComponent', () => {
-  let component: CLTransactionsReportComponent;
-  let fixture: ComponentFixture<CLTransactionsReportComponent>;
+describe('CLNTransactionsReportComponent', () => {
+  let component: CLNTransactionsReportComponent;
+  let fixture: ComponentFixture<CLNTransactionsReportComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLTransactionsReportComponent],
+      declarations: [CLNTransactionsReportComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer })
       ],
       providers: [
         CommonService,
@@ -35,7 +35,7 @@ describe('CLTransactionsReportComponent', () => {
 
   beforeEach(() => {
     const service = TestBed.inject(CommonService);
-    fixture = TestBed.createComponent(CLTransactionsReportComponent);
+    fixture = TestBed.createComponent(CLNTransactionsReportComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

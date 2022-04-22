@@ -8,13 +8,13 @@ import { mockDataService, mockLoggerService } from '../../../shared/test-helpers
 import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-describe('CLVerifyComponent', () => {
-  let component: CLVerifyComponent;
-  let fixture: ComponentFixture<CLVerifyComponent>;
+describe('CLNVerifyComponent', () => {
+  let component: CLNVerifyComponent;
+  let fixture: ComponentFixture<CLNVerifyComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CLVerifyComponent],
+      declarations: [CLNVerifyComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule
@@ -28,7 +28,7 @@ describe('CLVerifyComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLVerifyComponent);
+    fixture = TestBed.createComponent(CLNVerifyComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

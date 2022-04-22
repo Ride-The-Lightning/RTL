@@ -9,7 +9,7 @@ import { mockDataService, mockLoggerService, mockECLEffects } from '../../../sha
 import { SharedModule } from '../../../shared/shared.module';
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../../lnd/store/lnd.reducers';
-import { CLReducer } from '../../../cln/store/cl.reducers';
+import { CLNReducer } from '../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { ECLEffects } from '../../store/ecl.effects';
 
@@ -25,7 +25,7 @@ describe('ECLQueryRoutesComponent', () => {
       imports: [
         BrowserAnimationsModule,
         SharedModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer })
       ],
       providers: [
         CommonService,

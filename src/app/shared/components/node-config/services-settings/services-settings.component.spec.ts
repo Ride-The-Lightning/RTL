@@ -4,7 +4,7 @@ import { StoreModule } from '@ngrx/store';
 
 import { RootReducer } from '../../../../store/rtl.reducers';
 import { LNDReducer } from '../../../../lnd/store/lnd.reducers';
-import { CLNReducer } from '../../../../cln/store/cl.reducers';
+import { CLNReducer } from '../../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../../eclair/store/ecl.reducers';
 import { SharedModule } from '../../../shared.module';
 import { BoltzServiceSettingsComponent } from './boltz-service-settings/boltz-service-settings.component';
@@ -21,7 +21,7 @@ describe('ServicesSettingsComponent', () => {
       imports: [
         SharedModule,
         RouterTestingModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer })
       ]
     }).
       compileComponents();
