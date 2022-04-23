@@ -1,8 +1,11 @@
-<div fxLayout="row">
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" *ngIf="!flgShowInfo" [@opacityAnimation]>
   <div fxFlex="100">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
-      <div fxFlex="95" fxLayoutAlign="start start"><span class="page-title">Channel Rebalance</span></div>
-      <button tabindex="15" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+      <div [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '83' : '91'" fxLayoutAlign="start start"><span class="page-title">{{channel ? ('Channel ' + loopDirectionCaption) : loopDirectionCaption}}</span></div>
+      <div [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '17' : '9'" fxLayoutAlign="space-between end">
+        <button tabindex="21" class="btn-close-x p-0" (click)="showInfo()" mat-button>?</button>
+        <button tabindex="22" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+      </div>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <div fxLayout="column">
@@ -134,3 +137,28 @@
     </div>
   </div>
 </ng-template>
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" *ngIf="flgShowInfo" [@opacityAnimation] class="info-graphics-container">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+    <mat-card-header fxLayout="row" fxFlex="8" fxLayoutAlign="space-between center" class="modal-info-header">
+      <div fxFlex="95" fxLayoutAlign="start start"><span class="page-title"></span></div>
+      <div fxFlex="5" fxLayoutAlign="end center">
+        <button tabindex="19" class="btn-close-x p-0" (click)="flgShowInfo=false;stepNumber=1;" mat-button>X</button>
+      </div>
+    </mat-card-header>
+    <mat-card-content fxLayout="column" fxFlex="70" fxLayoutAlign="space-between center" class="padding-gap-x-large">
+      <rtl-channel-rebalance-infographics fxFlex="100" [(stepNumber)]="stepNumber" [animationDirection]="animationDirection"></rtl-channel-rebalance-infographics>
+    </mat-card-content>
+    <div fxLayout="row" fxFlex="10" fxLayoutAlign="center end" class="padding-gap-x-large padding-gap-bottom-large">
+      <span *ngFor="let i of [1, 2, 3, 4, 5];" (click) = "onStepChanged(i)" fxLayoutAlign="center center" class="dots-stepper-block">
+        <p class="dot tiny-dot mr-0" [ngClass]="{'dot-primary': stepNumber === i, 'dot-primary-lighter': stepNumber !== i}"></p>
+      </span>
+    </div>
+    <div fxLayout="row" fxFlex="10" fxLayoutAlign="end end" class="padding-gap-x-large padding-gap-bottom-large">
+      <button *ngIf="stepNumber === 5" mat-button class="mr-1" color="primary" tabindex="16" type="button" (click)="onStepChanged(4)">Back</button>
+      <button *ngIf="stepNumber === 5" mat-button color="primary" tabindex="17" type="button" (click)="flgShowInfo=false;stepNumber=1;">Close</button>
+      <button *ngIf="stepNumber < 5" mat-button class="mr-1" color="primary" tabindex="18" type="button" (click)="flgShowInfo=false;stepNumber=1;">Close</button>
+      <button *ngIf="stepNumber > 1 && stepNumber < 5" mat-button class="mr-1" color="primary" tabindex="19" type="button" (click)="onStepChanged(stepNumber - 1)">Back</button>
+      <button *ngIf="stepNumber < 5" mat-button color="primary" tabindex="20" type="button" (click)="onStepChanged(stepNumber + 1)">Next</button>
+    </div>
+  </div>
+</div>

@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Subject, throwError } from 'rxjs';
+import { BehaviorSubject, Subject, throwError, of } from 'rxjs';
 import { catchError, takeUntil, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
@@ -38,13 +38,13 @@ export class BoltzService implements OnDestroy {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_BOLTZ_SWAPS }));
           this.swaps = swapResponse;
           this.swapsChanged.next(this.swaps);
-        }, error: (err) => this.handleErrorWithAlert(UI_MESSAGES.GET_BOLTZ_SWAPS, this.swapUrl, err)
+        }, error: (err) => this.swapsChanged.error(this.handleErrorWithAlert(UI_MESSAGES.GET_BOLTZ_SWAPS, this.swapUrl, err))
       });
   }
 
   swapInfo(id: string) {
     this.swapUrl = API_URL + environment.BOLTZ_API + '/swapInfo/' + id;
-    return this.httpClient.get(this.swapUrl).pipe(catchError((err) => this.handleErrorWithAlert(UI_MESSAGES.NO_SPINNER, this.swapUrl, err)));
+    return this.httpClient.get(this.swapUrl).pipe(catchError((err) => of(this.handleErrorWithAlert(UI_MESSAGES.NO_SPINNER, this.swapUrl, err))));
   }
 
   serviceInfo() {
@@ -56,7 +56,7 @@ export class BoltzService implements OnDestroy {
         this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_SERVICE_INFO }));
         return res;
       }),
-      catchError((err) => this.handleErrorWithAlert(UI_MESSAGES.GET_SERVICE_INFO, this.swapUrl, err))
+      catchError((err) => of(this.handleErrorWithAlert(UI_MESSAGES.GET_SERVICE_INFO, this.swapUrl, err)))
     );
   }
 
@@ -112,31 +112,35 @@ export class BoltzService implements OnDestroy {
       this.store.dispatch(logout());
     } else if (err.status === 503) {
       errMsg = 'Unable to Connect to Boltz Server.';
-      this.store.dispatch(openAlert({
-        payload: {
-          data: {
-            type: 'ERROR',
-            alertTitle: 'Boltz Not Connected',
-            message: { code: err.status, message: 'Unable to Connect to Boltz Server', URL: errURL },
-            component: ErrorMessageComponent
+      setTimeout(() => {
+        this.store.dispatch(openAlert({
+          payload: {
+            data: {
+              type: 'ERROR',
+              alertTitle: 'Boltz Not Connected',
+              message: { code: err.status, message: 'Unable to Connect to Boltz Server', URL: errURL },
+              component: ErrorMessageComponent
+            }
           }
-        }
-      }));
+        }));
+      }, 100);
     } else {
       errMsg = this.commonService.extractErrorMessage(err);
       const errCode = (err.error && err.error.error && err.error.error.code) ? err.error.error.code : (err.error && err.error.code) ? err.error.code : err.code ? err.code : err.status;
-      this.store.dispatch(openAlert({
-        payload: {
-          data: {
-            type: AlertTypeEnum.ERROR,
-            alertTitle: 'ERROR',
-            message: { code: errCode, message: errMsg, URL: errURL },
-            component: ErrorMessageComponent
+      setTimeout(() => {
+        this.store.dispatch(openAlert({
+          payload: {
+            data: {
+              type: AlertTypeEnum.ERROR,
+              alertTitle: 'ERROR',
+              message: { code: errCode, message: errMsg, URL: errURL },
+              component: ErrorMessageComponent
+            }
           }
-        }
-      }));
+        }));
+      }, 100);
     }
-    return throwError(() => new Error(errMsg));
+    return { message: errMsg };
   }
 
   ngOnDestroy() {
