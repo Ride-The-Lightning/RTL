@@ -2,7 +2,7 @@
   <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" fxFlex="100" class="page-sub-title-container w-100">
     <div fxFlex="70">
       <fa-icon [icon]="faHistory" class="page-title-img mr-1"></fa-icon>
-      <span class="page-title">{{swapCaption}} History</span>
+      <span class="page-title">{{swapCaption}} History, {{flgLoading}}</span>
     </div>
     <mat-form-field fxFlex="30">
       <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" placeholder="Filter">

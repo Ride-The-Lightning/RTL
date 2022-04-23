@@ -52,6 +52,7 @@ import { ChannelLiquidityInfoComponent } from './home/channel-liquidity-info/cha
 import { NetworkInfoComponent } from './network-info/network-info.component';
 import { InvoiceInformationComponent } from './transactions/invoice-information-modal/invoice-information.component';
 import { ChannelRebalanceComponent } from './peers-channels/channels/channel-rebalance-modal/channel-rebalance.component';
+import { ChannelRebalanceInfographicsComponent } from './peers-channels/channels/channel-rebalance-infographics/channel-rebalance-infographics.component';
 import { CloseChannelComponent } from './peers-channels/channels/close-channel-modal/close-channel.component';
 import { OpenChannelComponent } from './peers-channels/channels/open-channel-modal/open-channel.component';
 import { ChannelInformationComponent } from './peers-channels/channels/channel-information-modal/channel-information.component';
@@ -119,6 +120,7 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     NetworkInfoComponent,
     InvoiceInformationComponent,
     ChannelRebalanceComponent,
+    ChannelRebalanceInfographicsComponent,
     OpenChannelComponent,
     ChannelInformationComponent,
     LightningSendPaymentsComponent,

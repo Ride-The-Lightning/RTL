@@ -5,7 +5,7 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faInfinity } from '@fortawesome/free-solid-svg-icons';
 
-import { LoopTypeEnum, UI_MESSAGES } from '../../../services/consts-enums-functions';
+import { LoopTypeEnum } from '../../../services/consts-enums-functions';
 import { LoopModalComponent } from './loop-modal/loop-modal.component';
 import { LoopQuote, LoopSwapStatus } from '../../../models/loopModels';
 import { LoopService } from '../../../services/loop.service';
@@ -70,32 +70,36 @@ export class LoopComponent implements OnInit, OnDestroy {
     if (direction === LoopTypeEnum.LOOP_IN) {
       this.loopService.getLoopInTermsAndQuotes(this.targetConf).
         pipe(takeUntil(this.unSubs[2])).
-        subscribe((response) => {
-          this.store.dispatch(openAlert({
-            payload: {
-              data: {
-                minQuote: response[0],
-                maxQuote: response[1],
-                direction: direction,
-                component: LoopModalComponent
+        subscribe({
+          next: (response) => {
+            this.store.dispatch(openAlert({
+              payload: {
+                data: {
+                  minQuote: response[0],
+                  maxQuote: response[1],
+                  direction: direction,
+                  component: LoopModalComponent
+                }
               }
-            }
-          }));
+            }));
+          }
         });
     } else {
       this.loopService.getLoopOutTermsAndQuotes(this.targetConf).
         pipe(takeUntil(this.unSubs[3])).
-        subscribe((response) => {
-          this.store.dispatch(openAlert({
-            payload: {
-              data: {
-                minQuote: response[0],
-                maxQuote: response[1],
-                direction: direction,
-                component: LoopModalComponent
+        subscribe({
+          next: (response) => {
+            this.store.dispatch(openAlert({
+              payload: {
+                data: {
+                  minQuote: response[0],
+                  maxQuote: response[1],
+                  direction: direction,
+                  component: LoopModalComponent
+                }
               }
-            }
-          }));
+            }));
+          }
         });
     }
   }

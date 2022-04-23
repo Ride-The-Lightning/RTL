@@ -69,16 +69,18 @@ export class BoltzRootComponent implements OnInit, OnDestroy {
   onSwap(direction: SwapTypeEnum) {
     this.boltzService.serviceInfo().
       pipe(takeUntil(this.unSubs[2])).
-      subscribe((response) => {
-        this.store.dispatch(openAlert({
-          payload: {
-            data: {
-              serviceInfo: response,
-              direction: direction,
-              component: SwapModalComponent
+      subscribe({
+        next: (response: any) => {
+          this.store.dispatch(openAlert({
+            payload: {
+              data: {
+                serviceInfo: response,
+                direction: direction,
+                component: SwapModalComponent
+              }
             }
-          }
-        }));
+          }));
+        }
       });
   }
 
