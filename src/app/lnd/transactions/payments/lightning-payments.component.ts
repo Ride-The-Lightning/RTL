@@ -23,7 +23,7 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 import { fetchPayments, sendPayment } from '../../store/lnd.actions';
-import { allLightningTransactions, lndNodeInformation, lndNodeSettings, payments, peers } from '../../store/lnd.selector';
+import { lndNodeInformation, lndNodeSettings, payments, peers } from '../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-lightning-payments',
@@ -93,11 +93,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
         this.peers = peersSelector.peers;
       });
-    this.store.select(allLightningTransactions).pipe(takeUntil(this.unSubs[3])).
-      subscribe((allLTSelector: { allLightningTransactions: { listPaymentsAll: ListPayments, listInvoicesAll: ListInvoices }, apiCallStatus: ApiCallStatusPayload }) => {
-        this.totalPayments = allLTSelector.allLightningTransactions.listPaymentsAll && allLTSelector.allLightningTransactions.listPaymentsAll.payments && allLTSelector.allLightningTransactions.listPaymentsAll.payments.length ? allLTSelector.allLightningTransactions.listPaymentsAll.payments.length : 0;
-      });
-    this.store.select(payments).pipe(takeUntil(this.unSubs[4])).
+    this.store.select(payments).pipe(takeUntil(this.unSubs[3])).
       subscribe((paymentsSelector: { listPayments: ListPayments, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = paymentsSelector.apiCallStatus;
@@ -105,10 +101,12 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
           this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.paymentJSONArr = paymentsSelector.listPayments.payments || [];
+        this.totalPayments = this.paymentJSONArr.length;
         this.firstOffset = +paymentsSelector.listPayments.first_index_offset;
         this.lastOffset = +paymentsSelector.listPayments.last_index_offset;
         if (this.paymentJSONArr && this.paymentJSONArr.length > 0 && this.sort && this.paginator) {
-          this.loadPaymentsTable(this.paymentJSONArr);
+          // this.loadPaymentsTable(this.paymentJSONArr);
+          this.loadPaymentsTable(this.paymentJSONArr.slice(0, this.pageSize));
         }
         this.logger.info(paymentsSelector);
       });
@@ -116,7 +114,8 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
 
   ngAfterViewInit() {
     if (this.paymentJSONArr && this.paymentJSONArr.length > 0) {
-      this.loadPaymentsTable(this.paymentJSONArr);
+      // this.loadPaymentsTable(this.paymentJSONArr);
+      this.loadPaymentsTable(this.paymentJSONArr.slice(0, this.pageSize));
     }
   }
 
@@ -275,7 +274,9 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       index_offset = 0;
       page_size = event.length - (event.pageIndex * event.pageSize);
     }
-    this.store.dispatch(fetchPayments({ payload: { max_payments: page_size, index_offset: index_offset, reversed: reverse } }));
+    const starting_index = event.pageIndex * this.pageSize;
+    this.loadPaymentsTable(this.paymentJSONArr.slice(starting_index, (starting_index + this.pageSize)));
+    // this.store.dispatch(fetchPayments({ payload: { max_payments: page_size, index_offset: index_offset, reversed: reverse } }));
   }
 
   is_group(index: number, payment: Payment) {

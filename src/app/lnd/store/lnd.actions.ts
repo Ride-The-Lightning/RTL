@@ -134,6 +134,8 @@ export const channelLookup = createAction(LNDActions.CHANNEL_LOOKUP_LND, props<{
 
 export const invoiceLookup = createAction(LNDActions.INVOICE_LOOKUP_LND, props<{ payload: string }>());
 
+export const paymentLookup = createAction(LNDActions.PAYMENT_LOOKUP_LND, props<{ payload: string }>());
+
 export const setLookup = createAction(LNDActions.SET_LOOKUP_LND, props<{ payload: any }>());
 
 export const getForwardingHistory = createAction(LNDActions.GET_FORWARDING_HISTORY_LND, props<{ payload: SwitchReq }>());
