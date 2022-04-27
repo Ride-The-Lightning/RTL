@@ -37,6 +37,7 @@ import { NotFoundComponent } from '../shared/components/not-found/not-found.comp
 
 import { AuthGuard, LNDUnlockedGuard } from '../shared/services/auth.guard';
 import { NonRoutingPeersComponent } from './routing/non-routing-peers/non-routing-peers.component';
+import { LookupTransactionsComponent } from './transactions/lookup-transactions/lookup-transactions.component';
 
 export const LndRoutes: Routes = [
   {
@@ -72,7 +73,8 @@ export const LndRoutes: Routes = [
         path: 'transactions', component: TransactionsComponent, canActivate: [LNDUnlockedGuard], children: [
           { path: '', pathMatch: 'full', redirectTo: 'payments' },
           { path: 'payments', component: LightningPaymentsComponent, canActivate: [LNDUnlockedGuard] },
-          { path: 'invoices', component: LightningInvoicesComponent, canActivate: [LNDUnlockedGuard] }
+          { path: 'invoices', component: LightningInvoicesComponent, canActivate: [LNDUnlockedGuard] },
+          { path: 'lookuptransactions', component: LookupTransactionsComponent, canActivate: [LNDUnlockedGuard] }
         ]
       },
       {

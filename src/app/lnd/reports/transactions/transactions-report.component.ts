@@ -12,7 +12,7 @@ import { fadeIn } from '../../../shared/animation/opacity-animation';
 
 import { RTLState } from '../../../store/rtl.state';
 import { allLightningTransactions } from '../../store/lnd.selector';
-
+import { getAllLightningTransactions } from '../../store/lnd.actions';
 
 @Component({
   selector: 'rtl-transactions-report',
@@ -54,6 +54,9 @@ export class TransactionsReportComponent implements OnInit, OnDestroy {
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
     this.store.select(allLightningTransactions).pipe(takeUntil(this.unSubs[0])).
       subscribe((allLTSelector: { allLightningTransactions: { listPaymentsAll: ListPayments, listInvoicesAll: ListInvoices }, apiCallStatus: ApiCallStatusPayload }) => {
+        if (allLTSelector.apiCallStatus.status === APICallStatusEnum.UN_INITIATED) {
+          this.store.dispatch(getAllLightningTransactions());
+        }
         this.errorMessage = '';
         this.apiCallStatus = allLTSelector.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {

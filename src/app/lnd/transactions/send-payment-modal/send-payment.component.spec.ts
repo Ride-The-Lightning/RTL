@@ -21,7 +21,6 @@ import { mockRTLStoreState } from '../../../shared/test-helpers/test-data';
 import { RTLState } from '../../../store/rtl.state';
 import { sendPayment } from '../../store/lnd.actions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
-import { channels } from '../../store/lnd.selector';
 
 describe('LightningSendPaymentsComponent', () => {
   let component: LightningSendPaymentsComponent;
@@ -43,7 +42,6 @@ describe('LightningSendPaymentsComponent', () => {
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: DataService, useClass: mockDataService },
-        { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {} }
       ]
     }).
@@ -55,11 +53,12 @@ describe('LightningSendPaymentsComponent', () => {
     component = fixture.componentInstance;
     commonService = fixture.debugElement.injector.get(CommonService);
     store = fixture.debugElement.injector.get(Store);
-    component.activeChannels = [];
     fixture.detectChanges();
   });
 
   it('should create', () => {
+    const storeSpyChannels = spyOn(store, 'select').and.returnValue(of(mockRTLStoreState.lnd.channels));
+    component.activeChannels = [];
     expect(component).toBeTruthy();
   });
 

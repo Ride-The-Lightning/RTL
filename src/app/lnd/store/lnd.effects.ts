@@ -19,7 +19,7 @@ import { RTLActions, LNDActions, AlertTypeEnum, APICallStatusEnum, FEE_LIMIT_TYP
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 import { RTLState } from '../../store/rtl.state';
 
-import { backupChannels, fetchBalanceBlockchain, fetchClosedChannels, fetchFees, fetchInfoLND, fetchInvoices, fetchNetwork, fetchPayments, fetchPeers, fetchPendingChannels, fetchTransactions, getAllLightningTransactions, setForwardingHistory, setLookup, setPeers, setQueryRoutes, setRestoreChannelsList, updateLNDAPICallStatus, updateInvoice, fetchChannels } from './lnd.actions';
+import { backupChannels, fetchBalanceBlockchain, fetchClosedChannels, fetchFees, fetchInfoLND, fetchInvoices, fetchNetwork, fetchPayments, fetchPeers, fetchPendingChannels, fetchTransactions, setForwardingHistory, setLookup, setPeers, setQueryRoutes, setRestoreChannelsList, updateLNDAPICallStatus, updateInvoice, fetchChannels, paymentLookup, updatePayment } from './lnd.actions';
 import { allAPIsCallStatus, lndNodeInformation } from './lnd.selector';
 import { ApiCallsListLND } from '../../shared/models/apiCallsPayload';
 import { WebSocketClientService } from '../../shared/services/web-socket.service';
@@ -1050,7 +1050,6 @@ export class LNDEffects implements OnDestroy {
         }),
         catchError((err: any) => {
           this.handleErrorWithAlert('Lookup', action.payload.uiMessage, 'Channel Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/edge/' + action.payload.channelID, err);
-          this.store.dispatch(setLookup({ payload: {} }));
           return of({ type: RTLActions.VOID });
         })
       );
@@ -1059,10 +1058,16 @@ export class LNDEffects implements OnDestroy {
 
   invoiceLookup = createEffect(() => this.actions.pipe(
     ofType(LNDActions.INVOICE_LOOKUP_LND),
-    mergeMap((action: { type: string, payload: string }) => {
+    mergeMap((action: { type: string, payload: { openSnackBar: boolean, paymentHash?: string, paymentAddress?: string } }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.SEARCHING_INVOICE }));
       this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'Lookup', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get(this.CHILD_API_URL + environment.INVOICES_API + '/' + action.payload).pipe(
+      let lookupUrl = this.CHILD_API_URL + environment.INVOICES_API + '/lookup';
+      if (action.payload.paymentAddress && action.payload.paymentAddress !== '') {
+        lookupUrl = lookupUrl + '?payment_addr=' + action.payload.paymentAddress;
+      } else {
+        lookupUrl = lookupUrl + '?payment_hash=' + action.payload.paymentHash;
+      }
+      return this.httpClient.get(lookupUrl).pipe(
         map((resInvoice) => {
           this.logger.info(resInvoice);
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.SEARCHING_INVOICE }));
@@ -1074,9 +1079,43 @@ export class LNDEffects implements OnDestroy {
           };
         }),
         catchError((err: any) => {
+          this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'Lookup', status: APICallStatusEnum.ERROR } }));
           this.handleErrorWithoutAlert('Lookup', UI_MESSAGES.SEARCHING_INVOICE, 'Invoice Lookup Failed', err);
-          this.store.dispatch(openSnackBar({ payload: { message: 'Invoice Refresh Failed.', type: 'ERROR' } }));
-          return of({ type: RTLActions.VOID });
+          if (action.payload.openSnackBar) {
+            this.store.dispatch(openSnackBar({ payload: { message: 'Invoice Refresh Failed.', type: 'ERROR' } }));
+          }
+          return of({
+            type: LNDActions.SET_LOOKUP_LND,
+            payload: { error: err }
+          });
+        })
+      );
+    }))
+  );
+
+  paymentLookup = createEffect(() => this.actions.pipe(
+    ofType(LNDActions.PAYMENT_LOOKUP_LND),
+    mergeMap((action: { type: string, payload: string }) => {
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.SEARCHING_PAYMENT }));
+      this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'Lookup', status: APICallStatusEnum.INITIATED } }));
+      return this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/lookup/' + action.payload).pipe(
+        map((resPayment: any) => {
+          this.logger.info(resPayment);
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.SEARCHING_PAYMENT }));
+          this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'Lookup', status: APICallStatusEnum.COMPLETED } }));
+          this.store.dispatch(updatePayment({ payload: resPayment }));
+          return {
+            type: LNDActions.SET_LOOKUP_LND,
+            payload: resPayment
+          };
+        }),
+        catchError((err: any) => {
+          this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'Lookup', status: APICallStatusEnum.ERROR } }));
+          this.handleErrorWithoutAlert('Lookup', UI_MESSAGES.SEARCHING_PAYMENT, 'Payment Lookup Failed', err);
+          return of({
+            type: LNDActions.SET_LOOKUP_LND,
+            payload: { error: err }
+          });
         })
       );
     }))
@@ -1128,12 +1167,12 @@ export class LNDEffects implements OnDestroy {
     mergeMap(() => {
       this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchLightningTransactions', status: APICallStatusEnum.INITIATED } }));
       return this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/alltransactions').pipe(
-        map((respose: any) => {
-          this.logger.info(respose);
+        map((response: any) => {
+          this.logger.info(response);
           this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchLightningTransactions', status: APICallStatusEnum.COMPLETED } }));
           return {
             type: LNDActions.SET_ALL_LIGHTNING_TRANSATIONS_LND,
-            payload: respose
+            payload: response
           };
         }),
         catchError((err: any) => {
@@ -1172,10 +1211,11 @@ export class LNDEffects implements OnDestroy {
     this.store.dispatch(fetchClosedChannels());
     this.store.dispatch(fetchPeers());
     this.store.dispatch(fetchNetwork());
-    this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: 10, reversed: true } }));
-    this.store.dispatch(fetchPayments({ payload: { max_payments: 10, reversed: true } }));
     this.store.dispatch(fetchFees()); // Fetches monthly forwarding history as well, to count total number of events
-    this.store.dispatch(getAllLightningTransactions());
+    this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: 10, reversed: true } }));
+    this.store.dispatch(fetchPayments({ payload: { max_payments: 100000, reversed: true } }));
+    // this.store.dispatch(fetchPayments({ payload: { max_payments: 10, reversed: true } }));
+    // this.store.dispatch(getAllLightningTransactions());
   }
 
   handleErrorWithoutAlert(actionName: string, uiMessage: string, genericErrorMessage: string, err: { status: number, error: any }) {

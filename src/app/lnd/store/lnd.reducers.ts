@@ -1,8 +1,8 @@
 import { createReducer, on } from '@ngrx/store';
 
 import { initLNDState } from './lnd.state';
-import { addInvoice, removeChannel, removePeer, resetLNDStore, setChannels, setAllLightningTransactions, setBalanceBlockchain, setChildNodeSettingsLND, setClosedChannels, setFees, setForwardingHistory, setInfo, setInvoices, setNetwork, setPayments, setPeers, setPendingChannels, setTransactions, setUTXOs, updateLNDAPICallStatus, updateInvoice } from './lnd.actions';
-import { Channel, ClosedChannel } from '../../shared/models/lndModels';
+import { addInvoice, removeChannel, removePeer, resetLNDStore, setChannels, setAllLightningTransactions, setBalanceBlockchain, setChildNodeSettingsLND, setClosedChannels, setFees, setForwardingHistory, setInfo, setInvoices, setNetwork, setPayments, setPeers, setPendingChannels, setTransactions, setUTXOs, updateLNDAPICallStatus, updateInvoice, updatePayment } from './lnd.actions';
+import { Channel, ClosedChannel, SetAllLightningTransactions } from '../../shared/models/lndModels';
 
 let flgTransactionsSet = false;
 let flgUTXOsSet = false;
@@ -63,6 +63,14 @@ export const LNDReducer = createReducer(initLNDState,
     return {
       ...state,
       listInvoices: modifiedListInvoices
+    };
+  }),
+  on(updatePayment, (state, { payload }) => {
+    const modifiedListPayments = state.listPayments;
+    modifiedListPayments.payments = modifiedListPayments.payments.map((payment) => ((payment.payment_hash === payload.payment_hash) ? payload : payment));
+    return {
+      ...state,
+      listPayments: modifiedListPayments
     };
   }),
   on(setFees, (state, { payload }) => ({
@@ -177,14 +185,29 @@ export const LNDReducer = createReducer(initLNDState,
       utxos: payload
     };
   }),
-  on(setPayments, (state, { payload }) => ({
-    ...state,
-    listPayments: payload
-  })),
-  on(setAllLightningTransactions, (state, { payload }) => ({
-    ...state,
-    allLightningTransactions: payload
-  })),
+  // on(setPayments, (state, { payload }) => ({
+  //   ...state,
+  //   listPayments: payload
+  // })),
+  // on(setAllLightningTransactions, (state, { payload }) => ({
+  //   ...state,
+  //   allLightningTransactions: payload
+  // })),
+  on(setPayments, (state, { payload }) => {
+    const allLtTrans: SetAllLightningTransactions = { listInvoicesAll: state.allLightningTransactions.listInvoicesAll, listPaymentsAll: payload };
+    return {
+      ...state,
+      listPayments: payload,
+      allLightningTransactions: allLtTrans
+    };
+  }),
+  on(setAllLightningTransactions, (state, { payload }) => {
+    const allLtTrans: SetAllLightningTransactions = { listInvoicesAll: payload.listInvoicesAll, listPaymentsAll: state.listPayments };
+    return {
+      ...state,
+      allLightningTransactions: allLtTrans
+    };
+  }),
   on(setForwardingHistory, (state, { payload }) => {
     const storedChannels = [...state.channels, ...state.closedChannels];
     let updatedPayload = !payload.forwarding_events ? {} : JSON.parse(JSON.stringify(payload));

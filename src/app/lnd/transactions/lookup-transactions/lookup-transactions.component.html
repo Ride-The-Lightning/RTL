@@ -1,0 +1,37 @@
+<div fxLayout="column">
+  <div fxLayout="row" fxFlex="100" fxLayoutAlign="start start" class="padding-gap">
+    <mat-card-content fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+      <form fxFlex="100" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start space-between" class="w-100" #form="ngForm">
+        <div fxFlex="100" fxLayoutAlign="start end">
+          <mat-radio-group color="primary" [(ngModel)]="selectedFieldId" (change)="onSelectChange($event)" tabindex="1" name="lookupField">
+            <mat-radio-button *ngFor="let lookupField of lookupFields" [value]="lookupField.id" [checked]="selectedFieldId === lookupField.id" class="mr-4">
+              {{lookupField.name}}
+            </mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <mat-form-field fxFlex="100" fxLayoutAlign="start end" [ngClass]="{'mt-1': true, 'mt-2': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
+          <input matInput name="lookupKey" [placeholder]="lookupFields[selectedFieldId]?.placeholder || 'Lookup Key'" (change)="clearLookupValue()" [(ngModel)]="lookupKey" tabindex="2" required #key>
+          <mat-error *ngIf="!lookupKey">{{lookupFields[selectedFieldId]?.placeholder}} is required.</mat-error>
+        </mat-form-field>
+        <div fxLayout="row" fxFlex="100" class="mt-1">
+          <button class="mr-1" mat-stroked-button color="primary" tabindex="3" type="button" (click)="resetData()">Clear</button>
+          <button mat-flat-button color="primary" tabindex="4" type="submit" (click)="onLookup()">Lookup</button>
+        </div>
+      </form>
+      <div fxFlex="100" *ngIf="errorMessage !== ''" fxLayout="row wrap" fxLayoutAlign="space-between center" [ngClass]="{'w-100 mt-2 p-2 error-border': errorMessage !== '' && errorMessage !== 'Getting lookup details...', 'w-100 my-2 p-2': true}">
+        <mat-progress-bar *ngIf="errorMessage === 'Getting lookup details...'" mode="indeterminate"></mat-progress-bar>
+        {{errorMessage}}
+      </div>
+      <div fxFlex="100" *ngIf="errorMessage === '' && lookupValue && flgSetLookupValue" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="w-100 mt-2">
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center" class="mb-2">
+          <span class="page-title font-bold-500">{{lookupFields[selectedFieldId].name}} Details</span>
+        </div>
+        <div [ngSwitch]="selectedFieldId" fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+          <span fxFlex="100" *ngSwitchCase="0"><rtl-payment-lookup [payment]="lookupValue"></rtl-payment-lookup></span>
+          <span fxFlex="100" *ngSwitchCase="1"><rtl-invoice-lookup [invoice]="lookupValue"></rtl-invoice-lookup></span>
+          <span fxFlex="100" *ngSwitchDefault><h3>Error! Unable to find details!</h3></span>
+        </div>
+      </div>      
+    </mat-card-content>
+  </div>
+</div>

@@ -2,6 +2,7 @@ import request from 'request-promise';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { CommonSelectedNode } from '../../models/config.model.js';
+
 let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
@@ -71,15 +72,30 @@ export const getAllLightningTransactions = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Getting All Lightning Transactions..' });
   const options1 = JSON.parse(JSON.stringify(common.getOptions(req)));
   const options2 = JSON.parse(JSON.stringify(common.getOptions(req)));
-  options1.url = req.session.selectedNode.ln_server_url + '/v1/payments?max_payments=100000&index_offset=0&reversed=true';
+  // options1.url = req.session.selectedNode.ln_server_url + '/v1/payments?max_payments=100000&index_offset=0&reversed=true';
   options2.url = req.session.selectedNode.ln_server_url + '/v1/invoices?num_max_invoices=100000&index_offset=0&reversed=true';
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'All Payments Options', data: options1 });
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'All Invoices Options', data: options2 });
-  return Promise.all([request(options1), request(options2)]).then((values) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'All Lightning Transactions Received', data: ({ totalPayments: values[0].length || 0, totalInvoices: values[1].length || 0 }) });
+  // return Promise.all([request(options1), request(options2)]).then((values) => {
+  return Promise.all([{ payments: [] }, request(options2)]).then((values) => {
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'All Lightning Transactions Received', data: ({ totalPayments: values[0].payments.length || 0, totalInvoices: values[1].invoices.length || 0 }) });
     res.status(200).json({ listPaymentsAll: values[0], listInvoicesAll: values[1] });
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Payments', 'All Lightning Transactions Error', req.session.selectedNode);
+    return res.status(err.statusCode).json({ message: err.message, error: err.error });
+  });
+};
+
+export const paymentLookup = (req, res, next) => {
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Looking up Payment..' });
+  options = common.getOptions(req);
+  if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
+  options.url = req.session.selectedNode.ln_server_url + '/v2/router/track/' + req.params.paymentHash;
+  request(options).then((body) => {
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Information Received for ' + req.params.paymentHash, data: body });
+    res.status(200).json(body.result || body);
+  }).catch((errRes) => {
+    const err = common.handleError(errRes, 'Payments', 'Payment Lookup Error', req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
   });
 };
