@@ -3,7 +3,7 @@ import { createAction, props } from '@ngrx/store';
 import { ECLActions } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Channel, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus, Payments, Route, Transaction, SendPaymentOnChain, Invoice, PaymentReceived, ChannelStateUpdate, SaveChannel, UpdateChannel, CloseChannel, GetQueryRoutes, CreateInvoice, SendPayment, PaymentRelayed } from '../../shared/models/eclModels';
+import { GetInfo, Channel, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus, Payments, QueryRoutes, Transaction, SendPaymentOnChain, Invoice, PaymentReceived, ChannelStateUpdate, SaveChannel, UpdateChannel, CloseChannel, GetQueryRoutes, CreateInvoice, SendPayment, PaymentRelayed } from '../../shared/models/eclModels';
 
 export const updateECLAPICallStatus = createAction(ECLActions.UPDATE_API_CALL_STATUS_ECL, props<{ payload: ApiCallStatusPayload }>());
 
@@ -67,7 +67,7 @@ export const setPayments = createAction(ECLActions.SET_PAYMENTS_ECL, props<{ pay
 
 export const getQueryRoutes = createAction(ECLActions.GET_QUERY_ROUTES_ECL, props<{ payload: GetQueryRoutes }>());
 
-export const setQueryRoutes = createAction(ECLActions.SET_QUERY_ROUTES_ECL, props<{ payload: Route[] }>());
+export const setQueryRoutes = createAction(ECLActions.SET_QUERY_ROUTES_ECL, props<{ payload: QueryRoutes[] }>());
 
 export const sendPayment = createAction(ECLActions.SEND_PAYMENT_ECL, props<{ payload: SendPayment }>());
 

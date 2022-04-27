@@ -3,11 +3,10 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faRoute, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
-import { Route } from '../../../shared/models/eclModels';
+import { QueryRoutes, RouteNode } from '../../../shared/models/eclModels';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { ECLEffects } from '../../store/ecl.effects';
@@ -22,13 +21,13 @@ import { getQueryRoutes } from '../../store/ecl.actions';
 })
 export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild('queryRoutesForm', { static: true }) form: any;
+  public allQRoutes = [];
   public nodeId = '';
   public amount = 0;
-  public qrHops: any;
+  public qrHops: Array<any> = [];
   public flgSticky = false;
-  public displayedColumns: any[] = [];
+  public displayedColumns: any;
   public flgLoading: Array<Boolean | 'error'> = [false]; // 0: peers
   public faRoute = faRoute;
   public faExclamationTriangle = faExclamationTriangle;
@@ -54,18 +53,20 @@ export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.qrHops = new MatTableDataSource([]);
-    this.eclEffects.setQueryRoutes.pipe(takeUntil(this.unSubs[1])).subscribe((queryRoute) => {
-      this.qrHops.data = [];
-      if (queryRoute && queryRoute.length && queryRoute.length > 0) {
+    this.qrHops[0] = new MatTableDataSource([]);
+    this.qrHops[0].data = [];
+    this.eclEffects.setQueryRoutes.pipe(takeUntil(this.unSubs[1])).subscribe((queryRoute: any) => {
+      if (queryRoute && queryRoute.routes && queryRoute.routes.length) {
         this.flgLoading[0] = false;
-        this.qrHops = new MatTableDataSource<Route>([...queryRoute]);
-        this.qrHops.data = queryRoute;
+        this.allQRoutes = queryRoute.routes;
+        this.allQRoutes.forEach((route, i) => {
+          this.qrHops[i] = new MatTableDataSource<QueryRoutes>([...route.nodeIds]);
+        });
       } else {
         this.flgLoading[0] = 'error';
+        this.allQRoutes = [];
+        this.qrHops = [];
       }
-      this.qrHops.sort = this.sort;
-      this.qrHops.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     });
   }
 
@@ -73,20 +74,21 @@ export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
     if (!this.nodeId || !this.amount) {
       return true;
     }
-    this.qrHops.data = [];
+    this.qrHops = [];
     this.flgLoading[0] = true;
     this.store.dispatch(getQueryRoutes({ payload: { nodeId: this.nodeId, amount: this.amount * 1000 } }));
   }
 
   resetData() {
+    this.allQRoutes = [];
     this.nodeId = '';
     this.amount = 0;
     this.flgLoading[0] = false;
-    this.qrHops.data = [];
+    this.qrHops = [];
     this.form.resetForm();
   }
 
-  onHopClick(selHop: Route, event: any) {
+  onHopClick(selHop: RouteNode) {
     const reorderedHop = [
       [{ key: 'alias', value: selHop.alias, title: 'Alias', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'nodeId', value: selHop.nodeId, title: 'Node ID', width: 100, type: DataTypeEnum.STRING }]
