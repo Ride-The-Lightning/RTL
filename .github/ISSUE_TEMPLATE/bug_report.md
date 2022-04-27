@@ -22,7 +22,7 @@ If applicable, add screenshots to help explain your problem.
 
 **Your environment**
 * Version of `RTL`
-* Version of `lnd`
+* Version of `lnd`/`core lightning`/`eclair`
 * Version of `btcd`, `bitcoind`, or other backend
 * Browser & browser version
 * Operating system (`uname -a` on *Nix)
