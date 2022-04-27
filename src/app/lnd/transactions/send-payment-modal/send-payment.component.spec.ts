@@ -53,11 +53,12 @@ describe('LightningSendPaymentsComponent', () => {
     component = fixture.componentInstance;
     commonService = fixture.debugElement.injector.get(CommonService);
     store = fixture.debugElement.injector.get(Store);
-    component.activeChannels = [];
     fixture.detectChanges();
   });
 
   it('should create', () => {
+    const storeSpyChannels = spyOn(store, 'select').and.returnValue(of(mockRTLStoreState.lnd.channels));
+    component.activeChannels = [];
     expect(component).toBeTruthy();
   });
 

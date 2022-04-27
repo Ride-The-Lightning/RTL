@@ -23,12 +23,12 @@
         {{errorMessage}}
       </div>
       <div fxFlex="100" *ngIf="errorMessage === '' && lookupValue && flgSetLookupValue" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="w-100 mt-2">
-        <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center" class="mb-2">
           <span class="page-title font-bold-500">{{lookupFields[selectedFieldId].name}} Details</span>
         </div>
         <div [ngSwitch]="selectedFieldId" fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
-          <span fxFlex="100" *ngSwitchCase="0"><rtl-node-lookup [lookupResult]="lookupValue"></rtl-node-lookup></span>
-          <span fxFlex="100" *ngSwitchCase="1"><rtl-channel-lookup [lookupResult]="lookupValue"></rtl-channel-lookup></span>
+          <span fxFlex="100" *ngSwitchCase="0"><rtl-payment-lookup [payment]="lookupValue"></rtl-payment-lookup></span>
+          <span fxFlex="100" *ngSwitchCase="1"><rtl-invoice-lookup [invoice]="lookupValue"></rtl-invoice-lookup></span>
           <span fxFlex="100" *ngSwitchDefault><h3>Error! Unable to find details!</h3></span>
         </div>
       </div>      

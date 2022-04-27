@@ -43,12 +43,10 @@ export class LookupTransactionsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.actions.pipe(takeUntil(this.unSubs[0]), filter((action) => (action.type === LNDActions.SET_LOOKUP_LND))).
       subscribe((resLookup: any) => {
-        this.errorMessage = (this.selectedFieldId === 0 && resLookup.payload.hasOwnProperty('node')) ? '' : (this.selectedFieldId === 1 && resLookup.payload.hasOwnProperty('channel_id')) ? '' : this.errorMessage;
+        this.flgSetLookupValue = !resLookup.payload.error;
         this.lookupValue = JSON.parse(JSON.stringify(resLookup.payload));
-        this.flgSetLookupValue = (this.selectedFieldId === 0 && resLookup.payload.hasOwnProperty('node')) ? true : !!((this.selectedFieldId === 1 && resLookup.payload.hasOwnProperty('channel_id')));
+        this.errorMessage = resLookup.payload.error ? this.commonService.extractErrorMessage(resLookup.payload.error) : '';
         this.logger.info(this.lookupValue);
-        // this.errorMessage = '';
-        // this.errorMessage = (typeof (resLookup.payload.message) === 'object') ? JSON.stringify(resLookup.payload.message) : resLookup.payload.message;
       });
   }
 
@@ -56,6 +54,7 @@ export class LookupTransactionsComponent implements OnInit, OnDestroy {
     if (!this.lookupKey) {
       return true;
     }
+    this.errorMessage = '';
     this.flgSetLookupValue = false;
     this.lookupValue = {};
     switch (this.selectedFieldId) {

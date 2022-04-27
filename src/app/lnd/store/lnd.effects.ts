@@ -1086,7 +1086,7 @@ export class LNDEffects implements OnDestroy {
           }
           return of({
             type: LNDActions.SET_LOOKUP_LND,
-            payload: err
+            payload: { error: err }
           });
         })
       );
@@ -1114,7 +1114,7 @@ export class LNDEffects implements OnDestroy {
           this.handleErrorWithoutAlert('Lookup', UI_MESSAGES.SEARCHING_PAYMENT, 'Payment Lookup Failed', err);
           return of({
             type: LNDActions.SET_LOOKUP_LND,
-            payload: err
+            payload: { error: err }
           });
         })
       );

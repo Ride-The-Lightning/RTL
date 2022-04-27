@@ -11,6 +11,8 @@ import { ChannelsTablesComponent } from './peers-channels/channels/channels-tabl
 import { PeersComponent } from './peers-channels/peers/peers.component';
 import { LightningInvoicesComponent } from './transactions/invoices/lightning-invoices.component';
 import { LookupTransactionsComponent } from './transactions/lookup-transactions/lookup-transactions.component';
+import { PaymentLookupComponent } from './transactions/lookup-transactions/payment-lookup/payment-lookup.component';
+import { InvoiceLookupComponent } from './transactions/lookup-transactions/invoice-lookup/invoice-lookup.component';
 import { OnChainReceiveComponent } from './on-chain/on-chain-receive/on-chain-receive.component';
 import { OnChainComponent } from './on-chain/on-chain.component';
 import { UTXOTablesComponent } from './on-chain/utxo-tables/utxo-tables.component';
@@ -79,6 +81,8 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     ConnectionsComponent,
     LightningInvoicesComponent,
     LookupTransactionsComponent,
+    PaymentLookupComponent,
+    InvoiceLookupComponent,
     WalletComponent,
     LightningPaymentsComponent,
     ChannelPendingTableComponent,
