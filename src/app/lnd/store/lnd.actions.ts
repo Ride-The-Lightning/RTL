@@ -5,7 +5,7 @@ import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import {
   GetInfo, Peer, NetworkInfo, Fees, Channel, Invoice, ListInvoices, ChannelsTransaction, ClosedChannel, Transaction, SwitchReq,
-  SwitchRes, QueryRoutes, LightningNode, UTXO, ListPayments, SavePeer, SaveInvoice, SaveChannel, CloseChannel, FetchInvoices, FetchPayments, SendPayment, GetNewAddress, GetQueryRoutes, InitWallet, ChannelLookup, SetRestoreChannelsList, NewlyAddedPeer, BlockchainBalance, SetPendingChannels, BackupChannels, SetAllLightningTransactions
+  SwitchRes, QueryRoutes, LightningNode, UTXO, ListPayments, SavePeer, SaveInvoice, SaveChannel, CloseChannel, FetchInvoices, FetchPayments, SendPayment, GetNewAddress, GetQueryRoutes, InitWallet, ChannelLookup, SetRestoreChannelsList, NewlyAddedPeer, BlockchainBalance, SetPendingChannels, BackupChannels, SetAllLightningTransactions, Payment
 } from '../../shared/models/lndModels';
 
 export const updateLNDAPICallStatus = createAction(LNDActions.UPDATE_API_CALL_STATUS_LND, props<{ payload: ApiCallStatusPayload }>());
@@ -90,6 +90,8 @@ export const setInvoices = createAction(LNDActions.SET_INVOICES_LND, props<{ pay
 
 export const updateInvoice = createAction(LNDActions.UPDATE_INVOICE_LND, props<{ payload: Invoice }>());
 
+export const updatePayment = createAction(LNDActions.UPDATE_PAYMENT_LND, props<{ payload: Payment }>());
+
 export const fetchTransactions = createAction(LNDActions.FETCH_TRANSACTIONS_LND);
 
 export const setTransactions = createAction(LNDActions.SET_TRANSACTIONS_LND, props<{ payload: Transaction[] }>());
@@ -132,7 +134,7 @@ export const peerLookup = createAction(LNDActions.PEER_LOOKUP_LND, props<{ paylo
 
 export const channelLookup = createAction(LNDActions.CHANNEL_LOOKUP_LND, props<{ payload: ChannelLookup }>());
 
-export const invoiceLookup = createAction(LNDActions.INVOICE_LOOKUP_LND, props<{ payload: string }>());
+export const invoiceLookup = createAction(LNDActions.INVOICE_LOOKUP_LND, props<{ payload: { openSnackBar: boolean, paymentHash?: string, paymentAddress?: string } }>());
 
 export const paymentLookup = createAction(LNDActions.PAYMENT_LOOKUP_LND, props<{ payload: string }>());
 

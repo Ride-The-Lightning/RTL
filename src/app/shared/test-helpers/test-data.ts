@@ -1505,7 +1505,7 @@ export const mockRTLStoreState = {
       confirmed_balance: '1621135',
       unconfirmed_balance: '0'
     },
-    allChannels: [
+    channels: [
       {
         active: true,
         remote_pubkey: '030f0bf260acdbd3edcad84d7588ec7c5df4711e87e6a23016f989b8d3a4147230',

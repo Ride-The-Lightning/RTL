@@ -1,7 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 
 import { initLNDState } from './lnd.state';
-import { addInvoice, removeChannel, removePeer, resetLNDStore, setChannels, setAllLightningTransactions, setBalanceBlockchain, setChildNodeSettingsLND, setClosedChannels, setFees, setForwardingHistory, setInfo, setInvoices, setNetwork, setPayments, setPeers, setPendingChannels, setTransactions, setUTXOs, updateLNDAPICallStatus, updateInvoice } from './lnd.actions';
+import { addInvoice, removeChannel, removePeer, resetLNDStore, setChannels, setAllLightningTransactions, setBalanceBlockchain, setChildNodeSettingsLND, setClosedChannels, setFees, setForwardingHistory, setInfo, setInvoices, setNetwork, setPayments, setPeers, setPendingChannels, setTransactions, setUTXOs, updateLNDAPICallStatus, updateInvoice, updatePayment } from './lnd.actions';
 import { Channel, ClosedChannel, SetAllLightningTransactions } from '../../shared/models/lndModels';
 
 let flgTransactionsSet = false;
@@ -63,6 +63,14 @@ export const LNDReducer = createReducer(initLNDState,
     return {
       ...state,
       listInvoices: modifiedListInvoices
+    };
+  }),
+  on(updatePayment, (state, { payload }) => {
+    const modifiedListPayments = state.listPayments;
+    modifiedListPayments.payments = modifiedListPayments.payments.map((payment) => ((payment.payment_hash === payload.payment_hash) ? payload : payment));
+    return {
+      ...state,
+      listPayments: modifiedListPayments
     };
   }),
   on(setFees, (state, { payload }) => ({

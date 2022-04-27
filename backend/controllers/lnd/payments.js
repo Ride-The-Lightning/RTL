@@ -94,7 +94,7 @@ export const paymentLookup = (req, res, next) => {
     options.url = req.session.selectedNode.ln_server_url + '/v2/router/track/' + req.params.paymentHash;
     request(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Information Received for ' + req.params.paymentHash, data: body });
-        res.status(200).json(body);
+        res.status(200).json(body.result || body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Payments', 'Payment Lookup Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
