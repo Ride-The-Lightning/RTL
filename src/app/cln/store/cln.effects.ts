@@ -27,7 +27,7 @@ import { CLNOfferInformationComponent } from '../transactions/offers/offer-infor
 @Injectable()
 export class CLNEffects implements OnDestroy {
 
-  CHILD_API_URL = API_URL + '/cl';
+  CHILD_API_URL = API_URL + '/cln';
   private flgInitialized = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
