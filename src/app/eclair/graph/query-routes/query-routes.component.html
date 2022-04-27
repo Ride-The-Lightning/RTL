@@ -23,25 +23,41 @@
       <span class="page-title">Transaction Route</span>
     </div>
   </div>
-  <div [perfectScrollbar] class="table-container mb-6">
-    <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
-    <table mat-table #table [dataSource]="qrHops" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
-      <ng-container matColumnDef="alias">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Alias </th>
-        <td mat-cell *matCellDef="let hop"> {{hop?.alias}} </td>
-      </ng-container>
-      <ng-container matColumnDef="nodeId">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-        <td mat-cell *matCellDef="let hop"> {{hop?.nodeId}} </td>
-      </ng-container>
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="pl-4 pr-3"><span fxLayoutAlign="end center">Actions</span></th>
-        <td mat-cell *matCellDef="let hop" class="pl-4">
-          <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onHopClick(hop, $event)">View Info</button>          
-        </td>
-      </ng-container>
-      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
+  <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
+  <div fxLayout="row" fxFlex="100" class="padding-gap-x" fxLayoutAlign="start start">
+    <div fxLayout="column" fxFlex="100">
+      <div fxFlex="100" *ngFor="let qRoute of allQRoutes; index as i">
+        <mat-expansion-panel class="flat-expansion-panel help-expansion mb-2px">
+          <mat-expansion-panel-header>
+              <mat-panel-title fxLayout="row" fxLayoutAlign="space-between start">
+                <span fxFlex="50" fxLayoutAlign="start start">Route {{i+1}}</span>
+                <span fxFlex="50" fxLayoutAlign="end end">{{(qRoute.amount/1000) | number}}</span>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+          <mat-panel-description fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch">
+            <div [perfectScrollbar] class="table-container mb-2" fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch">
+              <table mat-table #table[i] [dataSource]="qrHops[i]" [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
+                <ng-container matColumnDef="alias">
+                  <th mat-header-cell *matHeaderCellDef> Alias </th>
+                  <td mat-cell *matCellDef="let hop"> {{hop?.alias}} </td>
+                </ng-container>
+                <ng-container matColumnDef="nodeId">
+                  <th mat-header-cell *matHeaderCellDef> ID </th>
+                  <td mat-cell *matCellDef="let hop"> {{hop?.nodeId}} </td>
+                </ng-container>
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef class="pl-4 pr-3"><span fxLayoutAlign="end center">Actions</span></th>
+                  <td mat-cell *matCellDef="let hop" class="pl-4">
+                    <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onHopClick(hop)">View Info</button>
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              </table>
+            </div>          
+          </mat-panel-description>
+        </mat-expansion-panel>
+      </div>
+    </div>
   </div>
 </div>

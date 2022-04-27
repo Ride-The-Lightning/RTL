@@ -22,7 +22,7 @@ export const getSentInfoFromPaymentRequest = (selNode, payment) => {
 };
 export const getQueryNodes = (selNode, nodeIds) => {
     options.url = selNode.ln_server_url + '/nodes';
-    options.form = { nodeIds: nodeIds };
+    options.form = { nodeIds: nodeIds.reduce((acc, curr) => acc + ',' + curr) };
     return request.post(options).then((nodes) => {
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Payments', msg: 'Query Nodes Received', data: nodes });
         return nodes;
@@ -78,22 +78,25 @@ export const queryPaymentRoute = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Query Payment Route Options', data: options.form });
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Query Payment Route Received', data: body });
-        if (body && body.length) {
-            const queryRoutes = [];
-            return getQueryNodes(req.session.selectedNode, body).then((hopsWithAlias) => {
+        if (body && body.routes && body.routes.length) {
+            let allRoutesNodeIds = [];
+            allRoutesNodeIds = body.routes.reduce((accRoutes, currRoute) => [...new Set([...accRoutes, ...currRoute.nodeIds])], []);
+            return getQueryNodes(req.session.selectedNode, allRoutesNodeIds).then((nodesWithAlias) => {
                 let foundPeer = null;
-                body.map((hop) => {
-                    foundPeer = hopsWithAlias.find((hopWithAlias) => hop === hopWithAlias.nodeId);
-                    queryRoutes.push({ nodeId: hop, alias: foundPeer ? foundPeer.alias : '' });
-                    return hop;
+                body.routes.forEach((route, i) => {
+                    route.nodeIds.map((node, j) => {
+                        foundPeer = nodesWithAlias.find((nodeWithAlias) => node === nodeWithAlias.nodeId);
+                        body.routes[i].nodeIds[j] = { nodeId: node, alias: foundPeer ? foundPeer.alias : '' };
+                        return node;
+                    });
                 });
-                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Query Routes with Alias Received', data: queryRoutes });
-                res.status(200).json(queryRoutes);
+                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Query Routes with Alias Received', data: body });
+                res.status(200).json(body);
             });
         }
         else {
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Empty Payment Route Information Received' });
-            res.status(200).json([]);
+            res.status(200).json({ routes: [] });
         }
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Payments', 'Query Route Error', req.session.selectedNode);

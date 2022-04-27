@@ -158,9 +158,18 @@ export interface SendPaymentOnChain {
   blocks?: number;
 }
 
-export interface Route {
+export interface RouteNode {
   nodeId?: string;
   alias?: string;
+}
+
+export interface Route {
+  amount?: number;
+  nodeIds?: RouteNode[];
+}
+
+export interface QueryRoutes {
+  routes: Route[];
 }
 
 export interface Transaction {
