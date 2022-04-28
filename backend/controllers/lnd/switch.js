@@ -4,10 +4,10 @@ import { Common } from '../../utils/common.js';
 let options = null;
 const logger = Logger;
 const common = Common;
-let responseData = { forwarding_events: [], last_offset_index: 0 };
+const responseData = { switch: { forwarding_events: [], last_offset_index: 0 }, fees: { forwarding_events: [], last_offset_index: 0 } };
 const num_max_events = 100;
 export const forwardingHistory = (req, res, next) => {
-    getAllForwardingEvents(req, req.body.start_time, req.body.end_time, 0, (eventsResponse) => {
+    getAllForwardingEvents(req, req.body.start_time, req.body.end_time, 0, 'switch', (eventsResponse) => {
         if (eventsResponse.error) {
             res.status(eventsResponse.error.statusCode).json(eventsResponse);
         }
@@ -16,10 +16,10 @@ export const forwardingHistory = (req, res, next) => {
         }
     });
 };
-export const getAllForwardingEvents = (req, start, end, offset, callback) => {
+export const getAllForwardingEvents = (req, start, end, offset, caller, callback) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Switch', msg: 'Getting Forwarding Events..' });
     if (offset === 0) {
-        responseData = { forwarding_events: [], last_offset_index: 0 };
+        responseData[caller] = { forwarding_events: [], last_offset_index: 0 };
     }
     if (!req.session.selectedNode) {
         const err = common.handleError({ message: 'Session Expired after a day\'s inactivity.', statusCode: 401 }, 'Balance', 'Get Balance Error', req.session.selectedNode);
@@ -41,17 +41,18 @@ export const getAllForwardingEvents = (req, start, end, offset, callback) => {
     return request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Switch', msg: 'Forwarding Events Received', data: body });
         if (body.forwarding_events) {
-            responseData.forwarding_events.push(...body.forwarding_events);
+            responseData[caller].forwarding_events.push(...body.forwarding_events);
+            responseData[caller].last_offset_index = body.last_offset_index ? body.last_offset_index : 0;
         }
         if (!body.last_offset_index || body.last_offset_index < offset + num_max_events) {
-            responseData.last_offset_index = body.last_offset_index ? body.last_offset_index : 0;
-            if (responseData.forwarding_events) {
-                responseData.forwarding_events = common.sortDescByKey(responseData.forwarding_events, 'timestamp');
+            responseData[caller].last_offset_index = body.last_offset_index ? body.last_offset_index : 0;
+            if (responseData[caller].forwarding_events) {
+                responseData[caller].forwarding_events = common.sortDescByKey(responseData[caller].forwarding_events, 'timestamp');
             }
-            return callback(responseData);
+            return callback(responseData[caller]);
         }
         else {
-            return getAllForwardingEvents(req, start, end, offset + num_max_events, callback);
+            return getAllForwardingEvents(req, start, end, offset + num_max_events, caller, callback);
         }
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Switch', 'Get All Forwarding Events Error', req.session.selectedNode);
