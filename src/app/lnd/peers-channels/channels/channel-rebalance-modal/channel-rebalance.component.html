@@ -35,7 +35,7 @@
                 <mat-form-field fxFlex="48" fxLayoutAlign="start end">
                   <input type="text" placeholder="Receive from Peer" aria-label="Receive from Peer" matInput formControlName="selRebalancePeer" (change)="onSelectedPeerChanged()" [matAutocomplete]="auto" tabindex="2" required>
                   <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectedPeerChanged()">
-                    <mat-option *ngFor="let activeChannel of filteredActiveChannels | async" [value]="activeChannel">{{activeChannel.remote_alias || activeChannel.chan_id}}</mat-option>
+                    <mat-option *ngFor="let activeChannel of filteredActiveChannels | async" [value]="activeChannel">{{activeChannel.remote_alias}} - {{activeChannel.chan_id}}</mat-option>
                   </mat-autocomplete>
                   <mat-error *ngIf="inputFormGroup.controls.selRebalancePeer.errors?.required">Receive from Peer is required.</mat-error>
                   <mat-error *ngIf="inputFormGroup.controls.selRebalancePeer.errors?.notfound">Receive from Peer not found in the list.</mat-error>
