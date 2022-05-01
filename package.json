@@ -6,7 +6,9 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --open",
+    "prebuildfrontendtest": "node src/prebuild.cjs",
     "prebuildfrontend": "node src/prebuild.cjs",
+    "buildfrontendtest": "ng test --watch=false && ng build --configuration production",
     "buildfrontend": "ng test --watch=false && ng build --configuration production",
     "buildbackend": "tsc --project tsconfig.json",
     "watchbackend": "tsc --project tsconfig.json --watch",
