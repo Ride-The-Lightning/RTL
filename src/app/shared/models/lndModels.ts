@@ -391,6 +391,8 @@ export interface Payment {
   failure_reason?: string;
   htlcs: PaymentHTLC[];
   is_expanded?: boolean;
+  description?: string;
+  description_hash?: string;
 }
 
 export interface ListPayments {

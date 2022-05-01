@@ -1,0 +1,67 @@
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+  <mat-card-content class="padding-gap-x-large" fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+    <div fxFlex="100">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Payment Hash</h4>
+      <span class="foreground-secondary-text">{{payment?.payment_hash}}</span>
+    </div>
+    <mat-divider [inset]="true" class="my-1"></mat-divider>
+    <div fxFlex="100">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Payment Preimage</h4>
+      <span class="foreground-secondary-text">
+        <div>{{payment?.payment_preimage}}</div>
+      </span>
+    </div>
+    <mat-divider [inset]="true" class="my-1"></mat-divider>
+    <div fxFlex="100">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Payment Request</h4>
+      <span class="foreground-secondary-text">
+        <div>{{payment?.payment_request}}</div>
+      </span>
+    </div>
+    <mat-divider [inset]="true" class="my-1"></mat-divider>
+    <div fxFlex="100">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Description</h4>
+      <span class="foreground-secondary-text">
+        <div>{{payment?.description}}</div>
+      </span>
+    </div>
+    <mat-divider [inset]="true" class="my-1"></mat-divider>
+    <div fxLayout="row">
+      <div fxFlex="50">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Status</h4>
+        <span class="foreground-secondary-text">
+          <div>{{payment?.status}}</div>
+        </span>
+      </div>
+      <div fxFlex="50">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Creation Date</h4>
+        <span class="foreground-secondary-text">
+          <div>{{payment?.creation_date}}</div>
+        </span>
+      </div>
+    </div>
+    <mat-divider [inset]="true" class="my-1"></mat-divider>
+    <div fxLayout="row">
+      <div fxFlex="50">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Value (mSats)</h4>
+        <span class="foreground-secondary-text">
+          <div>{{payment?.value_msat | number}}</div>
+        </span>
+      </div>
+      <div fxFlex="50">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Fee (mSats)</h4>
+        <span class="foreground-secondary-text">
+          <div>{{payment?.fee_msat | number}}</div>
+        </span>
+      </div>
+    </div>
+    <mat-divider [inset]="true" class="my-1"></mat-divider>
+    <div fxFlex="100">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Path</h4>
+      <span class="foreground-secondary-text">
+        <div>{{paths}}</div>
+      </span>
+    </div>
+    <mat-divider [inset]="true" class="my-1"></mat-divider>
+  </mat-card-content>
+</div>

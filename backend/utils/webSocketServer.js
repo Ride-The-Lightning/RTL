@@ -11,7 +11,7 @@ export class WebSocketServer {
         this.logger = Logger;
         this.common = Common;
         this.clientDetails = [];
-        this.eventEmitterCLT = new EventEmitter();
+        this.eventEmitterCLN = new EventEmitter();
         this.eventEmitterECL = new EventEmitter();
         this.eventEmitterLND = new EventEmitter();
         this.webSocketServer = null;
@@ -104,8 +104,8 @@ export class WebSocketServer {
                             case 'LND':
                                 this.eventEmitterLND.emit('DISCONNECT', prevNodeIndex);
                                 break;
-                            case 'CLT':
-                                this.eventEmitterCLT.emit('DISCONNECT', prevNodeIndex);
+                            case 'CLN':
+                                this.eventEmitterCLN.emit('DISCONNECT', prevNodeIndex);
                                 break;
                             case 'ECL':
                                 this.eventEmitterECL.emit('DISCONNECT', prevNodeIndex);
@@ -134,8 +134,8 @@ export class WebSocketServer {
                         case 'LND':
                             this.eventEmitterLND.emit('CONNECT', currNodeIndex);
                             break;
-                        case 'CLT':
-                            this.eventEmitterCLT.emit('CONNECT', currNodeIndex);
+                        case 'CLN':
+                            this.eventEmitterCLN.emit('CONNECT', currNodeIndex);
                             break;
                         case 'ECL':
                             this.eventEmitterECL.emit('CONNECT', currNodeIndex);

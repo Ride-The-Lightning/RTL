@@ -137,6 +137,9 @@ export class ConfigService {
                     this.common.nodes[idx].index = node.index;
                     this.common.nodes[idx].ln_node = node.lnNode;
                     this.common.nodes[idx].ln_implementation = (process.env.LN_IMPLEMENTATION) ? process.env.LN_IMPLEMENTATION : node.lnImplementation ? node.lnImplementation : 'LND';
+                    if (this.common.nodes[idx].ln_implementation === 'CLT') {
+                        this.common.nodes[idx].ln_implementation = 'CLN';
+                    }
                     if (this.common.nodes[idx].ln_implementation !== 'ECL' && process.env.MACAROON_PATH && process.env.MACAROON_PATH.trim() !== '') {
                         this.common.nodes[idx].macaroon_path = process.env.MACAROON_PATH;
                     }
@@ -307,8 +310,13 @@ export class ConfigService {
             else if (config.SSO && config.SSO.logoutRedirectLink) {
                 this.common.logout_redirect_link = config.SSO.logoutRedirectLink;
             }
-            if (+this.common.rtl_sso && (!this.common.rtl_cookie_path || this.common.rtl_cookie_path.trim() === '')) {
-                this.errMsg = 'Please set rtlCookiePath value for single sign on option!';
+            if (+this.common.rtl_sso) {
+                if (!this.common.rtl_cookie_path || this.common.rtl_cookie_path.trim() === '') {
+                    this.errMsg = 'Please set rtlCookiePath value for single sign on option!';
+                }
+                else {
+                    this.common.readCookie();
+                }
             }
         };
         this.setSelectedNode = (config) => {

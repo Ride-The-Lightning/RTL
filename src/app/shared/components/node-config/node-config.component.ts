@@ -38,8 +38,8 @@ export class NodeConfigComponent implements OnInit, OnDestroy {
       this.showLnConfig = false;
       this.selNode = selNode;
       switch (this.selNode.lnImplementation.toUpperCase()) {
-        case 'CLT':
-          this.lnImplementationStr = 'C-Lightning Config';
+        case 'CLN':
+          this.lnImplementationStr = 'Core Lightning Config';
           break;
 
         case 'ECL':

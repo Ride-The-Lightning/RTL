@@ -37,8 +37,8 @@ export class DataService implements OnDestroy {
   setChildAPIUrl(lnImplementation: string) {
     this.lnImplementation = lnImplementation;
     switch (lnImplementation) {
-      case 'CLT':
-        this.childAPIUrl = API_URL + '/cl';
+      case 'CLN':
+        this.childAPIUrl = API_URL + '/cln';
         break;
 
       case 'ECL':

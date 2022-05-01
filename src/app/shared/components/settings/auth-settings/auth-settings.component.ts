@@ -56,8 +56,8 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
       subscribe((action: any) => {
         if (PASSWORD_BLACKLIST.includes(this.currPassword.toLowerCase())) { // To redirect after initial password reset is done
           switch (this.selNode.lnImplementation.toUpperCase()) {
-            case 'CLT':
-              this.router.navigate(['/cl/home']);
+            case 'CLN':
+              this.router.navigate(['/cln/home']);
               break;
 
             case 'ECL':

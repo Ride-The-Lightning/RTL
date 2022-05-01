@@ -20,6 +20,7 @@ export class CommonService {
   public rtl_sso = 0;
   public rtl_cookie_path = '';
   public logout_redirect_link = '';
+  public cookie_value = '';
   public api_version = '';
   public secret_key = crypto.randomBytes(64).toString('hex');
   public read_dummy_data = false;
@@ -88,7 +89,7 @@ export class CommonService {
     try {
       if (req.session.selectedNode && req.session.selectedNode.ln_implementation) {
         switch (req.session.selectedNode.ln_implementation.toUpperCase()) {
-          case 'CLT':
+          case 'CLN':
             req.session.selectedNode.options.headers = { macaroon: Buffer.from(fs.readFileSync(join(req.session.selectedNode.macaroon_path, 'access.macaroon'))).toString('base64') };
             break;
 
@@ -130,7 +131,7 @@ export class CommonService {
         try {
           if (node.ln_implementation) {
             switch (node.ln_implementation.toUpperCase()) {
-              case 'CLT':
+              case 'CLN':
                 node.options.headers = { macaroon: Buffer.from(fs.readFileSync(join(node.macaroon_path, 'access.macaroon'))).toString('base64') };
                 break;
 
@@ -230,7 +231,7 @@ export class CommonService {
         }
         break;
 
-      case 'CLT':
+      case 'CLN':
         if (err.options && err.options.headers && err.options.headers.macaroon) {
           delete err.options.headers.macaroon;
         }
@@ -300,7 +301,7 @@ export class CommonService {
     const exists = fs.existsSync(this.rtl_cookie_path);
     if (exists) {
       try {
-        return fs.readFileSync(this.rtl_cookie_path, 'utf-8');
+        this.cookie_value = fs.readFileSync(this.rtl_cookie_path, 'utf-8');
       } catch (err) {
         this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while reading cookie: \n' + err });
         throw new Error(err);
@@ -310,7 +311,7 @@ export class CommonService {
         const directoryName = dirname(this.rtl_cookie_path);
         this.createDirectory(directoryName);
         fs.writeFileSync(this.rtl_cookie_path, crypto.randomBytes(64).toString('hex'));
-        return fs.readFileSync(this.rtl_cookie_path, 'utf-8');
+        this.cookie_value = fs.readFileSync(this.rtl_cookie_path, 'utf-8');
       } catch (err) {
         this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while reading the cookie: \n' + err });
         throw new Error(err);
@@ -321,6 +322,7 @@ export class CommonService {
   public refreshCookie = () => {
     try {
       fs.writeFileSync(this.rtl_cookie_path, crypto.randomBytes(64).toString('hex'));
+      this.cookie_value = fs.readFileSync(this.rtl_cookie_path, 'utf-8');
     } catch (err) {
       this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Something went wrong while refreshing cookie', error: err });
       throw new Error(err);
@@ -437,7 +439,7 @@ export class CommonService {
         case 'Channels': search_string = 'INFO: Channels => Simplified Channels with Alias: '; break;
         default: search_string = 'Random Line'; break;
       }
-    } else if (lnImplementation === 'CLT') {
+    } else if (lnImplementation === 'CLN') {
       switch (dataKey) {
         case 'GetInfo': search_string = 'DEBUG: GetInfo => Node Information. '; break;
         case 'Fees': search_string = 'DEBUG: Fees => Fee Received. '; break;

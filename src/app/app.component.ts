@@ -98,7 +98,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.actions.pipe(
       takeUntil(this.unSubs[4]),
-      filter((action) => action.type === RTLActions.SET_RTL_CONFIG || action.type === RTLActions.LOGOUT)).
+      filter((action) => action.type === RTLActions.SET_RTL_CONFIG || action.type === RTLActions.LOGIN || action.type === RTLActions.LOGOUT)).
       subscribe((action: (any)) => {
         if (action.type === RTLActions.SET_RTL_CONFIG) {
           if (!this.sessionService.getItem('token')) {
@@ -112,6 +112,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
               this.router.navigate(['./login']);
             }
           }
+        }
+        if (action.type === RTLActions.LOGIN) {
+          this.flgLoggedIn = true;
+          this.userIdle.startWatching();
+          this.userIdle.resetTimer();
+          setTimeout(() => {
+            this.commonService.setContainerSize(this.sideNavContent.elementRef.nativeElement.clientWidth, this.sideNavContent.elementRef.nativeElement.clientHeight);
+          }, 1000);
         }
         if (action.type === RTLActions.LOGOUT) {
           this.flgLoggedIn = false;
@@ -151,15 +159,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    if (this.smallScreen) {
-      this.sideNavigation.close();
-      this.commonService.setContainerSize(this.sideNavContent.elementRef.nativeElement.clientWidth, this.sideNavContent.elementRef.nativeElement.clientHeight);
-    } else {
-      setTimeout(() => {
-        this.renderer.setStyle(this.sideNavContent.elementRef.nativeElement, 'marginLeft', '22rem'); // $regular-sidenav-width
-        this.commonService.setContainerSize(this.sideNavContent.elementRef.nativeElement.clientWidth, this.sideNavContent.elementRef.nativeElement.clientHeight);
-      }, 100);
-    }
+    if (this.smallScreen || !this.flgLoggedIn) { this.sideNavigation.close(); }
+    this.commonService.setContainerSize(this.sideNavContent.elementRef.nativeElement.clientWidth, this.sideNavContent.elementRef.nativeElement.clientHeight);
   }
 
   sideNavToggle() {

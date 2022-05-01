@@ -4,7 +4,7 @@
 <a href="https://snyk.io/test/github/Ride-The-Lightning/RTL"><img src="https://snyk.io/test/github/Ride-The-Lightning/RTL/badge.svg" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/Ride-The-Lightning/RTL" style="max-width:100%;"></a>
 [![license](https://img.shields.io/github/license/DAVFoundation/captain-n3m0.svg?style=flat-square)](https://github.com/DAVFoundation/captain-n3m0/blob/master/LICENSE)
 
-**Intro** -- [Application Features](./docs/Application_features.md) -- [Road Map](./docs/Roadmap.md) -- [Application Configurations](./docs/Application_configurations.md) -- [C-Lightning](./docs/C-Lightning-setup.md) -- [Eclair](./docs/Eclair-setup.md) -- [Contribution](./docs/Contributing.md)
+**Intro** -- [Application Features](./docs/Application_features.md) -- [Road Map](./docs/Roadmap.md) -- [Application Configurations](./docs/Application_configurations.md) -- [Core Lightning](./docs/Core_lightning_setup.md) -- [Eclair](./docs/Eclair_setup.md) -- [Contribution](./docs/Contributing.md)
 
 * [Introduction](#intro)
 * [Architecture](#arch)
@@ -17,10 +17,10 @@
 
 ### <a name="intro"></a>Introduction
 RTL is a full function, device agnostic, web user interface to help manage lightning node operations.
-RTL is available on [LND](https://github.com/lightningnetwork/lnd), [C-Lightning](https://github.com/ElementsProject/lightning) and [Eclair](https://github.com/ACINQ/eclair) implementations.
+RTL is available on [LND](https://github.com/lightningnetwork/lnd), [CoreLightning](https://github.com/ElementsProject/lightning) and [Eclair](https://github.com/ACINQ/eclair) implementations.
 
-* C-Lightning users, refer to [this](./docs/C-Lightning-setup.md) page for install instructions.
-* Eclair users, refer to [this](./docs/Eclair-setup.md) page for install instructions.
+* Core Lightning users, refer to [this](./docs/Core_lightning_setup.md) page for install instructions.
+* Eclair users, refer to [this](./docs/Eclair_setup.md) page for install instructions.
 * LND users, follow the instructions below
 
 Pre-requisite for running RTL is a functioning and synced LND node. If you are a Raspberry Pi or a Linux user, you can follow the famous Stadicus's [guide](https://stadicus.github.io/RaspiBolt/) to setup a Bitcoin + Lighting node.
@@ -67,7 +67,7 @@ $ npm install --only=prod
 ### <a name="prep"></a>Prep for Execution
 RTL requires its own config file `RTL-Config.json`, to start the server and provide user authentication on the app.
 
-*Advanced users can refer to [this page](./docs/Multi-Node-setup.md), for config settings required to manage multiple nodes*
+*Advanced users can refer to [this page](./docs/Multi_node_setup.md), for config settings required to manage multiple nodes*
 
 * Copy the file `Sample-RTL-Config.json` from `./RTL/docs` to `./RTL` and rename it to `RTL-Config.json`.
 * Locate the complete path of the readable macroon file (admin.macroon) on your node and the lnd.conf file.

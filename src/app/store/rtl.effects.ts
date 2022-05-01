@@ -29,7 +29,7 @@ import { ShowPubkeyComponent } from '../shared/components/data-modal/show-pubkey
 import { RTLState } from './rtl.state';
 import { resetRootStore, setNodeData, setSelectedNode, updateRootAPICallStatus, closeSpinner, openAlert, openSpinner, openSnackBar, fetchRTLConfig, closeAllDialogs, logout, updateRootNodeSettings, setRTLConfig } from './rtl.actions';
 import { fetchInfoLND, resetLNDStore } from '../lnd/store/lnd.actions';
-import { fetchInfoCL, resetCLStore } from '../clightning/store/cl.actions';
+import { fetchInfoCL, resetCLStore } from '../cln/store/cln.actions';
 import { fetchInfoECL, resetECLStore } from '../eclair/store/ecl.actions';
 import { rootAppConfig, rootNodeData } from './rtl.selector';
 
@@ -568,7 +568,7 @@ export class RTLEffects implements OnDestroy {
       const apiUrl = (environment.production && window.location.origin) ? (window.location.origin + '/rtl/api') : API_URL;
       this.wsService.connectWebSocket(apiUrl.replace(/^http/, 'ws') + environment.Web_SOCKET_API, node.index.toString());
       switch (nodeLnImplementation) {
-        case 'CLT':
+        case 'CLN':
           this.store.dispatch(fetchInfoCL({ payload: { loadPage: landingPage } }));
           break;
 

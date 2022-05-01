@@ -50,7 +50,7 @@ export class ConfirmationMessageComponent implements OnInit {
   }
 
   onClose(dialogRes: any): boolean | void {
-    if (dialogRes && this.getInputs && this.getInputs.some((input) => !input.inputValue)) {
+    if (dialogRes && this.getInputs && this.getInputs.some((input) => typeof input.inputValue === 'undefined')) {
       return true;
     }
     this.store.dispatch(closeConfirmation({ payload: dialogRes }));

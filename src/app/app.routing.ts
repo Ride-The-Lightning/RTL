@@ -24,7 +24,7 @@ import { ExperimentalSettingsComponent } from './shared/components/node-config/e
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: 'lnd', loadChildren: () => import('./lnd/lnd.module').then((childModule) => childModule.LNDModule), canActivate: [AuthGuard] },
-  { path: 'cl', loadChildren: () => import('./clightning/cl.module').then((childModule) => childModule.CLModule), canActivate: [AuthGuard] },
+  { path: 'cln', loadChildren: () => import('./cln/cln.module').then((childModule) => childModule.CLNModule), canActivate: [AuthGuard] },
   { path: 'ecl', loadChildren: () => import('./eclair/ecl.module').then((childModule) => childModule.ECLModule), canActivate: [AuthGuard] },
   {
     path: 'settings', component: SettingsComponent, canActivate: [AuthGuard], children: [

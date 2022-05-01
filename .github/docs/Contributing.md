@@ -12,7 +12,7 @@ There are multiple ways you can contribute towards the development and not all o
 
 #### <a name="bug"></a>Bug Report
 Bug reports are reports of technical or functional issues with the software. Bug reports help with the removal of defects from the software and improve its quality. Guidelines for submitting a bug report:
-* Label the bug with the correct Lightning implementation (LND/C-Lightning/Eclair).
+* Label the bug with the correct Lightning implementation (LND/Core Lightning/Eclair).
 * Add the `Bug` label to the issue
 * Provide details of your configuration like Device, Operating system, Bitcoin version, Lightning implementation version, RTL version etc.
 * Attempt to explain the scenario in detail, so that the developer can try to replicate the issue at their end.
@@ -22,7 +22,7 @@ Bug reports are reports of technical or functional issues with the software. Bug
 
 #### <a name="feature"></a>Feature Request
 Feature Requests are requests raised to add new features to the application. The features requests can range from technical to functional, making the application better for everyone. Guidelines to follow for create a feature request:
-* Label the feature request with the correct Lightning implementation (LND/C-Lightning/Eclair).
+* Label the feature request with the correct Lightning implementation (LND/Core Lightning/Eclair).
 * Add the `Enhancement Request` label to the issue
 * If the feature relates to an existing aspect of the application, indicate clearly which part of the application the feature request relates to. E.g. Transactions page under Lightning menu.
 * Provide the justification for the feature request. E.g. Privacy/Security/Usability benefit.
@@ -51,13 +51,13 @@ Contributions via code is the most sought after contribution and something we en
 * To run RTL node server in development mode, open another command window, go to workspace/RTL and excute `npm run server`. This will run the script named `server` defined in package.json. This script sets the node environment as development and starts the server from rtl.js. Nodemon restarts the node application when file changes in the directory are detected.
 * This `server` script has been written for windows machine. Please update the script to set the `NODE_ENV=development` according to your machine's OS.
 * To check all available scripts for the project, explore the `scripts` section of package.json. 
-![](./screenshots/node-server-dev.jpg)
+![](../screenshots/node-server-dev.jpg)
 
 ##### Angular Frontend Server for Development
 * The last step starts the node server but it cannot detect and update the code written in Angular. We run the angular development server separately while working on the frontend of the project and package the final build once the development is finished. 
 * To run the angular development server, go to workspace/RTL and run `npm run start`. It will start the angular server at default '4200' port and serve the application on localhost:4200.
-![](./screenshots/angular-server-dev.jpg)
-![](./screenshots/localhost-ui-dev.jpg)
+![](../screenshots/angular-server-dev.jpg)
+![](../screenshots/localhost-ui-dev.jpg)
 	
 ##### Package Angular Build
 * Run `npm run test` script to verify and fix, if needed, automated test cases.
@@ -65,7 +65,7 @@ Contributions via code is the most sought after contribution and something we en
 * To compile the backend code, `npm run buildbackend` script should be used. It will compile the code written in typescript in `server` folder and create a folder named `backend` with final compiled javascript code.
 * The Angular application code needs to be compiled into the output directory named `frontend` at workspace/RTL. It can be done by running `npm run buildfrontend` command in the RTL root.
 * Please make sure to remove all linting and other errors thrown by the build command before moving to the next step.
-![](./screenshots/angular-build.jpg)
+![](../screenshots/angular-build.jpg)
 	
 ##### Create a Pull Request
 * Create a new branch on the github to push your updated code.

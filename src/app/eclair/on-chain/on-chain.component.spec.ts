@@ -11,7 +11,7 @@ import { SharedModule } from '../../shared/shared.module';
 
 import { RootReducer } from '../../store/rtl.reducers';
 import { LNDReducer } from '../../lnd/store/lnd.reducers';
-import { CLReducer } from '../../clightning/store/cl.reducers';
+import { CLNReducer } from '../../cln/store/cln.reducers';
 import { ECLReducer } from '../../eclair/store/ecl.reducers';
 import { ECLOnChainTransactionHistoryComponent } from './on-chain-transaction-history/on-chain-transaction-history.component';
 import { ECLOnChainComponent } from './on-chain.component';
@@ -27,7 +27,7 @@ describe('ECLOnChainComponent', () => {
         BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
-        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cl: CLReducer, ecl: ECLReducer })
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer })
       ],
       providers: [
         CommonService,

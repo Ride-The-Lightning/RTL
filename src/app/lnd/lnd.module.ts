@@ -10,6 +10,9 @@ import { ConnectionsComponent } from './peers-channels/connections.component';
 import { ChannelsTablesComponent } from './peers-channels/channels/channels-tables/channels-tables.component';
 import { PeersComponent } from './peers-channels/peers/peers.component';
 import { LightningInvoicesComponent } from './transactions/invoices/lightning-invoices.component';
+import { LookupTransactionsComponent } from './transactions/lookup-transactions/lookup-transactions.component';
+import { PaymentLookupComponent } from './transactions/lookup-transactions/payment-lookup/payment-lookup.component';
+import { InvoiceLookupComponent } from './transactions/lookup-transactions/invoice-lookup/invoice-lookup.component';
 import { OnChainReceiveComponent } from './on-chain/on-chain-receive/on-chain-receive.component';
 import { OnChainComponent } from './on-chain/on-chain.component';
 import { UTXOTablesComponent } from './on-chain/utxo-tables/utxo-tables.component';
@@ -52,6 +55,7 @@ import { ChannelLiquidityInfoComponent } from './home/channel-liquidity-info/cha
 import { NetworkInfoComponent } from './network-info/network-info.component';
 import { InvoiceInformationComponent } from './transactions/invoice-information-modal/invoice-information.component';
 import { ChannelRebalanceComponent } from './peers-channels/channels/channel-rebalance-modal/channel-rebalance.component';
+import { ChannelRebalanceInfographicsComponent } from './peers-channels/channels/channel-rebalance-infographics/channel-rebalance-infographics.component';
 import { CloseChannelComponent } from './peers-channels/channels/close-channel-modal/close-channel.component';
 import { OpenChannelComponent } from './peers-channels/channels/open-channel-modal/open-channel.component';
 import { ChannelInformationComponent } from './peers-channels/channels/channel-information-modal/channel-information.component';
@@ -76,6 +80,9 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     PeersComponent,
     ConnectionsComponent,
     LightningInvoicesComponent,
+    LookupTransactionsComponent,
+    PaymentLookupComponent,
+    InvoiceLookupComponent,
     WalletComponent,
     LightningPaymentsComponent,
     ChannelPendingTableComponent,
@@ -119,6 +126,7 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     NetworkInfoComponent,
     InvoiceInformationComponent,
     ChannelRebalanceComponent,
+    ChannelRebalanceInfographicsComponent,
     OpenChannelComponent,
     ChannelInformationComponent,
     LightningSendPaymentsComponent,

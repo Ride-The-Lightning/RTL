@@ -80,6 +80,23 @@ export class LNDWebSocketClient {
     });
   };
 
+  public subscribeToPayment = (options: any, selectedNode: CommonSelectedNode, paymentHash: string) => {
+    this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Subscribing to Payment ' + paymentHash + ' ..' });
+    options.url = selectedNode.ln_server_url + '/v2/router/track/' + paymentHash;
+    request(options).then((msg) => {
+      this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Payment Information Received for ' + paymentHash });
+      msg['type'] = 'payment';
+      msg['source'] = 'LND';
+      const msgStr = JSON.stringify(msg);
+      this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Payment Info Received', data: msgStr });
+      this.wsServer.sendEventsToAllLNClients(msgStr, selectedNode);
+    }).catch((errRes) => {
+      const err = this.common.handleError(errRes, 'Payment', 'Subscribe to Payment Error for ' + paymentHash, selectedNode);
+      const errStr = ((typeof err === 'object' && err.message) ? JSON.stringify({ error: err.message + ' ' + paymentHash }) : (typeof err === 'object') ? JSON.stringify({ error: err + ' ' + paymentHash }) : ('{ "error": ' + err + ' ' + paymentHash + ' }'));
+      this.wsServer.sendErrorToAllLNClients(errStr, selectedNode);
+    });
+  };
+
   public setOptionsForSelNode = (selectedNode: CommonSelectedNode) => {
     const options = { url: '', rejectUnauthorized: false, json: true, form: null };
     try {

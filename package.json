@@ -1,13 +1,13 @@
 {
   "name": "rtl",
-  "version": "0.12.2-beta",
+  "version": "0.12.3-beta",
   "license": "MIT",
   "type": "module",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --open",
     "prebuildfrontend": "node src/prebuild.cjs",
-    "buildfrontend": "ng build --configuration production",
+    "buildfrontend": "ng test --watch=false && ng build --configuration production",
     "buildbackend": "tsc --project tsconfig.json",
     "watchbackend": "tsc --project tsconfig.json --watch",
     "server": "set NODE_ENV=development&&nodemon ./rtl.js",
@@ -64,7 +64,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^13.0.3",
-    "@angular-eslint/builder": "13.0.1",
+    "@angular-eslint/builder": "^12.2.1",
     "@angular-eslint/eslint-plugin": "13.0.1",
     "@angular-eslint/eslint-plugin-template": "13.0.1",
     "@angular-eslint/schematics": "13.0.1",

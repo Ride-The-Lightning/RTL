@@ -6,13 +6,19 @@ let options = null;
 const logger = Logger;
 const common = Common;
 const lndWsClient = LNDWSClient;
-export const getInvoice = (req, res, next) => {
+export const invoiceLookup = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Getting Invoice Information..' });
     options = common.getOptions(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/invoice/' + req.params.rHashStr;
+    options.url = req.session.selectedNode.ln_server_url + '/v2/invoices/lookup';
+    if (req.query.payment_addr) {
+        options.url = options.url + '?payment_addr=' + req.query.payment_addr;
+    }
+    else {
+        options.url = options.url + '?payment_hash=' + req.query.payment_hash;
+    }
     request(options).then((body) => {
         body.r_preimage = body.r_preimage ? Buffer.from(body.r_preimage, 'base64').toString('hex') : '';
         body.r_hash = body.r_hash ? Buffer.from(body.r_hash, 'base64').toString('hex') : '';
@@ -20,7 +26,7 @@ export const getInvoice = (req, res, next) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Invoice Information Received', data: body });
         res.status(200).json(body);
     }).catch((errRes) => {
-        const err = common.handleError(errRes, 'Invoices', 'Get Invoice Error', req.session.selectedNode);
+        const err = common.handleError(errRes, 'Invoices', 'Invoice Lookup Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };

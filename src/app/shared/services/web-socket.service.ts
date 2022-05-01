@@ -63,7 +63,7 @@ export class WebSocketClientService implements OnDestroy {
             case 'LND':
               this.lndWSMessages.next(msg);
               break;
-            case 'CLT':
+            case 'CLN':
               this.clWSMessages.next(msg);
               break;
             case 'ECL':

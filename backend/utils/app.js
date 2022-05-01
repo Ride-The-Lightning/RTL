@@ -8,12 +8,12 @@ import CORS from './cors.js';
 import CSRF from './csrf.js';
 import sharedRoutes from '../routes/shared/index.js';
 import lndRoutes from '../routes/lnd/index.js';
-import clRoutes from '../routes/c-lightning/index.js';
+import clnRoutes from '../routes/cln/index.js';
 import eclRoutes from '../routes/eclair/index.js';
 import { Common } from './common.js';
 import { Logger } from './logger.js';
 import { Config } from './config.js';
-import { CLWSClient } from '../controllers/c-lightning/webSocketClient.js';
+import { CLWSClient } from '../controllers/cln/webSocketClient.js';
 import { ECLWSClient } from '../controllers/eclair/webSocketClient.js';
 import { LNDWSClient } from '../controllers/lnd/webSocketClient.js';
 const ONE_DAY = 1000 * 60 * 60 * 24;
@@ -37,7 +37,7 @@ export class ExpressApplication {
             this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'App', msg: 'Setting up Application Routes..' });
             this.app.use(this.common.baseHref + '/api', sharedRoutes);
             this.app.use(this.common.baseHref + '/api/lnd', lndRoutes);
-            this.app.use(this.common.baseHref + '/api/cl', clRoutes);
+            this.app.use(this.common.baseHref + '/api/cln', clnRoutes);
             this.app.use(this.common.baseHref + '/api/ecl', eclRoutes);
             this.app.use(this.common.baseHref, express.static(join(this.directoryName, '../..', 'frontend')));
             this.app.use((req, res, next) => {

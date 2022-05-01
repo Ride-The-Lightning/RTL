@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BehaviorSubject, Subject, throwError } from 'rxjs';
+import { BehaviorSubject, Subject, throwError, of } from 'rxjs';
 import { catchError, takeUntil, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
@@ -38,7 +38,7 @@ export class LoopService implements OnDestroy {
           this.swaps = swapResponse;
           this.swapsChanged.next(this.swaps);
         },
-        error: (err) => this.handleErrorWithAlert(UI_MESSAGES.GET_LOOP_SWAPS, this.loopUrl, err)
+        error: (err) => this.swapsChanged.error(this.handleErrorWithAlert(UI_MESSAGES.GET_LOOP_SWAPS, this.loopUrl, err))
       });
   }
 
@@ -83,8 +83,7 @@ export class LoopService implements OnDestroy {
       map((res) => {
         this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_TERMS_QUOTES }));
         return res;
-      }),
-      catchError((err) => this.handleErrorWithAlert(UI_MESSAGES.GET_TERMS_QUOTES, this.loopUrl, err))
+      }), catchError((err) => of(this.handleErrorWithAlert(UI_MESSAGES.GET_TERMS_QUOTES, this.loopUrl, err)))
     );
   }
 
@@ -126,7 +125,7 @@ export class LoopService implements OnDestroy {
       map((res) => {
         this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_TERMS_QUOTES }));
         return res;
-      }), catchError((err) => this.handleErrorWithAlert(UI_MESSAGES.GET_TERMS_QUOTES, this.loopUrl, err))
+      }), catchError((err) => of(this.handleErrorWithAlert(UI_MESSAGES.GET_TERMS_QUOTES, this.loopUrl, err)))
     );
   }
 
@@ -171,31 +170,35 @@ export class LoopService implements OnDestroy {
       this.store.dispatch(logout());
     } else if (err.status === 503) {
       errMsg = 'Unable to Connect to Loop Server.';
-      this.store.dispatch(openAlert({
-        payload: {
-          data: {
-            type: 'ERROR',
-            alertTitle: 'Loop Not Connected',
-            message: { code: err.status, message: 'Unable to Connect to Loop Server', URL: errURL },
-            component: ErrorMessageComponent
+      setTimeout(() => {
+        this.store.dispatch(openAlert({
+          payload: {
+            data: {
+              type: 'ERROR',
+              alertTitle: 'Loop Not Connected',
+              message: { code: err.status, message: 'Unable to Connect to Loop Server', URL: errURL },
+              component: ErrorMessageComponent
+            }
           }
-        }
-      }));
+        }));
+      }, 100);
     } else {
       errMsg = this.commonService.extractErrorMessage(err);
       const errCode = (err.error && err.error.error && err.error.error.code) ? err.error.error.code : (err.error && err.error.code) ? err.error.code : err.code ? err.code : err.status;
-      this.store.dispatch(openAlert({
-        payload: {
-          data: {
-            type: AlertTypeEnum.ERROR,
-            alertTitle: 'ERROR',
-            message: { code: errCode, message: errMsg, URL: errURL },
-            component: ErrorMessageComponent
+      setTimeout(() => {
+        this.store.dispatch(openAlert({
+          payload: {
+            data: {
+              type: AlertTypeEnum.ERROR,
+              alertTitle: 'ERROR',
+              message: { code: errCode, message: errMsg, URL: errURL },
+              component: ErrorMessageComponent
+            }
           }
-        }
-      }));
+        }));
+      }, 100);
     }
-    return throwError(() => new Error(errMsg));
+    return { message: errMsg };
   }
 
   ngOnDestroy() {

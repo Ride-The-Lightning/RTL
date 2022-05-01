@@ -23,7 +23,7 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 import { sendPayment } from '../../store/ecl.actions';
-import { eclNodeInformation, eclNodeSettings, payments } from '../../store/ecl.selector';
+import { eclNodeInformation, eclnNodeSettings, payments } from '../../store/ecl.selector';
 
 @Component({
   selector: 'rtl-ecl-lightning-payments',
@@ -83,7 +83,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngOnInit() {
-    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(eclnNodeSettings).pipe(takeUntil(this.unSubs[0])).
       subscribe((nodeSettings: SelNodeChild) => {
         this.selNode = nodeSettings;
       });

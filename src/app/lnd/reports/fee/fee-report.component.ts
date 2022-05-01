@@ -47,7 +47,9 @@ export class FeeReportComponent implements OnInit, OnDestroy {
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
     this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[0])).subscribe((info) => {
       if (info.identity_pubkey) {
-        this.fetchEvents(this.startDate, this.endDate);
+        setTimeout(() => {
+          this.fetchEvents(this.startDate, this.endDate);
+        }, 10); // To avoid fetchEvents call on selectedNode change and dashboard load
       }
     });
     this.commonService.containerSizeUpdated.pipe(takeUntil(this.unSubs[1])).subscribe((CONTAINER_SIZE) => {

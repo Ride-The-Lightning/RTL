@@ -11,7 +11,7 @@ import { CommonService } from '../../../services/common.service';
 import { RTLState } from '../../../../store/rtl.state';
 import { saveSettings, setSelectedNode } from '../../../../store/rtl.actions';
 import { setChildNodeSettingsECL } from '../../../../eclair/store/ecl.actions';
-import { setChildNodeSettingsCL } from '../../../../clightning/store/cl.actions';
+import { setChildNodeSettingsCL } from '../../../../cln/store/cln.actions';
 import { setChildNodeSettingsLND } from '../../../../lnd/store/lnd.actions';
 import { rootSelectedNode } from '../../../../store/rtl.selector';
 import { SetSelectedNode } from '../../../models/rtlModels';

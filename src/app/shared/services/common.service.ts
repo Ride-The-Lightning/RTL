@@ -33,6 +33,7 @@ export class CommonService implements OnDestroy {
 
   setContainerSize(width: number, height) {
     this.containerSize = { width: width, height: height };
+    this.logger.info('Container Size: ' + JSON.stringify(this.containerSize));
     this.containerSizeUpdated.next(this.containerSize);
   }
 

@@ -3,7 +3,7 @@ import { APICallStatusEnum } from '../shared/services/consts-enums-functions';
 import { RTLConfiguration, ConfigSettingsNode, GetInfoRoot } from '../shared/models/RTLconfig';
 
 import { LNDState } from '../lnd/store/lnd.state';
-import { CLState } from '../clightning/store/cl.state';
+import { CLNState } from '../cln/store/cln.state';
 import { ECLState } from '../eclair/store/ecl.state';
 
 export interface RootState {
@@ -35,6 +35,6 @@ export const initRootState: RootState = {
 export interface RTLState {
   root: RootState;
   lnd: LNDState;
-  cl: CLState;
+  cln: CLNState;
   ecl: ECLState;
 }

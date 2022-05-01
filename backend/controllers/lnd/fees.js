@@ -20,7 +20,7 @@ export const getFees = (req, res, next) => {
         const month_start_time = (Math.round(start_date.getTime() / 1000));
         const week_start_time = current_time - 604800;
         const day_start_time = current_time - 86400;
-        return getAllForwardingEvents(req, month_start_time, current_time, 0, (history) => {
+        return getAllForwardingEvents(req, month_start_time, current_time, 0, 'fees', (history) => {
             logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Fees', msg: 'Forwarding History Received', data: history });
             const daily_sum = history.forwarding_events.reduce((acc, curr) => ((curr.timestamp >= day_start_time) ? [(acc[0] + 1), (acc[1] + +curr.fee_msat)] : acc), [0, 0]);
             const weekly_sum = history.forwarding_events.reduce((acc, curr) => ((curr.timestamp >= week_start_time) ? [(acc[0] + 1), (acc[1] + +curr.fee_msat)] : acc), [0, 0]);
