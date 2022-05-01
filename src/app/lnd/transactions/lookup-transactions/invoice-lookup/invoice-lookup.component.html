@@ -49,11 +49,18 @@
               <span class="overflow-wrap foreground-secondary-text">{{invoice?.payment_request || 'N/A'}}</span>
             </div>
           </div>
+          <mat-divider [inset]="true" class="my-1"></mat-divider>
+          <div fxLayout="row">
+            <div fxFlex="100">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Payment Hash</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{invoice?.r_hash || ''}}</span>
+            </div>
+          </div>
           <div>
             <mat-divider [inset]="true" class="my-1"></mat-divider>
             <div fxLayout="row">
               <div fxFlex="100">
-                <h4 fxLayoutAlign="start" class="font-bold-500">R Preimage</h4>
+                <h4 fxLayoutAlign="start" class="font-bold-500">Preimage</h4>
                 <span class="overflow-wrap foreground-secondary-text">{{invoice?.r_preimage || '-'}}</span>
               </div>
             </div>

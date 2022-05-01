@@ -18,7 +18,7 @@
           <span *ngIf="!invoice?.payment_request || invoice?.payment_request === ''" class="font-size-120">QR Code Not Applicable</span>
         </div>
         <mat-divider *ngIf="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM" [inset]="true" class="my-1"></mat-divider>
-        <div [perfectScrollbar] [ngClass]="{'h-46': invoice?.htlcs && invoice?.htlcs.length > 0 && showAdvanced}" #scrollContainer>
+        <div [perfectScrollbar] [ngClass]="{'h-50': invoice?.htlcs && invoice?.htlcs.length > 0 && showAdvanced}" #scrollContainer>
           <div fxLayout="row">
             <div fxFlex="50">
               <h4 fxLayoutAlign="start" class="font-bold-500">{{screenSize === screenSizeEnum.XS ? 'Amount' : 'Amount Requested'}}</h4>
@@ -68,11 +68,18 @@
               <span class="overflow-wrap foreground-secondary-text">{{invoice?.payment_request || 'N/A'}}</span>
             </div>
           </div>
+          <mat-divider [inset]="true" class="my-1"></mat-divider>
+          <div fxLayout="row">
+            <div fxFlex="100">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Payment Hash</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{invoice?.r_hash || ''}}</span>
+            </div>
+          </div>
           <div *ngIf="showAdvanced">
             <mat-divider [inset]="true" class="my-1"></mat-divider>
             <div fxLayout="row">
               <div fxFlex="100">
-                <h4 fxLayoutAlign="start" class="font-bold-500">R Preimage</h4>
+                <h4 fxLayoutAlign="start" class="font-bold-500">Preimage</h4>
                 <span class="overflow-wrap foreground-secondary-text">{{invoice?.r_preimage || '-'}}</span>
               </div>
             </div>
