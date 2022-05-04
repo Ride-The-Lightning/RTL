@@ -125,7 +125,7 @@ Run the following command:
 
 If the server started successfully, you should get the below output on the console:
 
-`$ Server is up and running, please open the UI at http://localhost:3000`
+`$ Server is up and running, please open the UI at http://localhost:3000 or your proxy configured url.`
 
 #### Optional: Running RTL as a service (Rpi or Linux platform users)
 In case you are running a headless Rpi or a Linux node, you can configure RTL as a service.

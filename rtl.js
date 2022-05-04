@@ -35,7 +35,7 @@ const onError = (error) => {
 };
 
 const onListening = () => {
-  logger.log({ level: 'INFO', fileName: 'RTL', msg: 'Server is up and running, please open the UI at http://' + (common.host ? common.host : 'localhost') + ':' + common.port });
+  logger.log({ level: 'INFO', fileName: 'RTL', msg: 'Server is up and running, please open the UI at http://' + (common.host ? common.host : 'localhost') + ':' + common.port + ' or your proxy configured url' });
 };
 
 let server = http.createServer(app.getApp());
