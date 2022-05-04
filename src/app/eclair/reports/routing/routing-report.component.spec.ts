@@ -4,23 +4,23 @@ import { StoreModule } from '@ngrx/store';
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../../lnd/store/lnd.reducers';
 import { CLNReducer } from '../../../cln/store/cln.reducers';
-import { ECLReducer } from '../../../eclair/store/ecl.reducers';
+import { ECLReducer } from '../../store/ecl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
-import { ECLFeeReportComponent } from './fee-report.component';
+import { ECLRoutingReportComponent } from './routing-report.component';
 import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/mock-services';
 import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../shared/services/data.service';
 
-describe('ECLFeeReportComponent', () => {
-  let component: ECLFeeReportComponent;
-  let fixture: ComponentFixture<ECLFeeReportComponent>;
+describe('ECLRoutingReportComponent', () => {
+  let component: ECLRoutingReportComponent;
+  let fixture: ComponentFixture<ECLRoutingReportComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ECLFeeReportComponent],
+      declarations: [ECLRoutingReportComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -36,7 +36,7 @@ describe('ECLFeeReportComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ECLFeeReportComponent);
+    fixture = TestBed.createComponent(ECLRoutingReportComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

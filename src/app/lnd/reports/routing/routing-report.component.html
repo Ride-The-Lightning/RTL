@@ -1,0 +1,47 @@
+<div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x-large">
+  <rtl-horizontal-scroller (stepChanged)="onSelectionChange($event)"></rtl-horizontal-scroller>
+  <div fxLayout="column" fxLayoutAlign="center center" class="padding-gap-x">
+    <mat-radio-group class="my-1" color="primary" name="selReportBy" [(ngModel)]="selReportBy" (change)="onSelReportByChange()" fxFlex="100" fxLayoutAlign="start start">
+      <span class="mr-2">Report By: </span>
+      <mat-radio-button class="mr-2" tabindex="1" value="{{reportBy.FEES}}">Fees</mat-radio-button>
+      <mat-radio-button tabindex="2" value="{{reportBy.EVENTS}}">Events</mat-radio-button>
+    </mat-radio-group>
+  </div>
+  <mat-progress-bar mode="indeterminate" *ngIf="errorMessage === 'Getting Forwarding History...'" class="mt-2"></mat-progress-bar>
+  <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x my-1">
+    <div *ngIf="routingReportData.length > 0 && events.forwarding_events && events.forwarding_events.length && events.forwarding_events.length > 0" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 font-bold-700 mt-1"
+    [@fadeIn]="events.total_fee_msat">{{(events.total_fee_msat / 1000 || 0) | number:'1.0-2'}} Sats/{{(events?.forwarding_events?.length || 0) | number}} Events</div>
+    <div *ngIf="(routingReportData.length <= 0 || events.forwarding_events.length <= 0) && errorMessage === ''" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1">No routing report for the selected period</div>
+    <div *ngIf="errorMessage !== ''" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1" [ngClass]="{'error-border': errorMessage !== 'Getting Forwarding History...' && errorMessage !== ''}">{{errorMessage}}</div>
+    <div class="mt-1">
+      <ngx-charts-bar-vertical
+        *ngIf="routingReportData.length > 0 && events.forwarding_events && events.forwarding_events.length && events.forwarding_events.length > 0"
+        class="one-color"
+        [view]="view"
+        [results]="routingReportData"
+        [gradient]="false"
+        [xAxis]="true"
+        [yAxis]="true"
+        [showXAxisLabel]="true"
+        [showYAxisLabel]="showYAxisLabel"
+        [xAxisLabel]="xAxisLabel"
+        [yAxisLabel]="yAxisLabel"
+        [showGridLines]="false"
+        [showDataLabel]="false"
+        (select)="onChartBarSelected($event)"
+        (mouseup)="onChartMouseUp($event)">
+        <ng-template #tooltipTemplate let-model="model">
+          <span>
+            <span class="tooltip-label">Events: {{((selReportBy === reportBy.EVENTS ? model.value : model.extra.totalEvents) || 0) | number}}</span>
+            <span class="tooltip-label">Fee: {{((selReportBy === reportBy.EVENTS ? model.extra.totalFees : model.value) || 0) | number:'1.0-2'}}</span>
+          </span>
+        </ng-template>
+      </ngx-charts-bar-vertical>
+    </div>
+  </div>
+  <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x">
+    <div class="mt-1">
+      <rtl-forwarding-history *ngIf="events && events?.forwarding_events && events.forwarding_events.length && events.forwarding_events.length > 0" [eventsData]="events?.forwarding_events" [filterValue]="eventFilterValue"></rtl-forwarding-history>
+    </div>
+  </div>
+</div>

@@ -94,6 +94,18 @@
     color: $primary-color;
   }
 
+  .border-primary {
+    border: 1px solid $primary-color;
+  }
+
+  .border-accent {
+    border: 1px solid $accent-color;
+  }
+
+  .border-warn {
+    border: 1px solid $warn-color;
+  }
+
   .material-icons.primary { color: $primary-color; }
 
   .material-icons.accent { color: $accent-color; }

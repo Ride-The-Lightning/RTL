@@ -199,7 +199,7 @@ export class DataService implements OnDestroy {
 
   getForwardingHistory(start: string, end: string) {
     const queryHeaders: SwitchReq = { end_time: end, start_time: start };
-    this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_FEE_REPORT }));
+    this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_FORWARDING_HISTORY }));
     return this.httpClient.post(this.childAPIUrl + environment.SWITCH_API, queryHeaders).pipe(
       takeUntil(this.unSubs[7]),
       withLatestFrom(this.store.select(allChannels)),
@@ -238,11 +238,11 @@ export class DataService implements OnDestroy {
         } else {
           res = {};
         }
-        this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_FEE_REPORT }));
+        this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_FORWARDING_HISTORY }));
         return of(res);
       }),
       catchError((err) => {
-        this.handleErrorWithAlert('getForwardingHistoryData', UI_MESSAGES.GET_FEE_REPORT, 'Forwarding History Failed', this.childAPIUrl + environment.SWITCH_API, err);
+        this.handleErrorWithAlert('getForwardingHistoryData', UI_MESSAGES.GET_FORWARDING_HISTORY, 'Forwarding History Failed', this.childAPIUrl + environment.SWITCH_API, err);
         return throwError(() => new Error(this.extractErrorMessage(err)));
       }));
   }

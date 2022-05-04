@@ -32,7 +32,7 @@ import { ECLLookupsComponent } from './graph/lookups/lookups.component';
 import { ECLNodeLookupComponent } from './graph/lookups/node-lookup/node-lookup.component';
 import { ECLGraphComponent } from './graph/graph.component';
 import { ECLReportsComponent } from './reports/reports.component';
-import { ECLFeeReportComponent } from './reports/fee/fee-report.component';
+import { ECLRoutingReportComponent } from './reports/routing/routing-report.component';
 import { ECLTransactionsReportComponent } from './reports/transactions/transactions-report.component';
 import { ECLOnChainSendComponent } from './on-chain/on-chain-send/on-chain-send.component';
 import { ECLInvoiceInformationComponent } from './transactions/invoice-information-modal/invoice-information.component';
@@ -81,7 +81,7 @@ import { ECLUnlockedGuard } from '../shared/services/auth.guard';
     ECLNodeLookupComponent,
     ECLGraphComponent,
     ECLReportsComponent,
-    ECLFeeReportComponent,
+    ECLRoutingReportComponent,
     ECLTransactionsReportComponent,
     ECLOnChainSendComponent,
     ECLInvoiceInformationComponent,

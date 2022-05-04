@@ -3,34 +3,36 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { ForwardingEvent } from '../../../shared/models/clModels';
-import { APICallStatusEnum, MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
-import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
-import { LoggerService } from '../../../shared/services/logger.service';
+import { PaymentRelayed, Payments } from '../../../shared/models/eclModels';
 import { CommonService } from '../../../shared/services/common.service';
+import { LoggerService } from '../../../shared/services/logger.service';
+import { MONTHS, ReportBy, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
 import { RTLState } from '../../../store/rtl.state';
-import { forwardingHistory } from '../../store/cln.selector';
+import { payments } from '../../store/ecl.selector';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
-  selector: 'rtl-cln-fee-report',
-  templateUrl: './fee-report.component.html',
-  styleUrls: ['./fee-report.component.scss'],
+  selector: 'rtl-ecl-routing-report',
+  templateUrl: './routing-report.component.html',
+  styleUrls: ['./routing-report.component.scss'],
   animations: [fadeIn]
 })
-export class CLNFeeReportComponent implements OnInit, OnDestroy {
+export class ECLRoutingReportComponent implements OnInit, OnDestroy {
 
   public reportPeriod = SCROLL_RANGES[0];
   public secondsInADay = 24 * 60 * 60;
-  public events: ForwardingEvent[] = [];
-  public filteredEventsBySelectedPeriod: ForwardingEvent[] = [];
+  public events: PaymentRelayed[] = [];
+  public filteredEventsBySelectedPeriod: PaymentRelayed[] = [];
   public eventFilterValue = '';
-  public totalFeeMsat = null;
+  public reportBy = ReportBy;
+  public selReportBy = ReportBy.FEES;
+  public totalFeeSat = null;
   public today = new Date(Date.now());
   public startDate = new Date(this.today.getFullYear(), this.today.getMonth(), 1, 0, 0, 0);
   public endDate = new Date(this.today.getFullYear(), this.today.getMonth(), this.getMonthDays(this.today.getMonth(), this.today.getFullYear()), 23, 59, 59);
-  public feeReportData: any = [];
+  public routingReportData: any = [];
   public view: [number, number] = [350, 350];
   public screenPaddingX = 100;
   public gradient = true;
@@ -39,9 +41,6 @@ export class CLNFeeReportComponent implements OnInit, OnDestroy {
   public showYAxisLabel = true;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
-  public errorMessage = '';
-  public apiCallStatus: ApiCallStatusPayload = null;
-  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) { }
@@ -49,16 +48,11 @@ export class CLNFeeReportComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[0])).
-      subscribe((fhSeletor: { forwardingHistory: ForwardingEvent[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessage = '';
-        this.apiCallStatus = fhSeletor.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-        }
-        this.events = fhSeletor.forwardingHistory || [];
+    this.store.select(payments).pipe(takeUntil(this.unSubs[0])).
+      subscribe((paymentsSelector: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
+        this.events = paymentsSelector.payments && paymentsSelector.payments.relayed ? paymentsSelector.payments.relayed : [];
         this.filterForwardingEvents(this.startDate, this.endDate);
-        this.logger.info(fhSeletor);
+        this.logger.info(paymentsSelector);
       });
     this.commonService.containerSizeUpdated.pipe(takeUntil(this.unSubs[1])).subscribe((CONTAINER_SIZE) => {
       switch (this.screenSize) {
@@ -83,17 +77,19 @@ export class CLNFeeReportComponent implements OnInit, OnDestroy {
   filterForwardingEvents(start: Date, end: Date) {
     const startDateInSeconds = Math.round(start.getTime() / 1000);
     const endDateInSeconds = Math.round(end.getTime() / 1000);
+    this.logger.info('Filtering Forwarding Events Starting at ' + new Date(Date.now()).toLocaleString() + ' From ' + start.toLocaleString() + ' To ' + end.toLocaleString());
     this.filteredEventsBySelectedPeriod = [];
-    this.feeReportData = [];
-    this.totalFeeMsat = null;
+    this.routingReportData = [];
+    this.totalFeeSat = null;
     if (this.events && this.events.length > 0) {
       this.events.forEach((event) => {
-        if (event.received_time >= startDateInSeconds && event.received_time < endDateInSeconds) {
+        if (Math.floor(event.timestamp / 1000) >= startDateInSeconds && Math.floor(event.timestamp / 1000) < endDateInSeconds) {
           this.filteredEventsBySelectedPeriod.push(event);
         }
       });
-      this.feeReportData = this.prepareFeeReport(start);
+      this.routingReportData = this.selReportBy === this.reportBy.EVENTS ? this.prepareEventsReport(start) : this.prepareFeeReport(start);
     }
+    this.logger.info('Filtering Forwarding Events Finished at ' + new Date(Date.now()).toLocaleString());
   }
 
   @HostListener('mouseup', ['$event']) onChartMouseUp(e) {
@@ -113,15 +109,17 @@ export class CLNFeeReportComponent implements OnInit, OnDestroy {
   prepareFeeReport(start: Date) {
     const startDateInSeconds = Math.round(start.getTime() / 1000);
     const feeReport = [];
+    this.totalFeeSat = 0;
+    this.logger.info('Fee Report Prepare Starting at ' + new Date(Date.now()).toLocaleString() + ' From ' + start.toLocaleString());
     if (this.reportPeriod === SCROLL_RANGES[1]) {
       for (let i = 0; i < 12; i++) {
         feeReport.push({ name: MONTHS[i].name, value: 0.0, extra: { totalEvents: 0 } });
       }
       this.filteredEventsBySelectedPeriod.map((event) => {
-        const monthNumber = new Date((+event.received_time) * 1000).getMonth();
-        feeReport[monthNumber].value = feeReport[monthNumber].value + (+event.fee / 1000);
+        const monthNumber = new Date(event.timestamp).getMonth();
+        feeReport[monthNumber].value = feeReport[monthNumber].value + (event.amountIn - event.amountOut);
         feeReport[monthNumber].extra.totalEvents = feeReport[monthNumber].extra.totalEvents + 1;
-        this.totalFeeMsat = (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee;
+        this.totalFeeSat = (this.totalFeeSat ? this.totalFeeSat : 0) + (event.amountIn - event.amountOut);
         return this.filteredEventsBySelectedPeriod;
       });
     } else {
@@ -129,14 +127,47 @@ export class CLNFeeReportComponent implements OnInit, OnDestroy {
         feeReport.push({ name: i + 1, value: 0.0, extra: { totalEvents: 0 } });
       }
       this.filteredEventsBySelectedPeriod.map((event) => {
-        const dateNumber = Math.floor((+event.received_time - startDateInSeconds) / this.secondsInADay);
-        feeReport[dateNumber].value = feeReport[dateNumber].value + (+event.fee / 1000);
+        const dateNumber = Math.floor((Math.floor(event.timestamp / 1000) - startDateInSeconds) / this.secondsInADay);
+        feeReport[dateNumber].value = feeReport[dateNumber].value + (event.amountIn - event.amountOut);
         feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
-        this.totalFeeMsat = (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee;
+        this.totalFeeSat = (this.totalFeeSat ? this.totalFeeSat : 0) + (event.amountIn - event.amountOut);
         return this.filteredEventsBySelectedPeriod;
       });
     }
+    this.logger.info('Fee Report Prepare Finished at ' + new Date(Date.now()).toLocaleString());
     return feeReport;
+  }
+
+  prepareEventsReport(start: Date) {
+    const startDateInSeconds = Math.round(start.getTime() / 1000);
+    const eventsReport = [];
+    this.totalFeeSat = 0;
+    this.logger.info('Events Report Prepare Starting at ' + new Date(Date.now()).toLocaleString() + ' From ' + start.toLocaleString());
+    if (this.reportPeriod === SCROLL_RANGES[1]) {
+      for (let i = 0; i < 12; i++) {
+        eventsReport.push({ name: MONTHS[i].name, value: 0, extra: { totalFees: 0.0 } });
+      }
+      this.filteredEventsBySelectedPeriod.map((event) => {
+        const monthNumber = new Date(event.timestamp).getMonth();
+        eventsReport[monthNumber].value = eventsReport[monthNumber].value + 1;
+        eventsReport[monthNumber].extra.totalFees = eventsReport[monthNumber].extra.totalFees + (event.amountIn - event.amountOut);
+        this.totalFeeSat = (this.totalFeeSat ? this.totalFeeSat : 0) + (event.amountIn - event.amountOut);
+        return this.filteredEventsBySelectedPeriod;
+      });
+    } else {
+      for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
+        eventsReport.push({ name: i + 1, value: 0, extra: { totalFees: 0.0 } });
+      }
+      this.filteredEventsBySelectedPeriod.map((event) => {
+        const dateNumber = Math.floor((Math.floor(event.timestamp / 1000) - startDateInSeconds) / this.secondsInADay);
+        eventsReport[dateNumber].value = eventsReport[dateNumber].value + 1;
+        eventsReport[dateNumber].extra.totalFees = eventsReport[dateNumber].extra.totalFees + (event.amountIn - event.amountOut);
+        this.totalFeeSat = (this.totalFeeSat ? this.totalFeeSat : 0) + (event.amountIn - event.amountOut);
+        return this.filteredEventsBySelectedPeriod;
+      });
+    }
+    this.logger.info('Events Report Prepare Finished at ' + new Date(Date.now()).toLocaleString());
+    return eventsReport;
   }
 
   onSelectionChange(selectedValues: { selDate: Date, selScrollRange: string }) {
@@ -156,6 +187,11 @@ export class CLNFeeReportComponent implements OnInit, OnDestroy {
 
   getMonthDays(selMonth: number, selYear: number) {
     return (selMonth === 1 && selYear % 4 === 0) ? (MONTHS[selMonth].days + 1) : MONTHS[selMonth].days;
+  }
+
+  onSelReportByChange() {
+    this.yAxisLabel = this.selReportBy === this.reportBy.EVENTS ? 'Events' : 'Fee (Sats)';
+    this.routingReportData = this.selReportBy === this.reportBy.EVENTS ? this.prepareEventsReport(this.startDate) : this.prepareFeeReport(this.startDate);
   }
 
   ngOnDestroy() {

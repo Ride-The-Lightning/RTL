@@ -42,7 +42,7 @@ import { CLNSignVerifyMessageComponent } from './sign-verify-message/sign-verify
 import { CLNSignComponent } from './sign-verify-message/sign/sign.component';
 import { CLNVerifyComponent } from './sign-verify-message/verify/verify.component';
 import { CLNReportsComponent } from './reports/reports.component';
-import { CLNFeeReportComponent } from './reports/fee/fee-report.component';
+import { CLNRoutingReportComponent } from './reports/routing/routing-report.component';
 import { CLNTransactionsReportComponent } from './reports/transactions/transactions-report.component';
 import { CLNOnChainSendComponent } from './on-chain/on-chain-send/on-chain-send.component';
 import { CLNOpenChannelComponent } from './peers-channels/channels/open-channel-modal/open-channel.component';
@@ -104,7 +104,7 @@ import { CLNUnlockedGuard } from '../shared/services/auth.guard';
     CLNSignComponent,
     CLNVerifyComponent,
     CLNReportsComponent,
-    CLNFeeReportComponent,
+    CLNRoutingReportComponent,
     CLNTransactionsReportComponent,
     CLNOnChainSendComponent,
     CLNInvoiceInformationComponent,

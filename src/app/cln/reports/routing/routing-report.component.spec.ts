@@ -3,23 +3,24 @@ import { StoreModule } from '@ngrx/store';
 
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../../lnd/store/lnd.reducers';
-import { CLNReducer } from '../../../cln/store/cln.reducers';
+import { CLNReducer } from '../../store/cln.reducers';
 import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
+import { LoggerService } from '../../../shared/services/logger.service';
+
+import { CLNRoutingReportComponent } from './routing-report.component';
+import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/mock-services';
+import { SharedModule } from '../../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../shared/services/data.service';
 
-import { FeeReportComponent } from './fee-report.component';
-import { SharedModule } from '../../../shared/shared.module';
-import { mockDataService } from '../../../shared/test-helpers/mock-services';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
-describe('FeeReportComponent', () => {
-  let component: FeeReportComponent;
-  let fixture: ComponentFixture<FeeReportComponent>;
+describe('CLNRoutingReportComponent', () => {
+  let component: CLNRoutingReportComponent;
+  let fixture: ComponentFixture<CLNRoutingReportComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [FeeReportComponent],
+      declarations: [CLNRoutingReportComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -27,6 +28,7 @@ describe('FeeReportComponent', () => {
       ],
       providers: [
         CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
     }).
@@ -34,7 +36,7 @@ describe('FeeReportComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FeeReportComponent);
+    fixture = TestBed.createComponent(CLNRoutingReportComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
