@@ -4,8 +4,8 @@ import { routeAnimation } from '../shared/animation/route-animation';
 
 @Component({
   selector: 'rtl-cln-root',
-  templateUrl: './cl-root.component.html',
-  styleUrls: ['./cl-root.component.scss'],
+  templateUrl: './cln-root.component.html',
+  styleUrls: ['./cln-root.component.scss'],
   animations: [routeAnimation]
 })
 export class CLNRootComponent {

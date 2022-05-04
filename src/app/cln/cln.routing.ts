@@ -1,7 +1,7 @@
 import { Routes, RouterModule } from '@angular/router';
 import { ModuleWithProviders } from '@angular/core';
 
-import { CLNRootComponent } from './cl-root.component';
+import { CLNRootComponent } from './cln-root.component';
 import { CLNHomeComponent } from './home/home.component';
 import { CLNOnChainComponent } from './on-chain/on-chain.component';
 import { CLNConnectionsComponent } from './peers-channels/connections.component';

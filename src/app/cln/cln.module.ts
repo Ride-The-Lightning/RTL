@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { CLNRouting } from './cln.routing';
 import { SharedModule } from '../shared/shared.module';
 
-import { CLNRootComponent } from './cl-root.component';
+import { CLNRootComponent } from './cln-root.component';
 import { CLNHomeComponent } from './home/home.component';
 import { CLNConnectionsComponent } from './peers-channels/connections.component';
 import { CLNChannelsTablesComponent } from './peers-channels/channels/channels-tables/channels-tables.component';
