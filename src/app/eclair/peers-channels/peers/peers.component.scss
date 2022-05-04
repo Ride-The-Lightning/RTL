@@ -14,8 +14,9 @@
 }
 
 .mat-column-address {
-  flex: 1 1 15%;
-  width: 15%;
+  white-space: nowrap;
+  overflow: hidden;  
+  text-overflow: ellipsis;
 }
 
 .mat-column-actions {

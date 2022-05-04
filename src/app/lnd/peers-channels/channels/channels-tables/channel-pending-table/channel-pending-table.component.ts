@@ -117,8 +117,8 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
     Object.assign(preOrderedChannel, fcChannelObj1, fcChannelObj2);
     const reorderedChannel = [
       [{ key: 'channel_point', value: preOrderedChannel.channel_point, title: 'Channel Point', width: 100, type: DataTypeEnum.STRING }],
-      [{ key: 'remote_alias', value: preOrderedChannel.remote_alias, title: 'Peer Alias', width: 25, type: DataTypeEnum.STRING },
-      { key: 'remote_node_pub', value: preOrderedChannel.remote_node_pub, title: 'Peer Node Pubkey', width: 75, type: DataTypeEnum.STRING }],
+      [{ key: 'remote_node_pub', value: preOrderedChannel.remote_node_pub, title: 'Peer Node Pubkey', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'remote_alias', value: preOrderedChannel.remote_alias, title: 'Peer Alias', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'capacity', value: preOrderedChannel.capacity, title: 'Capacity', width: 25, type: DataTypeEnum.NUMBER },
       { key: 'confirmation_height', value: preOrderedChannel.confirmation_height, title: 'Confirmation Height', width: 25, type: DataTypeEnum.NUMBER },
       { key: 'local_balance', value: preOrderedChannel.local_balance, title: 'Local Balance', width: 25, type: DataTypeEnum.NUMBER },
