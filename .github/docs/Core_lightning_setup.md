@@ -45,7 +45,7 @@ $ npm install --only=prod
 ```
 ### <a name="prep"></a>Prep for Execution
 RTL requires its own config file `RTL-Config.json`, to start the server and provide user authentication on the app. 
-* Copy the file `Sample-RTL-Config.json` from `./RTL/docs` to `./RTL` and rename it to `RTL-Config.json`.
+* Copy the file `Sample-RTL-Config.json` in `./RTL` and rename it to `RTL-Config.json`.
 * Locate the complete path of the readable `access.macaroon` from `cl-rest` on your node.
 * Modify the RTL conf file per the example file below
 
