@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { SwitchRes } from '../../../shared/models/lndModels';
 import { CommonService } from '../../../shared/services/common.service';
-import { MONTHS, ScreenSizeEnum, SCROLL_RANGES, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
+import { MONTHS, ReportBy, ScreenSizeEnum, SCROLL_RANGES, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { DataService } from '../../../shared/services/data.service';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
@@ -14,21 +14,23 @@ import { lndNodeInformation } from '../../store/lnd.selector';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 @Component({
-  selector: 'rtl-fee-report',
-  templateUrl: './fee-report.component.html',
-  styleUrls: ['./fee-report.component.scss'],
+  selector: 'rtl-routing-report',
+  templateUrl: './routing-report.component.html',
+  styleUrls: ['./routing-report.component.scss'],
   animations: [fadeIn]
 })
-export class FeeReportComponent implements OnInit, OnDestroy {
+export class RoutingReportComponent implements OnInit, OnDestroy {
 
   public reportPeriod = SCROLL_RANGES[0];
   public secondsInADay = 24 * 60 * 60;
   public events: SwitchRes = {};
   public eventFilterValue = '';
+  public reportBy = ReportBy;
+  public selReportBy = ReportBy.FEES;
   public today = new Date(Date.now());
   public startDate = new Date(this.today.getFullYear(), this.today.getMonth(), 1, 0, 0, 0);
   public endDate = new Date(this.today.getFullYear(), this.today.getMonth(), this.getMonthDays(this.today.getMonth(), this.today.getFullYear()), 23, 59, 59);
-  public feeReportData: any = [];
+  public routingReportData: any = [];
   public view: [number, number] = [350, 350];
   public screenPaddingX = 100;
   public gradient = true;
@@ -73,7 +75,7 @@ export class FeeReportComponent implements OnInit, OnDestroy {
   }
 
   fetchEvents(start: Date, end: Date) {
-    this.errorMessage = UI_MESSAGES.GET_FEE_REPORT;
+    this.errorMessage = UI_MESSAGES.GET_FORWARDING_HISTORY;
     const startDateInSeconds = Math.round(start.getTime() / 1000).toString();
     const endDateInSeconds = Math.round(end.getTime() / 1000).toString();
     this.dataService.getForwardingHistory(startDateInSeconds, endDateInSeconds).
@@ -83,10 +85,10 @@ export class FeeReportComponent implements OnInit, OnDestroy {
           if (res.forwarding_events && res.forwarding_events.length) {
             res.forwarding_events = res.forwarding_events.reverse();
             this.events = res;
-            this.feeReportData = this.prepareFeeReport(start);
+            this.routingReportData = this.selReportBy === this.reportBy.EVENTS ? this.prepareEventsReport(start) : this.prepareFeeReport(start);
           } else {
-            this.events = {};
-            this.feeReportData = [];
+            this.events = { forwarding_events: [], total_fee_msat: 0 };
+            this.routingReportData = [];
           }
         }, error: (err) => {
           this.errorMessage = err;
@@ -111,6 +113,7 @@ export class FeeReportComponent implements OnInit, OnDestroy {
   prepareFeeReport(start: Date) {
     const startDateInSeconds = Math.round(start.getTime() / 1000);
     const feeReport = [];
+    this.events.total_fee_msat = 0;
     if (this.reportPeriod === SCROLL_RANGES[1]) {
       for (let i = 0; i < 12; i++) {
         feeReport.push({ name: MONTHS[i].name, value: 0.0, extra: { totalEvents: 0 } });
@@ -137,6 +140,36 @@ export class FeeReportComponent implements OnInit, OnDestroy {
     return feeReport;
   }
 
+  prepareEventsReport(start: Date) {
+    const startDateInSeconds = Math.round(start.getTime() / 1000);
+    const eventsReport = [];
+    this.events.total_fee_msat = 0;
+    if (this.reportPeriod === SCROLL_RANGES[1]) {
+      for (let i = 0; i < 12; i++) {
+        eventsReport.push({ name: MONTHS[i].name, value: 0, extra: { totalFees: 0.0 } });
+      }
+      this.events.forwarding_events.map((event) => {
+        const monthNumber = new Date((+event.timestamp) * 1000).getMonth();
+        eventsReport[monthNumber].value = eventsReport[monthNumber].value + 1;
+        eventsReport[monthNumber].extra.totalFees = eventsReport[monthNumber].extra.totalFees + (+event.fee_msat / 1000);
+        this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;
+        return this.events;
+      });
+    } else {
+      for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
+        eventsReport.push({ name: i + 1, value: 0, extra: { totalFees: 0.0 } });
+      }
+      this.events.forwarding_events.map((event) => {
+        const dateNumber = Math.floor((+event.timestamp - startDateInSeconds) / this.secondsInADay);
+        eventsReport[dateNumber].value = eventsReport[dateNumber].value + 1;
+        eventsReport[dateNumber].extra.totalFees = eventsReport[dateNumber].extra.totalFees + (+event.fee_msat / 1000);
+        this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;
+        return this.events;
+      });
+    }
+    return eventsReport;
+  }
+
   onSelectionChange(selectedValues: { selDate: Date, selScrollRange: string }) {
     const selMonth = selectedValues.selDate.getMonth();
     const selYear = selectedValues.selDate.getFullYear();
@@ -154,6 +187,11 @@ export class FeeReportComponent implements OnInit, OnDestroy {
 
   getMonthDays(selMonth: number, selYear: number) {
     return (selMonth === 1 && selYear % 4 === 0) ? (MONTHS[selMonth].days + 1) : MONTHS[selMonth].days;
+  }
+
+  onSelReportByChange() {
+    this.yAxisLabel = this.selReportBy === this.reportBy.EVENTS ? 'Events' : 'Fee (Sats)';
+    this.routingReportData = this.selReportBy === this.reportBy.EVENTS ? this.prepareEventsReport(this.startDate) : this.prepareFeeReport(this.startDate);
   }
 
   ngOnDestroy() {

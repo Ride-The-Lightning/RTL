@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router, ResolveEnd } from '@angular/router';
+import { Router, ResolveEnd, Event } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { faChartBar } from '@fortawesome/free-solid-svg-icons';
@@ -12,7 +12,7 @@ import { faChartBar } from '@fortawesome/free-solid-svg-icons';
 export class CLNReportsComponent implements OnInit, OnDestroy {
 
   public faChartBar = faChartBar;
-  public links = [{ link: 'routingfees', name: 'Routing Fees' }, { link: 'transactions', name: 'Transactions' }];
+  public links = [{ link: 'routingreport', name: 'Routing' }, { link: 'transactions', name: 'Transactions' }];
   public activeLink = this.links[0].link;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -22,8 +22,8 @@ export class CLNReportsComponent implements OnInit, OnDestroy {
     const linkFound = this.links.find((link) => this.router.url.includes(link.link));
     this.activeLink = linkFound ? linkFound.link : this.links[0].link;
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe((value: ResolveEnd) => {
-        const linkFound = this.links.find((link) => value.urlAfterRedirects.includes(link.link));
+      subscribe((value: ResolveEnd | Event) => {
+        const linkFound = this.links.find((link) => (<ResolveEnd>value).urlAfterRedirects.includes(link.link));
         this.activeLink = linkFound ? linkFound.link : this.links[0].link;
       });
   }

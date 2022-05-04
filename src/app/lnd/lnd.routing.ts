@@ -21,7 +21,7 @@ import { RoutingComponent } from './routing/routing.component';
 import { ForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
 import { RoutingPeersComponent } from './routing/routing-peers/routing-peers.component';
 import { ReportsComponent } from './reports/reports.component';
-import { FeeReportComponent } from './reports/fee/fee-report.component';
+import { RoutingReportComponent } from './reports/routing/routing-report.component';
 import { TransactionsReportComponent } from './reports/transactions/transactions-report.component';
 import { OnChainComponent } from './on-chain/on-chain.component';
 import { OnChainReceiveComponent } from './on-chain/on-chain-receive/on-chain-receive.component';
@@ -101,8 +101,8 @@ export const LndRoutes: Routes = [
       },
       {
         path: 'reports', component: ReportsComponent, canActivate: [LNDUnlockedGuard], children: [
-          { path: '', pathMatch: 'full', redirectTo: 'routingfees' },
-          { path: 'routingfees', component: FeeReportComponent, canActivate: [LNDUnlockedGuard] },
+          { path: '', pathMatch: 'full', redirectTo: 'routingreport' },
+          { path: 'routingreport', component: RoutingReportComponent, canActivate: [LNDUnlockedGuard] },
           { path: 'transactions', component: TransactionsReportComponent, canActivate: [LNDUnlockedGuard] }
         ]
       },

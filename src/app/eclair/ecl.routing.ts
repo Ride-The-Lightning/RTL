@@ -21,7 +21,7 @@ import { ECLChannelInactiveTableComponent } from './peers-channels/channels/chan
 import { ECLForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
 import { ECLRoutingPeersComponent } from './routing/routing-peers/routing-peers.component';
 import { ECLReportsComponent } from './reports/reports.component';
-import { ECLFeeReportComponent } from './reports/fee/fee-report.component';
+import { ECLRoutingReportComponent } from './reports/routing/routing-report.component';
 import { ECLTransactionsReportComponent } from './reports/transactions/transactions-report.component';
 import { ECLUnlockedGuard } from '../shared/services/auth.guard';
 import { NotFoundComponent } from '../shared/components/not-found/not-found.component';
@@ -70,8 +70,8 @@ export const EclRoutes: Routes = [
       },
       {
         path: 'reports', component: ECLReportsComponent, canActivate: [ECLUnlockedGuard], children: [
-          { path: '', pathMatch: 'full', redirectTo: 'routingfees' },
-          { path: 'routingfees', component: ECLFeeReportComponent, canActivate: [ECLUnlockedGuard] },
+          { path: '', pathMatch: 'full', redirectTo: 'routingreport' },
+          { path: 'routingreport', component: ECLRoutingReportComponent, canActivate: [ECLUnlockedGuard] },
           { path: 'transactions', component: ECLTransactionsReportComponent, canActivate: [ECLUnlockedGuard] }
         ]
       },

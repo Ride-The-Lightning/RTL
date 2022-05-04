@@ -1,20 +1,27 @@
 <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x-large">
   <rtl-horizontal-scroller (stepChanged)="onSelectionChange($event)"></rtl-horizontal-scroller>
+  <div fxLayout="column" fxLayoutAlign="center center" class="padding-gap-x">
+    <mat-radio-group class="my-1" color="primary" name="selReportBy" [(ngModel)]="selReportBy" (change)="onSelReportByChange()" fxFlex="100" fxLayoutAlign="start start">
+      <span class="mr-2">Report By: </span>
+      <mat-radio-button class="mr-2" tabindex="1" value="{{reportBy.FEES}}">Fees</mat-radio-button>
+      <mat-radio-button tabindex="2" value="{{reportBy.EVENTS}}">Events</mat-radio-button>
+    </mat-radio-group>
+  </div>
   <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x">
     <div *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1">
       <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-      <p>Getting fee report...</p>
+      <p>Getting Forwarding History...</p>
     </div>
     <div *ngIf="apiCallStatus?.status === apiCallStatusEnum.ERROR" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1 error-border">{{errorMessage}}</div>
-    <div *ngIf="apiCallStatus?.status === apiCallStatusEnum.COMPLETED && feeReportData.length > 0 && filteredEventsBySelectedPeriod.length > 0" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 font-bold-700 mt-1"
+    <div *ngIf="apiCallStatus?.status === apiCallStatusEnum.COMPLETED && routingReportData.length > 0 && filteredEventsBySelectedPeriod.length > 0" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 font-bold-700 mt-1"
     [@fadeIn]="totalFeeMsat">{{(totalFeeMsat / 1000 || 0) | number:'1.0-2'}} Sats/{{(filteredEventsBySelectedPeriod.length || 0) | number}} Events</div>
-    <div *ngIf="apiCallStatus?.status === apiCallStatusEnum.COMPLETED && (feeReportData.length <= 0 || filteredEventsBySelectedPeriod.length <= 0)" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1">No fee report for the selected period</div>
+    <div *ngIf="apiCallStatus?.status === apiCallStatusEnum.COMPLETED && (routingReportData.length <= 0 || filteredEventsBySelectedPeriod.length <= 0)" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1">No routing report for the selected period</div>
     <div class="mt-1">
       <ngx-charts-bar-vertical
-        *ngIf="feeReportData.length > 0 && filteredEventsBySelectedPeriod.length > 0"
+        *ngIf="routingReportData.length > 0 && filteredEventsBySelectedPeriod.length > 0"
         class="one-color"
         [view]="view"
-        [results]="feeReportData"
+        [results]="routingReportData"
         [gradient]="false"
         [xAxis]="true"
         [yAxis]="true"
@@ -28,8 +35,8 @@
         (mouseup)="onChartMouseUp($event)">
         <ng-template #tooltipTemplate let-model="model">
           <span>
-            <span class="tooltip-label">Events: {{(model.extra.totalEvents || 0) | number}}</span>
-            <span class="tooltip-label">Fee: {{(model.value || 0) | number:'1.0-2'}}</span>
+            <span class="tooltip-label">Events: {{((selReportBy === reportBy.EVENTS ? model.value : model.extra.totalEvents) || 0) | number}}</span>
+            <span class="tooltip-label">Fee: {{((selReportBy === reportBy.EVENTS ? model.extra.totalFees : model.value) || 0) | number:'1.0-2'}}</span>
           </span>
         </ng-template>
       </ngx-charts-bar-vertical>

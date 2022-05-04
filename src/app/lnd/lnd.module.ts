@@ -26,7 +26,7 @@ import { ChannelClosedTableComponent } from './peers-channels/channels/channels-
 import { TransactionsComponent } from './transactions/transactions.component';
 import { LookupsComponent } from './graph/lookups/lookups.component';
 import { ReportsComponent } from './reports/reports.component';
-import { FeeReportComponent } from './reports/fee/fee-report.component';
+import { RoutingReportComponent } from './reports/routing/routing-report.component';
 import { TransactionsReportComponent } from './reports/transactions/transactions-report.component';
 import { RoutingComponent } from './routing/routing.component';
 import { ForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
@@ -103,7 +103,7 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     SignComponent,
     VerifyComponent,
     ReportsComponent,
-    FeeReportComponent,
+    RoutingReportComponent,
     TransactionsReportComponent,
     QueryRoutesComponent,
     GraphComponent,

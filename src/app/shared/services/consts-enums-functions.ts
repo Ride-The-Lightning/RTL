@@ -310,8 +310,8 @@ export const UI_MESSAGES = {
   BUMP_FEE: 'Bumping Fee...',
   LEASE_UTXO: 'Leasing UTXO...',
   GET_LOOP_SWAPS: 'Getting List Swaps...',
-  GET_FEE_REPORT: 'Getting fee report...',
-  GET_LOOKUP_DETAILS: 'Getting lookup details...',
+  GET_FORWARDING_HISTORY: 'Getting Forwarding History...',
+  GET_LOOKUP_DETAILS: 'Getting Lookup Details...',
   GET_RTL_CONFIG: 'Getting RTL Config...',
   VERIFY_TOKEN: 'Verify Token...',
   DISABLE_OFFER: 'Disabling Offer...',
@@ -324,6 +324,11 @@ export enum PaymentTypes {
   INVOICE = 'INVOICE',
   OFFER = 'OFFER',
   KEYSEND = 'KEYSEND'
+}
+
+export enum ReportBy {
+  FEES = 'FEES',
+  EVENTS = 'EVENTS'
 }
 
 export enum RTLActions {

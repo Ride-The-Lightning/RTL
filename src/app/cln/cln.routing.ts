@@ -26,7 +26,7 @@ import { CLNFailedTransactionsComponent } from './routing/failed-transactions/fa
 import { CLNRoutingPeersComponent } from './routing/routing-peers/routing-peers.component';
 
 import { CLNReportsComponent } from './reports/reports.component';
-import { CLNFeeReportComponent } from './reports/fee/fee-report.component';
+import { CLNRoutingReportComponent } from './reports/routing/routing-report.component';
 import { CLNTransactionsReportComponent } from './reports/transactions/transactions-report.component';
 import { CLNUnlockedGuard } from '../shared/services/auth.guard';
 import { NotFoundComponent } from '../shared/components/not-found/not-found.component';
@@ -89,8 +89,8 @@ export const ClnRoutes: Routes = [
       },
       {
         path: 'reports', component: CLNReportsComponent, canActivate: [CLNUnlockedGuard], children: [
-          { path: '', pathMatch: 'full', redirectTo: 'routingfees' },
-          { path: 'routingfees', component: CLNFeeReportComponent, canActivate: [CLNUnlockedGuard] },
+          { path: '', pathMatch: 'full', redirectTo: 'routingreport' },
+          { path: 'routingreport', component: CLNRoutingReportComponent, canActivate: [CLNUnlockedGuard] },
           { path: 'transactions', component: CLNTransactionsReportComponent, canActivate: [CLNUnlockedGuard] }
         ]
       },
