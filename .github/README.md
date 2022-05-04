@@ -69,7 +69,7 @@ RTL requires its own config file `RTL-Config.json`, to start the server and prov
 
 *Advanced users can refer to [this page](./docs/Multi_node_setup.md), for config settings required to manage multiple nodes*
 
-* Copy the file `Sample-RTL-Config.json` from `./RTL/docs` to `./RTL` and rename it to `RTL-Config.json`.
+* Rename the file `Sample-RTL-Config.json` to `RTL-Config.json` located at`./RTL`.
 * Locate the complete path of the readable macroon file (admin.macroon) on your node and the lnd.conf file.
 * Modify the `RTL-Config.json` file per the example file below
 
