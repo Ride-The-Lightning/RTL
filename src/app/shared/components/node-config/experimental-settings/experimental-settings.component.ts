@@ -12,7 +12,11 @@ import { updateServiceSettings } from '../../../../store/rtl.actions';
 import { setChildNodeSettingsLND } from '../../../../lnd/store/lnd.actions';
 import { setChildNodeSettingsCL } from '../../../../cln/store/cln.actions';
 import { setChildNodeSettingsECL } from '../../../../eclair/store/ecl.actions';
-import { ServicesEnum, UI_MESSAGES } from '../../../services/consts-enums-functions';
+import { DataService } from '../../../services/data.service';
+import { ServicesEnum, UI_MESSAGES, LADS_POLICY } from '../../../services/consts-enums-functions';
+import { balance } from '../../../../cln/store/cln.selector';
+import { Balance, FunderPolicy } from '../../../models/clModels';
+import { ApiCallStatusPayload } from '../../../models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-experimental-settings',
@@ -24,20 +28,35 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
   public faInfoCircle = faInfoCircle;
   public faExclamationTriangle = faExclamationTriangle;
   public faCode = faCode;
-  public features = [{ name: 'Offers', enabled: false }];
+  public features = [{ name: 'Offers', enabled: false }, { name: 'Channel Funding Policy', enabled: false }];
   public enableOffers = false;
   public selNode: ConfigSettingsNode;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
+  public fundingPolicy: FunderPolicy = null;
+  public policyTypes = LADS_POLICY;
+  public selPolicyType = LADS_POLICY[0];
+  public policyMod: number;
+  public leaseFeeBaseSat: number;
+  public leaseFeeBasis: number;
+  public channelFeeMaxBaseSat: number;
+  public channelFeeMaxProportional: number;
+  public flgUpdateCalled = false;
+  public updateMsg = '';
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<RTLState>) { }
+
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private dataService: DataService) { }
 
   ngOnInit() {
-    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).
       subscribe((selNode) => {
         this.selNode = selNode;
         this.enableOffers = this.selNode.settings.enableOffers;
         this.features[0].enabled = this.enableOffers;
         this.logger.info(this.selNode);
+      });
+    this.store.select(balance).pipe(takeUntil(this.unSubs[2])).
+      subscribe((balanceSeletor: { balance: Balance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.policyTypes[2].max = balanceSeletor.balance.totalBalance || 1000;
       });
   }
 
@@ -64,6 +83,52 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
         lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.enableOffers
       }
     }));
+  }
+
+  onPanelOpen(i) {
+    if (i === 1 && !this.fundingPolicy) {
+      this.dataService.getOrUpdateFunderPolicy().pipe(takeUntil(this.unSubs[0])).subscribe((res: any) => {
+        this.logger.info('Received Funder Update Policy: ' + JSON.stringify(res));
+        this.fundingPolicy = res;
+        if (this.fundingPolicy.policy) {
+          this.selPolicyType = LADS_POLICY.find((policy) => policy.id === this.fundingPolicy.policy);
+        }
+        this.policyMod = this.fundingPolicy.policy_mod || this.fundingPolicy.policy_mod === 0 ? this.fundingPolicy.policy_mod : null;
+        this.leaseFeeBaseSat = this.fundingPolicy.lease_fee_base_msat ? this.fundingPolicy.lease_fee_base_msat / 1000 : this.fundingPolicy.lease_fee_base_msat === 0 ? 0 : null;
+        this.leaseFeeBasis = this.fundingPolicy.lease_fee_basis || this.fundingPolicy.lease_fee_basis === 0 ? this.fundingPolicy.lease_fee_basis : null;
+        this.channelFeeMaxBaseSat = this.fundingPolicy.channel_fee_max_base_msat ? this.fundingPolicy.channel_fee_max_base_msat / 1000 : this.fundingPolicy.channel_fee_max_base_msat === 0 ? 0 : null;
+        this.channelFeeMaxProportional = this.fundingPolicy.channel_fee_max_proportional_thousandths || this.fundingPolicy.channel_fee_max_proportional_thousandths === 0 ? this.fundingPolicy.channel_fee_max_proportional_thousandths : null;
+      });
+    }
+  }
+
+  onUpdateFundingPolicy() {
+    this.flgUpdateCalled = false;
+    this.updateMsg = '';
+    this.dataService.getOrUpdateFunderPolicy(this.selPolicyType.id, this.policyMod, this.leaseFeeBaseSat, this.leaseFeeBasis, this.channelFeeMaxBaseSat * 1000, this.channelFeeMaxProportional).
+      pipe(takeUntil(this.unSubs[3])).
+      subscribe({
+        next: (updatePolicyRes: any) => {
+          this.logger.info(updatePolicyRes);
+          this.fundingPolicy = updatePolicyRes;
+          this.onResetPolicy();
+          this.updateMsg = 'Compact Lease: ' + updatePolicyRes.compact_lease;
+        }, error: (err) => {
+          this.logger.error(err);
+          this.updateMsg = JSON.stringify(err.error.error.message);
+        }
+      });
+  }
+
+  onResetPolicy() {
+    this.flgUpdateCalled = false;
+    this.updateMsg = '';
+    this.selPolicyType = LADS_POLICY[0];
+    this.policyMod = this.fundingPolicy.policy_mod !== 0 && !this.fundingPolicy.policy_mod ? null : this.fundingPolicy.policy_mod;
+    this.leaseFeeBaseSat = this.fundingPolicy.lease_fee_base_msat !== 0 && !this.fundingPolicy.lease_fee_base_msat ? null : this.fundingPolicy.lease_fee_base_msat / 1000;
+    this.leaseFeeBasis = this.fundingPolicy.lease_fee_basis !== 0 && !this.fundingPolicy.lease_fee_basis ? null : this.fundingPolicy.lease_fee_basis;
+    this.channelFeeMaxBaseSat = this.fundingPolicy.channel_fee_max_base_msat !== 0 && !this.fundingPolicy.channel_fee_max_base_msat ? null : this.fundingPolicy.channel_fee_max_base_msat / 1000;
+    this.channelFeeMaxProportional = this.fundingPolicy.channel_fee_max_proportional_thousandths !== 0 && !this.fundingPolicy.channel_fee_max_proportional_thousandths ? null : this.fundingPolicy.channel_fee_max_proportional_thousandths;
   }
 
   ngOnDestroy() {

@@ -247,6 +247,21 @@ export class DataService implements OnDestroy {
       }));
   }
 
+  getOrUpdateFunderPolicy(policy?: any, policyMod?: any, leaseFeeBaseMsat?: any, leaseFeeBasis?: any, channelFeeMaxBaseMsat?: any, channelFeeMaxProportional?: any) {
+    const postParams = policy ? { policy: policy, policyMod: policyMod, leaseFeeBaseMsat: leaseFeeBaseMsat, leaseFeeBasis: leaseFeeBasis, channelFeeMaxBaseMsat: channelFeeMaxBaseMsat, channelFeeMaxProportional: channelFeeMaxProportional } : null;
+    this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_FUNDER_POLICY }));
+    return this.httpClient.post(this.childAPIUrl + environment.CHANNELS_API + '/funderUpdate', postParams).pipe(
+      takeUntil(this.unSubs[8]),
+      map((res) => {
+        this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_FUNDER_POLICY }));
+        return res;
+      }), catchError((err) => {
+        this.handleErrorWithoutAlert('Funder Policy', UI_MESSAGES.GET_FUNDER_POLICY, err);
+        return throwError(() => new Error(this.extractErrorMessage(err)));
+      })
+    );
+  }
+
   extractErrorMessage(err: any, genericErrorMessage: string = 'Unknown Error.') {
     return this.titleCasePipe.transform((err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error :
       (err.error && err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error :

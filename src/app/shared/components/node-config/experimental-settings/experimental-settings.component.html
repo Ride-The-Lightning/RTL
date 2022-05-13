@@ -9,7 +9,7 @@
       <span class="page-title">Features</span>
     </div>
     <mat-accordion>
-      <mat-expansion-panel [expanded]="false" class="flat-expansion-panel my-1" *ngFor="let feature of features; index as i">
+      <mat-expansion-panel [expanded]="false" class="flat-expansion-panel my-1" *ngFor="let feature of features; index as i" (opened)="onPanelOpen(i)">
         <mat-expansion-panel-header>
           <mat-panel-title fxFlex="100" fxLayoutAlign="space-between center">
             <h4 class="font-bold-500">{{feature.name}}</h4>
@@ -36,6 +36,53 @@
               <span>Do not get an Offer tattoo until spec is fully ratified!</span>
             </div>
             <mat-slide-toggle autoFocus class="my-1" tabindex="1" color="primary" name="enableOfr" [(ngModel)]="enableOffers" (change)="onUpdateFeature()">Enable Offers {{enableOffers ? '(You can find Offers under Lightning -> Transactions -> Offers)' : ''}}</mat-slide-toggle>
+          </form>
+          <form *ngIf="i === 1" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="page-sub-title-container" #form="ngForm">
+            <div fxFlex="100" fxLayout="row" class="alert alert-warn">
+              <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+              <span>These config changes should be configured permanently via the config file on your CLN node otherwise the policy would need to be configured again, if your node restarts.</span>
+            </div>
+            <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch">
+              <mat-form-field fxFlex="49" fxLayoutAlign="start end">
+                <mat-select autofocus tabindex="1" [(ngModel)]="selPolicyType" (selectionChange)="policyMod=null" placeholder="Policy" name="policy">
+                  <mat-option *ngFor="let policyType of policyTypes" [value]="policyType">
+                    {{policyType.id | titlecase}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field fxFlex="49">
+                <input matInput [(ngModel)]="policyMod" [placeholder]="selPolicyType.placeholder" type="number" [step]="selPolicyType.id === 'fixed' ? 1000 : 10" [min]="selPolicyType.min" [max]="selPolicyType.max" tabindex="2" required name="plcMod" #plcMod="ngModel">
+                <mat-hint>{{selPolicyType.placeholder}} should be between {{selPolicyType.min}} and {{selPolicyType.max}}</mat-hint>
+                <mat-error *ngIf="!policyMod">{{selPolicyType.placeholder}} is required.</mat-error>
+                <mat-error *ngIf="policyMod < selPolicyType.min">{{selPolicyType.placeholder}} must be greater than or equal to {{selPolicyType.min}}.</mat-error>
+                <mat-error *ngIf="policyMod > selPolicyType.max">{{selPolicyType.placeholder}} must be less than or equal to {{selPolicyType.max}}.</mat-error>
+              </mat-form-field>
+            </div>
+            <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch">
+              <mat-form-field fxFlex="49">
+                <input matInput [(ngModel)]="leaseFeeBaseSat" placeholder="Lease Base Fee (Sats)" type="number" step="1000" min="0" tabindex="3" required name="leaseFeeBaseSat">
+                <mat-error *ngIf="!leaseFeeBaseSat">Lease base fee is required.</mat-error>
+              </mat-form-field>
+              <mat-form-field fxFlex="49">
+                <input matInput [(ngModel)]="leaseFeeBasis" placeholder="Lease Base Basis (bps)" type="number" step="10" min="0" tabindex="4" required name="leaseFeeBasis">
+                <mat-error *ngIf="!leaseFeeBasis">Lease base basis is required.</mat-error>
+              </mat-form-field>
+            </div>
+            <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch">
+              <mat-form-field fxFlex="49">
+                <input matInput [(ngModel)]="channelFeeMaxBaseSat" placeholder="Max Channel Routing Base Fee (Sats)" type="number" step="1" min="0" tabindex="5" required name="channelFeeMaxBaseSat">
+                <mat-error *ngIf="!channelFeeMaxBaseSat">Max channel routing base fee is required.</mat-error>
+              </mat-form-field>
+              <mat-form-field fxFlex="49">
+                <input matInput [(ngModel)]="channelFeeMaxProportional" placeholder="Max Channel Routing Fee Rate (ppm)" type="number" step="10" min="0" tabindex="6" required name="channelFeeMaxProportional">
+                <mat-error *ngIf="!channelFeeMaxProportional">Max channel routing fee rate is required.</mat-error>
+              </mat-form-field>
+            </div>
+            <h4 *ngIf="flgUpdateCalled" fxLayoutAlign="start" class="font-bold-500 mt-2">{{(updateMsg.error && updateMsg.error !== '') ? (('Error: ' + updateMsg.error) || 'Unknown Error') : ((updateMsg) || 'Successfully Updated the Funding Policy!')}}</h4>
+            <div fxLayout="row" class="my-1">
+              <button class="mr-1" mat-stroked-button color="primary" (click)="onResetPolicy()" tabindex="7">Reset</button>
+              <button mat-flat-button color="primary" (click)="onUpdateFundingPolicy()" tabindex="8">Update</button>
+            </div>
           </form>
         </div>
       </mat-expansion-panel>

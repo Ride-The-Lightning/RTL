@@ -120,3 +120,22 @@ export const listForwards = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
+export const funderUpdatePolicy = (req, res, next) => {
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Getting or Updating Funder Policy..' });
+    options = common.getOptions(req);
+    if (options.error) {
+        return res.status(options.statusCode).json({ message: options.message, error: options.error });
+    }
+    options.url = req.session.selectedNode.ln_server_url + '/v1/channel/funderUpdate';
+    if (req.body && req.body.policy) {
+        options.body = req.body;
+    }
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Funder Update Body', data: options.body });
+    request.post(options).then((body) => {
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Funder Policy Received', data: body });
+        res.status(200).json(body);
+    }).catch((errRes) => {
+        const err = common.handleError(errRes, 'Channels', 'Funder Policy Error', req.session.selectedNode);
+        return res.status(err.statusCode).json({ message: err.message, error: err.error });
+    });
+};

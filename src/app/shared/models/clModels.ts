@@ -454,3 +454,22 @@ export interface FetchInvoices {
   index_offset?: number;
   reversed?: boolean;
 }
+
+export interface FunderPolicy {
+  summary?: string;
+  policy?: string;
+  policy_mod?: number;
+  leases_only?: boolean;
+  min_their_funding_msat?: string;
+  max_their_funding_msat?: string;
+  per_channel_min_msat?: string;
+  per_channel_max_msat?: string;
+  reserve_tank_msat?: string;
+  fuzz_percent?: number;
+  fund_probability?: number;
+  lease_fee_base_msat?: number;
+  lease_fee_basis?: number;
+  funding_weight?: number;
+  channel_fee_max_base_msat?: number;
+  channel_fee_max_proportional_thousandths?: number;
+}
