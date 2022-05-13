@@ -198,7 +198,7 @@ export class CLNEffects implements OnDestroy {
     ofType(CLNActions.FETCH_LOCAL_REMOTE_BALANCE_CLN),
     mergeMap(() => {
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchLocalRemoteBalance', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<LocalRemoteBalance>(this.CHILD_API_URL + environment.CHANNELS_API + '/localremotebalance');
+      return this.httpClient.get<LocalRemoteBalance>(this.CHILD_API_URL + environment.CHANNELS_API + '/localRemoteBalance');
     }),
     map((lrBalance) => {
       this.logger.info(lrBalance);

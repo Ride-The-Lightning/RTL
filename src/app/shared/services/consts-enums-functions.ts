@@ -317,6 +317,7 @@ export const UI_MESSAGES = {
   DISABLE_OFFER: 'Disabling Offer...',
   CREATE_OFFER: 'Creating Offer...',
   DELETE_OFFER_BOOKMARK: 'Deleting Bookmark...',
+  GET_FUNDER_POLICY: 'Getting Or Updating Funder Policy...',
   LOG_OUT: 'Logging Out...'
 };
 
@@ -615,3 +616,9 @@ export enum NodeFeaturesLND {
   'anchors-zero-fee-htlc-tx' = 'Anchor commitment type with zero fee HTLC transactions',
   'amp' = 'AMP'
 };
+
+export const LADS_POLICY = [
+  { id: 'match', placeholder: 'Policy Match (%age)', min: 0, max: 200 },
+  { id: 'available', placeholder: 'Policy Available (%age)', min: 0, max: 100 },
+  { id: 'fixed', placeholder: 'Fixed Policy (Sats)', min: 0, max: 100 }
+];
