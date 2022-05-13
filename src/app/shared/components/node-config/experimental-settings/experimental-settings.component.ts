@@ -47,6 +47,21 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
   constructor(private logger: LoggerService, private store: Store<RTLState>, private dataService: DataService) { }
 
   ngOnInit() {
+    if (!this.fundingPolicy) {
+      this.dataService.getOrUpdateFunderPolicy().pipe(takeUntil(this.unSubs[0])).subscribe((res: any) => {
+        this.logger.info('Received Funder Update Policy: ' + JSON.stringify(res));
+        this.fundingPolicy = res;
+        this.features[1].enabled = !!(this.fundingPolicy && this.fundingPolicy.summary);
+        if (this.fundingPolicy.policy) {
+          this.selPolicyType = LADS_POLICY.find((policy) => policy.id === this.fundingPolicy.policy);
+        }
+        this.policyMod = this.fundingPolicy.policy_mod || this.fundingPolicy.policy_mod === 0 ? this.fundingPolicy.policy_mod : null;
+        this.leaseFeeBaseSat = this.fundingPolicy.lease_fee_base_msat ? this.fundingPolicy.lease_fee_base_msat / 1000 : this.fundingPolicy.lease_fee_base_msat === 0 ? 0 : null;
+        this.leaseFeeBasis = this.fundingPolicy.lease_fee_basis || this.fundingPolicy.lease_fee_basis === 0 ? this.fundingPolicy.lease_fee_basis : null;
+        this.channelFeeMaxBaseSat = this.fundingPolicy.channel_fee_max_base_msat ? this.fundingPolicy.channel_fee_max_base_msat / 1000 : this.fundingPolicy.channel_fee_max_base_msat === 0 ? 0 : null;
+        this.channelFeeMaxProportional = this.fundingPolicy.channel_fee_max_proportional_thousandths || this.fundingPolicy.channel_fee_max_proportional_thousandths === 0 ? this.fundingPolicy.channel_fee_max_proportional_thousandths : null;
+      });
+    }
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).
       subscribe((selNode) => {
         this.selNode = selNode;
@@ -83,23 +98,6 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
         lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.enableOffers
       }
     }));
-  }
-
-  onPanelOpen(i) {
-    if (i === 1 && !this.fundingPolicy) {
-      this.dataService.getOrUpdateFunderPolicy().pipe(takeUntil(this.unSubs[0])).subscribe((res: any) => {
-        this.logger.info('Received Funder Update Policy: ' + JSON.stringify(res));
-        this.fundingPolicy = res;
-        if (this.fundingPolicy.policy) {
-          this.selPolicyType = LADS_POLICY.find((policy) => policy.id === this.fundingPolicy.policy);
-        }
-        this.policyMod = this.fundingPolicy.policy_mod || this.fundingPolicy.policy_mod === 0 ? this.fundingPolicy.policy_mod : null;
-        this.leaseFeeBaseSat = this.fundingPolicy.lease_fee_base_msat ? this.fundingPolicy.lease_fee_base_msat / 1000 : this.fundingPolicy.lease_fee_base_msat === 0 ? 0 : null;
-        this.leaseFeeBasis = this.fundingPolicy.lease_fee_basis || this.fundingPolicy.lease_fee_basis === 0 ? this.fundingPolicy.lease_fee_basis : null;
-        this.channelFeeMaxBaseSat = this.fundingPolicy.channel_fee_max_base_msat ? this.fundingPolicy.channel_fee_max_base_msat / 1000 : this.fundingPolicy.channel_fee_max_base_msat === 0 ? 0 : null;
-        this.channelFeeMaxProportional = this.fundingPolicy.channel_fee_max_proportional_thousandths || this.fundingPolicy.channel_fee_max_proportional_thousandths === 0 ? this.fundingPolicy.channel_fee_max_proportional_thousandths : null;
-      });
-    }
   }
 
   onUpdateFundingPolicy() {
