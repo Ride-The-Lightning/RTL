@@ -118,6 +118,8 @@ export const funderUpdatePolicy = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Funder Update Body', data: options.body });
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Funder Policy Received', data: body });
+    body.channel_fee_max_base_msat = (body.channel_fee_max_base_msat && typeof body.channel_fee_max_base_msat === 'string' && body.channel_fee_max_base_msat.includes('msat')) ? +body.channel_fee_max_base_msat.replace('msat', '') : body.channel_fee_max_base_msat;
+    body.lease_fee_base_msat = (body.lease_fee_base_msat && typeof body.lease_fee_base_msat === 'string' && body.lease_fee_base_msat.includes('msat')) ? +body.lease_fee_base_msat.replace('msat', '') : body.channel_fee_max_base_msat;
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Channels', 'Funder Policy Error', req.session.selectedNode);

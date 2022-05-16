@@ -280,12 +280,15 @@ export class DataService implements OnDestroy {
 
   getOrUpdateFunderPolicy(policy?: any, policyMod?: any, leaseFeeBaseMsat?: any, leaseFeeBasis?: any, channelFeeMaxBaseMsat?: any, channelFeeMaxProportional?: any) {
     return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
-      const postParams = policy ? { policy: policy, policyMod: policyMod, leaseFeeBaseMsat: leaseFeeBaseMsat, leaseFeeBasis: leaseFeeBasis, channelFeeMaxBaseMsat: channelFeeMaxBaseMsat, channelFeeMaxProportional: channelFeeMaxProportional } : null;
+      const postParams = policy ? { policy: policy, policy_mod: policyMod, lease_fee_base_msat: leaseFeeBaseMsat, lease_fee_basis: leaseFeeBasis, channel_fee_max_base_msat: channelFeeMaxBaseMsat, channel_fee_max_proportional_thousandths: channelFeeMaxProportional } : null;
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_FUNDER_POLICY }));
       return this.httpClient.post(this.APIUrl + '/' + updatedLnImplementation + environment.CHANNELS_API + '/funderUpdate', postParams).pipe(
         takeUntil(this.unSubs[8]),
         map((res) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_FUNDER_POLICY }));
+          if (postParams) {
+            this.store.dispatch(openSnackBar({ payload: 'Funder Policy Updated Successfully!' }));
+          }
           return res;
         }), catchError((err) => {
           this.handleErrorWithoutAlert('Funder Policy', UI_MESSAGES.GET_FUNDER_POLICY, err);
