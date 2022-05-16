@@ -21,6 +21,7 @@ export const environment = {
   ON_CHAIN_API: '/onchain',
   MESSAGE_API: '/message',
   OFFERS_API: '/offers',
+  UTILITY_API: '/utility',
   LOOP_API: '/loop',
   BOLTZ_API: '/boltz',
   Web_SOCKET_API: '/ws'

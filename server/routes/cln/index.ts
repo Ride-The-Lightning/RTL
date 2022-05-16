@@ -9,8 +9,8 @@ import onChainCLRoutes from './onchain.js';
 import paymentsCLRoutes from './payments.js';
 import peersCLRoutes from './peers.js';
 import networkCLRoutes from './network.js';
-import messageCLRoutes from './message.js';
 import offersCLRoutes from './offers.js';
+import utilityCLRoutes from './utility.js';
 
 const router = Router();
 
@@ -24,8 +24,8 @@ const clRoutes = [
   { path: '/payments', route: paymentsCLRoutes },
   { path: '/peers', route: peersCLRoutes },
   { path: '/network', route: networkCLRoutes },
-  { path: '/message', route: messageCLRoutes },
-  { path: '/offers', route: offersCLRoutes }
+  { path: '/offers', route: offersCLRoutes },
+  { path: '/utility', route: utilityCLRoutes }
 ];
 
 clRoutes.forEach((route) => {

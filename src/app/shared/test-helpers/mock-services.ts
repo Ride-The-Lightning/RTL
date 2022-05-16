@@ -45,32 +45,13 @@ export class mockRouter {
 export class mockDataService {
 
   private lnImplementation = 'LND';
-  private childAPIUrl = API_URL;
+  private APIUrl = API_URL;
+  public lnImplementationUpdated: BehaviorSubject<string> = new BehaviorSubject(this.lnImplementation);
 
-  getChildAPIUrl() {
-    return of(this.childAPIUrl);
-  };
-
-  getLnImplementation() {
-    return of(this.lnImplementation);
-  };
-
-  setChildAPIUrl(lnImplementation: string) {
-    this.lnImplementation = lnImplementation;
-    switch (lnImplementation) {
-      case 'CLN':
-        this.childAPIUrl = API_URL + '/cln';
-        break;
-
-      case 'ECL':
-        this.childAPIUrl = API_URL + '/ecl';
-        break;
-
-      default:
-        this.childAPIUrl = API_URL + '/lnd';
-        break;
-    }
-  };
+  setLnImplementation(lnImplementation: string) {
+    this.lnImplementation = lnImplementation.toLowerCase();
+    this.lnImplementationUpdated.next(this.lnImplementation);
+  }
 
   getFiatRates() {
     return of(mockResponseData.fiatRates);

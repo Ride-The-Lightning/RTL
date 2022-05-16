@@ -9,7 +9,7 @@
       <span class="page-title">Features</span>
     </div>
     <mat-accordion>
-      <mat-expansion-panel [expanded]="false" class="flat-expansion-panel my-1" *ngFor="let feature of features; index as i">
+      <mat-expansion-panel [expanded]="false" class="flat-expansion-panel my-1" *ngFor="let feature of features; index as i" (opened)="onPanelExpanded(i)">
         <mat-expansion-panel-header>
           <mat-panel-title fxFlex="100" fxLayoutAlign="space-between center">
             <h4 class="font-bold-500">{{feature.name}}</h4>
