@@ -307,16 +307,18 @@ export class CommonService implements OnDestroy {
   }
 
   extractErrorMessage(err: any, genericErrorMessage: string = 'Unknown Error.') {
-    const msg = this.titleCase((err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error :
-      (err.error && err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error :
-        (err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error :
-          (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error :
-            (err.error && typeof err.error === 'string') ? err.error :
-              (err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message :
-                (err.error && err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message :
-                  (err.error && err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message :
-                    (err.error && err.error.message && typeof err.error.message === 'string') ? err.error.message :
-                      (err.message && typeof err.message === 'string') ? err.message : genericErrorMessage);
+    const msg = this.titleCase(
+      (err.error.text && typeof err.error.text === 'string' && err.error.text.includes('<!DOCTYPE html><html lang="en">')) ? 'API Route Does Not Exist.' :
+        (err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error :
+          (err.error && err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error :
+            (err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error :
+              (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error :
+                (err.error && typeof err.error === 'string') ? err.error :
+                  (err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message :
+                    (err.error && err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message :
+                      (err.error && err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message :
+                        (err.error && err.error.message && typeof err.error.message === 'string') ? err.error.message :
+                          (err.message && typeof err.message === 'string') ? err.message : genericErrorMessage);
     this.logger.info('Error Message: ' + msg);
     return msg;
   }

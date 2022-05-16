@@ -74,20 +74,6 @@ export const listPayments = (req, res, next) => {
   });
 };
 
-export const decodePayment = (req, res, next) => {
-  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Decoding Payment..' });
-  options = common.getOptions(req);
-  if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.ln_server_url + '/v1/utility/decode/' + req.params.payReq;
-  request(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Decoded', data: body });
-    res.status(200).json(body);
-  }).catch((errRes) => {
-    const err = common.handleError(errRes, 'Payments', 'Decode Payment Error', req.session.selectedNode);
-    return res.status(err.statusCode).json({ message: err.message, error: err.error });
-  });
-};
-
 export const postPayment = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
