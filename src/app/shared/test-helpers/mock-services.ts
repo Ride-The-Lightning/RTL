@@ -100,6 +100,10 @@ export class mockDataService {
     return of(mockResponseData.leaseUTXO); // 10 mins
   };
 
+  listConfigs() {
+    return of({ '# version': 'v0.10.2-55-g35c6f90', network: 'testnet', 'experimental-dual-fund': true, 'experimental-offers': true, rgb: '009001', alias: 'MyTestNode', 'watchtime-blocks': 6 });
+  }
+
   getForwardingHistory(start: string, end: string) {
     return of(mockResponseData.getForwardingHistory);
   };
