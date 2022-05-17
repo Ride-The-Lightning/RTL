@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { ChannelsStatus } from '../../../shared/models/clModels';
+import { ChannelsStatus } from '../../../shared/models/clnModels';
 
 @Component({
   selector: 'rtl-cln-channel-status-info',

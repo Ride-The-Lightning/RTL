@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { Payment, Invoice, ListInvoices } from '../../../shared/models/clModels';
+import { Payment, Invoice, ListInvoices } from '../../../shared/models/clnModels';
 import { CommonService } from '../../../shared/services/common.service';
 import { MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
 import { fadeIn } from '../../../shared/animation/opacity-animation';

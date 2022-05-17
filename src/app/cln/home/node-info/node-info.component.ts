@@ -1,5 +1,5 @@
 import { Component, OnChanges, Input } from '@angular/core';
-import { GetInfo } from '../../../shared/models/clModels';
+import { GetInfo } from '../../../shared/models/clnModels';
 import { CommonService } from '../../../shared/services/common.service';
 
 @Component({

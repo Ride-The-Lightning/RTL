@@ -3,7 +3,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { LookupNode } from '../../../../shared/models/clModels';
+import { LookupNode } from '../../../../shared/models/clnModels';
 import { NODE_FEATURES_CLN } from '../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../shared/services/logger.service';
 

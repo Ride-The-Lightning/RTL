@@ -6,7 +6,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { faRoute, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-import { Routes } from '../../../shared/models/clModels';
+import { Routes } from '../../../shared/models/clnModels';
 import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 

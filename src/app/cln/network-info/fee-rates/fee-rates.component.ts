@@ -1,6 +1,6 @@
 import { Component, AfterContentChecked, Input } from '@angular/core';
 
-import { FeeRates, FeeRatePerObj, feeRateStyle } from '../../../shared/models/clModels';
+import { FeeRates, FeeRatePerObj, feeRateStyle } from '../../../shared/models/clnModels';
 
 @Component({
   selector: 'rtl-cln-fee-rates',

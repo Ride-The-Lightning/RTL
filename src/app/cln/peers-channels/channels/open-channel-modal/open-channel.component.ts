@@ -9,7 +9,7 @@ import { Actions } from '@ngrx/effects';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { CommonService } from '../../../../shared/services/common.service';
-import { Peer, GetInfo, UTXO } from '../../../../shared/models/clModels';
+import { Peer, GetInfo, UTXO } from '../../../../shared/models/clnModels';
 import { CLNOpenChannelAlert } from '../../../../shared/models/alertData';
 import { APICallStatusEnum, CLNActions, FEE_RATE_TYPES, ScreenSizeEnum } from '../../../../shared/services/consts-enums-functions';
 

@@ -1,5 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { Offer } from '../../shared/models/clModels';
+import { Offer } from '../../shared/models/clnModels';
 import { CLNState } from './cln.state';
 
 export const clnState = createFeatureSelector<CLNState>('cln');

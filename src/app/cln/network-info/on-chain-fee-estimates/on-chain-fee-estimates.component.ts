@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 
-import { FeeRates } from '../../../shared/models/clModels';
+import { FeeRates } from '../../../shared/models/clnModels';
 
 @Component({
   selector: 'rtl-cln-onchain-fee-estimates',

@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { ChannelEdge, GetInfo } from '../../../../shared/models/clModels';
+import { ChannelEdge, GetInfo } from '../../../../shared/models/clnModels';
 import { RTLState } from '../../../../store/rtl.state';
 import { clnNodeInformation } from '../../../store/cln.selector';
 

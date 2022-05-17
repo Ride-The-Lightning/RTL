@@ -1,4 +1,4 @@
-import { faTachometerAlt, faLink, faBolt, faExchangeAlt, faUsers, faMapSigns, faQuestion, faSearch, faChartBar, faTools, faProjectDiagram, faDownload, faServer, faPercentage, faInfinity, faUserCheck, faLayerGroup, faSync } from '@fortawesome/free-solid-svg-icons';
+import { faTachometerAlt, faLink, faBolt, faExchangeAlt, faUsers, faMapSigns, faQuestion, faSearch, faChartBar, faTools, faProjectDiagram, faDownload, faServer, faPercentage, faInfinity, faUserCheck, faLayerGroup, faAd, faWater } from '@fortawesome/free-solid-svg-icons';
 import { UserPersonaEnum } from '../services/consts-enums-functions';
 
 export class MenuChildNode {
@@ -54,13 +54,14 @@ export const MENU_DATA: MenuRootNode = {
     {
       id: 3, parentId: 0, name: 'Lightning', iconType: 'FA', icon: faBolt, link: '/cln/connections', userPersona: UserPersonaEnum.ALL, children: [
         { id: 31, parentId: 3, name: 'Peers/Channels', iconType: 'FA', icon: faUsers, link: '/cln/connections', userPersona: UserPersonaEnum.ALL },
-        { id: 32, parentId: 3, name: 'Transactions', iconType: 'FA', icon: faExchangeAlt, link: '/cln/transactions', userPersona: UserPersonaEnum.ALL },
-        { id: 33, parentId: 3, name: 'Routing', iconType: 'FA', icon: faMapSigns, link: '/cln/routing', userPersona: UserPersonaEnum.ALL },
-        { id: 34, parentId: 3, name: 'Reports', iconType: 'FA', icon: faChartBar, link: '/cln/reports', userPersona: UserPersonaEnum.ALL },
-        { id: 35, parentId: 3, name: 'Graph Lookup', iconType: 'FA', icon: faSearch, link: '/cln/graph', userPersona: UserPersonaEnum.ALL },
-        { id: 36, parentId: 3, name: 'Sign/Verify', iconType: 'FA', icon: faUserCheck, link: '/cln/messages', userPersona: UserPersonaEnum.ALL },
-        { id: 37, parentId: 3, name: 'Fee Rates', iconType: 'FA', icon: faPercentage, link: '/cln/rates', userPersona: UserPersonaEnum.OPERATOR },
-        { id: 38, parentId: 3, name: 'Node/Fee Rates', iconType: 'FA', icon: faServer, link: '/cln/rates', userPersona: UserPersonaEnum.MERCHANT }
+        { id: 32, parentId: 3, name: 'Liquidity Ads', iconType: 'FA', icon: faWater, link: '/cln/liquidityads', userPersona: UserPersonaEnum.ALL },
+        { id: 33, parentId: 3, name: 'Transactions', iconType: 'FA', icon: faExchangeAlt, link: '/cln/transactions', userPersona: UserPersonaEnum.ALL },
+        { id: 34, parentId: 3, name: 'Routing', iconType: 'FA', icon: faMapSigns, link: '/cln/routing', userPersona: UserPersonaEnum.ALL },
+        { id: 35, parentId: 3, name: 'Reports', iconType: 'FA', icon: faChartBar, link: '/cln/reports', userPersona: UserPersonaEnum.ALL },
+        { id: 36, parentId: 3, name: 'Graph Lookup', iconType: 'FA', icon: faSearch, link: '/cln/graph', userPersona: UserPersonaEnum.ALL },
+        { id: 37, parentId: 3, name: 'Sign/Verify', iconType: 'FA', icon: faUserCheck, link: '/cln/messages', userPersona: UserPersonaEnum.ALL },
+        { id: 38, parentId: 3, name: 'Fee Rates', iconType: 'FA', icon: faPercentage, link: '/cln/rates', userPersona: UserPersonaEnum.OPERATOR },
+        { id: 39, parentId: 3, name: 'Node/Fee Rates', iconType: 'FA', icon: faServer, link: '/cln/rates', userPersona: UserPersonaEnum.MERCHANT }
       ]
     },
     { id: 4, parentId: 0, name: 'Node Config', iconType: 'FA', icon: faTools, link: '/config', userPersona: UserPersonaEnum.ALL },

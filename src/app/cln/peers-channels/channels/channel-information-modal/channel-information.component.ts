@@ -6,7 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
 import { CLNChannelInformation } from '../../../../shared/models/alertData';
-import { Channel } from '../../../../shared/models/clModels';
+import { Channel } from '../../../../shared/models/clnModels';
 import { ScreenSizeEnum } from '../../../../shared/services/consts-enums-functions';
 
 @Component({

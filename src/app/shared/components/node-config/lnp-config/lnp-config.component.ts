@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router, ResolveEnd } from '@angular/router';
+import { Router, ResolveEnd, Event } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -27,8 +27,10 @@ export class LNPConfigComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.selectedNodeType = (this.router.url.includes('bconfig')) ? 'bitcoind' : 'ln';
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe((value: any) => {
-        this.selectedNodeType = (value.urlAfterRedirects.includes('bconfig')) ? 'bitcoind' : 'ln';
+      subscribe({
+        next: (value: ResolveEnd | Event) => {
+          this.selectedNodeType = ((<ResolveEnd>value).urlAfterRedirects.includes('bconfig')) ? 'bitcoind' : 'ln';
+        }
       });
     this.store.dispatch(fetchConfig({ payload: this.selectedNodeType }));
     this.rtlEffects.showLnConfig.

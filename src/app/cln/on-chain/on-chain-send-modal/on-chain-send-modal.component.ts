@@ -13,7 +13,7 @@ import * as sha256 from 'sha256';
 
 import { SelNodeChild, RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CLNOnChainSendFunds } from '../../../shared/models/alertData';
-import { GetInfo, Balance, OnChain, UTXO } from '../../../shared/models/clModels';
+import { GetInfo, Balance, OnChain, UTXO } from '../../../shared/models/clnModels';
 import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, FEE_RATE_TYPES, APICallStatusEnum, CLNActions, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';

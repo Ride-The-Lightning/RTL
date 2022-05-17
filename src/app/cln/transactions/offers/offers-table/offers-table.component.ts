@@ -14,7 +14,7 @@ import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, AlertTypeEnum } from '../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../../../shared/models/RTLconfig';
-import { GetInfo, Offer, OfferRequest } from '../../../../shared/models/clModels';
+import { GetInfo, Offer, OfferRequest } from '../../../../shared/models/clnModels';
 import { DataService } from '../../../../shared/services/data.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';

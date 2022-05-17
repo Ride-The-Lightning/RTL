@@ -1,6 +1,6 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { APICallStatusEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ForwardingEvent, ListInvoices, UTXO, Offer, OfferBookmark, LocalFailedEvent } from '../../shared/models/clModels';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ForwardingEvent, ListInvoices, UTXO, Offer, OfferBookmark, LocalFailedEvent } from '../../shared/models/clnModels';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 
 export interface CLNState {

@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Channel } from '../../../shared/models/clModels';
+import { Channel } from '../../../shared/models/clnModels';
 import { ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 
