@@ -164,6 +164,7 @@ $ sudo systemctl start RTL
 You can access the application in multiple setups (Please make note of the 4th exception):
 1. Same device as the server:
 Open your browser at the following address: http://localhost:3000 to access the RTL application.
+- **Note:** If running RTL on Windows 10 via Ubuntu WSL v2, please review this [known issue](https://github.com/Ride-The-Lightning/RTL/issues/1018) as RTL may have trouble interfacing with localhost (`ECONNREFUSED`)
 
 2. Remotely from another device on the same local network (home network) as the node(RTL server+LND running on the same device):
 * Ensure that the if a firewall running on your node, it allows access on port 3000 (or the custom port configured for RTL).
