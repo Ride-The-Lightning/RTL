@@ -10,7 +10,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { CLNOfferInformation } from '../../../../shared/models/alertData';
 import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, CLNActions } from '../../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../../shared/models/RTLconfig';
-import { GetInfo } from '../../../../shared/models/clModels';
+import { GetInfo } from '../../../../shared/models/clnModels';
 import { CommonService } from '../../../../shared/services/common.service';
 
 import { RTLState } from '../../../../store/rtl.state';

@@ -9,7 +9,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
-import { PayRequest, Channel, GetInfo, OfferRequest, OfferInvoice } from '../../../shared/models/clModels';
+import { PayRequest, Channel, GetInfo, OfferRequest, OfferInvoice } from '../../../shared/models/clnModels';
 import { APICallStatusEnum, CLNActions, PaymentTypes, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { DataService } from '../../../shared/services/data.service';
 import { CommonService } from '../../../shared/services/common.service';

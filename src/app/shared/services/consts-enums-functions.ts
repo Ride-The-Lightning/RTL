@@ -318,7 +318,8 @@ export const UI_MESSAGES = {
   CREATE_OFFER: 'Creating Offer...',
   DELETE_OFFER_BOOKMARK: 'Deleting Bookmark...',
   GET_FUNDER_POLICY: 'Getting Or Updating Funder Policy...',
-  GET_LIST_CONFIGS: 'Getting List Configurations...',
+  GET_LIST_CONFIGS: 'Getting Configurations List...',
+  LIST_NETWORK_NODES: 'Getting Network Nodes List...',
   LOG_OUT: 'Logging Out...'
 };
 

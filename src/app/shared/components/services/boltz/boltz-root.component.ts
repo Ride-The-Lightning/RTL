@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router, ResolveEnd } from '@angular/router';
+import { Router, ResolveEnd, Event } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -37,10 +37,12 @@ export class BoltzRootComponent implements OnInit, OnDestroy {
     this.activeTab = linkFound ? linkFound : this.links[0];
     this.selectedSwapType = linkFound && linkFound.link === 'swapin' ? SwapTypeEnum.SWAP_IN : SwapTypeEnum.SWAP_OUT;
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe((value: any) => {
-        const linkFound = this.links.find((link) => value.urlAfterRedirects.includes(link.link));
-        this.activeTab = linkFound ? linkFound : this.links[0];
-        this.selectedSwapType = linkFound && linkFound.link === 'swapin' ? SwapTypeEnum.SWAP_IN : SwapTypeEnum.SWAP_OUT;
+      subscribe({
+        next: (value: ResolveEnd | Event) => {
+          const linkFound = this.links.find((link) => (<ResolveEnd>value).urlAfterRedirects.includes(link.link));
+          this.activeTab = linkFound ? linkFound : this.links[0];
+          this.selectedSwapType = linkFound && linkFound.link === 'swapin' ? SwapTypeEnum.SWAP_IN : SwapTypeEnum.SWAP_OUT;
+        }
       });
     this.boltzService.swapsChanged.
       pipe(takeUntil(this.unSubs[1])).

@@ -22,9 +22,11 @@ export class CLNReportsComponent implements OnInit, OnDestroy {
     const linkFound = this.links.find((link) => this.router.url.includes(link.link));
     this.activeLink = linkFound ? linkFound.link : this.links[0].link;
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe((value: ResolveEnd | Event) => {
-        const linkFound = this.links.find((link) => (<ResolveEnd>value).urlAfterRedirects.includes(link.link));
-        this.activeLink = linkFound ? linkFound.link : this.links[0].link;
+      subscribe({
+        next: (value: ResolveEnd | Event) => {
+          const linkFound = this.links.find((link) => (<ResolveEnd>value).urlAfterRedirects.includes(link.link));
+          this.activeLink = linkFound ? linkFound.link : this.links[0].link;
+        }
       });
   }
 

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router, ResolveEnd } from '@angular/router';
+import { Router, ResolveEnd, Event } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -7,7 +7,7 @@ import { Store } from '@ngrx/store';
 import { CLNOpenChannelComponent } from '../open-channel-modal/open-channel.component';
 import { CommonService } from '../../../../shared/services/common.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
-import { Balance, Channel, GetInfo, Peer, UTXO } from '../../../../shared/models/clModels';
+import { Balance, Channel, GetInfo, Peer, UTXO } from '../../../../shared/models/clnModels';
 import { SelNodeChild } from '../../../../shared/models/RTLconfig';
 
 import { RTLState } from '../../../../store/rtl.state';
@@ -38,8 +38,10 @@ export class CLNChannelsTablesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.activeLink = this.links.findIndex((link) => link.link === this.router.url.substring(this.router.url.lastIndexOf('/') + 1));
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe((value: any) => {
-        this.activeLink = this.links.findIndex((link) => link.link === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
+      subscribe({
+        next: (value: ResolveEnd | Event) => {
+          this.activeLink = this.links.findIndex((link) => link.link === (<ResolveEnd>value).urlAfterRedirects.substring((<ResolveEnd>value).urlAfterRedirects.lastIndexOf('/') + 1));
+        }
       });
     this.store.select(nodeInfoAndNodeSettingsAndBalance).pipe(takeUntil(this.unSubs[1])).
       subscribe((infoSettingsBalSelector: { information: GetInfo, nodeSettings: SelNodeChild, balance: Balance }) => {

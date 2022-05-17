@@ -8,7 +8,7 @@ import { faCopy, faInfoCircle, faExclamationTriangle } from '@fortawesome/free-s
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { Channel } from '../../../../shared/models/clModels';
+import { Channel } from '../../../../shared/models/clnModels';
 import { CLNChannelInformation } from '../../../../shared/models/alertData';
 import { ADDRESS_TYPES, APICallStatusEnum, CLNActions } from '../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../shared/services/logger.service';

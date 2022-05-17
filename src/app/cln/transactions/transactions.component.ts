@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router, ResolveEnd } from '@angular/router';
+import { Router, ResolveEnd, Event } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -10,7 +10,7 @@ import { LoggerService } from '../../shared/services/logger.service';
 
 import { RTLState } from '../../store/rtl.state';
 import { clnNodeSettings, localRemoteBalance } from '../store/cln.selector';
-import { LocalRemoteBalance } from '../../shared/models/clModels';
+import { LocalRemoteBalance } from '../../shared/models/clnModels';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { fetchOffers, fetchOfferBookmarks } from '../store/cln.actions';
@@ -38,10 +38,13 @@ export class CLNTransactionsComponent implements OnInit, OnDestroy {
     const linkFound = this.links.find((link) => this.router.url.includes(link.link));
     this.activeLink = linkFound ? linkFound.link : this.links[0].link;
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe((value: any) => {
-        const linkFound = this.links.find((link) => value.urlAfterRedirects.includes(link.link));
-        this.activeLink = linkFound ? linkFound.link : this.links[0].link;
-        this.routerUrl = value.urlAfterRedirects;
+      subscribe({
+        next: (value: ResolveEnd | Event) => {
+          const linkFound = this.links.find((link) => (<ResolveEnd>value).urlAfterRedirects.includes(link.link));
+
+          this.activeLink = linkFound ? linkFound.link : this.links[0].link;
+          this.routerUrl = (<ResolveEnd>value).urlAfterRedirects;
+        }
       });
     this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[1])).subscribe((nodeSettings: SelNodeChild) => {
       this.selNode = nodeSettings;

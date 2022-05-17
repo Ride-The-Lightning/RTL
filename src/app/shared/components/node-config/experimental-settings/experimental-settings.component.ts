@@ -15,7 +15,7 @@ import { setChildNodeSettingsECL } from '../../../../eclair/store/ecl.actions';
 import { DataService } from '../../../services/data.service';
 import { ServicesEnum, UI_MESSAGES, LADS_POLICY } from '../../../services/consts-enums-functions';
 import { balance } from '../../../../cln/store/cln.selector';
-import { Balance, FunderPolicy } from '../../../models/clModels';
+import { Balance, FunderPolicy } from '../../../models/clnModels';
 import { ApiCallStatusPayload } from '../../../models/apiCallsPayload';
 
 @Component({

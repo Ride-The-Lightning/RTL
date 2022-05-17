@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router, ResolveEnd, ActivatedRoute, NavigationExtras } from '@angular/router';
+import { Router, ResolveEnd, ActivatedRoute, Event } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -35,10 +35,12 @@ export class OnChainComponent implements OnInit, OnDestroy {
     this.activeLink = linkFound ? linkFound.link : this.links[0].link;
     this.selectedTable = this.tables.find((table) => table.name === this.router.url.substring(this.router.url.lastIndexOf('/') + 1));
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe((value: any) => {
-        const linkFound = this.links.find((link) => value.urlAfterRedirects.includes(link.link));
-        this.activeLink = linkFound ? linkFound.link : this.links[0].link;
-        this.selectedTable = this.tables.find((table) => table.name === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
+      subscribe({
+        next: (value: ResolveEnd | Event) => {
+          const linkFound = this.links.find((link) => (<ResolveEnd>value).urlAfterRedirects.includes(link.link));
+          this.activeLink = linkFound ? linkFound.link : this.links[0].link;
+          this.selectedTable = this.tables.find((table) => table.name === (<ResolveEnd>value).urlAfterRedirects.substring((<ResolveEnd>value).urlAfterRedirects.lastIndexOf('/') + 1));
+        }
       });
     this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[1])).
       subscribe((nodeSettings: SelNodeChild) => {

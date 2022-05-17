@@ -6,7 +6,7 @@ import {
   setInfo, setInvoices, setLocalRemoteBalance, setOffers, addOffer, setPayments, setPeers, setUTXOs,
   updateCLAPICallStatus, updateInvoice, updateOffer, setOfferBookmarks, addUpdateOfferBookmark, removeOfferBookmark
 } from './cln.actions';
-import { Channel, OfferBookmark } from '../../shared/models/clModels';
+import { Channel, OfferBookmark } from '../../shared/models/clnModels';
 
 export const CLNReducer = createReducer(initCLNState,
   on(updateCLAPICallStatus, (state, { payload }) => {

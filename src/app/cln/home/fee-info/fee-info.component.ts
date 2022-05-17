@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Fees } from '../../../shared/models/clModels';
+import { Fees } from '../../../shared/models/clnModels';
 
 @Component({
   selector: 'rtl-cln-fee-info',

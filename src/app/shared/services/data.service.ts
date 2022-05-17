@@ -16,6 +16,7 @@ import { fetchTransactions, fetchUTXOs } from '../../lnd/store/lnd.actions';
 
 import { RTLState } from '../../store/rtl.state';
 import { allChannels } from '../../lnd/store/lnd.selector';
+import { LookupNode } from '../models/clnModels';
 
 @Injectable()
 export class DataService implements OnDestroy {
@@ -262,6 +263,22 @@ export class DataService implements OnDestroy {
     }));
   }
 
+  listNetworkNodes(queryParams: string = '') {
+    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.LIST_NETWORK_NODES }));
+      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + environment.NETWORK_API + '/listNodes' + queryParams).pipe(
+        takeUntil(this.unSubs[8]),
+        mergeMap((res) => {
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.LIST_NETWORK_NODES }));
+          return of(res);
+        }), catchError((err) => {
+          this.handleErrorWithoutAlert('List Network Nodes', UI_MESSAGES.LIST_NETWORK_NODES, err);
+          return throwError(() => this.extractErrorMessage(err));
+        })
+      );
+    }));
+  }
+
   listConfigs() {
     return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_LIST_CONFIGS }));
@@ -283,7 +300,7 @@ export class DataService implements OnDestroy {
       const postParams = policy ? { policy: policy, policy_mod: policyMod, lease_fee_base_msat: leaseFeeBaseMsat, lease_fee_basis: leaseFeeBasis, channel_fee_max_base_msat: channelFeeMaxBaseMsat, channel_fee_max_proportional_thousandths: channelFeeMaxProportional } : null;
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_FUNDER_POLICY }));
       return this.httpClient.post(this.APIUrl + '/' + updatedLnImplementation + environment.CHANNELS_API + '/funderUpdate', postParams).pipe(
-        takeUntil(this.unSubs[8]),
+        takeUntil(this.unSubs[10]),
         map((res) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_FUNDER_POLICY }));
           if (postParams) {

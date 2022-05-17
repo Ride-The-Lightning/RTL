@@ -16,7 +16,7 @@ import { DataService } from '../../../../shared/services/data.service';
 import { RTLState } from '../../../../store/rtl.state';
 import { listInvoices } from '../../../store/cln.selector';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
-import { ListInvoices } from '../../../../shared/models/clModels';
+import { ListInvoices } from '../../../../shared/models/clnModels';
 
 describe('CLNInvoiceInformationComponent', () => {
   let component: CLNInvoiceInformationComponent;

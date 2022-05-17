@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router, ResolveEnd } from '@angular/router';
+import { Router, ResolveEnd, Event } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -10,7 +10,7 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { RTLState } from '../../store/rtl.state';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { balance, channels, peers } from '../store/cln.selector';
-import { Balance, Channel, Peer } from '../../shared/models/clModels';
+import { Balance, Channel, Peer } from '../../shared/models/clnModels';
 
 @Component({
   selector: 'rtl-cln-connections',
@@ -33,8 +33,10 @@ export class CLNConnectionsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.activeLink = this.links.findIndex((link) => link.link === this.router.url.substring(this.router.url.lastIndexOf('/') + 1));
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe((value: any) => {
-        this.activeLink = this.links.findIndex((link) => link.link === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
+      subscribe({
+        next: (value: ResolveEnd | Event) => {
+          this.activeLink = this.links.findIndex((link) => link.link === (<ResolveEnd>value).urlAfterRedirects.substring((<ResolveEnd>value).urlAfterRedirects.lastIndexOf('/') + 1));
+        }
       });
     this.store.select(channels).pipe(takeUntil(this.unSubs[1])).
       subscribe((channelsSeletor: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {

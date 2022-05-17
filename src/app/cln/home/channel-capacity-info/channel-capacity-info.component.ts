@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { faBalanceScale, faDumbbell } from '@fortawesome/free-solid-svg-icons';
 
-import { Channel } from '../../../shared/models/clModels';
+import { Channel } from '../../../shared/models/clnModels';
 
 @Component({
   selector: 'rtl-cln-channel-capacity-info',

@@ -12,7 +12,7 @@ import { CommonService } from '../../../../shared/services/common.service';
 import { CLNOfferInformation } from '../../../../shared/models/alertData';
 import { ScreenSizeEnum } from '../../../../shared/services/consts-enums-functions';
 
-import { GetInfo, Offer, OfferRequest } from '../../../../shared/models/clModels';
+import { GetInfo, Offer, OfferRequest } from '../../../../shared/models/clnModels';
 import { RTLState } from '../../../../store/rtl.state';
 import { clnNodeInformation } from '../../../store/cln.selector';
 

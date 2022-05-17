@@ -10,7 +10,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
-import { Peer } from '../../../shared/models/clModels';
+import { Peer } from '../../../shared/models/clnModels';
 import { CLNOpenChannelAlert } from '../../../shared/models/alertData';
 import { APICallStatusEnum, CLNActions, FEE_RATE_TYPES, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 
