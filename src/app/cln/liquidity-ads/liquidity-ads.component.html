@@ -1,5 +1,5 @@
 <div fxLayout="row" fxLayoutAlign="start center" class="page-title-container">
-  <fa-icon [icon]="faWater" class="page-title-img mr-1"></fa-icon>
+  <fa-icon [icon]="faBullhorn" class="page-title-img mr-1"></fa-icon>
   <span class="page-title">Liquidity Ads</span>
 </div>
 <div fxLayout="column" class="padding-gap-x">
@@ -15,7 +15,7 @@
             <div fxFlex="30">
               <span class="page-title">
                 Liquidity Ask
-                <mat-icon matTooltip="Tooltip for Liquidity Ask" matTooltipPosition="above" class="info-icon info-icon-primary">info_outline</mat-icon>
+                <mat-icon [matTooltip]="askTooltipMsg" matTooltipPosition="above" matTooltipClass="pre-wrap" class="info-icon info-icon-primary">info_outline</mat-icon>
               </span>
             </div>
             <mat-form-field fxFlex="34">
@@ -38,7 +38,7 @@
             <div fxFlex="30">
               <span class="page-title">
                 Nodes Advertising Liquidity
-                <mat-icon matTooltip="Tooltip for Nodes Advertising Liquidity" matTooltipPosition="above" class="info-icon info-icon-primary">info_outline</mat-icon>
+                <mat-icon [matTooltip]="nodesTooltipMsg" matTooltipPosition="above" matTooltipClass="pre-wrap" class="info-icon info-icon-primary">info_outline</mat-icon>
               </span>
             </div>
             <mat-form-field fxFlex="34">
@@ -102,7 +102,7 @@
                 <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
                   <mat-select placeholder="Actions" tabindex="1" class="mr-0">
                     <mat-select-trigger></mat-select-trigger>
-                    <mat-option (click)="onNodeClick(lqNode)">View Info</mat-option>
+                    <mat-option (click)="onViewLeaseInfo(lqNode)">View Lease Info</mat-option>
                     <mat-option (click)="onOpenChannel(lqNode)">Open Channel</mat-option>
                   </mat-select>
                 </div>
