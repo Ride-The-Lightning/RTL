@@ -20,7 +20,13 @@ export class DatabaseService {
             this.nodeDatabase[selectedNode.index].data = this.nodeDatabase[selectedNode.index].adapter.fetchData();
         }
         catch (err) {
-            this.logger.log({ selectedNode: selectedNode, level: 'ERROR', fileName: 'Database', msg: 'Database Load Error', error: err });
+            this.logger.log({
+                selectedNode: selectedNode,
+                level: 'ERROR',
+                fileName: 'Database',
+                msg: 'Database Load Error',
+                error: err
+            });
         }
     }
     create(selectedNode, collectionName, newDocument) {
@@ -54,7 +60,10 @@ export class DatabaseService {
                 let foundDoc = null;
                 if (this.nodeDatabase[selectedNode.index].data[collectionName]) {
                     foundDocIdx = this.nodeDatabase[selectedNode.index].data[collectionName].findIndex((document) => document[documentFieldName] === documentFieldValue);
-                    foundDoc = foundDocIdx > -1 ? JSON.parse(JSON.stringify(this.nodeDatabase[selectedNode.index].data[collectionName][foundDocIdx])) : null;
+                    foundDoc =
+                        foundDocIdx > -1
+                            ? JSON.parse(JSON.stringify(this.nodeDatabase[selectedNode.index].data[collectionName][foundDocIdx]))
+                            : null;
                 }
                 if (foundDocIdx > -1 && foundDoc) {
                     for (const docKey in updatedDocument) {
@@ -131,23 +140,47 @@ export class DatabaseService {
             case CollectionsEnum.OFFERS:
                 return validateOffer(documentToValidate);
             default:
-                return ({ isValid: false, error: 'Collection does not exist' });
+                return { isValid: false, error: 'Collection does not exist' };
         }
     }
     saveDatabase(nodeIndex) {
         try {
-            const selNode = this.nodeDatabase[nodeIndex] && this.nodeDatabase[nodeIndex].adapter && this.nodeDatabase[nodeIndex].adapter.selNode ? this.nodeDatabase[nodeIndex].adapter.selNode : null;
+            const selNode = this.nodeDatabase[nodeIndex] &&
+                this.nodeDatabase[nodeIndex].adapter &&
+                this.nodeDatabase[nodeIndex].adapter.selNode
+                ? this.nodeDatabase[nodeIndex].adapter.selNode
+                : null;
             if (!this.nodeDatabase[nodeIndex]) {
-                this.logger.log({ selectedNode: selNode, level: 'ERROR', fileName: 'Database', msg: 'Database Save Error: Selected Node Setup Not Found.' });
+                this.logger.log({
+                    selectedNode: selNode,
+                    level: 'ERROR',
+                    fileName: 'Database',
+                    msg: 'Database Save Error: Selected Node Setup Not Found.'
+                });
                 throw new Error('Database Save Error: Selected Node Setup Not Found.');
             }
             this.nodeDatabase[nodeIndex].adapter.saveData(this.nodeDatabase[nodeIndex].data);
-            this.logger.log({ selectedNode: this.nodeDatabase[nodeIndex].adapter.selNode, level: 'INFO', fileName: 'Database', msg: 'Database Saved' });
+            this.logger.log({
+                selectedNode: this.nodeDatabase[nodeIndex].adapter.selNode,
+                level: 'INFO',
+                fileName: 'Database',
+                msg: 'Database Saved'
+            });
             return true;
         }
         catch (err) {
-            const selNode = this.nodeDatabase[nodeIndex] && this.nodeDatabase[nodeIndex].adapter && this.nodeDatabase[nodeIndex].adapter.selNode ? this.nodeDatabase[nodeIndex].adapter.selNode : null;
-            this.logger.log({ selectedNode: selNode, level: 'ERROR', fileName: 'Database', msg: 'Database Save Error', error: err });
+            const selNode = this.nodeDatabase[nodeIndex] &&
+                this.nodeDatabase[nodeIndex].adapter &&
+                this.nodeDatabase[nodeIndex].adapter.selNode
+                ? this.nodeDatabase[nodeIndex].adapter.selNode
+                : null;
+            this.logger.log({
+                selectedNode: selNode,
+                level: 'ERROR',
+                fileName: 'Database',
+                msg: 'Database Save Error',
+                error: err
+            });
             return new Error(err);
         }
     }

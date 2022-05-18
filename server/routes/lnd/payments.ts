@@ -1,7 +1,13 @@
 import exprs from 'express';
 const { Router } = exprs;
 import { isAuthenticated } from '../../utils/authCheck.js';
-import { decodePayment, decodePayments, getPayments, getAllLightningTransactions, paymentLookup } from '../../controllers/lnd/payments.js';
+import {
+  decodePayment,
+  decodePayments,
+  getPayments,
+  getAllLightningTransactions,
+  paymentLookup
+} from '../../controllers/lnd/payments.js';
 
 const router = Router();
 

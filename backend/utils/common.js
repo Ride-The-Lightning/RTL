@@ -12,6 +12,7 @@ export class CommonService {
         this.rtl_conf_file_path = '';
         this.port = 3000;
         this.host = null;
+        this.ssl = false;
         this.rtl_pass = '';
         this.flg_allow_password_update = true;
         this.rtl_secret2fa = '';
@@ -24,7 +25,20 @@ export class CommonService {
         this.read_dummy_data = false;
         this.baseHref = '/rtl';
         this.dummy_data_array_from_file = [];
-        this.MONTHS = [{ name: 'JAN', days: 31 }, { name: 'FEB', days: 28 }, { name: 'MAR', days: 31 }, { name: 'APR', days: 30 }, { name: 'MAY', days: 31 }, { name: 'JUN', days: 30 }, { name: 'JUL', days: 31 }, { name: 'AUG', days: 31 }, { name: 'SEP', days: 30 }, { name: 'OCT', days: 31 }, { name: 'NOV', days: 30 }, { name: 'DEC', days: 31 }];
+        this.MONTHS = [
+            { name: 'JAN', days: 31 },
+            { name: 'FEB', days: 28 },
+            { name: 'MAR', days: 31 },
+            { name: 'APR', days: 30 },
+            { name: 'MAY', days: 31 },
+            { name: 'JUN', days: 30 },
+            { name: 'JUL', days: 31 },
+            { name: 'AUG', days: 31 },
+            { name: 'SEP', days: 30 },
+            { name: 'OCT', days: 31 },
+            { name: 'NOV', days: 30 },
+            { name: 'DEC', days: 31 }
+        ];
         this.getSwapServerOptions = (req) => {
             const swapOptions = {
                 url: req.session.selectedNode.swap_server_url,
@@ -34,13 +48,29 @@ export class CommonService {
             };
             if (req.session.selectedNode.swap_macaroon_path) {
                 try {
-                    swapOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(req.session.selectedNode.swap_macaroon_path, 'loop.macaroon')).toString('hex') };
+                    swapOptions.headers = {
+                        'Grpc-Metadata-macaroon': fs
+                            .readFileSync(join(req.session.selectedNode.swap_macaroon_path, 'loop.macaroon'))
+                            .toString('hex')
+                    };
                 }
                 catch (err) {
-                    this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Loop macaroon Error', error: err });
+                    this.logger.log({
+                        selectedNode: this.initSelectedNode,
+                        level: 'ERROR',
+                        fileName: 'Common',
+                        msg: 'Loop macaroon Error',
+                        error: err
+                    });
                 }
             }
-            this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Swap Options', data: swapOptions });
+            this.logger.log({
+                selectedNode: this.initSelectedNode,
+                level: 'INFO',
+                fileName: 'Common',
+                msg: 'Swap Options',
+                data: swapOptions
+            });
             return swapOptions;
         };
         this.getBoltzServerOptions = (req) => {
@@ -52,23 +82,42 @@ export class CommonService {
             };
             if (req.session.selectedNode.boltz_macaroon_path) {
                 try {
-                    boltzOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(req.session.selectedNode.boltz_macaroon_path, 'admin.macaroon')).toString('hex') };
+                    boltzOptions.headers = {
+                        'Grpc-Metadata-macaroon': fs
+                            .readFileSync(join(req.session.selectedNode.boltz_macaroon_path, 'admin.macaroon'))
+                            .toString('hex')
+                    };
                 }
                 catch (err) {
-                    this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Boltz macaroon Error', error: err });
+                    this.logger.log({
+                        selectedNode: this.initSelectedNode,
+                        level: 'ERROR',
+                        fileName: 'Common',
+                        msg: 'Boltz macaroon Error',
+                        error: err
+                    });
                 }
             }
-            this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Boltz Options', data: boltzOptions });
+            this.logger.log({
+                selectedNode: this.initSelectedNode,
+                level: 'INFO',
+                fileName: 'Common',
+                msg: 'Boltz Options',
+                data: boltzOptions
+            });
             return boltzOptions;
         };
         this.getOptions = (req) => {
             if (req.session.selectedNode && req.session.selectedNode.options) {
-                req.session.selectedNode.options.method = (req.session.selectedNode.ln_implementation && req.session.selectedNode.ln_implementation.toUpperCase() !== 'ECL') ? 'GET' : 'POST';
+                req.session.selectedNode.options.method =
+                    req.session.selectedNode.ln_implementation && req.session.selectedNode.ln_implementation.toUpperCase() !== 'ECL'
+                        ? 'GET'
+                        : 'POST';
                 delete req.session.selectedNode.options.form;
                 req.session.selectedNode.options.qs = {};
                 return req.session.selectedNode.options;
             }
-            return this.handleError({ statusCode: 401, message: 'Session expired after a day\'s inactivity' }, 'Session Expired', 'Session Expiry Error', this.initSelectedNode);
+            return this.handleError({ statusCode: 401, message: "Session expired after a day's inactivity" }, 'Session Expired', 'Session Expiry Error', this.initSelectedNode);
         };
         this.updateSelectedNodeOptions = (req) => {
             if (!req.session.selectedNode) {
@@ -84,18 +133,32 @@ export class CommonService {
                 if (req.session.selectedNode && req.session.selectedNode.ln_implementation) {
                     switch (req.session.selectedNode.ln_implementation.toUpperCase()) {
                         case 'CLN':
-                            req.session.selectedNode.options.headers = { macaroon: Buffer.from(fs.readFileSync(join(req.session.selectedNode.macaroon_path, 'access.macaroon'))).toString('base64') };
+                            req.session.selectedNode.options.headers = {
+                                macaroon: Buffer.from(fs.readFileSync(join(req.session.selectedNode.macaroon_path, 'access.macaroon'))).toString('base64')
+                            };
                             break;
                         case 'ECL':
-                            req.session.selectedNode.options.headers = { authorization: 'Basic ' + Buffer.from(':' + req.session.selectedNode.ln_api_password).toString('base64') };
+                            req.session.selectedNode.options.headers = {
+                                authorization: 'Basic ' + Buffer.from(':' + req.session.selectedNode.ln_api_password).toString('base64')
+                            };
                             break;
                         default:
-                            req.session.selectedNode.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(req.session.selectedNode.macaroon_path, 'admin.macaroon')).toString('hex') };
+                            req.session.selectedNode.options.headers = {
+                                'Grpc-Metadata-macaroon': fs
+                                    .readFileSync(join(req.session.selectedNode.macaroon_path, 'admin.macaroon'))
+                                    .toString('hex')
+                            };
                             break;
                     }
                 }
                 if (req.session.selectedNode) {
-                    this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Updated Node Options for ' + req.session.selectedNode.ln_node, data: req.session.selectedNode.options });
+                    this.logger.log({
+                        selectedNode: this.initSelectedNode,
+                        level: 'INFO',
+                        fileName: 'Common',
+                        msg: 'Updated Node Options for ' + req.session.selectedNode.ln_node,
+                        data: req.session.selectedNode.options
+                    });
                 }
                 return { status: 200, message: 'Updated Successfully' };
             }
@@ -106,7 +169,13 @@ export class CommonService {
                     json: true,
                     form: null
                 };
-                this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Update Selected Node Options Error', error: err });
+                this.logger.log({
+                    selectedNode: this.initSelectedNode,
+                    level: 'ERROR',
+                    fileName: 'Common',
+                    msg: 'Update Selected Node Options Error',
+                    error: err
+                });
                 return { status: 502, message: err };
             }
         };
@@ -126,19 +195,31 @@ export class CommonService {
                         if (node.ln_implementation) {
                             switch (node.ln_implementation.toUpperCase()) {
                                 case 'CLN':
-                                    node.options.headers = { macaroon: Buffer.from(fs.readFileSync(join(node.macaroon_path, 'access.macaroon'))).toString('base64') };
+                                    node.options.headers = {
+                                        macaroon: Buffer.from(fs.readFileSync(join(node.macaroon_path, 'access.macaroon'))).toString('base64')
+                                    };
                                     break;
                                 case 'ECL':
-                                    node.options.headers = { authorization: 'Basic ' + Buffer.from(':' + node.ln_api_password).toString('base64') };
+                                    node.options.headers = {
+                                        authorization: 'Basic ' + Buffer.from(':' + node.ln_api_password).toString('base64')
+                                    };
                                     break;
                                 default:
-                                    node.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(node.macaroon_path, 'admin.macaroon')).toString('hex') };
+                                    node.options.headers = {
+                                        'Grpc-Metadata-macaroon': fs.readFileSync(join(node.macaroon_path, 'admin.macaroon')).toString('hex')
+                                    };
                                     break;
                             }
                         }
                     }
                     catch (err) {
-                        this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Common Set Options Error', error: err });
+                        this.logger.log({
+                            selectedNode: this.initSelectedNode,
+                            level: 'ERROR',
+                            fileName: 'Common',
+                            msg: 'Common Set Options Error',
+                            error: err
+                        });
                         node.options = {
                             url: '',
                             rejectUnauthorized: false,
@@ -146,7 +227,13 @@ export class CommonService {
                             form: ''
                         };
                     }
-                    this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Set Node Options for ' + node.ln_node, data: node.options });
+                    this.logger.log({
+                        selectedNode: this.initSelectedNode,
+                        level: 'INFO',
+                        fileName: 'Common',
+                        msg: 'Set Node Options for ' + node.ln_node,
+                        data: node.options
+                    });
                 });
                 this.updateSelectedNodeOptions(req);
             }
@@ -168,23 +255,33 @@ export class CommonService {
             minutes = +minutes < 10 ? '0' + minutes : minutes;
             let seconds = myDate.getSeconds().toString();
             seconds = +seconds < 10 ? '0' + seconds : seconds;
-            return days + '/' + this.MONTHS[myDate.getMonth()].name + '/' + myDate.getFullYear() + ' ' + hours + ':' + minutes + ':' + seconds;
+            return (days +
+                '/' +
+                this.MONTHS[myDate.getMonth()].name +
+                '/' +
+                myDate.getFullYear() +
+                ' ' +
+                hours +
+                ':' +
+                minutes +
+                ':' +
+                seconds);
         };
         this.sortAscByKey = (array, key) => array.sort((a, b) => {
             const x = +a[key];
             const y = +b[key];
-            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+            return x < y ? -1 : x > y ? 1 : 0;
         });
         this.sortAscByStrKey = (array, key) => array.sort((a, b) => {
             const x = a[key] ? a[key].toUpperCase() : '';
             const y = b[key] ? b[key].toUpperCase() : '';
-            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+            return x < y ? -1 : x > y ? 1 : 0;
         });
         this.sortDescByKey = (array, key) => {
             const temp = array.sort((a, b) => {
                 const x = +a[key] ? +a[key] : 0;
                 const y = +b[key] ? +b[key] : 0;
-                return (x > y) ? -1 : ((x < y) ? 1 : 0);
+                return x > y ? -1 : x < y ? 1 : 0;
             });
             return temp;
         };
@@ -192,7 +289,7 @@ export class CommonService {
             const temp = array.sort((a, b) => {
                 const x = a[key] ? a[key].toUpperCase() : '';
                 const y = b[key] ? b[key].toUpperCase() : '';
-                return (x > y) ? -1 : ((x < y) ? 1 : 0);
+                return x > y ? -1 : x < y ? 1 : 0;
             });
             return temp;
         };
@@ -211,7 +308,10 @@ export class CommonService {
                     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
                         delete err.options.headers['Grpc-Metadata-macaroon'];
                     }
-                    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+                    if (err.response &&
+                        err.response.request &&
+                        err.response.request.headers &&
+                        err.response.request.headers['Grpc-Metadata-macaroon']) {
                         delete err.response.request.headers['Grpc-Metadata-macaroon'];
                     }
                     break;
@@ -219,7 +319,10 @@ export class CommonService {
                     if (err.options && err.options.headers && err.options.headers.macaroon) {
                         delete err.options.headers.macaroon;
                     }
-                    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
+                    if (err.response &&
+                        err.response.request &&
+                        err.response.request.headers &&
+                        err.response.request.headers.macaroon) {
                         delete err.response.request.headers.macaroon;
                     }
                     break;
@@ -227,7 +330,10 @@ export class CommonService {
                     if (err.options && err.options.headers && err.options.headers.authorization) {
                         delete err.options.headers.authorization;
                     }
-                    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
+                    if (err.response &&
+                        err.response.request &&
+                        err.response.request.headers &&
+                        err.response.request.headers.authorization) {
                         delete err.response.request.headers.authorization;
                     }
                     break;
@@ -237,24 +343,45 @@ export class CommonService {
                     }
                     break;
             }
-            this.logger.log({ selectedNode: selectedNode, level: 'ERROR', fileName: fileName, msg: errMsg, error: (typeof err === 'object' ? JSON.stringify(err) : (typeof err === 'string') ? err : 'Unknown Error') });
+            this.logger.log({
+                selectedNode: selectedNode,
+                level: 'ERROR',
+                fileName: fileName,
+                msg: errMsg,
+                error: typeof err === 'object' ? JSON.stringify(err) : typeof err === 'string' ? err : 'Unknown Error'
+            });
             const newErrorObj = {
-                statusCode: err.statusCode ? err.statusCode : err.status ? err.status : (err.error && err.error.code && err.error.code === 'ECONNREFUSED') ? 503 : 500,
-                message: (err.error && err.error.message) ? err.error.message : err.message ? err.message : errMsg,
-                error: ((err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error :
-                    (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error :
-                        (err.error && err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message :
-                            (err.error && err.error.message && typeof err.error.message === 'string') ? err.error.message :
-                                (err.error && typeof err.error === 'string') ? err.error :
-                                    (err.message && typeof err.message === 'string') ? err.message : (typeof err === 'string') ? err : 'Unknown Error')
+                statusCode: err.statusCode
+                    ? err.statusCode
+                    : err.status
+                        ? err.status
+                        : err.error && err.error.code && err.error.code === 'ECONNREFUSED'
+                            ? 503
+                            : 500,
+                message: err.error && err.error.message ? err.error.message : err.message ? err.message : errMsg,
+                error: err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string'
+                    ? err.error.error.error
+                    : err.error && err.error.error && typeof err.error.error === 'string'
+                        ? err.error.error
+                        : err.error && err.error.error && err.error.error.message && typeof err.error.error.message === 'string'
+                            ? err.error.error.message
+                            : err.error && err.error.message && typeof err.error.message === 'string'
+                                ? err.error.message
+                                : err.error && typeof err.error === 'string'
+                                    ? err.error
+                                    : err.message && typeof err.message === 'string'
+                                        ? err.message
+                                        : typeof err === 'string'
+                                            ? err
+                                            : 'Unknown Error'
             };
             return newErrorObj;
         };
-        this.getRequestIP = (req) => ((typeof req.headers['x-forwarded-for'] === 'string' && req.headers['x-forwarded-for'].split(',').shift()) ||
+        this.getRequestIP = (req) => (typeof req.headers['x-forwarded-for'] === 'string' && req.headers['x-forwarded-for'].split(',').shift()) ||
             req.ip ||
             req.connection.remoteAddress ||
             req.socket.remoteAddress ||
-            (req.connection.socket ? req.connection.socket.remoteAddress : null));
+            (req.connection.socket ? req.connection.socket.remoteAddress : null);
         this.getDummyData = (dataKey, lnImplementation) => {
             const dummyDataFile = this.rtl_conf_file_path + sep + 'ECLDummyData.log';
             return new Promise((resolve, reject) => {
@@ -262,10 +389,20 @@ export class CommonService {
                     fs.readFile(dummyDataFile, 'utf8', (err, data) => {
                         if (err) {
                             if (err.code === 'ENOENT') {
-                                this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Dummy data file does not exist' });
+                                this.logger.log({
+                                    selectedNode: this.initSelectedNode,
+                                    level: 'ERROR',
+                                    fileName: 'Common',
+                                    msg: 'Dummy data file does not exist'
+                                });
                             }
                             else {
-                                this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Getting dummy data failed' });
+                                this.logger.log({
+                                    selectedNode: this.initSelectedNode,
+                                    level: 'ERROR',
+                                    fileName: 'Common',
+                                    msg: 'Getting dummy data failed'
+                                });
                             }
                         }
                         else {
@@ -286,7 +423,12 @@ export class CommonService {
                     this.cookie_value = fs.readFileSync(this.rtl_cookie_path, 'utf-8');
                 }
                 catch (err) {
-                    this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while reading cookie: \n' + err });
+                    this.logger.log({
+                        selectedNode: this.initSelectedNode,
+                        level: 'ERROR',
+                        fileName: 'Config',
+                        msg: 'Something went wrong while reading cookie: \n' + err
+                    });
                     throw new Error(err);
                 }
             }
@@ -298,7 +440,12 @@ export class CommonService {
                     this.cookie_value = fs.readFileSync(this.rtl_cookie_path, 'utf-8');
                 }
                 catch (err) {
-                    this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while reading the cookie: \n' + err });
+                    this.logger.log({
+                        selectedNode: this.initSelectedNode,
+                        level: 'ERROR',
+                        fileName: 'Config',
+                        msg: 'Something went wrong while reading the cookie: \n' + err
+                    });
                     throw new Error(err);
                 }
             }
@@ -309,7 +456,13 @@ export class CommonService {
                 this.cookie_value = fs.readFileSync(this.rtl_cookie_path, 'utf-8');
             }
             catch (err) {
-                this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Something went wrong while refreshing cookie', error: err });
+                this.logger.log({
+                    selectedNode: this.initSelectedNode,
+                    level: 'ERROR',
+                    fileName: 'Common',
+                    msg: 'Something went wrong while refreshing cookie',
+                    error: err
+                });
                 throw new Error(err);
             }
         };
@@ -336,18 +489,31 @@ export class CommonService {
             }, initDir);
         };
         this.replacePasswordWithHash = (multiPassHashed) => {
-            this.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : join(dirname(fileURLToPath(import.meta.url)), '../..');
+            this.rtl_conf_file_path = process.env.RTL_CONFIG_PATH
+                ? process.env.RTL_CONFIG_PATH
+                : join(dirname(fileURLToPath(import.meta.url)), '../..');
             try {
                 const RTLConfFile = this.rtl_conf_file_path + sep + 'RTL-Config.json';
                 const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
                 config.multiPassHashed = multiPassHashed;
                 delete config.multiPass;
                 fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
-                this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Please note that, RTL has encrypted the plaintext password into its corresponding hash' });
+                this.logger.log({
+                    selectedNode: this.initSelectedNode,
+                    level: 'INFO',
+                    fileName: 'Common',
+                    msg: 'Please note that, RTL has encrypted the plaintext password into its corresponding hash'
+                });
                 return config.multiPassHashed;
             }
             catch (err) {
-                this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Password hashing failed', error: err });
+                this.logger.log({
+                    selectedNode: this.initSelectedNode,
+                    level: 'ERROR',
+                    fileName: 'Common',
+                    msg: 'Password hashing failed',
+                    error: err
+                });
             }
         };
         this.getAllNodeAllChannelBackup = (node) => {
@@ -358,28 +524,63 @@ export class CommonService {
                 json: true,
                 headers: { 'Grpc-Metadata-macaroon': fs.readFileSync(node.macaroon_path + '/admin.macaroon').toString('hex') }
             };
-            this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Getting Channel Backup for Node ' + node.ln_node + '..' });
+            this.logger.log({
+                selectedNode: this.initSelectedNode,
+                level: 'INFO',
+                fileName: 'Common',
+                msg: 'Getting Channel Backup for Node ' + node.ln_node + '..'
+            });
             request(options).then((body) => {
                 fs.writeFile(channel_backup_file, JSON.stringify(body), (err) => {
                     if (err) {
                         if (node.ln_node) {
-                            this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Error in Channel Backup for Node ' + node.ln_node, error: err });
+                            this.logger.log({
+                                selectedNode: this.initSelectedNode,
+                                level: 'ERROR',
+                                fileName: 'Common',
+                                msg: 'Error in Channel Backup for Node ' + node.ln_node,
+                                error: err
+                            });
                         }
                         else {
-                            this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Error in Channel Backup for File ' + channel_backup_file, error: err });
+                            this.logger.log({
+                                selectedNode: this.initSelectedNode,
+                                level: 'ERROR',
+                                fileName: 'Common',
+                                msg: 'Error in Channel Backup for File ' + channel_backup_file,
+                                error: err
+                            });
                         }
                     }
                     else {
                         if (node.ln_node) {
-                            this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Successful in Channel Backup for Node ' + node.ln_node, data: body });
+                            this.logger.log({
+                                selectedNode: this.initSelectedNode,
+                                level: 'INFO',
+                                fileName: 'Common',
+                                msg: 'Successful in Channel Backup for Node ' + node.ln_node,
+                                data: body
+                            });
                         }
                         else {
-                            this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Successful in Channel Backup for File ' + channel_backup_file, data: body });
+                            this.logger.log({
+                                selectedNode: this.initSelectedNode,
+                                level: 'INFO',
+                                fileName: 'Common',
+                                msg: 'Successful in Channel Backup for File ' + channel_backup_file,
+                                data: body
+                            });
                         }
                     }
                 });
             }, (err) => {
-                this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Error in Channel Backup for Node ' + node.ln_node, error: err });
+                this.logger.log({
+                    selectedNode: this.initSelectedNode,
+                    level: 'ERROR',
+                    fileName: 'Common',
+                    msg: 'Error in Channel Backup for Node ' + node.ln_node,
+                    error: err
+                });
                 fs.writeFile(channel_backup_file, '', () => { });
             });
         };
@@ -387,27 +588,84 @@ export class CommonService {
             if (currentVersion) {
                 const versionsArr = currentVersion.trim().replace('v', '').split('-')[0].split('.') || [];
                 const checkVersionsArr = checkVersion.split('.');
-                return (+versionsArr[0] > +checkVersionsArr[0]) ||
+                return (+versionsArr[0] > +checkVersionsArr[0] ||
                     (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] > +checkVersionsArr[1]) ||
-                    (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] === +checkVersionsArr[1] && +versionsArr[2] >= +checkVersionsArr[2]);
+                    (+versionsArr[0] === +checkVersionsArr[0] &&
+                        +versionsArr[1] === +checkVersionsArr[1] &&
+                        +versionsArr[2] >= +checkVersionsArr[2]));
             }
             return false;
         };
-        this.getMonthDays = (selMonth, selYear) => ((selMonth === 1 && selYear % 4 === 0) ? (this.MONTHS[selMonth].days + 1) : this.MONTHS[selMonth].days);
+        this.getMonthDays = (selMonth, selYear) => selMonth === 1 && selYear % 4 === 0 ? this.MONTHS[selMonth].days + 1 : this.MONTHS[selMonth].days;
         this.logEnvVariables = (req) => {
             const selNode = req.session.selectedNode;
             if (selNode && selNode.index) {
-                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'PORT: ' + this.port });
-                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'HOST: ' + this.host });
-                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'SSO: ' + this.rtl_sso });
-                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + selNode.index });
-                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'INDEX: ' + selNode.index });
-                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LN NODE: ' + selNode.ln_node });
-                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + selNode.ln_implementation });
-                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + selNode.fiat_conversion });
-                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + selNode.currency_unit });
-                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + selNode.ln_server_url });
-                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + this.logout_redirect_link + '\r\n' });
+                this.logger.log({
+                    selectedNode: selNode,
+                    level: 'INFO',
+                    fileName: 'Config Setup Variable',
+                    msg: 'PORT: ' + this.port
+                });
+                this.logger.log({
+                    selectedNode: selNode,
+                    level: 'INFO',
+                    fileName: 'Config Setup Variable',
+                    msg: 'HOST: ' + this.host
+                });
+                this.logger.log({
+                    selectedNode: selNode,
+                    level: 'INFO',
+                    fileName: 'Config Setup Variable',
+                    msg: 'SSO: ' + this.rtl_sso
+                });
+                this.logger.log({
+                    selectedNode: selNode,
+                    level: 'INFO',
+                    fileName: 'Config Setup Variable',
+                    msg: 'DEFAULT NODE INDEX: ' + selNode.index
+                });
+                this.logger.log({
+                    selectedNode: selNode,
+                    level: 'INFO',
+                    fileName: 'Config Setup Variable',
+                    msg: 'INDEX: ' + selNode.index
+                });
+                this.logger.log({
+                    selectedNode: selNode,
+                    level: 'INFO',
+                    fileName: 'Config Setup Variable',
+                    msg: 'LN NODE: ' + selNode.ln_node
+                });
+                this.logger.log({
+                    selectedNode: selNode,
+                    level: 'INFO',
+                    fileName: 'Config Setup Variable',
+                    msg: 'LN IMPLEMENTATION: ' + selNode.ln_implementation
+                });
+                this.logger.log({
+                    selectedNode: selNode,
+                    level: 'INFO',
+                    fileName: 'Config Setup Variable',
+                    msg: 'FIAT CONVERSION: ' + selNode.fiat_conversion
+                });
+                this.logger.log({
+                    selectedNode: selNode,
+                    level: 'INFO',
+                    fileName: 'Config Setup Variable',
+                    msg: 'CURRENCY UNIT: ' + selNode.currency_unit
+                });
+                this.logger.log({
+                    selectedNode: selNode,
+                    level: 'INFO',
+                    fileName: 'Config Setup Variable',
+                    msg: 'LN SERVER URL: ' + selNode.ln_server_url
+                });
+                this.logger.log({
+                    selectedNode: selNode,
+                    level: 'INFO',
+                    fileName: 'Config Setup Variable',
+                    msg: 'LOGOUT REDIRECT LINK: ' + this.logout_redirect_link + '\r\n'
+                });
             }
         };
         this.filterData = (dataKey, lnImplementation) => {
@@ -484,7 +742,9 @@ export class CommonService {
                 }
             }
             const foundDataLine = this.dummy_data_array_from_file.find((dataItem) => dataItem.includes(search_string));
-            const dataStr = foundDataLine ? foundDataLine.substring((foundDataLine.indexOf(search_string)) + search_string.length) : '{}';
+            const dataStr = foundDataLine
+                ? foundDataLine.substring(foundDataLine.indexOf(search_string) + search_string.length)
+                : '{}';
             return JSON.parse(dataStr);
         };
     }

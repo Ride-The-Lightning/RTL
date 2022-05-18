@@ -3,18 +3,22 @@ import { Logger } from './logger.js';
 import { Common } from './common.js';
 class CSRF {
     constructor() {
-        this.csrfProtection = csurf({ cookie: true });
+        this.csrfProtection = csurf({ cookie: true, secure: Common.ssl ? true : false });
         this.logger = Logger;
         this.common = Common;
     }
     mount(app) {
-        this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'CSRF', msg: 'Setting up CSRF..' });
+        this.logger.log({
+            selectedNode: this.common.initSelectedNode,
+            level: 'INFO',
+            fileName: 'CSRF',
+            msg: 'Setting up CSRF..'
+        });
         if (process.env.NODE_ENV !== 'development') {
             app.use((req, res, next) => this.csrfProtection(req, res, next));
         }
         this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'CSRF', msg: 'CSRF Set' });
         return app;
     }
-    ;
 }
-export default new CSRF;
+export default new CSRF();

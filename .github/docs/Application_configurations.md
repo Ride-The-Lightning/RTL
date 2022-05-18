@@ -1,6 +1,7 @@
 RTL allows the user to configure and control specific application parameters for app customization and integration.<br />
-The parameters can be configured via RTL-Config.json file or through environment variables defined at the OS level. Required <br />
-parameters have `default` values for initial setup and can be updated after RTL server initial start.<br />
+The parameters can be configured via RTL-Config.json file or through environment variables defined at the OS level.<br />
+Required parameters have `default` values for initial setup and can be updated after RTL server initial start.<br />
+SSL config parameter can be set as `undefined`, `true` (which uses self-signed certs), `false` (http only), or an `<object>` as outlined below. `key`, `cert` and `ca` parameters are reserved for static file paths to valid SSL key files. If `key`, `cert`, or `ca` are used, no self-signed certificate options will be used. `rejectUnauthorized` and `requestCert` can be used in all cases to enforce x509 certificate validation. <br />
 <br />
 ### RTL-Config.json<br />
 ```
@@ -9,6 +10,22 @@ parameters have `default` values for initial setup and can be updated after RTL 
   "port": "<port number for the rtl node server, default '3000', Required>",
   "host": "<host for the rtl node server, default 'all IPs', Optional>",
   "defaultNodeIndex": <Default index to load when rtl server starts, default 1, Optional>,
+  "ssl": {
+    "key": "<Full path of a server SSL key file to enable SSL, default is null, Optional>",
+    "cert": "<Full path of a server SSL pem format certificate file to enable SSL, default is null, Optional>",
+    "ca": <Full path of a server SSL certificate authority file to enable SSL, default is null, Optional>,
+    "altIp": "<parameter to set an alternate IP address in any randomly generated SSL certificate, default '127.0.0.1', Optional>",
+    "commonName": "<parameter to set a common name in any randomly generated SSL certificate, default 'localhost', Optional>",
+    "countryName": "<parameter to set a country name in any randomly generated SSL certificate, default 'US', Optional>",
+    "stateName": "<parameter to set a state name in any randomly generated SSL certificate, default 'New York', Optional>",
+    "localityName": "<parameter to set an locality name in any randomly generated SSL certificate, default 'New York', Optional>",
+    "organizationName": "<parameter to set an organizational name in any randomly generated SSL certificate, default 'RTL', Optional>",
+    "organizationalUnit": "<parameter to set an organizational unit in any randomly generated SSL certificate, default 'RTL', Optional>",
+    "encryptionBits": <parameter to set default encryption strength for any randomly generated SSL certificate, default 2048, Optional>,
+    "validForYears": <parameter to set default validity duration (in years) for any randomly generated SSL certificate, default 10, Optional>,
+    "rejectUnauthorized": <parameter to set server-side SSL rejection if certificates are not valid per the ca file, default false, Optional>,
+    "requestCert": <parameter to require client x509 certificates to communicate with RTL. Can be used to block users without PKI certificates issued by an admin with a valid ca, default false, Optional>
+  },
   "SSO": {
     "rtlSSO": <parameter to turn SSO off/on. Allowed values - 1 (single sign on via an external cookie), 0 (stand alone RTL authentication), default 0, Required>,
     "rtlCookiePath": "<Full path of the cookie file including the file name. The application url needs to pass the value from this cookie file as query param 'access-key' for the SSO authentication to work, Required if SSO=1 else empty (Optional)>",
@@ -50,6 +67,7 @@ If the environment variables are set, it will take precedence over the parameter
 <br />
 PORT (port number for the rtl node server, default 3000, Required)<br />
 HOST (host for the rtl node server, default localhost, Optional)<br />
+SSL (true, false, or a stringified JSON object formatted like the 'ssl' property above)<br />
 APP_PASSWORD (Plaintext password to be provided by the parent container, NOT suggested for standalone RTL applications, to be used by Umbrel) (Optional)<br />
 LN_IMPLEMENTATION (LND/CLN/ECL. Default 'LND', Required)<br />
 LN_SERVER_URL (LN server URL for LNP REST APIs, default https://localhost:8080) (Required)<br />

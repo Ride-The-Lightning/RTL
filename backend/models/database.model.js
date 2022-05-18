@@ -23,16 +23,16 @@ export class Offer {
 }
 export const validateOffer = (documentToValidate) => {
     if (!documentToValidate.hasOwnProperty(CollectionFieldsEnum.BOLT12)) {
-        return ({ isValid: false, error: CollectionFieldsEnum.BOLT12 + 'is mandatory.' });
+        return { isValid: false, error: CollectionFieldsEnum.BOLT12 + 'is mandatory.' };
     }
     if (!documentToValidate.hasOwnProperty(CollectionFieldsEnum.AMOUNTMSAT)) {
-        return ({ isValid: false, error: CollectionFieldsEnum.AMOUNTMSAT + 'is mandatory.' });
+        return { isValid: false, error: CollectionFieldsEnum.AMOUNTMSAT + 'is mandatory.' };
     }
     if (!documentToValidate.hasOwnProperty(CollectionFieldsEnum.TITLE)) {
-        return ({ isValid: false, error: CollectionFieldsEnum.TITLE + 'is mandatory.' });
+        return { isValid: false, error: CollectionFieldsEnum.TITLE + 'is mandatory.' };
     }
-    if ((typeof documentToValidate[CollectionFieldsEnum.AMOUNTMSAT] !== 'number')) {
-        return ({ isValid: false, error: CollectionFieldsEnum.AMOUNTMSAT + 'should be a number.' });
+    if (typeof documentToValidate[CollectionFieldsEnum.AMOUNTMSAT] !== 'number') {
+        return { isValid: false, error: CollectionFieldsEnum.AMOUNTMSAT + 'should be a number.' };
     }
-    return ({ isValid: true });
+    return { isValid: true };
 };

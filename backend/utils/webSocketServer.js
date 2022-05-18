@@ -28,8 +28,17 @@ export class WebSocketServer {
             }
         }, 1000 * 60 * 60); // Terminate broken connections every hour
         this.mount = (httpServer) => {
-            this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Connecting Websocket Server..' });
-            this.webSocketServer = new WebSocket.Server({ noServer: true, path: this.common.baseHref + '/api/ws', verifyClient: (process.env.NODE_ENV === 'development') ? null : verifyWSUser });
+            this.logger.log({
+                selectedNode: this.common.initSelectedNode,
+                level: 'INFO',
+                fileName: 'WebSocketServer',
+                msg: 'Connecting Websocket Server..'
+            });
+            this.webSocketServer = new WebSocket.Server({
+                noServer: true,
+                path: this.common.baseHref + '/api/ws',
+                verifyClient: process.env.NODE_ENV === 'development' ? null : verifyWSUser
+            });
             httpServer.on('upgrade', (request, socket, head) => {
                 if (request.headers['upgrade'] !== 'websocket') {
                     socket.end('HTTP/1.1 400 Bad Request');
@@ -37,8 +46,15 @@ export class WebSocketServer {
                 }
                 const acceptKey = request.headers['sec-websocket-key'];
                 const hash = this.generateAcceptValue(acceptKey);
-                const responseHeaders = ['HTTP/1.1 101 Web Socket Protocol Handshake', 'Upgrade: WebSocket', 'Connection: Upgrade', 'Sec-WebSocket-Accept: ' + hash];
-                const protocols = !request.headers['sec-websocket-protocol'] ? [] : request.headers['sec-websocket-protocol'].split(',').map((s) => s.trim());
+                const responseHeaders = [
+                    'HTTP/1.1 101 Web Socket Protocol Handshake',
+                    'Upgrade: WebSocket',
+                    'Connection: Upgrade',
+                    'Sec-WebSocket-Accept: ' + hash
+                ];
+                const protocols = !request.headers['sec-websocket-protocol']
+                    ? []
+                    : request.headers['sec-websocket-protocol'].split(',').map((s) => s.trim());
                 if (protocols.includes('json')) {
                     responseHeaders.push('Sec-WebSocket-Protocol: json');
                 }
@@ -46,25 +62,49 @@ export class WebSocketServer {
             });
             this.webSocketServer.on('connection', this.mountEventsOnConnection);
             this.webSocketServer.on('close', () => clearInterval(this.pingInterval));
-            this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Websocket Server Connected' });
+            this.logger.log({
+                selectedNode: this.common.initSelectedNode,
+                level: 'INFO',
+                fileName: 'WebSocketServer',
+                msg: 'Websocket Server Connected'
+            });
         };
         this.upgradeCallback = (websocket, request) => {
             this.webSocketServer.emit('connection', websocket, request);
         };
         this.mountEventsOnConnection = (websocket, request) => {
-            const protocols = !request.headers['sec-websocket-protocol'] ? [] : request.headers['sec-websocket-protocol'].split(',').map((s) => s.trim());
+            const protocols = !request.headers['sec-websocket-protocol']
+                ? []
+                : request.headers['sec-websocket-protocol'].split(',').map((s) => s.trim());
             const cookies = parse(request.headers.cookie);
             websocket.clientId = Date.now();
             websocket.isAlive = true;
             websocket.sessionId = cookieParser.signedCookie(cookies['connect.sid'], this.common.secret_key);
             websocket.clientNodeIndex = +protocols[1];
-            this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Connected: ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
+            this.logger.log({
+                selectedNode: this.common.initSelectedNode,
+                level: 'INFO',
+                fileName: 'WebSocketServer',
+                msg: 'Connected: ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size
+            });
             websocket.on('error', this.sendErrorToAllLNClients);
             websocket.on('message', this.sendEventsToAllLNClients);
-            websocket.on('pong', () => { websocket.isAlive = true; });
+            websocket.on('pong', () => {
+                websocket.isAlive = true;
+            });
             websocket.on('close', (code, reason) => {
                 this.updateLNWSClientDetails(websocket.sessionId, -1, websocket.clientNodeIndex);
-                this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Disconnected due to ' + code + ' : ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
+                this.logger.log({
+                    selectedNode: this.common.initSelectedNode,
+                    level: 'INFO',
+                    fileName: 'WebSocketServer',
+                    msg: 'Disconnected due to ' +
+                        code +
+                        ' : ' +
+                        websocket.clientId +
+                        ', Total WS clients: ' +
+                        this.webSocketServer.clients.size
+                });
             });
         };
         this.updateLNWSClientDetails = (sessionId, currNodeIndex, prevNodeIndex) => {
@@ -85,7 +125,12 @@ export class WebSocketServer {
             }
             else {
                 const selectedNode = this.common.findNode(currNodeIndex);
-                this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Invalid Node Selection. Previous and current node indices can not be less than zero.' });
+                this.logger.log({
+                    selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode,
+                    level: 'ERROR',
+                    fileName: 'WebSocketServer',
+                    msg: 'Invalid Node Selection. Previous and current node indices can not be less than zero.'
+                });
             }
         };
         this.disconnectFromNodeClient = (sessionId, prevNodeIndex) => {
@@ -149,30 +194,53 @@ export class WebSocketServer {
         this.sendErrorToAllLNClients = (serverError, selectedNode) => {
             try {
                 this.webSocketServer.clients.forEach((client) => {
-                    this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Broadcasting error to clients...: ' + serverError });
+                    this.logger.log({
+                        selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode,
+                        level: 'ERROR',
+                        fileName: 'WebSocketServer',
+                        msg: 'Broadcasting error to clients...: ' + serverError
+                    });
                     if (+client.clientNodeIndex === +selectedNode.index) {
                         client.send(serverError);
                     }
                 });
             }
             catch (err) {
-                this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Error while broadcasting message: ' + JSON.stringify(err) });
+                this.logger.log({
+                    selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode,
+                    level: 'ERROR',
+                    fileName: 'WebSocketServer',
+                    msg: 'Error while broadcasting message: ' + JSON.stringify(err)
+                });
             }
         };
         this.sendEventsToAllLNClients = (newMessage, selectedNode) => {
             try {
                 this.webSocketServer.clients.forEach((client) => {
                     if (+client.clientNodeIndex === +selectedNode.index) {
-                        this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'DEBUG', fileName: 'WebSocketServer', msg: 'Broadcasting message to client...: ' + client.clientId });
+                        this.logger.log({
+                            selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode,
+                            level: 'DEBUG',
+                            fileName: 'WebSocketServer',
+                            msg: 'Broadcasting message to client...: ' + client.clientId
+                        });
                         client.send(newMessage);
                     }
                 });
             }
             catch (err) {
-                this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Error while broadcasting message: ' + JSON.stringify(err) });
+                this.logger.log({
+                    selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode,
+                    level: 'ERROR',
+                    fileName: 'WebSocketServer',
+                    msg: 'Error while broadcasting message: ' + JSON.stringify(err)
+                });
             }
         };
-        this.generateAcceptValue = (acceptKey) => crypto.createHash('sha1').update(acceptKey + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', 'binary').digest('base64');
+        this.generateAcceptValue = (acceptKey) => crypto
+            .createHash('sha1')
+            .update(acceptKey + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', 'binary')
+            .digest('base64');
         this.getClients = () => this.webSocketServer.clients;
     }
 }
