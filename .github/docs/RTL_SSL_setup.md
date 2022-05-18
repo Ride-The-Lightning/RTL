@@ -1,4 +1,4 @@
-### Setup https access for RTL
+### Setup https forwarding for RTL
 
 Forward the ports 80 and 3002 on the router to the device running RTL.  
 Allow the ports through the firewall of the device.

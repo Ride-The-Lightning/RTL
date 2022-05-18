@@ -1,7 +1,18 @@
 import exprs from 'express';
 const { Router } = exprs;
 import { isAuthenticated } from '../../utils/authCheck.js';
-import { loopInTerms, loopInQuote, loopInTermsAndQuotes, loopIn, loopOutTerms, loopOutQuote, loopOutTermsAndQuotes, loopOut, swaps, swap } from '../../controllers/shared/loop.js';
+import {
+  loopInTerms,
+  loopInQuote,
+  loopInTermsAndQuotes,
+  loopIn,
+  loopOutTerms,
+  loopOutQuote,
+  loopOutTermsAndQuotes,
+  loopOut,
+  swaps,
+  swap
+} from '../../controllers/shared/loop.js';
 
 const router = Router();
 

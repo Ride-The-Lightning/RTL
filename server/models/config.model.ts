@@ -1,5 +1,4 @@
 export class CommonSelectedNode {
-
   constructor(
     public options?: any,
     public ln_server_url?: string,
@@ -26,22 +25,14 @@ export class CommonSelectedNode {
     public ln_version?: string,
     public api_version?: string,
     public enable_offers?: boolean
-  ) { }
-
+  ) {}
 }
 
 export class AuthenticationConfiguration {
-
-  constructor(
-    public configPath?: string,
-    public swapMacaroonPath?: string,
-    public boltzMacaroonPath?: string
-  ) { }
-
+  constructor(public configPath?: string, public swapMacaroonPath?: string, public boltzMacaroonPath?: string) {}
 }
 
 export class NodeSettingsConfiguration {
-
   constructor(
     public userPersona?: string,
     public themeMode?: string,
@@ -55,12 +46,10 @@ export class NodeSettingsConfiguration {
     public boltzServerUrl?: string,
     public channelBackupPath?: string,
     public enableOffers?: boolean
-  ) { }
-
+  ) {}
 }
 
 export class LogJSONObj {
-
   constructor(
     public level?: string,
     public msg?: string,
@@ -68,6 +57,5 @@ export class LogJSONObj {
     public error?: string | any,
     public fileName?: string,
     public selectedNode?: CommonSelectedNode
-  ) { }
-
+  ) {}
 }

@@ -1,7 +1,14 @@
 import exprs from 'express';
 const { Router } = exprs;
 import { isAuthenticated } from '../../utils/authCheck.js';
-import { listChannels, openChannel, setChannelFee, closeChannel, getLocalRemoteBalance, listForwards } from '../../controllers/cln/channels.js';
+import {
+  listChannels,
+  openChannel,
+  setChannelFee,
+  closeChannel,
+  getLocalRemoteBalance,
+  listForwards
+} from '../../controllers/cln/channels.js';
 
 const router = Router();
 

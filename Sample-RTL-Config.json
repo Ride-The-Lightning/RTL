@@ -2,6 +2,7 @@
   "multiPass": "password",
   "port": "3000",
   "defaultNodeIndex": 1,
+  "ssl": false,
   "SSO": {
     "rtlSSO": 0,
     "rtlCookiePath": "",

@@ -31,7 +31,12 @@ function getFilesList(channelBackupPath, callback) {
     });
 }
 export const getBackup = (req, res, next) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Getting Channel Backup..' });
+    logger.log({
+        selectedNode: req.session.selectedNode,
+        level: 'INFO',
+        fileName: 'ChannelBackup',
+        msg: 'Getting Channel Backup..'
+    });
     options = common.getOptions(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
@@ -44,7 +49,12 @@ export const getBackup = (req, res, next) => {
         options.url = req.session.selectedNode.ln_server_url + '/v1/channels/backup';
     }
     else {
-        channel_backup_file = req.session.selectedNode.channel_backup_path + sep + 'channel-' + req.params.channelPoint.replace(':', '-') + '.bak';
+        channel_backup_file =
+            req.session.selectedNode.channel_backup_path +
+                sep +
+                'channel-' +
+                req.params.channelPoint.replace(':', '-') +
+                '.bak';
         message = 'Channel Backup Successful.';
         const channelpoint = req.params.channelPoint.replace(':', '/');
         options.url = req.session.selectedNode.ln_server_url + '/v1/channels/backup/' + channelpoint;
@@ -63,25 +73,44 @@ export const getBackup = (req, res, next) => {
             }
         }
     }
-    request(options).then((body) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'ChannelsBackup', msg: 'Channel Backup Received', data: body });
+    request(options)
+        .then((body) => {
+        logger.log({
+            selectedNode: req.session.selectedNode,
+            level: 'DEBUG',
+            fileName: 'ChannelsBackup',
+            msg: 'Channel Backup Received',
+            data: body
+        });
         fs.writeFile(channel_backup_file, JSON.stringify(body), (errRes) => {
             if (errRes) {
                 const err = common.handleError(errRes, 'ChannelsBackup', 'Backup Channels Error', req.session.selectedNode);
                 return res.status(err.statusCode).json({ message: err.message, error: err.error });
             }
             else {
-                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Channel Backed up and Saved', data: body });
+                logger.log({
+                    selectedNode: req.session.selectedNode,
+                    level: 'INFO',
+                    fileName: 'ChannelBackup',
+                    msg: 'Channel Backed up and Saved',
+                    data: body
+                });
                 res.status(200).json({ message: message });
             }
         });
-    }).catch((errRes) => {
+    })
+        .catch((errRes) => {
         const err = common.handleError(errRes, 'ChannelsBackup', 'Backup Channels Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
 export const postBackupVerify = (req, res, next) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Verifying Channel Backup..' });
+    logger.log({
+        selectedNode: req.session.selectedNode,
+        level: 'INFO',
+        fileName: 'ChannelBackup',
+        msg: 'Verifying Channel Backup..'
+    });
     options = common.getOptions(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
@@ -116,7 +145,12 @@ export const postBackupVerify = (req, res, next) => {
     }
     else {
         message = 'Channel Verify Successful.';
-        channel_verify_file = req.session.selectedNode.channel_backup_path + sep + 'channel-' + req.params.channelPoint.replace(':', '-') + '.bak';
+        channel_verify_file =
+            req.session.selectedNode.channel_backup_path +
+                sep +
+                'channel-' +
+                req.params.channelPoint.replace(':', '-') +
+                '.bak';
         const exists = fs.existsSync(channel_verify_file);
         if (exists) {
             verify_backup = fs.readFileSync(channel_verify_file, 'utf-8');
@@ -130,18 +164,31 @@ export const postBackupVerify = (req, res, next) => {
         }
     }
     if (verify_backup !== '') {
-        request.post(options).then((body) => {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Channel Backup Verified', data: body });
+        request
+            .post(options)
+            .then((body) => {
+            logger.log({
+                selectedNode: req.session.selectedNode,
+                level: 'INFO',
+                fileName: 'ChannelBackup',
+                msg: 'Channel Backup Verified',
+                data: body
+            });
             res.status(201).json({ message: message });
-        }).
-            catch((errRes) => {
+        })
+            .catch((errRes) => {
             const err = common.handleError(errRes, 'ChannelsBackup', 'Verify Channels Error', req.session.selectedNode);
             return res.status(err.statusCode).json({ message: err.message, error: err.error });
         });
     }
 };
 export const postRestore = (req, res, next) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Restoring Channel Backup..' });
+    logger.log({
+        selectedNode: req.session.selectedNode,
+        level: 'INFO',
+        fileName: 'ChannelBackup',
+        msg: 'Restoring Channel Backup..'
+    });
     options = common.getOptions(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
@@ -188,7 +235,14 @@ export const postRestore = (req, res, next) => {
     }
     else {
         message = 'Channel Restore Successful.';
-        channel_restore_file = req.session.selectedNode.channel_backup_path + sep + 'restore' + sep + 'channel-' + req.params.channelPoint.replace(':', '-') + '.bak';
+        channel_restore_file =
+            req.session.selectedNode.channel_backup_path +
+                sep +
+                'restore' +
+                sep +
+                'channel-' +
+                req.params.channelPoint.replace(':', '-') +
+                '.bak';
         const exists = fs.existsSync(channel_restore_file);
         if (exists) {
             restore_backup = fs.readFileSync(channel_restore_file, 'utf-8');
@@ -202,8 +256,16 @@ export const postRestore = (req, res, next) => {
         }
     }
     if (restore_backup !== '') {
-        request.post(options).then((body) => {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'ChannelBackup', msg: 'Channel Restored', data: body });
+        request
+            .post(options)
+            .then((body) => {
+            logger.log({
+                selectedNode: req.session.selectedNode,
+                level: 'DEBUG',
+                fileName: 'ChannelBackup',
+                msg: 'Channel Restored',
+                data: body
+            });
             if (req.params.channelPoint === 'ALL') {
                 channel_restore_file = channel_restore_file + 'channel-all.bak';
             }
@@ -215,13 +277,18 @@ export const postRestore = (req, res, next) => {
                         return res.status(err.statusCode).json({ message: err.error, list: getFilesListRes });
                     }
                     else {
-                        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Channel Restored and Saved' });
+                        logger.log({
+                            selectedNode: req.session.selectedNode,
+                            level: 'INFO',
+                            fileName: 'ChannelBackup',
+                            msg: 'Channel Restored and Saved'
+                        });
                         return res.status(201).json({ message: message, list: getFilesListRes });
                     }
                 });
             });
-        }).
-            catch((errRes) => {
+        })
+            .catch((errRes) => {
             const err = common.handleError(errRes, 'ChannelsBackup', 'Restore Channel Error', req.session.selectedNode);
             return res.status(err.statusCode).json({ message: err.message, error: err.error });
         });

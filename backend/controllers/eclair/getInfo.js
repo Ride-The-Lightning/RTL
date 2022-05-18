@@ -9,7 +9,12 @@ const common = Common;
 const eclWsClient = ECLWSClient;
 const databaseService = Database;
 export const getInfo = (req, res, next) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Getting Eclair Node Information..' });
+    logger.log({
+        selectedNode: req.session.selectedNode,
+        level: 'INFO',
+        fileName: 'GetInfo',
+        msg: 'Getting Eclair Node Information..'
+    });
     common.logEnvVariables(req);
     common.setOptions(req);
     options = common.getOptions(req);
@@ -18,8 +23,18 @@ export const getInfo = (req, res, next) => {
     }
     options.url = req.session.selectedNode.ln_server_url + '/getinfo';
     options.form = {};
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Selected Node ' + req.session.selectedNode.ln_node });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Calling Info from Eclair server url ' + options.url });
+    logger.log({
+        selectedNode: req.session.selectedNode,
+        level: 'INFO',
+        fileName: 'GetInfo',
+        msg: 'Selected Node ' + req.session.selectedNode.ln_node
+    });
+    logger.log({
+        selectedNode: req.session.selectedNode,
+        level: 'INFO',
+        fileName: 'GetInfo',
+        msg: 'Calling Info from Eclair server url ' + options.url
+    });
     if (common.read_dummy_data) {
         common.getDummyData('GetInfo', req.session.selectedNode.ln_implementation).then((data) => {
             data.lnImplementation = 'Eclair';
@@ -33,15 +48,29 @@ export const getInfo = (req, res, next) => {
             return res.status(err.statusCode).json({ message: err.message, error: err.error });
         }
         else {
-            return request.post(options).then((body) => {
-                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Connecting to the Eclair\'s Websocket Server.' });
+            return request
+                .post(options)
+                .then((body) => {
+                logger.log({
+                    selectedNode: req.session.selectedNode,
+                    level: 'INFO',
+                    fileName: 'GetInfo',
+                    msg: "Connecting to the Eclair's Websocket Server."
+                });
                 body.lnImplementation = 'Eclair';
                 req.session.selectedNode.ln_version = body.version.split('-')[0] || '';
                 eclWsClient.updateSelectedNode(req.session.selectedNode);
                 databaseService.loadDatabase(req.session.selectedNode);
-                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Node Information Received', data: body });
+                logger.log({
+                    selectedNode: req.session.selectedNode,
+                    level: 'INFO',
+                    fileName: 'GetInfo',
+                    msg: 'Node Information Received',
+                    data: body
+                });
                 return res.status(200).json(body);
-            }).catch((errRes) => {
+            })
+                .catch((errRes) => {
                 const err = common.handleError(errRes, 'GetInfo', 'Get Info Error', req);
                 return res.status(err.statusCode).json({ message: err.message, error: err.error });
             });
