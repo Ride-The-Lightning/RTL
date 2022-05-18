@@ -56,7 +56,8 @@ import { CLNCreateOfferComponent } from './transactions/offers/create-offer-moda
 import { CLNOfferInformationComponent } from './transactions/offers/offer-information-modal/offer-information.component';
 import { CLNOffersTableComponent } from './transactions/offers/offers-table/offers-table.component';
 import { CLNOfferBookmarksTableComponent } from './transactions/offers/offer-bookmarks-table/offer-bookmarks-table.component';
-import { CLNLiquidityAdsComponent } from './liquidity-ads/liquidity-ads.component';
+import { CLNLiquidityAdsListComponent } from './liquidity-ads/liquidity-ads-list/liquidity-ads-list.component';
+import { CLNOpenLiquidityChannelComponent } from './liquidity-ads/open-liquidity-channel-modal/open-liquidity-channel-modal.component';
 
 import { CLNUnlockedGuard } from '../shared/services/auth.guard';
 
@@ -119,7 +120,8 @@ import { CLNUnlockedGuard } from '../shared/services/auth.guard';
     CLNOfferInformationComponent,
     CLNOffersTableComponent,
     CLNOfferBookmarksTableComponent,
-    CLNLiquidityAdsComponent
+    CLNLiquidityAdsListComponent,
+    CLNOpenLiquidityChannelComponent
   ],
   providers: [
     CLNUnlockedGuard

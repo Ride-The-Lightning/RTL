@@ -42,17 +42,12 @@
               </span>
             </div>
             <mat-form-field fxFlex="34">
-              <input matInput placeholder="Node Capacity (Sats)" name="nodeCapacity" [(ngModel)]="nodeCapacity" tabindex="5" type="number" step="1000" required>
+              <input matInput placeholder="Node Capacity (Sats)" name="nodeCapacity" [(ngModel)]="nodeCapacity" (keyup)="onFilter()" tabindex="5" type="number" min="0" step="1000">
               <mat-error *ngIf="!nodeCapacity">Node capacity is required.</mat-error>
             </mat-form-field>
             <mat-form-field fxFlex="34">
-              <input matInput placeholder="Channel Count" name="channelCount" [(ngModel)]="channelCount" type="number" step="1" tabindex="6" required>
-              <mat-error *ngIf="!channelCount">Channel count is required.</mat-error>
+              <input matInput placeholder="Channel Count" name="channelCount" [(ngModel)]="channelCount" (keyup)="onFilter()" type="number" step="1" min="0" tabindex="6">
             </mat-form-field>
-          </div>
-          <div fxLayout="row" class="my-1">
-            <button class="mr-1" mat-stroked-button color="primary" tabindex="7" type="reset" (click)="onFilterReset()">Clear</button>
-            <button mat-flat-button color="primary" (click)="onFilter()" tabindex="8" type="submit">Filter</button>
           </div>
         </form>
         <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">

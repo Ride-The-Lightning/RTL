@@ -7,25 +7,28 @@ import { MatSort } from '@angular/material/sort';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { faBullhorn, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-import { DataService } from '../../shared/services/data.service';
-import { LoggerService } from '../../shared/services/logger.service';
-import { CommonService } from '../../shared/services/common.service';
-import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, getPaginatorLabel, PAGE_SIZE, PAGE_SIZE_OPTIONS, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
-import { LookupNode } from '../../shared/models/clnModels';
-import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
-import { openConfirmation } from '../../store/rtl.actions';
-import { RTLState } from '../../store/rtl.state';
-import { RTLEffects } from '../../store/rtl.effects';
+import { DataService } from '../../../shared/services/data.service';
+import { LoggerService } from '../../../shared/services/logger.service';
+import { CommonService } from '../../../shared/services/common.service';
+import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, getPaginatorLabel, PAGE_SIZE, PAGE_SIZE_OPTIONS, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { Balance, GetInfo, LookupNode } from '../../../shared/models/clnModels';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
+import { openAlert, openConfirmation } from '../../../store/rtl.actions';
+import { RTLState } from '../../../store/rtl.state';
+import { RTLEffects } from '../../../store/rtl.effects';
+import { CLNOpenLiquidityChannelComponent } from '../open-liquidity-channel-modal/open-liquidity-channel-modal.component';
+import { nodeInfoAndNodeSettingsAndBalance } from '../../store/cln.selector';
+import { SelNodeChild } from '../../../shared/models/RTLconfig';
 
 @Component({
-  selector: 'rtl-cln-liquidity-ads',
-  templateUrl: './liquidity-ads.component.html',
-  styleUrls: ['./liquidity-ads.component.scss'],
+  selector: 'rtl-cln-liquidity-ads-list',
+  templateUrl: './liquidity-ads-list.component.html',
+  styleUrls: ['./liquidity-ads-list.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Liquidity Ads') }
   ]
 })
-export class CLNLiquidityAdsComponent implements OnInit, OnDestroy {
+export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
@@ -34,8 +37,10 @@ export class CLNLiquidityAdsComponent implements OnInit, OnDestroy {
   public displayedColumns: any[] = [];
   public faBullhorn = faBullhorn;
   public faExclamationTriangle = faExclamationTriangle;
-  public channelAmount = 0;
-  public channelOpeningFeeRate = 0;
+  public totalBalance = 0;
+  public information: GetInfo;
+  public channelAmount = 100000;
+  public channelOpeningFeeRate = 2;
   public nodeCapacity = 500000;
   public channelCount = 5;
   public liquidityNodesData: LookupNode[] = [];
@@ -83,6 +88,12 @@ export class CLNLiquidityAdsComponent implements OnInit, OnDestroy {
         this.errorMessage = JSON.stringify(err);
       }
     });
+    this.store.select(nodeInfoAndNodeSettingsAndBalance).pipe(takeUntil(this.unSubs[1])).
+      subscribe((infoSettingsBalSelector: { information: GetInfo, nodeSettings: SelNodeChild, balance: Balance }) => {
+        this.information = infoSettingsBalSelector.information;
+        this.totalBalance = infoSettingsBalSelector.balance.totalBalance;
+        this.logger.info(infoSettingsBalSelector);
+      });
   }
 
   onRecalculate() {
@@ -90,27 +101,35 @@ export class CLNLiquidityAdsComponent implements OnInit, OnDestroy {
   }
 
   onFilter() {
-    this.logger.info(this.nodeCapacity);
-    this.logger.info(this.channelCount);
-    this.liquidityNodes.filter = this.nodeCapacity + ' ' + this.channelCount;
+    this.liquidityNodes.filter = 'Changed';
   }
 
   loadLiqNodesTable(liqNodes: LookupNode[]) {
     this.liquidityNodes = new MatTableDataSource<LookupNode>([...liqNodes]);
     this.liquidityNodes.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.liquidityNodes.sort = this.sort;
-    this.liquidityNodes.filterPredicate = (node: LookupNode, fltr: string) => {
-      console.warn(node.channelCount);
-      console.warn(node.nodeCapacity);
-      console.warn(node.channelCount >= this.channelCount && node.nodeCapacity >= this.nodeCapacity);
-      return node.channelCount >= this.channelCount && node.nodeCapacity >= this.nodeCapacity;
-    }
+    this.liquidityNodes.filterPredicate = (node: LookupNode, fltr: string) => node.channelCount >= this.channelCount && node.nodeCapacity >= this.nodeCapacity;
     this.liquidityNodes.paginator = this.paginator;
     this.onFilter();
   }
 
   onOpenChannel(lqNode: LookupNode) {
-
+    const peerToAddChannelMessage = {
+      node: lqNode,
+      balance: this.totalBalance,
+      requestedAmount: this.channelAmount,
+      feeRate: this.channelOpeningFeeRate,
+      localAmount: 20000
+    };
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          alertTitle: 'Open Channel',
+          message: peerToAddChannelMessage,
+          component: CLNOpenLiquidityChannelComponent
+        }
+      }
+    }));
   }
 
   onViewLeaseInfo(lqNode: LookupNode) {
@@ -141,9 +160,9 @@ export class CLNLiquidityAdsComponent implements OnInit, OnDestroy {
         }
       }
     }));
-    this.rtlEffects.closeConfirm.pipe(takeUntil(this.unSubs[1])).subscribe((confirmRes) => {
+    this.rtlEffects.closeConfirm.pipe(takeUntil(this.unSubs[2])).subscribe((confirmRes) => {
       if (confirmRes) {
-        console.warn('Open Channel Modal');
+        this.onOpenChannel(lqNode);
       }
     });
   }
