@@ -339,6 +339,8 @@ export interface LookupNode {
   color?: string;
   last_timestamp?: number;
   features?: string;
+  channelCount?: number;
+  nodeCapacity?: number;
   addresses?: Address[];
   option_will_fund?: {
     lease_fee_base_msat?: number;
