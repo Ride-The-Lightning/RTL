@@ -34,7 +34,7 @@ import { CLNGraphComponent } from './graph/graph.component';
 import { CLNOffersTableComponent } from './transactions/offers/offers-table/offers-table.component';
 import { CLNOfferBookmarksTableComponent } from './transactions/offers/offer-bookmarks-table/offer-bookmarks-table.component';
 import { CLNLocalFailedTransactionsComponent } from './routing/local-failed-transactions/local-failed-transactions.component';
-import { CLNLiquidityAdsComponent } from './liquidity-ads/liquidity-ads.component';
+import { CLNLiquidityAdsListComponent } from './liquidity-ads/liquidity-ads-list/liquidity-ads-list.component';
 
 export const ClnRoutes: Routes = [
   {
@@ -63,7 +63,7 @@ export const ClnRoutes: Routes = [
           { path: 'peers', component: CLNPeersComponent, data: { sweepAll: false }, canActivate: [CLNUnlockedGuard] }
         ]
       },
-      { path: 'liquidityads', component: CLNLiquidityAdsComponent, canActivate: [CLNUnlockedGuard] },
+      { path: 'liquidityads', component: CLNLiquidityAdsListComponent, canActivate: [CLNUnlockedGuard] },
       {
         path: 'transactions', component: CLNTransactionsComponent, canActivate: [CLNUnlockedGuard], children: [
           { path: '', pathMatch: 'full', redirectTo: 'payments' },

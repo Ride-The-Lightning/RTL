@@ -1,7 +1,7 @@
 import { DataTypeEnum, LoopTypeEnum, PaymentTypes, SwapTypeEnum } from '../services/consts-enums-functions';
 import { GetInfoRoot, RTLConfiguration } from './RTLconfig';
 import { GetInfo, Invoice, Channel, Peer, PendingOpenChannel, UTXO } from './lndModels';
-import { Invoice as InvoiceCLN, GetInfo as GetInfoCLN, Peer as PeerCLN, Channel as ChannelCLN, UTXO as UTXOCLN, Offer as OfferCLN } from './clnModels';
+import { Invoice as InvoiceCLN, GetInfo as GetInfoCLN, Peer as PeerCLN, Channel as ChannelCLN, UTXO as UTXOCLN, Offer as OfferCLN, LookupNode as LookupNodeCLN } from './clnModels';
 import { GetInfo as GetInfoECL, Peer as PeerECL, Channel as ChannelECL, Invoice as InvoiceECL, PaymentSent as PaymentSentECL } from './eclModels';
 import { LoopQuote } from './loopModels';
 import { ServiceInfo } from './boltzModels';
@@ -65,6 +65,14 @@ export interface CLNOpenChannelAlert {
   alertTitle?: string;
   titleMessage?: string;
   message?: { information: GetInfoCLN, balance: number, utxos: UTXOCLN[], peer?: PeerCLN, peers?: PeerCLN[], isCompatibleVersion: boolean };
+  newlyAdded?: boolean;
+  component?: any;
+}
+
+export interface CLNOpenLiquidityChannelAlert {
+  alertTitle?: string;
+  titleMessage?: string;
+  message?: { node: LookupNodeCLN, balance: number, requestedAmount: number, feeRate: number, localAmount: number };
   newlyAdded?: boolean;
   component?: any;
 }

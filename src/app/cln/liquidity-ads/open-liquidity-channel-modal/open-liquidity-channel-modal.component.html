@@ -1,0 +1,93 @@
+<div fxLayout="row">
+  <div fxFlex="100">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
+      <div fxFlex="95" fxLayoutAlign="start start">
+        <span class="page-title">{{alertTitle}}</span>
+      </div>
+      <button tabindex="6" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+    </mat-card-header>
+    <mat-card-content class="padding-gap-x-large">
+      <form fxLayout="column" #form="ngForm">
+        <ng-container *ngTemplateOutlet="nodeDetailsExpansionBlock"></ng-container>
+        <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-sm="space-between center" fxLayout.gt-sm="row wrap">
+          <mat-form-field fxFlex="30" fxLayoutAlign="start end">
+            <input autoFocus matInput [(ngModel)]="requestedAmount" placeholder="Requested Amount" type="number" [step]="1000" [min]="0" tabindex="1" required name="ramount" #ramount="ngModel">
+            <span matSuffix> Sats </span>
+            <mat-error *ngIf="ramount.errors?.required">Requested amount is required.</mat-error>
+          </mat-form-field>
+          <mat-form-field fxFlex="30" fxLayoutAlign="start end">
+            <input matInput [(ngModel)]="feeRate" placeholder="Fee Rate" type="number" [step]="1" [min]="0" tabindex="2" required name="feerate" #feeRt="ngModel">
+            <span matSuffix> Sats/vByte </span>
+            <mat-error *ngIf="feeRt.errors?.required">Fee rate is required.</mat-error>
+          </mat-form-field>
+          <mat-form-field fxFlex="30" fxLayoutAlign="start end">
+            <input matInput [(ngModel)]="localAmount" placeholder="Local Amount" type="number" [step]="1000" [min]="20000" [max]="totalBalance" tabindex="3" required name="lamount" #lamount="ngModel">
+            <mat-hint>Remaining Bal: {{totalBalance - ((localAmount) ? localAmount : 0) | number}}</mat-hint>
+            <span matSuffix> Sats </span>
+            <mat-error *ngIf="lamount.errors?.required">Local amount is required.</mat-error>
+            <mat-error *ngIf="lamount.errors?.min">Local amount must be greater than or equal to 20000.</mat-error>
+            <mat-error *ngIf="lamount.errors?.max">Local amount must be less than or equal to {{totalBalance}}.</mat-error>
+          </mat-form-field>
+        </div>
+        <div fxFlex="100" class="alert alert-info mt-2">
+          <span>Total cost to lease {{1250 | number}} (Sats)</span>
+        </div>
+        <div fxFlex="100" class="alert alert-danger mt-2" *ngIf="channelConnectionError !== ''">
+          <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+          <span *ngIf="channelConnectionError !== ''">{{channelConnectionError}}</span>
+        </div>
+        <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
+          <button mat-button color="primary" class="mr-1" tabindex="4" (click)="resetData()">Clear</button>
+          <button autoFocus mat-button color="primary" tabindex="5" (click)="onOpenChannel()">Execute</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </div>
+</div>
+
+<ng-template #nodeDetailsExpansionBlock>
+  <mat-expansion-panel class="flat-expansion-panel my-1" *ngIf="node" expanded="false">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <span>Node: &nbsp;</span><strong class="font-weight-900">{{node?.alias || node?.nodeid}}</strong>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div fxLayout="column">
+      <div fxLayout="row">
+        <div fxFlex="100">
+          <h4 fxLayoutAlign="start" class="font-bold-500">Pubkey</h4>
+          <span class="foreground-secondary-text">{{node.nodeid}}</span>
+        </div>
+      </div>
+      <mat-divider class="w-100 my-1"></mat-divider>
+      <div fxLayout="row">
+        <div fxFlex="100">
+          <h4 fxLayoutAlign="start" class="font-bold-500">Last Timestamp</h4>
+          <span class="overflow-wrap foreground-secondary-text">{{node.last_timestamp}}</span>
+        </div>
+      </div>
+      <mat-divider class="w-100 my-1"></mat-divider>
+      <div fxLayout="column" fxLayoutAlign="start stretch">
+        <h4 fxFlex="100" class="font-bold-500 mb-1">Addresses</h4>
+        <div class="table-container">
+          <table mat-table #table [dataSource]="node.addresses" matSort class="overflow-auto">
+            <ng-container matColumnDef="type">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+              <td mat-cell *matCellDef="let address"> {{address?.type}} </td>
+            </ng-container>
+            <ng-container matColumnDef="address">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Address</th>
+              <td mat-cell *matCellDef="let address"> {{address?.address }} </td>
+            </ng-container>
+            <ng-container matColumnDef="port">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Port</th>
+              <td mat-cell *matCellDef="let address"> {{address?.port}} </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns;"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>        
+          </table>
+        </div>
+      </div>
+    </div>
+  </mat-expansion-panel>
+</ng-template>
