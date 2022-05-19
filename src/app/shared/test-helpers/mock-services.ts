@@ -108,6 +108,10 @@ export class mockDataService {
     return of(mockResponseData.getForwardingHistory);
   };
 
+  listNetworkNodes(qp: string) {
+    return of(mockResponseData.getListLiqNode);
+  };
+
 };
 
 export class mockSessionService {

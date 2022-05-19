@@ -43,7 +43,7 @@
                   </div>
                 </div>
                 <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign.gt-sm="space-between center">
-                  <div fxFlex="48" fxLayoutAlign="space-between end">
+                  <div fxFlex="60" fxLayoutAlign="space-between end">
                     <mat-form-field [fxFlex]="channelFormGroup.controls.selFeeRate.value === 'customperkb' && !channelFormGroup.controls.flgMinConf.value ? '48' : '100'" fxLayoutAlign="start center">
                       <mat-select tabindex="4" placeholder="Fee Rate" formControlName="selFeeRate">
                         <mat-option *ngFor="let feeRateType of feeRateTypes" [value]="feeRateType.feeRateId">
@@ -52,11 +52,11 @@
                       </mat-select>
                     </mat-form-field>
                     <mat-form-field *ngIf="channelFormGroup.controls.selFeeRate.value === 'customperkb' && !channelFormGroup.controls.flgMinConf.value" fxFlex="48" fxLayoutAlign="end center">
-                      <input matInput formControlName="customFeeRate" placeholder="Fee Rate (Sats/vB)" type="number" name="custFeeRate" [step]="0.1" [min]="0" tabindex="4">
+                      <input matInput formControlName="customFeeRate" placeholder="Fee Rate (Sats/vByte)" type="number" name="custFeeRate" [step]="0.1" [min]="0" tabindex="4">
                       <mat-error *ngIf="channelFormGroup.controls.selFeeRate.value === 'customperkb' && !channelFormGroup.controls.flgMinConf.value && !channelFormGroup.controls.customFeeRate.value">Fee Rate is required.</mat-error>
                     </mat-form-field>
                   </div>
-                  <div fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
+                  <div fxFlex="35" fxLayout="row" fxLayoutAlign="start center">
                     <mat-checkbox fxFlex="2" tabindex="5" color="primary" formControlName="flgMinConf" fxLayoutAlign="stretch start" [ngClass]="{'mr-6': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mr-2': screenSize === screenSizeEnum.MD || screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}"></mat-checkbox>
                     <mat-form-field fxFlex="98">
                       <input matInput formControlName="minConfValue" placeholder="Min Confirmation Blocks" type="number" name="blocks" [step]="1" [min]="0" tabindex="8" [required]="channelFormGroup.controls.flgMinConf.value">

@@ -19,21 +19,17 @@
               </span>
             </div>
             <mat-form-field fxFlex="34">
-              <input autoFocus matInput placeholder="Channel Amount (Sats)" name="channelAmount" [(ngModel)]="channelAmount" tabindex="1" type="number" step="1000" required>
+              <input autoFocus matInput placeholder="Channel Amount (Sats)" name="channelAmount" [(ngModel)]="channelAmount" (keyup)="onCalculateOpeningFee()" tabindex="1" type="number" step="10000" required>
               <mat-error *ngIf="!channelAmount">Channel amount is required.</mat-error>
             </mat-form-field>
             <mat-form-field fxFlex="34">
-              <input matInput placeholder="Channel Opening Fee Rate (Sats/vByte)" name="channelOpeningFeeRate" [(ngModel)]="channelOpeningFeeRate" type="number" step="1" tabindex="2" required>
+              <input matInput placeholder="Channel Opening Fee Rate (Sats/vByte)" name="channelOpeningFeeRate" [(ngModel)]="channelOpeningFeeRate" (keyup)="onCalculateOpeningFee()" type="number" step="10" tabindex="2" required>
               <mat-error *ngIf="!channelOpeningFeeRate">Channel opening fee rate is required.</mat-error>
             </mat-form-field>
           </div>
-          <div fxLayout="row" class="my-1">
-            <button class="mr-1" mat-stroked-button color="primary" tabindex="3" type="reset" (click)="onReset()">Clear</button>
-            <button mat-flat-button color="primary" (click)="onRecalculate()" tabindex="4" type="submit">Recalculate</button>
-          </div>
         </form>
-        <mat-divider [inset]="true" class="my-2"></mat-divider>
-        <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" #formFilter="ngForm">
+        <!-- <mat-divider [inset]="true" class="my-2"></mat-divider> -->
+        <!-- <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" #formFilter="ngForm">
           <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start start" class="page-sub-title-container mt-1">
             <div fxFlex="30">
               <span class="page-title">
@@ -49,8 +45,8 @@
               <input matInput placeholder="Channel Count" name="channelCount" [(ngModel)]="channelCount" (keyup)="onFilter()" type="number" step="1" min="0" tabindex="6">
             </mat-form-field>
           </div>
-        </form>
-        <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+        </form> -->
+        <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container mt-2">
           <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
           <table mat-table #table [dataSource]="liquidityNodes" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
             <ng-container matColumnDef="alias">
@@ -59,30 +55,31 @@
                 {{lqNode?.alias}} 
               </td>
             </ng-container>
-            <ng-container matColumnDef="capacity">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Capacity </th>
-              <td mat-cell *matCellDef="let lqNode"><span fxLayoutAlign="end center">
-                  {{lqNode?.option_will_fund?.lease_fee_basis | number:'1.0-0'}} </span></td>
+            <ng-container matColumnDef="capacityChannels">
+              <th mat-header-cell *matHeaderCellDef> Capacity/Channels </th>
+              <td mat-cell *matCellDef="let lqNode">
+                {{lqNode?.nodeCapacity/100000000 | number:'1.0-2'}} BTC / {{lqNode?.channelCount | number:'1.0-0'}} 
+              </td>
             </ng-container>
-            <ng-container matColumnDef="numChannels">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Channels </th>
-              <td mat-cell *matCellDef="let lqNode"><span fxLayoutAlign="end center">
-                  {{lqNode?.option_will_fund?.lease_fee_basis | number:'1.0-0'}} </span></td>
-            </ng-container>
-            <ng-container matColumnDef="leaseFeeBasis">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Lease Fee </th>
-              <td mat-cell *matCellDef="let lqNode"><span fxLayoutAlign="end center">
-                  {{lqNode?.option_will_fund?.lease_fee_basis | number:'1.0-0'}} </span></td>
+            <ng-container matColumnDef="leaseFee">
+              <th mat-header-cell *matHeaderCellDef> Lease Fee </th>
+              <td mat-cell *matCellDef="let lqNode">
+                {{lqNode?.option_will_fund?.lease_fee_base_msat/1000 | number:'1.0-0'}} Sats + {{(lqNode?.option_will_fund?.lease_fee_basis/100) | number:'1.2-2'}}%
+              </td>
             </ng-container>
             <ng-container matColumnDef="routingFee">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Routing Fee </th>
-              <td mat-cell *matCellDef="let lqNode"><span fxLayoutAlign="end center">
-                  {{lqNode?.option_will_fund?.lease_fee_basis | number:'1.0-0'}} </span></td>
+              <th mat-header-cell *matHeaderCellDef> Routing Fee </th>
+              <td mat-cell *matCellDef="let lqNode">
+                {{lqNode?.option_will_fund?.channel_fee_max_base_msat/1000 | number:'1.0-0'}} Sats + {{lqNode?.option_will_fund?.channel_fee_max_proportional_thousandths * 1000 | number:'1.0-0'}} ppm
+              </td>
             </ng-container>
-            <ng-container matColumnDef="channelOpenFee">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Channel Open Fee </th>
-              <td mat-cell *matCellDef="let lqNode"><span fxLayoutAlign="end center">
-                  {{lqNode?.option_will_fund?.lease_fee_basis | number:'1.0-0'}} </span></td>
+            <ng-container matColumnDef="channelOpeningFee">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Channel Opening Fee </th>
+              <td mat-cell *matCellDef="let lqNode">
+                <span fxLayoutAlign="end center">
+                  {{lqNode.channelOpeningFee | number:'1.0-0'}} Sats
+                </span>
+              </td>
             </ng-container>
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef class="px-3">

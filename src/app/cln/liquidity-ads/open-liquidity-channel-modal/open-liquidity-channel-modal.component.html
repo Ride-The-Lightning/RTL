@@ -11,17 +11,17 @@
         <ng-container *ngTemplateOutlet="nodeDetailsExpansionBlock"></ng-container>
         <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-sm="space-between center" fxLayout.gt-sm="row wrap">
           <mat-form-field fxFlex="30" fxLayoutAlign="start end">
-            <input autoFocus matInput [(ngModel)]="requestedAmount" placeholder="Requested Amount" type="number" [step]="1000" [min]="0" tabindex="1" required name="ramount" #ramount="ngModel">
+            <input autoFocus matInput [(ngModel)]="requestedAmount" (keyup)="calculateFee()" placeholder="Requested Amount" type="number" [step]="10000" [min]="0" tabindex="1" required name="ramount" #ramount="ngModel">
             <span matSuffix> Sats </span>
             <mat-error *ngIf="ramount.errors?.required">Requested amount is required.</mat-error>
           </mat-form-field>
           <mat-form-field fxFlex="30" fxLayoutAlign="start end">
-            <input matInput [(ngModel)]="feeRate" placeholder="Fee Rate" type="number" [step]="1" [min]="0" tabindex="2" required name="feerate" #feeRt="ngModel">
+            <input matInput [(ngModel)]="feeRate" placeholder="Fee Rate" (keyup)="calculateFee()" type="number" [step]="10" [min]="0" tabindex="2" required name="feerate" #feeRt="ngModel">
             <span matSuffix> Sats/vByte </span>
             <mat-error *ngIf="feeRt.errors?.required">Fee rate is required.</mat-error>
           </mat-form-field>
           <mat-form-field fxFlex="30" fxLayoutAlign="start end">
-            <input matInput [(ngModel)]="localAmount" placeholder="Local Amount" type="number" [step]="1000" [min]="20000" [max]="totalBalance" tabindex="3" required name="lamount" #lamount="ngModel">
+            <input matInput [(ngModel)]="localAmount" placeholder="Local Amount" type="number" [step]="10000" [min]="20000" [max]="totalBalance" tabindex="3" required name="lamount" #lamount="ngModel">
             <mat-hint>Remaining Bal: {{totalBalance - ((localAmount) ? localAmount : 0) | number}}</mat-hint>
             <span matSuffix> Sats </span>
             <mat-error *ngIf="lamount.errors?.required">Local amount is required.</mat-error>
@@ -30,7 +30,7 @@
           </mat-form-field>
         </div>
         <div fxFlex="100" class="alert alert-info mt-2">
-          <span>Total cost to lease {{1250 | number}} (Sats)</span>
+          <span>Total cost to lease {{node.channelOpeningFee | number}} (Sats)</span>
         </div>
         <div fxFlex="100" class="alert alert-danger mt-2" *ngIf="channelConnectionError !== ''">
           <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
@@ -46,7 +46,7 @@
 </div>
 
 <ng-template #nodeDetailsExpansionBlock>
-  <mat-expansion-panel class="flat-expansion-panel my-1" *ngIf="node" expanded="false">
+  <mat-expansion-panel class="flat-expansion-panel mt-1 mb-2" *ngIf="node" expanded="false">
     <mat-expansion-panel-header>
       <mat-panel-title>
         <span>Node: &nbsp;</span><strong class="font-weight-900">{{node?.alias || node?.nodeid}}</strong>
@@ -63,7 +63,7 @@
       <div fxLayout="row">
         <div fxFlex="100">
           <h4 fxLayoutAlign="start" class="font-bold-500">Last Timestamp</h4>
-          <span class="overflow-wrap foreground-secondary-text">{{node.last_timestamp}}</span>
+          <span class="overflow-wrap foreground-secondary-text">{{(node.last_timestamp * 1000) | date:'dd/MMM/y HH:mm'}}</span>
         </div>
       </div>
       <mat-divider class="w-100 my-1"></mat-divider>

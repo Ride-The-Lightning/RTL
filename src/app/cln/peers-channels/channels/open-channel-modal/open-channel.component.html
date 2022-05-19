@@ -40,7 +40,7 @@
             </mat-expansion-panel-header>
             <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
               <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-sm="space-between center" fxLayout.gt-sm="row wrap">
-                <div fxFlex="48" fxLayoutAlign="space-between end">
+                <div fxFlex="54" fxLayoutAlign="space-between end">
                   <mat-form-field [fxFlex]="selFeeRate === 'customperkb' && !flgMinConf ? '48' : '100'" fxLayoutAlign="start center">
                     <mat-select tabindex="4" placeholder="Fee Rate" [(value)]="selFeeRate" (selectionChange)="customFeeRate=null" [disabled]="flgMinConf">
                       <mat-option *ngFor="let feeRateType of feeRateTypes" [value]="feeRateType.feeRateId">
@@ -49,11 +49,11 @@
                     </mat-select>
                   </mat-form-field>
                   <mat-form-field *ngIf="selFeeRate === 'customperkb' && !flgMinConf" fxFlex="48" fxLayoutAlign="end center">
-                    <input matInput [(ngModel)]="customFeeRate" placeholder="Fee Rate (Sats/vB)" type="number" name="custFeeRate" [step]="0.1" [min]="0" tabindex="4" #custFeeRate="ngModel" [required]="selFeeRate === 'customperkb' && !flgMinConf">
+                    <input matInput [(ngModel)]="customFeeRate" placeholder="Fee Rate (Sats/vByte)" type="number" name="custFeeRate" [step]="0.1" [min]="0" tabindex="4" #custFeeRate="ngModel" [required]="selFeeRate === 'customperkb' && !flgMinConf">
                     <mat-error *ngIf="selFeeRate === 'customperkb' && !flgMinConf && !customFeeRate">Fee Rate is required.</mat-error>
                   </mat-form-field>
                 </div>
-                <div fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
+                <div fxFlex="42" fxLayout="row" fxLayoutAlign="start center">
                   <mat-checkbox fxFlex="2" tabindex="5" color="primary" [(ngModel)]="flgMinConf" (change)="flgMinConf ? selFeeRate=null : minConfValue=null" name="flgMinConf" fxLayoutAlign="stretch start" [ngClass]="{'mr-6': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mr-2': screenSize === screenSizeEnum.MD || screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}"></mat-checkbox>
                   <mat-form-field fxFlex="98">
                     <input matInput [(ngModel)]="minConfValue" placeholder="Min Confirmation Blocks" type="number" name="blocks" [step]="1" [min]="0" tabindex="8" #blocks="ngModel" [required]="flgMinConf" [disabled]="!flgMinConf">
@@ -62,13 +62,13 @@
                 </div>
               </div>
               <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-sm="space-between center" fxLayout.gt-sm="row wrap" *ngIf="isCompatibleVersion">
-                <mat-form-field fxFlex="48" fxLayoutAlign="start end">
+                <mat-form-field fxFlex="54" fxLayoutAlign="start end">
                   <mat-select tabindex="6" placeholder="Coin Selection" (selectionChange)="onUTXOSelectionChange($event)" [(value)]="selUTXOs" multiple>
                     <mat-select-trigger>{{totalSelectedUTXOAmount | number}} Sats ({{selUTXOs.length > 1 ? selUTXOs.length + ' UTXOs' : '1 UTXO'}})</mat-select-trigger>
                     <mat-option *ngFor="let utxo of utxos" [value]="utxo">{{utxo.value | number}} Sats</mat-option>
                   </mat-select>
                 </mat-form-field>
-                <div fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
+                <div fxFlex="42" fxLayout="row" fxLayoutAlign="start center">
                   <mat-slide-toggle tabindex="7" color="primary" [(ngModel)]="flgUseAllBalance" (change)="onUTXOAllBalanceChange()" name="flgUseAllBalance" [disabled]="selUTXOs.length < 1">
                     Use selected UTXOs balance
                   </mat-slide-toggle>

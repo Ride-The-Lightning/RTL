@@ -355,10 +355,11 @@ export class CLNEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: SaveChannel }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.OPEN_CHANNEL }));
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'SaveNewChannel', status: APICallStatusEnum.INITIATED } }));
-      const newPayload = { id: action.payload.peerId, satoshis: action.payload.satoshis, feeRate: action.payload.feeRate, announce: action.payload.announce, minconf: (action.payload.minconf) ? action.payload.minconf : null };
-      if (action.payload.utxos) {
-        newPayload['utxos'] = action.payload.utxos;
-      }
+      const newPayload = { id: action.payload.peerId, satoshis: action.payload.satoshis, feeRate: action.payload.feeRate, announce: action.payload.announce };
+      if (action.payload.minconf) { newPayload['minconf'] = action.payload.minconf; }
+      if (action.payload.utxos) { newPayload['utxos'] = action.payload.utxos; }
+      if (action.payload.requestAmount) { newPayload['request_amt'] = action.payload.requestAmount; }
+      if (action.payload.compactLease) { newPayload['compact_lease'] = action.payload.compactLease; }
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API, newPayload).
         pipe(
           map((postRes: any) => {

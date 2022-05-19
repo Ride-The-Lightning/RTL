@@ -341,6 +341,7 @@ export interface LookupNode {
   features?: string;
   channelCount?: number;
   nodeCapacity?: number;
+  channelOpeningFee?: number;
   addresses?: Address[];
   option_will_fund?: {
     lease_fee_base_msat?: number;
@@ -402,6 +403,8 @@ export interface SaveChannel {
   feeRate?: string;
   minconf?: number;
   utxos?: string[];
+  requestAmount?: string;
+  compactLease?: string;
 }
 
 export interface GetNewAddress {

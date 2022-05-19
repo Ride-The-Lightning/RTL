@@ -138,7 +138,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
           this.advancedTitle = this.advancedTitle + ' | Min Confirmation Blocks: ' + this.minConfValue;
         }
         if (this.selFeeRate) {
-          this.advancedTitle = this.advancedTitle + ' | Fee Rate: ' + (this.customFeeRate ? (this.customFeeRate + ' (Sats/vB)') : (this.feeRateTypes.find((feeRateType) => feeRateType.feeRateId === this.selFeeRate).feeRateType));
+          this.advancedTitle = this.advancedTitle + ' | Fee Rate: ' + (this.customFeeRate ? (this.customFeeRate + ' (Sats/vByte)') : (this.feeRateTypes.find((feeRateType) => feeRateType.feeRateId === this.selFeeRate).feeRateType));
         }
         if (this.selUTXOs.length && this.selUTXOs.length > 0) {
           this.advancedTitle = this.advancedTitle + ' | Total Selected: ' + this.selUTXOs.length + ' | Selected UTXOs: ' + this.decimalPipe.transform(this.totalSelectedUTXOAmount) + ' Sats';
