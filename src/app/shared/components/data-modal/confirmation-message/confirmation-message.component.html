@@ -22,7 +22,7 @@
             <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutAlign.gt-md="space-between start">
               <div fxLayout="column" fxFlex="100" fxFlex.gt-md="{{obj.width}}" *ngFor="let obj of objs; index as j;">
                 <h4 fxLayoutAlign="start" class="font-bold-500">{{obj.title}}</h4>
-                <span *ngIf="obj && obj.value; else emptyField">
+                <span *ngIf="obj && (!!obj.value || obj.value === 0); else emptyField">
                   <span [ngSwitch]="obj.type" class="foreground-secondary-text">
                     <ng-container *ngSwitchCase="dataTypeEnum.ARRAY">
                       <span *ngFor="let arrayObj of obj.value" class="display-block w-100" [innerHTML]="arrayObj"></span>

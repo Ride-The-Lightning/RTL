@@ -60,21 +60,21 @@
             </div>
             <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch">
               <mat-form-field fxFlex="49">
-                <input matInput [(ngModel)]="leaseFeeBaseSat" placeholder="Lease Base Fee (Sats)" type="number" step="1000" min="0" tabindex="3" required name="leaseFeeBaseSat">
+                <input matInput [(ngModel)]="leaseFeeBaseSat" placeholder="Lease Base Fee (Sats)" type="number" step="100" min="0" tabindex="3" required name="leaseFeeBaseSat">
                 <mat-error *ngIf="!leaseFeeBaseSat">Lease base fee is required.</mat-error>
               </mat-form-field>
               <mat-form-field fxFlex="49">
-                <input matInput [(ngModel)]="leaseFeeBasis" placeholder="Lease Base Basis (bps)" type="number" step="10" min="0" tabindex="4" required name="leaseFeeBasis">
+                <input matInput [(ngModel)]="leaseFeeBasis" placeholder="Lease Base Basis (bps)" type="number" step="1" min="0" tabindex="4" required name="leaseFeeBasis">
                 <mat-error *ngIf="!leaseFeeBasis">Lease base basis is required.</mat-error>
               </mat-form-field>
             </div>
             <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch">
               <mat-form-field fxFlex="49">
-                <input matInput [(ngModel)]="channelFeeMaxBaseSat" placeholder="Max Channel Routing Base Fee (Sats)" type="number" step="1" min="0" tabindex="5" required name="channelFeeMaxBaseSat">
+                <input matInput [(ngModel)]="channelFeeMaxBaseSat" placeholder="Max Channel Routing Base Fee (Sats)" type="number" step="100" min="0" tabindex="5" required name="channelFeeMaxBaseSat">
                 <mat-error *ngIf="!channelFeeMaxBaseSat">Max channel routing base fee is required.</mat-error>
               </mat-form-field>
               <mat-form-field fxFlex="49">
-                <input matInput [(ngModel)]="channelFeeMaxProportional" placeholder="Max Channel Routing Fee Rate (ppm)" type="number" step="10" min="0" tabindex="6" required name="channelFeeMaxProportional">
+                <input matInput [(ngModel)]="channelFeeMaxProportional" placeholder="Max Channel Routing Fee Rate (ppm)" type="number" step="1000" min="0" tabindex="6" required name="channelFeeMaxProportional">
                 <mat-error *ngIf="!channelFeeMaxProportional">Max channel routing fee rate is required.</mat-error>
               </mat-form-field>
             </div>

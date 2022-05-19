@@ -66,15 +66,14 @@ export const listNodes = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/network/listNodes' + (req.query !== {} ? (JSON.stringify(req.query).replace('{', '?').replace('}', '').replace(/:/g, '=').replace(/,/g, '&').replace(/"/g, '')) : '');
+  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Network', msg: 'List Nodes URL' + options.url });
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'List Nodes Finished', data: body });
-    body.forEach((node, i) => {
-      node.option_will_fund.lease_fee_base_msat = (node.option_will_fund && node.option_will_fund.lease_fee_base_msat && typeof node.option_will_fund.lease_fee_base_msat === 'string' && node.option_will_fund.lease_fee_base_msat.includes('msat')) ? node.option_will_fund.lease_fee_base_msat.replace('msat', '') : node.option_will_fund.lease_fee_base_msat;
-      node.option_will_fund.channel_fee_max_base_msat = (node.option_will_fund && node.option_will_fund.channel_fee_max_base_msat && typeof node.option_will_fund.channel_fee_max_base_msat === 'string' && node.option_will_fund.channel_fee_max_base_msat.includes('msat')) ? node.option_will_fund.channel_fee_max_base_msat.replace('msat', '') : node.option_will_fund.channel_fee_max_base_msat;
-      // TO BE REMOVED
-      node.channelCount = +(Math.random() * 10).toFixed(0);
-      node.nodeCapacity = +(Math.random() * 1000000).toFixed(0);
-      // TO BE REMOVED
+    body.forEach((node) => {
+      if (node.option_will_fund) {
+        node.option_will_fund.lease_fee_base_msat = (node.option_will_fund.lease_fee_base_msat && typeof node.option_will_fund.lease_fee_base_msat === 'string' && node.option_will_fund.lease_fee_base_msat.includes('msat')) ? node.option_will_fund.lease_fee_base_msat.replace('msat', '') : node.option_will_fund.lease_fee_base_msat;
+        node.option_will_fund.channel_fee_max_base_msat = (node.option_will_fund.channel_fee_max_base_msat && typeof node.option_will_fund.channel_fee_max_base_msat === 'string' && node.option_will_fund.channel_fee_max_base_msat.includes('msat')) ? node.option_will_fund.channel_fee_max_base_msat.replace('msat', '') : node.option_will_fund.channel_fee_max_base_msat;
+      }
       return node;
     });
     res.status(200).json(body);

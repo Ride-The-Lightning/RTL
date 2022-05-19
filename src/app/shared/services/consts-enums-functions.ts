@@ -45,7 +45,7 @@ export const FEE_RATE_TYPES = [
   { feeRateId: 'urgent', feeRateType: 'Urgent' },
   { feeRateId: 'normal', feeRateType: 'Normal' },
   { feeRateId: 'slow', feeRateType: 'Slow' },
-  { feeRateId: 'customperkb', feeRateType: 'Custom (Sats/vB)' }
+  { feeRateId: 'customperkb', feeRateType: 'Custom (Sats/vByte)' }
 ];
 
 export const NODE_SETTINGS = {

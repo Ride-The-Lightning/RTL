@@ -81,7 +81,7 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
         this.leaseFeeBaseSat = this.fundingPolicy.lease_fee_base_msat ? this.fundingPolicy.lease_fee_base_msat / 1000 : this.fundingPolicy.lease_fee_base_msat === 0 ? 0 : null;
         this.leaseFeeBasis = this.fundingPolicy.lease_fee_basis || this.fundingPolicy.lease_fee_basis === 0 ? this.fundingPolicy.lease_fee_basis : null;
         this.channelFeeMaxBaseSat = this.fundingPolicy.channel_fee_max_base_msat ? this.fundingPolicy.channel_fee_max_base_msat / 1000 : this.fundingPolicy.channel_fee_max_base_msat === 0 ? 0 : null;
-        this.channelFeeMaxProportional = this.fundingPolicy.channel_fee_max_proportional_thousandths || this.fundingPolicy.channel_fee_max_proportional_thousandths === 0 ? this.fundingPolicy.channel_fee_max_proportional_thousandths : null;
+        this.channelFeeMaxProportional = this.fundingPolicy.channel_fee_max_proportional_thousandths || this.fundingPolicy.channel_fee_max_proportional_thousandths === 0 ? (this.fundingPolicy.channel_fee_max_proportional_thousandths * 1000) : null;
       });
     }
   }
@@ -114,7 +114,7 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
   onUpdateFundingPolicy() {
     this.flgUpdateCalled = false;
     this.updateMsg = '';
-    this.dataService.getOrUpdateFunderPolicy(this.selPolicyType.id, this.policyMod, this.leaseFeeBaseSat, this.leaseFeeBasis, this.channelFeeMaxBaseSat * 1000, this.channelFeeMaxProportional).
+    this.dataService.getOrUpdateFunderPolicy(this.selPolicyType.id, this.policyMod, this.leaseFeeBaseSat, this.leaseFeeBasis, this.channelFeeMaxBaseSat * 1000, this.channelFeeMaxProportional / 1000).
       pipe(takeUntil(this.unSubs[4])).
       subscribe({
         next: (updatePolicyRes: any) => {
@@ -141,7 +141,7 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
     this.leaseFeeBaseSat = this.fundingPolicy.lease_fee_base_msat ? this.fundingPolicy.lease_fee_base_msat / 1000 : this.fundingPolicy.lease_fee_base_msat === 0 ? 0 : null;
     this.leaseFeeBasis = this.fundingPolicy.lease_fee_basis || this.fundingPolicy.lease_fee_basis === 0 ? this.fundingPolicy.lease_fee_basis : null;
     this.channelFeeMaxBaseSat = this.fundingPolicy.channel_fee_max_base_msat ? this.fundingPolicy.channel_fee_max_base_msat / 1000 : this.fundingPolicy.channel_fee_max_base_msat === 0 ? 0 : null;
-    this.channelFeeMaxProportional = this.fundingPolicy.channel_fee_max_proportional_thousandths || this.fundingPolicy.channel_fee_max_proportional_thousandths === 0 ? this.fundingPolicy.channel_fee_max_proportional_thousandths : null;
+    this.channelFeeMaxProportional = this.fundingPolicy.channel_fee_max_proportional_thousandths || this.fundingPolicy.channel_fee_max_proportional_thousandths === 0 ? (this.fundingPolicy.channel_fee_max_proportional_thousandths * 1000) : null;
   }
 
   ngOnDestroy() {

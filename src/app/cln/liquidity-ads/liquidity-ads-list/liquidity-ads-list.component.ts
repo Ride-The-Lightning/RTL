@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatTableDataSource } from '@angular/material/table';
@@ -11,14 +11,14 @@ import { DataService } from '../../../shared/services/data.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, getPaginatorLabel, PAGE_SIZE, PAGE_SIZE_OPTIONS, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
-import { Balance, GetInfo, LookupNode } from '../../../shared/models/clnModels';
+import { GetInfo, LookupNode } from '../../../shared/models/clnModels';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
+
 import { RTLState } from '../../../store/rtl.state';
 import { RTLEffects } from '../../../store/rtl.effects';
 import { CLNOpenLiquidityChannelComponent } from '../open-liquidity-channel-modal/open-liquidity-channel-modal.component';
 import { nodeInfoAndNodeSettingsAndBalance } from '../../store/cln.selector';
-import { SelNodeChild } from '../../../shared/models/RTLconfig';
 
 @Component({
   selector: 'rtl-cln-liquidity-ads-list',
@@ -40,7 +40,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
   public totalBalance = 0;
   public information: GetInfo;
   public channelAmount = 100000;
-  public channelOpeningFeeRate = 2;
+  public channelOpeningFeeRate = 10;
   public nodeCapacity = 500000;
   public channelCount = 5;
   public liquidityNodesData: LookupNode[] = [];
@@ -62,55 +62,64 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['alias', 'capacity', 'actions'];
+      this.displayedColumns = ['alias', 'channelOpeningFee', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['alias', 'capacity', 'numChannels', 'leaseFeeBasis', 'routingFee', 'channelOpenFee', 'actions'];
+      this.displayedColumns = ['alias', 'leaseFee', 'routingFee', 'channelOpeningFee', 'actions'];
+      // this.displayedColumns = ['alias', 'capacityChannels', 'leaseFee', 'routingFee', 'channelOpeningFee', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['alias', 'capacity', 'numChannels', 'leaseFeeBasis', 'routingFee', 'channelOpenFee', 'actions'];
+      this.displayedColumns = ['alias', 'leaseFee', 'routingFee', 'channelOpeningFee', 'actions'];
+      // this.displayedColumns = ['alias', 'capacityChannels', 'leaseFee', 'routingFee', 'channelOpeningFee', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['alias', 'capacity', 'numChannels', 'leaseFeeBasis', 'routingFee', 'channelOpenFee', 'actions'];
+      this.displayedColumns = ['alias', 'leaseFee', 'routingFee', 'channelOpeningFee', 'actions'];
+      // this.displayedColumns = ['alias', 'capacityChannels', 'leaseFee', 'routingFee', 'channelOpeningFee', 'actions'];
     }
   }
 
   ngOnInit(): void {
-    this.dataService.listNetworkNodes('?liquidity_ads=yes').pipe(takeUntil(this.unSubs[0])).subscribe({
-      next: (res: any) => {
-        this.logger.info('Received Liquidity Ads Enabled Nodes: ' + JSON.stringify(res));
-        this.apiCallStatus.status = APICallStatusEnum.COMPLETED;
-        this.liquidityNodesData = res;
-        this.loadLiqNodesTable(this.liquidityNodesData);
-      }, error: (err) => {
-        this.logger.error('Liquidity Ads Nodes Error: ' + JSON.stringify(err));
-        this.apiCallStatus.status = APICallStatusEnum.ERROR;
-        this.errorMessage = JSON.stringify(err);
-      }
-    });
-    this.store.select(nodeInfoAndNodeSettingsAndBalance).pipe(takeUntil(this.unSubs[1])).
-      subscribe((infoSettingsBalSelector: { information: GetInfo, nodeSettings: SelNodeChild, balance: Balance }) => {
-        this.information = infoSettingsBalSelector.information;
-        this.totalBalance = infoSettingsBalSelector.balance.totalBalance;
-        this.logger.info(infoSettingsBalSelector);
+    combineLatest([this.store.select(nodeInfoAndNodeSettingsAndBalance), this.dataService.listNetworkNodes('?liquidity_ads=yes')]).pipe(takeUntil(this.unSubs[0])).
+      subscribe({
+        next: ([infoSettingsBalSelector, nodeListRes]) => {
+          this.information = infoSettingsBalSelector.information;
+          this.totalBalance = infoSettingsBalSelector.balance.totalBalance;
+          this.logger.info(infoSettingsBalSelector);
+          if (nodeListRes && !(<any[]>nodeListRes).length) { nodeListRes = []; }
+          this.logger.info('Received Liquidity Ads Enabled Nodes: ' + JSON.stringify(nodeListRes));
+          this.apiCallStatus.status = APICallStatusEnum.COMPLETED;
+          this.liquidityNodesData = (<LookupNode[]>nodeListRes).filter((node) => node.nodeid !== this.information.id);
+          this.onCalculateOpeningFee();
+          this.loadLiqNodesTable(this.liquidityNodesData);
+        }, error: (err) => {
+          this.logger.error('Liquidity Ads Nodes Error: ' + JSON.stringify(err));
+          this.apiCallStatus.status = APICallStatusEnum.ERROR;
+          this.errorMessage = JSON.stringify(err);
+        }
       });
   }
 
-  onRecalculate() {
-
+  onCalculateOpeningFee() {
+    this.liquidityNodesData.forEach((lqNode) => {
+      if (lqNode.option_will_fund) {
+        lqNode.channelOpeningFee = (+(lqNode.option_will_fund.lease_fee_base_msat) / 1000) + (this.channelAmount * (+lqNode.option_will_fund.lease_fee_basis) / 10000) + ((+lqNode.option_will_fund.funding_weight / 4) * this.channelOpeningFeeRate);
+      }
+    });
+    if (this.paginator) { this.paginator.firstPage(); }
   }
 
-  onFilter() {
-    this.liquidityNodes.filter = 'Changed';
-  }
+  // onFilter() {
+  //   this.liquidityNodes.filter = 'Changed';
+  // }
 
   loadLiqNodesTable(liqNodes: LookupNode[]) {
     this.liquidityNodes = new MatTableDataSource<LookupNode>([...liqNodes]);
     this.liquidityNodes.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.liquidityNodes.sort = this.sort;
-    this.liquidityNodes.filterPredicate = (node: LookupNode, fltr: string) => node.channelCount >= this.channelCount && node.nodeCapacity >= this.nodeCapacity;
     this.liquidityNodes.paginator = this.paginator;
-    this.onFilter();
+    if (this.sort) { this.sort.sort({ id: 'channelOpeningFee', start: 'asc', disableClear: true }); }
+    // this.liquidityNodes.filterPredicate = (node: LookupNode, fltr: string) => node.channelCount >= this.channelCount && node.nodeCapacity >= this.nodeCapacity;
+    // this.onFilter();
   }
 
   onOpenChannel(lqNode: LookupNode) {
@@ -143,10 +152,9 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
       [{ key: 'nodeid', value: lqNode.nodeid, title: 'Node ID', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'base_fee', value: (lqNode.option_will_fund.lease_fee_base_msat / 1000), title: 'Lease Base Fee (Sats)', width: 50, type: DataTypeEnum.NUMBER },
       { key: 'fee_basis', value: lqNode.option_will_fund.lease_fee_basis, title: 'Lease Base Basis (bps)', width: 50, type: DataTypeEnum.NUMBER }],
-      [{ key: 'lease_fee_rate', value: '-000', title: 'Lease Fee Rate (ppm)', width: 50, type: DataTypeEnum.NUMBER },
-      { key: 'funding_rate', value: lqNode.option_will_fund.funding_weight, title: 'Channel Open Funding Rate', width: 50, type: DataTypeEnum.NUMBER }],
-      [{ key: 'channel_max_base', value: (lqNode.option_will_fund.channel_fee_max_base_msat / 1000), title: 'Max Channel Routing Base Fee (Sats)', width: 50, type: DataTypeEnum.NUMBER },
-      { key: 'channel_max_rate', value: lqNode.option_will_fund.channel_fee_max_proportional_thousandths, title: 'Max Channel Routing Fee Rate (ppm)', width: 50, type: DataTypeEnum.NUMBER }],
+      [{ key: 'channel_max_base', value: lqNode.option_will_fund.channel_fee_max_base_msat / 1000, title: 'Max Channel Routing Base Fee (Sats)', width: 50, type: DataTypeEnum.NUMBER },
+      { key: 'channel_max_rate', value: lqNode.option_will_fund.channel_fee_max_proportional_thousandths * 1000, title: 'Max Channel Routing Fee Rate (ppm)', width: 50, type: DataTypeEnum.NUMBER }],
+      [{ key: 'funding_rate', value: lqNode.option_will_fund.funding_weight, title: 'Funding Weight', width: 100, type: DataTypeEnum.NUMBER }],
       [{ key: 'address', value: addArr, title: 'Address', width: 100, type: DataTypeEnum.ARRAY }]
     ];
     this.store.dispatch(openConfirmation({
@@ -160,7 +168,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
         }
       }
     }));
-    this.rtlEffects.closeConfirm.pipe(takeUntil(this.unSubs[2])).subscribe((confirmRes) => {
+    this.rtlEffects.closeConfirm.pipe(takeUntil(this.unSubs[1])).subscribe((confirmRes) => {
       if (confirmRes) {
         this.onOpenChannel(lqNode);
       }
@@ -171,11 +179,6 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
     if (this.liquidityNodes.data && this.liquidityNodes.data.length > 0) {
       this.commonService.downloadFile(this.liquidityNodes.data, 'LiquidityNodes');
     }
-  }
-
-  onReset() {
-    this.channelAmount = 0;
-    this.channelOpeningFeeRate = 0;
   }
 
   onFilterReset() {

@@ -63,14 +63,19 @@ export class CLNOpenLiquidityChannelComponent implements OnInit, OnDestroy {
     this.form.controls.ramount.setValue(this.data.message.requestedAmount);
     this.form.controls.feerate.setValue(this.data.message.feeRate);
     this.form.controls.lamount.setValue(this.data.message.localAmount);
+    this.calculateFee();
     this.channelConnectionError = '';
   }
 
+  calculateFee() {
+    this.node.channelOpeningFee = (+(this.node.option_will_fund.lease_fee_base_msat) / 1000) + (this.requestedAmount * (+this.node.option_will_fund.lease_fee_basis) / 10000) + ((+this.node.option_will_fund.funding_weight / 4) * this.feeRate);
+  }
+
   onOpenChannel(): boolean | void {
-    if (!this.node || !this.requestedAmount || !this.feeRate || !this.localAmount) {
+    if (!this.node || !this.node.option_will_fund || !this.requestedAmount || !this.feeRate || !this.localAmount) {
       return true;
     }
-    const newChannel = { peerId: this.node.nodeid, satoshis: this.requestedAmount.toString(), announce: false, feeRate: this.feeRate + 'perkb' };
+    const newChannel = { peerId: this.node.nodeid, satoshis: this.localAmount.toString(), feeRate: this.feeRate + 'perkb', requestAmount: this.requestedAmount.toString(), compactLease: this.node.option_will_fund.compact_lease };
     this.store.dispatch(saveNewChannel({ payload: newChannel }));
   }
 

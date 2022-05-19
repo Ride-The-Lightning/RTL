@@ -31,7 +31,36 @@ describe('CLNOpenLiquidityChannelComponent', () => {
         CommonService,
         { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: { message: {} } }
+        {
+          provide: MAT_DIALOG_DATA, useValue: {
+            message: {
+              node: {
+                nodeid: '0263983b2261d6ad9e2e134c1aa60d0c82d47c1c16b876a096a38d4f283fc236dc',
+                alias: 'blyte c-lightning',
+                color: '026398',
+                last_timestamp: 1640062643,
+                features: '800088282a6aa2',
+                addresses: [
+                  {
+                    type: 'ipv4',
+                    address: '172.105.98.46',
+                    port: 9747
+                  }
+                ],
+                option_will_fund: {
+                  lease_fee_base_msat: '20000000',
+                  lease_fee_basis: 50,
+                  funding_weight: 666,
+                  channel_fee_max_base_msat: '0',
+                  channel_fee_max_proportional_thousandths: 1,
+                  compact_lease: '029a0032000100004e20'
+                },
+                channelOpeningFee: 22165
+              },
+              balance: 100000, requestedAmount: 20000, feeRate: 10, localAmount: 20000
+            }
+          }
+        }
       ]
     }).
       compileComponents();
