@@ -4,19 +4,19 @@ import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { LocalFailedEvent } from '../../../shared/models/clnModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, CLNFailReason } from '../../../shared/services/consts-enums-functions';
+import { ListForwards, LocalFailedEvent } from '../../../shared/models/clnModels';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, CLNFailReason, CLNForwardingEventsStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
-import { getLocalFailedForwardingHistory } from '../../store/cln.actions';
+import { getForwardingHistory } from '../../store/cln.actions';
 import { localFailedForwardingHistory } from '../../store/cln.selector';
 
 @Component({
@@ -38,6 +38,9 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
   public failedLocalForwardingEvents: any;
   public flgSticky = false;
   public selFilter = '';
+  private firstOffset = -1;
+  private lastOffset = -1;
+  public totalLocalFailedTransactions = 0;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -63,15 +66,18 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
   ngOnInit() {
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     this.router.onSameUrlNavigation = 'reload';
-    this.store.dispatch(getLocalFailedForwardingHistory());
+    this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.LOCAL_FAILED, maxLen: this.pageSize, offset: 0, reverse: true } }));
     this.store.select(localFailedForwardingHistory).pipe(takeUntil(this.unSubs[0])).
-      subscribe((lffhSeletor: { localFailedForwardingHistory: LocalFailedEvent[], apiCallStatus: ApiCallStatusPayload }) => {
+      subscribe((lffhSeletor: { localFailedForwardingHistory: ListForwards, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = lffhSeletor.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.failedLocalEvents = lffhSeletor.localFailedForwardingHistory || [];
+        this.totalLocalFailedTransactions = lffhSeletor.localFailedForwardingHistory.totalEvents;
+        this.firstOffset = lffhSeletor.localFailedForwardingHistory.firstIndexOffset;
+        this.lastOffset = lffhSeletor.localFailedForwardingHistory.lastIndexOffset;
+        this.failedLocalEvents = lffhSeletor.localFailedForwardingHistory.listForwards || [];
         if (this.failedLocalEvents.length > 0 && this.sort && this.paginator) {
           this.loadLocalfailedLocalEventsTable(this.failedLocalEvents);
         }
@@ -135,6 +141,26 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
 
   applyFilter() {
     this.failedLocalForwardingEvents.filter = this.selFilter.trim().toLowerCase();
+  }
+
+  onPageChange(event: PageEvent) {
+    let reverse = true;
+    let index_offset = this.lastOffset;
+    this.pageSize = event.pageSize;
+    if (event.pageIndex === 0) {
+      reverse = true;
+      index_offset = 0;
+    } else if (event.pageIndex < event.previousPageIndex) {
+      reverse = false;
+      index_offset = this.lastOffset;
+    } else if (event.pageIndex > event.previousPageIndex && (event.length > ((event.pageIndex + 1) * event.pageSize))) {
+      reverse = true;
+      index_offset = this.firstOffset;
+    } else if (event.length <= ((event.pageIndex + 1) * event.pageSize)) {
+      reverse = false;
+      index_offset = 0;
+    }
+    this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.LOCAL_FAILED, maxLen: event.pageSize, offset: index_offset, reverse: reverse } }));
   }
 
   ngOnDestroy() {

@@ -2,11 +2,12 @@ import { createReducer, on } from '@ngrx/store';
 import { initCLNState } from './cln.state';
 import {
   addInvoice, addPeer, removeChannel, removePeer, resetCLStore, setBalance, setChannels,
-  setChildNodeSettingsCL, setFailedForwardingHistory, setLocalFailedForwardingHistory, setFeeRates, setFees, setForwardingHistory,
+  setChildNodeSettingsCL, setFeeRates, setFees, setForwardingHistory,
   setInfo, setInvoices, setLocalRemoteBalance, setOffers, addOffer, setPayments, setPeers, setUTXOs,
   updateCLAPICallStatus, updateInvoice, updateOffer, setOfferBookmarks, addUpdateOfferBookmark, removeOfferBookmark
 } from './cln.actions';
 import { Channel, OfferBookmark } from '../../shared/models/clnModels';
+import { CLNForwardingEventsStatusEnum } from '../../shared/services/consts-enums-functions';
 
 export const CLNReducer = createReducer(initCLNState,
   on(updateCLAPICallStatus, (state, { payload }) => {
@@ -107,31 +108,31 @@ export const CLNReducer = createReducer(initCLNState,
     payments: payload
   })),
   on(setForwardingHistory, (state, { payload }) => {
-    const modifiedFeeWithTxCount = state.fees;
     const storedChannels = [...state.activeChannels, ...state.pendingChannels, ...state.inactiveChannels];
-    payload = mapAliases(payload, storedChannels);
-    modifiedFeeWithTxCount.totalTxCount = payload.length;
-    return {
-      ...state,
-      fee: modifiedFeeWithTxCount,
-      forwardingHistory: payload
-    };
-  }),
-  on(setFailedForwardingHistory, (state, { payload }) => {
-    const storedChannels = [...state.activeChannels, ...state.pendingChannels, ...state.inactiveChannels];
-    payload = mapAliases(payload, storedChannels);
-    return {
-      ...state,
-      failedForwardingHistory: payload
-    };
-  }),
-  on(setLocalFailedForwardingHistory, (state, { payload }) => {
-    const storedChannels = [...state.activeChannels, ...state.pendingChannels, ...state.inactiveChannels];
-    payload = mapAliases(payload, storedChannels);
-    return {
-      ...state,
-      localFailedForwardingHistory: payload
-    };
+    const forwardsWithAlias = mapAliases(payload.response.listForwards, storedChannels);
+    payload.response.listForwards = forwardsWithAlias;
+    switch (payload.status) {
+      case CLNForwardingEventsStatusEnum.SETTLED:
+        const modifiedFeeWithTxCount = state.fees;
+        modifiedFeeWithTxCount.totalTxCount = payload.response.totalEvents | 0;
+        return {
+          ...state,
+          fee: modifiedFeeWithTxCount,
+          forwardingHistory: payload.response
+        };
+      case CLNForwardingEventsStatusEnum.FAILED:
+        return {
+          ...state,
+          failedForwardingHistory: payload.response
+        };
+      case CLNForwardingEventsStatusEnum.LOCAL_FAILED:
+        return {
+          ...state,
+          localFailedForwardingHistory: payload.response
+        };
+      default:
+        return { ...state };
+    }
   }),
   on(addInvoice, (state, { payload }) => {
     const newInvoices = state.invoices;

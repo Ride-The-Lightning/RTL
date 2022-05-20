@@ -65,7 +65,8 @@ export const listNodes = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'List Nodes..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.ln_server_url + '/v1/network/listNodes' + (req.query !== {} ? (JSON.stringify(req.query).replace('{', '?').replace('}', '').replace(/:/g, '=').replace(/,/g, '&').replace(/"/g, '')) : '');
+  const queryStr = req.query.liquidity_ads ? '?liquidity_ads=' + req.query.liquidity_ads : '';
+  options.url = req.session.selectedNode.ln_server_url + '/v1/network/listNodes' + queryStr;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Network', msg: 'List Nodes URL' + options.url });
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'List Nodes Finished', data: body });

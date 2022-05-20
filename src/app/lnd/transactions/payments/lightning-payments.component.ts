@@ -259,7 +259,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   onPageChange(event: any) {
     let reverse = true;
     let index_offset = this.lastOffset;
-    let page_size = event.pageSize;
+    this.pageSize = event.pageSize;
     if (event.pageIndex === 0) {
       reverse = true;
       index_offset = 0;
@@ -272,7 +272,6 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
     } else if (event.length <= ((event.pageIndex + 1) * event.pageSize)) {
       reverse = false;
       index_offset = 0;
-      page_size = event.length - (event.pageIndex * event.pageSize);
     }
     const starting_index = event.pageIndex * this.pageSize;
     this.loadPaymentsTable(this.paymentJSONArr.slice(starting_index, (starting_index + this.pageSize)));

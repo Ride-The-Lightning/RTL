@@ -1,6 +1,6 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { APICallStatusEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ForwardingEvent, ListInvoices, UTXO, Offer, OfferBookmark, LocalFailedEvent } from '../../shared/models/clnModels';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ListInvoices, UTXO, Offer, OfferBookmark, ListForwards } from '../../shared/models/clnModels';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 
 export interface CLNState {
@@ -17,9 +17,9 @@ export interface CLNState {
   pendingChannels: Channel[];
   inactiveChannels: Channel[];
   payments: Payment[];
-  forwardingHistory: ForwardingEvent[];
-  failedForwardingHistory: ForwardingEvent[];
-  localFailedForwardingHistory: LocalFailedEvent[];
+  forwardingHistory: ListForwards;
+  failedForwardingHistory: ListForwards;
+  localFailedForwardingHistory: ListForwards;
   invoices: ListInvoices;
   utxos: UTXO[];
   offers: Offer[];
@@ -57,9 +57,9 @@ export const initCLNState: CLNState = {
   pendingChannels: [],
   inactiveChannels: [],
   payments: [],
-  forwardingHistory: [],
-  failedForwardingHistory: [],
-  localFailedForwardingHistory: [],
+  forwardingHistory: {},
+  failedForwardingHistory: {},
+  localFailedForwardingHistory: {},
   invoices: { invoices: [] },
   utxos: [],
   offers: [],

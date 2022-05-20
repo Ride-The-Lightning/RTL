@@ -7,7 +7,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
-import { ForwardingEvent, RoutingPeer } from '../../../shared/models/clnModels';
+import { ForwardingEvent, ListForwards, RoutingPeer } from '../../../shared/models/clnModels';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -66,14 +66,14 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
 
   ngOnInit() {
     this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[0])).
-      subscribe((fhSeletor: { forwardingHistory: ForwardingEvent[], apiCallStatus: ApiCallStatusPayload }) => {
+      subscribe((fhSeletor: { forwardingHistory: ListForwards, apiCallStatus: ApiCallStatusPayload }) => {
         if (this.eventsData.length <= 0) {
           this.errorMessage = '';
           this.apiCallStatus = fhSeletor.apiCallStatus;
           if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
             this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
           }
-          this.successfulEvents = fhSeletor.forwardingHistory || [];
+          this.successfulEvents = fhSeletor.forwardingHistory.listForwards || [];
           if (this.successfulEvents.length > 0 && this.sortIn && this.paginatorIn && this.sortOut && this.paginatorOut) {
             this.loadRoutingPeersTable(this.successfulEvents);
           }

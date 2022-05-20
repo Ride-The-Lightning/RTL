@@ -624,3 +624,9 @@ export const LADS_POLICY = [
   { id: 'available', placeholder: 'Policy Available (%age)', min: 0, max: 100 },
   { id: 'fixed', placeholder: 'Fixed Policy (Sats)', min: 0, max: 100 }
 ];
+
+export enum CLNForwardingEventsStatusEnum {
+  SETTLED = 'settled',
+  FAILED = 'failed',
+  LOCAL_FAILED = 'local_failed'
+}

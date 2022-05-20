@@ -141,3 +141,27 @@ export const funderUpdatePolicy = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
+export const listForwardsPaginated = (req, res, next) => {
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Getting Paginated List Forwards..' });
+    options = common.getOptions(req);
+    if (options.error) {
+        return res.status(options.statusCode).json({ message: options.message, error: options.error });
+    }
+    let queryStr = '';
+    if (req.query && Object.keys(req.query).length > 0) {
+        queryStr = req.query.status ? '&status=' + req.query.status : '';
+        queryStr = req.query.maxLen ? (queryStr + '&maxLen=' + req.query.maxLen) : '';
+        queryStr = req.query.offset ? (queryStr + '&offset=' + req.query.offset) : '';
+        queryStr = req.query.reverse ? (queryStr + '&reverse=' + req.query.reverse) : '';
+        queryStr = queryStr.replace('&', '?');
+    }
+    options.url = req.session.selectedNode.ln_server_url + '/v1/channel/listForwardsFilter' + queryStr;
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Paginated Forwarding History url' + options.url });
+    request.get(options).then((body) => {
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Paginated Forwarding History Received For Status' + req.query.status, data: body });
+        res.status(200).json(body);
+    }).catch((errRes) => {
+        const err = common.handleError(errRes, 'Channels', 'Paginated Forwarding History Error', req.session.selectedNode);
+        return res.status(err.statusCode).json({ message: err.message, error: err.error });
+    });
+};
