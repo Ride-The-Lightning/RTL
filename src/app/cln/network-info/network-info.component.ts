@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { faBolt, faServer, faNetworkWired, faLink } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Fees, ChannelsStatus, FeeRates, ForwardingEvent, LocalRemoteBalance, Channel } from '../../shared/models/clnModels';
+import { GetInfo, Fees, ChannelsStatus, FeeRates, ForwardingEvent, LocalRemoteBalance, Channel, ListForwards } from '../../shared/models/clnModels';
 import { APICallStatusEnum, ScreenSizeEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../shared/services/logger.service';
@@ -122,14 +122,14 @@ export class CLNNetworkInfoComponent implements OnInit, OnDestroy {
         this.fees = feesSeletor.fees;
       });
     this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[3])).
-      subscribe((fhSeletor: { forwardingHistory: ForwardingEvent[], apiCallStatus: ApiCallStatusPayload }) => {
+      subscribe((fhSeletor: { forwardingHistory: ListForwards, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessages[4] = '';
         this.apiCallStatusFHistory = fhSeletor.apiCallStatus;
         if (this.apiCallStatusFHistory.status === APICallStatusEnum.ERROR) {
           this.errorMessages[4] = (typeof (this.apiCallStatusFHistory.message) === 'object') ? JSON.stringify(this.apiCallStatusFHistory.message) : this.apiCallStatusFHistory.message;
         }
-        if (fhSeletor.forwardingHistory && fhSeletor.forwardingHistory.length) {
-          this.fees.totalTxCount = fhSeletor.forwardingHistory.length;
+        if (fhSeletor.forwardingHistory && fhSeletor.forwardingHistory.listForwards.length) {
+          this.fees.totalTxCount = fhSeletor.forwardingHistory.listForwards.length;
         }
       });
     this.store.select(feeRatesPerKB).pipe(takeUntil(this.unSubs[4])).

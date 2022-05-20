@@ -283,6 +283,13 @@ export interface LocalFailedEvent {
   failreason?: string;
 }
 
+export interface ListForwards {
+  firstIndexOffset?: number;
+  lastIndexOffset?: number;
+  totalEvents?: number;
+  listForwards?: ForwardingEvent[] | LocalFailedEvent[];
+}
+
 export interface Routes {
   id?: string;
   channel?: string;
@@ -485,4 +492,11 @@ export interface FunderPolicy {
   funding_weight?: number;
   channel_fee_max_base_msat?: number;
   channel_fee_max_proportional_thousandths?: number;
+}
+
+export interface FetchListForwards {
+  status?: string;
+  maxLen?: number;
+  offset?: number;
+  reverse?: boolean;
 }

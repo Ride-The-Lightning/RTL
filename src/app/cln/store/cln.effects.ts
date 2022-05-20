@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Subject, of } from 'rxjs';
-import { map, mergeMap, catchError, withLatestFrom, takeUntil } from 'rxjs/operators';
+import { map, mergeMap, catchError, takeUntil } from 'rxjs/operators';
 import { Location } from '@angular/common';
 
 import { environment, API_URL } from '../../../environments/environment';
@@ -14,13 +14,13 @@ import { SessionService } from '../../shared/services/session.service';
 import { WebSocketClientService } from '../../shared/services/web-socket.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CLNInvoiceInformationComponent } from '../transactions/invoices/invoice-information-modal/invoice-information.component';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer, ForwardingEvent, OnChain, QueryRoutes, PayRequest, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, DecodePayment, SendPayment, GetQueryRoutes, ChannelLookup, FetchInvoices, Channel, OfferInvoice, Offer } from '../../shared/models/clnModels';
-import { AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLNWSEventTypeEnum, CLNActions, RTLActions } from '../../shared/services/consts-enums-functions';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer, OnChain, QueryRoutes, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, FetchInvoices, Channel, OfferInvoice, Offer, ListForwards, FetchListForwards } from '../../shared/models/clnModels';
+import { AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLNWSEventTypeEnum, CLNActions, RTLActions, CLNForwardingEventsStatusEnum } from '../../shared/services/consts-enums-functions';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 
 import { RTLState } from '../../store/rtl.state';
-import { addUpdateOfferBookmark, fetchBalance, fetchChannels, fetchFeeRates, fetchFees, fetchInvoices, fetchLocalRemoteBalance, fetchPayments, fetchPeers, fetchUTXOs, getForwardingHistory, setFailedForwardingHistory, setLookup, setPeers, setQueryRoutes, updateCLAPICallStatus, updateInvoice, setOfferInvoice, sendPaymentStatus } from './cln.actions';
-import { allAPIsCallStatus, clnNodeInformation } from './cln.selector';
+import { addUpdateOfferBookmark, fetchBalance, fetchChannels, fetchFeeRates, fetchFees, fetchInvoices, fetchLocalRemoteBalance, fetchPayments, fetchPeers, fetchUTXOs, getForwardingHistory, setLookup, setPeers, setQueryRoutes, updateCLAPICallStatus, updateInvoice, setOfferInvoice, sendPaymentStatus } from './cln.actions';
+import { allAPIsCallStatus } from './cln.selector';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 import { CLNOfferInformationComponent } from '../transactions/offers/offer-information-modal/offer-information.component';
 
@@ -326,7 +326,7 @@ export class CLNEffects implements OnDestroy {
     map((channels: Channel[]) => {
       this.logger.info(channels);
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchChannels', status: APICallStatusEnum.COMPLETED } }));
-      this.store.dispatch(getForwardingHistory({ payload: { status: 'settled' } }));
+      this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.SETTLED, maxLen: 10, offset: 0, reverse: true } }));
       const sortedChannels = { activeChannels: [], pendingChannels: [], inactiveChannels: [] };
       channels.forEach((channel) => {
         if (channel.state === 'CHANNELD_NORMAL') {
@@ -654,100 +654,28 @@ export class CLNEffects implements OnDestroy {
 
   fetchForwardingHistoryCL = createEffect(() => this.actions.pipe(
     ofType(CLNActions.GET_FORWARDING_HISTORY_CLN),
-    withLatestFrom(this.store.select(clnNodeInformation)),
-    mergeMap(([action, nodeInfo]: [{ type: string, payload: { status: string } }, GetInfo]) => {
-      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchForwardingHistory', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=' + action.payload.status).
-        pipe(
-          map((fhRes: any) => {
-            this.logger.info(fhRes);
-            this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchForwardingHistory', status: APICallStatusEnum.COMPLETED } }));
-            const isNewerVersion = (nodeInfo.api_version) ? this.commonService.isVersionCompatible(nodeInfo.api_version, '0.5.0') : false;
-            if (!isNewerVersion) {
-              const filteredLocalFailedEvents = [];
-              const filteredFailedEvents = [];
-              const filteredSuccesfulEvents = [];
-              fhRes.forEach((event: ForwardingEvent) => {
-                if (event.status === 'settled') {
-                  filteredSuccesfulEvents.push(event);
-                } else if (event.status === 'failed') {
-                  filteredFailedEvents.push(event);
-                } else if (event.status === 'local_failed') {
-                  filteredLocalFailedEvents.push(event);
-                }
-              });
-              fhRes = JSON.parse(JSON.stringify(filteredSuccesfulEvents));
-              if (action.payload.status === 'failed') {
-                this.store.dispatch(setFailedForwardingHistory({ payload: filteredFailedEvents }));
-              }
-              if (action.payload.status === 'local_failed') {
-                this.store.dispatch(setFailedForwardingHistory({ payload: filteredLocalFailedEvents }));
-              }
-            }
-            return {
-              type: CLNActions.SET_FORWARDING_HISTORY_CLN,
-              payload: fhRes
-            };
-          }),
-          catchError((err: any) => {
-            this.handleErrorWithAlert('FetchForwardingHistory', UI_MESSAGES.NO_SPINNER, 'Get Forwarding History Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=' + action.payload.status, err);
-            return of({ type: RTLActions.VOID });
-          })
-        );
+    mergeMap((action: { type: string, payload: FetchListForwards }) => {
+      const status = (action.payload.status) ? action.payload.status : 'settled';
+      const maxLen = (action.payload.maxLen) ? action.payload.maxLen : 100;
+      const offset = (action.payload.offset) ? action.payload.offset : 0;
+      const reverse = (action.payload.reverse) ? action.payload.reverse : false;
+      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchForwardingHistory' + status, status: APICallStatusEnum.INITIATED } }));
+      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listForwardsPaginated?status=' + status + '&maxLen=' + maxLen + '&offset=' + offset + '&reverse=' + reverse).pipe(
+        map((fhRes: ListForwards) => {
+          this.logger.info(fhRes);
+          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchForwardingHistory' + status, status: APICallStatusEnum.COMPLETED } }));
+          return {
+            type: CLNActions.SET_FORWARDING_HISTORY_CLN,
+            payload: { status: status, response: fhRes }
+          };
+        }),
+        catchError((err: any) => {
+          this.handleErrorWithAlert('FetchForwardingHistory' + status, UI_MESSAGES.NO_SPINNER, 'Get ' + status + ' Forwarding History Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/listForwardsPaginated?status=' + status, err);
+          return of({ type: RTLActions.VOID });
+        })
+      );
     })
   ));
-
-  fetchFailedForwardingHistoryCL = createEffect(() => this.actions.pipe(
-    ofType(CLNActions.GET_FAILED_FORWARDING_HISTORY_CLN),
-    withLatestFrom(this.store.select(clnNodeInformation)),
-    mergeMap(([action, nodeInfo]: [{ type: string, payload: any }, GetInfo]) => {
-      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchFailedForwardingHistory', status: APICallStatusEnum.INITIATED } }));
-      // For backwards compatibility < 0.5.0 START
-      const isNewerVersion = (nodeInfo.api_version) ? this.commonService.isVersionCompatible(nodeInfo.api_version, '0.5.0') : false;
-      if (!isNewerVersion) {
-        this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchFailedForwardingHistory', status: APICallStatusEnum.COMPLETED } }));
-        return of({ type: RTLActions.VOID });
-      } // For backwards compatibility < 0.5.0 END
-      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=failed').
-        pipe(map((ffhRes: any) => {
-          this.logger.info(ffhRes);
-          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchFailedForwardingHistory', status: APICallStatusEnum.COMPLETED } }));
-          return {
-            type: CLNActions.SET_FAILED_FORWARDING_HISTORY_CLN,
-            payload: ffhRes
-          };
-        }), catchError((err) => {
-          this.handleErrorWithAlert('FetchFailedForwardingHistory', UI_MESSAGES.NO_SPINNER, 'Get Failed Forwarding History Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=failed', err);
-          return of({ type: RTLActions.VOID });
-        }));
-    }))
-  );
-
-  fetchLocalFailedForwardingHistoryCL = createEffect(() => this.actions.pipe(
-    ofType(CLNActions.GET_LOCAL_FAILED_FORWARDING_HISTORY_CLN),
-    withLatestFrom(this.store.select(clnNodeInformation)),
-    mergeMap(([action, nodeInfo]: [{ type: string, payload: any }, GetInfo]) => {
-      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchLocalFailedForwardingHistory', status: APICallStatusEnum.INITIATED } }));
-      // For backwards compatibility < 0.5.0 START
-      const isNewerVersion = (nodeInfo.api_version) ? this.commonService.isVersionCompatible(nodeInfo.api_version, '0.5.0') : false;
-      if (!isNewerVersion) {
-        this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchLocalFailedForwardingHistory', status: APICallStatusEnum.COMPLETED } }));
-        return of({ type: RTLActions.VOID });
-      } // For backwards compatibility < 0.5.0 END
-      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=local_failed').
-        pipe(map((lffhRes: any) => {
-          this.logger.info(lffhRes);
-          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchLocalFailedForwardingHistory', status: APICallStatusEnum.COMPLETED } }));
-          return {
-            type: CLNActions.SET_LOCAL_FAILED_FORWARDING_HISTORY_CLN,
-            payload: lffhRes
-          };
-        }), catchError((err) => {
-          this.handleErrorWithAlert('FetchLocalFailedForwardingHistory', UI_MESSAGES.NO_SPINNER, 'Get Local Failed Forwarding History Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=local_failed', err);
-          return of({ type: RTLActions.VOID });
-        }));
-    }))
-  );
 
   deleteExpiredInvoiceCL = createEffect(() => this.actions.pipe(
     ofType(CLNActions.DELETE_EXPIRED_INVOICE_CLN),

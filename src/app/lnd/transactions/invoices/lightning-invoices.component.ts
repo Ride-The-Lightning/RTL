@@ -58,7 +58,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   private firstOffset = -1;
   private lastOffset = -1;
-  public totalInvoices = 100;
+  public totalInvoices = 0;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
@@ -179,7 +179,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   onPageChange(event: PageEvent) {
     let reverse = true;
     let index_offset = this.lastOffset;
-    let page_size = event.pageSize;
+    this.pageSize = event.pageSize;
     if (event.pageIndex === 0) {
       reverse = true;
       index_offset = 0;
@@ -192,7 +192,6 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
     } else if (event.length <= ((event.pageIndex + 1) * event.pageSize)) {
       reverse = false;
       index_offset = 0;
-      page_size = event.length - (event.pageIndex * event.pageSize);
     }
     this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: event.pageSize, index_offset: index_offset, reversed: reverse } }));
   }
