@@ -284,9 +284,9 @@ export interface LocalFailedEvent {
 }
 
 export interface ListForwards {
-  firstIndexOffset?: number;
-  lastIndexOffset?: number;
-  totalEvents?: number;
+  offset?: number;
+  maxLen?: number;
+  totalForwards?: number;
   listForwards?: ForwardingEvent[] | LocalFailedEvent[];
 }
 
@@ -498,5 +498,4 @@ export interface FetchListForwards {
   status?: string;
   maxLen?: number;
   offset?: number;
-  reverse?: boolean;
 }

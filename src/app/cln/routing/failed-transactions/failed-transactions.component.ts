@@ -37,8 +37,7 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
   public failedForwardingEvents: any;
   public flgSticky = false;
   public selFilter = '';
-  private firstOffset = -1;
-  private lastOffset = -1;
+  private indexOffset = -1;
   public totalFailedTransactions = 0;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -65,7 +64,7 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
   ngOnInit() {
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     this.router.onSameUrlNavigation = 'reload';
-    this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.FAILED, maxLen: this.pageSize, offset: 0, reverse: true } }));
+    this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.FAILED, maxLen: this.pageSize, offset: 0 } }));
     this.store.select(failedForwardingHistory).pipe(takeUntil(this.unSubs[0])).
       subscribe((ffhSeletor: { failedForwardingHistory: ListForwards, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
@@ -73,9 +72,8 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.totalFailedTransactions = ffhSeletor.failedForwardingHistory.totalEvents;
-        this.firstOffset = ffhSeletor.failedForwardingHistory.firstIndexOffset;
-        this.lastOffset = ffhSeletor.failedForwardingHistory.lastIndexOffset;
+        this.totalFailedTransactions = ffhSeletor.failedForwardingHistory.totalForwards;
+        this.indexOffset = ffhSeletor.failedForwardingHistory.offset;
         this.failedEvents = ffhSeletor.failedForwardingHistory.listForwards || [];
         if (this.failedEvents.length > 0 && this.sort && this.paginator) {
           this.loadFailedEventsTable(this.failedEvents);
@@ -142,23 +140,13 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
   }
 
   onPageChange(event: PageEvent) {
-    let reverse = true;
-    let index_offset = this.lastOffset;
-    this.pageSize = event.pageSize;
-    if (event.pageIndex === 0) {
-      reverse = true;
-      index_offset = 0;
-    } else if (event.pageIndex < event.previousPageIndex) {
-      reverse = false;
-      index_offset = this.lastOffset;
-    } else if (event.pageIndex > event.previousPageIndex && (event.length > ((event.pageIndex + 1) * event.pageSize))) {
-      reverse = true;
-      index_offset = this.firstOffset;
-    } else if (event.length <= ((event.pageIndex + 1) * event.pageSize)) {
-      reverse = false;
-      index_offset = 0;
+    if (this.pageSize !== event.pageSize) {
+      this.pageSize = event.pageSize;
+      this.indexOffset = 0;
+    } else {
+      this.indexOffset = event.pageIndex * this.pageSize;
     }
-    this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.FAILED, maxLen: event.pageSize, offset: index_offset, reverse: reverse } }));
+    this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.FAILED, maxLen: this.pageSize, offset: this.indexOffset } }));
   }
 
   ngOnDestroy() {
