@@ -17,13 +17,13 @@ export const utxos = createSelector(clnState, (state: CLNState) => ({ utxos: sta
 export const channels = createSelector(clnState, (state: CLNState) => ({ activeChannels: state.activeChannels, pendingChannels: state.pendingChannels, inactiveChannels: state.inactiveChannels, apiCallStatus: state.apisCallStatus.FetchChannels }));
 export const balance = createSelector(clnState, (state: CLNState) => ({ balance: state.balance, apiCallStatus: state.apisCallStatus.FetchBalance }));
 export const localRemoteBalance = createSelector(clnState, (state: CLNState) => ({ localRemoteBalance: state.localRemoteBalance, apiCallStatus: state.apisCallStatus.FetchLocalRemoteBalance }));
-export const forwardingHistory = createSelector(clnState, (state: CLNState) => ({ forwardingHistory: state.forwardingHistory, apiCallStatus: state.apisCallStatus.FetchForwardingHistory }));
-export const failedForwardingHistory = createSelector(clnState, (state: CLNState) => ({ failedForwardingHistory: state.failedForwardingHistory, apiCallStatus: state.apisCallStatus.FetchFailedForwardingHistory }));
-export const localFailedForwardingHistory = createSelector(clnState, (state: CLNState) => ({ localFailedForwardingHistory: state.localFailedForwardingHistory, apiCallStatus: state.apisCallStatus.FetchLocalFailedForwardingHistory }));
+export const forwardingHistory = createSelector(clnState, (state: CLNState) => ({ forwardingHistory: state.forwardingHistory, apiCallStatus: state.apisCallStatus.FetchForwardingHistoryS }));
+export const failedForwardingHistory = createSelector(clnState, (state: CLNState) => ({ failedForwardingHistory: state.failedForwardingHistory, apiCallStatus: state.apisCallStatus.FetchForwardingHistoryF }));
+export const localFailedForwardingHistory = createSelector(clnState, (state: CLNState) => ({ localFailedForwardingHistory: state.localFailedForwardingHistory, apiCallStatus: state.apisCallStatus.FetchForwardingHistoryL }));
 export const nodeInfoAndNodeSettingsAndBalance = createSelector(clnState, (state: CLNState) => ({ information: state.information, nodeSettings: state.nodeSettings, balance: state.balance }));
 export const nodeInfoAndBalanceAndNumPeers = createSelector(clnState, (state: CLNState) => ({ information: state.information, balance: state.balance, numPeers: state.peers.length }));
 export const nodeInfoAndBalance = createSelector(clnState, (state: CLNState) => ({ information: state.information, balance: state.balance }));
-export const nodeInfoAndNodeSettingsAndAPIsStatus = createSelector(clnState, (state: CLNState) => ({ information: state.information, nodeSettings: state.nodeSettings, apisCallStatus: [state.apisCallStatus.FetchInfo, state.apisCallStatus.FetchForwardingHistory] }));
+export const nodeInfoAndNodeSettingsAndAPIsStatus = createSelector(clnState, (state: CLNState) => ({ information: state.information, nodeSettings: state.nodeSettings, apisCallStatus: [state.apisCallStatus.FetchInfo, state.apisCallStatus.FetchForwardingHistoryS] }));
 export const offers = createSelector(clnState, (state: CLNState) => ({ offers: state.offers, apiCallStatus: state.apisCallStatus.FetchOffers }));
 export const offerBookmarks = createSelector(clnState, (state: CLNState) => ({ offersBookmarks: state.offersBookmarks, apiCallStatus: state.apisCallStatus.FetchOfferBookmarks }));
 export const getoffer = (bolt12Str) => createSelector(clnState, (state: CLNState) => (state.offers.find((offer: Offer) => offer.bolt12 === bolt12Str)));

@@ -659,18 +659,22 @@ export class CLNEffects implements OnDestroy {
       const maxLen = (action.payload.maxLen) ? action.payload.maxLen : 100;
       const offset = (action.payload.offset) ? action.payload.offset : 0;
       const reverse = (action.payload.reverse) ? action.payload.reverse : false;
-      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchForwardingHistory' + status, status: APICallStatusEnum.INITIATED } }));
+      const statusInitial = status.charAt(0).toUpperCase();
+      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchForwardingHistory' + statusInitial, status: APICallStatusEnum.INITIATED } }));
       return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listForwardsPaginated?status=' + status + '&maxLen=' + maxLen + '&offset=' + offset + '&reverse=' + reverse).pipe(
         map((fhRes: ListForwards) => {
           this.logger.info(fhRes);
-          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchForwardingHistory' + status, status: APICallStatusEnum.COMPLETED } }));
+          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchForwardingHistory' + statusInitial, status: APICallStatusEnum.COMPLETED } }));
+          if (reverse && offset === 0) {
+            fhRes['totalEvents'] = +fhRes.lastIndexOffset | 0;
+          }
           return {
             type: CLNActions.SET_FORWARDING_HISTORY_CLN,
             payload: { status: status, response: fhRes }
           };
         }),
         catchError((err: any) => {
-          this.handleErrorWithAlert('FetchForwardingHistory' + status, UI_MESSAGES.NO_SPINNER, 'Get ' + status + ' Forwarding History Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/listForwardsPaginated?status=' + status, err);
+          this.handleErrorWithAlert('FetchForwardingHistory' + statusInitial, UI_MESSAGES.NO_SPINNER, 'Get ' + status + ' Forwarding History Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/listForwardsPaginated?status=' + status, err);
           return of({ type: RTLActions.VOID });
         })
       );

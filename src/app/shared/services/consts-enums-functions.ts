@@ -626,6 +626,7 @@ export const LADS_POLICY = [
 ];
 
 export enum CLNForwardingEventsStatusEnum {
+  OFFERED = 'offered',
   SETTLED = 'settled',
   FAILED = 'failed',
   LOCAL_FAILED = 'local_failed'

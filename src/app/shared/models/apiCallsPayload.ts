@@ -54,9 +54,9 @@ export interface ApiCallsListCL {
   FetchPeers: ApiCallStatusPayload;
   FetchUTXOs: ApiCallStatusPayload;
   FetchPayments: ApiCallStatusPayload;
-  FetchForwardingHistory: ApiCallStatusPayload;
-  FetchFailedForwardingHistory: ApiCallStatusPayload;
-  FetchLocalFailedForwardingHistory: ApiCallStatusPayload;
+  FetchForwardingHistoryS: ApiCallStatusPayload;
+  FetchForwardingHistoryF: ApiCallStatusPayload;
+  FetchForwardingHistoryL: ApiCallStatusPayload;
   FetchOffers: ApiCallStatusPayload;
   FetchOfferBookmarks: ApiCallStatusPayload;
 }

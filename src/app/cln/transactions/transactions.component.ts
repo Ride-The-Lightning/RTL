@@ -41,7 +41,6 @@ export class CLNTransactionsComponent implements OnInit, OnDestroy {
       subscribe({
         next: (value: ResolveEnd | Event) => {
           const linkFound = this.links.find((link) => (<ResolveEnd>value).urlAfterRedirects.includes(link.link));
-
           this.activeLink = linkFound ? linkFound.link : this.links[0].link;
           this.routerUrl = (<ResolveEnd>value).urlAfterRedirects;
         }

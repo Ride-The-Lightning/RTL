@@ -24,7 +24,7 @@ import { localFailedForwardingHistory } from '../../store/cln.selector';
   templateUrl: './local-failed-transactions.component.html',
   styleUrls: ['./local-failed-transactions.component.scss'],
   providers: [
-    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Local Failed Events') }
+    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Local failed events') }
   ]
 })
 export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -128,7 +128,6 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
           return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     };
-    this.failedLocalForwardingEvents.paginator = this.paginator;
     this.applyFilter();
     this.logger.info(this.failedLocalForwardingEvents);
   }
@@ -151,14 +150,15 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
       reverse = true;
       index_offset = 0;
     } else if (event.pageIndex < event.previousPageIndex) {
-      reverse = false;
-      index_offset = this.lastOffset;
-    } else if (event.pageIndex > event.previousPageIndex && (event.length > ((event.pageIndex + 1) * event.pageSize))) {
       reverse = true;
-      index_offset = this.firstOffset;
-    } else if (event.length <= ((event.pageIndex + 1) * event.pageSize)) {
-      reverse = false;
-      index_offset = 0;
+      index_offset = this.lastOffset;
+    } else if (event.pageIndex > event.previousPageIndex) {
+      reverse = true;
+      if (event.length <= (event.pageIndex + 1) * event.pageSize) {
+        index_offset = this.totalLocalFailedTransactions - (event.pageIndex * event.pageSize);
+      } else {
+        index_offset = this.firstOffset;
+      }
     }
     this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.LOCAL_FAILED, maxLen: event.pageSize, offset: index_offset, reverse: reverse } }));
   }
