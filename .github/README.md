@@ -79,6 +79,22 @@ Example RTL-Config.json:
   "multiPass": "password",
   "port": "3000",
   "defaultNodeIndex": 1,
+  "ssl": {
+    "key": null,
+    "cert": null,
+    "ca": null,
+    "altIp": "127.0.0.1",
+    "commonName": "localhost",
+    "countryName": "US",
+    "encryptionBits": 2048,
+    "stateName": "Florida",
+    "localityName": "Miami",
+    "organizationName": "RTL",
+    "organizationalUnit": "RTL",
+    "validForYears": 10,
+    "rejectUnauthorized": true,
+    "requestCert": false
+  },
   "SSO": {
     "rtlSSO": 0,
     "rtlCookiePath": "",
@@ -173,7 +189,7 @@ E.g. if the IP address of your node is 192.168.0.15 then open your browser at th
 3. Config tweaks for running RTL server and LND on separate devices on the same network can be found [here](./docs/RTL_setups.md).
 
 4. Any Other setup: **Please be advised, if you are accessing your node remotely via RTL, its critical to encrypt the communication via use of https. You can use solutions like nginx and letsencrypt or TOR to setup secure access for RTL.** 
-- Sample SSL setup guide can be found [here](./docs/RTL_SSL_setup.md)
+- RTL now supports native SSL! See config options [here](./docs/Application_configurations.md). Alternatively, you can run nginx as an SSL proxy. An example nginx SSL setup guide can be found [here](./docs/RTL_SSL_setup.md)
 - (For advanced users) A sample SSL guide to serve remote access over an encrypted Tor connection can be found [here](./docs/RTL_TOR_setup.md)
 
 ### <a name="trouble"></a>Troubleshooting

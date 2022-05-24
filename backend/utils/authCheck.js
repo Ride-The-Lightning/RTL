@@ -4,7 +4,7 @@ import { Common } from './common.js';
 import { Logger } from './logger.js';
 const common = Common;
 const logger = Logger;
-const csurfProtection = csurf({ cookie: true });
+const csurfProtection = csurf({ cookie: true, secure: Common.ssl ? true : false });
 export const isAuthenticated = (req, res, next) => {
     try {
         const token = req.headers.authorization.split(' ')[1];

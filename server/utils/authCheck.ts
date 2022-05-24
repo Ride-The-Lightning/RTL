@@ -5,7 +5,7 @@ import { Logger, LoggerService } from './logger.js';
 
 const common: CommonService = Common;
 const logger: LoggerService = Logger;
-const csurfProtection = csurf({ cookie: true });
+const csurfProtection = csurf({ cookie: true, secure: Common.ssl ? true : false });
 
 export const isAuthenticated = (req, res, next) => {
   try {
