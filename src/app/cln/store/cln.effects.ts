@@ -326,7 +326,7 @@ export class CLNEffects implements OnDestroy {
     map((channels: Channel[]) => {
       this.logger.info(channels);
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchChannels', status: APICallStatusEnum.COMPLETED } }));
-      this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.SETTLED, maxLen: 10, offset: 0, reverse: true } }));
+      this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.SETTLED, maxLen: 10, offset: 0 } }));
       const sortedChannels = { activeChannels: [], pendingChannels: [], inactiveChannels: [] };
       channels.forEach((channel) => {
         if (channel.state === 'CHANNELD_NORMAL') {
@@ -658,16 +658,12 @@ export class CLNEffects implements OnDestroy {
       const status = (action.payload.status) ? action.payload.status : 'settled';
       const maxLen = (action.payload.maxLen) ? action.payload.maxLen : 100;
       const offset = (action.payload.offset) ? action.payload.offset : 0;
-      const reverse = (action.payload.reverse) ? action.payload.reverse : false;
       const statusInitial = status.charAt(0).toUpperCase();
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchForwardingHistory' + statusInitial, status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listForwardsPaginated?status=' + status + '&maxLen=' + maxLen + '&offset=' + offset + '&reverse=' + reverse).pipe(
+      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listForwardsPaginated?status=' + status + '&maxLen=' + maxLen + '&offset=' + offset).pipe(
         map((fhRes: ListForwards) => {
           this.logger.info(fhRes);
           this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchForwardingHistory' + statusInitial, status: APICallStatusEnum.COMPLETED } }));
-          if (reverse && offset === 0) {
-            fhRes['totalEvents'] = +fhRes.lastIndexOffset | 0;
-          }
           return {
             type: CLNActions.SET_FORWARDING_HISTORY_CLN,
             payload: { status: status, response: fhRes }

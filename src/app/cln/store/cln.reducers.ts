@@ -113,28 +113,19 @@ export const CLNReducer = createReducer(initCLNState,
     payload.response.listForwards = forwardsWithAlias;
     switch (payload.status) {
       case CLNForwardingEventsStatusEnum.SETTLED:
-        if (!payload.response.totalEvents) {
-          payload.response.totalEvents = state.forwardingHistory.totalEvents | 0;
-        }
         const modifiedFeeWithTxCount = state.fees;
-        modifiedFeeWithTxCount.totalTxCount = payload.response.totalEvents | 0;
+        modifiedFeeWithTxCount.totalTxCount = payload.response.totalForwards | 0;
         return {
           ...state,
           fees: modifiedFeeWithTxCount,
           forwardingHistory: payload.response
         };
       case CLNForwardingEventsStatusEnum.FAILED:
-        if (!payload.response.totalEvents) {
-          payload.response.totalEvents = state.failedForwardingHistory.totalEvents;
-        }
         return {
           ...state,
           failedForwardingHistory: payload.response
         };
       case CLNForwardingEventsStatusEnum.LOCAL_FAILED:
-        if (!payload.response.totalEvents) {
-          payload.response.totalEvents = state.localFailedForwardingHistory.totalEvents;
-        }
         return {
           ...state,
           localFailedForwardingHistory: payload.response

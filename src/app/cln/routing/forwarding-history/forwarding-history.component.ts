@@ -36,8 +36,7 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   public displayedColumns: any[] = [];
   public forwardingHistoryEvents: any;
   public flgSticky = false;
-  private firstOffset = -1;
-  private lastOffset = -1;
+  private indexOffset = -1;
   public totalForwardedTransactions = 0;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -71,9 +70,8 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
           this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         if (this.eventsData.length <= 0 && fhSeletor.forwardingHistory.listForwards) {
-          this.totalForwardedTransactions = fhSeletor.forwardingHistory.totalEvents;
-          this.firstOffset = fhSeletor.forwardingHistory.firstIndexOffset;
-          this.lastOffset = fhSeletor.forwardingHistory.lastIndexOffset;
+          this.totalForwardedTransactions = fhSeletor.forwardingHistory.totalForwards;
+          this.indexOffset = fhSeletor.forwardingHistory.offset;
           this.successfulEvents = fhSeletor.forwardingHistory.listForwards || [];
           if (this.successfulEvents.length > 0 && this.sort && this.paginator) {
             this.loadForwardingEventsTable(this.successfulEvents);
@@ -154,23 +152,13 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   }
 
   onPageChange(event: PageEvent) {
-    let reverse = true;
-    let index_offset = this.lastOffset;
-    this.pageSize = event.pageSize;
-    if (event.pageIndex === 0) {
-      reverse = true;
-      index_offset = 0;
-    } else if (event.pageIndex < event.previousPageIndex) {
-      reverse = false;
-      index_offset = this.lastOffset;
-    } else if (event.pageIndex > event.previousPageIndex && (event.length > ((event.pageIndex + 1) * event.pageSize))) {
-      reverse = true;
-      index_offset = this.firstOffset;
-    } else if (event.length <= ((event.pageIndex + 1) * event.pageSize)) {
-      reverse = false;
-      index_offset = 0;
+    if (this.pageSize !== event.pageSize) {
+      this.pageSize = event.pageSize;
+      this.indexOffset = 0;
+    } else {
+      this.indexOffset = event.pageIndex * this.pageSize;
     }
-    this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.SETTLED, maxLen: event.pageSize, offset: index_offset, reverse: reverse } }));
+    this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.SETTLED, maxLen: this.pageSize, offset: this.indexOffset } }));
   }
 
   ngOnDestroy() {
