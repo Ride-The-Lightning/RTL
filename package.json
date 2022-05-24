@@ -12,6 +12,7 @@
     "buildfrontend": "ng build --configuration production",
     "buildbackend": "tsc --project tsconfig.json",
     "watchbackend": "tsc --project tsconfig.json --watch",
+    "formatserver": "node ./node_modules/.bin/prettier --single-quote --tab-width 2 --print-width 120 --trailing-comma none --write '{server/**/*.ts,rtl.js}'",
     "server": "set NODE_ENV=development&&nodemon ./rtl.js",
     "serverUbuntu": "NODE_ENV=development nodemon ./rtl.js",
     "testdev": "ng test --watch=true --code-coverage",
@@ -52,6 +53,7 @@
     "material-design-icons": "^3.0.1",
     "ng-qrcode": "^6.0.0",
     "ngx-perfect-scrollbar": "^10.0.1",
+    "node-forge": "^1.3.1",
     "otplib": "^12.0.1",
     "pdfmake": "^0.2.4",
     "request": "^2.88.2",
@@ -89,6 +91,7 @@
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.5.0",
     "nodemon": "~2.0.6",
+    "prettier": "^2.6.2",
     "protractor": "~7.0.0",
     "stream-browserify": "^3.0.0",
     "ts-node": "~8.3.0"
