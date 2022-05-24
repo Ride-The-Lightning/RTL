@@ -24,7 +24,7 @@ import { failedForwardingHistory } from '../../store/cln.selector';
   templateUrl: './failed-transactions.component.html',
   styleUrls: ['./failed-transactions.component.scss'],
   providers: [
-    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Failed Events') }
+    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Failed events') }
   ]
 })
 export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -118,7 +118,6 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
     this.failedForwardingEvents = new MatTableDataSource<ForwardingEvent>([...forwardingEvents]);
     this.failedForwardingEvents.sort = this.sort;
     this.failedForwardingEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    this.failedForwardingEvents.paginator = this.paginator;
     this.failedForwardingEvents.filterPredicate = (event: ForwardingEvent, fltr: string) => {
       const newEvent = ((event.received_time ? this.datePipe.transform(new Date(event.received_time * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') +
         (event.resolved_time ? this.datePipe.transform(new Date(event.resolved_time * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') +

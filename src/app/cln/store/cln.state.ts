@@ -39,9 +39,9 @@ export const initCLNState: CLNState = {
     FetchPeers: { status: APICallStatusEnum.UN_INITIATED },
     FetchUTXOs: { status: APICallStatusEnum.UN_INITIATED },
     FetchPayments: { status: APICallStatusEnum.UN_INITIATED },
-    FetchForwardingHistory: { status: APICallStatusEnum.UN_INITIATED },
-    FetchFailedForwardingHistory: { status: APICallStatusEnum.UN_INITIATED },
-    FetchLocalFailedForwardingHistory: { status: APICallStatusEnum.UN_INITIATED },
+    FetchForwardingHistoryS: { status: APICallStatusEnum.UN_INITIATED },
+    FetchForwardingHistoryF: { status: APICallStatusEnum.UN_INITIATED },
+    FetchForwardingHistoryL: { status: APICallStatusEnum.UN_INITIATED },
     FetchOffers: { status: APICallStatusEnum.UN_INITIATED },
     FetchOfferBookmarks: { status: APICallStatusEnum.UN_INITIATED }
   },

@@ -58,7 +58,9 @@ Ensure that the follow values are correct per your config:
 
 ```
 {
+  "multiPass": <password required for accessing RTL>,
   "port": "3000",
+  "defaultNodeIndex": 1,
   "SSO": {
     "rtlSSO": 0,
     "rtlCookiePath": "",
@@ -83,8 +85,7 @@ Ensure that the follow values are correct per your config:
         "lnServerUrl": "https://<cl-rest api server ip address>:3001"
       }
     }
-  ],
-  "multiPass": <password required for accessing RTL>
+  ]
 }
 ```
 ### <a name="start"></a>Start the server and access the app

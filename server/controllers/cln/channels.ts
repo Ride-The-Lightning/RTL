@@ -139,7 +139,7 @@ export const listForwardsPaginated = (req, res, next) => {
     queryStr = req.query.reverse ? (queryStr + '&reverse=' + req.query.reverse) : '';
     queryStr = queryStr.replace('&', '?');
   }
-  options.url = req.session.selectedNode.ln_server_url + '/v1/channel/listForwardsFilter' + queryStr;
+  options.url = req.session.selectedNode.ln_server_url + '/v1/channel/listForwardsPaginated' + queryStr;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Paginated Forwarding History url' + options.url });
   request.get(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Paginated Forwarding History Received For Status' + req.query.status, data: body });

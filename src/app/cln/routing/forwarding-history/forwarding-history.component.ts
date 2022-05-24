@@ -70,7 +70,7 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        if (this.eventsData.length <= 0) {
+        if (this.eventsData.length <= 0 && fhSeletor.forwardingHistory.listForwards) {
           this.totalForwardedTransactions = fhSeletor.forwardingHistory.totalEvents;
           this.firstOffset = fhSeletor.forwardingHistory.firstIndexOffset;
           this.lastOffset = fhSeletor.forwardingHistory.lastIndexOffset;
@@ -130,7 +130,6 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
     this.forwardingHistoryEvents = new MatTableDataSource<ForwardingEvent>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
     this.forwardingHistoryEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    this.forwardingHistoryEvents.paginator = this.paginator;
     this.forwardingHistoryEvents.filterPredicate = (event: ForwardingEvent, fltr: string) => {
       const newEvent = (event.received_time ? this.datePipe.transform(new Date(event.received_time * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() + ' ' : '') +
         (event.resolved_time ? this.datePipe.transform(new Date(event.resolved_time * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() + ' ' : '') +
