@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Subject, of } from 'rxjs';
-import { map, mergeMap, catchError, takeUntil } from 'rxjs/operators';
+import { map, mergeMap, catchError, takeUntil, withLatestFrom } from 'rxjs/operators';
 import { Location } from '@angular/common';
 
 import { environment, API_URL } from '../../../environments/environment';
@@ -14,13 +14,13 @@ import { SessionService } from '../../shared/services/session.service';
 import { WebSocketClientService } from '../../shared/services/web-socket.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CLNInvoiceInformationComponent } from '../transactions/invoices/invoice-information-modal/invoice-information.component';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer, OnChain, QueryRoutes, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, FetchInvoices, Channel, OfferInvoice, Offer, ListForwards, FetchListForwards } from '../../shared/models/clnModels';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer, OnChain, QueryRoutes, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, FetchInvoices, Channel, OfferInvoice, Offer, ListForwards, FetchListForwards, ForwardingEvent, LocalFailedEvent } from '../../shared/models/clnModels';
 import { AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLNWSEventTypeEnum, CLNActions, RTLActions, CLNForwardingEventsStatusEnum } from '../../shared/services/consts-enums-functions';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 
 import { RTLState } from '../../store/rtl.state';
-import { addUpdateOfferBookmark, fetchBalance, fetchChannels, fetchFeeRates, fetchFees, fetchInvoices, fetchLocalRemoteBalance, fetchPayments, fetchPeers, fetchUTXOs, getForwardingHistory, setLookup, setPeers, setQueryRoutes, updateCLAPICallStatus, updateInvoice, setOfferInvoice, sendPaymentStatus } from './cln.actions';
-import { allAPIsCallStatus } from './cln.selector';
+import { addUpdateOfferBookmark, fetchBalance, fetchChannels, fetchFeeRates, fetchFees, fetchInvoices, fetchLocalRemoteBalance, fetchPayments, fetchPeers, fetchUTXOs, getForwardingHistory, setLookup, setPeers, setQueryRoutes, updateCLAPICallStatus, updateInvoice, setOfferInvoice, sendPaymentStatus, setForwardingHistory } from './cln.actions';
+import { allAPIsCallStatus, clnNodeInformation } from './cln.selector';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 import { CLNOfferInformationComponent } from '../transactions/offers/offer-information-modal/offer-information.component';
 
@@ -654,20 +654,51 @@ export class CLNEffects implements OnDestroy {
 
   fetchForwardingHistoryCL = createEffect(() => this.actions.pipe(
     ofType(CLNActions.GET_FORWARDING_HISTORY_CLN),
-    mergeMap((action: { type: string, payload: FetchListForwards }) => {
+    withLatestFrom(this.store.select(clnNodeInformation)),
+    mergeMap(([action, nodeInfo]: [{ type: string, payload: FetchListForwards }, GetInfo]) => {
       const status = (action.payload.status) ? action.payload.status : 'settled';
-      const maxLen = (action.payload.maxLen) ? action.payload.maxLen : 100;
+      const maxLen = (action.payload.maxLen) ? action.payload.maxLen : 10;
       const offset = (action.payload.offset) ? action.payload.offset : 0;
       const statusInitial = status.charAt(0).toUpperCase();
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchForwardingHistory' + statusInitial, status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listForwardsPaginated?status=' + status + '&maxLen=' + maxLen + '&offset=' + offset).pipe(
+      const isNewerVersion = (nodeInfo.api_version) ? this.commonService.isVersionCompatible(nodeInfo.api_version, '0.7.3') : false;
+      let listForwardsUrl = '';
+      if (isNewerVersion) {
+        listForwardsUrl = this.CHILD_API_URL + environment.CHANNELS_API + '/listForwardsPaginated?status=' + status + '&maxLen=' + maxLen + '&offset=' + offset + '&sortBy=received_time&sortOrder=DESC';
+      } else {
+        listForwardsUrl = this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=' + status;
+      }
+      return this.httpClient.get(listForwardsUrl).pipe(
         map((fhRes: ListForwards) => {
           this.logger.info(fhRes);
           this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchForwardingHistory' + statusInitial, status: APICallStatusEnum.COMPLETED } }));
-          return {
-            type: CLNActions.SET_FORWARDING_HISTORY_CLN,
-            payload: { status: status, response: fhRes }
-          };
+          if (!isNewerVersion) {
+            const filteredLocalFailedEvents: LocalFailedEvent[] = [];
+            const filteredFailedEvents: ForwardingEvent[] = [];
+            const filteredSuccessfulEvents: ForwardingEvent[] = [];
+            (<any[]>fhRes).forEach((event: ForwardingEvent | LocalFailedEvent) => {
+              if (event.status === CLNForwardingEventsStatusEnum.SETTLED) {
+                filteredSuccessfulEvents.push(event);
+              } else if (event.status === CLNForwardingEventsStatusEnum.FAILED) {
+                filteredFailedEvents.push(event);
+              } else if (event.status === CLNForwardingEventsStatusEnum.LOCAL_FAILED) {
+                filteredLocalFailedEvents.push(event);
+              }
+            });
+            if (action.payload.status === CLNForwardingEventsStatusEnum.FAILED) {
+              this.store.dispatch(setForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.FAILED, offset: offset, maxLen: maxLen, totalForwards: filteredFailedEvents.length, listForwards: filteredFailedEvents } }));
+            } else if (action.payload.status === CLNForwardingEventsStatusEnum.LOCAL_FAILED) {
+              this.store.dispatch(setForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.LOCAL_FAILED, offset: offset, maxLen: maxLen, totalForwards: filteredLocalFailedEvents.length, listForwards: filteredLocalFailedEvents } }));
+            } else if (action.payload.status === CLNForwardingEventsStatusEnum.SETTLED) {
+              this.store.dispatch(setForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.SETTLED, offset: offset, maxLen: maxLen, totalForwards: filteredSuccessfulEvents.length, listForwards: filteredSuccessfulEvents } }));
+            }
+            return { type: RTLActions.VOID };
+          } else {
+            return {
+              type: CLNActions.SET_FORWARDING_HISTORY_CLN,
+              payload: fhRes
+            };
+          }
         }),
         catchError((err: any) => {
           this.handleErrorWithAlert('FetchForwardingHistory' + statusInitial, UI_MESSAGES.NO_SPINNER, 'Get ' + status + ' Forwarding History Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/listForwardsPaginated?status=' + status, err);

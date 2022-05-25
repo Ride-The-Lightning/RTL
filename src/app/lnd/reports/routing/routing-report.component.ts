@@ -78,7 +78,7 @@ export class RoutingReportComponent implements OnInit, OnDestroy {
     this.errorMessage = UI_MESSAGES.GET_FORWARDING_HISTORY;
     const startDateInSeconds = Math.round(start.getTime() / 1000).toString();
     const endDateInSeconds = Math.round(end.getTime() / 1000).toString();
-    this.dataService.getForwardingHistory(startDateInSeconds, endDateInSeconds).
+    this.dataService.getForwardingHistory('LND', startDateInSeconds, endDateInSeconds).
       pipe(takeUntil(this.unSubs[2])).subscribe({
         next: (res) => {
           this.errorMessage = '';

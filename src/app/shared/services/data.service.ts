@@ -16,7 +16,9 @@ import { fetchTransactions, fetchUTXOs } from '../../lnd/store/lnd.actions';
 
 import { RTLState } from '../../store/rtl.state';
 import { allChannels } from '../../lnd/store/lnd.selector';
-import { LookupNode } from '../models/clnModels';
+import { Channel as ChannelCLN } from '../models/clnModels';
+import { channels } from '../../cln/store/cln.selector';
+import { ApiCallStatusPayload } from '../models/apiCallsPayload';
 
 @Injectable()
 export class DataService implements OnDestroy {
@@ -211,11 +213,11 @@ export class DataService implements OnDestroy {
     }));
   }
 
-  getForwardingHistory(start: string, end: string) {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+  getForwardingHistory(implementation: string, start: string, end: string, status?: string) {
+    if (implementation === 'LND') {
       const queryHeaders: SwitchReq = { end_time: end, start_time: start };
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_FORWARDING_HISTORY }));
-      return this.httpClient.post(this.APIUrl + '/' + updatedLnImplementation + environment.SWITCH_API, queryHeaders).pipe(
+      return this.httpClient.post(this.APIUrl + '/lnd' + environment.SWITCH_API, queryHeaders).pipe(
         takeUntil(this.unSubs[7]),
         withLatestFrom(this.store.select(allChannels)),
         mergeMap(([res, allChannelsSelector]: [any, { channels: Channel[], pendingChannels: PendingChannels, closedChannels: ClosedChannel[] }]) => {
@@ -257,17 +259,33 @@ export class DataService implements OnDestroy {
           return of(res);
         }),
         catchError((err) => {
-          this.handleErrorWithAlert('getForwardingHistoryData', UI_MESSAGES.GET_FORWARDING_HISTORY, 'Forwarding History Failed', this.APIUrl + '/' + updatedLnImplementation + environment.SWITCH_API, err);
+          this.handleErrorWithAlert('getForwardingHistoryData', UI_MESSAGES.GET_FORWARDING_HISTORY, 'Forwarding History Failed', this.APIUrl + '/lnd' + environment.SWITCH_API, err);
           return throwError(() => new Error(this.extractErrorMessage(err)));
         }));
-    }));
+    } else if (implementation === 'CLN') {
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_FORWARDING_HISTORY }));
+      return this.httpClient.get(this.APIUrl + '/cln' + environment.CHANNELS_API + '/listForwards?status=' + status).pipe(
+        takeUntil(this.unSubs[8]),
+        withLatestFrom(this.store.select(channels)),
+        mergeMap(([res, channelsSelector]: [any, { activeChannels: ChannelCLN[], pendingChannels: ChannelCLN[], inactiveChannels: ChannelCLN[], apiCallStatus: ApiCallStatusPayload }]) => {
+          const forwardsWithAlias = this.mapAliases(res, [...channelsSelector.activeChannels, ...channelsSelector.pendingChannels, ...channelsSelector.inactiveChannels]);
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_FORWARDING_HISTORY }));
+          return of(forwardsWithAlias);
+        }),
+        catchError((err) => {
+          this.handleErrorWithAlert('getForwardingHistoryData', UI_MESSAGES.GET_FORWARDING_HISTORY, 'Forwarding History Failed', this.APIUrl + '/cln' + environment.CHANNELS_API + '/listForwards?status=' + status + '&start=' + start + '&end=' + end, err);
+          return throwError(() => new Error(this.extractErrorMessage(err)));
+        }));
+    } else {
+      return of({});
+    }
   }
 
   listNetworkNodes(queryParams: string = '') {
     return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.LIST_NETWORK_NODES }));
       return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + environment.NETWORK_API + '/listNodes' + queryParams).pipe(
-        takeUntil(this.unSubs[8]),
+        takeUntil(this.unSubs[9]),
         mergeMap((res) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.LIST_NETWORK_NODES }));
           return of(res);
@@ -283,7 +301,7 @@ export class DataService implements OnDestroy {
     return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_LIST_CONFIGS }));
       return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + environment.UTILITY_API + '/listConfigs').pipe(
-        takeUntil(this.unSubs[9]),
+        takeUntil(this.unSubs[10]),
         mergeMap((res) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_LIST_CONFIGS }));
           return of(res);
@@ -300,7 +318,7 @@ export class DataService implements OnDestroy {
       const postParams = policy ? { policy: policy, policy_mod: policyMod, lease_fee_base_msat: leaseFeeBaseMsat, lease_fee_basis: leaseFeeBasis, channel_fee_max_base_msat: channelFeeMaxBaseMsat, channel_fee_max_proportional_thousandths: channelFeeMaxProportional } : null;
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_FUNDER_POLICY }));
       return this.httpClient.post(this.APIUrl + '/' + updatedLnImplementation + environment.CHANNELS_API + '/funderUpdate', postParams).pipe(
-        takeUntil(this.unSubs[10]),
+        takeUntil(this.unSubs[11]),
         map((res) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_FUNDER_POLICY }));
           if (postParams) {
@@ -314,6 +332,35 @@ export class DataService implements OnDestroy {
       );
     }));
   }
+
+  mapAliases = (payload: any, storedChannels: ChannelCLN[]) => {
+    if (payload && payload.length > 0) {
+      payload.forEach((fhEvent, i) => {
+        if (storedChannels && storedChannels.length > 0) {
+          for (let idx = 0; idx < storedChannels.length; idx++) {
+            if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id === fhEvent.in_channel) {
+              fhEvent.in_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.in_channel;
+              if (fhEvent.out_channel_alias) { return; }
+            }
+            if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id.toString() === fhEvent.out_channel) {
+              fhEvent.out_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.out_channel;
+              if (fhEvent.in_channel_alias) { return; }
+            }
+            if (idx === storedChannels.length - 1) {
+              if (!fhEvent.in_channel_alias) { fhEvent.in_channel_alias = fhEvent.in_channel ? fhEvent.in_channel : '-'; }
+              if (!fhEvent.out_channel_alias) { fhEvent.out_channel_alias = fhEvent.out_channel ? fhEvent.out_channel : '-'; }
+            }
+          }
+        } else {
+          fhEvent.in_channel_alias = fhEvent.in_channel ? fhEvent.in_channel : '-';
+          fhEvent.out_channel_alias = fhEvent.out_channel ? fhEvent.out_channel : '-';
+        }
+      });
+    } else {
+      payload = [];
+    }
+    return payload;
+  };
 
   extractErrorMessage(err: any, genericErrorMessage: string = 'Unknown Error.') {
     return this.titleCasePipe.transform(

@@ -96,7 +96,7 @@ export const listForwards = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Getting Channel List Forwards..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.ln_server_url + '/v1/channel/listForwards?status=' + req.query.status;
+  options.url = req.session.selectedNode.ln_server_url + '/v1/channel/listForwards?status=' + (req.query.status ? req.query.status : 'settled');
   request.get(options).then((body) => {
     if (body && body.length > 0) { body = common.sortDescByKey(body, 'received_time'); }
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Forwarding History Received For Status' + req.query.status, data: body });
@@ -131,10 +131,12 @@ export const listForwardsPaginated = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Getting Paginated List Forwards..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  const { status, maxLen, offset } = req.query;
+  const { status, maxLen, offset, sortBy, sortOrder } = req.query;
   let queryStr = '?status=' + (status ? status : 'settled');
   queryStr = queryStr + '&maxLen=' + (maxLen ? maxLen : '10');
   queryStr = queryStr + '&offset=' + (offset ? offset : '0');
+  queryStr = sortBy ? (queryStr + '&sortBy=' + sortBy) : (queryStr + '');
+  queryStr = sortOrder ? (queryStr + '&sortOrder=' + sortOrder) : (queryStr + '');
   options.url = req.session.selectedNode.ln_server_url + '/v1/channel/listForwardsPaginated' + queryStr;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Paginated Forwarding History url' + options.url });
   request.get(options).then((body) => {
