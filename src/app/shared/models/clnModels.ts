@@ -1,4 +1,4 @@
-import { PaymentTypes } from '../services/consts-enums-functions';
+import { CLNForwardingEventsStatusEnum, PaymentTypes } from '../services/consts-enums-functions';
 
 export enum feeRateStyle {
   KB = 'KB',
@@ -284,6 +284,7 @@ export interface LocalFailedEvent {
 }
 
 export interface ListForwards {
+  status?: CLNForwardingEventsStatusEnum;
   offset?: number;
   maxLen?: number;
   totalForwards?: number;

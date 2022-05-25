@@ -109,26 +109,26 @@ export const CLNReducer = createReducer(initCLNState,
   })),
   on(setForwardingHistory, (state, { payload }) => {
     const storedChannels = [...state.activeChannels, ...state.pendingChannels, ...state.inactiveChannels];
-    const forwardsWithAlias = mapAliases(payload.response.listForwards, storedChannels);
-    payload.response.listForwards = forwardsWithAlias;
+    const forwardsWithAlias = mapAliases(payload.listForwards, storedChannels);
+    payload.listForwards = forwardsWithAlias;
     switch (payload.status) {
       case CLNForwardingEventsStatusEnum.SETTLED:
         const modifiedFeeWithTxCount = state.fees;
-        modifiedFeeWithTxCount.totalTxCount = payload.response.totalForwards | 0;
+        modifiedFeeWithTxCount.totalTxCount = payload.totalForwards | 0;
         return {
           ...state,
           fees: modifiedFeeWithTxCount,
-          forwardingHistory: payload.response
+          forwardingHistory: payload
         };
       case CLNForwardingEventsStatusEnum.FAILED:
         return {
           ...state,
-          failedForwardingHistory: payload.response
+          failedForwardingHistory: payload
         };
       case CLNForwardingEventsStatusEnum.LOCAL_FAILED:
         return {
           ...state,
-          localFailedForwardingHistory: payload.response
+          localFailedForwardingHistory: payload
         };
       default:
         return { ...state };

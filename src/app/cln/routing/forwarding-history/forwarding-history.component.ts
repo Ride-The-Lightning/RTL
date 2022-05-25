@@ -1,13 +1,13 @@
 import { Component, OnInit, OnChanges, ViewChild, OnDestroy, SimpleChanges, Input, AfterViewInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { ForwardingEvent, ListForwards } from '../../../shared/models/clnModels';
+import { ForwardingEvent, GetInfo, ListForwards } from '../../../shared/models/clnModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, CLNForwardingEventsStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -15,7 +15,7 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
-import { forwardingHistory } from '../../store/cln.selector';
+import { clnNodeInformation, forwardingHistory } from '../../store/cln.selector';
 import { getForwardingHistory } from '../../store/cln.actions';
 
 @Component({
@@ -32,6 +32,8 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   @Input() eventsData = [];
   @Input() filterValue = '';
+  public flgCompatible = true;
+  public information: GetInfo = {};
   public successfulEvents = [];
   public displayedColumns: any[] = [];
   public forwardingHistoryEvents: any;
@@ -62,8 +64,11 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   }
 
   ngOnInit() {
-    this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[0])).
-      subscribe((fhSeletor: { forwardingHistory: ListForwards, apiCallStatus: ApiCallStatusPayload }) => {
+    this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[0]),
+      withLatestFrom(this.store.select(clnNodeInformation))).
+      subscribe(([fhSeletor, nodeInfo]: [{ forwardingHistory: ListForwards, apiCallStatus: ApiCallStatusPayload }, GetInfo]) => {
+        this.information = nodeInfo;
+        this.flgCompatible = (this.information.api_version) ? this.commonService.isVersionCompatible(this.information.api_version, '0.7.3') : true;
         this.errorMessage = '';
         this.apiCallStatus = fhSeletor.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
@@ -74,7 +79,11 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
           this.indexOffset = fhSeletor.forwardingHistory.offset;
           this.successfulEvents = fhSeletor.forwardingHistory.listForwards || [];
           if (this.successfulEvents.length > 0 && this.sort && this.paginator) {
-            this.loadForwardingEventsTable(this.successfulEvents);
+            if (this.flgCompatible) {
+              this.loadForwardingEventsTable(this.successfulEvents);
+            } else {
+              this.loadForwardingEventsTable(this.successfulEvents.slice(0, this.pageSize));
+            }
           }
           this.logger.info(fhSeletor);
         }
@@ -83,7 +92,11 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
 
   ngAfterViewInit() {
     if (this.successfulEvents.length > 0) {
-      this.loadForwardingEventsTable(this.successfulEvents);
+      if (this.flgCompatible) {
+        this.loadForwardingEventsTable(this.successfulEvents);
+      } else {
+        this.loadForwardingEventsTable(this.successfulEvents.slice(0, this.pageSize));
+      }
     }
   }
 
@@ -92,8 +105,11 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
       this.apiCallStatus = { status: APICallStatusEnum.COMPLETED, action: 'FetchForwardingHistory' };
       this.eventsData = changes.eventsData.currentValue;
       this.successfulEvents = this.eventsData;
+      this.indexOffset = 0;
+      this.totalForwardedTransactions = this.eventsData.length;
+      if (this.paginator) { this.paginator.firstPage(); }
       if (!changes.eventsData.firstChange) {
-        this.loadForwardingEventsTable(this.successfulEvents);
+        this.loadForwardingEventsTable(this.successfulEvents.slice(0, this.pageSize));
       }
     }
     if (changes.filterValue && !changes.filterValue.firstChange) {
@@ -158,7 +174,11 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
     } else {
       this.indexOffset = event.pageIndex * this.pageSize;
     }
-    this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.SETTLED, maxLen: this.pageSize, offset: this.indexOffset } }));
+    if (this.flgCompatible) {
+      this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.SETTLED, maxLen: this.pageSize, offset: this.indexOffset } }));
+    } else {
+      this.loadForwardingEventsTable(this.successfulEvents.slice(this.indexOffset, (this.indexOffset + this.pageSize)));
+    }
   }
 
   ngOnDestroy() {

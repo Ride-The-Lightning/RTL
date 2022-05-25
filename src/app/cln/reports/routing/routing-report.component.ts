@@ -1,17 +1,18 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { ForwardingEvent, ListForwards } from '../../../shared/models/clnModels';
-import { APICallStatusEnum, MONTHS, ReportBy, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
+import { ForwardingEvent, GetInfo, ListForwards } from '../../../shared/models/clnModels';
+import { APICallStatusEnum, CLNForwardingEventsStatusEnum, MONTHS, ReportBy, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
 import { RTLState } from '../../../store/rtl.state';
-import { forwardingHistory } from '../../store/cln.selector';
+import { clnNodeInformation, forwardingHistory } from '../../store/cln.selector';
+import { DataService } from '../../../shared/services/data.service';
 
 @Component({
   selector: 'rtl-cln-routing-report',
@@ -46,21 +47,33 @@ export class CLNRoutingReportComponent implements OnInit, OnDestroy {
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) { }
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private dataService: DataService) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[0])).
-      subscribe((fhSeletor: { forwardingHistory: ListForwards, apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessage = '';
-        this.apiCallStatus = fhSeletor.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+    this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[0]),
+      withLatestFrom(this.store.select(clnNodeInformation))).
+      subscribe(([fhSeletor, nodeInfo]: [{ forwardingHistory: ListForwards, apiCallStatus: ApiCallStatusPayload }, GetInfo]) => {
+        if (fhSeletor.forwardingHistory.status === CLNForwardingEventsStatusEnum.SETTLED && (fhSeletor.apiCallStatus.status === APICallStatusEnum.COMPLETED || fhSeletor.apiCallStatus.status === APICallStatusEnum.ERROR)) {
+          if (nodeInfo.api_version && this.commonService.isVersionCompatible(nodeInfo.api_version, '0.7.3')) {
+            this.dataService.getForwardingHistory('CLN', '', '', CLNForwardingEventsStatusEnum.SETTLED).pipe(takeUntil(this.unSubs[0])).
+              subscribe((response: ForwardingEvent[]) => {
+                this.events = response || [];
+                this.filterForwardingEvents(this.startDate, this.endDate);
+                this.logger.info(response);
+              });
+          } else {
+            this.errorMessage = '';
+            this.apiCallStatus = fhSeletor.apiCallStatus;
+            if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+              this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+            }
+            this.events = fhSeletor.forwardingHistory.listForwards || [];
+            this.filterForwardingEvents(this.startDate, this.endDate);
+            this.logger.info(fhSeletor);
+          }
         }
-        this.events = fhSeletor.forwardingHistory.listForwards || [];
-        this.filterForwardingEvents(this.startDate, this.endDate);
-        this.logger.info(fhSeletor);
       });
     this.commonService.containerSizeUpdated.pipe(takeUntil(this.unSubs[1])).subscribe((CONTAINER_SIZE) => {
       switch (this.screenSize) {
