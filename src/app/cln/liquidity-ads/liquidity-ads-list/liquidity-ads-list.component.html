@@ -28,8 +28,8 @@
             </mat-form-field>
           </div>
         </form>
-        <!-- <mat-divider [inset]="true" class="my-2"></mat-divider> -->
-        <!-- <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" #formFilter="ngForm">
+        <!-- <mat-divider [inset]="true" class="my-2"></mat-divider>
+        <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" #formFilter="ngForm">
           <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start start" class="page-sub-title-container mt-1">
             <div fxFlex="30">
               <span class="page-title">
@@ -94,8 +94,10 @@
                 <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
                   <mat-select placeholder="Actions" tabindex="1" class="mr-0">
                     <mat-select-trigger></mat-select-trigger>
-                    <mat-option (click)="onViewLeaseInfo(lqNode)">View Lease Info</mat-option>
+                    <mat-option (click)="onViewLeaseInfo(lqNode)">View Info</mat-option>
                     <mat-option (click)="onOpenChannel(lqNode)">Open Channel</mat-option>
+                    <mat-option (click)="viewLeaseOn(lqNode, 'LN')">View on Lnrouter</mat-option>
+                    <mat-option (click)="viewLeaseOn(lqNode, 'AM')">View on Amboss</mat-option>
                   </mat-select>
                 </div>
               </td>

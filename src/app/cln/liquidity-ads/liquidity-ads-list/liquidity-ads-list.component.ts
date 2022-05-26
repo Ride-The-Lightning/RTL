@@ -57,7 +57,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private dataService: DataService, private commonService: CommonService, private rtlEffects: RTLEffects) {
     this.askTooltipMsg = 'Specify the liquidity requirements for your node: \n 1. Channel Amount - Amount in Sats you need for the channel opened to your node \n 2. Channel opening fee rate - Rate in Sats/vByte that you are willing to pay to open the channel to you';
-    this.nodesTooltipMsg = 'These are the nodes which are advertising their liquidity offering on the network.\nYou should pay attention to the following aspects to evaluate each node offer: \n- The total bitcoin deployed on the node, the more the better\n';
+    this.nodesTooltipMsg = 'These nodes are advertising their liquidity offering on the network.\nYou should pay attention to the following aspects to evaluate each node offer: \n- The total bitcoin deployed on the node, the more the better\n';
     this.nodesTooltipMsg = this.nodesTooltipMsg + '- The number of channels open on the node, the more the better\n- The channel open fee which the node will charge from you\n- The routing fee which the node will charge on the payments, the lesser the better\n- The reliability of the node, ideally uptime. Refer to the information being provided by the node explorers';
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
@@ -66,15 +66,12 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
     } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'leaseFee', 'routingFee', 'channelOpeningFee', 'actions'];
-      // this.displayedColumns = ['alias', 'capacityChannels', 'leaseFee', 'routingFee', 'channelOpeningFee', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'leaseFee', 'routingFee', 'channelOpeningFee', 'actions'];
-      // this.displayedColumns = ['alias', 'capacityChannels', 'leaseFee', 'routingFee', 'channelOpeningFee', 'actions'];
     } else {
       this.flgSticky = true;
       this.displayedColumns = ['alias', 'leaseFee', 'routingFee', 'channelOpeningFee', 'actions'];
-      // this.displayedColumns = ['alias', 'capacityChannels', 'leaseFee', 'routingFee', 'channelOpeningFee', 'actions'];
     }
   }
 
@@ -108,9 +105,9 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
     if (this.paginator) { this.paginator.firstPage(); }
   }
 
-  // onFilter() {
-  //   this.liquidityNodes.filter = 'Changed';
-  // }
+  onFilter() {
+    // this.liquidityNodes.filter = 'Changed';
+  }
 
   loadLiqNodesTable(liqNodes: LookupNode[]) {
     this.liquidityNodes = new MatTableDataSource<LookupNode>([...liqNodes]);
@@ -118,8 +115,16 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
     this.liquidityNodes.sort = this.sort;
     this.liquidityNodes.paginator = this.paginator;
     if (this.sort) { this.sort.sort({ id: 'channelOpeningFee', start: 'asc', disableClear: true }); }
-    // this.liquidityNodes.filterPredicate = (node: LookupNode, fltr: string) => node.channelCount >= this.channelCount && node.nodeCapacity >= this.nodeCapacity;
-    // this.onFilter();
+    this.liquidityNodes.filterPredicate = (node: LookupNode, fltr: string) => node.channelCount >= this.channelCount && node.nodeCapacity >= this.nodeCapacity;
+    this.onFilter();
+  }
+
+  viewLeaseOn(lqNode: LookupNode, link: string) {
+    if (link === 'LN') {
+      window.open('https://lnrouter.app/node/' + lqNode.nodeid, '_blank');
+    } else if (link === 'AM') {
+      window.open('https://amboss.space/node/' + lqNode.nodeid, '_blank');
+    }
   }
 
   onOpenChannel(lqNode: LookupNode) {
