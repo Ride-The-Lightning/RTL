@@ -41,7 +41,10 @@ export class ExpressApplication {
             this.app.use(this.common.baseHref + '/api/ecl', eclRoutes);
             this.app.use(this.common.baseHref, express.static(join(this.directoryName, '../..', 'frontend')));
             this.app.use((req, res, next) => {
+                // For Angular App
                 res.cookie('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : '');
+                // For JQuery Browser Plugin
+                res.setHeader('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : '');
                 res.sendFile(join(this.directoryName, '../..', 'frontend', 'index.html'));
             });
             this.app.use((err, req, res, next) => this.handleApplicationErrors(err, res));
