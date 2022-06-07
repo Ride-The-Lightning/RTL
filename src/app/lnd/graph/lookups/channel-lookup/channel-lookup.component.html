@@ -45,6 +45,11 @@
       </div>
       <mat-divider [inset]="true" class="my-1"></mat-divider>
       <div fxLayout="column" fxFlex="10">
+        <h4 class="font-bold-500">Max HTLC</h4>
+        <span class="foreground-secondary-text">{{lookupResult.node1_policy?.max_htlc_msat}}</span>
+      </div>
+      <mat-divider [inset]="true" class="my-1"></mat-divider>
+      <div fxLayout="column" fxFlex="10">
         <h4 class="font-bold-500">Fee Base Msat</h4>
         <span class="foreground-secondary-text">{{lookupResult.node1_policy?.fee_base_msat}}</span>
       </div>
@@ -78,6 +83,11 @@
       <div fxLayout="column" fxFlex="10">
         <h4 class="font-bold-500">Min HTLC</h4>
         <span class="foreground-secondary-text">{{lookupResult.node2_policy?.min_htlc}}</span>
+      </div>
+      <mat-divider [inset]="true" class="my-1"></mat-divider>
+      <div fxLayout="column" fxFlex="10">
+        <h4 class="font-bold-500">Max HTLC</h4>
+        <span class="foreground-secondary-text">{{lookupResult.node2_policy?.max_htlc_msat}}</span>
       </div>
       <mat-divider [inset]="true" class="my-1"></mat-divider>
       <div fxLayout="column" fxFlex="10">

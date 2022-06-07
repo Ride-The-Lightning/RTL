@@ -25,9 +25,12 @@ export class ConfirmationMessageComponent implements OnInit {
   public yesBtnText = 'Yes';
   public messageObjs = [];
   public flgShowInput = false;
+  public hasAdvanced = false;
   public alertTypeEnum = AlertTypeEnum;
   public dataTypeEnum = DataTypeEnum;
-  public getInputs: Array<InputData> = [{ placeholder: '', inputType: 'text', inputValue: '', hintText: '', hintFunction: null }];
+  public getInputs: Array<InputData> = [{ placeholder: '', inputType: 'text', inputValue: '', hintText: '', hintFunction: null, advancedField: false }];
+  
+  private showAdvanced = false;
 
   constructor(
     public dialogRef: MatDialogRef<ConfirmationMessageComponent>, @Inject(MAT_DIALOG_DATA) public data: ConfirmationData, private logger: LoggerService,
@@ -41,12 +44,17 @@ export class ConfirmationMessageComponent implements OnInit {
     this.getInputs = this.data.getInputs;
     this.noBtnText = (this.data.noBtnText) ? this.data.noBtnText : 'No';
     this.yesBtnText = (this.data.yesBtnText) ? this.data.yesBtnText : 'Yes';
+    this.hasAdvanced = (this.data.hasAdvanced) ? this.data.hasAdvanced : false;
     this.messageObjs = this.data.message;
     if (this.data.type === AlertTypeEnum.ERROR) {
       if (!this.data.message && !this.data.titleMessage && this.messageObjs.length <= 0) {
         this.data.titleMessage = 'Please Check Server Connection';
       }
     }
+  }
+  
+  onShowAdvanced() {
+    this.showAdvanced = !this.showAdvanced;
   }
 
   onClose(dialogRes: any): boolean | void {

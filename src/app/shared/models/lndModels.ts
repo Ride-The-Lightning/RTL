@@ -168,6 +168,7 @@ export interface LightningNode {
 export interface RoutingPolicy {
   time_lock_delta?: number;
   min_htlc?: string;
+  max_htlc_msat?: string;
   fee_base_msat?: string;
   fee_rate_milli_msat?: string;
   disabled?: boolean;
