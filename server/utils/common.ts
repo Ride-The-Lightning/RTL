@@ -218,6 +218,20 @@ export class CommonService {
     return array;
   };
 
+  public camelCase = (str: string) => str.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => (word.toUpperCase())).replace(/\s+/g, '').replace(/-/g, ' ');
+
+  public titleCase = (str: string) => {
+    if (str.indexOf('!\n') > 0 || str.indexOf('.\n') > 0) {
+      return str.split('\n').reduce((accumulator, currentStr) => accumulator + currentStr.charAt(0).toUpperCase() + currentStr.substring(1).toLowerCase() + '\n', '');
+    } else {
+      if (str.indexOf(' ') > 0) {
+        return str.split(' ').reduce((accumulator, currentStr) => accumulator + currentStr.charAt(0).toUpperCase() + currentStr.substring(1).toLowerCase() + ' ', '');
+      } else {
+        return str.charAt(0).toUpperCase() + str.substring(1).toLowerCase();
+      }
+    }
+  };
+
   public handleError = (errRes, fileName, errMsg, selectedNode: CommonSelectedNode) => {
     const err = JSON.parse(JSON.stringify(errRes));
     if (!selectedNode) { selectedNode = this.initSelectedNode; }

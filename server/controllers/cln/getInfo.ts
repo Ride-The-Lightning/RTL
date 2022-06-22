@@ -32,23 +32,18 @@ export const getInfo = (req, res, next) => {
         const err = common.handleError(body, 'GetInfo', 'Get Info Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
       } else {
+        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'GetInfo', msg: 'Node Information Before Update', data: body });
         body.lnImplementation = 'Core Lightning';
         const chainObj = { chain: '', network: '' };
-        if (body.network === 'testnet') {
+        if (body.network.includes('litecoin') || body.network.includes('feathercoin')) {
+          chainObj.chain = '';
+          chainObj.network = '';
+        } else if (body.network.includes('liquid')) {
+          chainObj.chain = 'Liquid';
+          chainObj.network = common.titleCase(body.network);
+        } else {
           chainObj.chain = 'Bitcoin';
-          chainObj.network = 'Testnet';
-        } else if (body.network === 'bitcoin') {
-          chainObj.chain = 'Bitcoin';
-          chainObj.network = 'Mainnet';
-        } else if (body.network === 'signet') {
-          chainObj.chain = 'Bitcoin';
-          chainObj.network = 'Signet';
-        } else if (body.network === 'litecoin') {
-          chainObj.chain = 'Litecoin';
-          chainObj.network = 'Mainnet';
-        } else if (body.network === 'litecoin-testnet') {
-          chainObj.chain = 'Litecoin';
-          chainObj.network = 'Testnet';
+          chainObj.network = common.titleCase(body.network);
         }
         body.chains = [chainObj];
         body.uris = [];

@@ -201,6 +201,20 @@ export class CommonService {
             array.unshift(newlyAddedRecord[0]);
             return array;
         };
+        this.camelCase = (str) => str.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => (word.toUpperCase())).replace(/\s+/g, '').replace(/-/g, ' ');
+        this.titleCase = (str) => {
+            if (str.indexOf('!\n') > 0 || str.indexOf('.\n') > 0) {
+                return str.split('\n').reduce((accumulator, currentStr) => accumulator + currentStr.charAt(0).toUpperCase() + currentStr.substring(1).toLowerCase() + '\n', '');
+            }
+            else {
+                if (str.indexOf(' ') > 0) {
+                    return str.split(' ').reduce((accumulator, currentStr) => accumulator + currentStr.charAt(0).toUpperCase() + currentStr.substring(1).toLowerCase() + ' ', '');
+                }
+                else {
+                    return str.charAt(0).toUpperCase() + str.substring(1).toLowerCase();
+                }
+            }
+        };
         this.handleError = (errRes, fileName, errMsg, selectedNode) => {
             const err = JSON.parse(JSON.stringify(errRes));
             if (!selectedNode) {
