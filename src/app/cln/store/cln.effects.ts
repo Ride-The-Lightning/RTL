@@ -99,15 +99,17 @@ export class CLNEffects implements OnDestroy {
               this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchInfo', status: APICallStatusEnum.COMPLETED } }));
               this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_NODE_INFO }));
               this.store.dispatch(closeAllDialogs());
-              this.store.dispatch(openAlert({
-                payload: {
-                  data: {
-                    type: AlertTypeEnum.ERROR,
-                    alertTitle: 'Shitcoin Found',
-                    titleMessage: 'Sorry Not Sorry, RTL is Bitcoin Only!'
+              setTimeout(() => {
+                this.store.dispatch(openAlert({
+                  payload: {
+                    data: {
+                      type: AlertTypeEnum.ERROR,
+                      alertTitle: 'Shitcoin Found',
+                      titleMessage: 'Sorry Not Sorry, RTL is Bitcoin Only!'
+                    }
                   }
-                }
-              }));
+                }));
+              }, 500);
               return {
                 type: RTLActions.LOGOUT
               };

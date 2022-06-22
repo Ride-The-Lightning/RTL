@@ -63,3 +63,6 @@ _config.yml
 RTL-Config-Docker.json
 dockerfiles/RTL-Config.json
 dockerfiles/.env
+RTL-Config-Regtest.json
+RTL-Config-Signet.json
+RTL-Config-Testnet.json
