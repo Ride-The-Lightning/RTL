@@ -264,7 +264,7 @@ export class ConfigService {
                     catch (err) {
                         this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while creating the backup directory: \n' + err });
                     }
-                    this.common.nodes[idx].log_file = this.common.rtl_conf_file_path + '/logs/RTL-Node-' + node.index + '.log';
+                    this.common.nodes[idx].log_file = this.common.rtl_log_file_path + '/RTL-Node-' + node.index + '.log';
                     this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'Config', msg: 'Node Config: ' + JSON.stringify(this.common.nodes[idx]) });
                     const log_file = this.common.nodes[idx].log_file;
                     if (fs.existsSync(log_file)) {
@@ -330,6 +330,7 @@ export class ConfigService {
         this.setServerConfiguration = () => {
             try {
                 this.common.rtl_conf_file_path = (process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH : join(this.directoryName, '../..');
+                this.common.rtl_log_file_path = (process.env.RTL_LOG_PATH) ? process.env.RTL_LOG_PATH : join(this.common.rtl_conf_file_path, "logs");
                 const confFileFullPath = this.common.rtl_conf_file_path + sep + 'RTL-Config.json';
                 if (!fs.existsSync(confFileFullPath)) {
                     fs.writeFileSync(confFileFullPath, JSON.stringify(this.setDefaultConfig()));
