@@ -66,7 +66,7 @@ export const getChannels = (req, res, next) => {
         });
       } else {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Empty Channels List Received' });
-        res.status(200).json({ activeChannels: [], pendingChannels: [], inactiveChannels: [], lightningBalances: { localBalance: 0, remoteBalance: 0 }, channelStatus: { active: { channels: 0, capacity: 0 }, inactive: { channels: 0, capacity: 0 }, pending: { channels: 0, capacity: 0 } } });
+        res.status(200).json([]);
       }
     }).
       catch((errRes) => {

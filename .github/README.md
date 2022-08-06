@@ -54,7 +54,7 @@ To download from master (*not recommended*):
 ```
 $ git clone https://github.com/Ride-The-Lightning/RTL.git
 $ cd RTL
-$ npm install --only=prod
+$ npm install --omit=dev --legacy-peer-deps
 ```
 #### Or: Update existing dependencies
 ```
@@ -62,7 +62,7 @@ $ cd RTL
 $ git reset --hard HEAD
 $ git clean -f -d
 $ git pull
-$ npm install --only=prod
+$ npm install --omit=dev --legacy-peer-deps
 ```
 ### <a name="prep"></a>Prep for Execution
 RTL requires its own config file `RTL-Config.json`, to start the server and provide user authentication on the app.

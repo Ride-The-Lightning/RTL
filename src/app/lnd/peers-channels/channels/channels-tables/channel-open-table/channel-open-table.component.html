@@ -73,7 +73,7 @@
           </div>
         </td>
       </ng-container>
-      <ng-container matColumnDef="no_peer">
+      <ng-container matColumnDef="no_channel">
         <td mat-footer-cell *matFooterCellDef colspan="4">
           <p *ngIf="numPeers<1 && (!channels?.data || channels?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.COMPLETED">No peers connected. Add a peer in order to open a channel.</p>
           <p *ngIf="numPeers>0 && (!channels?.data || channels?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.COMPLETED">No channel available.</p>
@@ -81,7 +81,7 @@
           <p *ngIf="(!channels?.data || channels?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
         </td>
       </ng-container>
-      <tr mat-footer-row *matFooterRowDef="['no_peer']" [ngClass]="{'display-none': numPeers>0 && channels?.data && channels?.data?.length>0}"></tr>
+      <tr mat-footer-row *matFooterRowDef="['no_channel']" [ngClass]="{'display-none': channels?.data && channels?.data?.length>0}"></tr>
       <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
