@@ -653,24 +653,26 @@ export class ECLEffects implements OnDestroy {
     const inactiveChannels = [];
     const channelStatus = { active: { channels: 0, capacity: 0 }, inactive: { channels: 0, capacity: 0 }, pending: { channels: 0, capacity: 0 } };
     this.rawChannelsList.forEach((channel, i) => {
-      if (channel.state === 'NORMAL') {
-        channelTotal = channel.toLocal + channel.toRemote;
-        totalLocalBalance = totalLocalBalance + channel.toLocal;
-        totalRemoteBalance = totalRemoteBalance + channel.toRemote;
-        channel.balancedness = (channelTotal === 0) ? 1 : +(1 - Math.abs((channel.toLocal - channel.toRemote) / channelTotal)).toFixed(3);
-        activeChannels.push(channel);
-        channelStatus.active.channels = channelStatus.active.channels + 1;
-        channelStatus.active.capacity = channelStatus.active.capacity + channel.toLocal;
-      } else if (channel.state.includes('WAIT') || channel.state.includes('CLOSING') || channel.state.includes('SYNCING')) {
-        channel.state = channel.state.replace(/_/g, ' ');
-        pendingChannels.push(channel);
-        channelStatus.pending.channels = channelStatus.pending.channels + 1;
-        channelStatus.pending.capacity = channelStatus.pending.capacity + channel.toLocal;
-      } else {
-        channel.state = channel.state.replace(/_/g, ' ');
-        inactiveChannels.push(channel);
-        channelStatus.inactive.channels = channelStatus.inactive.channels + 1;
-        channelStatus.inactive.capacity = channelStatus.inactive.capacity + channel.toLocal;
+      if (channel) {
+        if (channel.state === 'NORMAL') {
+          channelTotal = channel.toLocal + channel.toRemote;
+          totalLocalBalance = totalLocalBalance + channel.toLocal;
+          totalRemoteBalance = totalRemoteBalance + channel.toRemote;
+          channel.balancedness = (channelTotal === 0) ? 1 : +(1 - Math.abs((channel.toLocal - channel.toRemote) / channelTotal)).toFixed(3);
+          activeChannels.push(channel);
+          channelStatus.active.channels = channelStatus.active.channels + 1;
+          channelStatus.active.capacity = channelStatus.active.capacity + channel.toLocal;
+        } else if (channel.state.includes('WAIT') || channel.state.includes('CLOSING') || channel.state.includes('SYNCING')) {
+          channel.state = channel.state.replace(/_/g, ' ');
+          pendingChannels.push(channel);
+          channelStatus.pending.channels = channelStatus.pending.channels + 1;
+          channelStatus.pending.capacity = channelStatus.pending.capacity + channel.toLocal;
+        } else {
+          channel.state = channel.state.replace(/_/g, ' ');
+          inactiveChannels.push(channel);
+          channelStatus.inactive.channels = channelStatus.inactive.channels + 1;
+          channelStatus.inactive.capacity = channelStatus.inactive.capacity + channel.toLocal;
+        }
       }
     });
     lightningBalances = { localBalance: totalLocalBalance, remoteBalance: totalRemoteBalance };

@@ -66,3 +66,4 @@ dockerfiles/.env
 RTL-Config-Regtest.json
 RTL-Config-Signet.json
 RTL-Config-Testnet.json
+RTL-Config-All.json
