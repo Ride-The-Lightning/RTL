@@ -14,12 +14,12 @@ const wsServer = WSServer;
 const databaseService = Database;
 export const updateSelectedNode = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Updating Selected Node..' });
-    const selNodeIndex = req.body.currNodeIndex ? req.body.currNodeIndex : common.initSelectedNode ? common.initSelectedNode.index : 1;
+    const selNodeIndex = req.params.currNodeIndex ? +req.params.currNodeIndex : common.initSelectedNode ? +common.initSelectedNode.index : 1;
     req.session.selectedNode = common.findNode(selNodeIndex);
     if (req.headers && req.headers.authorization && req.headers.authorization !== '') {
-        wsServer.updateLNWSClientDetails(req.session.id, +req.session.selectedNode.index, +req.body.prevNodeIndex);
-        if (req.body.prevNodeIndex !== -1) {
-            databaseService.unloadDatabase(req.body.prevNodeIndex);
+        wsServer.updateLNWSClientDetails(req.session.id, +req.session.selectedNode.index, +req.params.prevNodeIndex);
+        if (req.params.prevNodeIndex !== -1) {
+            databaseService.unloadDatabase(req.params.prevNodeIndex);
         }
     }
     const responseVal = !req.session.selectedNode.ln_node ? '' : req.session.selectedNode.ln_node;

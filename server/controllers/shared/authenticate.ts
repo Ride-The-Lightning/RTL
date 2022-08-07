@@ -122,6 +122,8 @@ export const logoutUser = (req, res, next) => {
   if (req.session.selectedNode && req.session.selectedNode.index) {
     databaseService.unloadDatabase(+req.session.selectedNode.index);
   }
-  req.session.destroy();
-  res.status(200).json({ loggedout: true });
+  req.session.destroy((err) => {
+    res.clearCookie('connect.sid');
+    res.status(200).json({ loggedout: true });
+  });
 };
