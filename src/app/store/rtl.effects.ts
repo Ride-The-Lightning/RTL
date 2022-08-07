@@ -499,7 +499,7 @@ export class RTLEffects implements OnDestroy {
       mergeMap((action: { type: string, payload: SetSelectedNode }) => {
         this.store.dispatch(openSpinner({ payload: action.payload.uiMessage }));
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.INITIATED } }));
-        return this.httpClient.post(environment.CONF_API + '/updateSelNode', { prevNodeIndex: action.payload.prevLnNodeIndex, currNodeIndex: action.payload.currentLnNode.index }).pipe(
+        return this.httpClient.get(environment.CONF_API + '/updateSelNode/' + action.payload.currentLnNode.index + '/' + action.payload.prevLnNodeIndex).pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.COMPLETED } }));

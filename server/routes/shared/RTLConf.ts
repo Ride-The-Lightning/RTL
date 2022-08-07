@@ -11,7 +11,7 @@ router.post('/', isAuthenticated, updateUISettings);
 router.post('/update2FA', isAuthenticated, update2FASettings);
 router.get('/config/:nodeType', isAuthenticated, getConfig);
 router.get('/file', isAuthenticated, getFile);
-router.post('/updateSelNode', updateSelectedNode);
+router.get('/updateSelNode/:currNodeIndex/:prevNodeIndex', updateSelectedNode);
 router.post('/updateDefaultNode', updateDefaultNode);
 router.post('/updateServiceSettings', updateServiceSettings);
 router.post('/updateSSO', updateSSO);
