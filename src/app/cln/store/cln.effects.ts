@@ -94,7 +94,7 @@ export class CLNEffects implements OnDestroy {
           map((info) => {
             this.logger.info(info);
             if (info.chains && info.chains.length && info.chains[0] &&
-              (typeof info.chains[0] === 'object' && info.chains[0].hasOwnProperty('chain') && info.chains[0].chain.toLowerCase().indexOf('bitcoin') < 0)
+              (typeof info.chains[0] === 'object' && info.chains[0].hasOwnProperty('chain') && info?.chains[0].chain && info?.chains[0].chain.toLowerCase().indexOf('bitcoin') < 0)
             ) {
               this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchInfo', status: APICallStatusEnum.COMPLETED } }));
               this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_NODE_INFO }));
@@ -283,7 +283,7 @@ export class CLNEffects implements OnDestroy {
             this.store.dispatch(setPeers({ payload: (postRes || []) }));
             return {
               type: CLNActions.NEWLY_ADDED_PEER_CLN,
-              payload: { peer: postRes.find((peer) => action.payload.id.indexOf(peer.id) === 0) }
+              payload: { peer: postRes.find((peer: Peer) => action.payload.id.indexOf(peer.id ? peer.id : '') === 0) }
             };
           }),
           catchError((err: any) => {
@@ -327,7 +327,7 @@ export class CLNEffects implements OnDestroy {
       this.logger.info(channels);
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchChannels', status: APICallStatusEnum.COMPLETED } }));
       this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.SETTLED, maxLen: 10, offset: 0 } }));
-      const sortedChannels = { activeChannels: [], pendingChannels: [], inactiveChannels: [] };
+      const sortedChannels = { activeChannels: <Channel[]>[], pendingChannels: <Channel[]>[], inactiveChannels: <Channel[]>[] };
       channels.forEach((channel) => {
         if (channel.state === 'CHANNELD_NORMAL') {
           if (channel.connected) {
@@ -664,7 +664,7 @@ export class CLNEffects implements OnDestroy {
       const isNewerVersion = (nodeInfo.api_version) ? this.commonService.isVersionCompatible(nodeInfo.api_version, '0.7.3') : false;
       let listForwardsUrl = '';
       if (isNewerVersion) {
-        listForwardsUrl = this.CHILD_API_URL + environment.CHANNELS_API + '/listForwardsPaginated?status=' + status + '&maxLen=' + maxLen + '&offset=' + offset + '&sortBy=received_time&sortOrder=DESC';
+        listForwardsUrl = this.CHILD_API_URL + environment.CHANNELS_API + '/listForwardsPaginated?status=' + status + '&maxLen=' + maxLen + '&offset=' + offset;
       } else {
         listForwardsUrl = this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=' + status;
       }
@@ -1037,7 +1037,7 @@ export class CLNEffects implements OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }
