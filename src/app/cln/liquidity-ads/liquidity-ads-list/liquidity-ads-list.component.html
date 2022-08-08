@@ -52,7 +52,7 @@
             <ng-container matColumnDef="alias">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> Alias </th>
               <td mat-cell *matCellDef="let lqNode" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '40rem'}"> 
-                {{lqNode?.alias}} 
+                {{lqNode?.alias}}<span *ngIf="lqNode.tor_node" matBadge="Tor Node" matBadgeOverlap="false" class="tab-badge"></span>
               </td>
             </ng-container>
             <ng-container matColumnDef="capacityChannels">

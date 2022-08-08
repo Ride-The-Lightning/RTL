@@ -24,7 +24,7 @@ export class CLNOpenLiquidityChannelComponent implements OnInit, OnDestroy {
   @ViewChild('form', { static: true }) form: any;
   public alertTitle: string;
   public totalBalance = 0;
-  public node: LookupNode;
+  public node: LookupNode = {};
   public requestedAmount = 0;
   public feeRate = 0;
   public localAmount = 0;
@@ -35,12 +35,12 @@ export class CLNOpenLiquidityChannelComponent implements OnInit, OnDestroy {
   constructor(public dialogRef: MatDialogRef<CLNOpenLiquidityChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNOpenLiquidityChannelAlert, private actions: Actions, private store: Store<RTLState>) { }
 
   ngOnInit() {
-    this.alertTitle = this.data.alertTitle;
-    this.totalBalance = this.data.message.balance;
-    this.node = this.data.message.node;
-    this.requestedAmount = this.data.message.requestedAmount;
-    this.feeRate = this.data.message.feeRate;
-    this.localAmount = this.data.message.localAmount;
+    this.alertTitle = this.data.alertTitle || '';
+    this.totalBalance = this.data.message?.balance || 0;
+    this.node = this.data.message?.node || {};
+    this.requestedAmount = this.data.message?.requestedAmount || 0;
+    this.feeRate = this.data.message?.feeRate || 0;
+    this.localAmount = this.data.message?.localAmount || 0;
     this.actions.pipe(
       takeUntil(this.unSubs[0]),
       filter((action) => action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN || action.type === CLNActions.FETCH_CHANNELS_CLN)).
@@ -60,28 +60,28 @@ export class CLNOpenLiquidityChannelComponent implements OnInit, OnDestroy {
 
   resetData() {
     this.form.resetForm();
-    this.form.controls.ramount.setValue(this.data.message.requestedAmount);
-    this.form.controls.feerate.setValue(this.data.message.feeRate);
-    this.form.controls.lamount.setValue(this.data.message.localAmount);
+    this.form.controls.ramount.setValue(this.data.message?.requestedAmount);
+    this.form.controls.feerate.setValue(this.data.message?.feeRate);
+    this.form.controls.lamount.setValue(this.data.message?.localAmount);
     this.calculateFee();
     this.channelConnectionError = '';
   }
 
   calculateFee() {
-    this.node.channelOpeningFee = (+(this.node.option_will_fund.lease_fee_base_msat) / 1000) + (this.requestedAmount * (+this.node.option_will_fund.lease_fee_basis) / 10000) + ((+this.node.option_will_fund.funding_weight / 4) * this.feeRate);
+    this.node.channelOpeningFee = (+(this.node.option_will_fund?.lease_fee_base_msat || 0) / 1000) + (this.requestedAmount * (+(this.node.option_will_fund?.lease_fee_basis || 0)) / 10000) + ((+(this.node.option_will_fund?.funding_weight || 0) / 4) * this.feeRate);
   }
 
   onOpenChannel(): boolean | void {
-    if (!this.node || !this.node.option_will_fund || !this.requestedAmount || !this.feeRate || !this.localAmount) {
+    if (!this.node || !this.node.option_will_fund || !this.requestedAmount || !this.feeRate || !this.localAmount || this.localAmount < 20000) {
       return true;
     }
-    const newChannel = { peerId: this.node.nodeid, satoshis: this.localAmount.toString(), feeRate: this.feeRate + 'perkb', requestAmount: this.requestedAmount.toString(), compactLease: this.node.option_will_fund.compact_lease };
+    const newChannel = { peerId: this.node.nodeid || '', satoshis: this.localAmount.toString(), feeRate: this.feeRate + 'perkb', requestAmount: this.requestedAmount.toString(), compactLease: this.node.option_will_fund.compact_lease };
     this.store.dispatch(saveNewChannel({ payload: newChannel }));
   }
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

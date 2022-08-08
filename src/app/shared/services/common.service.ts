@@ -308,7 +308,7 @@ export class CommonService implements OnDestroy {
 
   extractErrorMessage(err: any, genericErrorMessage: string = 'Unknown Error.') {
     const msg = this.titleCase(
-      (err.error.text && typeof err.error.text === 'string' && err.error.text.includes('<!DOCTYPE html><html lang="en">')) ? 'API Route Does Not Exist.' :
+      (err.error && err.error.text && typeof err.error.text === 'string' && err.error.text.includes('<!DOCTYPE html><html lang="en">')) ? 'API Route Does Not Exist.' :
         (err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error :
           (err.error && err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error :
             (err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error :

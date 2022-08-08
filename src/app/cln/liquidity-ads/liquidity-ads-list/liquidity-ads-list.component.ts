@@ -85,7 +85,10 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
           if (nodeListRes && !(<any[]>nodeListRes).length) { nodeListRes = []; }
           this.logger.info('Received Liquidity Ads Enabled Nodes: ' + JSON.stringify(nodeListRes));
           this.apiCallStatus.status = APICallStatusEnum.COMPLETED;
-          this.liquidityNodesData = (<LookupNode[]>nodeListRes).filter((node) => node.nodeid !== this.information.id);
+          this.liquidityNodesData = (<LookupNode[]>nodeListRes).filter((node) => {
+            node.tor_node = (node.addresses) ? node.addresses.filter((addr) => addr?.type?.includes('tor')).length > 0 : false;
+            return node.nodeid !== this.information.id;
+          });
           this.onCalculateOpeningFee();
           this.loadLiqNodesTable(this.liquidityNodesData);
         }, error: (err) => {

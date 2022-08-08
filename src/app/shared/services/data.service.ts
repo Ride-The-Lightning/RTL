@@ -319,10 +319,10 @@ export class DataService implements OnDestroy {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_FUNDER_POLICY }));
       return this.httpClient.post(this.APIUrl + '/' + updatedLnImplementation + environment.CHANNELS_API + '/funderUpdate', postParams).pipe(
         takeUntil(this.unSubs[11]),
-        map((res) => {
+        map((res: any) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_FUNDER_POLICY }));
           if (postParams) {
-            this.store.dispatch(openSnackBar({ payload: 'Funder Policy Updated Successfully!' }));
+            this.store.dispatch(openSnackBar({ payload: 'Funder Policy Updated Successfully with Compact Lease: ' + res.compact_lease + '!' }));
           }
           return res;
         }), catchError((err) => {

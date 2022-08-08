@@ -13,6 +13,7 @@ import { setChildNodeSettingsLND } from '../../../../lnd/store/lnd.actions';
 import { setChildNodeSettingsCL } from '../../../../cln/store/cln.actions';
 import { setChildNodeSettingsECL } from '../../../../eclair/store/ecl.actions';
 import { DataService } from '../../../services/data.service';
+import { CommonService } from '../../../services/common.service';
 import { ServicesEnum, UI_MESSAGES, LADS_POLICY } from '../../../services/consts-enums-functions';
 import { balance } from '../../../../cln/store/cln.selector';
 import { Balance, FunderPolicy } from '../../../models/clnModels';
@@ -31,20 +32,20 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
   public features = [{ name: 'Offers', enabled: false }, { name: 'Channel Funding Policy', enabled: false }];
   public enableOffers = false;
   public selNode: ConfigSettingsNode;
-  public fundingPolicy: FunderPolicy = null;
+  public fundingPolicy: FunderPolicy = {};
   public policyTypes = LADS_POLICY;
   public selPolicyType = LADS_POLICY[0];
-  public policyMod: number;
-  public leaseFeeBaseSat: number;
-  public leaseFeeBasis: number;
-  public channelFeeMaxBaseSat: number;
-  public channelFeeMaxProportional: number;
+  public policyMod: number | null;
+  public leaseFeeBaseSat: number | null;
+  public leaseFeeBasis: number | null;
+  public channelFeeMaxBaseSat: number | null;
+  public channelFeeMaxProportional: number | null;
   public flgUpdateCalled = false;
-  public updateMsg = '';
+  public updateMsg: { error?: string } | { data?: string } = {};
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
 
-  constructor(private logger: LoggerService, private store: Store<RTLState>, private dataService: DataService) { }
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private dataService: DataService, private commonService: CommonService) { }
 
   ngOnInit() {
     this.dataService.listConfigs().pipe(takeUntil(this.unSubs[0])).subscribe({
@@ -59,7 +60,7 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).
       subscribe((selNode) => {
         this.selNode = selNode;
-        this.enableOffers = this.selNode.settings.enableOffers;
+        this.enableOffers = this.selNode.settings.enableOffers || false;
         this.features[0].enabled = this.enableOffers;
         this.logger.info(this.selNode);
       });
@@ -70,12 +71,12 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
   }
 
   onPanelExpanded(panelId: number) {
-    if (panelId === 1 && !this.fundingPolicy) {
+    if (panelId === 1 && !this.fundingPolicy.policy) {
       this.dataService.getOrUpdateFunderPolicy().pipe(takeUntil(this.unSubs[3])).subscribe((res: any) => {
         this.logger.info('Received Funder Update Policy: ' + JSON.stringify(res));
         this.fundingPolicy = res;
         if (this.fundingPolicy.policy) {
-          this.selPolicyType = LADS_POLICY.find((policy) => policy.id === this.fundingPolicy.policy);
+          this.selPolicyType = LADS_POLICY.find((policy) => policy.id === this.fundingPolicy.policy) || this.policyTypes[0];
         }
         this.policyMod = this.fundingPolicy.policy_mod || this.fundingPolicy.policy_mod === 0 ? this.fundingPolicy.policy_mod : null;
         this.leaseFeeBaseSat = this.fundingPolicy.lease_fee_base_msat ? this.fundingPolicy.lease_fee_base_msat / 1000 : this.fundingPolicy.lease_fee_base_msat === 0 ? 0 : null;
@@ -112,28 +113,29 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
   }
 
   onUpdateFundingPolicy() {
-    this.flgUpdateCalled = false;
-    this.updateMsg = '';
-    this.dataService.getOrUpdateFunderPolicy(this.selPolicyType.id, this.policyMod, this.leaseFeeBaseSat, this.leaseFeeBasis, this.channelFeeMaxBaseSat * 1000, this.channelFeeMaxProportional / 1000).
+    this.flgUpdateCalled = true;
+    this.updateMsg = {};
+    this.dataService.getOrUpdateFunderPolicy(this.selPolicyType.id, this.policyMod, this.leaseFeeBaseSat, this.leaseFeeBasis, (this.channelFeeMaxBaseSat || 0) * 1000, this.channelFeeMaxProportional ? this.channelFeeMaxProportional / 1000 : 0).
       pipe(takeUntil(this.unSubs[4])).
       subscribe({
         next: (updatePolicyRes: any) => {
           this.logger.info(updatePolicyRes);
           this.fundingPolicy = updatePolicyRes;
-          this.onResetPolicy();
-          this.updateMsg = 'Compact Lease: ' + updatePolicyRes.compact_lease;
+          this.updateMsg = { data: 'Compact Lease: ' + updatePolicyRes.compact_lease };
+          setTimeout(() => { this.flgUpdateCalled = false; }, 5000);
         }, error: (err) => {
           this.logger.error(err);
-          this.updateMsg = JSON.stringify(err.error.error.message);
+          this.updateMsg = { error: this.commonService.extractErrorMessage(err, 'Error in updating funder policy') };
+          setTimeout(() => { this.flgUpdateCalled = false; }, 5000);
         }
       });
   }
 
   onResetPolicy() {
     this.flgUpdateCalled = false;
-    this.updateMsg = '';
+    this.updateMsg = {};
     if (this.fundingPolicy.policy) {
-      this.selPolicyType = LADS_POLICY.find((policy) => policy.id === this.fundingPolicy.policy);
+      this.selPolicyType = LADS_POLICY.find((policy) => policy.id === this.fundingPolicy.policy) || this.policyTypes[0];
     } else {
       this.selPolicyType = LADS_POLICY[0];
     }
@@ -146,7 +148,7 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

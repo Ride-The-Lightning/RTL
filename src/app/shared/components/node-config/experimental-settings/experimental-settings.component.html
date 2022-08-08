@@ -78,7 +78,11 @@
                 <mat-error *ngIf="!channelFeeMaxProportional">Max channel routing fee rate is required.</mat-error>
               </mat-form-field>
             </div>
-            <h4 *ngIf="flgUpdateCalled" fxLayoutAlign="start" class="font-bold-500 mt-2">{{(updateMsg.error && updateMsg.error !== '') ? (('Error: ' + updateMsg.error) || 'Unknown Error') : ((updateMsg) || 'Successfully Updated the Funding Policy!')}}</h4>
+            <h4 *ngIf="flgUpdateCalled" fxLayoutAlign="start stretch" class="font-bold-500 mt-2">
+              <span fxFlex="100" class="alert" [ngClass]="{'alert-danger': !!updateMsg.error, 'alert-info': !!updateMsg.data}">
+                {{(updateMsg.error && updateMsg.error !== '') ? (('Error: ' + updateMsg.error) || 'Unknown Error') : (updateMsg.data && updateMsg.data !== '') ? updateMsg.data : 'Successfully Updated the Funding Policy!'}}
+              </span>
+            </h4>
             <div fxLayout="row" class="my-1">
               <button class="mr-1" mat-stroked-button color="primary" (click)="onResetPolicy()" tabindex="7">Reset</button>
               <button mat-flat-button color="primary" (click)="onUpdateFundingPolicy()" tabindex="8">Update</button>
