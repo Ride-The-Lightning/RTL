@@ -21,12 +21,14 @@ import { mockRTLStoreState } from '../../../shared/test-helpers/test-data';
 import { RTLState } from '../../../store/rtl.state';
 import { sendPayment } from '../../store/lnd.actions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
+import { Channel, SendPayment } from '../../../shared/models/lndModels';
 
 describe('LightningSendPaymentsComponent', () => {
   let component: LightningSendPaymentsComponent;
   let fixture: ComponentFixture<LightningSendPaymentsComponent>;
   let commonService: CommonService;
   let store: Store<RTLState>;
+  let storeSpyChannels;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -57,9 +59,11 @@ describe('LightningSendPaymentsComponent', () => {
   });
 
   it('should create', () => {
-    const storeSpyChannels = spyOn(store, 'select').and.returnValue(of(mockRTLStoreState.lnd.channels));
-    component.activeChannels = [];
-    expect(component).toBeTruthy();
+    storeSpyChannels = spyOn(store, 'select').and.returnValue(of(mockRTLStoreState.lnd.channels));
+    component.activeChannels = storeSpyChannels;
+    setTimeout(() => {
+      expect(component).toBeTruthy();
+    }, 1000);
   });
 
   it('should get lnd store value on ngOnInit', () => {
@@ -81,7 +85,7 @@ describe('LightningSendPaymentsComponent', () => {
     };
     const sendButton = fixture.debugElement.nativeElement.querySelector('#sendBtn');
     sendButton.click();
-    const expectedSendPaymentPayload = {
+    const expectedSendPaymentPayload: SendPayment = {
       uiMessage: UI_MESSAGES.SEND_PAYMENT, outgoingChannel: null, feeLimitType: 'none', feeLimit: null, fromDialog: true,
       paymentReq: 'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3'
     };
@@ -150,7 +154,7 @@ describe('LightningSendPaymentsComponent', () => {
   it('should decode payment when pay request changed and fiat conversion is true', () => {
     const updatedSelNode: SelNodeChild = JSON.parse(JSON.stringify(component.selNode));
     updatedSelNode.fiatConversion = true;
-    updatedSelNode.currencyUnits[2] = 'USD';
+    updatedSelNode.currencyUnits = ['BTC', 'SAT', 'USD'];
     Object.defineProperty(component, 'selNode', { value: updatedSelNode });
     component.onPaymentRequestEntry('lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3');
     expect(component.paymentDecodedHint).toEqual('Sending: 400 Sats (USD 0.13) | Memo: Testing ngrx Effects 4');
