@@ -12,6 +12,7 @@ import { ExperimentalSettingsComponent } from './experimental-settings.component
 import { mockDataService, mockLoggerService } from '../../../test-helpers/mock-services';
 import { LoggerService } from '../../../services/logger.service';
 import { DataService } from '../../../services/data.service';
+import { CommonService } from '../../../services/common.service';
 
 describe('ExperimentalSettingsComponent', () => {
   let component: ExperimentalSettingsComponent;
@@ -27,6 +28,7 @@ describe('ExperimentalSettingsComponent', () => {
         StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer })
       ],
       providers: [
+        CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]

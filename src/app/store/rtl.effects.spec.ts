@@ -97,17 +97,15 @@ describe('RTL Root Effects', () => {
       done();
       setTimeout(() => sub.unsubscribe());
     });
-
-    const req = httpTestingController.expectOne(environment.CONF_API + '/updateSelNode');
+    const req = httpTestingController.expectOne(environment.CONF_API + '/updateSelNode/1/-1');
     const expectedResponse = mockResponseData.setSelectedNodeSuccess;
     req.flush(expectedResponse);
-    expect(req.request.method).toEqual('POST');
-    expect(req.request.body).toEqual({ prevNodeIndex: -1, currNodeIndex: setSelectedNodeAction.payload.currentLnNode.index });
+    expect(req.request.method).toEqual('GET');
   });
 
   it('should throw error on dispatch set selected node', (done) => {
     const storeDispatchSpy = spyOn(mockStore, 'dispatch').and.callThrough();
-    const httpClientSpy = spyOn(httpClient, 'post').and.returnValue(throwError(() => mockResponseData.error));
+    const httpClientSpy = spyOn(httpClient, 'get').and.returnValue(throwError(() => mockResponseData.error));
     actions = new ReplaySubject(1);
     const setSelectedNodeAction = {
       type: RTLActions.SET_SELECTED_NODE,
