@@ -1,12 +1,12 @@
 import { parse } from 'cookie';
 import * as cookieParser from 'cookie-parser';
 import * as crypto from 'crypto';
-import WebSocket from 'ws';
+import { WebSocketServer } from 'ws';
 import { Logger } from './logger.js';
 import { Common } from './common.js';
 import { verifyWSUser } from './authCheck.js';
 import { EventEmitter } from 'events';
-export class WebSocketServer {
+export class RTLWebSocketServer {
     constructor() {
         this.logger = Logger;
         this.common = Common;
@@ -29,7 +29,7 @@ export class WebSocketServer {
         }, 1000 * 60 * 60); // Terminate broken connections every hour
         this.mount = (httpServer) => {
             this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Connecting Websocket Server..' });
-            this.webSocketServer = new WebSocket.Server({ noServer: true, path: this.common.baseHref + '/api/ws', verifyClient: (process.env.NODE_ENV === 'development') ? null : verifyWSUser });
+            this.webSocketServer = new WebSocketServer({ noServer: true, path: this.common.baseHref + '/api/ws', verifyClient: (process.env.NODE_ENV === 'development') ? null : verifyWSUser });
             httpServer.on('upgrade', (request, socket, head) => {
                 if (request.headers['upgrade'] !== 'websocket') {
                     socket.end('HTTP/1.1 400 Bad Request');
@@ -176,4 +176,4 @@ export class WebSocketServer {
         this.getClients = () => this.webSocketServer.clients;
     }
 }
-export const WSServer = new WebSocketServer();
+export const WSServer = new RTLWebSocketServer();

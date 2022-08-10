@@ -42,7 +42,7 @@ import { MatTreeModule } from '@angular/material/tree';
 
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { QrCodeModule } from 'ng-qrcode';
-import { PerfectScrollbarModule, PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
+import { PerfectScrollbarModule, PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar-next';
 
 import { ThemeOverlay } from './theme/overlay-container/theme-overlay';
 import { OverlayContainer } from '@angular/cdk/overlay';

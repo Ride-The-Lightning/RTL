@@ -1,15 +1,14 @@
 import { parse } from 'cookie';
 import * as cookieParser from 'cookie-parser';
 import * as crypto from 'crypto';
-import WebSocket from 'ws';
-import { Application } from 'express';
+import { WebSocketServer } from 'ws';
 import { Logger, LoggerService } from './logger.js';
 import { Common, CommonService } from './common.js';
 import { verifyWSUser } from './authCheck.js';
 import { EventEmitter } from 'events';
 import { CommonSelectedNode } from '../models/config.model.js';
 
-export class WebSocketServer {
+export class RTLWebSocketServer {
 
   public logger: LoggerService = Logger;
   public common: CommonService = Common;
@@ -34,7 +33,7 @@ export class WebSocketServer {
 
   public mount = (httpServer) => {
     this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Connecting Websocket Server..' });
-    this.webSocketServer = new WebSocket.Server({ noServer: true, path: this.common.baseHref + '/api/ws', verifyClient: (process.env.NODE_ENV === 'development') ? null : verifyWSUser });
+    this.webSocketServer = new WebSocketServer({ noServer: true, path: this.common.baseHref + '/api/ws', verifyClient: (process.env.NODE_ENV === 'development') ? null : verifyWSUser });
     httpServer.on('upgrade', (request, socket, head) => {
       if (request.headers['upgrade'] !== 'websocket') {
         socket.end('HTTP/1.1 400 Bad Request');
@@ -177,11 +176,11 @@ export class WebSocketServer {
     }
   };
 
-  public generateAcceptValue = (acceptKey) => crypto.createHash('sha1').update(acceptKey + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', 'binary').digest('base64');
+  public generateAcceptValue = (acceptKey) => crypto.createHash('sha1').update(acceptKey + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', 'binary' as crypto.Utf8AsciiLatin1Encoding).digest('base64');
 
   public getClients = () => this.webSocketServer.clients;
 
 }
 
-export const WSServer = new WebSocketServer();
+export const WSServer = new RTLWebSocketServer();
 
