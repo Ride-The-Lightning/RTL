@@ -89,10 +89,10 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   }
 
   private filterChannels(): Channel[] {
-    return this.activeChannels.filter((channel) => {
+    return this.activeChannels && this.activeChannels.length ? this.activeChannels.filter((channel) => {
       const alias = channel.remote_alias ? channel.remote_alias.toLowerCase() : channel.chan_id ? channel.chan_id.toLowerCase() : '';
       return alias.indexOf(this.selectedChannelCtrl.value ? this.selectedChannelCtrl.value.toLowerCase() : '') === 0 && (channel.local_balance || 0) >= +(this.paymentDecoded.num_satoshis ? this.paymentDecoded.num_satoshis : 0);
-    });
+    }) : [];
   }
 
   displayFn(channel: Channel): string {
@@ -101,10 +101,10 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
 
   onSelectedChannelChanged() {
     if (this.selectedChannelCtrl.value && this.selectedChannelCtrl.value.length > 0 && typeof this.selectedChannelCtrl.value === 'string') {
-      const foundChannels = this.activeChannels.filter((channel) => {
+      const foundChannels = this.activeChannels && this.activeChannels.length ? this.activeChannels.filter((channel) => {
         const alias = channel.remote_alias ? channel.remote_alias.toLowerCase() : channel.chan_id ? channel.chan_id.toLowerCase() : '';
         return alias.length === this.selectedChannelCtrl.value.length && alias.indexOf(this.selectedChannelCtrl.value ? this.selectedChannelCtrl.value.toLowerCase() : '') === 0;
-      });
+      }) : [];
       if (foundChannels && foundChannels.length > 0) {
         this.selectedChannelCtrl.setValue(foundChannels[0]);
         this.selectedChannelCtrl.setErrors(null);
