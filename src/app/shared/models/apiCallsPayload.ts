@@ -1,7 +1,7 @@
 import { APICallStatusEnum } from '../services/consts-enums-functions';
 
 export interface ApiCallStatusPayload {
-  status: APICallStatusEnum;
+  status?: APICallStatusEnum;
   action?: string;
   statusCode?: string;
   message?: string;

@@ -285,8 +285,6 @@ export interface LocalFailedEvent {
 
 export interface ListForwards {
   status?: CLNForwardingEventsStatusEnum;
-  offset?: number;
-  maxLen?: number;
   totalForwards?: number;
   listForwards?: ForwardingEvent[] | LocalFailedEvent[];
 }
@@ -498,6 +496,4 @@ export interface FunderPolicy {
 
 export interface FetchListForwards {
   status?: string;
-  maxLen?: number;
-  offset?: number;
 }

@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Subject, of } from 'rxjs';
-import { map, mergeMap, catchError, takeUntil, withLatestFrom } from 'rxjs/operators';
+import { map, mergeMap, catchError, takeUntil } from 'rxjs/operators';
 import { Location } from '@angular/common';
 
 import { environment, API_URL } from '../../../environments/environment';
@@ -328,7 +328,7 @@ export class CLNEffects implements OnDestroy {
     map((channels: Channel[]) => {
       this.logger.info(channels);
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchChannels', status: APICallStatusEnum.COMPLETED } }));
-      this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.SETTLED, maxLen: 10, offset: 0 } }));
+      // this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.SETTLED } }));
       const sortedChannels = { activeChannels: <Channel[]>[], pendingChannels: <Channel[]>[], inactiveChannels: <Channel[]>[] };
       channels.forEach((channel) => {
         if (channel.state === 'CHANNELD_NORMAL') {
@@ -656,57 +656,28 @@ export class CLNEffects implements OnDestroy {
 
   fetchForwardingHistoryCL = createEffect(() => this.actions.pipe(
     ofType(CLNActions.GET_FORWARDING_HISTORY_CLN),
-    withLatestFrom(this.store.select(clnNodeInformation)),
-    mergeMap(([action, nodeInfo]: [{ type: string, payload: FetchListForwards }, GetInfo]) => {
-      const status = (action.payload.status) ? action.payload.status : 'settled';
-      const maxLen = (action.payload.maxLen) ? action.payload.maxLen : 10;
-      const offset = (action.payload.offset) ? action.payload.offset : 0;
-      const statusInitial = status.charAt(0).toUpperCase();
+    mergeMap((action: { type: string, payload: { status: string } }) => {
+      const statusInitial = action.payload.status.charAt(0).toUpperCase();
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchForwardingHistory' + statusInitial, status: APICallStatusEnum.INITIATED } }));
-      const isNewerVersion = (nodeInfo.api_version) ? this.commonService.isVersionCompatible(nodeInfo.api_version, '0.7.3') : false;
-      let listForwardsUrl = '';
-      if (isNewerVersion) {
-        listForwardsUrl = this.CHILD_API_URL + environment.CHANNELS_API + '/listForwardsPaginated?status=' + status + '&maxLen=' + maxLen + '&offset=' + offset;
-      } else {
-        listForwardsUrl = this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=' + status;
-      }
-      return this.httpClient.get(listForwardsUrl).pipe(
-        map((fhRes: ListForwards) => {
-          this.logger.info(fhRes);
-          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchForwardingHistory' + statusInitial, status: APICallStatusEnum.COMPLETED } }));
-          if (!isNewerVersion) {
-            const filteredLocalFailedEvents: LocalFailedEvent[] = [];
-            const filteredFailedEvents: ForwardingEvent[] = [];
-            const filteredSuccessfulEvents: ForwardingEvent[] = [];
-            (<any[]>fhRes).forEach((event: ForwardingEvent | LocalFailedEvent) => {
-              if (event.status === CLNForwardingEventsStatusEnum.SETTLED) {
-                filteredSuccessfulEvents.push(event);
-              } else if (event.status === CLNForwardingEventsStatusEnum.FAILED) {
-                filteredFailedEvents.push(event);
-              } else if (event.status === CLNForwardingEventsStatusEnum.LOCAL_FAILED) {
-                filteredLocalFailedEvents.push(event);
-              }
-            });
+      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=' + action.payload.status).
+        pipe(
+          map((fhRes: any) => {
+            this.logger.info(fhRes);
+            this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchForwardingHistory' + statusInitial, status: APICallStatusEnum.COMPLETED } }));
             if (action.payload.status === CLNForwardingEventsStatusEnum.FAILED) {
-              this.store.dispatch(setForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.FAILED, offset: offset, maxLen: maxLen, totalForwards: filteredFailedEvents.length, listForwards: filteredFailedEvents } }));
+              this.store.dispatch(setForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.FAILED, totalForwards: fhRes.length, listForwards: fhRes } }));
             } else if (action.payload.status === CLNForwardingEventsStatusEnum.LOCAL_FAILED) {
-              this.store.dispatch(setForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.LOCAL_FAILED, offset: offset, maxLen: maxLen, totalForwards: filteredLocalFailedEvents.length, listForwards: filteredLocalFailedEvents } }));
+              this.store.dispatch(setForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.LOCAL_FAILED, totalForwards: fhRes.length, listForwards: fhRes } }));
             } else if (action.payload.status === CLNForwardingEventsStatusEnum.SETTLED) {
-              this.store.dispatch(setForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.SETTLED, offset: offset, maxLen: maxLen, totalForwards: filteredSuccessfulEvents.length, listForwards: filteredSuccessfulEvents } }));
+              this.store.dispatch(setForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.SETTLED, totalForwards: fhRes.length, listForwards: fhRes } }));
             }
             return { type: RTLActions.VOID };
-          } else {
-            return {
-              type: CLNActions.SET_FORWARDING_HISTORY_CLN,
-              payload: fhRes
-            };
-          }
-        }),
-        catchError((err: any) => {
-          this.handleErrorWithAlert('FetchForwardingHistory' + statusInitial, UI_MESSAGES.NO_SPINNER, 'Get ' + status + ' Forwarding History Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/listForwardsPaginated?status=' + status, err);
-          return of({ type: RTLActions.VOID });
-        })
-      );
+          }),
+          catchError((err: any) => {
+            this.handleErrorWithAlert('FetchForwardingHistory' + statusInitial, UI_MESSAGES.NO_SPINNER, 'Get ' + action.payload.status + ' Forwarding History Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards?status=' + action.payload.status, err);
+            return of({ type: RTLActions.VOID });
+          })
+        );
     })
   ));
 

@@ -2,13 +2,13 @@ import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit } from '@angular
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
-import { takeUntil, withLatestFrom } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { ForwardingEvent, GetInfo, ListForwards } from '../../../shared/models/clnModels';
+import { ForwardingEvent, ListForwards } from '../../../shared/models/clnModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, CLNForwardingEventsStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -17,7 +17,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
 import { getForwardingHistory } from '../../store/cln.actions';
-import { clnNodeInformation, failedForwardingHistory } from '../../store/cln.selector';
+import { failedForwardingHistory } from '../../store/cln.selector';
 
 @Component({
   selector: 'rtl-cln-failed-history',
@@ -31,8 +31,6 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
-  public flgCompatible = true;
-  public information: GetInfo = {};
   public failedEvents: any;
   public errorMessage = '';
   public displayedColumns: any[] = [];
@@ -45,7 +43,7 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
-  public apiCallStatus: ApiCallStatusPayload = null;
+  public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -66,26 +64,18 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
   ngOnInit() {
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     this.router.onSameUrlNavigation = 'reload';
-    this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.FAILED, maxLen: this.pageSize, offset: 0 } }));
-    this.store.select(failedForwardingHistory).pipe(takeUntil(this.unSubs[0]),
-      withLatestFrom(this.store.select(clnNodeInformation))).
-      subscribe(([ffhSeletor, nodeInfo]: [{ failedForwardingHistory: ListForwards, apiCallStatus: ApiCallStatusPayload }, GetInfo]) => {
-        this.information = nodeInfo;
-        this.flgCompatible = (this.information.api_version) ? this.commonService.isVersionCompatible(this.information.api_version, '0.7.3') : true;
+    this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.FAILED } }));
+    this.store.select(failedForwardingHistory).pipe(takeUntil(this.unSubs[0])).
+      subscribe((ffhSeletor: { failedForwardingHistory: ListForwards, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = ffhSeletor.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.totalFailedTransactions = ffhSeletor.failedForwardingHistory.totalForwards;
-        this.indexOffset = ffhSeletor.failedForwardingHistory.offset;
+        this.totalFailedTransactions = ffhSeletor.failedForwardingHistory.totalForwards || 0;
         this.failedEvents = ffhSeletor.failedForwardingHistory.listForwards || [];
         if (this.failedEvents.length > 0 && this.sort && this.paginator) {
-          if (this.flgCompatible) {
-            this.loadFailedEventsTable(this.failedEvents);
-          } else {
-            this.loadFailedEventsTable(this.failedEvents.slice(0, this.pageSize));
-          }
+          this.loadFailedEventsTable(this.failedEvents.slice(0, this.pageSize));
         }
         this.logger.info(ffhSeletor);
       });
@@ -93,11 +83,7 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
 
   ngAfterViewInit() {
     if (this.failedEvents.length > 0) {
-      if (this.flgCompatible) {
-        this.loadFailedEventsTable(this.failedEvents);
-      } else {
-        this.loadFailedEventsTable(this.failedEvents.slice(0, this.pageSize));
-      }
+      this.loadFailedEventsTable(this.failedEvents.slice(0, this.pageSize));
     }
   }
 
@@ -130,13 +116,13 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
     this.failedForwardingEvents.sort = this.sort;
     this.failedForwardingEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.failedForwardingEvents.filterPredicate = (event: ForwardingEvent, fltr: string) => {
-      const newEvent = ((event.received_time ? this.datePipe.transform(new Date(event.received_time * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') +
-        (event.resolved_time ? this.datePipe.transform(new Date(event.resolved_time * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') +
+      const newEvent = (event.received_time ? this.datePipe.transform(new Date(event.received_time * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '' +
+        (event.resolved_time ? this.datePipe.transform(new Date(event.resolved_time * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') +
         (event.payment_hash ? event.payment_hash.toLowerCase() : '') +
         (event.in_channel ? event.in_channel.toLowerCase() : '') + (event.out_channel ? event.out_channel.toLowerCase() : '') +
         (event.in_channel_alias ? event.in_channel_alias.toLowerCase() : '') + (event.out_channel_alias ? event.out_channel_alias.toLowerCase() : '') +
         (event.in_msatoshi ? (event.in_msatoshi / 1000) : '') + (event.out_msatoshi ? (event.out_msatoshi / 1000) : '') + (event.fee ? event.fee : ''));
-      return newEvent.includes(fltr);
+      return newEvent?.includes(fltr) || false;
     };
     this.applyFilter();
     this.logger.info(this.failedForwardingEvents);
@@ -159,16 +145,12 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
     } else {
       this.indexOffset = event.pageIndex * this.pageSize;
     }
-    if (this.flgCompatible) {
-      this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.FAILED, maxLen: this.pageSize, offset: this.indexOffset } }));
-    } else {
-      this.loadFailedEventsTable(this.failedEvents.slice(this.indexOffset, (this.indexOffset + this.pageSize)));
-    }
+    this.loadFailedEventsTable(this.failedEvents.slice(this.indexOffset, (this.indexOffset + this.pageSize)));
   }
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

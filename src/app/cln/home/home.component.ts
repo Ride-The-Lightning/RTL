@@ -63,12 +63,12 @@ export class CLNHomeComponent implements OnInit, OnDestroy {
   public merchantCardHeight = '65px';
   public sortField = 'Balance Score';
   public errorMessages = ['', '', '', '', '', ''];
-  public apiCallStatusNodeInfo: ApiCallStatusPayload = null;
-  public apiCallStatusFees: ApiCallStatusPayload = null;
-  public apiCallStatusBalance: ApiCallStatusPayload = null;
-  public apiCallStatusLRBal: ApiCallStatusPayload = null;
-  public apiCallStatusChannels: ApiCallStatusPayload = null;
-  public apiCallStatusFHistory: ApiCallStatusPayload = null;
+  public apiCallStatusNodeInfo: ApiCallStatusPayload | null = null;
+  public apiCallStatusFees: ApiCallStatusPayload | null = null;
+  public apiCallStatusBalance: ApiCallStatusPayload | null = null;
+  public apiCallStatusLRBal: ApiCallStatusPayload | null = null;
+  public apiCallStatusChannels: ApiCallStatusPayload | null = null;
+  public apiCallStatusFHistory: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -127,10 +127,10 @@ export class CLNHomeComponent implements OnInit, OnDestroy {
         this.apiCallStatusNodeInfo = infoSettingsStatusSelector.apisCallStatus[0];
         this.apiCallStatusFHistory = infoSettingsStatusSelector.apisCallStatus[1];
         if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[0] = (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message;
+          this.errorMessages[0] = !this.apiCallStatusNodeInfo.message ? '' : (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message;
         }
         if (this.apiCallStatusFHistory.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[5] = (typeof (this.apiCallStatusFHistory.message) === 'object') ? JSON.stringify(this.apiCallStatusFHistory.message) : this.apiCallStatusFHistory.message;
+          this.errorMessages[5] = !this.apiCallStatusFHistory.message ? '' : (typeof (this.apiCallStatusFHistory.message) === 'object') ? JSON.stringify(this.apiCallStatusFHistory.message) : this.apiCallStatusFHistory.message;
         }
         this.selNode = infoSettingsStatusSelector.nodeSettings;
         this.information = infoSettingsStatusSelector.information;
@@ -140,7 +140,7 @@ export class CLNHomeComponent implements OnInit, OnDestroy {
         this.errorMessages[1] = '';
         this.apiCallStatusFees = feesSeletor.apiCallStatus;
         if (this.apiCallStatusFees.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[1] = (typeof (this.apiCallStatusFees.message) === 'object') ? JSON.stringify(this.apiCallStatusFees.message) : this.apiCallStatusFees.message;
+          this.errorMessages[1] = !this.apiCallStatusFees.message ? '' : (typeof (this.apiCallStatusFees.message) === 'object') ? JSON.stringify(this.apiCallStatusFees.message) : this.apiCallStatusFees.message;
         }
         this.fees = feesSeletor.fees;
         this.logger.info(feesSeletor);
@@ -150,17 +150,17 @@ export class CLNHomeComponent implements OnInit, OnDestroy {
         this.errorMessages[4] = '';
         this.apiCallStatusChannels = channelsSeletor.apiCallStatus;
         if (this.apiCallStatusChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[4] = (typeof (this.apiCallStatusChannels.message) === 'object') ? JSON.stringify(this.apiCallStatusChannels.message) : this.apiCallStatusChannels.message;
+          this.errorMessages[4] = !this.apiCallStatusChannels.message ? '' : (typeof (this.apiCallStatusChannels.message) === 'object') ? JSON.stringify(this.apiCallStatusChannels.message) : this.apiCallStatusChannels.message;
         }
         this.totalInboundLiquidity = 0;
         this.totalOutboundLiquidity = 0;
         this.activeChannels = channelsSeletor.activeChannels;
         this.activeChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels, 'balancedness'))) || [];
-        this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels.filter((channel) => channel.msatoshi_to_them > 0), 'msatoshi_to_them'))) || [];
-        this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels.filter((channel) => channel.msatoshi_to_us > 0), 'msatoshi_to_us'))) || [];
+        this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels.filter((channel) => channel.msatoshi_to_them ? channel.msatoshi_to_them > 0 : false), 'msatoshi_to_them'))) || [];
+        this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels.filter((channel) => channel.msatoshi_to_us ? channel.msatoshi_to_us > 0 : false), 'msatoshi_to_us'))) || [];
         this.activeChannels.forEach((channel) => {
-          this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil(channel.msatoshi_to_them / 1000);
-          this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor(channel.msatoshi_to_us / 1000);
+          this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil((channel.msatoshi_to_them || 0) / 1000);
+          this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor((channel.msatoshi_to_us || 0) / 1000);
         });
         this.channelsStatus.active.channels = channelsSeletor.activeChannels.length || 0;
         this.channelsStatus.pending.channels = channelsSeletor.pendingChannels.length || 0;
@@ -173,15 +173,15 @@ export class CLNHomeComponent implements OnInit, OnDestroy {
         this.errorMessages[2] = '';
         this.apiCallStatusBalance = balanceSeletor.apiCallStatus;
         if (this.apiCallStatusBalance.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[2] = (typeof (this.apiCallStatusBalance.message) === 'object') ? JSON.stringify(this.apiCallStatusBalance.message) : this.apiCallStatusBalance.message;
+          this.errorMessages[2] = !this.apiCallStatusBalance.message ? '' : (typeof (this.apiCallStatusBalance.message) === 'object') ? JSON.stringify(this.apiCallStatusBalance.message) : this.apiCallStatusBalance.message;
         }
         this.errorMessages[3] = '';
         this.apiCallStatusLRBal = lrBalanceSeletor.apiCallStatus;
         if (this.apiCallStatusLRBal.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[3] = (typeof (this.apiCallStatusLRBal.message) === 'object') ? JSON.stringify(this.apiCallStatusLRBal.message) : this.apiCallStatusLRBal.message;
+          this.errorMessages[3] = !this.apiCallStatusLRBal.message ? '' : (typeof (this.apiCallStatusLRBal.message) === 'object') ? JSON.stringify(this.apiCallStatusLRBal.message) : this.apiCallStatusLRBal.message;
         }
         this.totalBalance = balanceSeletor.balance;
-        this.balances.onchain = balanceSeletor.balance.totalBalance;
+        this.balances.onchain = balanceSeletor.balance.totalBalance || 0;
         this.balances.lightning = lrBalanceSeletor.localRemoteBalance.localBalance;
         this.balances.total = this.balances.lightning + this.balances.onchain;
         this.balances = Object.assign({}, this.balances);
@@ -206,8 +206,8 @@ export class CLNHomeComponent implements OnInit, OnDestroy {
     if (this.sortField === 'Balance Score') {
       this.sortField = 'Capacity';
       this.activeChannelsCapacity = this.activeChannels.sort((a, b) => {
-        const x = +a.msatoshi_to_us + +a.msatoshi_to_them;
-        const y = +b.msatoshi_to_them + +b.msatoshi_to_them;
+        const x = (a.msatoshi_to_us ? +a.msatoshi_to_us : 0) + (a.msatoshi_to_them ? +a.msatoshi_to_them : 0);
+        const y = (b.msatoshi_to_them ? +b.msatoshi_to_them : 0) + (b.msatoshi_to_them ? +b.msatoshi_to_them : 0);
         return ((x > y) ? -1 : ((x < y) ? 1 : 0));
       });
     } else {
@@ -218,7 +218,7 @@ export class CLNHomeComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }
