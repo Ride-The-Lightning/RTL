@@ -1,9 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil, filter, withLatestFrom } from 'rxjs/operators';
+import { takeUntil, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { Actions } from '@ngrx/effects';
 import { faSmile, faFrown } from '@fortawesome/free-regular-svg-icons';
 import { faAngleDoubleDown, faAngleDoubleUp, faChartPie, faBolt, faServer, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
 
@@ -72,7 +71,7 @@ export class CLNHomeComponent implements OnInit, OnDestroy {
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<RTLState>, private actions: Actions, private commonService: CommonService, private router: Router) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private router: Router) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.operatorCards = [
@@ -156,8 +155,8 @@ export class CLNHomeComponent implements OnInit, OnDestroy {
         this.totalOutboundLiquidity = 0;
         this.activeChannels = channelsSeletor.activeChannels;
         this.activeChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels, 'balancedness'))) || [];
-        this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels.filter((channel) => channel.msatoshi_to_them ? channel.msatoshi_to_them > 0 : false), 'msatoshi_to_them'))) || [];
-        this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels.filter((channel) => channel.msatoshi_to_us ? channel.msatoshi_to_us > 0 : false), 'msatoshi_to_us'))) || [];
+        this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels.filter((channel) => (channel.msatoshi_to_them ? channel.msatoshi_to_them > 0 : false)), 'msatoshi_to_them'))) || [];
+        this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels.filter((channel) => (channel.msatoshi_to_us ? channel.msatoshi_to_us > 0 : false)), 'msatoshi_to_us'))) || [];
         this.activeChannels.forEach((channel) => {
           this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil((channel.msatoshi_to_them || 0) / 1000);
           this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor((channel.msatoshi_to_us || 0) / 1000);

@@ -55,7 +55,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

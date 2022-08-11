@@ -46,7 +46,7 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apiCallStatus: ApiCallStatusPayload = null;
+  public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -73,7 +73,7 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
         this.errorMessage = '';
         this.apiCallStatus = allChannelsSelector.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.pendingChannels = allChannelsSelector.pendingChannels;
         this.loadChannelsTable();
@@ -134,7 +134,7 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

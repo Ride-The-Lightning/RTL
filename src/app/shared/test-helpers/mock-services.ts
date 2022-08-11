@@ -286,7 +286,7 @@ export class mockCLEffects {
   invoicesFetchCL = of(() => ({}));
   SetChannelTransactionCL = of(() => ({}));
   utxosFetchCL = of(() => ({}));
-  setQueryRoutesCL = of(() => ({ type: CLNActions.SET_QUERY_ROUTES_CLN, payload: { routes: [] } }))
+  setQueryRoutesCL = of(() => ({ type: CLNActions.SET_QUERY_ROUTES_CLN, payload: { routes: [] } }));
 
 }
 

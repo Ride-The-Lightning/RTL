@@ -41,7 +41,7 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public selFilter = '';
-  public apiCallStatus: ApiCallStatusPayload = null;
+  public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -69,7 +69,7 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
         this.errorMessage = '';
         this.apiCallStatus = transactionsSelector.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         if (transactionsSelector.transactions) {
           this.loadTransactionsTable(transactionsSelector.transactions);
@@ -124,7 +124,7 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
 
   ngOnDestroy() {
     this.unsub.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

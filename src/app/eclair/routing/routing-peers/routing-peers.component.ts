@@ -41,7 +41,7 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   public errorMessage = '';
   public filterIn = '';
   public filterOut = '';
-  public apiCallStatus: ApiCallStatusPayload = null;
+  public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -69,7 +69,7 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
         this.errorMessage = '';
         this.apiCallStatus = paymentsSelector.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.routingPeersData = paymentsSelector.payments && paymentsSelector.payments.relayed ? paymentsSelector.payments.relayed : [];
         if (this.routingPeersData.length > 0 && this.sortIn && this.paginatorIn && this.sortOut && this.paginatorOut) {
@@ -141,7 +141,7 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

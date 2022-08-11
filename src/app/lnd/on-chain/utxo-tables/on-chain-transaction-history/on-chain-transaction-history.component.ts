@@ -41,7 +41,7 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public selFilter = '';
-  public apiCallStatus: ApiCallStatusPayload = null;
+  public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -68,7 +68,7 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
         this.errorMessage = '';
         this.apiCallStatus = transactionsSelector.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         if (transactionsSelector.transactions && transactionsSelector.transactions.length > 0) {
           this.transactions = transactionsSelector.transactions;
@@ -133,7 +133,7 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

@@ -13,6 +13,7 @@ import { mockDataService, mockLoggerService } from '../../../shared/test-helpers
 import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../shared/services/data.service';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('CLNForwardingHistoryComponent', () => {
   let component: CLNForwardingHistoryComponent;
@@ -23,6 +24,7 @@ describe('CLNForwardingHistoryComponent', () => {
       declarations: [CLNForwardingHistoryComponent],
       imports: [
         BrowserAnimationsModule,
+        RouterTestingModule,
         SharedModule,
         StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer })
       ],

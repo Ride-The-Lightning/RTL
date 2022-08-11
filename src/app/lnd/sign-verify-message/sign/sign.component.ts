@@ -18,9 +18,9 @@ export class SignComponent implements OnDestroy {
   public signature = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private dataService: DataService, private snackBar: MatSnackBar, private logger: LoggerService) {}
+  constructor(private dataService: DataService, private snackBar: MatSnackBar, private logger: LoggerService) { }
 
-  onSign(): boolean|void {
+  onSign(): boolean | void {
     if (!this.message || this.message === '') {
       return true;
     }
@@ -49,7 +49,7 @@ export class SignComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

@@ -33,7 +33,7 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faEye = faEye;
-  public faEyeSlash = faEyeSlash
+  public faEyeSlash = faEyeSlash;
   public inactiveChannels: Channel[];
   public totalBalance = 0;
   public displayedColumns: any[] = [];
@@ -49,7 +49,7 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apiCallStatus: ApiCallStatusPayload = null;
+  public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -76,7 +76,7 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
         this.errorMessage = '';
         this.apiCallStatus = allChannelsSelector.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.inactiveChannels = allChannelsSelector.inactiveChannels;
         this.loadChannelsTable();
@@ -92,7 +92,7 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
       });
     this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[3])).
       subscribe((ocBalSelector: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.totalBalance = ocBalSelector.onchainBalance.total;
+        this.totalBalance = ocBalSelector.onchainBalance.total || 0;
       });
   }
 
@@ -123,7 +123,7 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
       pipe(takeUntil(this.unSubs[4])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.store.dispatch(closeChannel({ payload: { channelId: channelToClose.channelId, force: forceClose } }));
+          this.store.dispatch(closeChannel({ payload: { channelId: channelToClose.channelId || '', force: forceClose } }));
         }
       });
   }
@@ -163,7 +163,7 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

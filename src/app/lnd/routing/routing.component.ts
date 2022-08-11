@@ -66,7 +66,7 @@ export class RoutingComponent implements OnInit, OnDestroy {
     this.resetData();
     this.store.dispatch(setForwardingHistory({ payload: { forwarding_events: [] } }));
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

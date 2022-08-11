@@ -21,7 +21,7 @@ import { mockRTLStoreState } from '../../../shared/test-helpers/test-data';
 import { RTLState } from '../../../store/rtl.state';
 import { sendPayment } from '../../store/lnd.actions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
-import { Channel, SendPayment } from '../../../shared/models/lndModels';
+import { SendPayment } from '../../../shared/models/lndModels';
 
 describe('LightningSendPaymentsComponent', () => {
   let component: LightningSendPaymentsComponent;
@@ -61,9 +61,7 @@ describe('LightningSendPaymentsComponent', () => {
   it('should create', () => {
     storeSpyChannels = spyOn(store, 'select').and.returnValue(of(mockRTLStoreState.lnd.channels));
     component.activeChannels = storeSpyChannels;
-    setTimeout(() => {
-      expect(component).toBeTruthy();
-    }, 1000);
+    expect(component).toBeTruthy();
   });
 
   it('should get lnd store value on ngOnInit', () => {

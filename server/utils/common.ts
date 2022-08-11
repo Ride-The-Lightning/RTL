@@ -331,7 +331,7 @@ export class CommonService {
         throw new Error(err);
       }
     }
-  }
+  };
 
   public refreshCookie = () => {
     try {
@@ -341,7 +341,7 @@ export class CommonService {
       this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Something went wrong while refreshing cookie', error: err });
       throw new Error(err);
     }
-  }
+  };
 
   public createDirectory = (directoryName) => {
     const initDir = isAbsolute(directoryName) ? sep : '';
@@ -377,7 +377,7 @@ export class CommonService {
     } catch (err) {
       this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Password hashing failed', error: err });
     }
-  }
+  };
 
   public getAllNodeAllChannelBackup = (node: CommonSelectedNode) => {
     const channel_backup_file = node.channel_backup_path + sep + 'channel-all.bak';
@@ -419,7 +419,7 @@ export class CommonService {
         (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] === +checkVersionsArr[1] && +versionsArr[2] >= +checkVersionsArr[2]);
     }
     return false;
-  }
+  };
 
   public getMonthDays = (selMonth, selYear) => ((selMonth === 1 && selYear % 4 === 0) ? (this.MONTHS[selMonth].days + 1) : this.MONTHS[selMonth].days);
 
@@ -438,7 +438,7 @@ export class CommonService {
       this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + selNode.ln_server_url });
       this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + this.logout_redirect_link + '\r\n' });
     }
-  }
+  };
 
   public filterData = (dataKey, lnImplementation) => {
     let search_string = '';
@@ -473,7 +473,7 @@ export class CommonService {
     const foundDataLine = this.dummy_data_array_from_file.find((dataItem) => dataItem.includes(search_string));
     const dataStr = foundDataLine ? foundDataLine.substring((foundDataLine.indexOf(search_string)) + search_string.length) : '{}';
     return JSON.parse(dataStr);
-  }
+  };
 
 }
 

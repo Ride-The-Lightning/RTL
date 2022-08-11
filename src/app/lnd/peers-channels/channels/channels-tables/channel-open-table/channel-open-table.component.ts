@@ -56,12 +56,12 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
-  public versionsArr = [];
+  public versionsArr: string[] = [];
   public faEye = faEye;
-  public faEyeSlash = faEyeSlash
+  public faEyeSlash = faEyeSlash;
   private targetConf = 6;
   public errorMessage = '';
-  public apiCallStatus: ApiCallStatusPayload = null;
+  public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -80,7 +80,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
       this.flgSticky = true;
       this.displayedColumns = ['remote_alias', 'uptime', 'total_satoshis_sent', 'total_satoshis_received', 'local_balance', 'remote_balance', 'balancedness', 'actions'];
     }
-    this.selFilter = this.router.getCurrentNavigation().extras?.state?.filter ? this.router.getCurrentNavigation().extras?.state?.filter : '';
+    this.selFilter = this.router.getCurrentNavigation()?.extras?.state?.filter ? this.router.getCurrentNavigation()?.extras?.state?.filter : '';
   }
 
   ngOnInit() {
@@ -101,14 +101,14 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
       });
     this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[3])).
       subscribe((bcBalanceSelector: { blockchainBalance: BlockchainBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.totalBalance = +bcBalanceSelector.blockchainBalance.total_balance;
+        this.totalBalance = bcBalanceSelector.blockchainBalance?.total_balance ? +bcBalanceSelector.blockchainBalance?.total_balance : 0;
       });
     this.store.select(channels).pipe(takeUntil(this.unSubs[4])).
       subscribe((channelsSelector: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = channelsSelector.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.channelsData = this.calculateUptime(channelsSelector.channels);
         if (this.channelsData.length > 0) {
@@ -125,7 +125,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   onViewRemotePolicy(selChannel: Channel) {
-    this.store.dispatch(channelLookup({ payload: { uiMessage: UI_MESSAGES.GET_REMOTE_POLICY, channelID: selChannel.chan_id.toString() + '/' + this.information.identity_pubkey } }));
+    this.store.dispatch(channelLookup({ payload: { uiMessage: UI_MESSAGES.GET_REMOTE_POLICY, channelID: selChannel.chan_id?.toString() + '/' + this.information.identity_pubkey } }));
     this.lndEffects.setLookup.pipe(take(1)).subscribe((resLookup): boolean | void => {
       if (!resLookup.fee_base_msat && !resLookup.fee_rate_milli_msat && !resLookup.time_lock_delta) {
         return false;
@@ -376,7 +376,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

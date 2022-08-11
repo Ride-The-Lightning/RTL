@@ -41,7 +41,7 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public selFilter = '';
-  public apiCallStatus: ApiCallStatusPayload = null;
+  public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -65,7 +65,7 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
         this.errorMessage = '';
         this.apiCallStatus = closedChannelsSelector.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.closedChannelsData = closedChannelsSelector.closedChannels;
         if (this.closedChannelsData.length > 0) {
@@ -127,7 +127,7 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
 
   ngOnDestroy() {
     this.unsub.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }
