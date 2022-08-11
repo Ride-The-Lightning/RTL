@@ -1,12 +1,12 @@
 <div fxLayout="row" fxFlex="100" fxLayoutAlign="start stretch" *ngIf="errorMessage?.trim() === ''; else errorBlock">
-  <div fxLayout="column" fxFlex="50" fxLayoutAlign="space-between stretch">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
     <div>
       <h4 fxLayoutAlign="start" class="dashboard-info-title">Total</h4>
       <div class="overflow-wrap dashboard-info-value">{{fees?.feeCollected/1000 | number}} Sats</div>
     </div>
   </div>
   <div fxLayout="column" fxFlex="50" fxLayoutAlign="space-between stretch">
-    <div>
+    <div *ngIf="fees?.totalTxCount">
       <h4 fxLayoutAlign="start" class="dashboard-info-title">Transactions</h4>
       <div class="overflow-wrap dashboard-info-value">{{fees?.totalTxCount | number}}</div>
     </div>

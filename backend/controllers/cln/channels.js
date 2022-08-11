@@ -110,10 +110,7 @@ export const listForwards = (req, res, next) => {
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/channel/listForwards?status=' + (req.query.status ? req.query.status : 'settled');
     request.get(options).then((body) => {
-        if (body && body.length > 0) {
-            body = common.sortDescByKey(body, 'received_time');
-        }
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Forwarding History Received For Status' + req.query.status, data: body });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Forwarding History Received For Status ' + req.query.status, data: body });
         res.status(200).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Channels', 'Forwarding History Error', req.session.selectedNode);
@@ -154,7 +151,7 @@ export const listForwardsPaginated = (req, res, next) => {
     options.url = req.session.selectedNode.ln_server_url + '/v1/channel/listForwardsPaginated' + queryStr;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Paginated Forwarding History url' + options.url });
     request.get(options).then((body) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Paginated Forwarding History Received For Status ' + req.query.status, data: body });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Paginated Forwarding History Received For Status ' + req.query.status, data: body });
         res.status(200).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Channels', 'Paginated Forwarding History Error', req.session.selectedNode);

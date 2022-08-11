@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil, withLatestFrom } from 'rxjs/operators';
+import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { ForwardingEvent, GetInfo, ListForwards } from '../../../shared/models/clnModels';
+import { ForwardingEvent, ListForwards } from '../../../shared/models/clnModels';
 import { APICallStatusEnum, CLNForwardingEventsStatusEnum, MONTHS, ReportBy, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -11,7 +11,8 @@ import { CommonService } from '../../../shared/services/common.service';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
 import { RTLState } from '../../../store/rtl.state';
-import { clnNodeInformation, forwardingHistory } from '../../store/cln.selector';
+import { forwardingHistory } from '../../store/cln.selector';
+import { getForwardingHistory } from '../../store/cln.actions';
 import { DataService } from '../../../shared/services/data.service';
 
 @Component({
@@ -29,7 +30,7 @@ export class CLNRoutingReportComponent implements OnInit, OnDestroy {
   public eventFilterValue = '';
   public reportBy = ReportBy;
   public selReportBy = ReportBy.FEES;
-  public totalFeeMsat = null;
+  public totalFeeMsat: number | null = null;
   public today = new Date(Date.now());
   public startDate = new Date(this.today.getFullYear(), this.today.getMonth(), 1, 0, 0, 0);
   public endDate = new Date(this.today.getFullYear(), this.today.getMonth(), this.getMonthDays(this.today.getMonth(), this.today.getFullYear()), 23, 59, 59);
@@ -43,7 +44,7 @@ export class CLNRoutingReportComponent implements OnInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apiCallStatus: ApiCallStatusPayload = null;
+  public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
@@ -52,27 +53,23 @@ export class CLNRoutingReportComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[0]),
-      withLatestFrom(this.store.select(clnNodeInformation))).
-      subscribe(([fhSeletor, nodeInfo]: [{ forwardingHistory: ListForwards, apiCallStatus: ApiCallStatusPayload }, GetInfo]) => {
-        if (fhSeletor.forwardingHistory.status === CLNForwardingEventsStatusEnum.SETTLED && (fhSeletor.apiCallStatus.status === APICallStatusEnum.COMPLETED || fhSeletor.apiCallStatus.status === APICallStatusEnum.ERROR)) {
-          if (nodeInfo.api_version && this.commonService.isVersionCompatible(nodeInfo.api_version, '0.7.3')) {
-            this.dataService.getForwardingHistory('CLN', '', '', CLNForwardingEventsStatusEnum.SETTLED).pipe(takeUntil(this.unSubs[0])).
-              subscribe((response: ForwardingEvent[]) => {
-                this.events = response || [];
-                this.filterForwardingEvents(this.startDate, this.endDate);
-                this.logger.info(response);
-              });
-          } else {
-            this.errorMessage = '';
-            this.apiCallStatus = fhSeletor.apiCallStatus;
-            if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-              this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-            }
+    this.store.pipe(take(1)).subscribe((state) => {
+      if (state.cln.apisCallStatus.FetchForwardingHistoryS.status === APICallStatusEnum.UN_INITIATED && !state.cln.forwardingHistory.listForwards?.length) {
+        this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.SETTLED } }));
+      }
+    });
+    this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[0])).
+      subscribe((fhSeletor: { forwardingHistory: ListForwards, apiCallStatus: ApiCallStatusPayload }) => {
+        if (fhSeletor.forwardingHistory.status === CLNForwardingEventsStatusEnum.SETTLED) {
+          this.errorMessage = '';
+          this.apiCallStatus = fhSeletor.apiCallStatus;
+          if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+            this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+          } else if (this.apiCallStatus.status === APICallStatusEnum.COMPLETED) {
             this.events = fhSeletor.forwardingHistory.listForwards || [];
             this.filterForwardingEvents(this.startDate, this.endDate);
-            this.logger.info(fhSeletor);
           }
+          this.logger.info(fhSeletor);
         }
       });
     this.commonService.containerSizeUpdated.pipe(takeUntil(this.unSubs[1])).subscribe((CONTAINER_SIZE) => {
@@ -103,7 +100,7 @@ export class CLNRoutingReportComponent implements OnInit, OnDestroy {
     this.totalFeeMsat = null;
     if (this.events && this.events.length > 0) {
       this.events.forEach((event) => {
-        if (event.received_time >= startDateInSeconds && event.received_time < endDateInSeconds) {
+        if (event.received_time && event.received_time >= startDateInSeconds && event.received_time < endDateInSeconds) {
           this.filteredEventsBySelectedPeriod.push(event);
         }
       });
@@ -127,17 +124,17 @@ export class CLNRoutingReportComponent implements OnInit, OnDestroy {
 
   prepareFeeReport(start: Date) {
     const startDateInSeconds = Math.round(start.getTime() / 1000);
-    const feeReport = [];
+    const feeReport: any[] = [];
     this.totalFeeMsat = 0;
     if (this.reportPeriod === SCROLL_RANGES[1]) {
       for (let i = 0; i < 12; i++) {
         feeReport.push({ name: MONTHS[i].name, value: 0.0, extra: { totalEvents: 0 } });
       }
       this.filteredEventsBySelectedPeriod.map((event) => {
-        const monthNumber = new Date((+event.received_time) * 1000).getMonth();
-        feeReport[monthNumber].value = feeReport[monthNumber].value + (+event.fee / 1000);
+        const monthNumber = event.received_time ? new Date((+event.received_time) * 1000).getMonth() : 12;
+        feeReport[monthNumber].value = event.fee ? feeReport[monthNumber].value + (+event.fee / 1000) : feeReport[monthNumber].value;
         feeReport[monthNumber].extra.totalEvents = feeReport[monthNumber].extra.totalEvents + 1;
-        this.totalFeeMsat = (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee;
+        this.totalFeeMsat = event.fee ? (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee : this.totalFeeMsat;
         return this.filteredEventsBySelectedPeriod;
       });
     } else {
@@ -145,10 +142,10 @@ export class CLNRoutingReportComponent implements OnInit, OnDestroy {
         feeReport.push({ name: i + 1, value: 0.0, extra: { totalEvents: 0 } });
       }
       this.filteredEventsBySelectedPeriod.map((event) => {
-        const dateNumber = Math.floor((+event.received_time - startDateInSeconds) / this.secondsInADay);
-        feeReport[dateNumber].value = feeReport[dateNumber].value + (+event.fee / 1000);
+        const dateNumber = event.received_time ? Math.floor((+event.received_time - startDateInSeconds) / this.secondsInADay) : 0;
+        feeReport[dateNumber].value = event.fee ? feeReport[dateNumber].value + (+event.fee / 1000) : feeReport[dateNumber].value;
         feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
-        this.totalFeeMsat = (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee;
+        this.totalFeeMsat = event.fee ? (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee : this.totalFeeMsat;
         return this.filteredEventsBySelectedPeriod;
       });
     }
@@ -157,17 +154,17 @@ export class CLNRoutingReportComponent implements OnInit, OnDestroy {
 
   prepareEventsReport(start: Date) {
     const startDateInSeconds = Math.round(start.getTime() / 1000);
-    const eventsReport = [];
+    const eventsReport: any[] = [];
     this.totalFeeMsat = 0;
     if (this.reportPeriod === SCROLL_RANGES[1]) {
       for (let i = 0; i < 12; i++) {
         eventsReport.push({ name: MONTHS[i].name, value: 0, extra: { totalFees: 0.0 } });
       }
       this.filteredEventsBySelectedPeriod.map((event) => {
-        const monthNumber = new Date((+event.received_time) * 1000).getMonth();
+        const monthNumber = event.received_time ? new Date((+event.received_time) * 1000).getMonth() : 12;
         eventsReport[monthNumber].value = eventsReport[monthNumber].value + 1;
-        eventsReport[monthNumber].extra.totalFees = eventsReport[monthNumber].extra.totalFees + (+event.fee / 1000);
-        this.totalFeeMsat = (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee;
+        eventsReport[monthNumber].extra.totalFees = event.fee ? eventsReport[monthNumber].extra.totalFees + (+event.fee / 1000) : eventsReport[monthNumber].extra.totalFees;
+        this.totalFeeMsat = event.fee ? (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee : this.totalFeeMsat;
         return this.filteredEventsBySelectedPeriod;
       });
     } else {
@@ -175,10 +172,10 @@ export class CLNRoutingReportComponent implements OnInit, OnDestroy {
         eventsReport.push({ name: i + 1, value: 0, extra: { totalFees: 0.0 } });
       }
       this.filteredEventsBySelectedPeriod.map((event) => {
-        const dateNumber = Math.floor((+event.received_time - startDateInSeconds) / this.secondsInADay);
+        const dateNumber = event.received_time ? Math.floor((+event.received_time - startDateInSeconds) / this.secondsInADay) : 0;
         eventsReport[dateNumber].value = eventsReport[dateNumber].value + 1;
-        eventsReport[dateNumber].extra.totalFees = eventsReport[dateNumber].extra.totalFees + (+event.fee / 1000);
-        this.totalFeeMsat = (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee;
+        eventsReport[dateNumber].extra.totalFees = event.fee ? eventsReport[dateNumber].extra.totalFees + (+event.fee / 1000) : eventsReport[dateNumber].extra.totalFees;
+        this.totalFeeMsat = event.fee ? (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee : this.totalFeeMsat;
         return this.filteredEventsBySelectedPeriod;
       });
     }
@@ -211,7 +208,7 @@ export class CLNRoutingReportComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

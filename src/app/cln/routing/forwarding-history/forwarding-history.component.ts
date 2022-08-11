@@ -1,13 +1,14 @@
 import { Component, OnInit, OnChanges, ViewChild, OnDestroy, SimpleChanges, Input, AfterViewInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
-import { takeUntil, withLatestFrom } from 'rxjs/operators';
+import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { ForwardingEvent, GetInfo, ListForwards } from '../../../shared/models/clnModels';
+import { ForwardingEvent, ListForwards } from '../../../shared/models/clnModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, CLNForwardingEventsStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -15,7 +16,7 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
-import { clnNodeInformation, forwardingHistory } from '../../store/cln.selector';
+import { forwardingHistory } from '../../store/cln.selector';
 import { getForwardingHistory } from '../../store/cln.actions';
 
 @Component({
@@ -32,9 +33,7 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   @Input() eventsData = [];
   @Input() filterValue = '';
-  public flgCompatible = true;
-  public information: GetInfo = {};
-  public successfulEvents = [];
+  public successfulEvents: ForwardingEvent[] = [];
   public displayedColumns: any[] = [];
   public forwardingHistoryEvents: any;
   public flgSticky = false;
@@ -45,11 +44,11 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apiCallStatus: ApiCallStatusPayload = null;
+  public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe, private router: Router) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -64,26 +63,25 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   }
 
   ngOnInit() {
-    this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[0]),
-      withLatestFrom(this.store.select(clnNodeInformation))).
-      subscribe(([fhSeletor, nodeInfo]: [{ forwardingHistory: ListForwards, apiCallStatus: ApiCallStatusPayload }, GetInfo]) => {
-        this.information = nodeInfo;
-        this.flgCompatible = (this.information.api_version) ? this.commonService.isVersionCompatible(this.information.api_version, '0.7.3') : true;
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+    this.router.onSameUrlNavigation = 'reload';
+    this.store.pipe(take(1)).subscribe((state) => {
+      if (state.cln.apisCallStatus.FetchForwardingHistoryS.status === APICallStatusEnum.UN_INITIATED && !state.cln.forwardingHistory.listForwards?.length) {
+        this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.SETTLED } }));
+      }
+    });
+    this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[0])).
+      subscribe((fhSeletor: { forwardingHistory: ListForwards, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = fhSeletor.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         if (this.eventsData.length <= 0 && fhSeletor.forwardingHistory.listForwards) {
-          this.totalForwardedTransactions = fhSeletor.forwardingHistory.totalForwards;
-          this.indexOffset = fhSeletor.forwardingHistory.offset;
+          this.totalForwardedTransactions = fhSeletor.forwardingHistory.totalForwards || 0;
           this.successfulEvents = fhSeletor.forwardingHistory.listForwards || [];
           if (this.successfulEvents.length > 0 && this.sort && this.paginator) {
-            if (this.flgCompatible) {
-              this.loadForwardingEventsTable(this.successfulEvents);
-            } else {
-              this.loadForwardingEventsTable(this.successfulEvents.slice(0, this.pageSize));
-            }
+            this.loadForwardingEventsTable(this.successfulEvents.slice(0, this.pageSize));
           }
           this.logger.info(fhSeletor);
         }
@@ -92,11 +90,7 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
 
   ngAfterViewInit() {
     if (this.successfulEvents.length > 0) {
-      if (this.flgCompatible) {
-        this.loadForwardingEventsTable(this.successfulEvents);
-      } else {
-        this.loadForwardingEventsTable(this.successfulEvents.slice(0, this.pageSize));
-      }
+      this.loadForwardingEventsTable(this.successfulEvents.slice(0, this.pageSize));
     }
   }
 
@@ -145,8 +139,8 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
     this.forwardingHistoryEvents.sort = this.sort;
     this.forwardingHistoryEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.forwardingHistoryEvents.filterPredicate = (event: ForwardingEvent, fltr: string) => {
-      const newEvent = (event.received_time ? this.datePipe.transform(new Date(event.received_time * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() + ' ' : '') +
-        (event.resolved_time ? this.datePipe.transform(new Date(event.resolved_time * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() + ' ' : '') +
+      const newEvent = (event.received_time ? this.datePipe.transform(new Date(event.received_time * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() + ' ' : '') +
+        (event.resolved_time ? this.datePipe.transform(new Date(event.resolved_time * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() + ' ' : '') +
         (event.in_channel ? event.in_channel.toLowerCase() + ' ' : '') + (event.out_channel ? event.out_channel.toLowerCase() + ' ' : '') +
         (event.in_channel_alias ? event.in_channel_alias.toLowerCase() + ' ' : '') + (event.out_channel_alias ? event.out_channel_alias.toLowerCase() + ' ' : '') +
         (event.in_msatoshi ? (event.in_msatoshi / 1000) + ' ' : '') + (event.out_msatoshi ? (event.out_msatoshi / 1000) + ' ' : '') + (event.fee ? event.fee + ' ' : '');
@@ -174,16 +168,12 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
     } else {
       this.indexOffset = event.pageIndex * this.pageSize;
     }
-    if (this.flgCompatible) {
-      this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.SETTLED, maxLen: this.pageSize, offset: this.indexOffset } }));
-    } else {
-      this.loadForwardingEventsTable(this.successfulEvents.slice(this.indexOffset, (this.indexOffset + this.pageSize)));
-    }
+    this.loadForwardingEventsTable(this.successfulEvents.slice(this.indexOffset, (this.indexOffset + this.pageSize)));
   }
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }
