@@ -1,10 +1,16 @@
 <div fxLayout="column" fxLayoutAlign="start stretch" class="padding-gap-x">
   <div class="p-2 error-border my-2" *ngIf="errorMessage !== ''">{{errorMessage}}</div>
-  <div *ngIf="errorMessage === ''" fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container">
-    <div fxFlex="70"></div>
-    <mat-form-field fxFlex="30">
-      <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" placeholder="Filter">
-    </mat-form-field>
+  <div *ngIf="errorMessage === ''" fxLayout.gt-xs="column" fxLayout="row" fxLayoutAlign="start center" fxLayoutAlign.gt-xs="start stretch" class="page-sub-title-container">
+    <div fxFlex="100" class="alert alert-warn mt-1">
+      <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+      <span>Maximum 1,000 failed transactions only.</span>
+    </div>
+    <div fxFlex="100">
+      <div fxFlex="70"></div>
+      <mat-form-field fxFlex="30">
+        <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" placeholder="Filter">
+      </mat-form-field>
+    </div>
   </div>
   <div *ngIf="errorMessage === ''" [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
     <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>

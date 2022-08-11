@@ -18,6 +18,7 @@ import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
 import { getForwardingHistory } from '../../store/cln.actions';
 import { failedForwardingHistory } from '../../store/cln.selector';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'rtl-cln-failed-history',
@@ -31,6 +32,7 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public faExclamationTriangle = faExclamationTriangle;
   public failedEvents: any;
   public errorMessage = '';
   public displayedColumns: any[] = [];
