@@ -62,7 +62,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apiCallStatus: ApiCallStatusPayload = null;
+  public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -91,7 +91,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
         this.errorMessage = '';
         this.apiCallStatus = invoicesSelector.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.totalInvoices = invoicesSelector.listInvoices.total_invoices;
         this.firstOffset = +invoicesSelector.listInvoices.first_index_offset;
@@ -230,7 +230,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

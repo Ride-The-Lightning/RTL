@@ -90,7 +90,7 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

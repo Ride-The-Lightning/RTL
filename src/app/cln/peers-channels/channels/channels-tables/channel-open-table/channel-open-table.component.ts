@@ -36,7 +36,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faEye = faEye;
-  public faEyeSlash = faEyeSlash
+  public faEyeSlash = faEyeSlash;
   public totalBalance = 0;
   public displayedColumns: any[] = [];
   public channelsData: Channel[] = [];
@@ -52,7 +52,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apiCallStatus: ApiCallStatusPayload = null;
+  public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -71,7 +71,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       this.flgSticky = true;
       this.displayedColumns = ['short_channel_id', 'alias', 'msatoshi_to_us', 'msatoshi_to_them', 'balancedness', 'actions'];
     }
-    this.selFilter = this.router.getCurrentNavigation().extras?.state?.filter ? this.router.getCurrentNavigation().extras?.state?.filter : '';
+    this.selFilter = this.router?.getCurrentNavigation()?.extras?.state?.filter ? this.router?.getCurrentNavigation()?.extras?.state?.filter : '';
   }
 
   ngOnInit() {
@@ -79,7 +79,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       subscribe((infoBalNumpeersSelector: { information: GetInfo, balance: Balance, numPeers: number }) => {
         this.information = infoBalNumpeersSelector.information;
         this.numPeers = infoBalNumpeersSelector.numPeers;
-        this.totalBalance = infoBalNumpeersSelector.balance.totalBalance;
+        this.totalBalance = infoBalNumpeersSelector.balance.totalBalance || 0;
         this.logger.info(infoBalNumpeersSelector);
       });
     this.store.select(channels).pipe(takeUntil(this.unSubs[1])).
@@ -87,7 +87,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
         this.errorMessage = '';
         this.apiCallStatus = channelsSeletor.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.channelsData = channelsSeletor.activeChannels;
         if (this.channelsData.length > 0) {
@@ -104,7 +104,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   onViewRemotePolicy(selChannel: Channel) {
-    this.store.dispatch(channelLookup({ payload: { uiMessage: UI_MESSAGES.GET_REMOTE_POLICY, shortChannelID: selChannel.short_channel_id, showError: true } }));
+    this.store.dispatch(channelLookup({ payload: { uiMessage: UI_MESSAGES.GET_REMOTE_POLICY, shortChannelID: selChannel.short_channel_id || '', showError: true } }));
     this.clnEffects.setLookupCL.pipe(take(1)).subscribe((resLookup: ChannelEdge[]): boolean | void => {
       if (resLookup.length === 0) {
         return false;
@@ -233,7 +233,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       pipe(takeUntil(this.unSubs[3])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.store.dispatch(closeChannel({ payload: { id: channelToClose.id, channelId: channelToClose.channel_id, force: false } }));
+          this.store.dispatch(closeChannel({ payload: { id: channelToClose.id || '', channelId: channelToClose.channel_id || '', force: false } }));
         }
       });
   }
@@ -281,7 +281,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

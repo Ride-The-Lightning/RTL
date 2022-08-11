@@ -434,17 +434,6 @@ export interface QueryRoutes {
   routes?: Route[];
 }
 
-export interface SendPayment {
-  dest_string?: string;
-  dest?: string;
-  payment_hash_string?: string;
-  payment_request?: string;
-  fee_limit?: FeeLimit;
-  amt?: number;
-  payment_hash?: string;
-  final_cltv_delta?: number;
-}
-
 export interface ChannelsTransaction {
   address?: string;
   amount?: number;
@@ -552,9 +541,9 @@ export interface SendPayment {
   fromDialog: boolean;
   paymentReq: string;
   paymentAmount?: number;
-  outgoingChannel?: Channel;
+  outgoingChannel?: Channel | null;
   feeLimitType?: string;
-  feeLimit?: number;
+  feeLimit?: number | null;
   allowSelfPayment?: boolean;
   lastHopPubkey?: string;
 }

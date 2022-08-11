@@ -293,7 +293,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

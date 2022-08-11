@@ -40,7 +40,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public selFilter = '';
-  public apiCallStatus: ApiCallStatusPayload = null;
+  public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -67,7 +67,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
         this.errorMessage = '';
         this.apiCallStatus = channelsSelector.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.channelsJSONArr = channelsSelector.channels.filter((channel) => channel.pending_htlcs && channel.pending_htlcs.length > 0) || [];
         this.loadHTLCsTable(this.channelsJSONArr);
@@ -168,7 +168,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

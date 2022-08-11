@@ -21,9 +21,9 @@ export class VerifyComponent implements OnDestroy {
   public verifyRes = { pubkey: '', valid: null };
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private dataService: DataService, private snackBar: MatSnackBar, private logger: LoggerService) {}
+  constructor(private dataService: DataService, private snackBar: MatSnackBar, private logger: LoggerService) { }
 
-  onVerify(): boolean|void {
+  onVerify(): boolean | void {
     if ((!this.message || this.message === '') || (!this.signature || this.signature === '')) {
       return true;
     }
@@ -57,7 +57,7 @@ export class VerifyComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

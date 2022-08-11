@@ -246,8 +246,8 @@ export interface UpdateChannel {
 }
 
 export interface CloseChannel {
-  channelId: string;
-  force: boolean;
+  channelId?: string;
+  force?: boolean;
 }
 
 export interface GetQueryRoutes {

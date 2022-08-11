@@ -32,14 +32,14 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   public selNode: SelNodeChild = {};
   public paymentDecoded: PayRequest = {};
   public zeroAmtInvoice = false;
-  public paymentAmount = null;
+  public paymentAmount: number | null = null;
   public paymentRequest = '';
   public paymentDecodedHint = '';
   public showAdvanced = false;
-  public activeChannels = [];
+  public activeChannels: Channel[] = [];
   public filteredMinAmtActvChannels: Channel[] = [];
   public selectedChannelCtrl = new FormControl();
-  public feeLimit = null;
+  public feeLimit: number | null = null;
   public selFeeLimitType = FEE_LIMIT_TYPES[0];
   public feeLimitTypes = FEE_LIMIT_TYPES;
   public advancedTitle = 'Advanced Options';
@@ -52,7 +52,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => { this.selNode = nodeSettings; });
     this.store.select(channels).pipe(takeUntil(this.unSubs[1])).
       subscribe((channelsSelector: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.activeChannels = channelsSelector.channels.filter((channel) => channel.active);
+        this.activeChannels = channelsSelector.channels && channelsSelector.channels.length ? channelsSelector.channels.filter((channel) => channel.active) : [];
         this.filteredMinAmtActvChannels = this.activeChannels;
         if (this.filteredMinAmtActvChannels.length && this.filteredMinAmtActvChannels.length > 0) {
           this.selectedChannelCtrl.enable();
@@ -91,7 +91,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   private filterChannels(): Channel[] {
     return this.activeChannels.filter((channel) => {
       const alias = channel.remote_alias ? channel.remote_alias.toLowerCase() : channel.chan_id ? channel.chan_id.toLowerCase() : '';
-      return alias.indexOf(this.selectedChannelCtrl.value ? this.selectedChannelCtrl.value.toLowerCase() : '') === 0 && channel.local_balance >= +(this.paymentDecoded.num_satoshis ? this.paymentDecoded.num_satoshis : 0);
+      return alias.indexOf(this.selectedChannelCtrl.value ? this.selectedChannelCtrl.value.toLowerCase() : '') === 0 && (channel.local_balance || 0) >= +(this.paymentDecoded.num_satoshis ? this.paymentDecoded.num_satoshis : 0);
     });
   }
 
@@ -137,8 +137,8 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     }
     if (!this.paymentDecoded.num_satoshis || this.paymentDecoded.num_satoshis === '' || this.paymentDecoded.num_satoshis === '0') {
       this.zeroAmtInvoice = true;
-      this.paymentDecoded.num_satoshis = this.paymentAmount;
-      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, paymentAmount: this.paymentAmount, outgoingChannel: this.selectedChannelCtrl.value, feeLimitType: this.selFeeLimitType.id, feeLimit: this.feeLimit, fromDialog: true } }));
+      this.paymentDecoded.num_satoshis = this.paymentAmount?.toString() || '';
+      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, paymentAmount: this.paymentAmount || 0, outgoingChannel: this.selectedChannelCtrl.value, feeLimitType: this.selFeeLimitType.id, feeLimit: this.feeLimit, fromDialog: true } }));
     } else {
       this.zeroAmtInvoice = false;
       this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, outgoingChannel: this.selectedChannelCtrl.value, feeLimitType: this.selFeeLimitType.id, feeLimit: this.feeLimit, fromDialog: true } }));
@@ -176,7 +176,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
               }
               this.zeroAmtInvoice = false;
               if (this.selNode.fiatConversion) {
-                this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
+                this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : 'BTC'), this.selNode.fiatConversion).
                   pipe(takeUntil(this.unSubs[4])).
                   subscribe({
                     next: (data) => {
@@ -237,7 +237,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

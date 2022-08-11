@@ -73,7 +73,7 @@ export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDest
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

@@ -34,7 +34,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faEye = faEye;
-  public faEyeSlash = faEyeSlash
+  public faEyeSlash = faEyeSlash;
   public activeChannels: Channel[];
   public totalBalance = 0;
   public displayedColumns: any[] = [];
@@ -50,7 +50,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apiCallStatus: ApiCallStatusPayload = null;
+  public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -69,7 +69,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       this.flgSticky = true;
       this.displayedColumns = ['shortChannelId', 'alias', 'feeBaseMsat', 'feeProportionalMillionths', 'toLocal', 'toRemote', 'balancedness', 'actions'];
     }
-    this.selFilter = this.router.getCurrentNavigation().extras?.state?.filter ? this.router.getCurrentNavigation().extras?.state?.filter : '';
+    this.selFilter = this.router.getCurrentNavigation()?.extras?.state?.filter ? this.router.getCurrentNavigation()?.extras?.state?.filter : '';
   }
 
   ngOnInit() {
@@ -78,7 +78,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
         this.errorMessage = '';
         this.apiCallStatus = allChannelsSelector.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.activeChannels = allChannelsSelector.activeChannels;
         if (this.activeChannels.length > 0 && this.sort && this.paginator) {
@@ -96,7 +96,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       });
     this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[3])).
       subscribe((ocBalSelector: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.totalBalance = ocBalSelector.onchainBalance.total;
+        this.totalBalance = ocBalSelector.onchainBalance.total || 0;
       });
   }
 
@@ -136,7 +136,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
         if (confirmRes) {
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
-          let updateRequestPayload = null;
+          let updateRequestPayload: any = null;
           if (this.commonService.isVersionCompatible(this.information.version, '0.6.2')) {
             let node_ids = '';
             if (channelToUpdate === 'all') {
@@ -231,7 +231,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

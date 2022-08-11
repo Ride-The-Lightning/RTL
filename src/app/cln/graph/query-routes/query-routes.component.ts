@@ -25,7 +25,7 @@ export class CLNQueryRoutesComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild('queryRoutesForm', { static: true }) form: any;
   public destinationPubkey = '';
-  public amount: number = null;
+  public amount: number | null = null;
   public qrHops: any;
   public flgSticky = false;
   public displayedColumns: any[] = [];
@@ -108,7 +108,7 @@ export class CLNQueryRoutesComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

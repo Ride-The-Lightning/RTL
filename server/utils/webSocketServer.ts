@@ -49,7 +49,7 @@ export class RTLWebSocketServer {
     this.webSocketServer.on('connection', this.mountEventsOnConnection);
     this.webSocketServer.on('close', () => clearInterval(this.pingInterval));
     this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Websocket Server Connected' });
-  }
+  };
 
   public upgradeCallback = (websocket, request) => {
     this.webSocketServer.emit('connection', websocket, request);
@@ -89,7 +89,7 @@ export class RTLWebSocketServer {
       const selectedNode = this.common.findNode(currNodeIndex);
       this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Invalid Node Selection. Previous and current node indices can not be less than zero.' });
     }
-  }
+  };
 
   public disconnectFromNodeClient = (sessionId: string, prevNodeIndex: number) => {
     const foundClient = this.clientDetails.find((clientDetail) => clientDetail.index === +prevNodeIndex);
@@ -119,7 +119,7 @@ export class RTLWebSocketServer {
         }
       }
     }
-  }
+  };
 
   public connectToNodeClient = (sessionId: string, currNodeIndex: number) => {
     let foundClient = this.clientDetails.find((clientDetail) => clientDetail.index === +currNodeIndex);
@@ -148,7 +148,7 @@ export class RTLWebSocketServer {
         }
       }
     }
-  }
+  };
 
   public sendErrorToAllLNClients = (serverError, selectedNode: CommonSelectedNode) => {
     try {

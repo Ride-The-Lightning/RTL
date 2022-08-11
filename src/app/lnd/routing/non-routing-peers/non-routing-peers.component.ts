@@ -38,7 +38,7 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   public errorMessage = '';
   public filter = '';
   public activeChannels: Channel[] = [];
-  public apiCallStatus: ApiCallStatusPayload = null;
+  public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -65,7 +65,7 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
         this.errorMessage = '';
         this.apiCallStatus = fhSelector.apiCallStatus;
         if (fhSelector.apiCallStatus?.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         if (fhSelector.forwardingHistory.forwarding_events) {
           this.routingPeersData = fhSelector.forwardingHistory.forwarding_events;
@@ -83,7 +83,7 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
         this.errorMessage = '';
         this.apiCallStatus = channelsSelector.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.activeChannels = channelsSelector.channels;
         this.logger.info(channelsSelector);
@@ -146,7 +146,7 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

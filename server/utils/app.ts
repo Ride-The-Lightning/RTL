@@ -49,11 +49,11 @@ export class ExpressApplication {
 
   public loadConfiguration = () => {
     this.config.setServerConfiguration();
-  }
+  };
 
-  public setCORS = () => { CORS.mount(this.app); }
+  public setCORS = () => { CORS.mount(this.app); };
 
-  public setCSRF = () => { CSRF.mount(this.app); }
+  public setCSRF = () => { CSRF.mount(this.app); };
 
   public setApplicationRoutes = () => {
     this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'App', msg: 'Setting up Application Routes..' });
@@ -71,7 +71,7 @@ export class ExpressApplication {
     });
     this.app.use((err, req, res, next) => this.handleApplicationErrors(err, res));
     this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'App', msg: 'Application Routes Set' });
-  }
+  };
 
   public handleApplicationErrors = (err, res) => {
     switch (err.code) {

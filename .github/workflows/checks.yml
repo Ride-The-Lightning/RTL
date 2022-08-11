@@ -62,6 +62,8 @@ jobs:
       - name: Lint Scripts
         run: npm run lint
 
+      - name: Lint Server Script
+        run: npm run lintServer
 
   test:
     name: Test

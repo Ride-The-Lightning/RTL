@@ -40,7 +40,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apiCallStatus: ApiCallStatusPayload = null;
+  public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -65,7 +65,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
           this.errorMessage = '';
           this.apiCallStatus = fhSelector.apiCallStatus;
           if (fhSelector.apiCallStatus?.status === APICallStatusEnum.ERROR) {
-            this.errorMessage = (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+            this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
           }
           this.forwardingHistoryData = fhSelector.forwardingHistory.forwarding_events || [];
           this.loadForwardingEventsTable(this.forwardingHistoryData);
@@ -143,7 +143,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {
-      completeSub.next(null);
+      completeSub.next(<any>null);
       completeSub.complete();
     });
   }

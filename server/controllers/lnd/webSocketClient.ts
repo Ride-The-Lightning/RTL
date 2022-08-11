@@ -125,7 +125,7 @@ export class LNDWebSocketClient {
     if (this.webSocketClients[clientIdx].selectedNode.ln_version === '' || !this.webSocketClients[clientIdx].selectedNode.ln_version || this.common.isVersionCompatible(this.webSocketClients[clientIdx].selectedNode.ln_version, '0.11.0')) {
       this.fetchUnpaidInvoices(this.webSocketClients[clientIdx].selectedNode);
     }
-  }
+  };
 
 }
 
