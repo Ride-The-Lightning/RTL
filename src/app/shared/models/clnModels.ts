@@ -344,7 +344,7 @@ export interface LookupNode {
   alias?: string;
   color?: string;
   last_timestamp?: number;
-  tor_node?: boolean;
+  address_types?: string[];
   features?: string;
   channelCount?: number;
   nodeCapacity?: number;

@@ -86,6 +86,15 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
           this.logger.info('Received Liquidity Ads Enabled Nodes: ' + JSON.stringify(nodeListRes));
           this.apiCallStatus.status = APICallStatusEnum.COMPLETED;
           this.liquidityNodesData = (<LookupNode[]>nodeListRes);
+          this.liquidityNodesData.forEach((lqNode) => {
+            const a: string[] = [];
+            lqNode.address_types = Array.from(new Set(lqNode.addresses?.reduce((acc, addr) => {
+              if (addr.type?.includes('ipv') || addr.type?.includes('tor')) {
+                acc.push(addr.type?.substring(0, 3));
+              }
+              return acc;
+            }, a)));
+          });
           this.onCalculateOpeningFee();
           this.loadLiqNodesTable(this.liquidityNodesData);
         }, error: (err) => {
@@ -148,7 +157,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
 
   onViewLeaseInfo(lqNode: LookupNode) {
     const addArr = lqNode.addresses.reduce((acc, curr) => {
-      if (curr.address.length > 40) { curr.address = curr.address.substring(0, 39) + '...'; }
+      if (curr.address && curr.address.length > 40) { curr.address = curr.address.substring(0, 39) + '...'; }
       return acc.concat(JSON.stringify(curr).replace('{', '').replace('}', '').replace(/:/g, ': ').replace(/,/g, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;').replace(/"/g, ''));
     }, []);
     const reorderedLQNode = [
