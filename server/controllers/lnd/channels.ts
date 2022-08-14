@@ -224,6 +224,9 @@ export const postChanPolicy = (req, res, next) => {
       base_fee_msat: req.body.baseFeeMsat,
       fee_rate: parseFloat((req.body.feeRate / 1000000).toString()),
       time_lock_delta: parseInt(req.body.timeLockDelta),
+      max_htlc_msat: req.body.max_htlc_msat,
+      min_htlc_msat: req.body.min_htlc_msat,
+      min_htlc_msat_specified: true,
       chan_point: { funding_txid_str: txid_str, output_index: parseInt(output_idx) }
     });
   }

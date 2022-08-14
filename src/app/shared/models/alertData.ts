@@ -30,6 +30,7 @@ export interface InputData {
   width?: number;
   hintText?: string;
   hintFunction?: Function;
+  advancedField?: boolean;
 }
 
 export interface OnChainLabelUTXO {
@@ -205,6 +206,7 @@ export interface ConfirmationData {
   noBtnText?: string;
   yesBtnText?: string;
   flgShowInput?: boolean;
+  hasAdvanced?: boolean;
   getInputs?: Array<InputData>;
   component?: any;
 }

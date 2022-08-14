@@ -302,7 +302,12 @@ export class LNDEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: any }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UPDATE_CHAN_POLICY }));
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API + '/chanPolicy',
-        { baseFeeMsat: action.payload.baseFeeMsat, feeRate: action.payload.feeRate, timeLockDelta: action.payload.timeLockDelta, chanPoint: action.payload.chanPoint }
+        { baseFeeMsat: action.payload.baseFeeMsat, 
+          feeRate: action.payload.feeRate, 
+          timeLockDelta: action.payload.timeLockDelta, 
+          max_htlc_msat: action.payload.maxHtlcMsat,
+          min_htlc_msat: action.payload.minHtlcMsat,
+          chanPoint: action.payload.chanPoint }
       ).pipe(
         map((postRes: any) => {
           this.logger.info(postRes);

@@ -199,7 +199,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
           }
         });
     } else {
-      this.myChanPolicy = { fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0 };
+      this.myChanPolicy = { fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0, min_htlc_msat: 0, max_htlc_msat: 0 };
       this.store.dispatch(channelLookup({ payload: { uiMessage: UI_MESSAGES.GET_CHAN_POLICY, channelID: channelToUpdate.chan_id.toString() } }));
       this.lndEffects.setLookup.pipe(take(1)).subscribe((resLookup) => {
         if (resLookup.node1_pub === this.information.identity_pubkey) {
@@ -223,10 +223,13 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
                 yesBtnText: 'Update Channel',
                 message: confirmationMsg,
                 flgShowInput: true,
+                hasAdvanced: true,
                 getInputs: [
                   { placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, width: 32 },
                   { placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 32, hintFunction: this.percentHintFunction },
-                  { placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: this.myChanPolicy.time_lock_delta, width: 32 }
+                  { placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: this.myChanPolicy.time_lock_delta, width: 32 },
+                  { placeholder: 'Minimum HTLC (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: (this.myChanPolicy.min_htlc === '') ? 0 : this.myChanPolicy.min_htlc, width: 32, advancedField: true },
+                  { placeholder: 'Maximum HTLC (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: (this.myChanPolicy.max_htlc_msat === '') ? 0 : this.myChanPolicy.max_htlc_msat, width: 32, advancedField: true }
                 ]
               }
             }
@@ -240,7 +243,16 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
             const base_fee = confirmRes[0].inputValue;
             const fee_rate = confirmRes[1].inputValue;
             const time_lock_delta = confirmRes[2].inputValue;
-            this.store.dispatch(updateChannel({ payload: { baseFeeMsat: base_fee, feeRate: fee_rate, timeLockDelta: time_lock_delta, chanPoint: channelToUpdate.channel_point } }));
+            const min_htlc = confirmRes[3].inputValue;
+            const max_htlc_msat = confirmRes[4].inputValue;
+            this.store.dispatch(updateChannel({ payload: { 
+              baseFeeMsat: base_fee, 
+              feeRate: fee_rate, 
+              timeLockDelta: time_lock_delta,
+              minHtlcMsat: min_htlc,
+              maxHtlcMsat: max_htlc_msat,
+              chanPoint: channelToUpdate.channel_point 
+            } }));
           }
         });
     }
