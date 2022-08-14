@@ -74,8 +74,6 @@ export const listNodes = (req, res, next) => {
       if (node.option_will_fund) {
         node.option_will_fund.lease_fee_base_msat = (node.option_will_fund.lease_fee_base_msat && typeof node.option_will_fund.lease_fee_base_msat === 'string' && node.option_will_fund.lease_fee_base_msat.includes('msat')) ? node.option_will_fund.lease_fee_base_msat.replace('msat', '') : node.option_will_fund.lease_fee_base_msat;
         node.option_will_fund.channel_fee_max_base_msat = (node.option_will_fund.channel_fee_max_base_msat && typeof node.option_will_fund.channel_fee_max_base_msat === 'string' && node.option_will_fund.channel_fee_max_base_msat.includes('msat')) ? node.option_will_fund.channel_fee_max_base_msat.replace('msat', '') : node.option_will_fund.channel_fee_max_base_msat;
-        // node.channelCount = Math.random() * 100 % 10;
-        // node.nodeCapacity = Math.random() * 100 * 250000;
       }
       return node;
     });

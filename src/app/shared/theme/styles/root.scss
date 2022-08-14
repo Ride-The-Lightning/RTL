@@ -344,6 +344,10 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
   margin-left: 0 !important;
 }
 
+.ml-half {
+  margin-left: 0.5rem !important;
+}
+
 .ml-1 {
   margin-left: 1rem !important;
   @include for_screensize(tab-port) {
