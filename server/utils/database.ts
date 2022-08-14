@@ -137,6 +137,9 @@ export class DatabaseService {
 
   saveDatabase(nodeIndex: number) {
     try {
+      if (+nodeIndex < 1) {
+        return true;
+      }
       const selNode = this.nodeDatabase[nodeIndex] && this.nodeDatabase[nodeIndex].adapter && this.nodeDatabase[nodeIndex].adapter.selNode ? this.nodeDatabase[nodeIndex].adapter.selNode : null;
       if (!this.nodeDatabase[nodeIndex]) {
         this.logger.log({ selectedNode: selNode, level: 'ERROR', fileName: 'Database', msg: 'Database Save Error: Selected Node Setup Not Found.' });
