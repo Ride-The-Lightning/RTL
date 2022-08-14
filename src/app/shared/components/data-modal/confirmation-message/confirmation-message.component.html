@@ -43,7 +43,7 @@
         </div>
         <div *ngIf="flgShowInput" fxLayout="column" class="bordered-box my-2 p-2">
           <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="pb-1">{{data.titleMessage}}</p>
-          <div [fxLayout]="showAdvanced ? 'column' : 'row'" [fxLayoutAlign]="showAdvanced ? 'start' : 'space-between center'">
+          <div fxLayout="row wrap" fxLayoutAlign="space-between center">
             <ng-container *ngFor="let getInput of getInputs; index as i">
               <mat-form-field *ngIf="!getInput.advancedField || showAdvanced" [fxFlex]="getInput.width">                              
                 <input matInput [autoFocus]="i === 0" [placeholder]="getInput.placeholder" name="input{{i}}" [min]="getInput.min" [step]="getInput.step" [type]="getInput.inputType | lowercase" [(ngModel)]="getInput.inputValue" [tabindex]="i+1" required>
@@ -54,11 +54,11 @@
           </div>        
         </div>
         <div fxLayout="row" fxLayoutAlign="end center">
-          <button *ngIf="hasAdvanced" mat-button color="primary" type="button" class="mr-1" (click)="onShowAdvanced()" tabindex="1" >
+          <button mat-button color="primary" type="reset" class="mr-1" (click)="onClose(false)" tabindex="1">{{noBtnText}}</button>
+          <button *ngIf="hasAdvanced" mat-button color="primary" type="button" class="mr-1" (click)="onShowAdvanced()" tabindex="2">
             <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
             <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
           </button>
-          <button mat-button color="primary" type="reset" class="mr-1" (click)="onClose(false)" tabindex="2">{{noBtnText}}</button>
           <button autoFocus *ngIf="flgShowInput" mat-button color="primary" type="submit" tabindex="3" (click)="onClose(getInputs)" default>{{yesBtnText}}</button>
           <button autoFocus *ngIf="!flgShowInput" mat-button color="primary" type="submit" tabindex="4" (click)="onClose(true)" default>{{yesBtnText}}</button>
         </div>

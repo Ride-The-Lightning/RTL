@@ -164,7 +164,7 @@ export class RTLEffects implements OnDestroy {
     () => this.actions.pipe(
       ofType(RTLActions.CLOSE_CONFIRMATION),
       take(1),
-      map((action: { type: string, payload: boolean }) => {
+      map((action: { type: string, payload: boolean | any[] }) => {
         if (this.dialogRef) {
           this.dialogRef.close();
         }

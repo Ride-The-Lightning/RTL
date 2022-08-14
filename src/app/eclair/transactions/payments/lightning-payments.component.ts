@@ -206,7 +206,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
             flgShowInput: true,
             titleMessage: titleMsg,
             getInputs: [
-              { placeholder: 'Amount (Sats)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: '', width: 30 }
+              { placeholder: 'Amount (Sats)', inputType: DataTypeEnum.NUMBER, inputValue: '', width: 30 }
             ]
           }
         }

@@ -169,7 +169,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
             yesBtnText: 'Send Payment',
             flgShowInput: true,
             getInputs: [
-              { placeholder: 'Amount (Sats)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: '', width: 30 }
+              { placeholder: 'Amount (Sats)', inputType: DataTypeEnum.NUMBER, inputValue: '', width: 30 }
             ]
           }
         }

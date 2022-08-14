@@ -220,19 +220,29 @@ export const postChanPolicy = (req, res, next) => {
     const breakPoint = req.body.chanPoint.indexOf(':');
     const txid_str = req.body.chanPoint.substring(0, breakPoint);
     const output_idx = req.body.chanPoint.substring(breakPoint + 1, req.body.chanPoint.length);
-    options.form = JSON.stringify({
+    const optionsBody = {
       base_fee_msat: req.body.baseFeeMsat,
       fee_rate: parseFloat((req.body.feeRate / 1000000).toString()),
       time_lock_delta: parseInt(req.body.timeLockDelta),
-      max_htlc_msat: req.body.max_htlc_msat,
-      min_htlc_msat: req.body.min_htlc_msat,
-      min_htlc_msat_specified: true,
       chan_point: { funding_txid_str: txid_str, output_index: parseInt(output_idx) }
-    });
+    };
+    if (req.body.max_htlc_msat) {
+      optionsBody['max_htlc_msat'] = req.body.max_htlc_msat;
+    }
+    if (req.body.min_htlc_msat) {
+      optionsBody['min_htlc_msat'] = req.body.min_htlc_msat;
+      optionsBody['min_htlc_msat_specified'] = true;
+    }
+    options.form = JSON.stringify(optionsBody);
   }
+
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Update Channel Policy Options', data: options.form });
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Policy Updated', data: body });
+    if (body.failed_updates && body.failed_updates.length && body.failed_updates[0].update_error) {
+      const err = common.handleError({ error: body.failed_updates[0].update_error }, 'Channels', 'Update Channel Policy Error', req.session.selectedNode);
+      return res.status(500).json({ message: err.message, error: err.error });
+    }
     res.status(201).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Channels', 'Update Channel Policy Error', req.session.selectedNode);

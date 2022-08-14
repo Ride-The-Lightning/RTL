@@ -26,7 +26,7 @@ export const closeAlert = createAction(RTLActions.CLOSE_ALERT, props<{ payload: 
 
 export const openConfirmation = createAction(RTLActions.OPEN_CONFIRMATION, props<{ payload: DialogConfig }>());
 
-export const closeConfirmation = createAction(RTLActions.CLOSE_CONFIRMATION, props<{ payload: boolean }>());
+export const closeConfirmation = createAction(RTLActions.CLOSE_CONFIRMATION, props<{ payload: boolean | any[] }>());
 
 export const showPubkey = createAction(RTLActions.SHOW_PUBKEY);
 

@@ -181,9 +181,9 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
             titleMessage: 'Update fee policy for all channels',
             flgShowInput: true,
             getInputs: [
-              { placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 1000, width: 32 },
-              { placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 1, min: 1, width: 32, hintFunction: this.percentHintFunction },
-              { placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 40, width: 32 }
+              { placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER, inputValue: 1000, width: 32 },
+              { placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER, inputValue: 1, min: 1, width: 32, hintFunction: this.percentHintFunction },
+              { placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER, inputValue: 40, width: 32 }
             ]
           }
         }
@@ -225,11 +225,11 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
                 flgShowInput: true,
                 hasAdvanced: true,
                 getInputs: [
-                  { placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, width: 32 },
-                  { placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 32, hintFunction: this.percentHintFunction },
-                  { placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: this.myChanPolicy.time_lock_delta, width: 32 },
-                  { placeholder: 'Minimum HTLC (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: (this.myChanPolicy.min_htlc === '') ? 0 : this.myChanPolicy.min_htlc, width: 32, advancedField: true },
-                  { placeholder: 'Maximum HTLC (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: (this.myChanPolicy.max_htlc_msat === '') ? 0 : this.myChanPolicy.max_htlc_msat, width: 32, advancedField: true }
+                  { placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER, inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, width: 32 },
+                  { placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER, inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 32, hintFunction: this.percentHintFunction },
+                  { placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER, inputValue: this.myChanPolicy.time_lock_delta, width: 32 },
+                  { placeholder: 'Minimum HTLC (mSat)', inputType: DataTypeEnum.NUMBER, inputValue: (this.myChanPolicy.min_htlc === '') ? 0 : this.myChanPolicy.min_htlc, width: 49, advancedField: true },
+                  { placeholder: 'Maximum HTLC (mSat)', inputType: DataTypeEnum.NUMBER, inputValue: (this.myChanPolicy.max_htlc_msat === '') ? 0 : this.myChanPolicy.max_htlc_msat, width: 49, advancedField: true }
                 ]
               }
             }
@@ -238,21 +238,19 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
       });
       this.rtlEffects.closeConfirm.
         pipe(takeUntil(this.unSubs[6])).
-        subscribe((confirmRes) => {
+        subscribe((confirmRes: boolean | any[]) => {
           if (confirmRes) {
-            const base_fee = confirmRes[0].inputValue;
-            const fee_rate = confirmRes[1].inputValue;
-            const time_lock_delta = confirmRes[2].inputValue;
-            const min_htlc = confirmRes[3].inputValue;
-            const max_htlc_msat = confirmRes[4].inputValue;
-            this.store.dispatch(updateChannel({ payload: { 
-              baseFeeMsat: base_fee, 
-              feeRate: fee_rate, 
-              timeLockDelta: time_lock_delta,
-              minHtlcMsat: min_htlc,
-              maxHtlcMsat: max_htlc_msat,
-              chanPoint: channelToUpdate.channel_point 
-            } }));
+            const updateChanPayload = {
+              baseFeeMsat: confirmRes[0].inputValue,
+              feeRate: confirmRes[1].inputValue,
+              timeLockDelta: confirmRes[2].inputValue,
+              chanPoint: channelToUpdate.channel_point
+            };
+            if ((<any[]>confirmRes).length > 3 && confirmRes[3] && confirmRes[4]) {
+              updateChanPayload['minHtlcMsat'] = confirmRes[3].inputValue;
+              updateChanPayload['maxHtlcMsat'] = confirmRes[4].inputValue;
+            }
+            this.store.dispatch(updateChannel({ payload: updateChanPayload }));
           }
         });
     }

@@ -29,7 +29,7 @@ export class ConfirmationMessageComponent implements OnInit {
   public alertTypeEnum = AlertTypeEnum;
   public dataTypeEnum = DataTypeEnum;
   public getInputs: Array<InputData> = [{ placeholder: '', inputType: 'text', inputValue: '', hintText: '', hintFunction: null, advancedField: false }];
-  
+
   private showAdvanced = false;
 
   constructor(
@@ -52,14 +52,22 @@ export class ConfirmationMessageComponent implements OnInit {
       }
     }
   }
-  
+
   onShowAdvanced() {
     this.showAdvanced = !this.showAdvanced;
   }
 
-  onClose(dialogRes: any): boolean | void {
+  onClose(dialogRes: any): boolean | any[] | void {
     if (dialogRes && this.getInputs && this.getInputs.some((input) => typeof input.inputValue === 'undefined')) {
       return true;
+    }
+    if (!this.showAdvanced && dialogRes.length) {
+      dialogRes = dialogRes.reduce((accumulator, current) => {
+        if (!current.advancedField) {
+          accumulator.push(current);
+        }
+        return accumulator;
+      }, []);
     }
     this.store.dispatch(closeConfirmation({ payload: dialogRes }));
   }
