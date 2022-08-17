@@ -58,7 +58,7 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
   public operatorCards: Tile[] = [];
   public merchantCards: Tile[] = [];
   public screenSize = '';
-  public operatorCardHeight = '330px';
+  public operatorCardHeight = '405px';
   public merchantCardHeight = '65px';
   public sortField = 'Balance Score';
   public errorMessages = ['', '', '', ''];
