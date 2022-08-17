@@ -62,7 +62,7 @@ export class ConfirmationMessageComponent implements OnInit {
       return true;
     }
     if (!this.showAdvanced && dialogRes.length) {
-      dialogRes = dialogRes.reduce((accumulator, current) => {
+      dialogRes = dialogRes?.reduce((accumulator, current) => {
         if (!current.advancedField) {
           accumulator.push(current);
         }

@@ -6,7 +6,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class RemoveLeadingZerosPipe implements PipeTransform {
 
   transform(value: string, args?: any): string {
-    return value.replace(/^[0]+/g, '');
+    return value?.replace(/^[0]+/g, '');
   }
 
 }
@@ -17,7 +17,7 @@ export class RemoveLeadingZerosPipe implements PipeTransform {
 export class CamelCasePipe implements PipeTransform {
 
   transform(value: string, args?: any): string {
-    return value.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => (word.toUpperCase())).replace(/\s+/g, '').replace(/-/g, ' ');
+    return value?.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => (word.toUpperCase()))?.replace(/\s+/g, '')?.replace(/-/g, ' ');
   }
 
 }

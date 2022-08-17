@@ -80,7 +80,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
       subscribe({
         next: ([infoSettingsBalSelector, nodeListRes]) => {
           this.information = infoSettingsBalSelector.information;
-          this.totalBalance = infoSettingsBalSelector.balance.totalBalance;
+          this.totalBalance = infoSettingsBalSelector.balance.totalBalance || 0;
           this.logger.info(infoSettingsBalSelector);
           if (nodeListRes && !(<any[]>nodeListRes).length) { nodeListRes = []; }
           this.logger.info('Received Liquidity Ads Enabled Nodes: ' + JSON.stringify(nodeListRes));
@@ -108,7 +108,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
   onCalculateOpeningFee() {
     this.liquidityNodesData.forEach((lqNode) => {
       if (lqNode.option_will_fund) {
-        lqNode.channelOpeningFee = (+(lqNode.option_will_fund.lease_fee_base_msat) / 1000) + (this.channelAmount * (+lqNode.option_will_fund.lease_fee_basis) / 10000) + ((+lqNode.option_will_fund.funding_weight / 4) * this.channelOpeningFeeRate);
+        lqNode.channelOpeningFee = (+(lqNode.option_will_fund.lease_fee_base_msat || 0) / 1000) + (this.channelAmount * (+(lqNode.option_will_fund.lease_fee_basis || 0)) / 10000) + ((+(lqNode.option_will_fund.funding_weight || 0) / 4) * this.channelOpeningFeeRate);
       }
     });
     if (this.paginator) { this.paginator.firstPage(); }
@@ -124,7 +124,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
     this.liquidityNodes.sort = this.sort;
     this.liquidityNodes.paginator = this.paginator;
     if (this.sort) { this.sort.sort({ id: 'channelOpeningFee', start: 'asc', disableClear: true }); }
-    this.liquidityNodes.filterPredicate = (node: LookupNode, fltr: string) => node.channelCount >= this.channelCount && node.nodeCapacity >= this.nodeCapacity;
+    this.liquidityNodes.filterPredicate = (node: LookupNode, fltr: string) => (node.channelCount || 0) >= this.channelCount && (node.nodeCapacity || 0) >= this.nodeCapacity;
     this.onFilter();
   }
 
@@ -156,19 +156,19 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
   }
 
   onViewLeaseInfo(lqNode: LookupNode) {
-    const addArr = lqNode.addresses.reduce((acc, curr) => {
+    const addArr = lqNode.addresses?.reduce((acc, curr) => {
       if (curr.address && curr.address.length > 40) { curr.address = curr.address.substring(0, 39) + '...'; }
-      return acc.concat(JSON.stringify(curr).replace('{', '').replace('}', '').replace(/:/g, ': ').replace(/,/g, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;').replace(/"/g, ''));
-    }, []);
+      return acc.concat(JSON.stringify(curr)?.replace('{', '')?.replace('}', '')?.replace(/:/g, ': ')?.replace(/,/g, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')?.replace(/"/g, ''));
+    }, <any[]>[]);
     const reorderedLQNode = [
       [{ key: 'alias', value: lqNode.alias, title: 'Node Alias', width: 50, type: DataTypeEnum.STRING },
       { key: 'last_timestamp', value: lqNode.last_timestamp, title: 'Last Timestamp', width: 50, type: DataTypeEnum.DATE_TIME }],
       [{ key: 'nodeid', value: lqNode.nodeid, title: 'Node ID', width: 100, type: DataTypeEnum.STRING }],
-      [{ key: 'base_fee', value: (lqNode.option_will_fund.lease_fee_base_msat / 1000), title: 'Lease Base Fee (Sats)', width: 50, type: DataTypeEnum.NUMBER },
-      { key: 'fee_basis', value: lqNode.option_will_fund.lease_fee_basis, title: 'Lease Base Basis (bps)', width: 50, type: DataTypeEnum.NUMBER }],
-      [{ key: 'channel_max_base', value: lqNode.option_will_fund.channel_fee_max_base_msat / 1000, title: 'Max Channel Routing Base Fee (Sats)', width: 50, type: DataTypeEnum.NUMBER },
-      { key: 'channel_max_rate', value: lqNode.option_will_fund.channel_fee_max_proportional_thousandths * 1000, title: 'Max Channel Routing Fee Rate (ppm)', width: 50, type: DataTypeEnum.NUMBER }],
-      [{ key: 'funding_rate', value: lqNode.option_will_fund.funding_weight, title: 'Funding Weight', width: 100, type: DataTypeEnum.NUMBER }],
+      [{ key: 'base_fee', value: ((lqNode.option_will_fund?.lease_fee_base_msat || 0) / 1000), title: 'Lease Base Fee (Sats)', width: 50, type: DataTypeEnum.NUMBER },
+      { key: 'fee_basis', value: lqNode.option_will_fund?.lease_fee_basis, title: 'Lease Base Basis (bps)', width: 50, type: DataTypeEnum.NUMBER }],
+      [{ key: 'channel_max_base', value: (lqNode.option_will_fund?.channel_fee_max_base_msat || 0) / 1000, title: 'Max Channel Routing Base Fee (Sats)', width: 50, type: DataTypeEnum.NUMBER },
+      { key: 'channel_max_rate', value: (lqNode.option_will_fund?.channel_fee_max_proportional_thousandths || 0) * 1000, title: 'Max Channel Routing Fee Rate (ppm)', width: 50, type: DataTypeEnum.NUMBER }],
+      [{ key: 'funding_rate', value: (lqNode.option_will_fund?.funding_weight || 0), title: 'Funding Weight', width: 100, type: DataTypeEnum.NUMBER }],
       [{ key: 'address', value: addArr, title: 'Address', width: 100, type: DataTypeEnum.ARRAY }]
     ];
     this.store.dispatch(openConfirmation({

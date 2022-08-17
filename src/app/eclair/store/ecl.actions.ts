@@ -7,7 +7,7 @@ import { GetInfo, Channel, Fees, Peer, LightningBalance, OnChainBalance, Channel
 
 export const updateECLAPICallStatus = createAction(ECLActions.UPDATE_API_CALL_STATUS_ECL, props<{ payload: ApiCallStatusPayload }>());
 
-export const resetECLStore = createAction(ECLActions.RESET_ECL_STORE, props<{ payload: SelNodeChild }>());
+export const resetECLStore = createAction(ECLActions.RESET_ECL_STORE, props<{ payload: SelNodeChild | null }>());
 
 export const setChildNodeSettingsECL = createAction(ECLActions.SET_CHILD_NODE_SETTINGS_ECL, props<{ payload: SelNodeChild }>());
 

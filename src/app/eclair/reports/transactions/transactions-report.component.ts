@@ -97,22 +97,22 @@ export class ECLTransactionsReportComponent implements OnInit, OnDestroy {
     const endDateInSeconds = Math.round(end.getTime() / 1000);
     const transactionsReport = [];
     this.transactionsReportSummary = { paymentsSelectedPeriod: 0, invoicesSelectedPeriod: 0, amountPaidSelectedPeriod: 0, amountReceivedSelectedPeriod: 0 };
-    const filteredPayments = this.payments.filter((payment) => Math.floor(payment.firstPartTimestamp / 1000) >= startDateInSeconds && Math.floor(payment.firstPartTimestamp / 1000) < endDateInSeconds);
-    const filteredInvoices = this.invoices.filter((invoice) => invoice.status === 'received' && invoice.timestamp >= startDateInSeconds && invoice.timestamp < endDateInSeconds);
+    const filteredPayments = this.payments?.filter((payment) => Math.floor(payment.firstPartTimestamp / 1000) >= startDateInSeconds && Math.floor(payment.firstPartTimestamp / 1000) < endDateInSeconds);
+    const filteredInvoices = this.invoices?.filter((invoice) => invoice.status === 'received' && invoice.timestamp >= startDateInSeconds && invoice.timestamp < endDateInSeconds);
     this.transactionsReportSummary.paymentsSelectedPeriod = filteredPayments.length;
     this.transactionsReportSummary.invoicesSelectedPeriod = filteredInvoices.length;
     if (this.reportPeriod === SCROLL_RANGES[1]) {
       for (let i = 0; i < 12; i++) {
         transactionsReport.push({ name: MONTHS[i].name, date: new Date(start.getFullYear(), i, 1, 0, 0, 0, 0), series: [{ name: 'Paid', value: 0, extra: { total: 0 } }, { name: 'Received', value: 0, extra: { total: 0 } }] });
       }
-      filteredPayments.map((payment) => {
+      filteredPayments?.map((payment) => {
         const monthNumber = new Date(payment.firstPartTimestamp).getMonth();
         this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + payment.recipientAmount;
         transactionsReport[monthNumber].series[0].value = transactionsReport[monthNumber].series[0].value + payment.recipientAmount;
         transactionsReport[monthNumber].series[0].extra.total = transactionsReport[monthNumber].series[0].extra.total + 1;
         return this.transactionsReportSummary;
       });
-      filteredInvoices.map((invoice) => {
+      filteredInvoices?.map((invoice) => {
         const monthNumber = new Date((invoice.timestamp) * 1000).getMonth();
         this.transactionsReportSummary.amountReceivedSelectedPeriod = this.transactionsReportSummary.amountReceivedSelectedPeriod + invoice.amountSettled;
         transactionsReport[monthNumber].series[1].value = transactionsReport[monthNumber].series[1].value + invoice.amountSettled;
@@ -123,14 +123,14 @@ export class ECLTransactionsReportComponent implements OnInit, OnDestroy {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
         transactionsReport.push({ name: (i + 1).toString(), date: new Date((((i) * this.secondsInADay) + startDateInSeconds) * 1000), series: [{ name: 'Paid', value: 0, extra: { total: 0 } }, { name: 'Received', value: 0, extra: { total: 0 } }] });
       }
-      filteredPayments.map((payment) => {
+      filteredPayments?.map((payment) => {
         const dateNumber = Math.floor((Math.floor(payment.firstPartTimestamp / 1000) - startDateInSeconds) / this.secondsInADay);
         this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + payment.recipientAmount;
         transactionsReport[dateNumber].series[0].value = transactionsReport[dateNumber].series[0].value + payment.recipientAmount;
         transactionsReport[dateNumber].series[0].extra.total = transactionsReport[dateNumber].series[0].extra.total + 1;
         return this.transactionsReportSummary;
       });
-      filteredInvoices.map((invoice) => {
+      filteredInvoices?.map((invoice) => {
         const dateNumber = Math.floor((invoice.timestamp - startDateInSeconds) / this.secondsInADay);
         this.transactionsReportSummary.amountReceivedSelectedPeriod = this.transactionsReportSummary.amountReceivedSelectedPeriod + invoice.amountSettled;
         transactionsReport[dateNumber].series[1].value = transactionsReport[dateNumber].series[1].value + invoice.amountSettled;
@@ -142,7 +142,7 @@ export class ECLTransactionsReportComponent implements OnInit, OnDestroy {
   }
 
   prepareTableData() {
-    return this.transactionsReportData.reduce((acc, curr) => {
+    return this.transactionsReportData?.reduce((acc, curr) => {
       if (curr.series[0].extra.total > 0 || curr.series[1].extra.total > 0) {
         return acc.concat({ date: curr.date, amount_paid: curr.series[0].value, num_payments: curr.series[0].extra.total, amount_received: curr.series[1].value, num_invoices: curr.series[1].extra.total });
       }

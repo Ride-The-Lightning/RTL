@@ -950,9 +950,9 @@ export class CLNEffects implements OnDestroy {
     this.store.dispatch(setNodeData({ payload: node_data }));
     let newRoute = this.location.path();
     if (newRoute.includes('/lnd/')) {
-      newRoute = newRoute.replace('/lnd/', '/cln/');
+      newRoute = newRoute?.replace('/lnd/', '/cln/');
     } else if (newRoute.includes('/ecl/')) {
-      newRoute = newRoute.replace('/ecl/', '/cln/');
+      newRoute = newRoute?.replace('/ecl/', '/cln/');
     }
     if (newRoute.includes('/login') || newRoute.includes('/error') || newRoute === '' || landingPage === 'HOME' || newRoute.includes('?access-key=')) {
       newRoute = '/cln/home';

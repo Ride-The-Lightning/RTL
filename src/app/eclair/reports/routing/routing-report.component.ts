@@ -115,7 +115,7 @@ export class ECLRoutingReportComponent implements OnInit, OnDestroy {
       for (let i = 0; i < 12; i++) {
         feeReport.push({ name: MONTHS[i].name, value: 0.0, extra: { totalEvents: 0 } });
       }
-      this.filteredEventsBySelectedPeriod.map((event) => {
+      this.filteredEventsBySelectedPeriod?.map((event) => {
         const monthNumber = new Date(event.timestamp).getMonth();
         feeReport[monthNumber].value = feeReport[monthNumber].value + (event.amountIn - event.amountOut);
         feeReport[monthNumber].extra.totalEvents = feeReport[monthNumber].extra.totalEvents + 1;
@@ -126,7 +126,7 @@ export class ECLRoutingReportComponent implements OnInit, OnDestroy {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
         feeReport.push({ name: i + 1, value: 0.0, extra: { totalEvents: 0 } });
       }
-      this.filteredEventsBySelectedPeriod.map((event) => {
+      this.filteredEventsBySelectedPeriod?.map((event) => {
         const dateNumber = Math.floor((Math.floor(event.timestamp / 1000) - startDateInSeconds) / this.secondsInADay);
         feeReport[dateNumber].value = feeReport[dateNumber].value + (event.amountIn - event.amountOut);
         feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
@@ -147,7 +147,7 @@ export class ECLRoutingReportComponent implements OnInit, OnDestroy {
       for (let i = 0; i < 12; i++) {
         eventsReport.push({ name: MONTHS[i].name, value: 0, extra: { totalFees: 0.0 } });
       }
-      this.filteredEventsBySelectedPeriod.map((event) => {
+      this.filteredEventsBySelectedPeriod?.map((event) => {
         const monthNumber = new Date(event.timestamp).getMonth();
         eventsReport[monthNumber].value = eventsReport[monthNumber].value + 1;
         eventsReport[monthNumber].extra.totalFees = eventsReport[monthNumber].extra.totalFees + (event.amountIn - event.amountOut);
@@ -158,7 +158,7 @@ export class ECLRoutingReportComponent implements OnInit, OnDestroy {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
         eventsReport.push({ name: i + 1, value: 0, extra: { totalFees: 0.0 } });
       }
-      this.filteredEventsBySelectedPeriod.map((event) => {
+      this.filteredEventsBySelectedPeriod?.map((event) => {
         const dateNumber = Math.floor((Math.floor(event.timestamp / 1000) - startDateInSeconds) / this.secondsInADay);
         eventsReport[dateNumber].value = eventsReport[dateNumber].value + 1;
         eventsReport[dateNumber].extra.totalFees = eventsReport[dateNumber].extra.totalFees + (event.amountIn - event.amountOut);

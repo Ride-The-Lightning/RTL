@@ -32,7 +32,7 @@ export const simplifyAllChannels = (selNode, channels) => {
     return request.post(options).then((nodes) => {
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Channels', msg: 'Filtered Nodes Received', data: nodes });
         let foundPeer = null;
-        simplifiedChannels.map((channel) => {
+        simplifiedChannels === null || simplifiedChannels === void 0 ? void 0 : simplifiedChannels.map((channel) => {
             foundPeer = nodes.find((channelWithAlias) => channel.nodeId === channelWithAlias.nodeId);
             channel.alias = foundPeer ? foundPeer.alias : channel.nodeId.substring(0, 20);
             return channel;

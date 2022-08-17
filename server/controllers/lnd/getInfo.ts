@@ -24,7 +24,7 @@ export const getInfo = (req, res, next) => {
     const err = common.handleError({ statusCode: 502, message: 'Bad or Missing Macaroon', error: errMsg }, 'GetInfo', errMsg, req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
   } else {
-    common.nodes.map((node: any) => {
+    common.nodes?.map((node: any) => {
       if (node.ln_implementation === 'LND') {
         common.getAllNodeAllChannelBackup(node);
       }

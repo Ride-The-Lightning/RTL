@@ -70,7 +70,7 @@ export const listInvoices = (req, res, next) => {
         return common.getDummyData('Invoices', req.session.selectedNode.ln_implementation).then((body) => {
             const invoices = (!body[0] || body[0].length <= 0) ? [] : body[0];
             pendingInvoices = (!body[1] || body[1].length <= 0) ? [] : body[1];
-            return Promise.all(invoices.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.ln_server_url, invoice))).
+            return Promise.all(invoices === null || invoices === void 0 ? void 0 : invoices.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.ln_server_url, invoice))).
                 then((values) => {
                 body = common.sortDescByKey(invoices, 'expiresAt');
                 return res.status(200).json(invoices);
@@ -84,7 +84,7 @@ export const listInvoices = (req, res, next) => {
             const invoices = (!body[0] || body[0].length <= 0) ? [] : body[0];
             pendingInvoices = (!body[1] || body[1].length <= 0) ? [] : body[1];
             if (invoices && invoices.length > 0) {
-                return Promise.all(invoices.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.ln_server_url, invoice))).
+                return Promise.all(invoices === null || invoices === void 0 ? void 0 : invoices.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.ln_server_url, invoice))).
                     then((values) => {
                     body = common.sortDescByKey(invoices, 'expiresAt');
                     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Sorted Invoices List Received', data: invoices });

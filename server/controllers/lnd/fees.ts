@@ -21,9 +21,9 @@ export const getFees = (req, res, next) => {
     const day_start_time = current_time - 86400;
     return getAllForwardingEvents(req, month_start_time, current_time, 0, 'fees', (history) => {
       logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Fees', msg: 'Forwarding History Received', data: history });
-      const daily_sum = history.forwarding_events.reduce((acc, curr) => ((curr.timestamp >= day_start_time) ? [(acc[0] + 1), (acc[1] + +curr.fee_msat)] : acc), [0, 0]);
-      const weekly_sum = history.forwarding_events.reduce((acc, curr) => ((curr.timestamp >= week_start_time) ? [(acc[0] + 1), (acc[1] + +curr.fee_msat)] : acc), [0, 0]);
-      const monthly_sum = history.forwarding_events.reduce((acc, curr) => [(acc[0] + 1), (acc[1] + +curr.fee_msat)], [0, 0]);
+      const daily_sum = history.forwarding_events?.reduce((acc, curr) => ((curr.timestamp >= day_start_time) ? [(acc[0] + 1), (acc[1] + +curr.fee_msat)] : acc), [0, 0]);
+      const weekly_sum = history.forwarding_events?.reduce((acc, curr) => ((curr.timestamp >= week_start_time) ? [(acc[0] + 1), (acc[1] + +curr.fee_msat)] : acc), [0, 0]);
+      const monthly_sum = history.forwarding_events?.reduce((acc, curr) => [(acc[0] + 1), (acc[1] + +curr.fee_msat)], [0, 0]);
       logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Fees', msg: 'Daily Sum (Transactions, Fee)', data: daily_sum });
       logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Fees', msg: 'Weekly Sum (Transactions, Fee)', data: weekly_sum });
       logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Fees', msg: 'Monthly Sum (Transactions, Fee)', data: monthly_sum });

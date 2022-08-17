@@ -16,12 +16,13 @@ function getFilesList(channelBackupPath, callback) {
         }
         if (files && files.length > 0) {
             files.forEach((file) => {
+                var _a;
                 if (!file.includes('.restored')) {
                     if (file.toLowerCase() === 'channel-all.bak' || file.toLowerCase() === 'backup-channel-all.bak') {
                         all_restore_exists = true;
                     }
                     else {
-                        files_list.push({ channel_point: file.substring(8, file.length - 4).replace('-', ':') });
+                        files_list.push({ channel_point: (_a = file.substring(8, file.length - 4)) === null || _a === void 0 ? void 0 : _a.replace('-', ':') });
                     }
                 }
             });
@@ -31,6 +32,7 @@ function getFilesList(channelBackupPath, callback) {
     });
 }
 export const getBackup = (req, res, next) => {
+    var _a, _b;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Getting Channel Backup..' });
     options = common.getOptions(req);
     if (options.error) {
@@ -44,9 +46,9 @@ export const getBackup = (req, res, next) => {
         options.url = req.session.selectedNode.ln_server_url + '/v1/channels/backup';
     }
     else {
-        channel_backup_file = req.session.selectedNode.channel_backup_path + sep + 'channel-' + req.params.channelPoint.replace(':', '-') + '.bak';
+        channel_backup_file = req.session.selectedNode.channel_backup_path + sep + 'channel-' + ((_a = req.params.channelPoint) === null || _a === void 0 ? void 0 : _a.replace(':', '-')) + '.bak';
         message = 'Channel Backup Successful.';
-        const channelpoint = req.params.channelPoint.replace(':', '/');
+        const channelpoint = (_b = req.params.channelPoint) === null || _b === void 0 ? void 0 : _b.replace(':', '/');
         options.url = req.session.selectedNode.ln_server_url + '/v1/channels/backup/' + channelpoint;
         const exists = fs.existsSync(channel_backup_file);
         if (exists) {
@@ -81,6 +83,7 @@ export const getBackup = (req, res, next) => {
     });
 };
 export const postBackupVerify = (req, res, next) => {
+    var _a;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Verifying Channel Backup..' });
     options = common.getOptions(req);
     if (options.error) {
@@ -116,7 +119,7 @@ export const postBackupVerify = (req, res, next) => {
     }
     else {
         message = 'Channel Verify Successful.';
-        channel_verify_file = req.session.selectedNode.channel_backup_path + sep + 'channel-' + req.params.channelPoint.replace(':', '-') + '.bak';
+        channel_verify_file = req.session.selectedNode.channel_backup_path + sep + 'channel-' + ((_a = req.params.channelPoint) === null || _a === void 0 ? void 0 : _a.replace(':', '-')) + '.bak';
         const exists = fs.existsSync(channel_verify_file);
         if (exists) {
             verify_backup = fs.readFileSync(channel_verify_file, 'utf-8');
@@ -141,6 +144,7 @@ export const postBackupVerify = (req, res, next) => {
     }
 };
 export const postRestore = (req, res, next) => {
+    var _a;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Restoring Channel Backup..' });
     options = common.getOptions(req);
     if (options.error) {
@@ -188,7 +192,7 @@ export const postRestore = (req, res, next) => {
     }
     else {
         message = 'Channel Restore Successful.';
-        channel_restore_file = req.session.selectedNode.channel_backup_path + sep + 'restore' + sep + 'channel-' + req.params.channelPoint.replace(':', '-') + '.bak';
+        channel_restore_file = req.session.selectedNode.channel_backup_path + sep + 'restore' + sep + 'channel-' + ((_a = req.params.channelPoint) === null || _a === void 0 ? void 0 : _a.replace(':', '-')) + '.bak';
         const exists = fs.existsSync(channel_restore_file);
         if (exists) {
             restore_backup = fs.readFileSync(channel_restore_file, 'utf-8');

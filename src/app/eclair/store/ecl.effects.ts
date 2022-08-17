@@ -86,7 +86,7 @@ export class ECLEffects implements OnDestroy {
               break;
             case ECLWSEventTypeEnum.CHANNEL_STATE_CHANGED:
               if ((<ChannelStateUpdate>newMessage).currentState === 'NORMAL' || (<ChannelStateUpdate>newMessage).currentState === 'CLOSED') {
-                this.rawChannelsList = this.rawChannelsList.map((channel) => {
+                this.rawChannelsList = this.rawChannelsList?.map((channel) => {
                   if (channel.channelId === (<ChannelStateUpdate>newMessage).channelId && channel.nodeId === (<ChannelStateUpdate>newMessage).remoteNodeId) {
                     channel.state = (<ChannelStateUpdate>newMessage).currentState;
                   }
@@ -663,12 +663,12 @@ export class ECLEffects implements OnDestroy {
           channelStatus.active.channels = channelStatus.active.channels + 1;
           channelStatus.active.capacity = channelStatus.active.capacity + channel.toLocal;
         } else if (channel.state.includes('WAIT') || channel.state.includes('CLOSING') || channel.state.includes('SYNCING')) {
-          channel.state = channel.state.replace(/_/g, ' ');
+          channel.state = channel.state?.replace(/_/g, ' ');
           pendingChannels.push(channel);
           channelStatus.pending.channels = channelStatus.pending.channels + 1;
           channelStatus.pending.capacity = channelStatus.pending.capacity + channel.toLocal;
         } else {
-          channel.state = channel.state.replace(/_/g, ' ');
+          channel.state = channel.state?.replace(/_/g, ' ');
           inactiveChannels.push(channel);
           channelStatus.inactive.channels = channelStatus.inactive.channels + 1;
           channelStatus.inactive.capacity = channelStatus.inactive.capacity + channel.toLocal;
@@ -713,9 +713,9 @@ export class ECLEffects implements OnDestroy {
     this.store.dispatch(setNodeData({ payload: node_data }));
     let newRoute = this.location.path();
     if (newRoute.includes('/lnd/')) {
-      newRoute = newRoute.replace('/lnd/', '/ecl/');
+      newRoute = newRoute?.replace('/lnd/', '/ecl/');
     } else if (newRoute.includes('/cln/')) {
-      newRoute = newRoute.replace('/cln/', '/ecl/');
+      newRoute = newRoute?.replace('/cln/', '/ecl/');
     }
     if (newRoute.includes('/login') || newRoute.includes('/error') || newRoute === '' || landingPage === 'HOME' || newRoute.includes('?access-key=')) {
       newRoute = '/ecl/home';

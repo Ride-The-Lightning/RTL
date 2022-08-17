@@ -69,7 +69,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.channelsJSONArr = channelsSelector.channels.filter((channel) => channel.pending_htlcs && channel.pending_htlcs.length > 0) || [];
+        this.channelsJSONArr = channelsSelector.channels?.filter((channel) => channel.pending_htlcs && channel.pending_htlcs.length > 0) || [];
         this.loadHTLCsTable(this.channelsJSONArr);
         this.logger.info(channelsSelector);
       });
@@ -142,7 +142,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
     this.channels.paginator = this.paginator;
     this.channels.filterPredicate = (channel: Channel, fltr: string) => {
       const newChannel = (channel.remote_alias ? channel.remote_alias.toLowerCase() : '') +
-        channel.pending_htlcs.map((htlc) => JSON.stringify(htlc) + (htlc.incoming ? 'yes' : 'no'));
+        channel.pending_htlcs?.map((htlc) => JSON.stringify(htlc) + (htlc.incoming ? 'yes' : 'no'));
       return newChannel.includes(fltr);
     };
     this.applyFilter();
@@ -156,7 +156,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
 
   flattenHTLCs() {
     const channelsDataCopy = JSON.parse(JSON.stringify(this.channels.data));
-    const flattenedHTLCs = channelsDataCopy.reduce((acc, curr) => {
+    const flattenedHTLCs = channelsDataCopy?.reduce((acc, curr) => {
       if (curr.pending_htlcs) {
         return acc.concat(curr.pending_htlcs);
       } else {

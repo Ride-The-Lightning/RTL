@@ -112,7 +112,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
         subscribe({
           next: (data) => {
             this.selAmountUnit = event.value;
-            self.transaction.amount = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
+            self.transaction.amount = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit])?.replace(/,/g, '');
           }, error: (err) => {
             self.transaction.amount = null;
             this.amountError = 'Conversion Error: ' + err;

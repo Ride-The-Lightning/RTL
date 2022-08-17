@@ -155,8 +155,8 @@ export class CLNHomeComponent implements OnInit, OnDestroy {
         this.totalOutboundLiquidity = 0;
         this.activeChannels = channelsSeletor.activeChannels;
         this.activeChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels, 'balancedness'))) || [];
-        this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels.filter((channel) => (channel.msatoshi_to_them ? channel.msatoshi_to_them > 0 : false)), 'msatoshi_to_them'))) || [];
-        this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels.filter((channel) => (channel.msatoshi_to_us ? channel.msatoshi_to_us > 0 : false)), 'msatoshi_to_us'))) || [];
+        this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels?.filter((channel) => (channel.msatoshi_to_them ? channel.msatoshi_to_them > 0 : false)), 'msatoshi_to_them'))) || [];
+        this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels?.filter((channel) => (channel.msatoshi_to_us ? channel.msatoshi_to_us > 0 : false)), 'msatoshi_to_us'))) || [];
         this.activeChannels.forEach((channel) => {
           this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil((channel.msatoshi_to_them || 0) / 1000);
           this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor((channel.msatoshi_to_us || 0) / 1000);

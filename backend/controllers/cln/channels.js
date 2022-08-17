@@ -12,7 +12,7 @@ export const listChannels = (req, res, next) => {
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/channel/listChannels';
     request(options).then((body) => {
-        body.map((channel) => {
+        body === null || body === void 0 ? void 0 : body.map((channel) => {
             if (!channel.alias || channel.alias === '') {
                 channel.alias = channel.id.substring(0, 20);
             }
@@ -129,9 +129,10 @@ export const funderUpdatePolicy = (req, res, next) => {
     }
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Funder Update Body', data: options.body });
     request.post(options).then((body) => {
+        var _a, _b;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Funder Policy Received', data: body });
-        body.channel_fee_max_base_msat = (body.channel_fee_max_base_msat && typeof body.channel_fee_max_base_msat === 'string' && body.channel_fee_max_base_msat.includes('msat')) ? +body.channel_fee_max_base_msat.replace('msat', '') : body.channel_fee_max_base_msat;
-        body.lease_fee_base_msat = (body.lease_fee_base_msat && typeof body.lease_fee_base_msat === 'string' && body.lease_fee_base_msat.includes('msat')) ? +body.lease_fee_base_msat.replace('msat', '') : body.channel_fee_max_base_msat;
+        body.channel_fee_max_base_msat = (body.channel_fee_max_base_msat && typeof body.channel_fee_max_base_msat === 'string' && body.channel_fee_max_base_msat.includes('msat')) ? +((_a = body.channel_fee_max_base_msat) === null || _a === void 0 ? void 0 : _a.replace('msat', '')) : body.channel_fee_max_base_msat;
+        body.lease_fee_base_msat = (body.lease_fee_base_msat && typeof body.lease_fee_base_msat === 'string' && body.lease_fee_base_msat.includes('msat')) ? +((_b = body.lease_fee_base_msat) === null || _b === void 0 ? void 0 : _b.replace('msat', '')) : body.channel_fee_max_base_msat;
         res.status(200).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Channels', 'Funder Policy Error', req.session.selectedNode);

@@ -57,7 +57,7 @@ export class ECLWebSocketClient {
 
   public connectWithClient = (eclWsClt) => {
     this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'INFO', fileName: 'ECLWebSocket', msg: 'Connecting to the Eclair\'s Websocket Server..' });
-    const UpdatedLNServerURL = (eclWsClt.selectedNode.ln_server_url).replace(/^http/, 'ws');
+    const UpdatedLNServerURL = (eclWsClt.selectedNode.ln_server_url)?.replace(/^http/, 'ws');
     const firstSubStrIndex = (UpdatedLNServerURL.indexOf('//') + 2);
     const WS_LINK = UpdatedLNServerURL.slice(0, firstSubStrIndex) + ':' + eclWsClt.selectedNode.ln_api_password + '@' + UpdatedLNServerURL.slice(firstSubStrIndex) + '/ws';
     eclWsClt.webSocketClient = new WebSocket(WS_LINK);

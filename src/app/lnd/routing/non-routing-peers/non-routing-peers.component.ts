@@ -128,7 +128,7 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   loadNonRoutingPeersTable(forwardingEvents: ForwardingEvent[]) {
     if (forwardingEvents.length > 0) {
       // const grpdRoutingPeers = this.groupRoutingPeers(forwardingEvents);
-      const filteredNonRoutingChannels = this.activeChannels.filter((actvChnl) => forwardingEvents.findIndex((evnt) => (evnt.chan_id_in === actvChnl.chan_id || evnt.chan_id_out === actvChnl.chan_id)) < 0);
+      const filteredNonRoutingChannels = this.activeChannels?.filter((actvChnl) => forwardingEvents.findIndex((evnt) => (evnt.chan_id_in === actvChnl.chan_id || evnt.chan_id_out === actvChnl.chan_id)) < 0);
       this.NonRoutingPeers = new MatTableDataSource<Channel>(filteredNonRoutingChannels);
       this.NonRoutingPeers.sort = this.sort;
       this.NonRoutingPeers.filterPredicate = (nrchnl: Channel, fltr: string) => JSON.stringify(nrchnl).toLowerCase().includes(fltr);

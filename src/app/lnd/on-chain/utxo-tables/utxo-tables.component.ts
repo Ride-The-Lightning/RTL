@@ -34,7 +34,7 @@ export class UTXOTablesComponent implements OnInit, OnDestroy {
       subscribe((utxosSelector: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
         if (utxosSelector.utxos && utxosSelector.utxos.length > 0) {
           this.numUtxos = utxosSelector.utxos.length;
-          this.numDustUtxos = utxosSelector.utxos.filter((utxo) => +utxo.amount_sat < 1000).length;
+          this.numDustUtxos = utxosSelector.utxos?.filter((utxo) => +utxo.amount_sat < 1000).length;
         }
         this.logger.info(utxosSelector);
       });

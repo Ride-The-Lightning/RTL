@@ -42,7 +42,7 @@ export class RTLWebSocketServer {
       const acceptKey = request.headers['sec-websocket-key'];
       const hash = this.generateAcceptValue(acceptKey);
       const responseHeaders = ['HTTP/1.1 101 Web Socket Protocol Handshake', 'Upgrade: WebSocket', 'Connection: Upgrade', 'Sec-WebSocket-Accept: ' + hash];
-      const protocols = !request.headers['sec-websocket-protocol'] ? [] : request.headers['sec-websocket-protocol'].split(',').map((s) => s.trim());
+      const protocols = !request.headers['sec-websocket-protocol'] ? [] : request.headers['sec-websocket-protocol'].split(',')?.map((s) => s.trim());
       if (protocols.includes('json')) { responseHeaders.push('Sec-WebSocket-Protocol: json'); }
       this.webSocketServer.handleUpgrade(request, socket, head, this.upgradeCallback);
     });
@@ -56,7 +56,7 @@ export class RTLWebSocketServer {
   };
 
   public mountEventsOnConnection = (websocket, request) => {
-    const protocols = !request.headers['sec-websocket-protocol'] ? [] : request.headers['sec-websocket-protocol'].split(',').map((s) => s.trim());
+    const protocols = !request.headers['sec-websocket-protocol'] ? [] : request.headers['sec-websocket-protocol'].split(',')?.map((s) => s.trim());
     const cookies = parse(request.headers.cookie);
     websocket.clientId = Date.now();
     websocket.isAlive = true;

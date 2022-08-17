@@ -89,7 +89,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
   }
 
   private filterPeers(newlySelectedPeer: string): Peer[] {
-    return this.sortedPeers.filter((peer) => peer.alias.toLowerCase().indexOf(newlySelectedPeer ? newlySelectedPeer.toLowerCase() : '') === 0);
+    return this.sortedPeers?.filter((peer) => peer.alias.toLowerCase().indexOf(newlySelectedPeer ? newlySelectedPeer.toLowerCase() : '') === 0);
   }
 
   displayFn(peer: Peer): string {
@@ -100,7 +100,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
     this.channelConnectionError = '';
     this.selectedPubkey = (this.selectedPeer.value && this.selectedPeer.value.id) ? this.selectedPeer.value.id : null;
     if (typeof this.selectedPeer.value === 'string') {
-      const selPeer = this.peers.filter((peer) => peer.alias.length === this.selectedPeer.value.length && peer.alias.toLowerCase().indexOf(this.selectedPeer.value ? this.selectedPeer.value.toLowerCase() : '') === 0);
+      const selPeer = this.peers?.filter((peer) => peer.alias.length === this.selectedPeer.value.length && peer.alias.toLowerCase().indexOf(this.selectedPeer.value ? this.selectedPeer.value.toLowerCase() : '') === 0);
       if (selPeer.length === 1 && selPeer[0].id) {
         this.selectedPubkey = selPeer[0].id;
       }
@@ -152,7 +152,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
   onUTXOSelectionChange(event: any) {
     const utxoNew = { value: 0 };
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
-      this.totalSelectedUTXOAmount = this.selUTXOs.reduce((a, b) => {
+      this.totalSelectedUTXOAmount = this.selUTXOs?.reduce((a, b) => {
         utxoNew.value = a.value + b.value;
         return utxoNew;
       }).value;

@@ -52,7 +52,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => { this.selNode = nodeSettings; });
     this.store.select(channels).pipe(takeUntil(this.unSubs[1])).
       subscribe((channelsSelector: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.activeChannels = channelsSelector.channels && channelsSelector.channels.length ? channelsSelector.channels.filter((channel) => channel.active) : [];
+        this.activeChannels = channelsSelector.channels && channelsSelector.channels.length ? channelsSelector.channels?.filter((channel) => channel.active) : [];
         this.filteredMinAmtActvChannels = this.activeChannels;
         if (this.filteredMinAmtActvChannels.length && this.filteredMinAmtActvChannels.length > 0) {
           this.selectedChannelCtrl.enable();
@@ -89,7 +89,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   }
 
   private filterChannels(): Channel[] {
-    return this.activeChannels && this.activeChannels.length ? this.activeChannels.filter((channel) => {
+    return this.activeChannels && this.activeChannels.length ? this.activeChannels?.filter((channel) => {
       const alias = channel.remote_alias ? channel.remote_alias.toLowerCase() : channel.chan_id ? channel.chan_id.toLowerCase() : '';
       return alias.indexOf(this.selectedChannelCtrl.value ? this.selectedChannelCtrl.value.toLowerCase() : '') === 0 && (channel.local_balance || 0) >= +(this.paymentDecoded.num_satoshis ? this.paymentDecoded.num_satoshis : 0);
     }) : [];
@@ -101,7 +101,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
 
   onSelectedChannelChanged() {
     if (this.selectedChannelCtrl.value && this.selectedChannelCtrl.value.length > 0 && typeof this.selectedChannelCtrl.value === 'string') {
-      const foundChannels = this.activeChannels && this.activeChannels.length ? this.activeChannels.filter((channel) => {
+      const foundChannels = this.activeChannels && this.activeChannels.length ? this.activeChannels?.filter((channel) => {
         const alias = channel.remote_alias ? channel.remote_alias.toLowerCase() : channel.chan_id ? channel.chan_id.toLowerCase() : '';
         return alias.length === this.selectedChannelCtrl.value.length && alias.indexOf(this.selectedChannelCtrl.value ? this.selectedChannelCtrl.value.toLowerCase() : '') === 0;
       }) : [];

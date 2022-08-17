@@ -162,7 +162,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   }
 
   updateInvoicesData(newInvoice: Invoice) {
-    this.invoiceJSONArr = this.invoiceJSONArr.map((invoice) => ((invoice.paymentHash === newInvoice.paymentHash) ? newInvoice : invoice));
+    this.invoiceJSONArr = this.invoiceJSONArr?.map((invoice) => ((invoice.paymentHash === newInvoice.paymentHash) ? newInvoice : invoice));
   }
 
   loadInvoicesTable(invs: Invoice[]) {

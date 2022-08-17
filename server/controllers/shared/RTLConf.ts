@@ -235,7 +235,7 @@ export const getConfig = (req, res, next) => {
         jsonConfig = JSON.parse(data);
       } else {
         fileFormat = 'INI';
-        data = data.replace('color=#', 'color=');
+        data = data?.replace('color=#', 'color=');
         jsonConfig = ini.parse(data);
         if (jsonConfig['Application Options'] && jsonConfig['Application Options'].color) {
           jsonConfig['Application Options'].color = '#' + jsonConfig['Application Options'].color;
@@ -246,7 +246,7 @@ export const getConfig = (req, res, next) => {
         }
       }
       jsonConfig = maskPasswords(jsonConfig);
-      const responseJSON = (fileFormat === 'JSON') ? jsonConfig : ini.stringify(jsonConfig).replace('color=\\#', 'color=#');
+      const responseJSON = (fileFormat === 'JSON') ? jsonConfig : ini.stringify(jsonConfig)?.replace('color=\\#', 'color=#');
       logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Configuration File Data Received', data: responseJSON });
       res.status(200).json({ format: fileFormat, data: responseJSON });
     }
@@ -255,7 +255,7 @@ export const getConfig = (req, res, next) => {
 
 export const getFile = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Getting File..' });
-  const file = req.query.path ? req.query.path : (req.session.selectedNode.channel_backup_path + sep + 'channel-' + req.query.channel.replace(':', '-') + '.bak');
+  const file = req.query.path ? req.query.path : (req.session.selectedNode.channel_backup_path + sep + 'channel-' + req.query.channel?.replace(':', '-') + '.bak');
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'RTLConf', msg: 'Channel Point', data: req.query.channel });
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'RTLConf', msg: 'File Path', data: file });
   fs.readFile(file, 'utf8', (errRes, data) => {

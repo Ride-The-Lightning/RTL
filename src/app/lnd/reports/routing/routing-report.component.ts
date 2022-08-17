@@ -118,7 +118,7 @@ export class RoutingReportComponent implements OnInit, OnDestroy {
       for (let i = 0; i < 12; i++) {
         feeReport.push({ name: MONTHS[i].name, value: 0.0, extra: { totalEvents: 0 } });
       }
-      this.events.forwarding_events.map((event) => {
+      this.events.forwarding_events?.map((event) => {
         const monthNumber = new Date((+event.timestamp) * 1000).getMonth();
         feeReport[monthNumber].value = feeReport[monthNumber].value + (+event.fee_msat / 1000);
         feeReport[monthNumber].extra.totalEvents = feeReport[monthNumber].extra.totalEvents + 1;
@@ -129,7 +129,7 @@ export class RoutingReportComponent implements OnInit, OnDestroy {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
         feeReport.push({ name: i + 1, value: 0.0, extra: { totalEvents: 0 } });
       }
-      this.events.forwarding_events.map((event) => {
+      this.events.forwarding_events?.map((event) => {
         const dateNumber = Math.floor((+event.timestamp - startDateInSeconds) / this.secondsInADay);
         feeReport[dateNumber].value = feeReport[dateNumber].value + (+event.fee_msat / 1000);
         feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
@@ -148,7 +148,7 @@ export class RoutingReportComponent implements OnInit, OnDestroy {
       for (let i = 0; i < 12; i++) {
         eventsReport.push({ name: MONTHS[i].name, value: 0, extra: { totalFees: 0.0 } });
       }
-      this.events.forwarding_events.map((event) => {
+      this.events.forwarding_events?.map((event) => {
         const monthNumber = new Date((+event.timestamp) * 1000).getMonth();
         eventsReport[monthNumber].value = eventsReport[monthNumber].value + 1;
         eventsReport[monthNumber].extra.totalFees = eventsReport[monthNumber].extra.totalFees + (+event.fee_msat / 1000);
@@ -159,7 +159,7 @@ export class RoutingReportComponent implements OnInit, OnDestroy {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
         eventsReport.push({ name: i + 1, value: 0, extra: { totalFees: 0.0 } });
       }
-      this.events.forwarding_events.map((event) => {
+      this.events.forwarding_events?.map((event) => {
         const dateNumber = Math.floor((+event.timestamp - startDateInSeconds) / this.secondsInADay);
         eventsReport[dateNumber].value = eventsReport[dateNumber].value + 1;
         eventsReport[dateNumber].extra.totalFees = eventsReport[dateNumber].extra.totalFees + (+event.fee_msat / 1000);

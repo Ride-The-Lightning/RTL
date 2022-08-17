@@ -10,7 +10,7 @@ let flgUTXOsSet = false;
 export const LNDReducer = createReducer(initLNDState,
   on(updateLNDAPICallStatus, (state, { payload }) => {
     const updatedApisCallStatus = JSON.parse(JSON.stringify(state.apisCallStatus));
-    updatedApisCallStatus[payload.action] = {
+    updatedApisCallStatus[payload.action || 0] = {
       status: payload.status,
       statusCode: payload.statusCode,
       message: payload.message,
@@ -51,7 +51,7 @@ export const LNDReducer = createReducer(initLNDState,
   }),
   on(addInvoice, (state, { payload }) => {
     const newListInvoices = state.listInvoices;
-    newListInvoices.invoices.unshift(payload);
+    newListInvoices.invoices?.unshift(payload);
     return {
       ...state,
       listInvoices: newListInvoices
@@ -59,7 +59,7 @@ export const LNDReducer = createReducer(initLNDState,
   }),
   on(updateInvoice, (state, { payload }) => {
     const modifiedListInvoices = state.listInvoices;
-    modifiedListInvoices.invoices = modifiedListInvoices.invoices.map((invoice) => ((invoice.payment_request === payload.payment_request) ? payload : invoice));
+    modifiedListInvoices.invoices = modifiedListInvoices.invoices?.map((invoice) => ((invoice.payment_request === payload.payment_request) ? payload : invoice));
     return {
       ...state,
       listInvoices: modifiedListInvoices
@@ -67,7 +67,7 @@ export const LNDReducer = createReducer(initLNDState,
   }),
   on(updatePayment, (state, { payload }) => {
     const modifiedListPayments = state.listPayments;
-    modifiedListPayments.payments = modifiedListPayments.payments.map((payment) => ((payment.payment_hash === payload.payment_hash) ? payload : payment));
+    modifiedListPayments.payments = modifiedListPayments.payments?.map((payment) => ((payment.payment_hash === payload.payment_hash) ? payload : payment));
     return {
       ...state,
       listPayments: modifiedListPayments
@@ -157,7 +157,7 @@ export const LNDReducer = createReducer(initLNDState,
     if (payload.length && flgUTXOsSet) {
       const modifiedUTXOs = [...state.utxos];
       modifiedUTXOs.forEach((utxo) => {
-        const foundTransaction = payload.find((transaction) => transaction.tx_hash === utxo.outpoint.txid_str);
+        const foundTransaction = payload.find((transaction) => transaction.tx_hash === utxo.outpoint?.txid_str);
         utxo.label = foundTransaction && foundTransaction.label ? foundTransaction.label : '';
       });
       return {
@@ -176,7 +176,7 @@ export const LNDReducer = createReducer(initLNDState,
     if (payload.length && flgTransactionsSet) {
       const transactions = [...state.transactions];
       payload.forEach((utxo) => {
-        const foundTransaction = transactions.find((transaction) => transaction.tx_hash === utxo.outpoint.txid_str);
+        const foundTransaction = transactions.find((transaction) => transaction.tx_hash === utxo.outpoint?.txid_str);
         utxo.label = foundTransaction && foundTransaction.label ? foundTransaction.label : '';
       });
     }
@@ -225,13 +225,13 @@ const mapAliases = (payload: any, storedChannels: (Channel | ClosedChannel)[]) =
   payload.forwarding_events.forEach((fhEvent) => {
     if (storedChannels && storedChannels.length > 0) {
       for (let idx = 0; idx < storedChannels.length; idx++) {
-        if (storedChannels[idx].chan_id.toString() === fhEvent.chan_id_in) {
+        if (storedChannels[idx].chan_id?.toString() === fhEvent.chan_id_in) {
           fhEvent.alias_in = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : fhEvent.chan_id_in;
           if (fhEvent.alias_out) {
             return;
           }
         }
-        if (storedChannels[idx].chan_id.toString() === fhEvent.chan_id_out) {
+        if (storedChannels[idx].chan_id?.toString() === fhEvent.chan_id_out) {
           fhEvent.alias_out = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : fhEvent.chan_id_out;
           if (fhEvent.alias_in) {
             return;

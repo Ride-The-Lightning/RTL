@@ -93,7 +93,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
         invalid = true;
       } else if (PASSWORD_BLACKLIST.includes(this.newPassword.toLowerCase())) {
         this.form.controls.newpassword.setErrors({ invalid: true });
-        this.errorMsg = PASSWORD_BLACKLIST.reduce((totalList, currentPass, i) => ((i < (PASSWORD_BLACKLIST.length - 1)) ? (totalList + currentPass + '" / "') : (totalList + currentPass + '".')), 'Password cannot be "');
+        this.errorMsg = PASSWORD_BLACKLIST?.reduce((totalList, currentPass, i) => ((i < (PASSWORD_BLACKLIST.length - 1)) ? (totalList + currentPass + '" / "') : (totalList + currentPass + '".')), 'Password cannot be "');
         invalid = true;
       } else {
         this.form.controls.newpassword.setErrors(null);
