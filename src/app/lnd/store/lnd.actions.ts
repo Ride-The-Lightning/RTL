@@ -10,7 +10,7 @@ import {
 
 export const updateLNDAPICallStatus = createAction(LNDActions.UPDATE_API_CALL_STATUS_LND, props<{ payload: ApiCallStatusPayload }>());
 
-export const resetLNDStore = createAction(LNDActions.RESET_LND_STORE, props<{ payload: SelNodeChild }>());
+export const resetLNDStore = createAction(LNDActions.RESET_LND_STORE, props<{ payload: SelNodeChild | null }>());
 
 export const setChildNodeSettingsLND = createAction(LNDActions.SET_CHILD_NODE_SETTINGS_LND, props<{ payload: SelNodeChild }>());
 

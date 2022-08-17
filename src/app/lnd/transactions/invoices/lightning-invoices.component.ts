@@ -145,11 +145,11 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   }
 
   onRefreshInvoice(selInvoice: Invoice) {
-    this.store.dispatch(invoiceLookup({ payload: { openSnackBar: true, paymentHash: Buffer.from(selInvoice.r_hash.trim(), 'hex').toString('base64').replace(/\+/g, '-').replace(/[/]/g, '_') } }));
+    this.store.dispatch(invoiceLookup({ payload: { openSnackBar: true, paymentHash: Buffer.from(selInvoice.r_hash.trim(), 'hex').toString('base64')?.replace(/\+/g, '-')?.replace(/[/]/g, '_') } }));
   }
 
   updateInvoicesData(newInvoice: Invoice) {
-    this.invoicesData = this.invoicesData.map((invoice) => ((invoice.r_hash === newInvoice.r_hash) ? newInvoice : invoice));
+    this.invoicesData = this.invoicesData?.map((invoice) => ((invoice.r_hash === newInvoice.r_hash) ? newInvoice : invoice));
   }
 
   loadInvoicesTable(invoices) {

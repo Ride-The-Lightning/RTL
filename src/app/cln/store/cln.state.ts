@@ -5,7 +5,7 @@ import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 
 export interface CLNState {
   apisCallStatus: ApiCallsListCL;
-  nodeSettings: SelNodeChild;
+  nodeSettings: SelNodeChild | null;
   information: GetInfo;
   fees: Fees;
   feeRatesPerKB: FeeRates;

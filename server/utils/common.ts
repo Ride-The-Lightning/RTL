@@ -214,18 +214,18 @@ export class CommonService {
 
   public newestOnTop = (array, key, value) => {
     const newlyAddedRecord = array.splice(array.findIndex((item) => item[key] === value), 1);
-    array.unshift(newlyAddedRecord[0]);
+    array?.unshift(newlyAddedRecord[0]);
     return array;
   };
 
-  public camelCase = (str: string) => str.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => (word.toUpperCase())).replace(/\s+/g, '').replace(/-/g, ' ');
+  public camelCase = (str: string) => str?.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => (word.toUpperCase()))?.replace(/\s+/g, '')?.replace(/-/g, ' ');
 
   public titleCase = (str: string) => {
     if (str.indexOf('!\n') > 0 || str.indexOf('.\n') > 0) {
-      return str.split('\n').reduce((accumulator, currentStr) => accumulator + currentStr.charAt(0).toUpperCase() + currentStr.substring(1).toLowerCase() + '\n', '');
+      return str.split('\n')?.reduce((accumulator, currentStr) => accumulator + currentStr.charAt(0).toUpperCase() + currentStr.substring(1).toLowerCase() + '\n', '');
     } else {
       if (str.indexOf(' ') > 0) {
-        return str.split(' ').reduce((accumulator, currentStr) => accumulator + currentStr.charAt(0).toUpperCase() + currentStr.substring(1).toLowerCase() + ' ', '');
+        return str.split(' ')?.reduce((accumulator, currentStr) => accumulator + currentStr.charAt(0).toUpperCase() + currentStr.substring(1).toLowerCase() + ' ', '');
       } else {
         return str.charAt(0).toUpperCase() + str.substring(1).toLowerCase();
       }
@@ -345,7 +345,7 @@ export class CommonService {
 
   public createDirectory = (directoryName) => {
     const initDir = isAbsolute(directoryName) ? sep : '';
-    directoryName.split(sep).reduce((parentDir, childDir) => {
+    directoryName.split(sep)?.reduce((parentDir, childDir) => {
       const curDir = resolve(parentDir, childDir);
       try {
         if (!fs.existsSync(curDir)) {
@@ -412,7 +412,7 @@ export class CommonService {
 
   public isVersionCompatible = (currentVersion, checkVersion) => {
     if (currentVersion) {
-      const versionsArr = currentVersion.trim().replace('v', '').split('-')[0].split('.') || [];
+      const versionsArr = currentVersion.trim()?.replace('v', '').split('-')[0].split('.') || [];
       const checkVersionsArr = checkVersion.split('.');
       return (+versionsArr[0] > +checkVersionsArr[0]) ||
         (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] > +checkVersionsArr[1]) ||

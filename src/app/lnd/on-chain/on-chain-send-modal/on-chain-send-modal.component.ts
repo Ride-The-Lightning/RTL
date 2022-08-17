@@ -167,7 +167,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
         subscribe({
           next: (data) => {
             this.selAmountUnit = CurrencyUnitEnum.SATS;
-            postTransaction.amount = +this.decimalPipe.transform(data[this.amountUnits[0]], this.currencyUnitFormats[this.amountUnits[0]]).replace(/,/g, '');
+            postTransaction.amount = +this.decimalPipe.transform(data[this.amountUnits[0]], this.currencyUnitFormats[this.amountUnits[0]])?.replace(/,/g, '');
             this.store.dispatch(setChannelTransaction({ payload: postTransaction }));
           }, error: (err) => {
             this.transactionAmount = null;
@@ -245,7 +245,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
         subscribe({
           next: (data) => {
             this.selAmountUnit = event.value;
-            self.transactionAmount = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
+            self.transactionAmount = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit])?.replace(/,/g, '');
           }, error: (err) => {
             self.transactionAmount = null;
             this.amountError = 'Conversion Error: ' + err;

@@ -47,8 +47,9 @@ export class CLWebSocketClient {
             }
         };
         this.connectWithClient = (clWsClt) => {
+            var _a;
             this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Connecting to the Core Lightning\'s Websocket Server..' });
-            const WS_LINK = (clWsClt.selectedNode.ln_server_url).replace(/^http/, 'ws') + '/v1/ws';
+            const WS_LINK = ((_a = (clWsClt.selectedNode.ln_server_url)) === null || _a === void 0 ? void 0 : _a.replace(/^http/, 'ws')) + '/v1/ws';
             const mcrnHexEncoded = Buffer.from(fs.readFileSync(join(clWsClt.selectedNode.macaroon_path, 'access.macaroon'))).toString('hex');
             clWsClt.webSocketClient = new WebSocket(WS_LINK, [mcrnHexEncoded, 'hex'], { rejectUnauthorized: false });
             clWsClt.webSocketClient.onopen = () => {

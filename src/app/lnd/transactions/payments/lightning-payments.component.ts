@@ -290,7 +290,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
 
   getHopDetails(hops: Hop[]) {
     const self = this;
-    return hops.reduce((accumulator, currentHop) => {
+    return hops?.reduce((accumulator, currentHop) => {
       const peerFound = self.peers.find((peer) => peer.pub_key === currentHop.pub_key);
       if (peerFound && peerFound.alias) {
         accumulator.push('<pre>Channel: ' + peerFound.alias.padEnd(20) + '&Tab;&Tab;&Tab;Amount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward) + '</pre>');
@@ -352,10 +352,10 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
 
   onPaymentClick(selPayment: Payment) {
     if (selPayment.htlcs && selPayment.htlcs[0] && selPayment.htlcs[0].route && selPayment.htlcs[0].route.hops && selPayment.htlcs[0].route.hops.length > 0) {
-      const nodePubkeys = selPayment.htlcs[0].route.hops.reduce((pubkeys, hop) => (pubkeys === '' ? hop.pub_key : pubkeys + ',' + hop.pub_key), '');
+      const nodePubkeys = selPayment.htlcs[0].route.hops?.reduce((pubkeys, hop) => (pubkeys === '' ? hop.pub_key : pubkeys + ',' + hop.pub_key), '');
       this.dataService.getAliasesFromPubkeys(nodePubkeys, true).pipe(takeUntil(this.unSubs[7])).
         subscribe((nodes: any) => {
-          this.showPaymentView(selPayment, nodes.reduce((pathAliases, node) => (pathAliases === '' ? node : pathAliases + '\n' + node), ''));
+          this.showPaymentView(selPayment, nodes?.reduce((pathAliases, node) => (pathAliases === '' ? node : pathAliases + '\n' + node), ''));
         });
     } else {
       this.showPaymentView(selPayment, '');
@@ -427,7 +427,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   onDownloadCSV() {
     if (this.payments.data && this.payments.data.length > 0) {
       const paymentsDataCopy = JSON.parse(JSON.stringify(this.payments.data));
-      const paymentRequests = paymentsDataCopy.reduce((paymentReqs, payment) => {
+      const paymentRequests = paymentsDataCopy?.reduce((paymentReqs, payment) => {
         if (payment.payment_request && payment.payment_request.trim() !== '') {
           paymentReqs = (paymentReqs === '') ? payment.payment_request : paymentReqs + ',' + payment.payment_request;
         }
@@ -445,7 +445,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
               paymentsDataCopy[idx + increament].description = decodedPayment.description;
             }
           });
-          const flattenedPayments = paymentsDataCopy.reduce((acc, curr) => acc.concat(curr), []);
+          const flattenedPayments = paymentsDataCopy?.reduce((acc, curr) => acc.concat(curr), []);
           this.commonService.downloadFile(flattenedPayments, 'Payments');
         });
     }

@@ -70,18 +70,18 @@ export class CommonService implements OnDestroy {
   }
 
   camelCase(str) {
-    return str.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => (word.toUpperCase())).replace(/\s+/g, '').replace(/-/g, ' ');
+    return str?.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => (word.toUpperCase()))?.replace(/\s+/g, '')?.replace(/-/g, ' ');
   }
 
   titleCase(str: string, searchValue?: string, replaceValue?: string) {
     if (searchValue && replaceValue && searchValue !== '' && replaceValue !== '') {
-      str = str.replace(new RegExp(searchValue, 'g'), replaceValue);
+      str = str?.replace(new RegExp(searchValue, 'g'), replaceValue);
     }
     if (str.indexOf('!\n') > 0 || str.indexOf('.\n') > 0) {
-      return str.split('\n').reduce((accumulator, currentStr) => accumulator + currentStr.charAt(0).toUpperCase() + currentStr.substring(1).toLowerCase() + '\n', '');
+      return str.split('\n')?.reduce((accumulator, currentStr) => accumulator + currentStr.charAt(0).toUpperCase() + currentStr.substring(1).toLowerCase() + '\n', '');
     } else {
       if (str.indexOf(' ') > 0) {
-        return str.split(' ').reduce((accumulator, currentStr) => accumulator + currentStr.charAt(0).toUpperCase() + currentStr.substring(1).toLowerCase() + ' ', '');
+        return str.split(' ')?.reduce((accumulator, currentStr) => accumulator + currentStr.charAt(0).toUpperCase() + currentStr.substring(1).toLowerCase() + ' ', '');
       } else {
         return str.charAt(0).toUpperCase() + str.substring(1).toLowerCase();
       }
@@ -273,7 +273,7 @@ export class CommonService implements OnDestroy {
             arrayField = '';
             obj[key].forEach((arrEl, i) => {
               if (typeof arrEl === 'object') {
-                arrayField += '(' + JSON.stringify(arrEl).replace(/\,/g, ';') + ')';
+                arrayField += '(' + JSON.stringify(arrEl)?.replace(/\,/g, ';') + ')';
               } else {
                 arrayField += '(' + arrEl + ')';
               }
@@ -281,7 +281,7 @@ export class CommonService implements OnDestroy {
             dataRow += arrayField + ',';
           } else {
             if (typeof obj[key] === 'object') {
-              dataRow += JSON.stringify(obj[key]).replace(/\,/g, ';') + ',';
+              dataRow += JSON.stringify(obj[key])?.replace(/\,/g, ';') + ',';
             } else {
               dataRow += obj[key] + ',';
             }
@@ -297,7 +297,7 @@ export class CommonService implements OnDestroy {
 
   isVersionCompatible(currentVersion, checkVersion) {
     if (currentVersion) {
-      const versionsArr = currentVersion.trim().replace('v', '').split('-')[0].split('.') || [];
+      const versionsArr = currentVersion.trim()?.replace('v', '').split('-')[0].split('.') || [];
       const checkVersionsArr = checkVersion.split('.');
       return (+versionsArr[0] > +checkVersionsArr[0]) ||
         (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] > +checkVersionsArr[1]) ||

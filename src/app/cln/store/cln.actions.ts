@@ -7,7 +7,7 @@ import { GetInfo, Fees, Peer, Payment, QueryRoutes, Channel, FeeRates, Invoice, 
 
 export const updateCLAPICallStatus = createAction(CLNActions.UPDATE_API_CALL_STATUS_CLN, props<{ payload: ApiCallStatusPayload }>());
 
-export const resetCLStore = createAction(CLNActions.RESET_CLN_STORE, props<{ payload: SelNodeChild }>());
+export const resetCLStore = createAction(CLNActions.RESET_CLN_STORE, props<{ payload: SelNodeChild | null }>());
 
 export const setChildNodeSettingsCL = createAction(CLNActions.SET_CHILD_NODE_SETTINGS_CLN, props<{ payload: SelNodeChild }>());
 

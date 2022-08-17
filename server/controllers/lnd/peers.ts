@@ -26,7 +26,7 @@ export const getPeers = (req, res, next) => {
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peers List Received', data: body });
     const peers = !body.peers ? [] : body.peers;
-    return Promise.all(peers.map((peer) => getAliasForPeers(req.session.selectedNode, peer))).then((values) => {
+    return Promise.all(peers?.map((peer) => getAliasForPeers(req.session.selectedNode, peer))).then((values) => {
       logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peers with Alias before Sort', data: body });
       if (body.peers) {
         body.peers = common.sortDescByStrKey(body.peers, 'alias');
@@ -54,7 +54,7 @@ export const postPeer = (req, res, next) => {
     options.url = req.session.selectedNode.ln_server_url + '/v1/peers';
     request(options).then((body) => {
       const peers = (!body.peers) ? [] : body.peers;
-      return Promise.all(peers.map((peer) => getAliasForPeers(req.session.selectedNode, peer))).then((values) => {
+      return Promise.all(peers?.map((peer) => getAliasForPeers(req.session.selectedNode, peer))).then((values) => {
         if (body.peers) {
           body.peers = common.sortDescByStrKey(body.peers, 'alias');
           body.peers = common.newestOnTop(body.peers, 'pub_key', req.body.pubkey);

@@ -214,7 +214,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
   }
 
   updateInvoicesData(newInvoice: Invoice) {
-    this.invoiceJSONArr = this.invoiceJSONArr.map((invoice) => ((invoice.label === newInvoice.label) ? newInvoice : invoice));
+    this.invoiceJSONArr = this.invoiceJSONArr?.map((invoice) => ((invoice.label === newInvoice.label) ? newInvoice : invoice));
   }
 
   loadInvoicesTable(invs: Invoice[]) {

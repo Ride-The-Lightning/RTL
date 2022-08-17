@@ -5,7 +5,7 @@ import { APICallStatusEnum, UserPersonaEnum } from '../../shared/services/consts
 
 export interface ECLState {
   apisCallStatus: ApiCallsListECL;
-  nodeSettings: SelNodeChild;
+  nodeSettings: SelNodeChild | null;
   information: GetInfo;
   fees: Fees;
   activeChannels: Channel[];

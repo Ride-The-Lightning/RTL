@@ -45,7 +45,7 @@ export class ChannelsTablesComponent implements OnInit, OnDestroy {
     this.store.select(channels).pipe(takeUntil(this.unSubs[2])).
       subscribe((channelsSelector: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
         this.numOpenChannels = (channelsSelector.channels && channelsSelector.channels.length) ? channelsSelector.channels.length : 0;
-        this.numActiveHTLCs = channelsSelector.channels.reduce((totalHTLCs, channel) => totalHTLCs + (channel.pending_htlcs && channel.pending_htlcs.length > 0 ? channel.pending_htlcs.length : 0), 0);
+        this.numActiveHTLCs = channelsSelector.channels?.reduce((totalHTLCs, channel) => totalHTLCs + (channel.pending_htlcs && channel.pending_htlcs.length > 0 ? channel.pending_htlcs.length : 0), 0);
         this.logger.info(channelsSelector);
       });
     this.store.select(pendingChannels).pipe(takeUntil(this.unSubs[3])).

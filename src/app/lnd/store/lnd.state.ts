@@ -5,7 +5,7 @@ import { GetInfo, Peer, Fees, NetworkInfo, BlockchainBalance, Channel, ListInvoi
 
 export interface LNDState {
   apisCallStatus: ApiCallsListLND;
-  nodeSettings: SelNodeChild;
+  nodeSettings: SelNodeChild | null;
   information: GetInfo;
   peers: Peer[];
   fees: Fees;

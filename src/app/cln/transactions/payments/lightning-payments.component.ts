@@ -41,12 +41,12 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faHistory = faHistory;
   public newlyAddedPayment = '';
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public information: GetInfo = {};
   public payments: any;
   public paymentJSONArr: Payment[] = [];
   public displayedColumns: any[] = [];
-  public mppColumns = [];
+  public mppColumns: string[] = [];
   public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
   public paymentDecodedHint = '';
@@ -83,7 +83,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngOnInit() {
-    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => {
+    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => {
       this.selNode = nodeSettings;
     });
     this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => {
@@ -111,7 +111,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   }
 
   is_group(index: number, payment: Payment): boolean {
-    return payment.is_group;
+    return payment.is_group || false;
   }
 
   onSendPayment(): boolean | void {
@@ -137,7 +137,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   }
 
   sendPayment() {
-    this.newlyAddedPayment = this.paymentDecoded.payment_hash;
+    this.newlyAddedPayment = this.paymentDecoded?.payment_hash || '';
     if (!this.paymentDecoded.msatoshi || this.paymentDecoded.msatoshi === 0) {
       const reorderedPaymentDecoded = [
         [{ key: 'payment_hash', value: this.paymentDecoded.payment_hash, title: 'Payment Hash', width: 100 }],
@@ -213,8 +213,8 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         pipe(takeUntil(this.unSubs[1])).subscribe((decodedPayment: PayRequest) => {
           this.paymentDecoded = decodedPayment;
           if (this.paymentDecoded.msatoshi) {
-            if (this.selNode.fiatConversion) {
-              this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
+            if (this.selNode?.fiatConversion) {
+              this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
                 pipe(takeUntil(this.unSubs[3])).
                 subscribe({
                   next: (data) => {
@@ -260,19 +260,19 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       { key: 'msatoshi_sent', value: selPayment.msatoshi_sent, title: 'Amount Sent (mSats)', width: 50, type: DataTypeEnum.NUMBER }]
     ];
     if (selPayment.bolt11 && selPayment.bolt11 !== '') {
-      reorderedPayment.unshift([{ key: 'bolt11', value: selPayment.bolt11, title: 'Bolt 11', width: 100, type: DataTypeEnum.STRING }]);
+      reorderedPayment?.unshift([{ key: 'bolt11', value: selPayment.bolt11, title: 'Bolt 11', width: 100, type: DataTypeEnum.STRING }]);
     }
     if (selPayment.bolt12 && selPayment.bolt12 !== '') {
-      reorderedPayment.unshift([{ key: 'bolt12', value: selPayment.bolt12, title: 'Bolt 12', width: 100, type: DataTypeEnum.STRING }]);
+      reorderedPayment?.unshift([{ key: 'bolt12', value: selPayment.bolt12, title: 'Bolt 12', width: 100, type: DataTypeEnum.STRING }]);
     }
     if (selPayment.memo && selPayment.memo !== '') {
-      reorderedPayment.splice(2, 0, [{ key: 'memo', value: selPayment.memo, title: 'Memo', width: 100, type: DataTypeEnum.STRING }]);
+      reorderedPayment?.splice(2, 0, [{ key: 'memo', value: selPayment.memo, title: 'Memo', width: 100, type: DataTypeEnum.STRING }]);
     }
     if (selPayment.hasOwnProperty('partid')) {
-      reorderedPayment.unshift([{ key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 80, type: DataTypeEnum.STRING },
+      reorderedPayment?.unshift([{ key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 80, type: DataTypeEnum.STRING },
       { key: 'partid', value: selPayment.partid, title: 'Part ID', width: 20, type: DataTypeEnum.STRING }]);
     } else {
-      reorderedPayment.unshift([{ key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }]);
+      reorderedPayment?.unshift([{ key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }]);
     }
     this.store.dispatch(openAlert({
       payload: {
@@ -295,7 +295,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
     this.payments.sort = this.sort;
     this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.payments.filterPredicate = (rowData: Payment, fltr: string) => {
-      const newRowData = ((rowData.created_at) ? this.datePipe.transform(new Date(rowData.created_at * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + ((rowData.bolt12) ? 'bolt12' : (rowData.bolt11) ? 'bolt11' : 'keysend') + JSON.stringify(rowData).toLowerCase();
+      const newRowData = ((rowData.created_at) ? this.datePipe.transform(new Date(rowData.created_at * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + ((rowData.bolt12) ? 'bolt12' : (rowData.bolt11) ? 'bolt11' : 'keysend') + JSON.stringify(rowData).toLowerCase();
       return newRowData.includes(fltr);
     };
     this.payments.paginator = this.paginator;
@@ -305,7 +305,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   onDownloadCSV() {
     if (this.payments.data && this.payments.data.length > 0) {
       const paymentsDataCopy = JSON.parse(JSON.stringify(this.payments.data));
-      const flattenedPayments = paymentsDataCopy.reduce((acc, curr) => {
+      const flattenedPayments = paymentsDataCopy?.reduce((acc, curr) => {
         if (curr.mpps) {
           return acc.concat(curr.mpps);
         } else {

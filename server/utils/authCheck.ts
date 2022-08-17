@@ -21,7 +21,7 @@ export const isAuthenticated = (req, res, next) => {
 
 export const verifyWSUser = (info, next) => {
   const headers = JSON.parse(JSON.stringify(info.req.headers));
-  const protocols = !info.req.headers['sec-websocket-protocol'] ? [] : info.req.headers['sec-websocket-protocol'].split(',').map((s) => s.trim());
+  const protocols = !info.req.headers['sec-websocket-protocol'] ? [] : info.req.headers['sec-websocket-protocol'].split(',')?.map((s) => s.trim());
   const jwToken = (protocols && protocols.length > 0) ? protocols[0] : '';
   if (!jwToken || jwToken === '') {
     next(false, 401, 'Authentication Failed! Please Login First!');
@@ -39,7 +39,7 @@ export const verifyWSUser = (info, next) => {
           }
           let cookies = null;
           try {
-            cookies = '{"' + headers.cookie.replace(/ /g, '').replace(/;/g, '","').trim().replace(/[=]/g, '":"') + '"}';
+            cookies = '{"' + headers.cookie?.replace(/ /g, '')?.replace(/;/g, '","').trim()?.replace(/[=]/g, '":"') + '"}';
             updatedReq['cookies'] = JSON.parse(cookies);
           } catch (err) {
             cookies = {};

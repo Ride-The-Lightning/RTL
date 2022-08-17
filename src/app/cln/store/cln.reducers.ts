@@ -12,7 +12,7 @@ import { CLNForwardingEventsStatusEnum } from '../../shared/services/consts-enum
 export const CLNReducer = createReducer(initCLNState,
   on(updateCLAPICallStatus, (state, { payload }) => {
     const updatedApisCallStatus = JSON.parse(JSON.stringify(state.apisCallStatus));
-    updatedApisCallStatus[payload.action] = {
+    updatedApisCallStatus[payload.action || 0] = {
       status: payload.status,
       statusCode: payload.statusCode,
       message: payload.message,
@@ -114,7 +114,7 @@ export const CLNReducer = createReducer(initCLNState,
     switch (payload.status) {
       case CLNForwardingEventsStatusEnum.SETTLED:
         const modifiedFeeWithTxCount = state.fees;
-        modifiedFeeWithTxCount.totalTxCount = payload.totalForwards | 0;
+        modifiedFeeWithTxCount.totalTxCount = payload.totalForwards || 0;
         return {
           ...state,
           fees: modifiedFeeWithTxCount,
@@ -136,7 +136,7 @@ export const CLNReducer = createReducer(initCLNState,
   }),
   on(addInvoice, (state, { payload }) => {
     const newInvoices = state.invoices;
-    newInvoices.invoices.unshift(payload);
+    newInvoices.invoices?.unshift(payload);
     return {
       ...state,
       invoices: newInvoices
@@ -148,7 +148,7 @@ export const CLNReducer = createReducer(initCLNState,
   })),
   on(updateInvoice, (state, { payload }) => {
     const modifiedInvoices = state.invoices;
-    modifiedInvoices.invoices = modifiedInvoices.invoices.map((invoice) => ((invoice.label === payload.label) ? payload : invoice));
+    modifiedInvoices.invoices = modifiedInvoices.invoices?.map((invoice) => ((invoice.label === payload.label) ? payload : invoice));
     return {
       ...state,
       invoices: modifiedInvoices
@@ -164,7 +164,7 @@ export const CLNReducer = createReducer(initCLNState,
   })),
   on(addOffer, (state, { payload }) => {
     const newOffers = state.offers;
-    newOffers.unshift(payload);
+    newOffers?.unshift(payload);
     return {
       ...state,
       offers: newOffers
@@ -189,7 +189,7 @@ export const CLNReducer = createReducer(initCLNState,
     const newOfferBMs: OfferBookmark[] = [...state.offersBookmarks];
     const offerBMExistsIdx = newOfferBMs.findIndex((offer: OfferBookmark) => offer.bolt12 === payload.bolt12);
     if (offerBMExistsIdx < 0) {
-      newOfferBMs.unshift(payload);
+      newOfferBMs?.unshift(payload);
     } else {
       const updatedOffer = { ...newOfferBMs[offerBMExistsIdx] };
       updatedOffer.title = payload.title;
@@ -226,7 +226,7 @@ const mapAliases = (payload: any, storedChannels: Channel[]) => {
             fhEvent.in_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.in_channel;
             if (fhEvent.out_channel_alias) { return; }
           }
-          if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id.toString() === fhEvent.out_channel) {
+          if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id?.toString() === fhEvent.out_channel) {
             fhEvent.out_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.out_channel;
             if (fhEvent.in_channel_alias) { return; }
           }

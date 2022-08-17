@@ -379,7 +379,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   onDownloadCSV() {
     if (this.payments.data && this.payments.data.length > 0) {
       const paymentsDataCopy: PaymentSent[] = JSON.parse(JSON.stringify(this.payments.data));
-      const paymentRequests = paymentsDataCopy.reduce((paymentReqs, payment) => {
+      const paymentRequests = paymentsDataCopy?.reduce((paymentReqs, payment) => {
         if (payment.paymentHash && payment.paymentHash.trim() !== '') {
           paymentReqs = (paymentReqs === '') ? payment.paymentHash : paymentReqs + ',' + payment.paymentHash;
         }
@@ -393,7 +393,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
               paymentsDataCopy[idx].description = decodedPayment[0].paymentRequest.description;
             }
           });
-          const flattenedPayments = paymentsDataCopy.reduce((acc, curr) => acc.concat(curr), []);
+          const flattenedPayments = paymentsDataCopy?.reduce((acc, curr) => acc.concat(curr), []);
           this.commonService.downloadFile(flattenedPayments, 'Payments');
         });
     }

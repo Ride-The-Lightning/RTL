@@ -56,7 +56,7 @@ export class LNDWebSocketClient {
   };
 
   public subscribeToInvoice = (options: any, selectedNode: CommonSelectedNode, rHash: string) => {
-    rHash = rHash.replace(/\+/g, '-').replace(/[/]/g, '_');
+    rHash = rHash?.replace(/\+/g, '-')?.replace(/[/]/g, '_');
     this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Subscribing to Invoice ' + rHash + ' ..' });
     options.url = selectedNode.ln_server_url + '/v2/invoices/subscribe/' + rHash;
     request(options).then((msg) => {

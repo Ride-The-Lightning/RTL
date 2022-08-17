@@ -62,7 +62,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     let x = '';
     let y = '';
     this.selChannel = this.data.message.selChannel;
-    this.activeChannels = this.data.message.channels.filter((channel) => channel.active && channel.chan_id !== this.selChannel.chan_id && channel.remote_balance > 0);
+    this.activeChannels = this.data.message.channels?.filter((channel) => channel.active && channel.chan_id !== this.selChannel.chan_id && channel.remote_balance > 0);
     this.activeChannels = this.activeChannels.sort((c1: Channel, c2: Channel) => {
       x = c1.remote_alias ? c1.remote_alias.toLowerCase() : c1.chan_id ? c1.chan_id.toLowerCase() : '';
       y = c2.remote_alias ? c2.remote_alias.toLowerCase() : c1.chan_id.toLowerCase();
@@ -231,13 +231,13 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   }
 
   filterActiveChannels() {
-    return this.activeChannels.filter((channel) => channel.remote_balance >= this.inputFormGroup.controls.rebalanceAmount.value &&
+    return this.activeChannels?.filter((channel) => channel.remote_balance >= this.inputFormGroup.controls.rebalanceAmount.value &&
       channel.chan_id !== this.selChannel.chan_id && ((channel.remote_alias.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0) || (channel.chan_id.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0)));
   }
 
   onSelectedPeerChanged() {
     if (this.inputFormGroup.controls.selRebalancePeer.value && this.inputFormGroup.controls.selRebalancePeer.value.length > 0 && typeof this.inputFormGroup.controls.selRebalancePeer.value === 'string') {
-      const foundChannels = this.activeChannels.filter((channel) => channel.remote_alias.length === this.inputFormGroup.controls.selRebalancePeer.value.length && channel.remote_alias.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0);
+      const foundChannels = this.activeChannels?.filter((channel) => channel.remote_alias.length === this.inputFormGroup.controls.selRebalancePeer.value.length && channel.remote_alias.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0);
       if (foundChannels && foundChannels.length > 0) {
         this.inputFormGroup.controls.selRebalancePeer.setValue(foundChannels[0]);
         this.inputFormGroup.controls.selRebalancePeer.setErrors(null);

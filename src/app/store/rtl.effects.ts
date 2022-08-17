@@ -222,10 +222,10 @@ export class RTLEffects implements OnDestroy {
         this.logger.info(rtlConfig);
         this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_RTL_CONFIG }));
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'FetchRTLConfig', status: APICallStatusEnum.COMPLETED } }));
-        let searchNode: ConfigSettingsNode;
+        let searchNode: ConfigSettingsNode | null = null;
         rtlConfig.nodes.forEach((node) => {
-          node.settings.currencyUnits = [...CURRENCY_UNITS, node.settings.currencyUnit];
-          if (+node.index === rtlConfig.selectedNodeIndex) {
+          node.settings.currencyUnits = [...CURRENCY_UNITS, (node.settings?.currencyUnit ? node.settings?.currencyUnit : '')];
+          if (+(node.index || -1) === rtlConfig.selectedNodeIndex) {
             searchNode = node;
           }
         });
@@ -566,7 +566,7 @@ export class RTLEffects implements OnDestroy {
       const nodeLnImplementation = node.lnImplementation ? node.lnImplementation.toUpperCase() : 'LND';
       this.dataService.setLnImplementation(nodeLnImplementation);
       const apiUrl = (environment.production && window.location.origin) ? (window.location.origin + '/rtl/api') : API_URL;
-      this.wsService.connectWebSocket(apiUrl.replace(/^http/, 'ws') + environment.Web_SOCKET_API, node.index.toString());
+      this.wsService.connectWebSocket(apiUrl?.replace(/^http/, 'ws') + environment.Web_SOCKET_API, (node.index ? node.index.toString() : '-1'));
       switch (nodeLnImplementation) {
         case 'CLN':
           this.store.dispatch(fetchInfoCL({ payload: { loadPage: landingPage } }));

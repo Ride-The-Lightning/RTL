@@ -56,7 +56,7 @@ export class CLNChannelsTablesComponent implements OnInit, OnDestroy {
       });
     this.store.select(utxos).pipe(takeUntil(this.unSubs[3])).
       subscribe((utxosSeletor: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.utxos = this.commonService.sortAscByKey(utxosSeletor.utxos.filter((utxo) => utxo.status === 'confirmed'), 'value');
+        this.utxos = this.commonService.sortAscByKey(utxosSeletor.utxos?.filter((utxo) => utxo.status === 'confirmed'), 'value');
       });
     this.store.select(channels).pipe(takeUntil(this.unSubs[4])).
       subscribe((channelsSeletor: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {

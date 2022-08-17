@@ -136,7 +136,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
       });
     this.store.select(utxos).pipe(takeUntil(this.unSubs[3])).
       subscribe((utxosSeletor: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.utxos = this.commonService.sortAscByKey(utxosSeletor.utxos.filter((utxo) => utxo.status === 'confirmed'), 'value');
+        this.utxos = this.commonService.sortAscByKey(utxosSeletor.utxos?.filter((utxo) => utxo.status === 'confirmed'), 'value');
         this.logger.info(utxosSeletor);
       });
     this.actions.pipe(
@@ -274,7 +274,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
   onUTXOSelectionChange(event: any) {
     const utxoNew = { value: 0 };
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
-      this.totalSelectedUTXOAmount = this.selUTXOs.reduce((a, b) => {
+      this.totalSelectedUTXOAmount = this.selUTXOs?.reduce((a, b) => {
         utxoNew.value = a.value + b.value;
         return utxoNew;
       }).value;
@@ -307,7 +307,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
         subscribe({
           next: (data) => {
             this.selAmountUnit = event.value;
-            self.transaction.satoshis = self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
+            self.transaction.satoshis = self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit])?.replace(/,/g, '');
           }, error: (err) => {
             self.transaction.satoshis = null;
             this.amountError = 'Conversion Error: ' + err;

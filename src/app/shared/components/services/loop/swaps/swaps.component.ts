@@ -79,7 +79,7 @@ export class SwapsComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   onSwapClick(selSwap: LoopSwapStatus, event: any) {
-    this.loopService.getSwap(selSwap.id_bytes.replace(/\//g, '_').replace(/\+/g, '-')).pipe(takeUntil(this.unSubs[2])).
+    this.loopService.getSwap(selSwap.id_bytes?.replace(/\//g, '_')?.replace(/\+/g, '-')).pipe(takeUntil(this.unSubs[2])).
       subscribe((fetchedSwap: LoopSwapStatus) => {
         const reorderedSwap = [
           [{ key: 'state', value: LoopStateEnum[fetchedSwap.state], title: 'Status', width: 50, type: DataTypeEnum.STRING },

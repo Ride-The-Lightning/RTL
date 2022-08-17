@@ -77,7 +77,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   }
 
   private filterPeers(newlySelectedPeer: string): Peer[] {
-    return this.sortedPeers.filter((peer) => peer.alias.toLowerCase().indexOf(newlySelectedPeer ? newlySelectedPeer.toLowerCase() : '') === 0);
+    return this.sortedPeers?.filter((peer) => peer.alias.toLowerCase().indexOf(newlySelectedPeer ? newlySelectedPeer.toLowerCase() : '') === 0);
   }
 
   displayFn(peer: Peer): string {
@@ -88,7 +88,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.channelConnectionError = '';
     this.selectedPubkey = (this.selectedPeer.value && this.selectedPeer.value.pub_key) ? this.selectedPeer.value.pub_key : null;
     if (typeof this.selectedPeer.value === 'string') {
-      const selPeer = this.peers.filter((peer) => peer.alias.length === this.selectedPeer.value.length && peer.alias.toLowerCase().indexOf(this.selectedPeer.value ? this.selectedPeer.value.toLowerCase() : '') === 0);
+      const selPeer = this.peers?.filter((peer) => peer.alias.length === this.selectedPeer.value.length && peer.alias.toLowerCase().indexOf(this.selectedPeer.value ? this.selectedPeer.value.toLowerCase() : '') === 0);
       if (selPeer.length === 1 && selPeer[0].pub_key) {
         this.selectedPubkey = selPeer[0].pub_key;
       }

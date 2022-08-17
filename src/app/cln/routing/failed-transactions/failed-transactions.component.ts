@@ -100,7 +100,7 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
       { key: 'fee', value: selFEvent.fee, title: 'Fee (mSats)', width: 34, type: DataTypeEnum.NUMBER }]
     ];
     if (selFEvent.payment_hash) {
-      reorderedFHEvent.unshift([{ key: 'payment_hash', value: selFEvent.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }]);
+      reorderedFHEvent?.unshift([{ key: 'payment_hash', value: selFEvent.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }]);
     }
     this.store.dispatch(openAlert({
       payload: {

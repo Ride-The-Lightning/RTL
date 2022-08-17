@@ -4,7 +4,7 @@ import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
@@ -37,7 +37,6 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   public displayedColumns: any[] = [];
   public forwardingHistoryEvents: any;
   public flgSticky = false;
-  private indexOffset = -1;
   public totalForwardedTransactions = 0;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -81,7 +80,7 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
           this.totalForwardedTransactions = fhSeletor.forwardingHistory.totalForwards || 0;
           this.successfulEvents = fhSeletor.forwardingHistory.listForwards || [];
           if (this.successfulEvents.length > 0 && this.sort && this.paginator) {
-            this.loadForwardingEventsTable(this.successfulEvents.slice(0, this.pageSize));
+            this.loadForwardingEventsTable(this.successfulEvents);
           }
           this.logger.info(fhSeletor);
         }
@@ -90,7 +89,7 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
 
   ngAfterViewInit() {
     if (this.successfulEvents.length > 0) {
-      this.loadForwardingEventsTable(this.successfulEvents.slice(0, this.pageSize));
+      this.loadForwardingEventsTable(this.successfulEvents);
     }
   }
 
@@ -99,11 +98,10 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
       this.apiCallStatus = { status: APICallStatusEnum.COMPLETED, action: 'FetchForwardingHistory' };
       this.eventsData = changes.eventsData.currentValue;
       this.successfulEvents = this.eventsData;
-      this.indexOffset = 0;
       this.totalForwardedTransactions = this.eventsData.length;
       if (this.paginator) { this.paginator.firstPage(); }
       if (!changes.eventsData.firstChange) {
-        this.loadForwardingEventsTable(this.successfulEvents.slice(0, this.pageSize));
+        this.loadForwardingEventsTable(this.successfulEvents);
       }
     }
     if (changes.filterValue && !changes.filterValue.firstChange) {
@@ -146,6 +144,7 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
         (event.in_msatoshi ? (event.in_msatoshi / 1000) + ' ' : '') + (event.out_msatoshi ? (event.out_msatoshi / 1000) + ' ' : '') + (event.fee ? event.fee + ' ' : '');
       return newEvent.includes(fltr);
     };
+    this.forwardingHistoryEvents.paginator = this.paginator;
     this.logger.info(this.forwardingHistoryEvents);
   }
 
@@ -159,16 +158,6 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
     if (this.forwardingHistoryEvents) {
       this.forwardingHistoryEvents.filter = this.filterValue.trim().toLowerCase();
     }
-  }
-
-  onPageChange(event: PageEvent) {
-    if (this.pageSize !== event.pageSize) {
-      this.pageSize = event.pageSize;
-      this.indexOffset = 0;
-    } else {
-      this.indexOffset = event.pageIndex * this.pageSize;
-    }
-    this.loadForwardingEventsTable(this.successfulEvents.slice(this.indexOffset, (this.indexOffset + this.pageSize)));
   }
 
   ngOnDestroy() {

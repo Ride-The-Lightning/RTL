@@ -207,10 +207,10 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.channelsStatus.inactive = channelsSelector.channelsSummary.inactive;
         this.totalInboundLiquidity = 0;
         this.totalOutboundLiquidity = 0;
-        this.allChannels = channelsSelector.channels.filter((channel) => channel.active === true);
+        this.allChannels = channelsSelector.channels?.filter((channel) => channel.active === true);
         this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'balancedness')));
-        this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter((channel) => channel.remote_balance > 0), 'remote_balance')));
-        this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter((channel) => channel.local_balance > 0), 'local_balance')));
+        this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels?.filter((channel) => channel.remote_balance > 0), 'remote_balance')));
+        this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels?.filter((channel) => channel.local_balance > 0), 'local_balance')));
         this.allChannels.forEach((channel) => {
           this.totalInboundLiquidity = this.totalInboundLiquidity + +channel.remote_balance;
           this.totalOutboundLiquidity = this.totalOutboundLiquidity + +channel.local_balance;
