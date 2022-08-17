@@ -37,8 +37,8 @@ body {
 }
 
 .mat-sidenav-container .mat-sidenav-content {
-  height: 94vh;
-  min-height: 94vh;
+  height: 95vh;
+  min-height: 95vh;
 }
 
 .sidenav {
@@ -86,8 +86,7 @@ body {
   left:0;
   right:0;  
   padding: $gap;
-  min-height: calc(100% - (#{$toolbar-height} + #{$gap}*4));
-  max-height: 90vh;
+  height: 95%;
   @include for_screensize(tab-port) {
     padding: $gap math.div($gap, 2);
   }

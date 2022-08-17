@@ -22,7 +22,7 @@
   </div>
 </div>
 <ng-template #noChannelBlock>
-  <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
+  <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start" class="mt-1">
     No channels available.
     <button *ngIf="direction === 'Out'" mat-stroked-button color="primary" (click)="goToChannels()" tabindex="1">Open Channel</button>
   </div>
