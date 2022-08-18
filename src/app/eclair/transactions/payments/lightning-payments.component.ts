@@ -261,7 +261,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           this.paymentDecoded = decodedPayment;
           if (this.paymentDecoded.amount) {
             if (this.selNode.fiatConversion) {
-              this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
+              this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
                 pipe(takeUntil(this.unSubs[3])).
                 subscribe({
                   next: (data) => {

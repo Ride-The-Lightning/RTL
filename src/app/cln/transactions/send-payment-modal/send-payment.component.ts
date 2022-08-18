@@ -310,7 +310,7 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.offerDescription = this.offerDecoded.description;
       this.offerVendor = this.offerDecoded.vendor ? this.offerDecoded.vendor : this.offerDecoded.issuer ? this.offerDecoded.issuer : '';
       if (this.selNode.fiatConversion) {
-        this.commonService.convertCurrency(this.offerAmount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
+        this.commonService.convertCurrency(this.offerAmount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
           pipe(takeUntil(this.unSubs[7])).
           subscribe({
             next: (data) => {
@@ -333,7 +333,7 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
     } else {
       this.zeroAmtInvoice = false;
       if (this.selNode.fiatConversion) {
-        this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
+        this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
           pipe(takeUntil(this.unSubs[8])).
           subscribe({
             next: (data) => {

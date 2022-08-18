@@ -8,7 +8,7 @@
       <nav mat-tab-nav-bar>
         <div role="tab" mat-tab-link *ngFor="let link of links" class="mat-tab-label" [active]="activeLink === link.link" (click)="activeLink = link.link" routerLink="{{link.link}}">{{link.name}}</div>
       </nav>
-      <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="mat-tab-body-wrapper">
+      <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="mat-tab-body-wrapper mb-2">
         <router-outlet></router-outlet>
       </div>
     </mat-card-content>

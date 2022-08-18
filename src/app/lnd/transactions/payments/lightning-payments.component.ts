@@ -237,7 +237,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
           }
           if (this.paymentDecoded.num_satoshis) {
             if (this.selNode.fiatConversion) {
-              this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
+              this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
                 pipe(takeUntil(this.unSubs[5])).
                 subscribe({
                   next: (data) => {
