@@ -97,7 +97,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.paymentJSONArr = paymentsSeletor.payments || [];
-        if (this.paymentJSONArr.length > 0) {
+        if (this.paymentJSONArr.length > 0 && this.sort && this.paginator) {
           this.loadPaymentsTable(this.paymentJSONArr);
         }
         this.logger.info(paymentsSeletor);
@@ -105,7 +105,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngAfterViewInit() {
-    if (this.paymentJSONArr.length > 0) {
+    if (this.paymentJSONArr.length > 0 && this.sort && this.paginator) {
       this.loadPaymentsTable(this.paymentJSONArr);
     }
   }
@@ -291,7 +291,6 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
 
   loadPaymentsTable(payments: Payment[]) {
     this.payments = (payments) ? new MatTableDataSource<Payment>([...payments]) : new MatTableDataSource([]);
-    this.payments.data = this.paymentJSONArr;
     this.payments.sort = this.sort;
     this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.payments.filterPredicate = (rowData: Payment, fltr: string) => {

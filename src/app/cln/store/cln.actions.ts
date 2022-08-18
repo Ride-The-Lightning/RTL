@@ -95,7 +95,7 @@ export const addInvoice = createAction(CLNActions.ADD_INVOICE_CLN, props<{ paylo
 
 export const updateInvoice = createAction(CLNActions.UPDATE_INVOICE_CLN, props<{ payload: Invoice }>());
 
-export const deleteExpiredInvoice = createAction(CLNActions.DELETE_EXPIRED_INVOICE_CLN, props<{ payload?: number }>());
+export const deleteExpiredInvoice = createAction(CLNActions.DELETE_EXPIRED_INVOICE_CLN, props<{ payload?: number | null }>());
 
 export const setChannelTransaction = createAction(CLNActions.SET_CHANNEL_TRANSACTION_CLN, props<{ payload: OnChain }>());
 

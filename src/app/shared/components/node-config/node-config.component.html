@@ -11,7 +11,7 @@
         <div role="tab" mat-tab-link *ngIf="selNode?.lnImplementation?.toUpperCase() === 'CLN'" class="mat-tab-label" [active]="activeLink === links[2].link" (click)="activeLink = links[2].link" routerLink="{{links[2].link}}">{{links[2].name}}</div>
         <div role="tab" mat-tab-link *ngIf="showLnConfig" class="mat-tab-label" [active]="activeLink === links[3].link" (click)="activeLink = links[3].link" routerLink="{{links[3].link}}">{{links[3].name}}</div>
       </nav>
-      <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="mat-tab-body-wrapper">
+      <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="mat-tab-body-wrapper mb-2">
         <router-outlet></router-outlet>
       </div>
     </mat-card-content>

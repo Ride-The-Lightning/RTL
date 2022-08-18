@@ -43,8 +43,8 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
   public newlyAddedInvoiceMemo = '';
   public newlyAddedInvoiceValue = 0;
   public description = '';
-  public expiry: number;
-  public invoiceValue: number = null;
+  public expiry: number | null;
+  public invoiceValue: number | null = null;
   public invoiceValueHint = '';
   public displayedColumns: any[] = [];
   public invoicePaymentReq = '';
@@ -82,8 +82,8 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
   }
 
   ngOnInit() {
-    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => {
-      this.selNode = nodeSettings;
+    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => {
+      this.selNode = <SelNodeChild>nodeSettings;
     });
     this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => {
       this.information = nodeInfo;
@@ -195,9 +195,9 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
   }
 
   onInvoiceValueChange() {
-    if (this.selNode.fiatConversion && this.invoiceValue > 99) {
+    if (this.selNode.fiatConversion && this.invoiceValue! > 99) {
       this.invoiceValueHint = '';
-      this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion).
+      this.commonService.convertCurrency(this.invoiceValue!, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
         pipe(takeUntil(this.unSubs[5])).
         subscribe({
           next: (data) => {
@@ -210,7 +210,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
   }
 
   onRefreshInvoice(selInvoice: Invoice) {
-    this.store.dispatch(invoiceLookup({ payload: selInvoice.label }));
+    this.store.dispatch(invoiceLookup({ payload: selInvoice.label! }));
   }
 
   updateInvoicesData(newInvoice: Invoice) {
@@ -222,7 +222,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
     this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.invoices.sort = this.sort;
     this.invoices.filterPredicate = (rowData: Invoice, fltr: string) => {
-      const newRowData = ((rowData.paid_at) ? this.datePipe.transform(new Date(rowData.paid_at * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + ((rowData.expires_at) ? this.datePipe.transform(new Date(rowData.expires_at * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + ((rowData.bolt12) ? 'bolt12' : (rowData.bolt11) ? 'bolt11' : 'keysend') + JSON.stringify(rowData).toLowerCase();
+      const newRowData = this.datePipe.transform(new Date((rowData.paid_at || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase()! + (this.datePipe.transform(new Date((rowData.expires_at || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase()) + ((rowData.bolt12) ? 'bolt12' : (rowData.bolt11) ? 'bolt11' : 'keysend') + JSON.stringify(rowData).toLowerCase();
       return newRowData.includes(fltr);
     };
     this.invoices.paginator = this.paginator;

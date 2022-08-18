@@ -21,7 +21,6 @@ export class LoggerService {
                 case 'WARN':
                     msgStr = prepMsgData(msgJSON, msgStr);
                     if (!msgJSON.selectedNode || msgJSON.selectedNode.log_level === 'WARN' || msgJSON.selectedNode.log_level === 'INFO' || msgJSON.selectedNode.log_level === 'DEBUG') {
-                        console.warn(msgStr);
                         if (msgJSON.selectedNode && msgJSON.selectedNode.log_file) {
                             fs.appendFile(msgJSON.selectedNode.log_file, msgStr, () => { });
                         }
