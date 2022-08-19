@@ -31,7 +31,7 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
   @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator | undefined;
   @Input() eventsData = [];
   @Input() filterValue = '';
-  public successfulEvents = [];
+  public successfulEvents: ForwardingEvent[] = [];
   public displayedColumns: any[] = [];
   public RoutingPeersIncoming: any = [];
   public RoutingPeersOutgoing: any = [];
@@ -126,22 +126,22 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
   groupRoutingPeers(forwardingEvents: ForwardingEvent[]) {
     const incomingResults: RoutingPeer[] = [];
     const outgoingResults: RoutingPeer[] = [];
-    forwardingEvents.forEach((event) => {
-      const incoming = incomingResults.find((result) => result.channel_id === event.in_channel);
-      const outgoing = outgoingResults.find((result) => result.channel_id === event.out_channel);
+    forwardingEvents.forEach((event: ForwardingEvent) => {
+      const incoming: any = incomingResults?.find((result) => result.channel_id === event.in_channel);
+      const outgoing: any = outgoingResults?.find((result) => result.channel_id === event.out_channel);
       if (!incoming) {
-        incomingResults.push({ channel_id: event.in_channel, alias: event.in_channel_alias, events: 1, total_amount: event.in_msatoshi, total_fee: (event.in_msatoshi - event.out_msatoshi) });
+        incomingResults.push({ channel_id: event.in_channel, alias: event.in_channel_alias, events: 1, total_amount: event.in_msatoshi, total_fee: ((event.in_msatoshi || 0) - (event.out_msatoshi || 0)) });
       } else {
         incoming.events++;
-        incoming.total_amount = +incoming.total_amount + +event.in_msatoshi;
-        incoming.total_fee = +incoming.total_fee + (event.in_msatoshi - event.out_msatoshi);
+        incoming.total_amount = +incoming.total_amount + +(event.in_msatoshi || 0);
+        incoming.total_fee = +incoming.total_fee + ((event.in_msatoshi || 0) - (event.out_msatoshi || 0));
       }
       if (!outgoing) {
-        outgoingResults.push({ channel_id: event.out_channel, alias: event.out_channel_alias, events: 1, total_amount: event.out_msatoshi, total_fee: (event.in_msatoshi - event.out_msatoshi) });
+        outgoingResults.push({ channel_id: event.out_channel, alias: event.out_channel_alias, events: 1, total_amount: event.out_msatoshi, total_fee: ((event.in_msatoshi || 0) - (event.out_msatoshi || 0)) });
       } else {
         outgoing.events++;
-        outgoing.total_amount = +outgoing.total_amount + +event.out_msatoshi;
-        outgoing.total_fee = +outgoing.total_fee + (event.in_msatoshi - event.out_msatoshi);
+        outgoing.total_amount = +outgoing.total_amount + +(event.out_msatoshi || 0);
+        outgoing.total_fee = +outgoing.total_fee + ((event.in_msatoshi || 0) - (event.out_msatoshi || 0));
       }
     });
     return [this.commonService.sortDescByKey(incomingResults, 'total_fee'), this.commonService.sortDescByKey(outgoingResults, 'total_fee')];

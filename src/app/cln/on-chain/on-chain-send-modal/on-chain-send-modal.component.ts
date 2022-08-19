@@ -38,19 +38,19 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
   public sweepAll = false;
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public appConfig: RTLConfiguration;
   public addressTypes = [];
   public utxos: UTXO[] = [];
-  public selUTXOs = [];
+  public selUTXOs: UTXO[] = [];
   public flgUseAllBalance = false;
-  public totalSelectedUTXOAmount = null;
+  public totalSelectedUTXOAmount: number | null = null;
   public selectedAddress = ADDRESS_TYPES[1];
   public blockchainBalance: Balance = {};
   public information: GetInfo = {};
   public isCompatibleVersion = false;
   public newAddress = '';
-  public transaction: OnChain = {};
+  public transaction: OnChain | any = {};
   public feeRateTypes = FEE_RATE_TYPES;
   public selFeeRate = '';
   public customFeeRate = null;
@@ -179,7 +179,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
     }
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
       this.transaction.utxos = [];
-      this.selUTXOs.forEach((utxo) => this.transaction.utxos.push(utxo.txid + ':' + utxo.output));
+      this.selUTXOs.forEach((utxo: UTXO) => this.transaction.utxos?.push(utxo.txid + ':' + utxo.output));
     }
     if (this.sweepAll) {
       if (
@@ -256,7 +256,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
         this.passwordFormLabel = 'User authenticated successfully';
         this.sendFundFormLabel = 'Sweep funds | Address: ' + this.sendFundFormGroup.controls.transactionAddress.value +
           (this.sendFundFormGroup.controls.flgMinConf.value ? (' | Min Confirmation Blocks: ' + this.sendFundFormGroup.controls.minConfValue.value) : (this.sendFundFormGroup.controls.selFeeRate.value ? (' | Fee Rate: ' +
-            this.feeRateTypes.find((frType) => frType.feeRateId === this.sendFundFormGroup.controls.selFeeRate.value).feeRateType) : ''));
+            this.feeRateTypes.find((frType) => frType.feeRateId === this.sendFundFormGroup.controls.selFeeRate.value)?.feeRateType) : ''));
         break;
 
       default:
@@ -272,12 +272,8 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
   }
 
   onUTXOSelectionChange(event: any) {
-    const utxoNew = { value: 0 };
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
-      this.totalSelectedUTXOAmount = this.selUTXOs?.reduce((a, b) => {
-        utxoNew.value = a.value + b.value;
-        return utxoNew;
-      }).value;
+      this.totalSelectedUTXOAmount = this.selUTXOs?.reduce((total, curr) => (total + (curr.value || 0)), 0);
       if (this.flgUseAllBalance) {
         this.onUTXOAllBalanceChange();
       }

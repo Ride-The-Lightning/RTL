@@ -41,7 +41,7 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
   }
 
   onUpdateSettings(): boolean | void {
-    const defaultNodeIndex = (this.appConfig.defaultNodeIndex) ? this.appConfig.defaultNodeIndex : +this.appConfig.nodes[0].index;
+    const defaultNodeIndex = (this.appConfig.defaultNodeIndex) ? this.appConfig.defaultNodeIndex : (this.appConfig && this.appConfig.nodes && this.appConfig.nodes.length && this.appConfig.nodes.length > 0 && this.appConfig.nodes[0].index) ? +this.appConfig.nodes[0].index : -1;
     this.store.dispatch(saveSettings({ payload: { uiMessage: UI_MESSAGES.UPDATE_DEFAULT_NODE_SETTING, defaultNodeIndex: defaultNodeIndex } }));
   }
 

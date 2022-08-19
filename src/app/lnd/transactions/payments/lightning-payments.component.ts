@@ -40,15 +40,15 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faHistory = faHistory;
-  public newlyAddedPayment = '';
-  public selNode: SelNodeChild = {};
+  public newlyAddedPayment: string = '';
+  public selNode: SelNodeChild | null = {};
   public information: GetInfo = {};
   public peers: Peer[] = [];
   public payments: any;
   public totalPayments = 100;
   public paymentJSONArr: Payment[] = [];
   public displayedColumns: any[] = [];
-  public htlcColumns = [];
+  public htlcColumns: any[] = [];
   public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
   public paymentDecodedHint = '';
@@ -87,7 +87,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   }
 
   ngOnInit() {
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => { this.selNode = nodeSettings; });
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => { this.selNode = nodeSettings; });
     this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => { this.information = nodeInfo; });
     this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
       subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
@@ -102,8 +102,8 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         }
         this.paymentJSONArr = paymentsSelector.listPayments.payments || [];
         this.totalPayments = this.paymentJSONArr.length;
-        this.firstOffset = +paymentsSelector.listPayments.first_index_offset;
-        this.lastOffset = +paymentsSelector.listPayments.last_index_offset;
+        this.firstOffset = +(paymentsSelector.listPayments.first_index_offset || -1);
+        this.lastOffset = +(paymentsSelector.listPayments.last_index_offset || -1);
         if (this.paymentJSONArr && this.paymentJSONArr.length > 0 && this.sort && this.paginator) {
           // this.loadPaymentsTable(this.paymentJSONArr);
           this.loadPaymentsTable(this.paymentJSONArr.slice(0, this.pageSize));
@@ -144,7 +144,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   }
 
   sendPayment() {
-    this.newlyAddedPayment = this.paymentDecoded.payment_hash;
+    this.newlyAddedPayment = this.paymentDecoded.payment_hash || '';
     if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
       this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
     }
@@ -236,7 +236,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
             this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
           }
           if (this.paymentDecoded.num_satoshis) {
-            if (this.selNode.fiatConversion) {
+            if (this.selNode && this.selNode.fiatConversion) {
               this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
                 pipe(takeUntil(this.unSubs[5])).
                 subscribe({
@@ -290,15 +290,15 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
 
   getHopDetails(hops: Hop[]) {
     const self = this;
-    return hops?.reduce((accumulator, currentHop) => {
+    return hops?.reduce((accumulator: any[], currentHop: Hop) => {
       const peerFound = self.peers.find((peer) => peer.pub_key === currentHop.pub_key);
       if (peerFound && peerFound.alias) {
         accumulator.push('<pre>Channel: ' + peerFound.alias.padEnd(20) + '&Tab;&Tab;&Tab;Amount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward) + '</pre>');
       } else {
-        self.dataService.getAliasesFromPubkeys(currentHop.pub_key, false).
+        self.dataService.getAliasesFromPubkeys((currentHop.pub_key || ''), false).
           pipe(takeUntil(self.unSubs[6])).
           subscribe((res: any) => {
-            accumulator.push('<pre>Channel: ' + (res.node && res.node.alias ? res.node.alias.padEnd(20) : (currentHop.pub_key.substring(0, 17) + '...')) + '&Tab;&Tab;&Tab;Amount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward) + '</pre>');
+            accumulator.push('<pre>Channel: ' + (res.node && res.node.alias ? res.node.alias.padEnd(20) : (currentHop.pub_key?.substring(0, 17) + '...')) + '&Tab;&Tab;&Tab;Amount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward) + '</pre>');
           });
       }
       return accumulator;
@@ -314,11 +314,11 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
               this.showHTLCView(selHtlc, selPayment, decodedPayment);
             }, 0);
           }, error: (error) => {
-            this.showHTLCView(selHtlc, selPayment, null);
+            this.showHTLCView(selHtlc, selPayment);
           }
         });
     } else {
-      this.showHTLCView(selHtlc, selPayment, null);
+      this.showHTLCView(selHtlc, selPayment);
     }
   }
 
@@ -328,12 +328,12 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       [{ key: 'preimage', value: selHtlc.preimage, title: 'Preimage', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'payment_request', value: selPayment.payment_request, title: 'Payment Request', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'status', value: selHtlc.status, title: 'Status', width: 33, type: DataTypeEnum.STRING },
-      { key: 'attempt_time_ns', value: +selHtlc.attempt_time_ns / 1000000000, title: 'Attempt Time', width: 33, type: DataTypeEnum.DATE_TIME },
-      { key: 'resolve_time_ns', value: +selHtlc.resolve_time_ns / 1000000000, title: 'Resolve Time', width: 34, type: DataTypeEnum.DATE_TIME }],
-      [{ key: 'total_amt', value: selHtlc.route.total_amt, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.NUMBER },
-      { key: 'total_fees', value: selHtlc.route.total_fees, title: 'Fee (Sats)', width: 33, type: DataTypeEnum.NUMBER },
-      { key: 'total_time_lock', value: selHtlc.route.total_time_lock, title: 'Total Time Lock', width: 34, type: DataTypeEnum.NUMBER }],
-      [{ key: 'hops', value: this.getHopDetails(selHtlc.route.hops), title: 'Hops', width: 100, type: DataTypeEnum.ARRAY }]
+      { key: 'attempt_time_ns', value: +(selHtlc.attempt_time_ns || 0) / 1000000000, title: 'Attempt Time', width: 33, type: DataTypeEnum.DATE_TIME },
+      { key: 'resolve_time_ns', value: +(selHtlc.resolve_time_ns || 0) / 1000000000, title: 'Resolve Time', width: 34, type: DataTypeEnum.DATE_TIME }],
+      [{ key: 'total_amt', value: selHtlc.route?.total_amt, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.NUMBER },
+      { key: 'total_fees', value: selHtlc.route?.total_fees, title: 'Fee (Sats)', width: 33, type: DataTypeEnum.NUMBER },
+      { key: 'total_time_lock', value: selHtlc.route?.total_time_lock, title: 'Total Time Lock', width: 34, type: DataTypeEnum.NUMBER }],
+      [{ key: 'hops', value: this.getHopDetails(selHtlc.route?.hops || []), title: 'Hops', width: 100, type: DataTypeEnum.ARRAY }]
     ];
     if (decodedPayment && decodedPayment.description && decodedPayment.description !== '') {
       reorderedHTLC.splice(3, 0, [{ key: 'description', value: decodedPayment.description, title: 'Description', width: 100, type: DataTypeEnum.STRING }]);
@@ -352,7 +352,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
 
   onPaymentClick(selPayment: Payment) {
     if (selPayment.htlcs && selPayment.htlcs[0] && selPayment.htlcs[0].route && selPayment.htlcs[0].route.hops && selPayment.htlcs[0].route.hops.length > 0) {
-      const nodePubkeys = selPayment.htlcs[0].route.hops?.reduce((pubkeys, hop) => (pubkeys === '' ? hop.pub_key : pubkeys + ',' + hop.pub_key), '');
+      const nodePubkeys = selPayment.htlcs[0].route.hops?.reduce((pubkeys, hop) => (hop.pub_key && pubkeys === '' ? hop.pub_key : pubkeys + ',' + hop.pub_key), '');
       this.dataService.getAliasesFromPubkeys(nodePubkeys, true).pipe(takeUntil(this.unSubs[7])).
         subscribe((nodes: any) => {
           this.showPaymentView(selPayment, nodes?.reduce((pathAliases, node) => (pathAliases === '' ? node : pathAliases + '\n' + node), ''));
@@ -380,7 +380,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
             reorderedPayment.splice(3, 0, [{ key: 'description', value: decodedPayment.description, title: 'Description', width: 100, type: DataTypeEnum.STRING }]);
           }
           setTimeout(() => {
-            this.openPaymentAlert(reorderedPayment, (selPayment.htlcs && selPayment.htlcs[0] && selPayment.htlcs[0].route && selPayment.htlcs[0].route.hops && selPayment.htlcs[0].route.hops.length > 1));
+            this.openPaymentAlert(reorderedPayment, !!(selPayment.htlcs && selPayment.htlcs[0] && selPayment.htlcs[0].route && selPayment.htlcs[0].route.hops && selPayment.htlcs[0].route.hops.length > 1));
           }, 0);
         });
     } else {
@@ -418,7 +418,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
     };
     this.payments.sort = this.sort;
     this.payments.filterPredicate = (payment: Payment, fltr: string) => {
-      const newPayment = ((payment.creation_date) ? this.datePipe.transform(new Date(payment.creation_date * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(payment).toLowerCase();
+      const newPayment = ((payment.creation_date) ? this.datePipe.transform(new Date(payment.creation_date * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(payment).toLowerCase();
       return newPayment.includes(fltr);
     };
     this.applyFilter();

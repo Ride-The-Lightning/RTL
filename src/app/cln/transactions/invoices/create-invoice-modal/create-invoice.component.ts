@@ -25,10 +25,10 @@ import { clnNodeInformation, clnNodeSettings } from '../../../store/cln.selector
 export class CLNCreateInvoiceComponent implements OnInit, OnDestroy {
 
   public faExclamationTriangle = faExclamationTriangle;
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public description = '';
-  public expiry: number;
-  public invoiceValue: number;
+  public expiry: number | null;
+  public invoiceValue: number | null;
   public invoiceValueHint = '';
   public invoicePaymentReq = '';
   public invoices: any;
@@ -46,7 +46,7 @@ export class CLNCreateInvoiceComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageSize = this.data.pageSize;
-    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => {
+    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => {
       this.selNode = nodeSettings;
     });
     this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => {
@@ -73,7 +73,7 @@ export class CLNCreateInvoiceComponent implements OnInit, OnDestroy {
       this.invoiceValue = 0;
     }
     let expiryInSecs = (this.expiry ? this.expiry : 3600);
-    if (this.selTimeUnit !== TimeUnitEnum.SECS) {
+    if (this.selTimeUnit !== TimeUnitEnum.SECS && this.expiry) {
       expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
     }
     this.store.dispatch(saveNewInvoice({
@@ -94,7 +94,7 @@ export class CLNCreateInvoiceComponent implements OnInit, OnDestroy {
   }
 
   onInvoiceValueChange() {
-    if (this.selNode.fiatConversion && this.invoiceValue > 99) {
+    if (this.selNode && this.selNode.fiatConversion && this.invoiceValue && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
       this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
         pipe(takeUntil(this.unSubs[3])).

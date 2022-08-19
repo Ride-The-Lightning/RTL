@@ -27,9 +27,9 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
-  public routingPeersData = [];
+  public routingPeersData: any[] = [];
   public displayedColumns: any[] = [];
-  public NonRoutingPeers = new MatTableDataSource<any>([]);
+  public NonRoutingPeers: any = new MatTableDataSource<any>([]);
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;

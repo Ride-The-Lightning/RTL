@@ -57,8 +57,8 @@ export interface PaymentReceived {
 
 export interface PaymentRelayed {
   type?: string;
-  amountIn?: number;
-  amountOut?: number;
+  amountIn: number;
+  amountOut: number;
   paymentHash?: string;
   fromChannelId?: string;
   fromShortChannelId?: string;

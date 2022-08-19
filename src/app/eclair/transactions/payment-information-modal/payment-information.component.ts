@@ -13,7 +13,7 @@ export class ECLPaymentInformationComponent implements OnInit, AfterViewChecked 
 
   @ViewChild('scrollContainer', { static: false }) scrollContainer: ElementRef;
   public payment: PaymentSent;
-  public description: string = null;
+  public description: string | null = null;
   public shouldScroll = true;
   public expansionOpen = true;
 

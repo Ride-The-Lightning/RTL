@@ -59,7 +59,7 @@ export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
       if (queryRoute && queryRoute.routes && queryRoute.routes.length) {
         this.flgLoading[0] = false;
         this.allQRoutes = queryRoute.routes;
-        this.allQRoutes.forEach((route, i) => {
+        this.allQRoutes.forEach((route: any, i) => {
           this.qrHops[i] = new MatTableDataSource<QueryRoutes>([...route.nodeIds]);
         });
       } else {

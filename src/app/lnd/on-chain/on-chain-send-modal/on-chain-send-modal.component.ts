@@ -36,7 +36,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
   public sweepAll = false;
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public appConfig: RTLConfiguration;
   public addressTypes = [];
   public selectedAddress: AddressType = {};
@@ -44,9 +44,9 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   public information: GetInfo = {};
   public newAddress = '';
   public transactionAddress = '';
-  public transactionAmount = null;
-  public transactionFees = null;
-  public transactionBlocks = null;
+  public transactionAmount: number | null = null;
+  public transactionFees: number | null = null;
+  public transactionBlocks: number | null = null;
   public transTypes = [{ id: '1', name: 'Target Confirmation Blocks' }, { id: '2', name: 'Fee' }];
   public selTransType = '1';
   public fiatConversion = false;
@@ -167,7 +167,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
         subscribe({
           next: (data) => {
             this.selAmountUnit = CurrencyUnitEnum.SATS;
-            postTransaction.amount = +this.decimalPipe.transform(data[this.amountUnits[0]], this.currencyUnitFormats[this.amountUnits[0]])?.replace(/,/g, '');
+            postTransaction.amount = +(this.decimalPipe.transform(data[this.amountUnits[0]], this.currencyUnitFormats[this.amountUnits[0]])?.replace(/,/g, '') || 0);
             this.store.dispatch(setChannelTransaction({ payload: postTransaction }));
           }, error: (err) => {
             this.transactionAmount = null;
@@ -245,7 +245,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
         subscribe({
           next: (data) => {
             this.selAmountUnit = event.value;
-            self.transactionAmount = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit])?.replace(/,/g, '');
+            self.transactionAmount = +(self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit])?.replace(/,/g, '') || 0);
           }, error: (err) => {
             self.transactionAmount = null;
             this.amountError = 'Conversion Error: ' + err;

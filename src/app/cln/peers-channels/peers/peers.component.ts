@@ -38,7 +38,7 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public faUsers = faUsers;
   public newlyAddedPeer = '';
   public displayedColumns: any[] = [];
-  public peerAddress = '';
+  public peerAddress: string | null = '';
   public peersData: Peer[] = [];
   public peers: any;
   public information: GetInfo = {};
@@ -171,7 +171,7 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       pipe(takeUntil(this.unSubs[3])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.store.dispatch(detachPeer({ payload: { id: peerToDetach.id, force: false } }));
+          this.store.dispatch(detachPeer({ payload: { id: peerToDetach.id!, force: false } }));
         }
       });
   }

@@ -38,10 +38,10 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
   public faArchive = faArchive;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public displayedColumns = ['channel_point', 'actions'];
-  public selectedChannel: Channel;
-  public channelsData = [];
+  public selectedChannel: Channel | null;
+  public channelsData: Channel[] = [];
   public channels: any;
   public flgSticky = false;
   public screenSize = '';
@@ -57,7 +57,7 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   ngOnInit() {
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => { this.selNode = nodeSettings; });
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => { this.selNode = nodeSettings; });
     this.store.select(channels).pipe(takeUntil(this.unSubs[1])).
       subscribe((channelsSeletor: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
@@ -76,7 +76,7 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
         this.selectedChannel = null;
       }
       if (action.type === RTLActions.SHOW_FILE) {
-        this.commonService.downloadFile(action.payload, 'channel-' + (this.selectedChannel.channel_point ? this.selectedChannel.channel_point : 'all'), '.bak', '.bak');
+        this.commonService.downloadFile(action.payload, 'channel-' + (this.selectedChannel?.channel_point ? this.selectedChannel.channel_point : 'all'), '.bak', '.bak');
         this.selectedChannel = null;
       }
     });

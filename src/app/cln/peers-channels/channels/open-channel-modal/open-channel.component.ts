@@ -28,7 +28,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
   public faExclamationTriangle = faExclamationTriangle;
   public alertTitle: string;
   public isCompatibleVersion = false;
-  public peer: Peer;
+  public peer: Peer | null;
   public peers: Peer[];
   public sortedPeers: Peer[];
   public filteredPeers: Observable<Peer[]>;
@@ -40,7 +40,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
   public advancedTitle = 'Advanced Options';
   public information: GetInfo;
   public totalBalance = 0;
-  public fundingAmount = null;
+  public fundingAmount: number | null = null;
   public selectedPubkey = '';
   public isPrivate = false;
   public feeRateTypes = FEE_RATE_TYPES;
@@ -57,13 +57,22 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.isCompatibleVersion = this.data.message.isCompatibleVersion;
-    this.information = this.data.message.information;
-    this.totalBalance = this.data.message.balance;
-    this.utxos = this.data.message.utxos;
-    this.alertTitle = this.data.alertTitle;
-    this.peer = this.data.message.peer || null;
-    this.peers = this.data.message.peers || [];
+    if (this.data.message) {
+      this.isCompatibleVersion = this.data.message.isCompatibleVersion;
+      this.information = this.data.message.information;
+      this.totalBalance = this.data.message.balance;
+      this.utxos = this.data.message.utxos;
+      this.peer = this.data.message.peer || null;
+      this.peers = this.data.message.peers || [];
+    } else {
+      this.isCompatibleVersion = false;
+      this.information = {};
+      this.totalBalance = 0;
+      this.utxos = [];
+      this.peer = null;
+      this.peers = [];  
+    }
+    this.alertTitle = this.data.alertTitle || 'Alert';
     this.actions.pipe(
       takeUntil(this.unSubs[0]),
       filter((action) => action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN || action.type === CLNActions.FETCH_CHANNELS_CLN)).
@@ -79,7 +88,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
       y = '';
     this.sortedPeers = this.peers.sort((p1, p2) => {
       x = p1.alias ? p1.alias.toLowerCase() : p1.id ? p1.id.toLowerCase() : '';
-      y = p2.alias ? p2.alias.toLowerCase() : p1.id.toLowerCase();
+      y = p2.alias ? p2.alias.toLowerCase() : p1.id ? p1.id.toLowerCase() : '';
       return ((x < y) ? -1 : ((x > y) ? 1 : 0));
     });
     this.filteredPeers = this.selectedPeer.valueChanges.pipe(takeUntil(this.unSubs[1]), startWith(''),
@@ -89,7 +98,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
   }
 
   private filterPeers(newlySelectedPeer: string): Peer[] {
-    return this.sortedPeers?.filter((peer) => peer.alias.toLowerCase().indexOf(newlySelectedPeer ? newlySelectedPeer.toLowerCase() : '') === 0);
+    return this.sortedPeers?.filter((peer) => peer.alias?.toLowerCase().indexOf(newlySelectedPeer ? newlySelectedPeer.toLowerCase() : '') === 0);
   }
 
   displayFn(peer: Peer): string {
@@ -100,7 +109,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
     this.channelConnectionError = '';
     this.selectedPubkey = (this.selectedPeer.value && this.selectedPeer.value.id) ? this.selectedPeer.value.id : null;
     if (typeof this.selectedPeer.value === 'string') {
-      const selPeer = this.peers?.filter((peer) => peer.alias.length === this.selectedPeer.value.length && peer.alias.toLowerCase().indexOf(this.selectedPeer.value ? this.selectedPeer.value.toLowerCase() : '') === 0);
+      const selPeer = this.peers?.filter((peer) => peer.alias?.length === this.selectedPeer.value.length && peer.alias?.toLowerCase().indexOf(this.selectedPeer.value ? this.selectedPeer.value.toLowerCase() : '') === 0);
       if (selPeer.length === 1 && selPeer[0].id) {
         this.selectedPubkey = selPeer[0].id;
       }
@@ -138,7 +147,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
           this.advancedTitle = this.advancedTitle + ' | Min Confirmation Blocks: ' + this.minConfValue;
         }
         if (this.selFeeRate) {
-          this.advancedTitle = this.advancedTitle + ' | Fee Rate: ' + (this.customFeeRate ? (this.customFeeRate + ' (Sats/vByte)') : (this.feeRateTypes.find((feeRateType) => feeRateType.feeRateId === this.selFeeRate).feeRateType));
+          this.advancedTitle = this.advancedTitle + ' | Fee Rate: ' + (this.customFeeRate ? (this.customFeeRate + ' (Sats/vByte)') : (this.feeRateTypes.find((feeRateType) => feeRateType.feeRateId === this.selFeeRate)?.feeRateType));
         }
         if (this.selUTXOs.length && this.selUTXOs.length > 0) {
           this.advancedTitle = this.advancedTitle + ' | Total Selected: ' + this.selUTXOs.length + ' | Selected UTXOs: ' + this.decimalPipe.transform(this.totalSelectedUTXOAmount) + ' Sats';
@@ -150,12 +159,8 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
   }
 
   onUTXOSelectionChange(event: any) {
-    const utxoNew = { value: 0 };
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
-      this.totalSelectedUTXOAmount = this.selUTXOs?.reduce((a, b) => {
-        utxoNew.value = a.value + b.value;
-        return utxoNew;
-      }).value;
+      this.totalSelectedUTXOAmount = this.selUTXOs?.reduce((acc, curr: UTXO) => acc + (curr.value || 0), 0);
       if (this.flgUseAllBalance) {
         this.onUTXOAllBalanceChange();
       }
@@ -182,7 +187,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
     newChannel['feeRate'] = (this.selFeeRate === 'customperkb' && !this.flgMinConf && this.customFeeRate) ? (this.customFeeRate * 1000) + 'perkb' : this.selFeeRate;
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
       newChannel['utxos'] = [];
-      this.selUTXOs.forEach((utxo) => newChannel['utxos'].push(utxo.txid + ':' + utxo.output));
+      this.selUTXOs.forEach((utxo: UTXO) => newChannel['utxos'].push(utxo.txid + ':' + utxo.output));
     }
     this.store.dispatch(saveNewChannel({ payload: newChannel }));
   }

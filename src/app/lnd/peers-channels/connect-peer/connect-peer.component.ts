@@ -32,7 +32,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   public transTypes = TRANS_TYPES;
   public flgChannelOpened = false;
   public channelOpenStatus = null;
-  public newlyAddedPeer: Peer = null;
+  public newlyAddedPeer: Peer | null = null;
   public flgEditable = true;
   public peerConnectionError = '';
   public channelConnectionError = '';
@@ -46,7 +46,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   constructor(public dialogRef: MatDialogRef<ConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<RTLState>, private lndEffects: LNDEffects, private formBuilder: FormBuilder, private actions: Actions, private logger: LoggerService) { }
 
   ngOnInit() {
-    this.totalBalance = this.data.message.balance;
+    this.totalBalance = this.data.message?.balance || 0;
     this.peerFormGroup = this.formBuilder.group({
       hiddenAddress: ['', [Validators.required]],
       peerAddress: ['', [Validators.required]]
@@ -130,7 +130,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
     this.channelConnectionError = '';
     this.store.dispatch(saveNewChannel({
       payload: {
-        selectedPeerPubkey: this.newlyAddedPeer.pub_key, fundingAmount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value,
+        selectedPeerPubkey: this.newlyAddedPeer?.pub_key!, fundingAmount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value,
         transType: this.channelFormGroup.controls.selTransType.value, transTypeValue: this.channelFormGroup.controls.transTypeValue.value, spendUnconfirmed: this.channelFormGroup.controls.spendUnconfirmed.value
       }
     }));
@@ -149,7 +149,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
 
       case 1:
         if (this.peerFormGroup.controls.peerAddress.value) {
-          this.peerFormLabel = 'Peer Added: ' + this.newlyAddedPeer.alias;
+          this.peerFormLabel = 'Peer Added: ' + this.newlyAddedPeer?.alias;
         } else {
           this.peerFormLabel = 'Peer Details';
         }
@@ -158,7 +158,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
 
       case 2:
         if (this.peerFormGroup.controls.peerAddress.value) {
-          this.peerFormLabel = 'Peer Added: ' + this.newlyAddedPeer.alias;
+          this.peerFormLabel = 'Peer Added: ' + this.newlyAddedPeer?.alias;
         } else {
           this.peerFormLabel = 'Peer Details';
         }

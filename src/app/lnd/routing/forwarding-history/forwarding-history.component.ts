@@ -31,7 +31,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   @Input() eventsData = [];
   @Input() filterValue = '';
-  public forwardingHistoryData = [];
+  public forwardingHistoryData: ForwardingEvent[] = [];
   public displayedColumns: any[] = [];
   public forwardingHistoryEvents: any;
   public flgSticky = false;
@@ -122,7 +122,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
     this.forwardingHistoryEvents.sort = this.sort;
     this.forwardingHistoryEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.forwardingHistoryEvents.filterPredicate = (rowData: ForwardingEvent, fltr: string) => {
-      const newRowData = ((rowData.timestamp) ? this.datePipe.transform(new Date(rowData.timestamp * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      const newRowData = ((rowData.timestamp) ? this.datePipe.transform(new Date(rowData.timestamp * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
       return newRowData.includes(fltr);
     };
     this.forwardingHistoryEvents.paginator = this.paginator;

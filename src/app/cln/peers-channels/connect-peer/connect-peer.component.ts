@@ -32,7 +32,7 @@ export class CLNConnectPeerComponent implements OnInit, OnDestroy {
   public feeRateTypes = FEE_RATE_TYPES;
   public flgChannelOpened = false;
   public channelOpenStatus = null;
-  public newlyAddedPeer: Peer = null;
+  public newlyAddedPeer: Peer | null = null;
   public flgEditable = true;
   public peerConnectionError = '';
   public channelConnectionError = '';
@@ -50,9 +50,14 @@ export class CLNConnectPeerComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.totalBalance = this.data.message.balance;
-    this.peerAddress = (this.data.message.peer && this.data.message.peer.id && this.data.message.peer.netaddr) ? (this.data.message.peer.id + '@' + this.data.message.peer.netaddr) :
-      (this.data.message.peer && this.data.message.peer.id && !this.data.message.peer.netaddr) ? this.data.message.peer.id : '';
+    if (this.data.message) {
+      this.totalBalance = this.data.message.balance;
+      this.peerAddress = (this.data.message.peer && this.data.message.peer.id && this.data.message.peer.netaddr) ? (this.data.message.peer.id + '@' + this.data.message.peer.netaddr) :
+        (this.data.message.peer && this.data.message.peer.id && !this.data.message.peer.netaddr) ? this.data.message.peer.id : '';
+    } else {
+      this.totalBalance = 0;
+      this.peerAddress = '';
+    }
     this.peerFormGroup = this.formBuilder.group({
       hiddenAddress: ['', [Validators.required]],
       peerAddress: [this.peerAddress, [Validators.required]]
@@ -130,7 +135,7 @@ export class CLNConnectPeerComponent implements OnInit, OnDestroy {
     this.channelConnectionError = '';
     this.store.dispatch(saveNewChannel({
       payload: {
-        peerId: this.newlyAddedPeer.id, satoshis: this.channelFormGroup.controls.fundingAmount.value, announce: !this.channelFormGroup.controls.isPrivate.value,
+        peerId: this.newlyAddedPeer?.id!, satoshis: this.channelFormGroup.controls.fundingAmount.value, announce: !this.channelFormGroup.controls.isPrivate.value,
         feeRate: (this.channelFormGroup.controls.selFeeRate.value === 'customperkb' && !this.channelFormGroup.controls.flgMinConf.value && this.channelFormGroup.controls.customFeeRate.value) ? ((this.channelFormGroup.controls.customFeeRate.value * 1000) + 'perkb') : this.channelFormGroup.controls.selFeeRate.value,
         minconf: this.channelFormGroup.controls.flgMinConf.value ? this.channelFormGroup.controls.minConfValue.value : null
       }
@@ -150,7 +155,7 @@ export class CLNConnectPeerComponent implements OnInit, OnDestroy {
 
       case 1:
         if (this.peerFormGroup.controls.peerAddress.value) {
-          this.peerFormLabel = 'Peer Added: ' + (this.newlyAddedPeer.alias ? this.newlyAddedPeer.alias : this.newlyAddedPeer.id);
+          this.peerFormLabel = 'Peer Added: ' + (this.newlyAddedPeer?.alias ? this.newlyAddedPeer.alias : this.newlyAddedPeer?.id);
         } else {
           this.peerFormLabel = 'Peer Details';
         }
@@ -159,7 +164,7 @@ export class CLNConnectPeerComponent implements OnInit, OnDestroy {
 
       case 2:
         if (this.peerFormGroup.controls.peerAddress.value) {
-          this.peerFormLabel = 'Peer Added: ' + (this.newlyAddedPeer.alias ? this.newlyAddedPeer.alias : this.newlyAddedPeer.id);
+          this.peerFormLabel = 'Peer Added: ' + (this.newlyAddedPeer?.alias ? this.newlyAddedPeer?.alias : this.newlyAddedPeer?.id);
         } else {
           this.peerFormLabel = 'Peer Details';
         }

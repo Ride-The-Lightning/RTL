@@ -76,7 +76,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
     this.store.dispatch(fetchRTLConfig());
-    this.accessKey = this.readAccessKey();
+    this.accessKey = this.readAccessKey() || '';
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).subscribe((selNode) => {
       this.settings = selNode.settings;
       if (!this.sessionService.getItem('token')) {

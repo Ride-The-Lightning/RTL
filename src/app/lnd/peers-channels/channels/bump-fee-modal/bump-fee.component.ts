@@ -28,9 +28,9 @@ export class BumpFeeComponent implements OnInit, OnDestroy {
   public bumpFeeChannel: PendingOpenChannel;
   public transTypes = [...TRANS_TYPES];
   public selTransType = '2';
-  public blocks = null;
-  public fees = null;
-  public outputIndex = null;
+  public blocks: number | null = null;
+  public fees: number | null = null;
+  public outputIndex: number | null = null;
   public faCopy = faCopy;
   public faInfoCircle = faInfoCircle;
   public faExclamationTriangle = faExclamationTriangle;
@@ -42,20 +42,22 @@ export class BumpFeeComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.transTypes = this.transTypes.splice(1);
     this.bumpFeeChannel = this.data.pendingChannel;
-    const channelPointArr = this.bumpFeeChannel.channel.channel_point.split(':') || [];
-    this.bumpFeeChannel.channel.txid_str = channelPointArr[0] || (this.bumpFeeChannel.channel && this.bumpFeeChannel.channel.channel_point ? this.bumpFeeChannel.channel.channel_point : '');
-    this.bumpFeeChannel.channel.output_index = +channelPointArr[1] || null;
+    const channelPointArr = this.bumpFeeChannel.channel?.channel_point?.split(':') || [];
+    if (this.bumpFeeChannel && this.bumpFeeChannel.channel) {
+      this.bumpFeeChannel.channel.txid_str = channelPointArr[0] || (this.bumpFeeChannel.channel && this.bumpFeeChannel.channel.channel_point ? this.bumpFeeChannel.channel.channel_point : '');
+      this.bumpFeeChannel.channel.output_index = +channelPointArr[1] || null;  
+    }
   }
 
   onBumpFee(): boolean | void {
-    if (this.outputIndex === this.bumpFeeChannel.channel.output_index) {
+    if (this.outputIndex === this.bumpFeeChannel.channel?.output_index) {
       this.outputIdx.control.setErrors({ pendingChannelOutputIndex: true });
       return true;
     }
     if ((!this.outputIndex && this.outputIndex !== 0) || (this.selTransType === '1' && (!this.blocks || this.blocks === 0)) || (this.selTransType === '2' && (!this.fees || this.fees === 0))) {
       return true;
     }
-    this.dataService.bumpFee(this.bumpFeeChannel.channel.txid_str, this.outputIndex, this.blocks, this.fees).pipe(takeUntil(this.unSubs[0])).
+    this.dataService.bumpFee((this.bumpFeeChannel && this.bumpFeeChannel.channel && this.bumpFeeChannel.channel.txid_str ? this.bumpFeeChannel.channel.txid_str : ''), this.outputIndex, (this.blocks || null), (this.fees || null)).pipe(takeUntil(this.unSubs[0])).
       subscribe({
         next: (res) => {
           this.dialogRef.close(false);

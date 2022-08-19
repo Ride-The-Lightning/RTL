@@ -7,9 +7,9 @@ import { Actions } from '@ngrx/effects';
 import { MatDialogRef } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-import { SelNodeChild, GetInfoRoot, RTLConfiguration } from '../../../shared/models/RTLconfig';
+import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, OnChainBalance, SendPaymentOnChain } from '../../../shared/models/eclModels';
-import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, APICallStatusEnum, UI_MESSAGES, ECLActions } from '../../../shared/services/consts-enums-functions';
+import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, APICallStatusEnum, ECLActions } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
@@ -27,7 +27,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
 
   @ViewChild('form', { static: true }) form: any;
   public faExclamationTriangle = faExclamationTriangle;
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public addressTypes = [];
   public selectedAddress = ADDRESS_TYPES[1];
   public blockchainBalance: OnChainBalance = {};
@@ -81,7 +81,6 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
             this.selAmountUnit = CurrencyUnitEnum.SATS;
             this.store.dispatch(sendOnchainFunds({ payload: this.transaction }));
           }, error: (err) => {
-            this.transaction.amount = null;
             this.selAmountUnit = CurrencyUnitEnum.SATS;
             this.amountError = 'Conversion Error: ' + err;
           }
@@ -112,9 +111,8 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
         subscribe({
           next: (data) => {
             this.selAmountUnit = event.value;
-            self.transaction.amount = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit])?.replace(/,/g, '');
+            self.transaction.amount = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit])!.replace(/,/g, '');
           }, error: (err) => {
-            self.transaction.amount = null;
             this.amountError = 'Conversion Error: ' + err;
             this.selAmountUnit = prevSelectedUnit;
             currSelectedUnit = prevSelectedUnit;

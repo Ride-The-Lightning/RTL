@@ -1,6 +1,6 @@
 export interface ServiceInfo {
-  fees?: {percentage?: number, miner: {normal?: number, reverse?: number}};
-  limits?: {minimal?: number, maximal?: number};
+  fees?: {percentage?: number | null, miner: {normal?: number | null, reverse?: number | null}};
+  limits?: {minimal?: number | null, maximal?: number | null};
 }
 
 export interface Swap {

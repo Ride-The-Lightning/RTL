@@ -18,7 +18,7 @@ export class VerifyComponent implements OnDestroy {
   public signature = '';
   public verifiedSignature = '';
   public showVerifyStatus = false;
-  public verifyRes = { pubkey: '', valid: null };
+  public verifyRes: any = { pubkey: '', valid: null };
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private dataService: DataService, private snackBar: MatSnackBar, private logger: LoggerService) { }

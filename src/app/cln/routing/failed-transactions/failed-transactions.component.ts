@@ -4,7 +4,7 @@ import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
@@ -39,7 +39,6 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
   public failedForwardingEvents: any;
   public flgSticky = false;
   public selFilter = '';
-  private indexOffset = -1;
   public totalFailedTransactions = 0;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -77,7 +76,7 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
         this.totalFailedTransactions = ffhSeletor.failedForwardingHistory.totalForwards || 0;
         this.failedEvents = ffhSeletor.failedForwardingHistory.listForwards || [];
         if (this.failedEvents.length > 0 && this.sort && this.paginator) {
-          this.loadFailedEventsTable(this.failedEvents.slice(0, this.pageSize));
+          this.loadFailedEventsTable(this.failedEvents);
         }
         this.logger.info(ffhSeletor);
       });
@@ -85,7 +84,7 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
 
   ngAfterViewInit() {
     if (this.failedEvents.length > 0) {
-      this.loadFailedEventsTable(this.failedEvents.slice(0, this.pageSize));
+      this.loadFailedEventsTable(this.failedEvents);
     }
   }
 
@@ -118,14 +117,16 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
     this.failedForwardingEvents.sort = this.sort;
     this.failedForwardingEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.failedForwardingEvents.filterPredicate = (event: ForwardingEvent, fltr: string) => {
-      const newEvent = (event.received_time ? this.datePipe.transform(new Date(event.received_time * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '' +
+      const newEvent = 
+        (event.received_time ? this.datePipe.transform(new Date(event.received_time * 1000), 'dd/MMM/YYYY HH:mm')!.toLowerCase() : '') +
         (event.resolved_time ? this.datePipe.transform(new Date(event.resolved_time * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') +
         (event.payment_hash ? event.payment_hash.toLowerCase() : '') +
         (event.in_channel ? event.in_channel.toLowerCase() : '') + (event.out_channel ? event.out_channel.toLowerCase() : '') +
         (event.in_channel_alias ? event.in_channel_alias.toLowerCase() : '') + (event.out_channel_alias ? event.out_channel_alias.toLowerCase() : '') +
-        (event.in_msatoshi ? (event.in_msatoshi / 1000) : '') + (event.out_msatoshi ? (event.out_msatoshi / 1000) : '') + (event.fee ? event.fee : ''));
+        (event.in_msatoshi ? (event.in_msatoshi / 1000) : '') + (event.out_msatoshi ? (event.out_msatoshi / 1000) : '') + (event.fee ? event.fee : '');
       return newEvent?.includes(fltr) || false;
     };
+    this.failedForwardingEvents.paginator = this.paginator;
     this.applyFilter();
     this.logger.info(this.failedForwardingEvents);
   }
@@ -138,16 +139,6 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
 
   applyFilter() {
     this.failedForwardingEvents.filter = this.selFilter.trim().toLowerCase();
-  }
-
-  onPageChange(event: PageEvent) {
-    if (this.pageSize !== event.pageSize) {
-      this.pageSize = event.pageSize;
-      this.indexOffset = 0;
-    } else {
-      this.indexOffset = event.pageIndex * this.pageSize;
-    }
-    this.loadFailedEventsTable(this.failedEvents.slice(this.indexOffset, (this.indexOffset + this.pageSize)));
   }
 
   ngOnDestroy() {

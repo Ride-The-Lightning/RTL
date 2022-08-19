@@ -7,13 +7,15 @@ import { Channel, PaymentReceived, PaymentRelayed } from '../../shared/models/ec
 export const ECLReducer = createReducer(initECLState,
   on(updateECLAPICallStatus, (state, { payload }) => {
     const updatedApisCallStatus = JSON.parse(JSON.stringify(state.apisCallStatus));
-    updatedApisCallStatus[payload.action || 0] = {
-      status: payload.status,
-      statusCode: payload.statusCode,
-      message: payload.message,
-      URL: payload.URL,
-      filePath: payload.filePath
-    };
+    if (payload.action) {
+      updatedApisCallStatus[payload.action] = {
+        status: payload.status,
+        statusCode: payload.statusCode,
+        message: payload.message,
+        URL: payload.URL,
+        filePath: payload.filePath
+      };
+    }
     return {
       ...state,
       apisCallStatus: updatedApisCallStatus
@@ -288,12 +290,12 @@ const mapAliases = (rlEvent: PaymentRelayed, storedChannels: Channel[]) => {
         outgoingEvent.shortChannelId = '';
       });
     }
-    rlEvent.amountIn = rlEvent.incoming?.reduce((acc, curr) => acc + curr.amount, 0);
+    rlEvent.amountIn = rlEvent.incoming?.reduce((acc, curr) => acc + curr.amount, 0) || 0;
     rlEvent.fromChannelId = rlEvent.incoming && rlEvent.incoming.length ? rlEvent.incoming[0].channelId : '';
     rlEvent.fromChannelAlias = rlEvent.incoming && rlEvent.incoming.length ? rlEvent.incoming[0].channelAlias : '';
     rlEvent.fromShortChannelId = rlEvent.incoming && rlEvent.incoming.length ? rlEvent.incoming[0].shortChannelId : '';
 
-    rlEvent.amountOut = rlEvent.outgoing?.reduce((acc, curr) => acc + curr.amount, 0);
+    rlEvent.amountOut = rlEvent.outgoing?.reduce((acc, curr) => acc + curr.amount, 0) || 0;
     rlEvent.toChannelId = rlEvent.outgoing && rlEvent.outgoing.length ? rlEvent.outgoing[0].channelId : '';
     rlEvent.toChannelAlias = rlEvent.outgoing && rlEvent.outgoing.length ? rlEvent.outgoing[0].channelAlias : '';
     rlEvent.toShortChannelId = rlEvent.outgoing && rlEvent.outgoing.length ? rlEvent.outgoing[0].shortChannelId : '';

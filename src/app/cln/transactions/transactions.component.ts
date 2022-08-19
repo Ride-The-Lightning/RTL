@@ -24,10 +24,10 @@ export class CLNTransactionsComponent implements OnInit, OnDestroy {
 
   faExchangeAlt = faExchangeAlt;
   faChartPie = faChartPie;
-  currencyUnits = [];
+  currencyUnits: string[] = [];
   routerUrl = '';
   balances = [{ title: 'Local Capacity', dataValue: 0, tooltip: 'Amount you can send' }, { title: 'Remote Capacity', dataValue: 0, tooltip: 'Amount you can receive' }];
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public links = [{ link: 'payments', name: 'Payments' }, { link: 'invoices', name: 'Invoices' }];
   public activeLink = this.links[0].link;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
@@ -45,9 +45,9 @@ export class CLNTransactionsComponent implements OnInit, OnDestroy {
           this.routerUrl = (<ResolveEnd>value).urlAfterRedirects;
         }
       });
-    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[1])).subscribe((nodeSettings: SelNodeChild) => {
+    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[1])).subscribe((nodeSettings: SelNodeChild | null) => {
       this.selNode = nodeSettings;
-      if (this.selNode.enableOffers) {
+      if (this.selNode && this.selNode.enableOffers) {
         this.store.dispatch(fetchOffers());
         this.store.dispatch(fetchOfferBookmarks());
         this.links.push({ link: 'offers', name: 'Offers' });
@@ -58,9 +58,9 @@ export class CLNTransactionsComponent implements OnInit, OnDestroy {
     });
     this.store.select(localRemoteBalance).pipe(takeUntil(this.unSubs[2]),
       withLatestFrom(this.store.select(clnNodeSettings))).
-      subscribe(([lrBalSeletor, nodeSettings]: [{ localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }, SelNodeChild]) => {
-        this.currencyUnits = nodeSettings.currencyUnits;
-        if (nodeSettings.userPersona === UserPersonaEnum.OPERATOR) {
+      subscribe(([lrBalSeletor, nodeSettings]: [{ localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }, (SelNodeChild | null)]) => {
+        this.currencyUnits = nodeSettings?.currencyUnits || [];
+        if (nodeSettings && nodeSettings.userPersona === UserPersonaEnum.OPERATOR) {
           this.balances = [{ title: 'Local Capacity', dataValue: lrBalSeletor.localRemoteBalance.localBalance, tooltip: 'Amount you can send' }, { title: 'Remote Capacity', dataValue: lrBalSeletor.localRemoteBalance.remoteBalance, tooltip: 'Amount you can receive' }];
         } else {
           this.balances = [{ title: 'Outbound Capacity', dataValue: lrBalSeletor.localRemoteBalance.localBalance, tooltip: 'Amount you can send' }, { title: 'Inbound Capacity', dataValue: lrBalSeletor.localRemoteBalance.remoteBalance, tooltip: 'Amount you can receive' }];

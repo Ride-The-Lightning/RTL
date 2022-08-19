@@ -33,10 +33,10 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   public faInfoCircle = faInfoCircle;
   public invoices: ListInvoices = {};
   public selChannel: Channel = {};
-  public activeChannels = [];
+  public activeChannels: Channel[] = [];
   public filteredActiveChannels: Observable<Channel[]>;
-  public feeLimitTypes = [];
-  public queryRoute: QueryRoutes = {};
+  public feeLimitTypes: any[] = [];
+  public queryRoute: QueryRoutes | null = {};
   public paymentRequest = '';
   public paymentStatus: any = null;
   public flgReusingInvoice = false;
@@ -61,11 +61,11 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     this.screenSize = this.commonService.getScreenSize();
     let x = '';
     let y = '';
-    this.selChannel = this.data.message.selChannel;
-    this.activeChannels = this.data.message.channels?.filter((channel) => channel.active && channel.chan_id !== this.selChannel.chan_id && channel.remote_balance > 0);
+    this.selChannel = this.data.message?.selChannel || {};
+    this.activeChannels = this.data.message?.channels?.filter((channel) => channel.active && channel.chan_id !== this.selChannel.chan_id && channel.remote_balance && channel.remote_balance > 0) || [];
     this.activeChannels = this.activeChannels.sort((c1: Channel, c2: Channel) => {
       x = c1.remote_alias ? c1.remote_alias.toLowerCase() : c1.chan_id ? c1.chan_id.toLowerCase() : '';
-      y = c2.remote_alias ? c2.remote_alias.toLowerCase() : c1.chan_id.toLowerCase();
+      y = c2.remote_alias ? c2.remote_alias.toLowerCase() : c1.chan_id ? c1.chan_id.toLowerCase() : '';
       return ((x < y) ? -1 : ((x > y) ? 1 : 0));
     });
     FEE_LIMIT_TYPES.forEach((FEE_LIMIT_TYPE, i) => {
@@ -77,7 +77,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     // User should be able to go to next step only by clicking the action button on the step.
     this.inputFormGroup = this.formBuilder.group({
       hiddenAmount: ['', [Validators.required]],
-      rebalanceAmount: ['', [Validators.required, Validators.min(1), Validators.max(this.selChannel.local_balance)]],
+      rebalanceAmount: ['', [Validators.required, Validators.min(1), Validators.max(this.selChannel.local_balance || 0)]],
       selRebalancePeer: [null, Validators.required]
     });
     this.feeFormGroup = this.formBuilder.group({
@@ -110,14 +110,14 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
           this.sendPayment(action.payload.paymentRequest);
         }
       });
-    this.inputFormGroup.get('rebalanceAmount').valueChanges.pipe(
+    this.inputFormGroup.get('rebalanceAmount')?.valueChanges.pipe(
       takeUntil(this.unSubs[2]), startWith(0)).
       subscribe((amount) => {
         this.inputFormGroup.controls.selRebalancePeer.setValue('');
         this.inputFormGroup.controls.selRebalancePeer.setErrors(null);
         this.filteredActiveChannels = of(amount ? this.filterActiveChannels() : this.activeChannels.slice());
       });
-    this.inputFormGroup.get('selRebalancePeer').valueChanges.pipe(
+    this.inputFormGroup.get('selRebalancePeer')?.valueChanges.pipe(
       takeUntil(this.unSubs[3]), startWith('')).
       subscribe((alias) => {
         if (typeof alias === 'string') {
@@ -171,7 +171,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
           this.inputFormLabel = 'Amount to rebalance';
         }
         if (this.queryRoute && this.queryRoute.routes && this.queryRoute.routes.length > 0 && (this.queryRoute.routes[0].total_fees_msat || (this.queryRoute.routes[0].hops && this.queryRoute.routes[0].hops.length))) {
-          this.feeFormLabel = this.feeFormGroup.controls.selFeeLimitType.value.placeholder + ': ' + this.decimalPipe.transform(this.feeFormGroup.controls.feeLimit.value ? this.feeFormGroup.controls.feeLimit.value : 0) + ' | Hops: ' + this.queryRoute.routes[0].hops.length;
+          this.feeFormLabel = this.feeFormGroup.controls.selFeeLimitType.value.placeholder + ': ' + this.decimalPipe.transform(this.feeFormGroup.controls.feeLimit.value ? this.feeFormGroup.controls.feeLimit.value : 0) + ' | Hops: ' + this.queryRoute.routes[0].hops?.length;
         } else {
           this.feeFormLabel = 'Select rebalance fee';
         }
@@ -192,7 +192,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   }
 
   onRebalance(): boolean | void {
-    if (!this.inputFormGroup.controls.rebalanceAmount.value || this.inputFormGroup.controls.rebalanceAmount.value <= 0 || this.inputFormGroup.controls.rebalanceAmount.value > +this.selChannel.local_balance || !this.feeFormGroup.controls.feeLimit.value || this.feeFormGroup.controls.feeLimit.value < 0 || !this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey) {
+    if (!this.inputFormGroup.controls.rebalanceAmount.value || this.inputFormGroup.controls.rebalanceAmount.value <= 0 || (this.selChannel.local_balance && this.inputFormGroup.controls.rebalanceAmount.value > +this.selChannel.local_balance) || !this.feeFormGroup.controls.feeLimit.value || this.feeFormGroup.controls.feeLimit.value < 0 || !this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey) {
       return true;
     }
     this.feeFormGroup.controls.hiddenFeeLimit.setValue(this.feeFormGroup.controls.feeLimit.value);
@@ -206,7 +206,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     const unsettledInvoice = this.findUnsettledInvoice();
     if (unsettledInvoice) {
       this.flgReusingInvoice = true;
-      this.sendPayment(unsettledInvoice.payment_request);
+      this.sendPayment(unsettledInvoice.payment_request || '');
     } else {
       this.store.dispatch(saveNewInvoice({
         payload: {
@@ -217,7 +217,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   }
 
   findUnsettledInvoice() {
-    return this.invoices.invoices.find((invoice) => (+invoice.settle_date === 0 || !invoice.settle_date) && invoice.memo === 'Local-Rebalance-' + this.inputFormGroup.controls.rebalanceAmount.value + '-Sats' && invoice.state !== 'CANCELED');
+    return this.invoices.invoices?.find((invoice) => (!invoice.settle_date || +invoice.settle_date === 0) && invoice.memo === 'Local-Rebalance-' + this.inputFormGroup.controls.rebalanceAmount.value + '-Sats' && invoice.state !== 'CANCELED');
   }
 
   sendPayment(payReq: string) {
@@ -231,13 +231,13 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   }
 
   filterActiveChannels() {
-    return this.activeChannels?.filter((channel) => channel.remote_balance >= this.inputFormGroup.controls.rebalanceAmount.value &&
-      channel.chan_id !== this.selChannel.chan_id && ((channel.remote_alias.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0) || (channel.chan_id.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0)));
+    return this.activeChannels?.filter((channel) => channel.remote_balance && channel.remote_balance >= this.inputFormGroup.controls.rebalanceAmount.value &&
+      channel.chan_id !== this.selChannel.chan_id && ((channel.remote_alias?.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0) || (channel.chan_id?.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0)));
   }
 
   onSelectedPeerChanged() {
     if (this.inputFormGroup.controls.selRebalancePeer.value && this.inputFormGroup.controls.selRebalancePeer.value.length > 0 && typeof this.inputFormGroup.controls.selRebalancePeer.value === 'string') {
-      const foundChannels = this.activeChannels?.filter((channel) => channel.remote_alias.length === this.inputFormGroup.controls.selRebalancePeer.value.length && channel.remote_alias.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0);
+      const foundChannels = this.activeChannels?.filter((channel) => channel.remote_alias?.length === this.inputFormGroup.controls.selRebalancePeer.value.length && channel.remote_alias?.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0);
       if (foundChannels && foundChannels.length > 0) {
         this.inputFormGroup.controls.selRebalancePeer.setValue(foundChannels[0]);
         this.inputFormGroup.controls.selRebalancePeer.setErrors(null);

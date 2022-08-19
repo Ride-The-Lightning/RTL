@@ -38,7 +38,7 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public faUsers = faUsers;
   public newlyAddedPeer = '';
   public displayedColumns: any[] = [];
-  public peerAddress = '';
+  public peerAddress: string | null = '';
   public peersData: Peer[] = [];
   public peers: any;
   public information: GetInfo = {};
@@ -108,7 +108,7 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       [{ key: 'nodeId', value: selPeer.nodeId, title: 'Public Key', width: 100 }],
       [{ key: 'address', value: selPeer.address, title: 'Address', width: 50 },
       { key: 'alias', value: selPeer.alias, title: 'Alias', width: 50 }],
-      [{ key: 'state', value: this.commonService.titleCase(selPeer.state), title: 'State', width: 50 },
+      [{ key: 'state', value: this.commonService.titleCase(selPeer.state || ''), title: 'State', width: 50 },
       { key: 'channels', value: selPeer.channels, title: 'Channels', width: 50 }]
     ];
     this.store.dispatch(openAlert({
@@ -158,7 +158,7 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onPeerDetach(peerToDetach: Peer) {
-    if (peerToDetach.channels > 0) {
+    if (peerToDetach && peerToDetach.channels && peerToDetach.channels > 0) {
       this.store.dispatch(openAlert({
         payload: {
           data: {
@@ -185,7 +185,7 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       pipe(takeUntil(this.unSubs[4])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.store.dispatch(disconnectPeer({ payload: { nodeId: peerToDetach.nodeId } }));
+          this.store.dispatch(disconnectPeer({ payload: { nodeId: (peerToDetach.nodeId || '') } }));
         }
       });
   }

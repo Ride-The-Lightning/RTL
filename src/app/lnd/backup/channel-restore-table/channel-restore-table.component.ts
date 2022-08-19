@@ -31,7 +31,7 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public displayedColumns = ['channel_point', 'actions'];
   public selChannel: Channel;
   public channelsData = [];
@@ -50,7 +50,7 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
 
   ngOnInit() {
     this.store.dispatch(restoreChannelsList());
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => { this.selNode = nodeSettings; });
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => { this.selNode = nodeSettings; });
     this.lndEffects.setRestoreChannelList.pipe(takeUntil(this.unSubs[1])).
       subscribe((resRCList) => {
         this.allRestoreExists = resRCList.all_restore_exists;

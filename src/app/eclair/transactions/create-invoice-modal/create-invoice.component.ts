@@ -25,10 +25,10 @@ import { eclNodeInformation, eclnNodeSettings } from '../../store/ecl.selector';
 export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
 
   public faExclamationTriangle = faExclamationTriangle;
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public description = '';
-  public expiry: number;
-  public invoiceValue: number = null;
+  public expiry: number | null;
+  public invoiceValue: number | null = null;
   public invoiceValueHint = '';
   public invoicePaymentReq = '';
   public invoices: any;
@@ -47,7 +47,7 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageSize = this.data.pageSize;
     this.store.select(eclnNodeSettings).pipe(takeUntil(this.unSubs[0])).
-      subscribe((nodeSettings: SelNodeChild) => {
+      subscribe((nodeSettings: SelNodeChild | null) => {
         this.selNode = nodeSettings;
       });
     this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[1])).
@@ -75,10 +75,10 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
       return true;
     }
     let expiryInSecs = (this.expiry ? this.expiry : 3600);
-    if (this.selTimeUnit !== TimeUnitEnum.SECS) {
+    if (this.expiry && this.selTimeUnit !== TimeUnitEnum.SECS) {
       expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
     }
-    let invoicePayload = null;
+    let invoicePayload: any = null;
     if (this.invoiceValue) {
       invoicePayload = { description: this.description, expireIn: expiryInSecs, amountMsat: this.invoiceValue * 1000 };
     } else {
@@ -98,7 +98,7 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
   }
 
   onInvoiceValueChange() {
-    if (this.selNode.fiatConversion && this.invoiceValue > 99) {
+    if (this.selNode && this.selNode.fiatConversion && this.invoiceValue && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
       this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
         pipe(takeUntil(this.unSubs[3])).

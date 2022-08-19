@@ -4,7 +4,7 @@ import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
@@ -40,7 +40,6 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
   public failedLocalForwardingEvents: any;
   public flgSticky = false;
   public selFilter = '';
-  private indexOffset = 0;
   public totalLocalFailedTransactions = 0;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -78,7 +77,7 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
         this.totalLocalFailedTransactions = lffhSeletor.localFailedForwardingHistory.totalForwards || 0;
         this.failedLocalEvents = lffhSeletor.localFailedForwardingHistory.listForwards || [];
         if (this.failedLocalEvents.length > 0 && this.sort && this.paginator) {
-          this.loadLocalfailedLocalEventsTable(this.failedLocalEvents.slice(0, this.pageSize));
+          this.loadLocalfailedLocalEventsTable(this.failedLocalEvents);
         }
         this.logger.info(lffhSeletor);
       });
@@ -86,7 +85,7 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
 
   ngAfterViewInit() {
     if (this.failedLocalEvents.length > 0) {
-      this.loadLocalfailedLocalEventsTable(this.failedLocalEvents.slice(0, this.pageSize));
+      this.loadLocalfailedLocalEventsTable(this.failedLocalEvents);
     }
   }
 
@@ -127,6 +126,7 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
           return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     };
+    this.failedLocalForwardingEvents.paginator = this.paginator;
     this.applyFilter();
     this.logger.info(this.failedLocalForwardingEvents);
   }
@@ -139,16 +139,6 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
 
   applyFilter() {
     this.failedLocalForwardingEvents.filter = this.selFilter.trim().toLowerCase();
-  }
-
-  onPageChange(event: PageEvent) {
-    if (this.pageSize !== event.pageSize) {
-      this.pageSize = event.pageSize;
-      this.indexOffset = 0;
-    } else {
-      this.indexOffset = event.pageIndex * this.pageSize;
-    }
-    this.loadLocalfailedLocalEventsTable(this.failedLocalEvents.slice(this.indexOffset, (this.indexOffset + this.pageSize)));
   }
 
   ngOnDestroy() {

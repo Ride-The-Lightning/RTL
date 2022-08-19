@@ -91,7 +91,7 @@ export class LNDEffects implements OnDestroy {
           this.logger.info(info);
           if (info.chains && info.chains.length && info.chains[0] && (
             (typeof info.chains[0] === 'string' && info.chains[0].toLowerCase().indexOf('bitcoin') < 0) ||
-            (typeof info.chains[0] === 'object' && info.chains[0].hasOwnProperty('chain') && info.chains[0].chain.toLowerCase().indexOf('bitcoin') < 0)
+            (typeof info.chains[0] === 'object' && info.chains[0].hasOwnProperty('chain') && info.chains[0].chain && info.chains[0].chain.toLowerCase().indexOf('bitcoin') < 0)
           )
           ) {
             this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchInfo', status: APICallStatusEnum.COMPLETED } }));
@@ -524,31 +524,31 @@ export class LNDEffects implements OnDestroy {
           if (pendingChannels) {
             pendingChannelsSummary.total_limbo_balance = pendingChannels.total_limbo_balance;
             if (pendingChannels.pending_closing_channels) {
-              pendingChannelsSummary.closing.num_channels = pendingChannels.pending_closing_channels.length;
+              pendingChannelsSummary.closing!.num_channels = pendingChannels.pending_closing_channels.length;
               pendingChannelsSummary.total_channels = pendingChannelsSummary.total_channels + pendingChannels.pending_closing_channels.length;
               pendingChannels.pending_closing_channels.forEach((closingChannel) => {
-                pendingChannelsSummary.closing.limbo_balance = +pendingChannelsSummary.closing.limbo_balance + (closingChannel.channel.local_balance ? +closingChannel.channel.local_balance : 0);
+                pendingChannelsSummary.closing!.limbo_balance = +pendingChannelsSummary.closing!.limbo_balance + (closingChannel.channel.local_balance ? +closingChannel.channel.local_balance : 0);
               });
             }
             if (pendingChannels.pending_force_closing_channels) {
-              pendingChannelsSummary.force_closing.num_channels = pendingChannels.pending_force_closing_channels.length;
+              pendingChannelsSummary.force_closing!.num_channels = pendingChannels.pending_force_closing_channels.length;
               pendingChannelsSummary.total_channels = pendingChannelsSummary.total_channels + pendingChannels.pending_force_closing_channels.length;
               pendingChannels.pending_force_closing_channels.forEach((closingChannel) => {
-                pendingChannelsSummary.force_closing.limbo_balance = +pendingChannelsSummary.force_closing.limbo_balance + (closingChannel.channel.local_balance ? +closingChannel.channel.local_balance : 0);
+                pendingChannelsSummary.force_closing!.limbo_balance = +pendingChannelsSummary.force_closing!.limbo_balance + (closingChannel.channel.local_balance ? +closingChannel.channel.local_balance : 0);
               });
             }
             if (pendingChannels.pending_open_channels) {
-              pendingChannelsSummary.open.num_channels = pendingChannels.pending_open_channels.length;
+              pendingChannelsSummary.open!.num_channels = pendingChannels.pending_open_channels.length;
               pendingChannelsSummary.total_channels = pendingChannelsSummary.total_channels + pendingChannels.pending_open_channels.length;
               pendingChannels.pending_open_channels.forEach((openingChannel) => {
-                pendingChannelsSummary.open.limbo_balance = +pendingChannelsSummary.open.limbo_balance + (openingChannel.channel.local_balance ? +openingChannel.channel.local_balance : 0);
+                pendingChannelsSummary.open!.limbo_balance = +pendingChannelsSummary.open!.limbo_balance + (openingChannel.channel.local_balance ? +openingChannel.channel.local_balance : 0);
               });
             }
             if (pendingChannels.waiting_close_channels) {
-              pendingChannelsSummary.waiting_close.num_channels = pendingChannels.waiting_close_channels.length;
+              pendingChannelsSummary.waiting_close!.num_channels = pendingChannels.waiting_close_channels.length;
               pendingChannelsSummary.total_channels = pendingChannelsSummary.total_channels + pendingChannels.waiting_close_channels.length;
               pendingChannels.waiting_close_channels.forEach((closingChannel) => {
-                pendingChannelsSummary.waiting_close.limbo_balance = +pendingChannelsSummary.waiting_close.limbo_balance + (closingChannel.channel.local_balance ? +closingChannel.channel.local_balance : 0);
+                pendingChannelsSummary.waiting_close!.limbo_balance = +pendingChannelsSummary.waiting_close!.limbo_balance + (closingChannel.channel.local_balance ? +closingChannel.channel.local_balance : 0);
               });
             }
           }
@@ -596,7 +596,7 @@ export class LNDEffects implements OnDestroy {
           this.logger.info(res);
           this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchInvoices', status: APICallStatusEnum.COMPLETED } }));
           if (action.payload.reversed && !action.payload.index_offset) {
-            res['total_invoices'] = +res.last_index_offset;
+            res['total_invoices'] = +(res.last_index_offset || 0);
           }
           return {
             type: LNDActions.SET_INVOICES_LND,

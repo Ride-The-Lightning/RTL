@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, OnChanges, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil, first } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS } from '../../services/consts-enums-functions';
@@ -16,10 +16,10 @@ import { rootSelectedNode } from '../../../store/rtl.selector';
 })
 export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDestroy {
 
-  @Input() values = [];
+  @Input() values: any[] = [];
   public currencyUnitEnum = CurrencyUnitEnum;
   public currencyUnitFormats = CURRENCY_UNIT_FORMATS;
-  public currencyUnits = [];
+  public currencyUnits: string[] = [];
   public fiatConversion = false;
   public conversionErrorMsg = '';
   private unSubs = [new Subject(), new Subject(), new Subject()];

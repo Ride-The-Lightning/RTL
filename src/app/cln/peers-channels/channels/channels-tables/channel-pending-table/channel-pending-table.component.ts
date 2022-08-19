@@ -78,7 +78,7 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
           this.isCompatibleVersion = this.commonService.isVersionCompatible(this.information.api_version, '0.4.2');
         }
         this.numPeers = infoBalNumpeersSelector.numPeers;
-        this.totalBalance = infoBalNumpeersSelector.balance.totalBalance;
+        this.totalBalance = infoBalNumpeersSelector.balance.totalBalance || 0;
         this.logger.info(infoBalNumpeersSelector);
       });
     this.store.select(channels).pipe(takeUntil(this.unSubs[1])).
@@ -89,7 +89,7 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.channelsData = [...channelsSeletor.pendingChannels, ...channelsSeletor.inactiveChannels];
-        this.channelsData = this.channelsData.sort((a, b) => ((this.CLNChannelPendingState[a.state] >= this.CLNChannelPendingState[b.state]) ? 1 : -1));
+        this.channelsData = this.channelsData.sort((a, b) => ((this.CLNChannelPendingState[a.state || ''] >= this.CLNChannelPendingState[b.state || '']) ? 1 : -1));
         if (this.channelsData && this.channelsData.length > 0) {
           this.loadChannelsTable(this.channelsData);
         }
@@ -146,7 +146,7 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
       pipe(takeUntil(this.unSubs[2])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.store.dispatch(closeChannel({ payload: { id: channelToClose.id, channelId: channelToClose.channel_id, force: true } }));
+          this.store.dispatch(closeChannel({ payload: { id: channelToClose.id!, channelId: channelToClose.channel_id!, force: true } }));
         }
       });
   }

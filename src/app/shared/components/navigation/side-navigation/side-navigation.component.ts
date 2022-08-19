@@ -58,10 +58,10 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
 
   constructor(private logger: LoggerService, private commonService: CommonService, private sessionService: SessionService, private store: Store<RTLState>, private actions: Actions, private rtlEffects: RTLEffects) {
     this.version = VERSION;
-    if (MENU_DATA.LNDChildren[MENU_DATA.LNDChildren.length - 1].id === 200) {
+    if (MENU_DATA.LNDChildren && MENU_DATA.LNDChildren[MENU_DATA.LNDChildren.length - 1].id === 200) {
       MENU_DATA.LNDChildren.pop();
     }
-    this.navMenus.data = MENU_DATA.LNDChildren;
+    this.navMenus.data = MENU_DATA.LNDChildren || [];
     this.navMenusLogout.data = this.logoutNode;
     this.navMenusShowData.data = this.showDataNodes;
   }
@@ -80,7 +80,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
           if (this.information.chains && typeof this.information.chains[0] === 'string') {
             this.informationChain.chain = this.information.chains[0].toString();
             this.informationChain.network = (this.information.testnet) ? 'Testnet' : 'Mainnet';
-          } else if (typeof this.information.chains[0] === 'object' && this.information.chains[0].hasOwnProperty('chain')) {
+          } else if (this.information && this.information.chains && this.information.chains.length && this.information.chains.length > 0 && typeof this.information.chains[0] === 'object' && this.information.chains[0].hasOwnProperty('chain')) {
             const getInfoChain = <GetInfoChain>this.information.chains[0];
             this.informationChain.chain = getInfoChain.chain;
             this.informationChain.network = getInfoChain.network;
@@ -95,7 +95,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
         }
         this.selNode = rootData.selNode;
         this.settings = this.selNode.settings;
-        this.selConfigNodeIndex = +rootData.selNode.index;
+        this.selConfigNodeIndex = +(rootData.selNode.index || 0);
         if (this.selNode && this.selNode.lnImplementation) {
           this.filterSideMenuNodes();
         }
@@ -143,7 +143,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   }
 
   filterSideMenuNodes() {
-    switch (this.selNode.lnImplementation.toUpperCase()) {
+    switch (this.selNode.lnImplementation?.toUpperCase()) {
       case 'CLN':
         this.loadCLNMenu();
         break;
@@ -161,7 +161,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   loadLNDMenu() {
     let clonedMenu = [];
     clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.LNDChildren));
-    this.navMenus.data = clonedMenu?.filter((navMenuData) => {
+    this.navMenus.data = clonedMenu?.filter((navMenuData: any) => {
       if (navMenuData.children && navMenuData.children.length) {
         navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona) && navMenuChild.link !== '/services/loop' && navMenuChild.link !== '/services/boltz') ||
           (navMenuChild.link === '/services/loop' && this.settings.swapServerUrl && this.settings.swapServerUrl.trim() !== '') ||
@@ -175,7 +175,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   loadCLNMenu() {
     let clonedMenu = [];
     clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.CLNChildren));
-    this.navMenus.data = clonedMenu?.filter((navMenuData) => {
+    this.navMenus.data = clonedMenu?.filter((navMenuData: any) => {
       if (navMenuData.children && navMenuData.children.length) {
         navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona) && navMenuChild.link !== '/cln/messages') ||
           (navMenuChild.link === '/cln/messages' && this.information.api_version && this.commonService.isVersionCompatible(this.information.api_version, '0.2.2')));
@@ -196,8 +196,8 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   onNodeSelectionChange(selNodeValue: Number) {
     const prevIndex = this.selConfigNodeIndex;
     this.selConfigNodeIndex = selNodeValue;
-    const foundNode = this.appConfig.nodes.find((node) => +node.index === selNodeValue);
-    this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.UPDATE_SELECTED_NODE, prevLnNodeIndex: +prevIndex, currentLnNode: foundNode, isInitialSetup: false } }));
+    const foundNode = this.appConfig.nodes.find((node: any) => +node.index === selNodeValue);
+    this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.UPDATE_SELECTED_NODE, prevLnNodeIndex: +prevIndex, currentLnNode: (foundNode || null), isInitialSetup: false } }));
     this.ChildNavClicked.emit('selectNode');
   }
 

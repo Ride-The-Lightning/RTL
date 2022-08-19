@@ -42,7 +42,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public timeUnit = 'mins:secs';
   public userPersonaEnum = UserPersonaEnum;
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public totalBalance = 0;
   public displayedColumns: any[] = [];
   public channelsData: Channel[] = [];

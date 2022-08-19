@@ -36,8 +36,8 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => {
-      this.showLoop = !!((nodeSettings.swapServerUrl && nodeSettings.swapServerUrl.trim() !== ''));
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => {
+      this.showLoop = !!((nodeSettings?.swapServerUrl && nodeSettings.swapServerUrl.trim() !== ''));
     });
   }
 
