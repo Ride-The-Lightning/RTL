@@ -33,7 +33,7 @@ export class CLNUTXOTablesComponent implements OnInit, OnDestroy {
         if (utxosSeletor.utxos && utxosSeletor.utxos.length > 0) {
           this.utxos = utxosSeletor.utxos;
           this.numUtxos = this.utxos.length;
-          this.dustUtxos = utxosSeletor.utxos?.filter((utxo) => +utxo.value < 1000);
+          this.dustUtxos = utxosSeletor.utxos?.filter((utxo) => +(utxo.value || 0) < 1000);
           this.numDustUtxos = this.dustUtxos.length;
         }
         if (utxosSeletor.utxos && utxosSeletor.utxos.length > 0) {

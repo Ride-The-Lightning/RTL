@@ -31,7 +31,7 @@ export class InvoiceInformationComponent implements OnInit, OnDestroy {
   public faReceipt = faReceipt;
   public showAdvanced = false;
   public newlyAdded = false;
-  public invoice: Invoice;
+  public invoice: Invoice | null = null;
   public qrWidth = 240;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
@@ -44,7 +44,7 @@ export class InvoiceInformationComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.invoice = JSON.parse(JSON.stringify(this.data.invoice));
-    this.newlyAdded = this.data.newlyAdded;
+    this.newlyAdded = !!this.data.newlyAdded;
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.qrWidth = 220;
@@ -56,11 +56,11 @@ export class InvoiceInformationComponent implements OnInit, OnDestroy {
     const invoiceToCompare = JSON.parse(JSON.stringify(this.invoice));
     this.store.select(invoices).pipe(takeUntil(this.unSubs[1])).
       subscribe((invoicesSelector: { listInvoices: ListInvoices, apiCallStatus: ApiCallStatusPayload }) => {
-        const invoiceStatus = this.invoice.state;
+        const invoiceStatus = this.invoice?.state;
         const invoices = invoicesSelector.listInvoices.invoices || [];
-        const foundInvoice = invoices.find((invoice) => invoice.r_hash === invoiceToCompare.r_hash);
+        const foundInvoice = invoices.find((invoice) => invoice.r_hash === invoiceToCompare.r_hash) || null;
         this.invoice = foundInvoice;
-        if (invoiceStatus !== this.invoice.state && this.invoice.state === 'SETTLED') {
+        if (invoiceStatus !== this.invoice?.state && this.invoice?.state === 'SETTLED') {
           this.flgInvoicePaid = true;
           setTimeout(() => { this.flgInvoicePaid = false; }, 4000);
         }

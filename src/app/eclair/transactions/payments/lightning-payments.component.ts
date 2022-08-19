@@ -41,13 +41,13 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faHistory = faHistory;
   public newlyAddedPayment = '';
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public information: GetInfo = {};
   public payments: any;
   public paymentJSONArr: PaymentSent[] = [];
   public paymentDecoded: PayRequest = {};
   public displayedColumns: any[] = [];
-  public partColumns = [];
+  public partColumns: string[] = [];
   public paymentRequest = '';
   public paymentDecodedHint = '';
   public flgSticky = false;
@@ -84,7 +84,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
 
   ngOnInit() {
     this.store.select(eclnNodeSettings).pipe(takeUntil(this.unSubs[0])).
-      subscribe((nodeSettings: SelNodeChild) => {
+      subscribe((nodeSettings: SelNodeChild | null) => {
         this.selNode = nodeSettings;
       });
     this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[1])).
@@ -119,13 +119,17 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         // }
         // This.paymentJSONArr = this.paymentJSONArr.splice(2, 5);
         // FOR MPP TESTING END
-        this.loadPaymentsTable(this.paymentJSONArr);
+        if(this.paymentJSONArr.length > 0 && this.sort && this.paginator) {
+          this.loadPaymentsTable(this.paymentJSONArr);
+        }
         this.logger.info(paymentsSeletor);
       });
   }
 
   ngAfterViewInit() {
-    this.loadPaymentsTable(this.paymentJSONArr);
+    if(this.paymentJSONArr.length > 0) {
+      this.loadPaymentsTable(this.paymentJSONArr);
+    }
   }
 
   loadPaymentsTable(payms: PaymentSent[]) {
@@ -134,19 +138,19 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
     this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
         case 'firstPartTimestamp':
-          this.commonService.sortByKey(data.parts, 'timestamp', 'number', this.sort.direction);
+          this.commonService.sortByKey(data.parts, 'timestamp', 'number', this.sort?.direction);
           return data.firstPartTimestamp;
 
         case 'id':
-          this.commonService.sortByKey(data.parts, 'id', 'string', this.sort.direction);
+          this.commonService.sortByKey(data.parts, 'id', 'string', this.sort?.direction);
           return data.id;
 
         case 'recipientNodeAlias':
-          this.commonService.sortByKey(data.parts, 'toChannelAlias', 'string', this.sort.direction);
+          this.commonService.sortByKey(data.parts, 'toChannelAlias', 'string', this.sort?.direction);
           return data.recipientNodeAlias;
 
         case 'recipientAmount':
-          this.commonService.sortByKey(data.parts, 'amount', 'number', this.sort.direction);
+          this.commonService.sortByKey(data.parts, 'amount', 'number', this.sort?.direction);
           return data.recipientAmount;
 
         default:
@@ -154,7 +158,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       }
     };
     this.payments.filterPredicate = (rowData: PaymentSent, fltr: string) => {
-      const newRowData = ((rowData.firstPartTimestamp) ? this.datePipe.transform(new Date(rowData.firstPartTimestamp), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      const newRowData = ((rowData.firstPartTimestamp) ? this.datePipe.transform(new Date(rowData.firstPartTimestamp), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
       return newRowData.includes(fltr);
     };
     this.payments.paginator = this.paginator;
@@ -184,7 +188,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   }
 
   sendPayment() {
-    this.newlyAddedPayment = this.paymentDecoded.paymentHash;
+    this.newlyAddedPayment = this.paymentDecoded.paymentHash || '';
     if (!this.paymentDecoded.amount || this.paymentDecoded.amount === 0) {
       const reorderedPaymentDecoded = [
         [{ key: 'paymentHash', value: this.paymentDecoded.paymentHash, title: 'Payment Hash', width: 100 }],
@@ -260,7 +264,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
           this.paymentDecoded = decodedPayment;
           if (this.paymentDecoded.amount) {
-            if (this.selNode.fiatConversion) {
+            if (this.selNode && this.selNode.fiatConversion) {
               this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
                 pipe(takeUntil(this.unSubs[3])).
                 subscribe({
@@ -358,7 +362,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       [{ key: 'amount', value: selPart.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER },
       { key: 'feesPaid', value: selPart.feesPaid, title: 'Fee (Sats)', width: 50, type: DataTypeEnum.NUMBER }]
     ];
-    if (sentPaymentInfo.length > 0 && sentPaymentInfo[0].paymentRequest && sentPaymentInfo[0].paymentRequest.description && sentPaymentInfo[0].paymentRequest.description !== '') {
+    if (sentPaymentInfo && sentPaymentInfo.length > 0 && sentPaymentInfo[0].paymentRequest && sentPaymentInfo[0].paymentRequest.description && sentPaymentInfo[0].paymentRequest.description !== '') {
       reorderedPart.splice(3, 0, [{ key: 'description', value: sentPaymentInfo[0].paymentRequest.description, title: 'Description', width: 100, type: DataTypeEnum.STRING }]);
     }
     this.store.dispatch(openAlert({
@@ -393,7 +397,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
               paymentsDataCopy[idx].description = decodedPayment[0].paymentRequest.description;
             }
           });
-          const flattenedPayments = paymentsDataCopy?.reduce((acc, curr) => acc.concat(curr), []);
+          const flattenedPayments = paymentsDataCopy?.reduce((acc, curr: any) => acc.concat(curr), []);
           this.commonService.downloadFile(flattenedPayments, 'Payments');
         });
     }

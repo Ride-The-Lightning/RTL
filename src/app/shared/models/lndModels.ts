@@ -89,7 +89,7 @@ export interface PendingChannel {
   remote_node_pub?: string;
   channel_point?: string;
   txid_str?: string;
-  output_index?: number;
+  output_index?: number | null;
   capacity?: string;
   local_balance?: string;
   remote_balance?: string;

@@ -35,7 +35,7 @@ export class LoopServiceSettingsComponent implements OnInit, OnDestroy {
       pipe(takeUntil(this.unSubs[0])).
       subscribe((selNode) => {
         this.selNode = selNode;
-        this.enableLoop = selNode.settings.swapServerUrl && selNode.settings.swapServerUrl.trim() !== '';
+        this.enableLoop = !!(selNode.settings.swapServerUrl && selNode.settings.swapServerUrl.trim() !== '');
         this.previousSelNode = JSON.parse(JSON.stringify(this.selNode));
         this.logger.info(selNode);
       });
@@ -80,7 +80,7 @@ export class LoopServiceSettingsComponent implements OnInit, OnDestroy {
 
   onReset() {
     this.selNode = JSON.parse(JSON.stringify(this.previousSelNode));
-    this.enableLoop = this.selNode.settings.swapServerUrl && this.selNode.settings.swapServerUrl.trim() !== '';
+    this.enableLoop = !!(this.selNode.settings.swapServerUrl && this.selNode.settings.swapServerUrl.trim() !== '');
   }
 
   ngOnDestroy() {

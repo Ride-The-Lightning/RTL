@@ -35,7 +35,7 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
 
   @ViewChild(MatStepper, { static: false }) stepper: MatStepper;
   public insecureLND = false;
-  public genSeedResponse = [];
+  public genSeedResponse: string[] = [];
   public initWalletResponse = '';
   passwordFormGroup: FormGroup;
   cipherFormGroup: FormGroup;

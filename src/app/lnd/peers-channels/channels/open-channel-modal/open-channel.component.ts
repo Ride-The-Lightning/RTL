@@ -26,7 +26,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   public amount = new FormControl();
   public faExclamationTriangle = faExclamationTriangle;
   public alertTitle: string;
-  public peer: Peer;
+  public peer: Peer | null;
   public peers: Peer[];
   public sortedPeers: Peer[];
   public filteredPeers: Observable<Peer[]>;
@@ -34,7 +34,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   public advancedTitle = 'Advanced Options';
   public information: GetInfo;
   public totalBalance = 0;
-  public fundingAmount: number;
+  public fundingAmount: number | null;
   public selectedPubkey = '';
   public isPrivate = false;
   public selTransType = '0';
@@ -46,11 +46,18 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   constructor(public dialogRef: MatDialogRef<OpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<RTLState>, private actions: Actions) { }
 
   ngOnInit() {
-    this.information = this.data.message.information;
-    this.totalBalance = this.data.message.balance;
-    this.alertTitle = this.data.alertTitle;
-    this.peer = this.data.message.peer || null;
-    this.peers = this.data.message.peers || [];
+    if (this.data.message) {
+      this.information = this.data.message.information;
+      this.totalBalance = this.data.message.balance;
+      this.peer = this.data.message.peer || null;
+      this.peers = this.data.message.peers || [];  
+    } else {
+      this.information = {};
+      this.totalBalance = 0;
+      this.peer = null;
+      this.peers = [];  
+    }
+    this.alertTitle = this.data.alertTitle || 'Alert';
     this.actions.pipe(
       takeUntil(this.unSubs[0]),
       filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.FETCH_CHANNELS_LND)).
@@ -66,7 +73,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     let y = '';
     this.sortedPeers = this.peers.sort((p1, p2) => {
       x = p1.alias ? p1.alias.toLowerCase() : p1.pub_key ? p1.pub_key.toLowerCase() : '';
-      y = p2.alias ? p2.alias.toLowerCase() : p1.pub_key.toLowerCase();
+      y = p2.alias ? p2.alias.toLowerCase() : p1.pub_key ? p1.pub_key.toLowerCase() : '';
       return ((x < y) ? -1 : ((x > y) ? 1 : 0));
     });
     this.filteredPeers = this.selectedPeer.valueChanges.pipe(
@@ -77,7 +84,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   }
 
   private filterPeers(newlySelectedPeer: string): Peer[] {
-    return this.sortedPeers?.filter((peer) => peer.alias.toLowerCase().indexOf(newlySelectedPeer ? newlySelectedPeer.toLowerCase() : '') === 0);
+    return this.sortedPeers?.filter((peer) => peer.alias?.toLowerCase().indexOf(newlySelectedPeer ? newlySelectedPeer.toLowerCase() : '') === 0);
   }
 
   displayFn(peer: Peer): string {
@@ -88,7 +95,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.channelConnectionError = '';
     this.selectedPubkey = (this.selectedPeer.value && this.selectedPeer.value.pub_key) ? this.selectedPeer.value.pub_key : null;
     if (typeof this.selectedPeer.value === 'string') {
-      const selPeer = this.peers?.filter((peer) => peer.alias.length === this.selectedPeer.value.length && peer.alias.toLowerCase().indexOf(this.selectedPeer.value ? this.selectedPeer.value.toLowerCase() : '') === 0);
+      const selPeer = this.peers?.filter((peer) => peer.alias?.length === this.selectedPeer.value.length && peer.alias?.toLowerCase().indexOf(this.selectedPeer.value ? this.selectedPeer.value.toLowerCase() : '') === 0);
       if (selPeer.length === 1 && selPeer[0].pub_key) {
         this.selectedPubkey = selPeer[0].pub_key;
       }

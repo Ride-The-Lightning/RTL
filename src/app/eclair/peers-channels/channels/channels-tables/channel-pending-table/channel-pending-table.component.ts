@@ -89,7 +89,7 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
       });
     this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[5])).
       subscribe((oCBalanceSelector: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.totalBalance = oCBalanceSelector.onchainBalance.total;
+        this.totalBalance = oCBalanceSelector.onchainBalance.total || 0;
       });
   }
 

@@ -20,9 +20,9 @@ import { BlockchainBalance, Channel, ChannelsSummary, LightningBalance, Peer } f
 })
 export class ConnectionsComponent implements OnInit, OnDestroy {
 
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public activePeers = 0;
-  public activeChannels = 0;
+  public activeChannels: number = 0;
   public faUsers = faUsers;
   public faChartPie = faChartPie;
   public balances = [{ title: 'Total Balance', dataValue: 0 }, { title: 'Confirmed', dataValue: 0 }, { title: 'Unconfirmed', dataValue: 0 }];
@@ -40,7 +40,7 @@ export class ConnectionsComponent implements OnInit, OnDestroy {
           this.activeLink = this.links.findIndex((link) => link.link === (<ResolveEnd>value).urlAfterRedirects.substring((<ResolveEnd>value).urlAfterRedirects.lastIndexOf('/') + 1));
         }
       });
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[1])).subscribe((nodeSettings: SelNodeChild) => { this.selNode = nodeSettings; });
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[1])).subscribe((nodeSettings: SelNodeChild | null) => { this.selNode = nodeSettings; });
     this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
       subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
         this.activePeers = (peersSelector.peers && peersSelector.peers.length) ? peersSelector.peers.length : 0;
@@ -48,12 +48,12 @@ export class ConnectionsComponent implements OnInit, OnDestroy {
       });
     this.store.select(channels).pipe(takeUntil(this.unSubs[3])).
       subscribe((channelsSelector: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.activeChannels = channelsSelector.channelsSummary.active.num_channels;
+        this.activeChannels = channelsSelector.channelsSummary.active?.num_channels || 0;
         this.logger.info(channelsSelector);
       });
     this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[4])).
       subscribe((bcBalanceSelector: { blockchainBalance: BlockchainBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.balances = [{ title: 'Total Balance', dataValue: bcBalanceSelector.blockchainBalance.total_balance || 0 }, { title: 'Confirmed', dataValue: bcBalanceSelector.blockchainBalance.confirmed_balance }, { title: 'Unconfirmed', dataValue: bcBalanceSelector.blockchainBalance.unconfirmed_balance }];
+        this.balances = [{ title: 'Total Balance', dataValue: bcBalanceSelector.blockchainBalance.total_balance || 0 }, { title: 'Confirmed', dataValue: (bcBalanceSelector.blockchainBalance.confirmed_balance || 0)}, { title: 'Unconfirmed', dataValue: (bcBalanceSelector.blockchainBalance.unconfirmed_balance || 0)}];
         this.logger.info(bcBalanceSelector);
       });
   }

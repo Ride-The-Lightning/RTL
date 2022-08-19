@@ -112,17 +112,17 @@ export class RoutingReportComponent implements OnInit, OnDestroy {
 
   prepareFeeReport(start: Date) {
     const startDateInSeconds = Math.round(start.getTime() / 1000);
-    const feeReport = [];
+    const feeReport: any[] = [];
     this.events.total_fee_msat = 0;
     if (this.reportPeriod === SCROLL_RANGES[1]) {
       for (let i = 0; i < 12; i++) {
         feeReport.push({ name: MONTHS[i].name, value: 0.0, extra: { totalEvents: 0 } });
       }
       this.events.forwarding_events?.map((event) => {
-        const monthNumber = new Date((+event.timestamp) * 1000).getMonth();
-        feeReport[monthNumber].value = feeReport[monthNumber].value + (+event.fee_msat / 1000);
+        const monthNumber = new Date(+(event.timestamp || 0) * 1000).getMonth();
+        feeReport[monthNumber].value = feeReport[monthNumber].value + (+(event.fee_msat || 0) / 1000);
         feeReport[monthNumber].extra.totalEvents = feeReport[monthNumber].extra.totalEvents + 1;
-        this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;
+        this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +(event.fee_msat || 0);
         return this.events;
       });
     } else {
@@ -130,10 +130,10 @@ export class RoutingReportComponent implements OnInit, OnDestroy {
         feeReport.push({ name: i + 1, value: 0.0, extra: { totalEvents: 0 } });
       }
       this.events.forwarding_events?.map((event) => {
-        const dateNumber = Math.floor((+event.timestamp - startDateInSeconds) / this.secondsInADay);
-        feeReport[dateNumber].value = feeReport[dateNumber].value + (+event.fee_msat / 1000);
+        const dateNumber = Math.floor((+(event.timestamp || 0) - startDateInSeconds) / this.secondsInADay);
+        feeReport[dateNumber].value = feeReport[dateNumber].value + (+(event.fee_msat || 0) / 1000);
         feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
-        this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;
+        this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +(event.fee_msat || 0);
         return this.events;
       });
     }
@@ -142,17 +142,17 @@ export class RoutingReportComponent implements OnInit, OnDestroy {
 
   prepareEventsReport(start: Date) {
     const startDateInSeconds = Math.round(start.getTime() / 1000);
-    const eventsReport = [];
+    const eventsReport: any[] = [];
     this.events.total_fee_msat = 0;
     if (this.reportPeriod === SCROLL_RANGES[1]) {
       for (let i = 0; i < 12; i++) {
         eventsReport.push({ name: MONTHS[i].name, value: 0, extra: { totalFees: 0.0 } });
       }
       this.events.forwarding_events?.map((event) => {
-        const monthNumber = new Date((+event.timestamp) * 1000).getMonth();
+        const monthNumber = new Date(+(event.timestamp || 0) * 1000).getMonth();
         eventsReport[monthNumber].value = eventsReport[monthNumber].value + 1;
-        eventsReport[monthNumber].extra.totalFees = eventsReport[monthNumber].extra.totalFees + (+event.fee_msat / 1000);
-        this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;
+        eventsReport[monthNumber].extra.totalFees = eventsReport[monthNumber].extra.totalFees + (+(event.fee_msat || 0) / 1000);
+        this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +(event.fee_msat || 0);
         return this.events;
       });
     } else {
@@ -160,10 +160,10 @@ export class RoutingReportComponent implements OnInit, OnDestroy {
         eventsReport.push({ name: i + 1, value: 0, extra: { totalFees: 0.0 } });
       }
       this.events.forwarding_events?.map((event) => {
-        const dateNumber = Math.floor((+event.timestamp - startDateInSeconds) / this.secondsInADay);
+        const dateNumber = Math.floor((+(event.timestamp || 0) - startDateInSeconds) / this.secondsInADay);
         eventsReport[dateNumber].value = eventsReport[dateNumber].value + 1;
-        eventsReport[dateNumber].extra.totalFees = eventsReport[dateNumber].extra.totalFees + (+event.fee_msat / 1000);
-        this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;
+        eventsReport[dateNumber].extra.totalFees = eventsReport[dateNumber].extra.totalFees + (+(event.fee_msat || 0) / 1000);
+        this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +(event.fee_msat || 0);
         return this.events;
       });
     }

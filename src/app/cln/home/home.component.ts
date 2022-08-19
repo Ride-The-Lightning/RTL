@@ -43,7 +43,7 @@ export class CLNHomeComponent implements OnInit, OnDestroy {
   public faNetworkWired = faNetworkWired;
   public userPersonaEnum = UserPersonaEnum;
   public channelBalances = { localBalance: 0, remoteBalance: 0, balancedness: 0 };
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public fees: Fees;
   public information: GetInfo = {};
   public totalBalance: Balance = {};
@@ -120,7 +120,7 @@ export class CLNHomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.select(nodeInfoAndNodeSettingsAndAPIsStatus).pipe(takeUntil(this.unSubs[0])).
-      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: SelNodeChild, apisCallStatus: ApiCallStatusPayload[] }) => {
+      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: SelNodeChild | null, apisCallStatus: ApiCallStatusPayload[] }) => {
         this.errorMessages[0] = '';
         this.errorMessages[5] = '';
         this.apiCallStatusNodeInfo = infoSettingsStatusSelector.apisCallStatus[0];

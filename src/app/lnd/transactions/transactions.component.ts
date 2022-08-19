@@ -22,7 +22,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
   faExchangeAlt = faExchangeAlt;
   faChartPie = faChartPie;
-  currencyUnits = [];
+  currencyUnits: string[] = [];
   balances = [{ title: 'Local Capacity', dataValue: 0, tooltip: 'Amount you can send' }, { title: 'Remote Capacity', dataValue: 0, tooltip: 'Amount you can receive' }];
   public links = [{ link: 'payments', name: 'Payments' }, { link: 'invoices', name: 'Invoices' }, { link: 'lookuptransactions', name: 'Lookup' }];
   public activeLink = this.links[0].link;
@@ -42,12 +42,12 @@ export class TransactionsComponent implements OnInit, OnDestroy {
       });
     this.store.select(channels).pipe(takeUntil(this.unSubs[1]),
       withLatestFrom(this.store.select(lndNodeSettings))).
-      subscribe(([channelsSelector, nodeSettings]: [{ channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }, SelNodeChild]) => {
-        this.currencyUnits = nodeSettings.currencyUnits;
-        if (nodeSettings.userPersona === UserPersonaEnum.OPERATOR) {
-          this.balances = [{ title: 'Local Capacity', dataValue: channelsSelector.lightningBalance.local, tooltip: 'Amount you can send' }, { title: 'Remote Capacity', dataValue: channelsSelector.lightningBalance.remote, tooltip: 'Amount you can receive' }];
+      subscribe(([channelsSelector, nodeSettings]: [{ channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }, (SelNodeChild | null)]) => {
+        this.currencyUnits = nodeSettings?.currencyUnits || [];
+        if (nodeSettings?.userPersona === UserPersonaEnum.OPERATOR) {
+          this.balances = [{ title: 'Local Capacity', dataValue: (channelsSelector.lightningBalance.local || 0), tooltip: 'Amount you can send' }, { title: 'Remote Capacity', dataValue: (channelsSelector.lightningBalance.remote || 0), tooltip: 'Amount you can receive' }];
         } else {
-          this.balances = [{ title: 'Outbound Capacity', dataValue: channelsSelector.lightningBalance.local, tooltip: 'Amount you can send' }, { title: 'Inbound Capacity', dataValue: channelsSelector.lightningBalance.remote, tooltip: 'Amount you can receive' }];
+          this.balances = [{ title: 'Outbound Capacity', dataValue: (channelsSelector.lightningBalance.local || 0), tooltip: 'Amount you can send' }, { title: 'Inbound Capacity', dataValue: (channelsSelector.lightningBalance.remote || 0), tooltip: 'Amount you can receive' }];
         }
         this.logger.info(channelsSelector);
       });

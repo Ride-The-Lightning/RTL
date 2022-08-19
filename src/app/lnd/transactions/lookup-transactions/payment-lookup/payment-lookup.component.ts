@@ -20,7 +20,7 @@ export class PaymentLookupComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (this.payment.htlcs && this.payment.htlcs[0] && this.payment.htlcs[0].route && this.payment.htlcs[0].route.hops && this.payment.htlcs[0].route.hops.length > 0) {
-      const nodePubkeys = this.payment.htlcs[0].route.hops?.reduce((pubkeys, hop) => (pubkeys === '' ? hop.pub_key : pubkeys + ',' + hop.pub_key), '');
+      const nodePubkeys = this.payment.htlcs[0].route.hops?.reduce((pubkeys, hop) => (pubkeys === '' && hop.pub_key ? hop.pub_key : pubkeys + ',' + hop.pub_key), '');
       this.dataService.getAliasesFromPubkeys(nodePubkeys, true).pipe(takeUntil(this.unSubs[0])).
         subscribe((nodes: any) => {
           this.paths = nodes?.reduce((pathAliases, node) => (pathAliases === '' ? node : pathAliases + '\n' + node), '');

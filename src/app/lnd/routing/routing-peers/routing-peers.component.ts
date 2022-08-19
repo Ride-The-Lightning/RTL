@@ -29,7 +29,7 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('tableOut', { read: MatSort, static: false }) sortOut: MatSort;
   @ViewChild('paginatorIn', { static: false }) paginatorIn: MatPaginator | undefined;
   @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator | undefined;
-  public routingPeersData = [];
+  public routingPeersData: any[] = [];
   public displayedColumns: any[] = [];
   public RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>([]);
   public RoutingPeersOutgoing = new MatTableDataSource<RoutingPeers>([]);
@@ -119,12 +119,12 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       this.RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>(results[0]);
       this.RoutingPeersIncoming.sort = this.sortIn;
       this.RoutingPeersIncoming.filterPredicate = (rpIn: RoutingPeers, fltr: string) => JSON.stringify(rpIn).toLowerCase().includes(fltr);
-      this.RoutingPeersIncoming.paginator = this.paginatorIn;
+      this.RoutingPeersIncoming.paginator = this.paginatorIn!;
       this.logger.info(this.RoutingPeersIncoming);
       this.RoutingPeersOutgoing = new MatTableDataSource<RoutingPeers>(results[1]);
       this.RoutingPeersOutgoing.sort = this.sortOut;
       this.RoutingPeersOutgoing.filterPredicate = (rpOut: RoutingPeers, fltr: string) => JSON.stringify(rpOut).toLowerCase().includes(fltr);
-      this.RoutingPeersOutgoing.paginator = this.paginatorOut;
+      this.RoutingPeersOutgoing.paginator = this.paginatorOut!;
       this.logger.info(this.RoutingPeersOutgoing);
     } else {
       // To reset table after other Forwarding history calls
@@ -136,22 +136,22 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   groupRoutingPeers(forwardingEvents: ForwardingEvent[]) {
-    const incomingResults = [];
-    const outgoingResults = [];
+    const incomingResults: any = [];
+    const outgoingResults: any = [];
     forwardingEvents.forEach((event) => {
-      const incoming = incomingResults.find((result) => result.chan_id === event.chan_id_in);
-      const outgoing = outgoingResults.find((result) => result.chan_id === event.chan_id_out);
+      const incoming: any = incomingResults.find((result) => result.chan_id === event.chan_id_in);
+      const outgoing: any = outgoingResults.find((result) => result.chan_id === event.chan_id_out);
       if (!incoming) {
-        incomingResults.push({ chan_id: event.chan_id_in, alias: event.alias_in, events: 1, total_amount: +event.amt_in });
+        incomingResults.push({ chan_id: event.chan_id_in, alias: event.alias_in, events: 1, total_amount: +(event.amt_in || 0) });
       } else {
         incoming.events++;
-        incoming.total_amount = +incoming.total_amount + +event.amt_in;
+        incoming.total_amount = +incoming.total_amount + +(event.amt_in || 0);
       }
       if (!outgoing) {
-        outgoingResults.push({ chan_id: event.chan_id_out, alias: event.alias_out, events: 1, total_amount: +event.amt_out });
+        outgoingResults.push({ chan_id: event.chan_id_out, alias: event.alias_out, events: 1, total_amount: +(event.amt_out || 0)});
       } else {
         outgoing.events++;
-        outgoing.total_amount = +outgoing.total_amount + +event.amt_out;
+        outgoing.total_amount = +outgoing.total_amount + +(event.amt_out || 0);
       }
     });
     return [this.commonService.sortDescByKey(incomingResults, 'total_amount'), this.commonService.sortDescByKey(outgoingResults, 'total_amount')];

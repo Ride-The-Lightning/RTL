@@ -120,19 +120,19 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
     this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
         case 'amount':
-          this.commonService.sortByKey(data.pending_htlcs, sortHeaderId, 'number', this.sort.direction);
+          this.commonService.sortByKey(data.pending_htlcs, sortHeaderId, 'number', this.sort?.direction);
           return data.pending_htlcs && data.pending_htlcs.length ? data.pending_htlcs.length : null;
 
         case 'incoming':
-          this.commonService.sortByKey(data.pending_htlcs, sortHeaderId, 'boolean', this.sort.direction);
+          this.commonService.sortByKey(data.pending_htlcs, sortHeaderId, 'boolean', this.sort?.direction);
           return data.remote_alias ? data.remote_alias : data.remote_pubkey ? data.remote_pubkey : null;
 
         case 'expiration_height':
-          this.commonService.sortByKey(data.pending_htlcs, sortHeaderId, 'number', this.sort.direction);
+          this.commonService.sortByKey(data.pending_htlcs, sortHeaderId, 'number', this.sort?.direction);
           return data;
 
         case 'hash_lock':
-          this.commonService.sortByKey(data.pending_htlcs, sortHeaderId, 'number', this.sort.direction);
+          this.commonService.sortByKey(data.pending_htlcs, sortHeaderId, 'number', this.sort?.direction);
           return data;
 
         default:

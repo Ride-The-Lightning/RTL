@@ -18,7 +18,7 @@ export class CLNVerifyComponent implements OnDestroy {
   public signature = '';
   public verifiedSignature = '';
   public showVerifyStatus = false;
-  public verifyRes = { pubkey: '', verified: null };
+  public verifyRes: any = { pubkey: '', verified: null };
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private dataService: DataService, private snackBar: MatSnackBar, private logger: LoggerService) { }

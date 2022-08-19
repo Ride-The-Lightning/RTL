@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { faBolt, faServer, faNetworkWired, faLink } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Fees, ChannelsStatus, FeeRates, ForwardingEvent, LocalRemoteBalance, Channel, ListForwards } from '../../shared/models/clnModels';
+import { GetInfo, Fees, ChannelsStatus, FeeRates, LocalRemoteBalance, Channel, ListForwards } from '../../shared/models/clnModels';
 import { APICallStatusEnum, ScreenSizeEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../shared/services/logger.service';
@@ -25,25 +25,25 @@ export class CLNNetworkInfoComponent implements OnInit, OnDestroy {
   public faServer = faServer;
   public faNetworkWired = faNetworkWired;
   public faLink = faLink;
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public information: GetInfo = {};
   public fees: Fees;
   public channelsStatus: ChannelsStatus = { active: {}, pending: {}, inactive: {} };
   public feeRatesPerKB: FeeRates = {};
   public feeRatesPerKW: FeeRates = {};
-  public nodeCardsOperator = [];
-  public nodeCardsMerchant = [];
+  public nodeCardsOperator: any[] = [];
+  public nodeCardsMerchant: any[] = [];
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public userPersonaEnum = UserPersonaEnum;
   public errorMessages = ['', '', '', '', '', '', ''];
-  public apiCallStatusNodeInfo: ApiCallStatusPayload = null;
-  public apiCallStatusLRBal: ApiCallStatusPayload = null;
-  public apiCallStatusChannels: ApiCallStatusPayload = null;
-  public apiCallStatusFees: ApiCallStatusPayload = null;
-  public apiCallStatusFHistory: ApiCallStatusPayload = null;
-  public apiCallStatusPerKB: ApiCallStatusPayload = null;
-  public apiCallStatusPerKW: ApiCallStatusPayload = null;
+  public apiCallStatusNodeInfo: ApiCallStatusPayload | null = null;
+  public apiCallStatusLRBal: ApiCallStatusPayload | null = null;
+  public apiCallStatusChannels: ApiCallStatusPayload | null = null;
+  public apiCallStatusFees: ApiCallStatusPayload | null = null;
+  public apiCallStatusFHistory: ApiCallStatusPayload | null = null;
+  public apiCallStatusPerKB: ApiCallStatusPayload | null = null;
+  public apiCallStatusPerKW: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -82,11 +82,11 @@ export class CLNNetworkInfoComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.select(nodeInfoAndNodeSettingsAndAPIsStatus).pipe(takeUntil(this.unSubs[0])).
-      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: SelNodeChild, apisCallStatus: ApiCallStatusPayload[] }) => {
+      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: SelNodeChild | null, apisCallStatus: ApiCallStatusPayload[] }) => {
         this.errorMessages[0] = '';
         this.apiCallStatusNodeInfo = infoSettingsStatusSelector.apisCallStatus[0];
         if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[0] = (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message;
+          this.errorMessages[0] = (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message ? this.apiCallStatusNodeInfo.message : '';
         }
         this.selNode = infoSettingsStatusSelector.nodeSettings;
         this.information = infoSettingsStatusSelector.information;
@@ -100,10 +100,10 @@ export class CLNNetworkInfoComponent implements OnInit, OnDestroy {
         this.apiCallStatusLRBal = channelsSeletor.apiCallStatus;
         this.apiCallStatusChannels = lrBalanceSeletor.apiCallStatus;
         if (this.apiCallStatusLRBal.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[2] = (typeof (this.apiCallStatusLRBal.message) === 'object') ? JSON.stringify(this.apiCallStatusLRBal.message) : this.apiCallStatusLRBal.message;
+          this.errorMessages[2] = (typeof (this.apiCallStatusLRBal.message) === 'object') ? JSON.stringify(this.apiCallStatusLRBal.message) : this.apiCallStatusLRBal.message ? this.apiCallStatusLRBal.message : '';
         }
         if (this.apiCallStatusChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[3] = (typeof (this.apiCallStatusChannels.message) === 'object') ? JSON.stringify(this.apiCallStatusChannels.message) : this.apiCallStatusChannels.message;
+          this.errorMessages[3] = (typeof (this.apiCallStatusChannels.message) === 'object') ? JSON.stringify(this.apiCallStatusChannels.message) : this.apiCallStatusChannels.message ? this.apiCallStatusChannels.message : '';
         }
         this.channelsStatus.active.channels = channelsSeletor.activeChannels.length || 0;
         this.channelsStatus.pending.channels = channelsSeletor.pendingChannels.length || 0;
@@ -117,7 +117,7 @@ export class CLNNetworkInfoComponent implements OnInit, OnDestroy {
         this.errorMessages[1] = '';
         this.apiCallStatusFees = feesSeletor.apiCallStatus;
         if (this.apiCallStatusFees.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[1] = (typeof (this.apiCallStatusFees.message) === 'object') ? JSON.stringify(this.apiCallStatusFees.message) : this.apiCallStatusFees.message;
+          this.errorMessages[1] = (typeof (this.apiCallStatusFees.message) === 'object') ? JSON.stringify(this.apiCallStatusFees.message) : this.apiCallStatusFees.message ? this.apiCallStatusFees.message : '';
         }
         this.fees = feesSeletor.fees;
       });
@@ -126,9 +126,9 @@ export class CLNNetworkInfoComponent implements OnInit, OnDestroy {
         this.errorMessages[4] = '';
         this.apiCallStatusFHistory = fhSeletor.apiCallStatus;
         if (this.apiCallStatusFHistory.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[4] = (typeof (this.apiCallStatusFHistory.message) === 'object') ? JSON.stringify(this.apiCallStatusFHistory.message) : this.apiCallStatusFHistory.message;
+          this.errorMessages[4] = (typeof (this.apiCallStatusFHistory.message) === 'object') ? JSON.stringify(this.apiCallStatusFHistory.message) : this.apiCallStatusFHistory.message ? this.apiCallStatusFHistory.message : '';
         }
-        if (fhSeletor.forwardingHistory && fhSeletor.forwardingHistory.listForwards.length) {
+        if (fhSeletor.forwardingHistory && fhSeletor.forwardingHistory.listForwards && fhSeletor.forwardingHistory.listForwards.length) {
           this.fees.totalTxCount = fhSeletor.forwardingHistory.listForwards.length;
         }
       });
@@ -137,7 +137,7 @@ export class CLNNetworkInfoComponent implements OnInit, OnDestroy {
         this.errorMessages[5] = '';
         this.apiCallStatusPerKB = frbSeletor.apiCallStatus;
         if (this.apiCallStatusPerKB.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[5] = (typeof (this.apiCallStatusPerKB.message) === 'object') ? JSON.stringify(this.apiCallStatusPerKB.message) : this.apiCallStatusPerKB.message;
+          this.errorMessages[5] = (typeof (this.apiCallStatusPerKB.message) === 'object') ? JSON.stringify(this.apiCallStatusPerKB.message) : this.apiCallStatusPerKB.message ? this.apiCallStatusPerKB.message : '';
         }
         this.feeRatesPerKB = frbSeletor.feeRatesPerKB;
       });
@@ -146,7 +146,7 @@ export class CLNNetworkInfoComponent implements OnInit, OnDestroy {
         this.errorMessages[6] = '';
         this.apiCallStatusPerKW = frwSeletor.apiCallStatus;
         if (this.apiCallStatusPerKW.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[6] = (typeof (this.apiCallStatusPerKW.message) === 'object') ? JSON.stringify(this.apiCallStatusPerKW.message) : this.apiCallStatusPerKW.message;
+          this.errorMessages[6] = (typeof (this.apiCallStatusPerKW.message) === 'object') ? JSON.stringify(this.apiCallStatusPerKW.message) : this.apiCallStatusPerKW.message ? this.apiCallStatusPerKW.message : '';
         }
         this.feeRatesPerKW = frwSeletor.feeRatesPerKW;
       });

@@ -25,7 +25,7 @@ export class DataService implements OnDestroy {
 
   private APIUrl = API_URL;
   private lnImplementation = '';
-  public lnImplementationUpdated: BehaviorSubject<string> = new BehaviorSubject(null);
+  public lnImplementationUpdated: BehaviorSubject<any> = new BehaviorSubject(null);
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private httpClient: HttpClient, private store: Store<RTLState>, private logger: LoggerService, private snackBar: MatSnackBar, private titleCasePipe: TitleCasePipe) { }
@@ -146,7 +146,7 @@ export class DataService implements OnDestroy {
     }));
   }
 
-  bumpFee(txid: string, outputIndex: number, targetConf: number, satPerByte: number) {
+  bumpFee(txid: string, outputIndex: number, targetConf: number | null, satPerByte: number | null) {
     return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
       const bumpFeeBody: any = { txid: txid, outputIndex: outputIndex };
       if (targetConf) {
@@ -226,13 +226,13 @@ export class DataService implements OnDestroy {
             res.forwarding_events.forEach((event) => {
               if (storedChannels && storedChannels.length > 0) {
                 for (let idx = 0; idx < storedChannels.length; idx++) {
-                  if (storedChannels[idx].chan_id.toString() === event.chan_id_in) {
+                  if (storedChannels[idx].chan_id?.toString() === event.chan_id_in) {
                     event.alias_in = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : event.chan_id_in;
                     if (event.alias_out) {
                       return;
                     }
                   }
-                  if (storedChannels[idx].chan_id.toString() === event.chan_id_out) {
+                  if (storedChannels[idx].chan_id?.toString() === event.chan_id_out) {
                     event.alias_out = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : event.chan_id_out;
                     if (event.alias_in) {
                       return;
@@ -342,7 +342,7 @@ export class DataService implements OnDestroy {
               fhEvent.in_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.in_channel;
               if (fhEvent.out_channel_alias) { return; }
             }
-            if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id.toString() === fhEvent.out_channel) {
+            if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id?.toString() === fhEvent.out_channel) {
               fhEvent.out_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.out_channel;
               if (fhEvent.in_channel_alias) { return; }
             }

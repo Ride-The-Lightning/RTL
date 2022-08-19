@@ -93,7 +93,7 @@ export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   onSwapClick(selSwap: Swap | ReverseSwap, event: any) {
-    this.boltzService.swapInfo(selSwap.id).pipe(takeUntil(this.unSubs[1])).
+    this.boltzService.swapInfo(selSwap.id || '').pipe(takeUntil(this.unSubs[1])).
       subscribe((fetchedSwap: any) => {
         fetchedSwap = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? fetchedSwap.swap : fetchedSwap.reverseSwap;
         const reorderedSwap = [

@@ -9,7 +9,7 @@ import { ECLState } from '../eclair/store/ecl.state';
 export interface RootState {
   apiURL: string;
   apisCallStatus: ApiCallsListRoot;
-  selNode: ConfigSettingsNode;
+  selNode: ConfigSettingsNode | null;
   appConfig: RTLConfiguration;
   nodeData: GetInfoRoot;
 }

@@ -191,7 +191,7 @@ export class HelpComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((selNode) => {
       this.selNode = selNode;
-      switch (this.selNode.lnImplementation.toUpperCase()) {
+      switch (this.selNode.lnImplementation?.toUpperCase()) {
         case 'CLN':
           this.LNPLink = '/cln/';
           break;

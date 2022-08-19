@@ -25,9 +25,9 @@ import { clnNodeInformation, clnNodeSettings } from '../../../store/cln.selector
 export class CLNCreateOfferComponent implements OnInit, OnDestroy {
 
   public faExclamationTriangle = faExclamationTriangle;
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public description = '';
-  public offerValue: number;
+  public offerValue: number | null;
   public vendor = '';
   public offerValueHint = '';
   public offers: any;
@@ -40,12 +40,12 @@ export class CLNCreateOfferComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageSize = this.data.pageSize;
-    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => {
+    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => {
       this.selNode = nodeSettings;
     });
     this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => {
       this.information = nodeInfo;
-      this.vendor = this.information.alias;
+      this.vendor = this.information.alias!;
     });
     this.actions.pipe(
       takeUntil(this.unSubs[2]),
@@ -70,14 +70,14 @@ export class CLNCreateOfferComponent implements OnInit, OnDestroy {
 
   resetData() {
     this.description = '';
-    this.vendor = this.information.alias;
+    this.vendor = this.information.alias!;
     this.offerValue = null;
     this.offerValueHint = '';
     this.offerError = '';
   }
 
   onOfferValueChange() {
-    if (this.selNode.fiatConversion && this.offerValue > 99) {
+    if (this.selNode && this.selNode.fiatConversion && this.offerValue && this.offerValue > 99) {
       this.offerValueHint = '';
       this.commonService.convertCurrency(this.offerValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
         pipe(takeUntil(this.unSubs[3])).

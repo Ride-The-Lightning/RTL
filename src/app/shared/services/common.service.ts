@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { of, Observable, throwError, BehaviorSubject } from 'rxjs';
-import { takeUntil, take, map, catchError } from 'rxjs/operators';
+import { take, map, catchError } from 'rxjs/operators';
 
 import { LoggerService } from './logger.service';
 import { DataService } from './data.service';
@@ -11,11 +11,11 @@ export class CommonService implements OnDestroy {
 
   currencyUnits = [];
   CurrencyUnitEnum = CurrencyUnitEnum;
-  conversionData = { data: null, last_fetched: null };
+  conversionData: any = { data: null, last_fetched: null };
   private ratesAPIStatus = APICallStatusEnum.UN_INITIATED;
   private screenSize = ScreenSizeEnum.MD;
   private containerSize = { width: 0, height: 0 };
-  public containerSizeUpdated: BehaviorSubject<{ width: number, height: number }> = new BehaviorSubject(this.containerSize);
+  public containerSizeUpdated: BehaviorSubject<any> = new BehaviorSubject(this.containerSize);
 
   constructor(public dataService: DataService, private logger: LoggerService) { }
 
@@ -91,7 +91,7 @@ export class CommonService implements OnDestroy {
   convertCurrency(value: number, from: string, to: string, otherCurrencyUnit: string, fiatConversion: boolean): Observable<any> {
     const latest_date = new Date().valueOf();
     if (fiatConversion && otherCurrencyUnit && this.ratesAPIStatus !== APICallStatusEnum.INITIATED && (from === CurrencyUnitEnum.OTHER || to === CurrencyUnitEnum.OTHER)) {
-      if (this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched.valueOf() + 300000))) {
+      if (this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched + 300000))) {
         return of(this.convertWithFiat(value, from, otherCurrencyUnit));
       } else {
         this.ratesAPIStatus = APICallStatusEnum.INITIATED;
@@ -249,7 +249,7 @@ export class CommonService implements OnDestroy {
   }
 
   convertToCSV(objArray: any[]) {
-    const keys = [];
+    const keys: string[] = [];
     let dataRow = '';
     let arrayField = '';
     let csvStrArray = '';

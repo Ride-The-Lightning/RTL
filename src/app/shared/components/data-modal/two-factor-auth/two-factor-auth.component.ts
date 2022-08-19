@@ -31,7 +31,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
   public flgValidated = false;
   public isTokenValid = true;
   public otpauth = '';
-  public appConfig: RTLConfiguration;
+  public appConfig: RTLConfiguration | null = null;
   public flgEditable = true;
   public showDisableStepper = false;
   public passwordFormLabel = 'Authenticate with your RTL password';
@@ -54,10 +54,10 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
   constructor(public dialogRef: MatDialogRef<TwoFactorAuthComponent>, @Inject(MAT_DIALOG_DATA) public data: AuthConfig, private store: Store<RTLState>, private formBuilder: FormBuilder, private rtlEffects: RTLEffects, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
-    this.appConfig = this.data.appConfig;
-    this.showDisableStepper = !!this.appConfig.enable2FA;
+    this.appConfig = this.data.appConfig || null;
+    this.showDisableStepper = !!this.appConfig?.enable2FA;
     this.secretFormGroup = this.formBuilder.group({
-      secret: [{ value: !this.appConfig.enable2FA ? this.generateSecret() : '', disabled: true }, Validators.required]
+      secret: [{ value: !this.appConfig?.enable2FA ? this.generateSecret() : '', disabled: true }, Validators.required]
     });
   }
 
@@ -91,7 +91,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
   }
 
   onVerifyToken(): boolean | void {
-    if (this.appConfig.enable2FA) {
+    if (this.appConfig?.enable2FA) {
       this.store.dispatch(twoFASaveSettings({ payload: { secret2fa: '' } }));
       this.generateSecret();
       this.isTokenValid = true;
@@ -108,7 +108,9 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
       this.tokenFormGroup.controls.token.setValue('');
     }
     this.flgValidated = true;
-    this.appConfig.enable2FA = !this.appConfig.enable2FA;
+    if(this.appConfig) {
+      this.appConfig.enable2FA = !this.appConfig?.enable2FA;
+    }
   }
 
   stepSelectionChanged(event: any) {

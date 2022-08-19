@@ -33,7 +33,7 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
   public swapTypeEnum = SwapTypeEnum;
   public direction = SwapTypeEnum.SWAP_OUT;
   public swapDirectionCaption = 'Swap out';
-  public swapStatus: CreateSwapResponse | CreateReverseSwapResponse | { error: any } = null;
+  public swapStatus: CreateSwapResponse | CreateReverseSwapResponse | { error: any } | null = null;
   public inputFormLabel = 'Amount to swap out';
   public addressFormLabel = 'Withdrawal Address';
   public flgShowInfo = false;
@@ -52,11 +52,11 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.serviceInfo = this.data.serviceInfo;
-    this.direction = this.data.direction;
+    this.direction = this.data.direction || SwapTypeEnum.SWAP_OUT;
     this.swapDirectionCaption = this.direction === SwapTypeEnum.SWAP_OUT ? 'Swap Out' : 'Swap in';
     this.inputFormLabel = 'Amount to ' + this.swapDirectionCaption;
     this.inputFormGroup = this.formBuilder.group({
-      amount: [this.serviceInfo.limits.minimal, [Validators.required, Validators.min(this.serviceInfo.limits.minimal), Validators.max(this.serviceInfo.limits.maximal)]]
+      amount: [this.serviceInfo.limits?.minimal, [Validators.required, Validators.min(this.serviceInfo.limits?.minimal || 0), Validators.max(this.serviceInfo.limits?.maximal || 0)]]
     });
     this.addressFormGroup = this.formBuilder.group({
       addressType: ['local', [Validators.required]],
@@ -95,13 +95,13 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onSwap(): boolean | void {
-    if (!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < +this.serviceInfo.limits.minimal || this.inputFormGroup.controls.amount.value > +this.serviceInfo.limits.maximal ||
+    if (!this.inputFormGroup.controls.amount.value || (this.serviceInfo.limits?.minimal && this.inputFormGroup.controls.amount.value < +this.serviceInfo.limits.minimal) || (this.serviceInfo.limits?.maximal && this.inputFormGroup.controls.amount.value > +this.serviceInfo.limits.maximal) ||
       (this.direction === SwapTypeEnum.SWAP_OUT && this.addressFormGroup.controls.addressType.value === 'external' &&
         (!this.addressFormGroup.controls.address.value || this.addressFormGroup.controls.address.value.trim() === ''))) {
       return true;
     }
     this.flgEditable = false;
-    this.stepper.selected.stepControl.setErrors(null);
+    this.stepper.selected?.stepControl.setErrors(null);
     this.stepper.next();
     if (this.direction === SwapTypeEnum.SWAP_IN) {
       this.boltzService.swapIn(this.inputFormGroup.controls.amount.value).pipe(takeUntil(this.unSubs[3])).
@@ -190,7 +190,7 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
   onRestart() {
     this.stepper.reset();
     this.flgEditable = true;
-    this.inputFormGroup.reset({ amount: this.serviceInfo.limits.minimal });
+    this.inputFormGroup.reset({ amount: this.serviceInfo.limits?.minimal });
     this.statusFormGroup.reset();
     this.addressFormGroup.reset({ addressType: 'local', address: '' });
     this.addressFormGroup.controls.address.disable();

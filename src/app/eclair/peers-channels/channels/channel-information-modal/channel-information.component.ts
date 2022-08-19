@@ -27,7 +27,7 @@ export class ECLChannelInformationComponent implements OnInit {
 
   ngOnInit() {
     this.channel = this.data.channel;
-    this.channelsType = this.data.channelsType;
+    this.channelsType = this.data.channelsType || '';
     this.screenSize = this.commonService.getScreenSize();
   }
 

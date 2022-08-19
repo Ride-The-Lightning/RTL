@@ -29,7 +29,7 @@ export interface InputData {
   step?: number;
   width?: number;
   hintText?: string;
-  hintFunction?: Function;
+  hintFunction?: Function | null;
   advancedField?: boolean;
 }
 

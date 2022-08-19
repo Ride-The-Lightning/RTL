@@ -38,12 +38,12 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   faHistory = faHistory;
-  public selNode: SelNodeChild = {};
-  public newlyAddedInvoiceMemo = null;
-  public newlyAddedInvoiceValue = null;
+  public selNode: SelNodeChild | null = {};
+  public newlyAddedInvoiceMemo: string | null = null;
+  public newlyAddedInvoiceValue: number | null = null;
   public memo = '';
-  public expiry: number;
-  public invoiceValue: number;
+  public expiry: number | null;
+  public invoiceValue: number | null;
   public invoiceValueHint = '';
   public displayedColumns: any[] = [];
   public invoicePaymentReq = '';
@@ -84,7 +84,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   }
 
   ngOnInit() {
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => { this.selNode = nodeSettings; });
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => { this.selNode = nodeSettings; });
     this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => { this.information = nodeInfo; });
     this.store.select(invoices).pipe(takeUntil(this.unSubs[2])).
       subscribe((invoicesSelector: { listInvoices: ListInvoices, apiCallStatus: ApiCallStatusPayload }) => {
@@ -93,9 +93,9 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.totalInvoices = invoicesSelector.listInvoices.total_invoices;
-        this.firstOffset = +invoicesSelector.listInvoices.first_index_offset;
-        this.lastOffset = +invoicesSelector.listInvoices.last_index_offset;
+        this.totalInvoices = (invoicesSelector.listInvoices.total_invoices || 0);
+        this.firstOffset = +(invoicesSelector.listInvoices.first_index_offset || -1);
+        this.lastOffset = +(invoicesSelector.listInvoices.last_index_offset || -1);
         this.invoicesData = invoicesSelector.listInvoices.invoices || [];
         if (this.invoicesData.length > 0 && this.sort && this.paginator) {
           this.loadInvoicesTable(this.invoicesData);
@@ -126,7 +126,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
     this.newlyAddedInvoiceValue = this.invoiceValue;
     this.store.dispatch(saveNewInvoice({
       payload: {
-        uiMessage: UI_MESSAGES.ADD_INVOICE, memo: this.memo, invoiceValue: this.invoiceValue, private: this.private, expiry: expiryInSecs, pageSize: this.pageSize, openModal: true
+        uiMessage: UI_MESSAGES.ADD_INVOICE, memo: this.memo, invoiceValue: this.invoiceValue!, private: this.private, expiry: expiryInSecs, pageSize: this.pageSize, openModal: true
       }
     }));
     this.resetData();
@@ -145,7 +145,9 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   }
 
   onRefreshInvoice(selInvoice: Invoice) {
-    this.store.dispatch(invoiceLookup({ payload: { openSnackBar: true, paymentHash: Buffer.from(selInvoice.r_hash.trim(), 'hex').toString('base64')?.replace(/\+/g, '-')?.replace(/[/]/g, '_') } }));
+    if (selInvoice && selInvoice.r_hash) {
+      this.store.dispatch(invoiceLookup({ payload: { openSnackBar: true, paymentHash: Buffer.from(selInvoice.r_hash.trim(), 'hex').toString('base64')?.replace(/\+/g, '-')?.replace(/[/]/g, '_') } }));
+    }
   }
 
   updateInvoicesData(newInvoice: Invoice) {
@@ -157,7 +159,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
     this.invoices.sort = this.sort;
     this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.invoices.filterPredicate = (invoice: Invoice, fltr: string) => {
-      const newInvoice = ((invoice.creation_date) ? this.datePipe.transform(new Date(invoice.creation_date * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + ((invoice.settle_date) ? this.datePipe.transform(new Date(invoice.settle_date * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(invoice).toLowerCase();
+      const newInvoice = (invoice.creation_date ? this.datePipe.transform(new Date(invoice.creation_date * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '')! + (invoice.settle_date ? this.datePipe.transform(new Date(invoice.settle_date * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(invoice).toLowerCase();
       return newInvoice.includes(fltr);
     };
     this.applyFilter();
@@ -183,10 +185,10 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
     if (event.pageIndex === 0) {
       reverse = true;
       index_offset = 0;
-    } else if (event.pageIndex < event.previousPageIndex) {
+    } else if (event.previousPageIndex && event.pageIndex < event.previousPageIndex) {
       reverse = false;
       index_offset = this.lastOffset;
-    } else if (event.pageIndex > event.previousPageIndex && (event.length > ((event.pageIndex + 1) * event.pageSize))) {
+    } else if (event.previousPageIndex && event.pageIndex > event.previousPageIndex && (event.length > ((event.pageIndex + 1) * event.pageSize))) {
       reverse = true;
       index_offset = this.firstOffset;
     } else if (event.length <= ((event.pageIndex + 1) * event.pageSize)) {
@@ -197,7 +199,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   }
 
   onInvoiceValueChange() {
-    if (this.selNode.fiatConversion && this.invoiceValue > 99) {
+    if (this.selNode && this.selNode.fiatConversion && this.invoiceValue && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
       this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
         pipe(takeUntil(this.unSubs[4])).

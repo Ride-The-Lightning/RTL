@@ -113,7 +113,7 @@ export class CLNOfferBookmarksTableComponent implements OnInit, AfterViewInit, O
     }));
     this.rtlEffects.closeConfirm.pipe(takeUntil(this.unSubs[1])).subscribe((confirmRes) => {
       if (confirmRes) {
-        this.store.dispatch(deleteOfferBookmark({ payload: { bolt12: selOffer.bolt12 } }));
+        this.store.dispatch(deleteOfferBookmark({ payload: { bolt12: selOffer.bolt12! } }));
       }
     });
   }

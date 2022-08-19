@@ -25,10 +25,10 @@ import { lndNodeInformation, lndNodeSettings } from '../../store/lnd.selector';
 export class CreateInvoiceComponent implements OnInit, OnDestroy {
 
   public faExclamationTriangle = faExclamationTriangle;
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public memo = '';
-  public expiry: number;
-  public invoiceValue: number;
+  public expiry: number | null;
+  public invoiceValue: number | null;
   public invoiceValueHint = '';
   public invoicePaymentReq = '';
   public invoices: any;
@@ -46,7 +46,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageSize = this.data.pageSize;
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => { this.selNode = nodeSettings; });
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => { this.selNode = nodeSettings; });
     this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => { this.information = nodeInfo; });
     this.actions.pipe(takeUntil(this.unSubs[2]),
       filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND)).
@@ -65,13 +65,19 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
 
   onAddInvoice(form: any) {
     this.invoiceError = '';
-    let expiryInSecs = (this.expiry ? this.expiry : 3600);
-    if (this.selTimeUnit !== TimeUnitEnum.SECS) {
-      expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
+    let expiryInSecs = 0;
+    if (this.expiry) {
+      if (this.selTimeUnit !== TimeUnitEnum.SECS) {
+        expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
+      } else {
+        expiryInSecs = this.expiry;
+      }
+    } else {
+      expiryInSecs = 3600;
     }
     this.store.dispatch(saveNewInvoice({
       payload: {
-        uiMessage: UI_MESSAGES.ADD_INVOICE, memo: this.memo, invoiceValue: this.invoiceValue, private: this.private, expiry: expiryInSecs, pageSize: this.pageSize, openModal: true
+        uiMessage: UI_MESSAGES.ADD_INVOICE, memo: this.memo, invoiceValue: this.invoiceValue!, private: this.private, expiry: expiryInSecs, pageSize: this.pageSize, openModal: true
       }
     }));
   }
@@ -87,7 +93,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
   }
 
   onInvoiceValueChange() {
-    if (this.selNode.fiatConversion && this.invoiceValue > 99) {
+    if (this.selNode && this.selNode.fiatConversion && this.invoiceValue && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
       this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
         pipe(takeUntil(this.unSubs[3])).
