@@ -4,8 +4,8 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faMoneyBillAlt, faPaintBrush, faInfoCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-import { CURRENCY_UNITS, UserPersonaEnum, ScreenSizeEnum, FIAT_CURRENCY_UNITS, NODE_SETTINGS, UI_MESSAGES, RTLActions } from '../../../services/consts-enums-functions';
-import { ConfigSettingsNode, Settings, RTLConfiguration, GetInfoRoot } from '../../../models/RTLconfig';
+import { CURRENCY_UNITS, UserPersonaEnum, ScreenSizeEnum, FIAT_CURRENCY_UNITS, NODE_SETTINGS, UI_MESSAGES } from '../../../services/consts-enums-functions';
+import { ConfigSettingsNode, Settings } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { CommonService } from '../../../services/common.service';
 import { RTLState } from '../../../../store/rtl.state';
@@ -14,7 +14,6 @@ import { setChildNodeSettingsECL } from '../../../../eclair/store/ecl.actions';
 import { setChildNodeSettingsCL } from '../../../../cln/store/cln.actions';
 import { setChildNodeSettingsLND } from '../../../../lnd/store/lnd.actions';
 import { rootSelectedNode } from '../../../../store/rtl.selector';
-import { SetSelectedNode } from '../../../models/rtlModels';
 
 @Component({
   selector: 'rtl-node-settings',
@@ -49,10 +48,10 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((selNode) => {
       this.selNode = selNode;
-      this.selectedThemeMode = this.themeModes.find((themeMode) => this.selNode.settings.themeMode === themeMode.id);
+      this.selectedThemeMode = this.themeModes.find((themeMode) => this.selNode.settings.themeMode === themeMode.id) || this.themeModes[0];
       this.selectedThemeColor = this.selNode.settings.themeColor;
       if (!this.selNode.settings.fiatConversion) {
-        this.selNode.settings.currencyUnit = null;
+        this.selNode.settings.currencyUnit = '';
       }
       this.previousSettings = JSON.parse(JSON.stringify(this.selNode.settings));
       this.logger.info(selNode);
@@ -116,9 +115,9 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
   }
 
   onResetSettings() {
-    const prevIndex = this.selNode.index;
+    const prevIndex = this.selNode.index || -1;
     this.selNode.settings = this.previousSettings;
-    this.selectedThemeMode = this.themeModes.find((themeMode) => themeMode.id === this.previousSettings.themeMode);
+    this.selectedThemeMode = this.themeModes.find((themeMode) => themeMode.id === this.previousSettings.themeMode) || this.themeModes[0];
     this.selectedThemeColor = this.previousSettings.themeColor;
     this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, prevLnNodeIndex: +prevIndex, currentLnNode: this.selNode, isInitialSetup: true } }));
   }

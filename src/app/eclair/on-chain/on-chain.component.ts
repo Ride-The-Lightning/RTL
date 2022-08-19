@@ -20,7 +20,7 @@ import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 })
 export class ECLOnChainComponent implements OnInit, OnDestroy {
 
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public faExchangeAlt = faExchangeAlt;
   public faChartPie = faChartPie;
   public balances = [{ title: 'Total Balance', dataValue: 0 }, { title: 'Confirmed', dataValue: 0 }, { title: 'Unconfirmed', dataValue: 0 }];
@@ -46,7 +46,7 @@ export class ECLOnChainComponent implements OnInit, OnDestroy {
       });
     this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[2])).
       subscribe((oCBalanceSelector: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.balances = [{ title: 'Total Balance', dataValue: oCBalanceSelector.onchainBalance.total || 0 }, { title: 'Confirmed', dataValue: oCBalanceSelector.onchainBalance.confirmed }, { title: 'Unconfirmed', dataValue: oCBalanceSelector.onchainBalance.unconfirmed }];
+        this.balances = [{ title: 'Total Balance', dataValue: oCBalanceSelector.onchainBalance.total || 0 }, { title: 'Confirmed', dataValue: (oCBalanceSelector.onchainBalance.confirmed || 0) }, { title: 'Unconfirmed', dataValue: (oCBalanceSelector.onchainBalance.unconfirmed || 0) }];
       });
   }
 

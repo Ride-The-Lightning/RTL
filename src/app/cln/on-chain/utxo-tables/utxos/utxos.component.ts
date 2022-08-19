@@ -94,7 +94,7 @@ export class CLNOnChainUtxosComponent implements OnInit, OnChanges, AfterViewIni
       [{ key: 'txid', value: selUtxo.txid, title: 'Transaction ID', width: 100 }],
       [{ key: 'output', value: selUtxo.output, title: 'Output', width: 50, type: DataTypeEnum.NUMBER },
       { key: 'value', value: selUtxo.value, title: 'Value (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
-      [{ key: 'status', value: this.commonService.titleCase(selUtxo.status), title: 'Status', width: 50, type: DataTypeEnum.STRING },
+      [{ key: 'status', value: this.commonService.titleCase(selUtxo.status || ''), title: 'Status', width: 50, type: DataTypeEnum.STRING },
       { key: 'blockheight', value: selUtxo.blockheight, title: 'Blockheight', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'address', value: selUtxo.address, title: 'Address', width: 100 }]
     ];

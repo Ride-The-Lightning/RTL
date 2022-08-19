@@ -30,13 +30,13 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
 
   @ViewChild('paymentReq', { static: false }) paymentReq: NgModel;
   public faExclamationTriangle = faExclamationTriangle;
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public paymentDecoded: PayRequest = {};
   public zeroAmtInvoice = false;
   public paymentAmount = null;
   public paymentRequest = '';
   public paymentDecodedHint = '';
-  public selActiveChannel: Channel = {};
+  public selActiveChannel: Channel | null = {};
   public activeChannels = {};
   public feeLimit = null;
   public selFeeLimitType = FEE_LIMIT_TYPES[0];
@@ -48,7 +48,7 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.select(eclnNodeSettings).pipe(takeUntil(this.unSubs[0])).
-      subscribe((nodeSettings: SelNodeChild) => {
+      subscribe((nodeSettings: SelNodeChild | null) => {
         this.selNode = nodeSettings;
       });
     this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[1])).
@@ -91,7 +91,7 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
               this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
             } else {
               this.zeroAmtInvoice = false;
-              if (this.selNode.fiatConversion) {
+              if (this.selNode && this.selNode.fiatConversion && this.paymentDecoded.amount) {
                 this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
                   pipe(takeUntil(this.unSubs[2])).
                   subscribe({
@@ -115,7 +115,7 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   }
 
   sendPayment() {
-    if (this.zeroAmtInvoice) {
+    if (this.zeroAmtInvoice && this.paymentAmount) {
       this.store.dispatch(sendPayment({ payload: { invoice: this.paymentRequest, amountMsat: this.paymentAmount * 1000, fromDialog: true } }));
     } else {
       this.store.dispatch(sendPayment({ payload: { invoice: this.paymentRequest, fromDialog: true } }));
@@ -140,7 +140,7 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
               this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
             } else {
               this.zeroAmtInvoice = false;
-              if (this.selNode.fiatConversion) {
+              if (this.selNode && this.selNode.fiatConversion && this.paymentDecoded.amount) {
                 this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
                   pipe(takeUntil(this.unSubs[3])).
                   subscribe({

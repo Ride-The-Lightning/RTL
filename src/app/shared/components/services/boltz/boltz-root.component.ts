@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { SwapTypeEnum, UI_MESSAGES } from '../../../services/consts-enums-functions';
+import { SwapTypeEnum } from '../../../services/consts-enums-functions';
 import { SwapModalComponent } from './swap-modal/swap-modal.component';
 import { ReverseSwap, Swap, ListSwaps } from '../../../models/boltzModels';
 import { BoltzService } from '../../../services/boltz.service';
@@ -49,7 +49,7 @@ export class BoltzRootComponent implements OnInit, OnDestroy {
       subscribe({
         next: (swaps: ListSwaps) => {
           this.swaps = swaps;
-          this.swapsData = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? swaps.swaps : swaps.reverseSwaps;
+          this.swapsData = (this.selectedSwapType === SwapTypeEnum.SWAP_IN && swaps.swaps) ? swaps.swaps : (this.selectedSwapType === SwapTypeEnum.SWAP_OUT && swaps.reverseSwaps) ? swaps.reverseSwaps : [];
           this.flgLoading[0] = false;
         }, error: (err) => {
           this.flgLoading[0] = 'error';
@@ -61,10 +61,10 @@ export class BoltzRootComponent implements OnInit, OnDestroy {
   onSelectedIndexChange(activeTab: any) {
     if (activeTab.link === 'swapin') {
       this.selectedSwapType = SwapTypeEnum.SWAP_IN;
-      this.swapsData = this.swaps.swaps;
+      this.swapsData = this.swaps.swaps || [];
     } else {
       this.selectedSwapType = SwapTypeEnum.SWAP_OUT;
-      this.swapsData = this.swaps.reverseSwaps;
+      this.swapsData = this.swaps.reverseSwaps || [];
     }
   }
 

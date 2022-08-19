@@ -46,7 +46,7 @@ export class ECLConnectionsComponent implements OnInit, OnDestroy {
       });
     this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[3])).
       subscribe((oCBalanceSelector: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.balances = [{ title: 'Total Balance', dataValue: oCBalanceSelector.onchainBalance.total || 0 }, { title: 'Confirmed', dataValue: oCBalanceSelector.onchainBalance.confirmed }, { title: 'Unconfirmed', dataValue: oCBalanceSelector.onchainBalance.unconfirmed }];
+        this.balances = [{ title: 'Total Balance', dataValue: oCBalanceSelector.onchainBalance.total || 0 }, { title: 'Confirmed', dataValue: (oCBalanceSelector.onchainBalance.confirmed || 0) }, { title: 'Unconfirmed', dataValue: (oCBalanceSelector.onchainBalance.unconfirmed || 0) }];
       });
   }
 

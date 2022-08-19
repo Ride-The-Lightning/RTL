@@ -40,7 +40,7 @@ export class CLNOfferInformationComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.offer = this.data.offer;
-    this.newlyAdded = this.data.newlyAdded;
+    this.newlyAdded = !!this.data.newlyAdded;
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.qrWidth = 220;
@@ -49,14 +49,14 @@ export class CLNOfferInformationComponent implements OnInit, OnDestroy {
       subscribe((nodeInfo: GetInfo) => {
         this.flgVersionCompatible = this.commonService.isVersionCompatible(nodeInfo.api_version, '0.6.0');
       });
-    this.dataService.decodePayment(this.offer.bolt12, true).
+    this.dataService.decodePayment(this.offer.bolt12!, true).
       pipe(takeUntil(this.unSubs[1])).subscribe((decodedOffer: OfferRequest) => {
         this.offerDecoded = decodedOffer;
         if (this.offerDecoded.offer_id && !this.offerDecoded.amount_msat) {
           this.offerDecoded.amount_msat = '0msat';
           this.offerDecoded.amount = 0;
         } else {
-          this.offerDecoded.amount = +(this.offerDecoded.amount || this.offerDecoded.amount_msat.slice(0, -4));
+          this.offerDecoded.amount = this.offerDecoded.amount ? +this.offerDecoded.amount : this.offerDecoded.amount_msat ? +(this.offerDecoded.amount_msat)?.slice(0, -4) : null;
         }
       });
   }

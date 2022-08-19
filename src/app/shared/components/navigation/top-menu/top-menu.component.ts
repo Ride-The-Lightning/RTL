@@ -52,7 +52,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
           if (this.information.chains && typeof this.information.chains[0] === 'string') {
             this.informationChain.chain = this.information.chains[0].toString();
             this.informationChain.network = (this.information.testnet) ? 'Testnet' : 'Mainnet';
-          } else if (typeof this.information.chains[0] === 'object' && this.information.chains[0].hasOwnProperty('chain')) {
+          } else if (this.information && this.information.chains && this.information.chains.length && this.information.chains.length > 0 && typeof this.information.chains[0] === 'object' && this.information.chains[0].hasOwnProperty('chain')) {
             const getInfoChain = <GetInfoChain>this.information.chains[0];
             this.informationChain.chain = getInfoChain.chain;
             this.informationChain.network = getInfoChain.network;

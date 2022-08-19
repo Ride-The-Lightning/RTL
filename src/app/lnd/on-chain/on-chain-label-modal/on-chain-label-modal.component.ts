@@ -23,7 +23,7 @@ export class OnChainLabelModalComponent implements OnInit, OnDestroy {
 
   @ViewChild('form', { static: true }) form: any;
   public faExclamationTriangle = faExclamationTriangle;
-  public utxo: UTXO = null;
+  public utxo: UTXO | null = null;
   public label = '';
   public labelError = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
@@ -32,7 +32,7 @@ export class OnChainLabelModalComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.utxo = this.data.utxo;
-    this.label = this.utxo.label;
+    this.label = this.utxo.label || '';
   }
 
   onLabelUTXO(): boolean | void {
@@ -40,7 +40,7 @@ export class OnChainLabelModalComponent implements OnInit, OnDestroy {
       return true;
     }
     this.labelError = '';
-    this.dataService.labelUTXO(this.utxo.outpoint.txid_bytes, this.label, true).
+    this.dataService.labelUTXO((this.utxo && this.utxo.outpoint && this.utxo.outpoint.txid_bytes ? this.utxo.outpoint.txid_bytes : ''), this.label, true).
       pipe(takeUntil(this.unSubs[0])).
       subscribe({
         next: (res) => {

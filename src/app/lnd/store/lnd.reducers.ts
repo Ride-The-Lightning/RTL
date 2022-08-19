@@ -10,13 +10,15 @@ let flgUTXOsSet = false;
 export const LNDReducer = createReducer(initLNDState,
   on(updateLNDAPICallStatus, (state, { payload }) => {
     const updatedApisCallStatus = JSON.parse(JSON.stringify(state.apisCallStatus));
-    updatedApisCallStatus[payload.action || 0] = {
-      status: payload.status,
-      statusCode: payload.statusCode,
-      message: payload.message,
-      URL: payload.URL,
-      filePath: payload.filePath
-    };
+    if (payload.action) {
+      updatedApisCallStatus[payload.action] = {
+        status: payload.status,
+        statusCode: payload.statusCode,
+        message: payload.message,
+        URL: payload.URL,
+        filePath: payload.filePath
+      };
+    }
     return {
       ...state,
       apisCallStatus: updatedApisCallStatus

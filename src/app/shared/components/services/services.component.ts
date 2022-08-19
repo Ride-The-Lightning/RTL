@@ -42,7 +42,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
         this.showLnConfig = false;
         this.showBitcoind = false;
         this.selNode = selNode;
-        switch (this.selNode.lnImplementation.toUpperCase()) {
+        switch (this.selNode.lnImplementation?.toUpperCase()) {
           case 'CLN':
             this.lnImplementationStr = 'Core Lightning Config';
             break;

@@ -36,7 +36,7 @@ export class AlertMessageComponent implements OnInit, AfterViewChecked, OnDestro
   public showCopyName = '';
   public showCopyField = '';
   public errorMessage = '';
-  public messageObjs = [];
+  public messageObjs: any[] = [];
   public alertTypeEnum = AlertTypeEnum;
   public dataTypeEnum = DataTypeEnum;
   public screenSize = '';
@@ -48,7 +48,7 @@ export class AlertMessageComponent implements OnInit, AfterViewChecked, OnDestro
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
-    this.messageObjs = this.data.message;
+    this.messageObjs = this.data.message || [];
     this.showQRField = this.data.showQRField ? this.data.showQRField : '';
     this.showQRName = this.data.showQRName ? this.data.showQRName : '';
     this.showCopyName = this.data.showCopyName ? this.data.showCopyName : '';

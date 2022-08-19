@@ -8,13 +8,15 @@ import { ConfigSettingsNode } from '../shared/models/RTLconfig';
 export const RootReducer = createReducer(initRootState,
   on(updateRootAPICallStatus, (state, { payload }) => {
     const updatedApisCallStatus = JSON.parse(JSON.stringify(state.apisCallStatus));
-    updatedApisCallStatus[payload.action] = {
-      status: payload.status,
-      statusCode: payload.statusCode,
-      message: payload.message,
-      URL: payload.URL,
-      filePath: payload.filePath
-    };
+    if (payload.action) {
+      updatedApisCallStatus[payload.action] = {
+        status: payload.status,
+        statusCode: payload.statusCode,
+        message: payload.message,
+        URL: payload.URL,
+        filePath: payload.filePath
+      };
+    }
     return {
       ...state,
       apisCallStatus: updatedApisCallStatus

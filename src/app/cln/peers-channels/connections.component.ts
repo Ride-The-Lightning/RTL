@@ -49,7 +49,7 @@ export class CLNConnectionsComponent implements OnInit, OnDestroy {
       });
     this.store.select(balance).pipe(takeUntil(this.unSubs[3])).
       subscribe((balanceSeletor: { balance: Balance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.balances = [{ title: 'Total Balance', dataValue: balanceSeletor.balance.totalBalance || 0 }, { title: 'Confirmed', dataValue: balanceSeletor.balance.confBalance }, { title: 'Unconfirmed', dataValue: balanceSeletor.balance.unconfBalance }];
+        this.balances = [{ title: 'Total Balance', dataValue: balanceSeletor.balance.totalBalance || 0 }, { title: 'Confirmed', dataValue: (balanceSeletor.balance.confBalance || 0) }, { title: 'Unconfirmed', dataValue: (balanceSeletor.balance.unconfBalance || 0) }];
       });
   }
 

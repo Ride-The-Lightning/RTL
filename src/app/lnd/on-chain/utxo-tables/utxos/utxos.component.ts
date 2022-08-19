@@ -77,7 +77,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         if (utxosSelector.utxos && utxosSelector.utxos.length > 0) {
-          this.dustUtxos = utxosSelector.utxos?.filter((utxo) => +utxo.amount_sat < 1000);
+          this.dustUtxos = utxosSelector.utxos?.filter((utxo) => +(utxo.amount_sat || 0) < 1000);
           this.utxos = utxosSelector.utxos;
           this.loadUTXOsTable((this.isDustUTXO) ? this.dustUtxos : this.utxos);
         }
@@ -100,12 +100,12 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
 
   onUTXOClick(selUTXO: UTXO) {
     const reorderedUTXOs = [
-      [{ key: 'txid', value: selUTXO.outpoint.txid_str, title: 'Transaction ID', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'txid', value: selUTXO.outpoint?.txid_str, title: 'Transaction ID', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'label', value: selUTXO.label, title: 'Label', width: 100, type: DataTypeEnum.STRING }],
-      [{ key: 'output_index', value: selUTXO.outpoint.output_index, title: 'Output Index', width: 34, type: DataTypeEnum.NUMBER },
+      [{ key: 'output_index', value: selUTXO.outpoint?.output_index, title: 'Output Index', width: 34, type: DataTypeEnum.NUMBER },
       { key: 'amount_sat', value: selUTXO.amount_sat, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.NUMBER },
       { key: 'confirmations', value: selUTXO.confirmations, title: 'Confirmations', width: 33, type: DataTypeEnum.NUMBER }],
-      [{ key: 'address_type', value: this.addressType[selUTXO.address_type].name, title: 'Address Type', width: 34 },
+      [{ key: 'address_type', value: (selUTXO.address_type ? this.addressType[selUTXO.address_type].name : ''), title: 'Address Type', width: 34 },
       { key: 'address', value: selUTXO.address, title: 'Address', width: 66 }],
       [{ key: 'pk_script', value: selUTXO.pk_script, title: 'PK Script', width: 100, type: DataTypeEnum.STRING }]
     ];
@@ -123,8 +123,8 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
   loadUTXOsTable(UTXOs: UTXO[]) {
     this.listUTXOs = new MatTableDataSource<UTXO>([...UTXOs]);
     this.listUTXOs.filterPredicate = (utxo: UTXO, fltr: string) => {
-      const newUTXO = ((utxo.label ? utxo.label.toLowerCase() : '') + (utxo.outpoint.txid_str ? utxo.outpoint.txid_str.toLowerCase() : '') + (utxo.outpoint.output_index ? utxo.outpoint.output_index : '') +
-        (utxo.outpoint.txid_bytes ? utxo.outpoint.txid_bytes.toLowerCase() : '') + (utxo.address ? utxo.address.toLowerCase() : '') + (utxo.address_type ? utxo.address_type.toLowerCase() : '') +
+      const newUTXO = ((utxo.label ? utxo.label.toLowerCase() : '') + (utxo.outpoint?.txid_str ? utxo.outpoint.txid_str.toLowerCase() : '') + (utxo.outpoint?.output_index ? utxo.outpoint?.output_index : '') +
+        (utxo.outpoint?.txid_bytes ? utxo.outpoint?.txid_bytes.toLowerCase() : '') + (utxo.address ? utxo.address.toLowerCase() : '') + (utxo.address_type ? utxo.address_type.toLowerCase() : '') +
         (utxo.amount_sat ? utxo.amount_sat : '') + (utxo.confirmations ? utxo.confirmations : '') + (utxo.pk_script ? utxo.pk_script.toLowerCase() : ''));
       return newUTXO.includes(fltr);
     };
@@ -155,7 +155,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
 
   onLeaseUTXO(utxo: UTXO) {
     const utxoDetails = [
-      [{ key: 'txid_str', value: utxo.outpoint.txid_str, title: 'Transaction ID', width: 100 }],
+      [{ key: 'txid_str', value: utxo.outpoint?.txid_str, title: 'Transaction ID', width: 100 }],
       [{ key: 'amount_sat', value: this.decimalPipe.transform(utxo.amount_sat), title: 'Amount (Sats)', width: 100 }]
     ];
     if (utxo.label) {
@@ -177,7 +177,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
       pipe(takeUntil(this.unSubs[0])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.dataService.leaseUTXO(utxo.outpoint.txid_bytes, utxo.outpoint.output_index);
+          this.dataService.leaseUTXO((utxo.outpoint?.txid_bytes || ''), (utxo.outpoint?.output_index || 0));
         }
       });
   }

@@ -47,7 +47,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public activeChannels = 0;
   public inactiveChannels = 0;
   public channelBalances = { localBalance: 0, remoteBalance: 0, balancedness: 0 };
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public fees: Fees;
   public information: GetInfo = {};
   public balances = { onchain: -1, lightning: -1, total: 0 };
@@ -66,11 +66,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   public sortField = 'Balance Score';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessages = ['', '', '', '', ''];
-  public apiCallStatusNodeInfo: ApiCallStatusPayload = null;
-  public apiCallStatusFees: ApiCallStatusPayload = null;
-  public apiCallStatusBlockchainBalance: ApiCallStatusPayload = null;
-  public apiCallStatusChannels: ApiCallStatusPayload = null;
-  public apiCallStatusPendingChannels: ApiCallStatusPayload = null;
+  public apiCallStatusNodeInfo: ApiCallStatusPayload | null = null;
+  public apiCallStatusFees: ApiCallStatusPayload | null = null;
+  public apiCallStatusBlockchainBalance: ApiCallStatusPayload | null = null;
+  public apiCallStatusChannels: ApiCallStatusPayload | null = null;
+  public apiCallStatusPendingChannels: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -145,11 +145,11 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.select(nodeInfoAndNodeSettingsAndAPIStatus).pipe(takeUntil(this.unSubs[0])).
-      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: SelNodeChild, apiCallStatus: ApiCallStatusPayload }) => {
+      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: SelNodeChild | null, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessages[0] = '';
         this.apiCallStatusNodeInfo = infoSettingsStatusSelector.apiCallStatus;
         if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[0] = (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message;
+          this.errorMessages[0] = (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message ? this.apiCallStatusNodeInfo.message : '';
         }
         this.selNode = infoSettingsStatusSelector.nodeSettings;
         this.information = infoSettingsStatusSelector.information;
@@ -159,7 +159,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.errorMessages[1] = '';
         this.apiCallStatusFees = feesSelector.apiCallStatus;
         if (this.apiCallStatusFees.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[1] = (typeof (this.apiCallStatusFees.message) === 'object') ? JSON.stringify(this.apiCallStatusFees.message) : this.apiCallStatusFees.message;
+          this.errorMessages[1] = (typeof (this.apiCallStatusFees.message) === 'object') ? JSON.stringify(this.apiCallStatusFees.message) : this.apiCallStatusFees.message ? this.apiCallStatusFees.message : '';
         }
         this.fees = feesSelector.fees;
       });
@@ -168,9 +168,9 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.errorMessages[2] = '';
         this.apiCallStatusBlockchainBalance = bcBalanceSelector.apiCallStatus;
         if (this.apiCallStatusBlockchainBalance.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[2] = (typeof (this.apiCallStatusBlockchainBalance.message) === 'object') ? JSON.stringify(this.apiCallStatusBlockchainBalance.message) : this.apiCallStatusBlockchainBalance.message;
+          this.errorMessages[2] = (typeof (this.apiCallStatusBlockchainBalance.message) === 'object') ? JSON.stringify(this.apiCallStatusBlockchainBalance.message) : this.apiCallStatusBlockchainBalance.message ? this.apiCallStatusBlockchainBalance.message : '';
         }
-        this.balances.onchain = (+bcBalanceSelector.blockchainBalance.total_balance >= 0) ? +bcBalanceSelector.blockchainBalance.total_balance : 0;
+        this.balances.onchain = (bcBalanceSelector.blockchainBalance.total_balance && +bcBalanceSelector.blockchainBalance.total_balance >= 0) ? +bcBalanceSelector.blockchainBalance.total_balance : 0;
         this.balances.total = this.balances.lightning + this.balances.onchain;
         this.balances = Object.assign({}, this.balances);
       });
@@ -179,11 +179,11 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.errorMessages[4] = '';
         this.apiCallStatusPendingChannels = pendingChannelsSelector.apiCallStatus;
         if (this.apiCallStatusPendingChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[4] = (typeof (this.apiCallStatusPendingChannels.message) === 'object') ? JSON.stringify(this.apiCallStatusPendingChannels.message) : this.apiCallStatusPendingChannels.message;
+          this.errorMessages[4] = (typeof (this.apiCallStatusPendingChannels.message) === 'object') ? JSON.stringify(this.apiCallStatusPendingChannels.message) : this.apiCallStatusPendingChannels.message ? this.apiCallStatusPendingChannels.message : '';
         }
-        this.channelsStatus.pending = { num_channels: pendingChannelsSelector.pendingChannelsSummary.open.num_channels, capacity: pendingChannelsSelector.pendingChannelsSummary.open.limbo_balance };
+        this.channelsStatus.pending = { num_channels: pendingChannelsSelector.pendingChannelsSummary.open?.num_channels, capacity: pendingChannelsSelector.pendingChannelsSummary.open?.limbo_balance };
         this.channelsStatus.closing = {
-          num_channels: pendingChannelsSelector.pendingChannelsSummary.closing.num_channels + pendingChannelsSelector.pendingChannelsSummary.force_closing.num_channels + pendingChannelsSelector.pendingChannelsSummary.waiting_close.num_channels,
+          num_channels: (pendingChannelsSelector.pendingChannelsSummary.closing?.num_channels || 0) + (pendingChannelsSelector.pendingChannelsSummary.force_closing?.num_channels || 0) + (pendingChannelsSelector.pendingChannelsSummary.waiting_close?.num_channels || 0),
           capacity: pendingChannelsSelector.pendingChannelsSummary.total_limbo_balance
         };
       });
@@ -192,30 +192,30 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.errorMessages[3] = '';
         this.apiCallStatusChannels = channelsSelector.apiCallStatus;
         if (this.apiCallStatusChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[3] = (typeof (this.apiCallStatusChannels.message) === 'object') ? JSON.stringify(this.apiCallStatusChannels.message) : this.apiCallStatusChannels.message;
+          this.errorMessages[3] = (typeof (this.apiCallStatusChannels.message) === 'object') ? JSON.stringify(this.apiCallStatusChannels.message) : this.apiCallStatusChannels.message ? this.apiCallStatusChannels.message : '';
         }
         const local = (channelsSelector.lightningBalance && channelsSelector.lightningBalance.local) ? +channelsSelector.lightningBalance.local : 0;
         const remote = (channelsSelector.lightningBalance && channelsSelector.lightningBalance.remote) ? +channelsSelector.lightningBalance.remote : 0;
         const total = local + remote;
         this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: +(1 - Math.abs((local - remote) / total)).toFixed(3) };
-        this.balances.lightning = channelsSelector.lightningBalance.local;
+        this.balances.lightning = channelsSelector.lightningBalance.local || 0;
         this.balances.total = this.balances.lightning + this.balances.onchain;
         this.balances = Object.assign({}, this.balances);
-        this.activeChannels = channelsSelector.channelsSummary.active.num_channels;
-        this.inactiveChannels = channelsSelector.channelsSummary.inactive.num_channels;
+        this.activeChannels = channelsSelector.channelsSummary.active?.num_channels || 0;
+        this.inactiveChannels = channelsSelector.channelsSummary.inactive?.num_channels || 0;
         this.channelsStatus.active = channelsSelector.channelsSummary.active;
         this.channelsStatus.inactive = channelsSelector.channelsSummary.inactive;
         this.totalInboundLiquidity = 0;
         this.totalOutboundLiquidity = 0;
         this.allChannels = channelsSelector.channels?.filter((channel) => channel.active === true);
         this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'balancedness')));
-        this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels?.filter((channel) => channel.remote_balance > 0), 'remote_balance')));
-        this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels?.filter((channel) => channel.local_balance > 0), 'local_balance')));
+        this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels?.filter((channel) => channel.remote_balance && channel.remote_balance > 0), 'remote_balance')));
+        this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels?.filter((channel) => channel.local_balance && channel.local_balance > 0), 'local_balance')));
         this.allChannels.forEach((channel) => {
-          this.totalInboundLiquidity = this.totalInboundLiquidity + +channel.remote_balance;
-          this.totalOutboundLiquidity = this.totalOutboundLiquidity + +channel.local_balance;
+          this.totalInboundLiquidity = this.totalInboundLiquidity + +(channel.remote_balance || 0);
+          this.totalOutboundLiquidity = this.totalOutboundLiquidity + +(channel.local_balance || 0);
         });
-        if (this.balances.lightning >= 0 && this.balances.onchain >= 0 && this.fees.month_fee_sum >= 0) {
+        if (this.balances.lightning >= 0 && this.balances.onchain >= 0 && this.fees.month_fee_sum && this.fees.month_fee_sum >= 0) {
           this.flgChildInfoUpdated = true;
         } else {
           this.flgChildInfoUpdated = false;
@@ -247,8 +247,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (this.sortField === 'Balance Score') {
       this.sortField = 'Capacity';
       this.allChannelsCapacity = this.allChannels.sort((a, b) => {
-        const x = +a.local_balance + +a.remote_balance;
-        const y = +b.local_balance + +b.remote_balance;
+        const x = +(a.local_balance || 0) + +(a.remote_balance || 0);
+        const y = +(b.local_balance || 0) + +(b.remote_balance || 0);
         return ((x > y) ? -1 : ((x < y) ? 1 : 0));
       });
     } else {

@@ -20,7 +20,7 @@ import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 })
 export class CLNOnChainComponent implements OnInit, OnDestroy {
 
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public faExchangeAlt = faExchangeAlt;
   public faChartPie = faChartPie;
   public balances = [{ title: 'Total Balance', dataValue: 0 }, { title: 'Confirmed', dataValue: 0 }, { title: 'Unconfirmed', dataValue: 0 }];
@@ -35,22 +35,22 @@ export class CLNOnChainComponent implements OnInit, OnDestroy {
   ngOnInit() {
     const linkFound = this.links.find((link) => this.router.url.includes(link.link));
     this.activeLink = linkFound ? linkFound.link : this.links[0].link;
-    this.selectedTable = this.tables.find((table) => table.name === this.router.url.substring(this.router.url.lastIndexOf('/') + 1));
+    this.selectedTable = this.tables.find((table) => table.name === this.router.url.substring(this.router.url.lastIndexOf('/') + 1)) || this.tables[0];
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
       subscribe({
         next: (value: ResolveEnd | Event) => {
           const linkFound = this.links.find((link) => (<ResolveEnd>value).urlAfterRedirects.includes(link.link));
           this.activeLink = linkFound ? linkFound.link : this.links[0].link;
-          this.selectedTable = this.tables.find((table) => table.name === (<ResolveEnd>value).urlAfterRedirects.substring((<ResolveEnd>value).urlAfterRedirects.lastIndexOf('/') + 1));
+          this.selectedTable = this.tables.find((table) => table.name === (<ResolveEnd>value).urlAfterRedirects.substring((<ResolveEnd>value).urlAfterRedirects.lastIndexOf('/') + 1)) || this.tables[0];
         }
       });
     this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[1])).
-      subscribe((nodeSettings: SelNodeChild) => {
+      subscribe((nodeSettings: SelNodeChild | null) => {
         this.selNode = nodeSettings;
       });
     this.store.select(balance).pipe(takeUntil(this.unSubs[2])).
       subscribe((balanceSeletor: { balance: Balance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.balances = [{ title: 'Total Balance', dataValue: balanceSeletor.balance.totalBalance || 0 }, { title: 'Confirmed', dataValue: balanceSeletor.balance.confBalance }, { title: 'Unconfirmed', dataValue: balanceSeletor.balance.unconfBalance }];
+        this.balances = [{ title: 'Total Balance', dataValue: balanceSeletor.balance.totalBalance || 0 }, { title: 'Confirmed', dataValue: (balanceSeletor.balance.confBalance || 0)}, { title: 'Unconfirmed', dataValue: (balanceSeletor.balance.unconfBalance || 0) }];
       });
   }
 
@@ -66,7 +66,7 @@ export class CLNOnChainComponent implements OnInit, OnDestroy {
   }
 
   onSelectedTableIndexChanged(event: number) {
-    this.selectedTable = this.tables.find((table) => table.id === event);
+    this.selectedTable = this.tables.find((table) => table.id === event) || this.tables[0];
     this.router.navigate(['./', this.activeLink, this.selectedTable.name], { relativeTo: this.activatedRoute });
   }
 

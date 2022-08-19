@@ -37,8 +37,8 @@ export class BoltzServiceSettingsComponent implements OnInit, OnDestroy {
       pipe(takeUntil(this.unSubs[0])).
       subscribe((selNode) => {
         this.selNode = selNode;
-        this.enableBoltz = selNode.settings.boltzServerUrl && selNode.settings.boltzServerUrl.trim() !== '';
-        this.serverUrl = this.selNode.settings.boltzServerUrl;
+        this.enableBoltz = !!(selNode.settings.boltzServerUrl && selNode.settings.boltzServerUrl.trim() !== '');
+        this.serverUrl = this.selNode.settings.boltzServerUrl || '';
         this.macaroonPath = this.selNode.authentication.boltzMacaroonPath;
         this.previousSelNode = JSON.parse(JSON.stringify(this.selNode));
         this.logger.info(selNode);
@@ -92,9 +92,9 @@ export class BoltzServiceSettingsComponent implements OnInit, OnDestroy {
 
   onReset() {
     this.selNode = JSON.parse(JSON.stringify(this.previousSelNode));
-    this.serverUrl = this.selNode.settings.boltzServerUrl;
+    this.serverUrl = this.selNode.settings.boltzServerUrl || '';
     this.macaroonPath = this.selNode.authentication.boltzMacaroonPath;
-    this.enableBoltz = this.serverUrl && this.serverUrl.trim() !== '';
+    this.enableBoltz = !!(this.serverUrl && this.serverUrl.trim() !== '');
   }
 
   ngOnDestroy() {

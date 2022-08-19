@@ -28,7 +28,7 @@ export class ECLRoutingReportComponent implements OnInit, OnDestroy {
   public eventFilterValue = '';
   public reportBy = ReportBy;
   public selReportBy = ReportBy.FEES;
-  public totalFeeSat = null;
+  public totalFeeSat: number | null = null;
   public today = new Date(Date.now());
   public startDate = new Date(this.today.getFullYear(), this.today.getMonth(), 1, 0, 0, 0);
   public endDate = new Date(this.today.getFullYear(), this.today.getMonth(), this.getMonthDays(this.today.getMonth(), this.today.getFullYear()), 23, 59, 59);
@@ -83,7 +83,7 @@ export class ECLRoutingReportComponent implements OnInit, OnDestroy {
     this.totalFeeSat = null;
     if (this.events && this.events.length > 0) {
       this.events.forEach((event) => {
-        if (Math.floor(event.timestamp / 1000) >= startDateInSeconds && Math.floor(event.timestamp / 1000) < endDateInSeconds) {
+        if (Math.floor((event.timestamp || 0) / 1000) >= startDateInSeconds && Math.floor((event.timestamp || 0) / 1000) < endDateInSeconds) {
           this.filteredEventsBySelectedPeriod.push(event);
         }
       });
@@ -108,7 +108,7 @@ export class ECLRoutingReportComponent implements OnInit, OnDestroy {
 
   prepareFeeReport(start: Date) {
     const startDateInSeconds = Math.round(start.getTime() / 1000);
-    const feeReport = [];
+    const feeReport: any = [];
     this.totalFeeSat = 0;
     this.logger.info('Fee Report Prepare Starting at ' + new Date(Date.now()).toLocaleString() + ' From ' + start.toLocaleString());
     if (this.reportPeriod === SCROLL_RANGES[1]) {
@@ -116,10 +116,10 @@ export class ECLRoutingReportComponent implements OnInit, OnDestroy {
         feeReport.push({ name: MONTHS[i].name, value: 0.0, extra: { totalEvents: 0 } });
       }
       this.filteredEventsBySelectedPeriod?.map((event) => {
-        const monthNumber = new Date(event.timestamp).getMonth();
-        feeReport[monthNumber].value = feeReport[monthNumber].value + (event.amountIn - event.amountOut);
+        const monthNumber = new Date((event.timestamp || 0)).getMonth();
+        feeReport[monthNumber].value = feeReport[monthNumber].value + ((event.amountIn || 0) - (event.amountOut || 0));
         feeReport[monthNumber].extra.totalEvents = feeReport[monthNumber].extra.totalEvents + 1;
-        this.totalFeeSat = (this.totalFeeSat ? this.totalFeeSat : 0) + (event.amountIn - event.amountOut);
+        this.totalFeeSat = (this.totalFeeSat ? this.totalFeeSat : 0) + ((event.amountIn || 0) - (event.amountOut || 0));
         return this.filteredEventsBySelectedPeriod;
       });
     } else {
@@ -127,10 +127,10 @@ export class ECLRoutingReportComponent implements OnInit, OnDestroy {
         feeReport.push({ name: i + 1, value: 0.0, extra: { totalEvents: 0 } });
       }
       this.filteredEventsBySelectedPeriod?.map((event) => {
-        const dateNumber = Math.floor((Math.floor(event.timestamp / 1000) - startDateInSeconds) / this.secondsInADay);
-        feeReport[dateNumber].value = feeReport[dateNumber].value + (event.amountIn - event.amountOut);
+        const dateNumber = Math.floor((Math.floor((event.timestamp || 0) / 1000) - startDateInSeconds) / this.secondsInADay);
+        feeReport[dateNumber].value = feeReport[dateNumber].value + ((event.amountIn || 0) - (event.amountOut || 0));
         feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
-        this.totalFeeSat = (this.totalFeeSat ? this.totalFeeSat : 0) + (event.amountIn - event.amountOut);
+        this.totalFeeSat = (this.totalFeeSat ? this.totalFeeSat : 0) + ((event.amountIn || 0) - (event.amountOut || 0));
         return this.filteredEventsBySelectedPeriod;
       });
     }
@@ -140,7 +140,7 @@ export class ECLRoutingReportComponent implements OnInit, OnDestroy {
 
   prepareEventsReport(start: Date) {
     const startDateInSeconds = Math.round(start.getTime() / 1000);
-    const eventsReport = [];
+    const eventsReport: any = [];
     this.totalFeeSat = 0;
     this.logger.info('Events Report Prepare Starting at ' + new Date(Date.now()).toLocaleString() + ' From ' + start.toLocaleString());
     if (this.reportPeriod === SCROLL_RANGES[1]) {
@@ -148,10 +148,10 @@ export class ECLRoutingReportComponent implements OnInit, OnDestroy {
         eventsReport.push({ name: MONTHS[i].name, value: 0, extra: { totalFees: 0.0 } });
       }
       this.filteredEventsBySelectedPeriod?.map((event) => {
-        const monthNumber = new Date(event.timestamp).getMonth();
+        const monthNumber = new Date((event.timestamp || 0)).getMonth();
         eventsReport[monthNumber].value = eventsReport[monthNumber].value + 1;
-        eventsReport[monthNumber].extra.totalFees = eventsReport[monthNumber].extra.totalFees + (event.amountIn - event.amountOut);
-        this.totalFeeSat = (this.totalFeeSat ? this.totalFeeSat : 0) + (event.amountIn - event.amountOut);
+        eventsReport[monthNumber].extra.totalFees = eventsReport[monthNumber].extra.totalFees + ((event.amountIn || 0) - (event.amountOut || 0));
+        this.totalFeeSat = (this.totalFeeSat ? this.totalFeeSat : 0) + ((event.amountIn || 0) - (event.amountOut || 0));
         return this.filteredEventsBySelectedPeriod;
       });
     } else {
@@ -159,10 +159,10 @@ export class ECLRoutingReportComponent implements OnInit, OnDestroy {
         eventsReport.push({ name: i + 1, value: 0, extra: { totalFees: 0.0 } });
       }
       this.filteredEventsBySelectedPeriod?.map((event) => {
-        const dateNumber = Math.floor((Math.floor(event.timestamp / 1000) - startDateInSeconds) / this.secondsInADay);
+        const dateNumber = Math.floor((Math.floor((event.timestamp || 0) / 1000) - startDateInSeconds) / this.secondsInADay);
         eventsReport[dateNumber].value = eventsReport[dateNumber].value + 1;
-        eventsReport[dateNumber].extra.totalFees = eventsReport[dateNumber].extra.totalFees + (event.amountIn - event.amountOut);
-        this.totalFeeSat = (this.totalFeeSat ? this.totalFeeSat : 0) + (event.amountIn - event.amountOut);
+        eventsReport[dateNumber].extra.totalFees = eventsReport[dateNumber].extra.totalFees + ((event.amountIn || 0) - (event.amountOut || 0));
+        this.totalFeeSat = (this.totalFeeSat ? this.totalFeeSat : 0) + ((event.amountIn || 0) - (event.amountOut || 0));
         return this.filteredEventsBySelectedPeriod;
       });
     }

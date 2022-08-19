@@ -160,7 +160,7 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
       pipe(takeUntil(this.unSubs[3])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.store.dispatch(detachPeer({ payload: { pubkey: peerToDetach.pub_key } }));
+          this.store.dispatch(detachPeer({ payload: { pubkey: peerToDetach.pub_key! } }));
         }
       });
   }

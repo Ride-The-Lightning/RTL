@@ -60,7 +60,7 @@ export class CLNBumpFeeComponent implements OnInit, OnDestroy {
             address: action.payload,
             satoshis: 'all',
             feeRate: (+(this.fees || 0) * 1000).toString(),
-            utxos: [this.bumpFeeChannel.funding_txid + ':' + this.outputIndex.toString()]
+            utxos: [this.bumpFeeChannel.funding_txid + ':' + (this.outputIndex || '').toString()]
           }
         }));
       });

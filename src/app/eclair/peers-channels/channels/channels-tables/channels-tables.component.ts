@@ -24,7 +24,7 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
   public numOfOpenChannels = 0;
   public numOfPendingChannels = 0;
   public numOfInactiveChannels = 0;
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public information: GetInfo = {};
   public peers: Peer[] = [];
   public totalBalance = 0;
@@ -50,7 +50,7 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
         this.logger.info(allChannelsSelector);
       });
     this.store.select(eclnNodeSettings).pipe(takeUntil(this.unSubs[2])).
-      subscribe((nodeSettings: SelNodeChild) => {
+      subscribe((nodeSettings: SelNodeChild | null) => {
         this.selNode = nodeSettings;
       });
     this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[3])).
@@ -63,7 +63,7 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
       });
     this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[5])).
       subscribe((oCBalanceSelector: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.totalBalance = oCBalanceSelector.onchainBalance.total;
+        this.totalBalance = oCBalanceSelector.onchainBalance.total || 0;
       });
   }
 

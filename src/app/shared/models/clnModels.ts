@@ -220,7 +220,7 @@ export interface OfferRequest {
   issuer?: string;
   currency?: string;
   minor_unit?: number;
-  amount?: number;
+  amount?: number | null;
   amount_msat?: string;
   send_invoice?: boolean;
   refund_for?: string;
@@ -408,7 +408,7 @@ export interface SaveChannel {
   satoshis: string;
   announce?: boolean;
   feeRate?: string;
-  minconf?: number;
+  minconf?: number | null;
   utxos?: string[];
   requestAmount?: string;
   compactLease?: string;

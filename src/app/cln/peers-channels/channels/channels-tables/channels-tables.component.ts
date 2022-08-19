@@ -24,7 +24,7 @@ export class CLNChannelsTablesComponent implements OnInit, OnDestroy {
 
   public openChannels = 0;
   public pendingChannels = 0;
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public information: GetInfo = {};
   public peers: Peer[] = [];
   public utxos: UTXO[] = [];
@@ -44,10 +44,10 @@ export class CLNChannelsTablesComponent implements OnInit, OnDestroy {
         }
       });
     this.store.select(nodeInfoAndNodeSettingsAndBalance).pipe(takeUntil(this.unSubs[1])).
-      subscribe((infoSettingsBalSelector: { information: GetInfo, nodeSettings: SelNodeChild, balance: Balance }) => {
+      subscribe((infoSettingsBalSelector: { information: GetInfo, nodeSettings: SelNodeChild | null, balance: Balance }) => {
         this.selNode = infoSettingsBalSelector.nodeSettings;
         this.information = infoSettingsBalSelector.information;
-        this.totalBalance = infoSettingsBalSelector.balance.totalBalance;
+        this.totalBalance = infoSettingsBalSelector.balance.totalBalance || 0;
         this.logger.info(infoSettingsBalSelector);
       });
     this.store.select(peers).pipe(takeUntil(this.unSubs[2])).

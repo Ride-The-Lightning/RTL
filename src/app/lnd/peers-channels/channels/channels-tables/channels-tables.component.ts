@@ -58,14 +58,14 @@ export class ChannelsTablesComponent implements OnInit, OnDestroy {
       });
     this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[5])).
       subscribe((bcBalanceSelector: { blockchainBalance: BlockchainBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.totalBalance = +bcBalanceSelector.blockchainBalance.total_balance;
+        this.totalBalance = +(bcBalanceSelector.blockchainBalance.total_balance || 0);
       });
     this.store.select(peers).pipe(takeUntil(this.unSubs[6])).
       subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
         this.peers = peersSelector.peers;
         this.peers.forEach((peer) => {
           if (!peer.alias || peer.alias === '') {
-            peer.alias = peer.pub_key.substring(0, 15) + '...';
+            peer.alias = peer.pub_key?.substring(0, 15) + '...';
           }
         });
         this.logger.info(peersSelector);

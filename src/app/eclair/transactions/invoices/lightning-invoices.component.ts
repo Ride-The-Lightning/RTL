@@ -38,12 +38,12 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   faHistory = faHistory;
-  public selNode: SelNodeChild = {};
-  public newlyAddedInvoiceMemo = '';
-  public newlyAddedInvoiceValue = 0;
-  public description = '';
-  public expiry: number;
-  public invoiceValue: number = null;
+  public selNode: SelNodeChild | null = {};
+  public newlyAddedInvoiceMemo: string | null = '';
+  public newlyAddedInvoiceValue: number | null = 0;
+  public description: string | null = '';
+  public expiry: number | null;
+  public invoiceValue: number | null = null;
   public invoiceValueHint = '';
   public displayedColumns: any[] = [];
   public invoicePaymentReq = '';
@@ -80,7 +80,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
 
   ngOnInit() {
     this.store.select(eclnNodeSettings).pipe(takeUntil(this.unSubs[0])).
-      subscribe((nodeSettings: SelNodeChild) => {
+      subscribe((nodeSettings: SelNodeChild | null) => {
         this.selNode = nodeSettings;
       });
     this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[1])).
@@ -135,7 +135,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
     const expiryInSecs = (this.expiry ? this.expiry : 3600);
     this.newlyAddedInvoiceMemo = 'ulbl' + Math.random().toString(36).slice(2) + Date.now();
     this.newlyAddedInvoiceValue = this.invoiceValue;
-    let invoicePayload = null;
+    let invoicePayload: any = null;
     if (this.invoiceValue) {
       invoicePayload = { description: this.description, expireIn: expiryInSecs, amountMsat: this.invoiceValue * 1000 };
     } else {
@@ -158,7 +158,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   }
 
   onRefreshInvoice(selInvoice: Invoice) {
-    this.store.dispatch(invoiceLookup({ payload: selInvoice.paymentHash }));
+    this.store.dispatch(invoiceLookup({ payload: selInvoice.paymentHash! }));
   }
 
   updateInvoicesData(newInvoice: Invoice) {
@@ -170,7 +170,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
     this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.invoices.sort = this.sort;
     this.invoices.filterPredicate = (rowData: Invoice, fltr: string) => {
-      const newRowData = ((rowData.timestamp) ? this.datePipe.transform(new Date(rowData.timestamp * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      const newRowData = ((rowData.timestamp) ? this.datePipe.transform(new Date(rowData.timestamp * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
       return newRowData.includes(fltr);
     };
     this.invoices.paginator = this.paginator;
@@ -189,7 +189,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   }
 
   onInvoiceValueChange() {
-    if (this.selNode.fiatConversion && this.invoiceValue > 99) {
+    if (this.selNode && this.selNode.fiatConversion && this.invoiceValue && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
       this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
         pipe(takeUntil(this.unSubs[4])).

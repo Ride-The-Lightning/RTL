@@ -29,7 +29,7 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   @ViewChild('tableOut', { read: MatSort, static: false }) sortOut: MatSort;
   @ViewChild('paginatorIn', { static: false }) paginatorIn: MatPaginator | undefined;
   @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator | undefined;
-  public routingPeersData = [];
+  public routingPeersData: PaymentRelayed[] = [];
   public displayedColumns: any[] = [];
   public RoutingPeersIncoming: any;
   public RoutingPeersOutgoing: any;
@@ -110,9 +110,9 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   groupRoutingPeers(forwardingEvents: PaymentRelayed[]) {
     const incomingResults: RoutingPeers[] = [];
     const outgoingResults: RoutingPeers[] = [];
-    forwardingEvents.forEach((event) => {
-      const incoming = incomingResults.find((result) => result.channelId === event.fromChannelId);
-      const outgoing = outgoingResults.find((result) => result.channelId === event.toChannelId);
+    forwardingEvents.forEach((event: PaymentRelayed) => {
+      const incoming: any = incomingResults.find((result) => result.channelId === event.fromChannelId);
+      const outgoing: any = outgoingResults.find((result) => result.channelId === event.toChannelId);
       if (!incoming) {
         incomingResults.push({ channelId: event.fromChannelId, alias: event.fromChannelAlias, events: 1, totalAmount: +event.amountIn, totalFee: (event.amountIn - event.amountOut) });
       } else {

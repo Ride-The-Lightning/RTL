@@ -39,7 +39,7 @@ export class NodeConfigComponent implements OnInit, OnDestroy {
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).subscribe((selNode) => {
       this.showLnConfig = false;
       this.selNode = selNode;
-      switch (this.selNode.lnImplementation.toUpperCase()) {
+      switch (this.selNode.lnImplementation?.toUpperCase()) {
         case 'CLN':
           this.lnImplementationStr = 'Core Lightning Config';
           break;

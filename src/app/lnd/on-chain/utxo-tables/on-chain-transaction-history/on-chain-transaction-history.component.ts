@@ -117,7 +117,7 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
     this.listTransactions.sort = this.sort;
     this.listTransactions.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.listTransactions.filterPredicate = (rowData: Transaction, fltr: string) => {
-      const newRowData = ((rowData.time_stamp) ? this.datePipe.transform(new Date(rowData.time_stamp * 1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      const newRowData = ((rowData.time_stamp) ? this.datePipe.transform(new Date(rowData.time_stamp * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
       return newRowData.includes(fltr);
     };
     this.listTransactions.paginator = this.paginator;

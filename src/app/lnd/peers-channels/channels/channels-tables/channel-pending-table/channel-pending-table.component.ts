@@ -25,7 +25,7 @@ import { lndNodeInformation, lndNodeSettings, pendingChannels } from '../../../.
 export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public selectedFilter = '';
   public information: GetInfo = {};
   public pendingChannels: PendingChannels = {};
@@ -69,7 +69,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngOnInit() {
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => { this.selNode = nodeSettings; });
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => { this.selNode = nodeSettings; });
     this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => { this.information = nodeInfo; });
     this.store.select(pendingChannels).pipe(takeUntil(this.unSubs[0])).
       subscribe((pendingChannelsSelector: { pendingChannels: PendingChannels, apiCallStatus: ApiCallStatusPayload }) => {

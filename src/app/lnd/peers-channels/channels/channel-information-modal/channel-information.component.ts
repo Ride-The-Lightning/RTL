@@ -28,7 +28,7 @@ export class ChannelInformationComponent implements OnInit {
 
   ngOnInit() {
     this.channel = this.data.channel;
-    this.showCopy = this.data.showCopy;
+    this.showCopy = !!this.data.showCopy;
     this.screenSize = this.commonService.getScreenSize();
   }
 

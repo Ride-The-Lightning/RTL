@@ -39,7 +39,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   faHistory = faHistory;
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public newlyAddedInvoiceMemo = '';
   public newlyAddedInvoiceValue = 0;
   public description = '';

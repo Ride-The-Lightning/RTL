@@ -79,13 +79,13 @@ export class SwapsComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   onSwapClick(selSwap: LoopSwapStatus, event: any) {
-    this.loopService.getSwap(selSwap.id_bytes?.replace(/\//g, '_')?.replace(/\+/g, '-')).pipe(takeUntil(this.unSubs[2])).
+    this.loopService.getSwap(selSwap.id_bytes?.replace(/\//g, '_')?.replace(/\+/g, '-') || '').pipe(takeUntil(this.unSubs[2])).
       subscribe((fetchedSwap: LoopSwapStatus) => {
         const reorderedSwap = [
-          [{ key: 'state', value: LoopStateEnum[fetchedSwap.state], title: 'Status', width: 50, type: DataTypeEnum.STRING },
+          [{ key: 'state', value: LoopStateEnum[fetchedSwap.state || ''], title: 'Status', width: 50, type: DataTypeEnum.STRING },
           { key: 'amt', value: fetchedSwap.amt, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
-          [{ key: 'initiation_time', value: fetchedSwap.initiation_time / 1000000000, title: 'Initiation Time', width: 50, type: DataTypeEnum.DATE_TIME },
-          { key: 'last_update_time', value: fetchedSwap.last_update_time / 1000000000, title: 'Last Update Time', width: 50, type: DataTypeEnum.DATE_TIME }],
+          [{ key: 'initiation_time', value: (fetchedSwap.initiation_time || 0) / 1000000000, title: 'Initiation Time', width: 50, type: DataTypeEnum.DATE_TIME },
+          { key: 'last_update_time', value: (fetchedSwap.last_update_time || 0) / 1000000000, title: 'Last Update Time', width: 50, type: DataTypeEnum.DATE_TIME }],
           [{ key: 'cost_server', value: fetchedSwap.cost_server, title: 'Server Cost (Sats)', width: 33, type: DataTypeEnum.NUMBER },
           { key: 'cost_offchain', value: fetchedSwap.cost_offchain, title: 'Offchain Cost (Sats)', width: 33, type: DataTypeEnum.NUMBER },
           { key: 'cost_onchain', value: fetchedSwap.cost_onchain, title: 'Onchain Cost (Sats)', width: 34, type: DataTypeEnum.NUMBER }],

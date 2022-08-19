@@ -39,7 +39,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   public LoopTypeEnum = LoopTypeEnum;
   public direction = LoopTypeEnum.LOOP_OUT;
   public loopDirectionCaption = 'Loop out';
-  public loopStatus: LoopStatus = null;
+  public loopStatus: LoopStatus | null = null;
   public inputFormLabel = 'Amount to loop out';
   public quoteFormLabel = 'Confirm Quote';
   public addressFormLabel = 'Withdrawal Address';
@@ -50,7 +50,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   public animationDirection = 'forward';
   public flgEditable = true;
-  public localBalanceToCompare = null;
+  public localBalanceToCompare: number | null = null;
   inputFormGroup: FormGroup;
   quoteFormGroup: FormGroup;
   addressFormGroup: FormGroup;
@@ -64,11 +64,11 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.channel = this.data.channel;
     this.minQuote = this.data.minQuote ? this.data.minQuote : {};
     this.maxQuote = this.data.maxQuote ? this.data.maxQuote : {};
-    this.direction = this.data.direction;
+    this.direction = this.data.direction || LoopTypeEnum.LOOP_OUT;
     this.loopDirectionCaption = this.direction === LoopTypeEnum.LOOP_IN ? 'Loop in' : 'Loop out';
     this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
     this.inputFormGroup = this.formBuilder.group({
-      amount: [this.minQuote.amount, [Validators.required, Validators.min(this.minQuote.amount), Validators.max(this.maxQuote.amount)]],
+      amount: [this.minQuote.amount, [Validators.required, Validators.min(this.minQuote.amount || 0), Validators.max(this.maxQuote.amount || 0)]],
       sweepConfTarget: [6, [Validators.required, Validators.min(1)]],
       routingFeePercent: [2, [Validators.required, Validators.min(0)]],
       fast: [false, [Validators.required]]
@@ -82,7 +82,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.onFormValueChanges();
     this.store.select(channels).pipe(takeUntil(this.unSubs[6])).
       subscribe((channelsSelector: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.localBalanceToCompare = (this.channel) ? +this.channel.local_balance : +channelsSelector.lightningBalance.local;
+        this.localBalanceToCompare = (this.channel && this.channel.local_balance) ? +this.channel.local_balance : (channelsSelector.lightningBalance && channelsSelector.lightningBalance.local) ? +channelsSelector.lightningBalance.local : null;
       });
   }
 
@@ -119,13 +119,13 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onValidateAmount() {
-    if (this.inputFormGroup.controls.amount.value <= this.localBalanceToCompare) {
+    if (this.localBalanceToCompare && this.inputFormGroup.controls.amount.value <= this.localBalanceToCompare) {
       this.stepper.next();
     }
   }
 
   onLoop(): boolean | void {
-    if (!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > (this.maxQuote.amount) ||
+    if (!this.inputFormGroup.controls.amount.value || (this.minQuote.amount && this.inputFormGroup.controls.amount.value < this.minQuote.amount) || (this.maxQuote.amount && this.inputFormGroup.controls.amount.value > this.maxQuote.amount) ||
       !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2 ||
       (this.direction === LoopTypeEnum.LOOP_OUT && (!this.inputFormGroup.controls.routingFeePercent.value || this.inputFormGroup.controls.routingFeePercent.value < 0)) ||
       (this.direction === LoopTypeEnum.LOOP_OUT && this.addressFormGroup.controls.addressType.value === 'external' &&
@@ -133,10 +133,10 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
       return true;
     }
     this.flgEditable = false;
-    this.stepper.selected.stepControl.setErrors(null);
+    this.stepper.selected?.stepControl.setErrors(null);
     this.stepper.next();
     if (this.direction === LoopTypeEnum.LOOP_IN) {
-      this.loopService.loopIn(this.inputFormGroup.controls.amount.value, +this.quote.swap_fee_sat, +this.quote.htlc_publish_fee_sat, '', true).pipe(takeUntil(this.unSubs[0])).
+      this.loopService.loopIn(this.inputFormGroup.controls.amount.value, +(this.quote.swap_fee_sat || 0), +(this.quote.htlc_publish_fee_sat || 0), '', true).pipe(takeUntil(this.unSubs[0])).
         subscribe({
           next: (loopStatus: any) => {
             this.loopStatus = loopStatus;
@@ -152,7 +152,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
       const swapRoutingFee = Math.ceil(this.inputFormGroup.controls.amount.value * (this.inputFormGroup.controls.routingFeePercent.value / 100));
       const destAddress = this.addressFormGroup.controls.addressType.value === 'external' ? this.addressFormGroup.controls.address.value : '';
       const swapPublicationDeadline = this.inputFormGroup.controls.fast.value ? 0 : new Date().getTime() + (30 * 60000);
-      this.loopService.loopOut(this.inputFormGroup.controls.amount.value, (this.channel && this.channel.chan_id ? this.channel.chan_id : ''), this.inputFormGroup.controls.sweepConfTarget.value, swapRoutingFee, +this.quote.htlc_sweep_fee_sat, this.prepayRoutingFee, +this.quote.prepay_amt_sat, +this.quote.swap_fee_sat, swapPublicationDeadline, destAddress).pipe(takeUntil(this.unSubs[1])).
+      this.loopService.loopOut(this.inputFormGroup.controls.amount.value, (this.channel && this.channel.chan_id ? this.channel.chan_id : ''), this.inputFormGroup.controls.sweepConfTarget.value, swapRoutingFee, +(this.quote.htlc_sweep_fee_sat || 0), this.prepayRoutingFee, +(this.quote.prepay_amt_sat || 0), +(this.quote.swap_fee_sat || 0), swapPublicationDeadline, destAddress).pipe(takeUntil(this.unSubs[1])).
         subscribe({
           next: (loopStatus: any) => {
             this.loopStatus = loopStatus;
@@ -168,7 +168,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onEstimateQuote(): boolean | void {
-    if (!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > (this.maxQuote.amount) || !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2) {
+    if (!this.inputFormGroup.controls.amount.value || (this.minQuote.amount && this.inputFormGroup.controls.amount.value < this.minQuote.amount) || (this.maxQuote.amount && this.inputFormGroup.controls.amount.value > this.maxQuote.amount) || !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2) {
       return true;
     }
     const swapPublicationDeadline = this.inputFormGroup.controls.fast.value ? 0 : new Date().getTime() + (30 * 60000);
@@ -187,7 +187,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
           this.quote.off_chain_swap_routing_fee_percentage = this.inputFormGroup.controls.routingFeePercent.value ? this.inputFormGroup.controls.routingFeePercent.value : 2;
         });
     }
-    this.stepper.selected.stepControl.setErrors(null);
+    this.stepper.selected?.stepControl.setErrors(null);
     this.stepper.next();
   }
 

@@ -47,7 +47,7 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public faExclamationTriangle = faExclamationTriangle;
   public paymentTypes = PaymentTypes;
   public paymentType = PaymentTypes.INVOICE;
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
 
   public offerDecoded: OfferRequest = {};
   public offerRequest = '';
@@ -56,8 +56,8 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public offerVendor = '';
   public offerTitle = '';
   public zeroAmtOffer = false;
-  public offerInvoice: OfferInvoice = null;
-  public offerAmount = null;
+  public offerInvoice: OfferInvoice | null = null;
+  public offerAmount: number | null = null;
   public flgSaveToDB = false;
 
   public paymentDecoded: PayRequest = {};
@@ -68,7 +68,7 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
 
   public pubkey = '';
   public keysendAmount = null;
-  public selActiveChannel: Channel = {};
+  public selActiveChannel: Channel | null = {};
   public activeChannels = {};
   public feeLimit = null;
   public selFeeLimitType = FEE_LIMIT_TYPES[0];
@@ -84,21 +84,21 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.paymentType = this.data.paymentType;
       switch (this.paymentType) {
         case PaymentTypes.INVOICE:
-          this.paymentRequest = this.data.invoiceBolt11;
+          this.paymentRequest = this.data.invoiceBolt11!;
           break;
         case PaymentTypes.KEYSEND:
-          this.pubkey = this.data.pubkeyKeysend;
+          this.pubkey = this.data.pubkeyKeysend!;
           break;
         case PaymentTypes.OFFER:
           this.onPaymentRequestEntry(this.data.bolt12);
-          this.offerTitle = this.data.offerTitle;
+          this.offerTitle = this.data.offerTitle!;
           this.flgSaveToDB = false;
           break;
         default:
           break;
       }
     }
-    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => {
+    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => {
       this.selNode = nodeSettings;
     });
     this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => {
@@ -203,26 +203,30 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
   }
 
   keysendPayment() {
-    this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_KEYSEND, paymentType: PaymentTypes.KEYSEND, pubkey: this.pubkey, amount: this.keysendAmount * 1000, fromDialog: true } }));
+    if (this.keysendAmount) {
+      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_KEYSEND, paymentType: PaymentTypes.KEYSEND, pubkey: this.pubkey, amount: this.keysendAmount * 1000, fromDialog: true } }));
+    }
   }
 
   sendPayment() {
     this.paymentError = '';
     if (this.paymentType === PaymentTypes.INVOICE) {
-      if (this.zeroAmtInvoice) {
+      if (this.zeroAmtInvoice && this.paymentAmount) {
         this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.INVOICE, invoice: this.paymentRequest, amount: this.paymentAmount * 1000, fromDialog: true } }));
       } else {
         this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.INVOICE, invoice: this.paymentRequest, fromDialog: true } }));
       }
     } else if (this.paymentType === PaymentTypes.OFFER) {
       if (!this.offerInvoice) {
-        if (this.zeroAmtOffer) {
+        if (this.zeroAmtOffer && this.offerAmount) {
           this.store.dispatch(fetchOfferInvoice({ payload: { offer: this.offerRequest, msatoshi: this.offerAmount * 1000 } }));
         } else {
           this.store.dispatch(fetchOfferInvoice({ payload: { offer: this.offerRequest } }));
         }
       } else {
-        this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.OFFER, invoice: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, bolt12: this.offerRequest, amount: this.offerAmount * 1000, zeroAmtOffer: this.zeroAmtOffer, title: this.offerTitle, vendor: this.offerVendor, description: this.offerDescription, fromDialog: true } }));
+        if (this.offerAmount) {
+          this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.OFFER, invoice: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, bolt12: this.offerRequest, amount: this.offerAmount * 1000, zeroAmtOffer: this.zeroAmtOffer, title: this.offerTitle, vendor: this.offerVendor, description: this.offerDescription, fromDialog: true } }));
+        }
       }
     }
   }
@@ -300,16 +304,16 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.offerDecoded.amount_msat = '0msat';
       this.offerDecoded.amount = 0;
       this.zeroAmtOffer = true;
-      this.offerDescription = this.offerDecoded.description;
+      this.offerDescription = this.offerDecoded.description || '';
       this.offerVendor = this.offerDecoded.vendor ? this.offerDecoded.vendor : this.offerDecoded.issuer ? this.offerDecoded.issuer : '';
       this.offerDecodedHint = 'Zero Amount Offer | Description: ' + this.offerDecoded.description;
     } else {
       this.zeroAmtOffer = false;
-      this.offerDecoded.amount = +(this.offerDecoded.amount || this.offerDecoded.amount_msat.slice(0, -4));
+      this.offerDecoded.amount = this.offerDecoded.amount ? +this.offerDecoded.amount : this.offerDecoded.amount_msat ? +this.offerDecoded.amount_msat.slice(0, -4) : null;
       this.offerAmount = this.offerDecoded.amount ? this.offerDecoded.amount / 1000 : 0;
-      this.offerDescription = this.offerDecoded.description;
+      this.offerDescription = this.offerDecoded.description || '';
       this.offerVendor = this.offerDecoded.vendor ? this.offerDecoded.vendor : this.offerDecoded.issuer ? this.offerDecoded.issuer : '';
-      if (this.selNode.fiatConversion) {
+      if (this.selNode && this.selNode.fiatConversion) {
         this.commonService.convertCurrency(this.offerAmount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
           pipe(takeUntil(this.unSubs[7])).
           subscribe({
@@ -332,7 +336,7 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
     } else {
       this.zeroAmtInvoice = false;
-      if (this.selNode.fiatConversion) {
+      if (this.selNode && this.selNode.fiatConversion) {
         this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
           pipe(takeUntil(this.unSubs[8])).
           subscribe({

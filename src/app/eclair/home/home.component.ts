@@ -43,7 +43,7 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
   public faNetworkWired = faNetworkWired;
   public userPersonaEnum = UserPersonaEnum;
   public channelBalances = { localBalance: 0, remoteBalance: 0, balancedness: 0 };
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public fees: Fees;
   public information: GetInfo = {};
   public channels: Channel[] = [];
@@ -126,7 +126,7 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
         this.errorMessages[0] = '';
         this.apiCallStatusNodeInfo = selNodeInfoStatusSelector.apiCallStatus;
         if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[0] = (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message;
+          this.errorMessages[0] = (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message ? this.apiCallStatusNodeInfo.message : '';
         }
         this.information = selNodeInfoStatusSelector.information;
       });
@@ -136,7 +136,7 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
         this.errorMessages[1] = '';
         this.apiCallStatusFees = feesSelector.apiCallStatus;
         if (this.apiCallStatusFees.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[1] = (typeof (this.apiCallStatusFees.message) === 'object') ? JSON.stringify(this.apiCallStatusFees.message) : this.apiCallStatusFees.message;
+          this.errorMessages[1] = (typeof (this.apiCallStatusFees.message) === 'object') ? JSON.stringify(this.apiCallStatusFees.message) : this.apiCallStatusFees.message ? this.apiCallStatusFees.message : '';
         }
         this.fees = feesSelector.fees;
       });
@@ -148,14 +148,14 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
         this.apiCallStatusAllChannels = allChannelsSelector.apiCallStatus;
         this.apiCallStatusOCBal = oCBalanceSelector.apiCallStatus;
         if (this.apiCallStatusAllChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[2] = (typeof (this.apiCallStatusAllChannels.message) === 'object') ? JSON.stringify(this.apiCallStatusAllChannels.message) : this.apiCallStatusAllChannels.message;
+          this.errorMessages[2] = (typeof (this.apiCallStatusAllChannels.message) === 'object') ? JSON.stringify(this.apiCallStatusAllChannels.message) : this.apiCallStatusAllChannels.message ? this.apiCallStatusAllChannels.message : '';
         }
         if (this.apiCallStatusOCBal.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[3] = (typeof (this.apiCallStatusOCBal.message) === 'object') ? JSON.stringify(this.apiCallStatusOCBal.message) : this.apiCallStatusOCBal.message;
+          this.errorMessages[3] = (typeof (this.apiCallStatusOCBal.message) === 'object') ? JSON.stringify(this.apiCallStatusOCBal.message) : this.apiCallStatusOCBal.message ? this.apiCallStatusOCBal.message : '';
         }
         this.channels = allChannelsSelector.activeChannels;
         this.onchainBalance = oCBalanceSelector.onchainBalance;
-        this.balances.onchain = this.onchainBalance.total;
+        this.balances.onchain = this.onchainBalance.total || 0;
         this.balances.lightning = allChannelsSelector.lightningBalance.localBalance;
         this.balances.total = this.balances.lightning + this.balances.onchain;
         this.balances = Object.assign({}, this.balances);
@@ -167,11 +167,11 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
         this.totalInboundLiquidity = 0;
         this.totalOutboundLiquidity = 0;
         this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels, 'balancedness')));
-        this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels?.filter((channel) => channel.toRemote > 0), 'toRemote')));
-        this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels?.filter((channel) => channel.toLocal > 0), 'toLocal')));
-        this.channels.forEach((channel) => {
-          this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil(channel.toRemote);
-          this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor(channel.toLocal);
+        this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels?.filter((channel: Channel) => (channel.toRemote || 0) > 0), 'toRemote')));
+        this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels?.filter((channel: Channel) => (channel.toLocal || 0) > 0), 'toLocal')));
+        this.channels.forEach((channel: Channel) => {
+          this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil(channel.toRemote || 0);
+          this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor(channel.toLocal || 0);
         });
         this.logger.info(allChannelsSelector);
       });
@@ -184,9 +184,9 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
   onsortChannelsBy() {
     if (this.sortField === 'Balance Score') {
       this.sortField = 'Capacity';
-      this.allChannelsCapacity = this.channels.sort((a, b) => {
-        const x = +a.toLocal + +a.toRemote;
-        const y = +b.toLocal + +b.toRemote;
+      this.allChannelsCapacity = this.channels.sort((a: Channel, b: Channel) => {
+        const x = +(a.toLocal || 0) + +(a.toRemote || 0);
+        const y = +(b.toLocal || 0) + +(b.toRemote || 0);
         return ((x > y) ? -1 : ((x < y) ? 1 : 0));
       });
     } else {

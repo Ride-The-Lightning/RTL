@@ -41,12 +41,12 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   faHistory = faHistory;
-  public selNode: SelNodeChild = {};
+  public selNode: SelNodeChild | null = {};
   public newlyAddedOfferMemo = '';
   public newlyAddedOfferValue = 0;
   public description = '';
   public expiry: number;
-  public offerValue: number = null;
+  public offerValue: number | null = null;
   public offerValueHint = '';
   public displayedColumns: any[] = [];
   public offerPaymentReq = '';
@@ -84,7 +84,7 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   ngOnInit() {
-    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild) => {
+    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => {
       this.selNode = nodeSettings;
     });
     this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => {
@@ -156,19 +156,19 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
     }));
     this.rtlEffects.closeConfirm.pipe(takeUntil(this.unSubs[3])).subscribe((confirmRes) => {
       if (confirmRes) {
-        this.store.dispatch(disableOffer({ payload: { offer_id: selOffer.offer_id } }));
+        this.store.dispatch(disableOffer({ payload: { offer_id: selOffer.offer_id! } }));
       }
     });
   }
 
   onPrintOffer(selOffer: Offer) {
-    this.dataService.decodePayment(selOffer.bolt12, false).
+    this.dataService.decodePayment(selOffer.bolt12!, false).
       pipe(take(1)).subscribe((offerDecoded: OfferRequest) => {
         if (offerDecoded.offer_id && !offerDecoded.amount_msat) {
           offerDecoded.amount_msat = '0msat';
           offerDecoded.amount = 0;
         } else {
-          offerDecoded.amount = +(offerDecoded.amount || offerDecoded.amount_msat.slice(0, -4));
+          offerDecoded.amount = offerDecoded.amount ? +offerDecoded.amount : offerDecoded.amount_msat ? +offerDecoded.amount_msat.slice(0, -4) : null;
         }
         const documentDefinition = {
           pageSize: 'A5',
@@ -196,7 +196,7 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
             },
             { text: offerDecoded.description ? offerDecoded.description.substring(0, 160) : '', alignment: 'center', fontSize: 16, color: '#5C5C5C' },
             { qr: selOffer.bolt12, eccLevel: 'M', fit: '227', alignment: 'center', absolutePosition: { x: 7, y: 205 } },
-            { text: (!offerDecoded?.amount_msat || offerDecoded?.amount === 0 ? 'Open amount' : (this.decimalPipe.transform(offerDecoded.amount / 1000) + ' SATS')), fontSize: 20, bold: false, color: 'white', alignment: 'center', absolutePosition: { x: 0, y: 430 } },
+            { text: (!offerDecoded?.amount_msat || offerDecoded?.amount === 0 ? 'Open amount' : (this.decimalPipe.transform((offerDecoded.amount || 0) / 1000) + ' SATS')), fontSize: 20, bold: false, color: 'white', alignment: 'center', absolutePosition: { x: 0, y: 430 } },
             { text: 'SCAN TO PAY', fontSize: 22, bold: true, color: 'white', alignment: 'center', absolutePosition: { x: 0, y: 455 } }
           ],
           footer: {

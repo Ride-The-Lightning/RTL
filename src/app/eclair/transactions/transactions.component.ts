@@ -22,7 +22,7 @@ export class ECLTransactionsComponent implements OnInit, OnDestroy {
 
   faExchangeAlt = faExchangeAlt;
   faChartPie = faChartPie;
-  currencyUnits = [];
+  currencyUnits: string[] = [];
   balances = [{ title: 'Local Capacity', dataValue: 0, tooltip: 'Amount you can send' }, { title: 'Remote Capacity', dataValue: 0, tooltip: 'Amount you can receive' }];
   public links = [{ link: 'payments', name: 'Payments' }, { link: 'invoices', name: 'Invoices' }];
   public activeLink = this.links[0].link;
@@ -42,9 +42,9 @@ export class ECLTransactionsComponent implements OnInit, OnDestroy {
       });
     this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[1]),
       withLatestFrom(this.store.select(eclnNodeSettings))).
-      subscribe(([allChannels, nodeSettings]: [{ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload }, SelNodeChild]) => {
-        this.currencyUnits = nodeSettings.currencyUnits;
-        if (nodeSettings.userPersona === UserPersonaEnum.OPERATOR) {
+      subscribe(([allChannels, nodeSettings]: [{ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload }, (SelNodeChild | null)]) => {
+        this.currencyUnits = nodeSettings?.currencyUnits || [];
+        if (nodeSettings && nodeSettings.userPersona === UserPersonaEnum.OPERATOR) {
           this.balances = [{ title: 'Local Capacity', dataValue: allChannels.lightningBalance.localBalance, tooltip: 'Amount you can send' }, { title: 'Remote Capacity', dataValue: allChannels.lightningBalance.remoteBalance, tooltip: 'Amount you can receive' }];
         } else {
           this.balances = [{ title: 'Outbound Capacity', dataValue: allChannels.lightningBalance.localBalance, tooltip: 'Amount you can send' }, { title: 'Inbound Capacity', dataValue: allChannels.lightningBalance.remoteBalance, tooltip: 'Amount you can receive' }];

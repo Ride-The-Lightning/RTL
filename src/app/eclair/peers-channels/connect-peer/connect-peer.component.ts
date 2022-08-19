@@ -30,7 +30,7 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
   public totalBalance = 0;
   public flgChannelOpened = false;
   public channelOpenStatus = null;
-  public newlyAddedPeer: Peer = null;
+  public newlyAddedPeer: Peer | null = null;
   public flgEditable = true;
   public peerConnectionError = '';
   public channelConnectionError = '';
@@ -44,9 +44,14 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
   constructor(public dialogRef: MatDialogRef<ECLConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLOpenChannelAlert, private store: Store<RTLState>, private formBuilder: FormBuilder, private actions: Actions, private logger: LoggerService) { }
 
   ngOnInit() {
-    this.totalBalance = this.data.message.balance;
-    this.peerAddress = (this.data.message.peer && this.data.message.peer.nodeId && this.data.message.peer.address) ? (this.data.message.peer.nodeId + '@' + this.data.message.peer.address) :
-      (this.data.message.peer && this.data.message.peer.nodeId && !this.data.message.peer.address) ? this.data.message.peer.nodeId : '';
+    if (this.data.message) {
+      this.totalBalance = this.data.message.balance;
+      this.peerAddress = (this.data.message.peer && this.data.message.peer.nodeId && this.data.message.peer.address) ? (this.data.message.peer.nodeId + '@' + this.data.message.peer.address) :
+        (this.data.message.peer && this.data.message.peer.nodeId && !this.data.message.peer.address) ? this.data.message.peer.nodeId : '';  
+    } else {
+      this.totalBalance = 0;
+      this.peerAddress = '';
+    }
     this.peerFormGroup = this.formBuilder.group({
       hiddenAddress: ['', [Validators.required]],
       peerAddress: [this.peerAddress, [Validators.required]]
@@ -97,7 +102,7 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
     this.channelConnectionError = '';
     this.store.dispatch(saveNewChannel({
       payload: {
-        nodeId: this.newlyAddedPeer.nodeId, amount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value, feeRate: this.channelFormGroup.controls.feeRate.value
+        nodeId: this.newlyAddedPeer?.nodeId!, amount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value, feeRate: this.channelFormGroup.controls.feeRate.value
       }
     }));
   }
@@ -115,7 +120,7 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
 
       case 1:
         if (this.peerFormGroup.controls.peerAddress.value) {
-          this.peerFormLabel = 'Peer Added: ' + (this.newlyAddedPeer.alias ? this.newlyAddedPeer.alias : this.newlyAddedPeer.nodeId);
+          this.peerFormLabel = 'Peer Added: ' + (this.newlyAddedPeer?.alias ? this.newlyAddedPeer.alias : this.newlyAddedPeer?.nodeId);
         } else {
           this.peerFormLabel = 'Peer Details';
         }
@@ -124,7 +129,7 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
 
       case 2:
         if (this.peerFormGroup.controls.peerAddress.value) {
-          this.peerFormLabel = 'Peer Added: ' + (this.newlyAddedPeer.alias ? this.newlyAddedPeer.alias : this.newlyAddedPeer.nodeId);
+          this.peerFormLabel = 'Peer Added: ' + (this.newlyAddedPeer?.alias ? this.newlyAddedPeer.alias : this.newlyAddedPeer?.nodeId);
         } else {
           this.peerFormLabel = 'Peer Details';
         }

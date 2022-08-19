@@ -16,7 +16,7 @@ export class WebSocketClientService implements OnDestroy {
   private nodeIndex = '';
   private socket: WebSocketSubject<any> | null;
   private RETRY_SECONDS = 5;
-  private RECONNECT_TIMEOUT = null;
+  private RECONNECT_TIMEOUT: any = null;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private sessionService: SessionService) { }
@@ -28,7 +28,7 @@ export class WebSocketClientService implements OnDestroy {
       this.logger.info('Websocket Url: ' + this.wsUrl);
       this.socket = new WebSocketSubject({
         url: finalWSUrl,
-        protocol: [this.sessionService.getItem('token'), nodeIndex]
+        protocol: [(this.sessionService.getItem('token') || ''), nodeIndex]
       });
       this.subscribeToMessages();
     }
@@ -52,7 +52,7 @@ export class WebSocketClientService implements OnDestroy {
   }
 
   private subscribeToMessages() {
-    this.socket.pipe(takeUntil(this.unSubs[1])).subscribe({
+    this.socket?.pipe(takeUntil(this.unSubs[1])).subscribe({
       next: (msg) => {
         msg = (typeof msg === 'string') ? JSON.parse(msg) : msg;
         if (msg.error) {
