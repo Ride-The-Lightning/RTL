@@ -18,7 +18,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   public faUserCog = faUserCog;
   public showBitcoind = false;
-  public selNode: ConfigSettingsNode;
+  public selNode: ConfigSettingsNode | any;
   public appConfig: RTLConfiguration;
   public links = [{ link: 'app', name: 'Application' }, { link: 'auth', name: 'Authentication' }, { link: 'bconfig', name: 'BitcoinD Config' }];
   public activeLink = '';

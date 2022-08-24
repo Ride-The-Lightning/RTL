@@ -26,7 +26,7 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
   public faMoneyBillAlt = faMoneyBillAlt;
   public faPaintBrush = faPaintBrush;
   public faInfoCircle = faInfoCircle;
-  public selNode: ConfigSettingsNode;
+  public selNode: ConfigSettingsNode | any;
   public userPersonas = [UserPersonaEnum.OPERATOR, UserPersonaEnum.MERCHANT];
   public currencyUnits = FIAT_CURRENCY_UNITS;
   public themeModes = NODE_SETTINGS.modes;

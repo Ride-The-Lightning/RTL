@@ -7,15 +7,15 @@ import { LNDReducer } from '../../../lnd/store/lnd.reducers';
 import { CLNReducer } from '../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { SharedModule } from '../../shared.module';
-import { ServicesComponent } from './services.component';
+import { LNServicesComponent } from './ln-services.component';
 
-describe('ServicesComponent', () => {
-  let component: ServicesComponent;
-  let fixture: ComponentFixture<ServicesComponent>;
+describe('LNServicesComponent', () => {
+  let component: LNServicesComponent;
+  let fixture: ComponentFixture<LNServicesComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ServicesComponent],
+      declarations: [LNServicesComponent],
       imports: [
         SharedModule,
         RouterTestingModule,
@@ -26,7 +26,7 @@ describe('ServicesComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ServicesComponent);
+    fixture = TestBed.createComponent(LNServicesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

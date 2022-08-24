@@ -36,7 +36,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
   public errorConfirmMsg = '';
   public initializeNodeData = false;
   public appConfig: RTLConfiguration;
-  public selNode: ConfigSettingsNode;
+  public selNode: ConfigSettingsNode | any;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private actions: Actions, private router: Router, private sessionService: SessionService) { }
