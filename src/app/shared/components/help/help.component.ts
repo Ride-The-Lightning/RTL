@@ -19,7 +19,7 @@ export class HelpComponent implements OnInit, OnDestroy {
 
   public helpTopics: Array<HelpTopic> = [];
   public faQuestion = faQuestion;
-  public selNode: ConfigSettingsNode;
+  public selNode: ConfigSettingsNode | any;
   public LNPLink = '/lnd/';
   public flgLoggedIn = false;
   private unSubs = [new Subject(), new Subject(), new Subject(), new Subject()];

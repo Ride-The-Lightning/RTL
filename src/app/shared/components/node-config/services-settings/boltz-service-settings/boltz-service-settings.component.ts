@@ -23,8 +23,8 @@ export class BoltzServiceSettingsComponent implements OnInit, OnDestroy {
 
   @ViewChild('form', { static: true }) form: any;
   public faInfoCircle = faInfoCircle;
-  public selNode: ConfigSettingsNode;
-  public previousSelNode: ConfigSettingsNode;
+  public selNode: ConfigSettingsNode | any;
+  public previousSelNode: ConfigSettingsNode | any;
   public enableBoltz = false;
   public serverUrl = '';
   public macaroonPath = '';

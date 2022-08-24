@@ -23,8 +23,8 @@ export class LoopServiceSettingsComponent implements OnInit, OnDestroy {
 
   @ViewChild('form', { static: true }) form: any;
   public faInfoCircle = faInfoCircle;
-  public selNode: ConfigSettingsNode;
-  public previousSelNode: ConfigSettingsNode;
+  public selNode: ConfigSettingsNode | any;
+  public previousSelNode: ConfigSettingsNode | any;
   public enableLoop = false;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
