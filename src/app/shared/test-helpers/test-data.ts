@@ -759,7 +759,8 @@ export const mockActionsData = {
       boltzServerUrl: '',
       channelBackupPath: '',
       currencyUnit: '',
-      enableOffers: false
+      enableOffers: false,
+      enablePeerswap: false
     },
     authentication: {
       swapMacaroonPath: '',
@@ -782,7 +783,8 @@ export const mockActionsData = {
     lnImplementation: 'LND',
     swapServerUrl: '',
     boltzServerUrl: '',
-    enableOffers: false
+    enableOffers: false,
+    enablePeerswap: false
   },
   setSelectedNode: {
     settings: {
@@ -802,7 +804,8 @@ export const mockActionsData = {
       boltzServerUrl: '',
       channelBackupPath: '',
       currencyUnit: '',
-      enableOffers: false
+      enableOffers: false,
+      enablePeerswap: false
     },
     authentication: {
       swapMacaroonPath: '',

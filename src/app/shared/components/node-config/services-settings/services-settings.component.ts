@@ -1,8 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router, ResolveEnd, Event } from '@angular/router';
+import { Router, ResolveEnd, Event, ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { faLayerGroup } from '@fortawesome/free-solid-svg-icons';
+import { ConfigSettingsNode } from '../../../models/RTLconfig';
+import { Store } from '@ngrx/store';
+import { RTLState } from '../../../../store/rtl.state';
+import { rootSelectedNode } from '../../../../store/rtl.selector';
 
 @Component({
   selector: 'rtl-services-settings',
@@ -12,11 +16,12 @@ import { faLayerGroup } from '@fortawesome/free-solid-svg-icons';
 export class ServicesSettingsComponent implements OnInit, OnDestroy {
 
   public faLayerGroup = faLayerGroup;
-  public links = [{ link: 'loop', name: 'Loop' }, { link: 'boltz', name: 'Boltz' }];
+  public links = [{ link: 'loop', name: 'Loop' }, { link: 'boltz', name: 'Boltz' }, { link: 'peerswap', name: 'Peerswap' }];
   public activeLink = '';
+  public selNode: ConfigSettingsNode | any;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private router: Router) { }
+  constructor(private store: Store<RTLState>, private router: Router, private activatedRoute: ActivatedRoute) { }
 
   ngOnInit() {
     const linkFound = this.links.find((link) => this.router.url.includes(link.link));
@@ -25,9 +30,20 @@ export class ServicesSettingsComponent implements OnInit, OnDestroy {
       subscribe({
         next: (value: ResolveEnd | Event) => {
           const linkFound = this.links.find((link) => (<ResolveEnd>value).urlAfterRedirects.includes(link.link));
-          this.activeLink = linkFound ? linkFound.link : this.links[0].link;
+          if(this.selNode.lnImplementation.toUpperCase() === 'CLN') {
+            this.activeLink = this.links[2].link;
+          } else {
+            this.activeLink = linkFound ? linkFound.link : this.links[0].link;
+          }
         }
       });
+      this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).subscribe((selNode) => {
+        this.selNode = selNode;
+        if (this.selNode.lnImplementation.toUpperCase() === 'CLN') {
+          this.activeLink = this.links[2].link;
+          this.router.navigate(['./' + this.activeLink], { relativeTo: this.activatedRoute });
+        }
+      });  
   }
 
   ngOnDestroy() {
