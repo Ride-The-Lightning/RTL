@@ -109,6 +109,7 @@ export const getRTLConfig = (req, res, next) => {
           settings.swapServerUrl = node.swap_server_url;
           settings.boltzServerUrl = node.boltz_server_url;
           settings.enableOffers = node.enable_offers;
+          settings.enablePeerswap = node.enable_peerswap;
           settings.channelBackupPath = node.channel_backup_path;
           settings.currencyUnit = node.currency_unit;
           nodesArr.push({
@@ -306,7 +307,7 @@ export const updateServiceSettings = (req, res, next) => {
   const RTLConfFile = common.rtl_conf_file_path + sep + 'RTL-Config.json';
   const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
   const selectedNode = common.findNode(req.session.selectedNode.index);
-  config.nodes.find((node) => {
+  config.nodes.forEach((node) => {
     if (node.index === req.session.selectedNode.index) {
       switch (req.body.service) {
         case 'LOOP':
@@ -340,6 +341,11 @@ export const updateServiceSettings = (req, res, next) => {
         case 'OFFERS':
           node.Settings.enableOffers = req.body.settings.enableOffers;
           selectedNode.enable_offers = req.body.settings.enableOffers;
+          break;
+
+        case 'PEERSWAP':
+          node.Settings.enablePeerswap = req.body.settings.enablePeerswap;
+          selectedNode.enable_peerswap = req.body.settings.enablePeerswap;
           break;
 
         default:

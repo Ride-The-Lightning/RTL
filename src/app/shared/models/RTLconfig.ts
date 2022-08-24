@@ -24,7 +24,8 @@ export class Settings {
     public boltzServerUrl?: string,
     public channelBackupPath?: string,
     public currencyUnit?: string,
-    public enableOffers?: boolean
+    public enableOffers?: boolean,
+    public enablePeerswap?: boolean
   ) { }
 
 }
@@ -84,6 +85,7 @@ export interface SelNodeChild {
   swapServerUrl?: string;
   boltzServerUrl?: string;
   enableOffers?: boolean;
+  enablePeerswap?: boolean;
 }
 
 export class HelpTopic {
