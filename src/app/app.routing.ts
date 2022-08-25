@@ -11,9 +11,9 @@ import { NodeSettingsComponent } from './shared/components/node-config/node-sett
 import { ServicesSettingsComponent } from './shared/components/node-config/services-settings/services-settings.component';
 import { LoopServiceSettingsComponent } from './shared/components/node-config/services-settings/loop-service-settings/loop-service-settings.component';
 import { BoltzServiceSettingsComponent } from './shared/components/node-config/services-settings/boltz-service-settings/boltz-service-settings.component';
-import { ServicesComponent } from './shared/components/services/services.component';
-import { LoopComponent } from './shared/components/services/loop/loop.component';
-import { BoltzRootComponent } from './shared/components/services/boltz/boltz-root.component';
+import { LNServicesComponent } from './shared/components/ln-services/ln-services.component';
+import { LoopComponent } from './shared/components/ln-services/loop/loop.component';
+import { BoltzRootComponent } from './shared/components/ln-services/boltz/boltz-root.component';
 import { HelpComponent } from './shared/components/help/help.component';
 import { LoginComponent } from './shared/components/login/login.component';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
@@ -50,7 +50,7 @@ export const routes: Routes = [
     ]
   },
   {
-    path: 'services', component: ServicesComponent, canActivate: [AuthGuard], children: [
+    path: 'services', component: LNServicesComponent, canActivate: [AuthGuard], children: [
       { path: '', pathMatch: 'full', redirectTo: 'loop' },
       { path: 'loop', pathMatch: 'full', redirectTo: 'loop/loopout' },
       { path: 'loop/:selTab', component: LoopComponent },

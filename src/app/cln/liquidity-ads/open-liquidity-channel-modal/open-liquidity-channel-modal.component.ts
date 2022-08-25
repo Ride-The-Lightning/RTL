@@ -75,7 +75,7 @@ export class CLNOpenLiquidityChannelComponent implements OnInit, OnDestroy {
     if (!this.node || !this.node.option_will_fund || !this.requestedAmount || !this.feeRate || !this.localAmount || this.localAmount < 20000) {
       return true;
     }
-    const newChannel = { peerId: this.node.nodeid || '', satoshis: this.localAmount.toString(), feeRate: this.feeRate + 'perkb', requestAmount: this.requestedAmount.toString(), compactLease: this.node.option_will_fund.compact_lease };
+    const newChannel = { peerId: this.node.nodeid || '', satoshis: this.localAmount.toString(), feeRate: this.feeRate + 'perkb', requestAmount: this.requestedAmount.toString(), compactLease: this.node.option_will_fund.compact_lease, announce: true };
     this.store.dispatch(saveNewChannel({ payload: newChannel }));
   }
 

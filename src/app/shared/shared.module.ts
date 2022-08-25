@@ -79,21 +79,21 @@ import { ErrorMessageComponent } from './components/data-modal/error-message/err
 import { TwoFactorAuthComponent } from './components/data-modal/two-factor-auth/two-factor-auth.component';
 import { LoginTokenComponent } from './components/data-modal/login-2fa-token/login-2fa-token.component';
 
-import { ServicesComponent } from './components/services/services.component';
-import { LoopComponent } from '../shared/components/services/loop/loop.component';
-import { SwapsComponent } from '../shared/components/services/loop/swaps/swaps.component';
-import { LoopModalComponent } from '../shared/components/services/loop/loop-modal/loop-modal.component';
-import { LoopQuoteComponent } from '../shared/components/services/loop/loop-quote/loop-quote.component';
-import { LoopStatusComponent } from '../shared/components/services/loop/loop-status/loop-status.component';
-import { LoopOutInfoGraphicsComponent } from '../shared/components/services/loop/loop-out-info-graphics/info-graphics.component';
-import { LoopInInfoGraphicsComponent } from '../shared/components/services/loop/loop-in-info-graphics/info-graphics.component';
-import { BoltzRootComponent } from './components/services/boltz/boltz-root.component';
-import { BoltzSwapsComponent } from './components/services/boltz/swaps/swaps.component';
-import { SwapStatusComponent } from './components/services/boltz/swap-status/swap-status.component';
-import { SwapServiceInfoComponent } from './components/services/boltz/swap-service-info/swap-service-info.component';
-import { SwapModalComponent } from './components/services/boltz/swap-modal/swap-modal.component';
-import { SwapInInfoGraphicsComponent } from './components/services/boltz/swap-in-info-graphics/info-graphics.component';
-import { SwapOutInfoGraphicsComponent } from './components/services/boltz/swap-out-info-graphics/info-graphics.component';
+import { LNServicesComponent } from './components/ln-services/ln-services.component';
+import { LoopComponent } from '../shared/components/ln-services/loop/loop.component';
+import { SwapsComponent } from '../shared/components/ln-services/loop/swaps/swaps.component';
+import { LoopModalComponent } from '../shared/components/ln-services/loop/loop-modal/loop-modal.component';
+import { LoopQuoteComponent } from '../shared/components/ln-services/loop/loop-quote/loop-quote.component';
+import { LoopStatusComponent } from '../shared/components/ln-services/loop/loop-status/loop-status.component';
+import { LoopOutInfoGraphicsComponent } from '../shared/components/ln-services/loop/loop-out-info-graphics/info-graphics.component';
+import { LoopInInfoGraphicsComponent } from '../shared/components/ln-services/loop/loop-in-info-graphics/info-graphics.component';
+import { BoltzRootComponent } from './components/ln-services/boltz/boltz-root.component';
+import { BoltzSwapsComponent } from './components/ln-services/boltz/swaps/swaps.component';
+import { SwapStatusComponent } from './components/ln-services/boltz/swap-status/swap-status.component';
+import { SwapServiceInfoComponent } from './components/ln-services/boltz/swap-service-info/swap-service-info.component';
+import { SwapModalComponent } from './components/ln-services/boltz/swap-modal/swap-modal.component';
+import { SwapInInfoGraphicsComponent } from './components/ln-services/boltz/swap-in-info-graphics/info-graphics.component';
+import { SwapOutInfoGraphicsComponent } from './components/ln-services/boltz/swap-out-info-graphics/info-graphics.component';
 
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
@@ -248,7 +248,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     CurrencyUnitConverterComponent,
     HorizontalScrollerComponent,
     TransactionsReportTableComponent,
-    ServicesComponent,
+    LNServicesComponent,
     LoopComponent,
     SwapsComponent,
     LoopModalComponent,
@@ -305,7 +305,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     TwoFactorAuthComponent,
     LoginTokenComponent,
     TransactionsReportTableComponent,
-    ServicesComponent,
+    LNServicesComponent,
     LoopComponent,
     SwapsComponent,
     LoopModalComponent,
