@@ -46,7 +46,18 @@
             </mat-form-field>
           </div>
         </form> -->
-        <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container mt-2">
+        <div fxLayout="row" fxLayoutAlign="start center" class="page-sub-title-container padding-gap-x mt-2">
+          <div fxFlex="30" fxFlex.gt-xs="70">
+            <fa-icon [icon]="faUsers" class="page-title-img mr-1"></fa-icon>
+            <span class="page-title">Liquidity Providing Peers</span>
+          </div>
+          <mat-form-field fxFlex="30">
+            <div fxLayout="row" fxLayoutAlign="start start">
+              <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" placeholder="Filter">
+            </div>
+          </mat-form-field>
+        </div>
+        <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
           <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
           <table mat-table #table [dataSource]="liquidityNodes" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
             <ng-container matColumnDef="alias">
