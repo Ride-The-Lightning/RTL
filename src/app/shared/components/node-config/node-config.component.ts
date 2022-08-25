@@ -18,7 +18,7 @@ export class NodeConfigComponent implements OnInit, OnDestroy {
 
   public faTools = faTools;
   public showLnConfig = false;
-  public selNode: ConfigSettingsNode;
+  public selNode: ConfigSettingsNode | any;
   public lnImplementationStr = '';
   public links = [{ link: 'layout', name: 'Layout' }, { link: 'services', name: 'Services' }, { link: 'experimental', name: 'Experimental' }, { link: 'lnconfig', name: this.lnImplementationStr }];
   public activeLink = '';

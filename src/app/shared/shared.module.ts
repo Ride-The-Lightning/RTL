@@ -65,6 +65,7 @@ import { NodeSettingsComponent } from './components/node-config/node-settings/no
 import { ServicesSettingsComponent } from './components/node-config/services-settings/services-settings.component';
 import { LoopServiceSettingsComponent } from './components/node-config/services-settings/loop-service-settings/loop-service-settings.component';
 import { BoltzServiceSettingsComponent } from './components/node-config/services-settings/boltz-service-settings/boltz-service-settings.component';
+import { PeerswapServiceSettingsComponent } from './components/node-config/services-settings/peerswap-service-settings/peerswap-service-settings.component';
 import { ExperimentalSettingsComponent } from './components/node-config/experimental-settings/experimental-settings.component';
 import { ErrorComponent } from './components/error/error.component';
 import { CurrencyUnitConverterComponent } from './components/currency-unit-converter/currency-unit-converter.component';
@@ -94,6 +95,11 @@ import { SwapServiceInfoComponent } from './components/ln-services/boltz/swap-se
 import { SwapModalComponent } from './components/ln-services/boltz/swap-modal/swap-modal.component';
 import { SwapInInfoGraphicsComponent } from './components/ln-services/boltz/swap-in-info-graphics/info-graphics.component';
 import { SwapOutInfoGraphicsComponent } from './components/ln-services/boltz/swap-out-info-graphics/info-graphics.component';
+import { PeerswapComponent } from './components/ln-services/peerswap/peerswap.component';
+import { SwapPeersComponent } from './components/ln-services/peerswap/swap-peers/swap-peers.component';
+import { PeerswapsCancelledComponent } from './components/ln-services/peerswap/swaps-cancelled/swaps-cancelled.component';
+import { PeerswapsInComponent } from './components/ln-services/peerswap/swaps-in/swaps-in.component';
+import { PeerswapsOutComponent } from './components/ln-services/peerswap/swaps-out/swaps-out.component';
 
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
@@ -244,6 +250,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     ServicesSettingsComponent,
     LoopServiceSettingsComponent,
     BoltzServiceSettingsComponent,
+    PeerswapServiceSettingsComponent,
     ExperimentalSettingsComponent,
     CurrencyUnitConverterComponent,
     HorizontalScrollerComponent,
@@ -262,7 +269,12 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     SwapServiceInfoComponent,
     SwapModalComponent,
     SwapInInfoGraphicsComponent,
-    SwapOutInfoGraphicsComponent
+    SwapOutInfoGraphicsComponent,
+    PeerswapComponent,
+    SwapPeersComponent,
+    PeerswapsCancelledComponent,
+    PeerswapsInComponent,
+    PeerswapsOutComponent
   ],
   declarations: [
     AppSettingsComponent,
@@ -282,6 +294,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     ServicesSettingsComponent,
     LoopServiceSettingsComponent,
     BoltzServiceSettingsComponent,
+    PeerswapServiceSettingsComponent,
     ExperimentalSettingsComponent,
     CurrencyUnitConverterComponent,
     HorizontalScrollerComponent,
@@ -319,7 +332,12 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     SwapServiceInfoComponent,
     SwapModalComponent,
     SwapInInfoGraphicsComponent,
-    SwapOutInfoGraphicsComponent
+    SwapOutInfoGraphicsComponent,
+    PeerswapComponent,
+    SwapPeersComponent,
+    PeerswapsCancelledComponent,
+    PeerswapsInComponent,
+    PeerswapsOutComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },

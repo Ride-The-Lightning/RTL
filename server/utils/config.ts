@@ -226,6 +226,7 @@ export class ConfigService {
           this.common.nodes[idx].boltz_macaroon_path = '';
         }
         this.common.nodes[idx].enable_offers = process.env.ENABLE_OFFERS ? process.env.ENABLE_OFFERS : (node.Settings.enableOffers) ? node.Settings.enableOffers : false;
+        this.common.nodes[idx].enable_peerswap = process.env.ENABLE_PEERSWAP ? process.env.ENABLE_PEERSWAP : (node.Settings.enablePeerswap) ? node.Settings.enablePeerswap : false;
         this.common.nodes[idx].bitcoind_config_path = process.env.BITCOIND_CONFIG_PATH ? process.env.BITCOIND_CONFIG_PATH : (node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
         this.common.nodes[idx].channel_backup_path = process.env.CHANNEL_BACKUP_PATH ? process.env.CHANNEL_BACKUP_PATH : (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : this.common.rtl_conf_file_path + sep + 'channels-backup' + sep + 'node-' + node.index;
         try {

@@ -20,6 +20,12 @@ import { NotFoundComponent } from './shared/components/not-found/not-found.compo
 import { ErrorComponent } from './shared/components/error/error.component';
 import { AuthGuard } from './shared/services/auth.guard';
 import { ExperimentalSettingsComponent } from './shared/components/node-config/experimental-settings/experimental-settings.component';
+import { PeerswapComponent } from './shared/components/ln-services/peerswap/peerswap.component';
+import { PeerswapServiceSettingsComponent } from './shared/components/node-config/services-settings/peerswap-service-settings/peerswap-service-settings.component';
+import { SwapPeersComponent } from './shared/components/ln-services/peerswap/swap-peers/swap-peers.component';
+import { PeerswapsOutComponent } from './shared/components/ln-services/peerswap/swaps-out/swaps-out.component';
+import { PeerswapsInComponent } from './shared/components/ln-services/peerswap/swaps-in/swaps-in.component';
+import { PeerswapsCancelledComponent } from './shared/components/ln-services/peerswap/swaps-cancelled/swaps-cancelled.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
@@ -42,7 +48,8 @@ export const routes: Routes = [
         path: 'services', component: ServicesSettingsComponent, canActivate: [AuthGuard], children: [
           { path: '', pathMatch: 'full', redirectTo: 'loop' },
           { path: 'loop', component: LoopServiceSettingsComponent, canActivate: [AuthGuard] },
-          { path: 'boltz', component: BoltzServiceSettingsComponent, canActivate: [AuthGuard] }
+          { path: 'boltz', component: BoltzServiceSettingsComponent, canActivate: [AuthGuard] },
+          { path: 'peerswap', component: PeerswapServiceSettingsComponent, canActivate: [AuthGuard] }
         ]
       },
       { path: 'experimental', component: ExperimentalSettingsComponent, canActivate: [AuthGuard] },
@@ -55,7 +62,16 @@ export const routes: Routes = [
       { path: 'loop', pathMatch: 'full', redirectTo: 'loop/loopout' },
       { path: 'loop/:selTab', component: LoopComponent },
       { path: 'boltz', pathMatch: 'full', redirectTo: 'boltz/swapout' },
-      { path: 'boltz/:selTab', component: BoltzRootComponent }
+      { path: 'boltz/:selTab', component: BoltzRootComponent },
+      {
+        path: 'peerswap', component: PeerswapComponent, canActivate: [AuthGuard], children: [
+          { path: '', pathMatch: 'full', redirectTo: 'peers' },
+          { path: 'peers', component: SwapPeersComponent, canActivate: [AuthGuard] },
+          { path: 'psout', component: PeerswapsOutComponent, canActivate: [AuthGuard] },
+          { path: 'psin', component: PeerswapsInComponent, canActivate: [AuthGuard] },
+          { path: 'pscancelled', component: PeerswapsCancelledComponent, canActivate: [AuthGuard] }
+        ]
+      },
     ]
   },
   { path: 'help', component: HelpComponent },

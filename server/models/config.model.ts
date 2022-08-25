@@ -25,7 +25,8 @@ export class CommonSelectedNode {
     public currency_unit?: string,
     public ln_version?: string,
     public api_version?: string,
-    public enable_offers?: boolean
+    public enable_offers?: boolean,
+    public enable_peerswap?: boolean
   ) { }
 
 }
@@ -54,7 +55,8 @@ export class NodeSettingsConfiguration {
     public swapServerUrl?: string,
     public boltzServerUrl?: string,
     public channelBackupPath?: string,
-    public enableOffers?: boolean
+    public enableOffers?: boolean,
+    public enablePeerswap?: boolean
   ) { }
 
 }

@@ -66,4 +66,5 @@ RTL_CONFIG_PATH (Path for the folder containing 'RTL-Config.json' file, Required
 BITCOIND_CONFIG_PATH (Full path of the bitcoind.conf file including the file name, Optional)<br />
 CHANNEL_BACKUP_PATH (Folder location for saving the channel backup files, valid for LND implementation only, Required if ln implementation=LND else Optional)<br />
 ENABLE_OFFERS (Boolean flag to enable the offers feature on core lighning, default false, optional)<br />
+ENABLE_PEERSWAP (Boolean flag to enable the peerswap feature on core lighning, default false, optional)<br />
 LN_API_PASSWORD (Password for Eclair implementation if the eclair.conf path is not available, Required if ln implementation=ECL && config path is undefined)<br />
