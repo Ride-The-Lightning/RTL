@@ -145,7 +145,7 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
       return newEvent.includes(fltr);
     };
     this.forwardingHistoryEvents.paginator = this.paginator;
-    this.applyFilter();    
+    this.applyFilter();
     this.logger.info(this.forwardingHistoryEvents);
   }
 

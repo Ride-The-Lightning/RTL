@@ -1,6 +1,6 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { APICallStatusEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ListInvoices, UTXO, Offer, OfferBookmark, ListForwards } from '../../shared/models/clnModels';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ListInvoices, UTXO, Offer, OfferBookmark, ListForwards, SwapPeerChannelsFlattened, SwapRequest, Swap } from '../../shared/models/clnModels';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 
 export interface CLNState {
@@ -24,6 +24,9 @@ export interface CLNState {
   utxos: UTXO[];
   offers: Offer[];
   offersBookmarks: OfferBookmark[];
+  swapPeers: SwapPeerChannelsFlattened[];
+  swaps: Swap[];
+  swapRequests: SwapRequest[];
 }
 
 export const initCLNState: CLNState = {
@@ -43,7 +46,10 @@ export const initCLNState: CLNState = {
     FetchForwardingHistoryF: { status: APICallStatusEnum.UN_INITIATED },
     FetchForwardingHistoryL: { status: APICallStatusEnum.UN_INITIATED },
     FetchOffers: { status: APICallStatusEnum.UN_INITIATED },
-    FetchOfferBookmarks: { status: APICallStatusEnum.UN_INITIATED }
+    FetchOfferBookmarks: { status: APICallStatusEnum.UN_INITIATED },
+    FetchSwaps: { status: APICallStatusEnum.UN_INITIATED },
+    FetchSwapPeers: { status: APICallStatusEnum.UN_INITIATED },
+    FetchSwapRequests: { status: APICallStatusEnum.UN_INITIATED }
   },
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [], enableOffers: false, enablePeerswap: false },
   information: {},
@@ -63,5 +69,8 @@ export const initCLNState: CLNState = {
   invoices: { invoices: [] },
   utxos: [],
   offers: [],
-  offersBookmarks: []
+  offersBookmarks: [],
+  swapPeers: [],
+  swaps: [],
+  swapRequests: []
 };

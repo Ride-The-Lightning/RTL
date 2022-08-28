@@ -34,6 +34,9 @@ import { SignVerifyMessageComponent } from './sign-verify-message/sign-verify-me
 import { SignComponent } from './sign-verify-message/sign/sign.component';
 import { VerifyComponent } from './sign-verify-message/verify/verify.component';
 import { NotFoundComponent } from '../shared/components/not-found/not-found.component';
+import { LNServicesComponent } from './ln-services/ln-services.component';
+import { LoopComponent } from './ln-services/loop/loop.component';
+import { BoltzRootComponent } from './ln-services/boltz/boltz-root.component';
 
 import { AuthGuard, LNDUnlockedGuard } from '../shared/services/auth.guard';
 import { NonRoutingPeersComponent } from './routing/non-routing-peers/non-routing-peers.component';
@@ -114,6 +117,15 @@ export const LndRoutes: Routes = [
         ]
       },
       { path: 'lookups', component: LookupsComponent, canActivate: [LNDUnlockedGuard] },
+      {
+        path: 'services', component: LNServicesComponent, canActivate: [LNDUnlockedGuard], children: [
+          { path: '', pathMatch: 'full', redirectTo: 'loop' },
+          { path: 'loop', pathMatch: 'full', redirectTo: 'loop/loopout' },
+          { path: 'loop/:selTab', component: LoopComponent },
+          { path: 'boltz', pathMatch: 'full', redirectTo: 'boltz/swapout' },
+          { path: 'boltz/:selTab', component: BoltzRootComponent }
+        ]
+      },
       { path: 'network', component: NetworkInfoComponent, canActivate: [LNDUnlockedGuard] },
       { path: '**', component: NotFoundComponent },
       { path: 'rates', redirectTo: 'network' }

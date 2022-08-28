@@ -106,7 +106,7 @@
               </span>
               <span *ngIf="payment.is_expanded">
                 <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="mpp-row-span">
-                  Part ID {{mpp.partid ? mpp.partid : 0}}
+                  Part ID {{mpp.id ? mpp.id : 0}}
                 </span>
               </span>
             </td>
@@ -138,7 +138,7 @@
               </span>
               <div *ngIf="payment.is_expanded">
                 <div *ngFor="let mpp of payment?.mpps; index as i" fxLayoutAlign="end center">
-                  <button mat-stroked-button class="btn-mpp-info" color="primary" type="button" tabindex="6" (click)="onPaymentClick(mpp)">View {{mpp.partid ? mpp.partid : 0}}</button>
+                  <button mat-stroked-button class="btn-mpp-info" color="primary" type="button" tabindex="6" (click)="onPaymentClick(mpp)">View {{mpp.id ? mpp.id : 0}}</button>
                 </div>
               </div>
             </td>

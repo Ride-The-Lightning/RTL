@@ -70,7 +70,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
       this.totalBalance = 0;
       this.utxos = [];
       this.peer = null;
-      this.peers = [];  
+      this.peers = [];
     }
     this.alertTitle = this.data.alertTitle || 'Alert';
     this.actions.pipe(

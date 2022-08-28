@@ -8,6 +8,7 @@ import invoicesCLRoutes from './invoices.js';
 import onChainCLRoutes from './onchain.js';
 import paymentsCLRoutes from './payments.js';
 import peersCLRoutes from './peers.js';
+import peerswapCLRoutes from './peerswap.js';
 import networkCLRoutes from './network.js';
 import offersCLRoutes from './offers.js';
 import utilityCLRoutes from './utility.js';
@@ -21,6 +22,7 @@ const clRoutes = [
     { path: '/onchain', route: onChainCLRoutes },
     { path: '/payments', route: paymentsCLRoutes },
     { path: '/peers', route: peersCLRoutes },
+    { path: '/peerswap', route: peerswapCLRoutes },
     { path: '/network', route: networkCLRoutes },
     { path: '/offers', route: offersCLRoutes },
     { path: '/utility', route: utilityCLRoutes }

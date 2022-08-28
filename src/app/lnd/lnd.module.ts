@@ -66,6 +66,22 @@ import { LightningSendPaymentsComponent } from './transactions/send-payment-moda
 import { CreateInvoiceComponent } from './transactions/create-invoice-modal/create-invoice.component';
 import { ConnectPeerComponent } from './peers-channels/connect-peer/connect-peer.component';
 
+import { LNServicesComponent } from './ln-services/ln-services.component';
+import { LoopComponent } from './ln-services/loop/loop.component';
+import { SwapsComponent } from './ln-services/loop/swaps/swaps.component';
+import { LoopModalComponent } from './ln-services/loop/loop-modal/loop-modal.component';
+import { LoopQuoteComponent } from './ln-services/loop/loop-quote/loop-quote.component';
+import { LoopStatusComponent } from './ln-services/loop/loop-status/loop-status.component';
+import { LoopOutInfoGraphicsComponent } from './ln-services/loop/loop-out-info-graphics/info-graphics.component';
+import { LoopInInfoGraphicsComponent } from './ln-services/loop/loop-in-info-graphics/info-graphics.component';
+import { BoltzRootComponent } from './ln-services/boltz/boltz-root.component';
+import { BoltzSwapsComponent } from './ln-services/boltz/swaps/swaps.component';
+import { SwapStatusComponent } from './ln-services/boltz/swap-status/swap-status.component';
+import { SwapServiceInfoComponent } from './ln-services/boltz/swap-service-info/swap-service-info.component';
+import { SwapModalComponent } from './ln-services/boltz/swap-modal/swap-modal.component';
+import { SwapInInfoGraphicsComponent } from './ln-services/boltz/swap-in-info-graphics/info-graphics.component';
+import { SwapOutInfoGraphicsComponent } from './ln-services/boltz/swap-out-info-graphics/info-graphics.component';
+
 import { LNDUnlockedGuard } from '../shared/services/auth.guard';
 
 @NgModule({
@@ -135,7 +151,22 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     CreateInvoiceComponent,
     OnChainSendComponent,
     OnChainSendModalComponent,
-    OnChainLabelModalComponent
+    OnChainLabelModalComponent,
+    LNServicesComponent,
+    LoopComponent,
+    SwapsComponent,
+    LoopModalComponent,
+    LoopQuoteComponent,
+    LoopStatusComponent,
+    LoopInInfoGraphicsComponent,
+    LoopOutInfoGraphicsComponent,
+    BoltzRootComponent,
+    BoltzSwapsComponent,
+    SwapStatusComponent,
+    SwapServiceInfoComponent,
+    SwapModalComponent,
+    SwapInInfoGraphicsComponent,
+    SwapOutInfoGraphicsComponent
   ],
   providers: [
     LNDUnlockedGuard

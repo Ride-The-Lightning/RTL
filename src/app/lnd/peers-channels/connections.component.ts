@@ -22,7 +22,7 @@ export class ConnectionsComponent implements OnInit, OnDestroy {
 
   public selNode: SelNodeChild | null = {};
   public activePeers = 0;
-  public activeChannels: number = 0;
+  public activeChannels = 0;
   public faUsers = faUsers;
   public faChartPie = faChartPie;
   public balances = [{ title: 'Total Balance', dataValue: 0 }, { title: 'Confirmed', dataValue: 0 }, { title: 'Unconfirmed', dataValue: 0 }];
@@ -53,7 +53,7 @@ export class ConnectionsComponent implements OnInit, OnDestroy {
       });
     this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[4])).
       subscribe((bcBalanceSelector: { blockchainBalance: BlockchainBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.balances = [{ title: 'Total Balance', dataValue: bcBalanceSelector.blockchainBalance.total_balance || 0 }, { title: 'Confirmed', dataValue: (bcBalanceSelector.blockchainBalance.confirmed_balance || 0)}, { title: 'Unconfirmed', dataValue: (bcBalanceSelector.blockchainBalance.unconfirmed_balance || 0)}];
+        this.balances = [{ title: 'Total Balance', dataValue: bcBalanceSelector.blockchainBalance.total_balance || 0 }, { title: 'Confirmed', dataValue: (bcBalanceSelector.blockchainBalance.confirmed_balance || 0) }, { title: 'Unconfirmed', dataValue: (bcBalanceSelector.blockchainBalance.unconfirmed_balance || 0) }];
         this.logger.info(bcBalanceSelector);
       });
   }

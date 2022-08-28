@@ -171,7 +171,7 @@ export const ECLReducer = createReducer(initECLState,
     updatedPayload.amountIn = Math.round((payload.amountIn || 0) / 1000);
     updatedPayload.amountOut = Math.round((payload.amountOut || 0) / 1000);
     modifiedPayments.relayed?.unshift(updatedPayload);
-    const feeSats = (payload.amountIn ||0) - (payload.amountOut || 0);
+    const feeSats = (payload.amountIn || 0) - (payload.amountOut || 0);
     const modifiedLightningBalance = { localBalance: (state.lightningBalance.localBalance + feeSats), remoteBalance: (state.lightningBalance.remoteBalance - feeSats) };
     const modifiedChannelStatus = state.channelsStatus;
     if (modifiedChannelStatus.active) {
