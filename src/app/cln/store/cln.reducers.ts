@@ -4,9 +4,10 @@ import {
   addInvoice, addPeer, removeChannel, removePeer, resetCLStore, setBalance, setChannels,
   setChildNodeSettingsCL, setFeeRates, setFees, setForwardingHistory,
   setInfo, setInvoices, setLocalRemoteBalance, setOffers, addOffer, setPayments, setPeers, setUTXOs,
-  updateCLAPICallStatus, updateInvoice, updateOffer, setOfferBookmarks, addUpdateOfferBookmark, removeOfferBookmark
+  updateCLAPICallStatus, updateInvoice, updateOffer, setOfferBookmarks, addUpdateOfferBookmark, removeOfferBookmark,
+  setSwaps, setSwapPeers, setSwapRequests
 } from './cln.actions';
-import { Channel, OfferBookmark } from '../../shared/models/clnModels';
+import { Channel, OfferBookmark, SwapPeerChannelsFlattened } from '../../shared/models/clnModels';
 import { CLNForwardingEventsStatusEnum } from '../../shared/services/consts-enums-functions';
 
 export const CLNReducer = createReducer(initCLNState,
@@ -19,7 +20,7 @@ export const CLNReducer = createReducer(initCLNState,
         message: payload.message,
         URL: payload.URL,
         filePath: payload.filePath
-      };  
+      };
     }
     return {
       ...state,
@@ -215,6 +216,26 @@ export const CLNReducer = createReducer(initCLNState,
     return {
       ...state,
       offersBookmarks: modifiedOfferBookmarks
+    };
+  }),
+  on(setSwaps, (state, { payload }) => ({
+    ...state,
+    swaps: payload
+  })),
+  on(setSwapRequests, (state, { payload }) => ({
+    ...state,
+    swapRequests: payload
+  })),
+  on(setSwapPeers, (state, { payload }) => {
+    const flattenedSwapPeers = payload.reduce((acc, swapPeer) => {
+      const peerWithFlatChannels: any[] = [];
+      swapPeer.alias = state.peers?.find((peer) => peer.id === swapPeer.nodeid)?.alias || swapPeer.nodeid;
+      swapPeer.channels?.forEach((channel) => peerWithFlatChannels.push({ ...swapPeer, ...channel }));
+      return [...acc, ...peerWithFlatChannels];
+    }, <any[]>[]);
+    return {
+      ...state,
+      swapPeers: flattenedSwapPeers
     };
   })
 );

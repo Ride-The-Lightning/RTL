@@ -40,7 +40,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faHistory = faHistory;
-  public newlyAddedPayment: string = '';
+  public newlyAddedPayment = '';
   public selNode: SelNodeChild | null = {};
   public information: GetInfo = {};
   public peers: Peer[] = [];

@@ -36,7 +36,7 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
   public fundingAmount: number | null;
   public selectedPubkey = '';
   public isPrivate = false;
-  public feeRate : number | null = null;
+  public feeRate: number | null = null;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<ECLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLOpenChannelAlert, private store: Store<RTLState>, private actions: Actions) { }
@@ -46,12 +46,12 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
       this.information = this.data.message.information;
       this.totalBalance = this.data.message.balance;
       this.peer = this.data.message.peer || null;
-      this.peers = this.data.message.peers || [];  
+      this.peers = this.data.message.peers || [];
     } else {
       this.information = {};
       this.totalBalance = 0;
       this.peer = null;
-      this.peers = [];  
+      this.peers = [];
     }
     this.alertTitle = this.data.alertTitle || 'Alert';
     this.actions.pipe(

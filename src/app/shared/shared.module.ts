@@ -80,27 +80,6 @@ import { ErrorMessageComponent } from './components/data-modal/error-message/err
 import { TwoFactorAuthComponent } from './components/data-modal/two-factor-auth/two-factor-auth.component';
 import { LoginTokenComponent } from './components/data-modal/login-2fa-token/login-2fa-token.component';
 
-import { LNServicesComponent } from './components/ln-services/ln-services.component';
-import { LoopComponent } from '../shared/components/ln-services/loop/loop.component';
-import { SwapsComponent } from '../shared/components/ln-services/loop/swaps/swaps.component';
-import { LoopModalComponent } from '../shared/components/ln-services/loop/loop-modal/loop-modal.component';
-import { LoopQuoteComponent } from '../shared/components/ln-services/loop/loop-quote/loop-quote.component';
-import { LoopStatusComponent } from '../shared/components/ln-services/loop/loop-status/loop-status.component';
-import { LoopOutInfoGraphicsComponent } from '../shared/components/ln-services/loop/loop-out-info-graphics/info-graphics.component';
-import { LoopInInfoGraphicsComponent } from '../shared/components/ln-services/loop/loop-in-info-graphics/info-graphics.component';
-import { BoltzRootComponent } from './components/ln-services/boltz/boltz-root.component';
-import { BoltzSwapsComponent } from './components/ln-services/boltz/swaps/swaps.component';
-import { SwapStatusComponent } from './components/ln-services/boltz/swap-status/swap-status.component';
-import { SwapServiceInfoComponent } from './components/ln-services/boltz/swap-service-info/swap-service-info.component';
-import { SwapModalComponent } from './components/ln-services/boltz/swap-modal/swap-modal.component';
-import { SwapInInfoGraphicsComponent } from './components/ln-services/boltz/swap-in-info-graphics/info-graphics.component';
-import { SwapOutInfoGraphicsComponent } from './components/ln-services/boltz/swap-out-info-graphics/info-graphics.component';
-import { PeerswapComponent } from './components/ln-services/peerswap/peerswap.component';
-import { SwapPeersComponent } from './components/ln-services/peerswap/swap-peers/swap-peers.component';
-import { PeerswapsCancelledComponent } from './components/ln-services/peerswap/swaps-cancelled/swaps-cancelled.component';
-import { PeerswapsInComponent } from './components/ln-services/peerswap/swaps-in/swaps-in.component';
-import { PeerswapsOutComponent } from './components/ln-services/peerswap/swaps-out/swaps-out.component';
-
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
 import { MonthlyDateDirective, YearlyDateDirective } from './directive/date-formats.directive';
@@ -254,27 +233,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     ExperimentalSettingsComponent,
     CurrencyUnitConverterComponent,
     HorizontalScrollerComponent,
-    TransactionsReportTableComponent,
-    LNServicesComponent,
-    LoopComponent,
-    SwapsComponent,
-    LoopModalComponent,
-    LoopQuoteComponent,
-    LoopStatusComponent,
-    LoopInInfoGraphicsComponent,
-    LoopOutInfoGraphicsComponent,
-    BoltzRootComponent,
-    BoltzSwapsComponent,
-    SwapStatusComponent,
-    SwapServiceInfoComponent,
-    SwapModalComponent,
-    SwapInInfoGraphicsComponent,
-    SwapOutInfoGraphicsComponent,
-    PeerswapComponent,
-    SwapPeersComponent,
-    PeerswapsCancelledComponent,
-    PeerswapsInComponent,
-    PeerswapsOutComponent
+    TransactionsReportTableComponent
   ],
   declarations: [
     AppSettingsComponent,
@@ -317,27 +276,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     ErrorMessageComponent,
     TwoFactorAuthComponent,
     LoginTokenComponent,
-    TransactionsReportTableComponent,
-    LNServicesComponent,
-    LoopComponent,
-    SwapsComponent,
-    LoopModalComponent,
-    LoopQuoteComponent,
-    LoopStatusComponent,
-    LoopInInfoGraphicsComponent,
-    LoopOutInfoGraphicsComponent,
-    BoltzRootComponent,
-    BoltzSwapsComponent,
-    SwapStatusComponent,
-    SwapServiceInfoComponent,
-    SwapModalComponent,
-    SwapInInfoGraphicsComponent,
-    SwapOutInfoGraphicsComponent,
-    PeerswapComponent,
-    SwapPeersComponent,
-    PeerswapsCancelledComponent,
-    PeerswapsInComponent,
-    PeerswapsOutComponent
+    TransactionsReportTableComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },

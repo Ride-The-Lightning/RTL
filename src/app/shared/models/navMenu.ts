@@ -40,9 +40,9 @@ export const MENU_DATA: MenuRootNode = {
       ]
     },
     {
-      id: 4, parentId: 0, name: 'Services', iconType: 'FA', icon: faLayerGroup, link: '/services/loop', userPersona: UserPersonaEnum.ALL, children: [
-        { id: 41, parentId: 4, name: 'Loop', iconType: 'FA', icon: faInfinity, link: '/services/loop', userPersona: UserPersonaEnum.ALL },
-        { id: 42, parentId: 4, name: 'Boltz', iconType: 'SVG', icon: 'boltzIconBlock', link: '/services/boltz', userPersona: UserPersonaEnum.ALL }
+      id: 4, parentId: 0, name: 'Services', iconType: 'FA', icon: faLayerGroup, link: '/lnd/services/loop', userPersona: UserPersonaEnum.ALL, children: [
+        { id: 41, parentId: 4, name: 'Loop', iconType: 'FA', icon: faInfinity, link: '/lnd/services/loop', userPersona: UserPersonaEnum.ALL },
+        { id: 42, parentId: 4, name: 'Boltz', iconType: 'SVG', icon: 'boltzIconBlock', link: '/lnd/services/boltz', userPersona: UserPersonaEnum.ALL }
       ]
     },
     { id: 5, parentId: 0, name: 'Node Config', iconType: 'FA', icon: faTools, link: '/config', userPersona: UserPersonaEnum.ALL },
@@ -65,8 +65,8 @@ export const MENU_DATA: MenuRootNode = {
       ]
     },
     {
-      id: 4, parentId: 0, name: 'Services', iconType: 'FA', icon: faLayerGroup, link: '/services/peerswap', userPersona: UserPersonaEnum.ALL, children: [
-        { id: 41, parentId: 4, name: 'Peerswap', iconType: 'FA', icon: faHandshake, link: '/services/peerswap', userPersona: UserPersonaEnum.ALL },
+      id: 4, parentId: 0, name: 'Services', iconType: 'FA', icon: faLayerGroup, link: '/cln/services/peerswap', userPersona: UserPersonaEnum.ALL, children: [
+        { id: 41, parentId: 4, name: 'Peerswap', iconType: 'FA', icon: faHandshake, link: '/cln/services/peerswap', userPersona: UserPersonaEnum.ALL }
       ]
     },
     { id: 5, parentId: 0, name: 'Node Config', iconType: 'FA', icon: faTools, link: '/config', userPersona: UserPersonaEnum.ALL },

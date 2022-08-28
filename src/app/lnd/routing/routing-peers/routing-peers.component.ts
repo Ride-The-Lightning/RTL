@@ -148,7 +148,7 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
         incoming.total_amount = +incoming.total_amount + +(event.amt_in || 0);
       }
       if (!outgoing) {
-        outgoingResults.push({ chan_id: event.chan_id_out, alias: event.alias_out, events: 1, total_amount: +(event.amt_out || 0)});
+        outgoingResults.push({ chan_id: event.chan_id_out, alias: event.alias_out, events: 1, total_amount: +(event.amt_out || 0) });
       } else {
         outgoing.events++;
         outgoing.total_amount = +outgoing.total_amount + +(event.amt_out || 0);

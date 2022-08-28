@@ -45,7 +45,7 @@ export class BumpFeeComponent implements OnInit, OnDestroy {
     const channelPointArr = this.bumpFeeChannel.channel?.channel_point?.split(':') || [];
     if (this.bumpFeeChannel && this.bumpFeeChannel.channel) {
       this.bumpFeeChannel.channel.txid_str = channelPointArr[0] || (this.bumpFeeChannel.channel && this.bumpFeeChannel.channel.channel_point ? this.bumpFeeChannel.channel.channel_point : '');
-      this.bumpFeeChannel.channel.output_index = +channelPointArr[1] || null;  
+      this.bumpFeeChannel.channel.output_index = +channelPointArr[1] || null;
     }
   }
 

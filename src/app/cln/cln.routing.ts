@@ -35,6 +35,12 @@ import { CLNOffersTableComponent } from './transactions/offers/offers-table/offe
 import { CLNOfferBookmarksTableComponent } from './transactions/offers/offer-bookmarks-table/offer-bookmarks-table.component';
 import { CLNLocalFailedTransactionsComponent } from './routing/local-failed-transactions/local-failed-transactions.component';
 import { CLNLiquidityAdsListComponent } from './liquidity-ads/liquidity-ads-list/liquidity-ads-list.component';
+import { LNServicesComponent } from './ln-services/ln-services.component';
+import { PeerswapComponent } from './ln-services/peerswap/peerswap.component';
+import { SwapPeersComponent } from './ln-services/peerswap/swap-peers/swap-peers.component';
+import { PeerswapsCancelledComponent } from './ln-services/peerswap/swaps-cancelled/swaps-cancelled.component';
+import { PeerswapsInComponent } from './ln-services/peerswap/swaps-in/swaps-in.component';
+import { PeerswapsOutComponent } from './ln-services/peerswap/swaps-out/swaps-out.component';
 
 export const ClnRoutes: Routes = [
   {
@@ -101,6 +107,19 @@ export const ClnRoutes: Routes = [
           { path: '', pathMatch: 'full', redirectTo: 'lookups' },
           { path: 'lookups', component: CLNLookupsComponent, canActivate: [CLNUnlockedGuard] },
           { path: 'queryroutes', component: CLNQueryRoutesComponent, canActivate: [CLNUnlockedGuard] }
+        ]
+      },
+      {
+        path: 'services', component: LNServicesComponent, canActivate: [CLNUnlockedGuard], children: [
+          {
+            path: 'peerswap', component: PeerswapComponent, canActivate: [CLNUnlockedGuard], children: [
+              { path: '', pathMatch: 'full', redirectTo: 'peers' },
+              { path: 'peers', component: SwapPeersComponent, canActivate: [CLNUnlockedGuard] },
+              { path: 'psout', component: PeerswapsOutComponent, canActivate: [CLNUnlockedGuard] },
+              { path: 'psin', component: PeerswapsInComponent, canActivate: [CLNUnlockedGuard] },
+              { path: 'pscancelled', component: PeerswapsCancelledComponent, canActivate: [CLNUnlockedGuard] }
+            ]
+          }
         ]
       },
       { path: 'rates', component: CLNNetworkInfoComponent, canActivate: [CLNUnlockedGuard] },

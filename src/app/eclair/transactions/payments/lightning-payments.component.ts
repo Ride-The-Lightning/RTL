@@ -119,7 +119,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         // }
         // This.paymentJSONArr = this.paymentJSONArr.splice(2, 5);
         // FOR MPP TESTING END
-        if(this.paymentJSONArr.length > 0 && this.sort && this.paginator) {
+        if (this.paymentJSONArr.length > 0 && this.sort && this.paginator) {
           this.loadPaymentsTable(this.paymentJSONArr);
         }
         this.logger.info(paymentsSeletor);
@@ -127,7 +127,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngAfterViewInit() {
-    if(this.paymentJSONArr.length > 0) {
+    if (this.paymentJSONArr.length > 0) {
       this.loadPaymentsTable(this.paymentJSONArr);
     }
   }

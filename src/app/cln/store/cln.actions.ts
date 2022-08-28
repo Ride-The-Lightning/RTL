@@ -3,7 +3,7 @@ import { createAction, props } from '@ngrx/store';
 import { CLNActions } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Fees, Peer, Payment, QueryRoutes, Channel, FeeRates, Invoice, ListInvoices, OnChain, UTXO, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, OfferInvoice, Offer, OfferBookmark, ListForwards, FetchListForwards, LocalFailedEvent, ForwardingEvent } from '../../shared/models/clnModels';
+import { GetInfo, Fees, Peer, Payment, QueryRoutes, Channel, FeeRates, Invoice, ListInvoices, OnChain, UTXO, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, OfferInvoice, Offer, OfferBookmark, ListForwards, FetchListForwards, LocalFailedEvent, ForwardingEvent, Swap, SwapPeer, SwapRequest } from '../../shared/models/clnModels';
 
 export const updateCLAPICallStatus = createAction(CLNActions.UPDATE_API_CALL_STATUS_CLN, props<{ payload: ApiCallStatusPayload }>());
 
@@ -130,3 +130,15 @@ export const addUpdateOfferBookmark = createAction(CLNActions.ADD_UPDATE_OFFER_B
 export const deleteOfferBookmark = createAction(CLNActions.DELETE_OFFER_BOOKMARK_CLN, props<{ payload: { bolt12: string } }>());
 
 export const removeOfferBookmark = createAction(CLNActions.REMOVE_OFFER_BOOKMARK_CLN, props<{ payload: { bolt12: string } }>());
+
+export const fetchSwaps = createAction(CLNActions.FETCH_SWAPS_CLN);
+
+export const setSwaps = createAction(CLNActions.SET_SWAPS_CLN, props<{ payload: Swap[] }>());
+
+export const fetchSwapPeers = createAction(CLNActions.FETCH_SWAP_PEERS_CLN);
+
+export const setSwapPeers = createAction(CLNActions.SET_SWAP_PEERS_CLN, props<{ payload: SwapPeer[] }>());
+
+export const fetchSwapRequests = createAction(CLNActions.FETCH_SWAP_REQUESTS_CLN);
+
+export const setSwapRequests = createAction(CLNActions.SET_SWAP_REQUESTS_CLN, props<{ payload: SwapRequest[] }>());

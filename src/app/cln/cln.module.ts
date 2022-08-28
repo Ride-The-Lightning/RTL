@@ -58,6 +58,12 @@ import { CLNOffersTableComponent } from './transactions/offers/offers-table/offe
 import { CLNOfferBookmarksTableComponent } from './transactions/offers/offer-bookmarks-table/offer-bookmarks-table.component';
 import { CLNLiquidityAdsListComponent } from './liquidity-ads/liquidity-ads-list/liquidity-ads-list.component';
 import { CLNOpenLiquidityChannelComponent } from './liquidity-ads/open-liquidity-channel-modal/open-liquidity-channel-modal.component';
+import { LNServicesComponent } from './ln-services/ln-services.component';
+import { PeerswapComponent } from './ln-services/peerswap/peerswap.component';
+import { SwapPeersComponent } from './ln-services/peerswap/swap-peers/swap-peers.component';
+import { PeerswapsCancelledComponent } from './ln-services/peerswap/swaps-cancelled/swaps-cancelled.component';
+import { PeerswapsInComponent } from './ln-services/peerswap/swaps-in/swaps-in.component';
+import { PeerswapsOutComponent } from './ln-services/peerswap/swaps-out/swaps-out.component';
 
 import { CLNUnlockedGuard } from '../shared/services/auth.guard';
 
@@ -121,7 +127,13 @@ import { CLNUnlockedGuard } from '../shared/services/auth.guard';
     CLNOffersTableComponent,
     CLNOfferBookmarksTableComponent,
     CLNLiquidityAdsListComponent,
-    CLNOpenLiquidityChannelComponent
+    CLNOpenLiquidityChannelComponent,
+    LNServicesComponent,
+    PeerswapComponent,
+    SwapPeersComponent,
+    PeerswapsCancelledComponent,
+    PeerswapsInComponent,
+    PeerswapsOutComponent
   ],
   providers: [
     CLNUnlockedGuard

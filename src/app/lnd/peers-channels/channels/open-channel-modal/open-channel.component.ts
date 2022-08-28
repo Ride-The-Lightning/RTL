@@ -50,12 +50,12 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
       this.information = this.data.message.information;
       this.totalBalance = this.data.message.balance;
       this.peer = this.data.message.peer || null;
-      this.peers = this.data.message.peers || [];  
+      this.peers = this.data.message.peers || [];
     } else {
       this.information = {};
       this.totalBalance = 0;
       this.peer = null;
-      this.peers = [];  
+      this.peers = [];
     }
     this.alertTitle = this.data.alertTitle || 'Alert';
     this.actions.pipe(

@@ -934,6 +934,63 @@ export class CLNEffects implements OnDestroy {
     })
   ));
 
+  swapsFetchCL = createEffect(() => this.actions.pipe(
+    ofType(CLNActions.FETCH_SWAPS_CLN),
+    mergeMap((action: { type: string, payload: any }) => {
+      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchSwaps', status: APICallStatusEnum.INITIATED } }));
+      return this.httpClient.get(this.CHILD_API_URL + environment.PEERSWAP_API + '/listSwaps').
+        pipe(map((res: any) => {
+          this.logger.info(res);
+          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchSwaps', status: APICallStatusEnum.COMPLETED } }));
+          return {
+            type: CLNActions.SET_SWAPS_CLN,
+            payload: res || []
+          };
+        }), catchError((err: any) => {
+          this.handleErrorWithoutAlert('FetchSwaps', UI_MESSAGES.NO_SPINNER, 'Fetching Swaps Failed.', err);
+          return of({ type: RTLActions.VOID });
+        }));
+    })
+  ));
+
+  swapPeersFetchCL = createEffect(() => this.actions.pipe(
+    ofType(CLNActions.FETCH_SWAP_PEERS_CLN),
+    mergeMap((action: { type: string, payload: any }) => {
+      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchSwapPeers', status: APICallStatusEnum.INITIATED } }));
+      return this.httpClient.get(this.CHILD_API_URL + environment.PEERSWAP_API + '/listSwapPeers').
+        pipe(map((res: any) => {
+          this.logger.info(res);
+          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchSwapPeers', status: APICallStatusEnum.COMPLETED } }));
+          return {
+            type: CLNActions.SET_SWAP_PEERS_CLN,
+            payload: res || []
+          };
+        }), catchError((err: any) => {
+          this.handleErrorWithoutAlert('FetchSwaps', UI_MESSAGES.NO_SPINNER, 'Fetching Swap Peers Failed.', err);
+          return of({ type: RTLActions.VOID });
+        }));
+    })
+  ));
+
+  swapRequestsFetchCL = createEffect(() => this.actions.pipe(
+    ofType(CLNActions.FETCH_SWAP_REQUESTS_CLN),
+    mergeMap((action: { type: string, payload: any }) => {
+      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchSwapRequests', status: APICallStatusEnum.INITIATED } }));
+      return this.httpClient.get(this.CHILD_API_URL + environment.PEERSWAP_API + '/listSwapRequests').
+        pipe(map((res: any) => {
+          this.logger.info(res);
+          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchSwapRequests', status: APICallStatusEnum.COMPLETED } }));
+          return {
+            type: CLNActions.SET_SWAP_REQUESTS_CLN,
+            payload: res || []
+          };
+        }), catchError((err: any) => {
+          this.handleErrorWithoutAlert('FetchSwaps', UI_MESSAGES.NO_SPINNER, 'Fetching Swap Requests Failed.', err);
+          return of({ type: RTLActions.VOID });
+        }));
+    })
+  ));
+
   initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('clUnlocked', 'true');
     const node_data = {
