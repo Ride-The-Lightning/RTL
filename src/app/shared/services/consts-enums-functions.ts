@@ -322,6 +322,8 @@ export const UI_MESSAGES = {
   GET_FUNDER_POLICY: 'Getting Or Updating Funder Policy...',
   GET_LIST_CONFIGS: 'Getting Configurations List...',
   LIST_NETWORK_NODES: 'Getting Network Nodes List...',
+  PEERSWAP_SWAPOUT: 'Initializing Swapout...',
+  PEERSWAP_SWAPIN: 'Initializing Swapin...',
   LOG_OUT: 'Logging Out...'
 };
 
@@ -329,6 +331,11 @@ export enum PaymentTypes {
   INVOICE = 'INVOICE',
   OFFER = 'OFFER',
   KEYSEND = 'KEYSEND'
+}
+
+export enum PeerswapTypes {
+  SWAP_OUT = 'swap-out',
+  SWAP_IN = 'swap-in'
 }
 
 export enum ReportBy {
@@ -525,6 +532,10 @@ export enum CLNActions {
   SET_SWAP_PEERS_CLN = 'SET_SWAP_PEERS_CLN',
   FETCH_SWAP_REQUESTS_CLN = 'FETCH_SWAP_REQUESTS_CLN',
   SET_SWAP_REQUESTS_CLN = 'SET_SWAP_REQUESTS_CLN',
+  SWAPOUT_CLN = 'SWAPOUT_CLN',
+  ADD_SWAPOUT_CLN = 'ADD_SWAPOUT_CLN',
+  SWAPIN_CLN = 'SWAPIN_CLN',
+  ADD_SWAPIN_CLN = 'ADD_SWAPIN_CLN',
 };
 
 export enum ECLActions {

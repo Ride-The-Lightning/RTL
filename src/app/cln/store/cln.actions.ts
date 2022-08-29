@@ -142,3 +142,11 @@ export const setSwapPeers = createAction(CLNActions.SET_SWAP_PEERS_CLN, props<{ 
 export const fetchSwapRequests = createAction(CLNActions.FETCH_SWAP_REQUESTS_CLN);
 
 export const setSwapRequests = createAction(CLNActions.SET_SWAP_REQUESTS_CLN, props<{ payload: SwapRequest[] }>());
+
+export const swapOut = createAction(CLNActions.SWAPOUT_CLN, props<{ payload: { amountSats: number, shortChannelId: string, asset: string } }>());
+
+export const addSwapout = createAction(CLNActions.ADD_SWAPOUT_CLN, props<{ payload: Swap }>());
+
+export const swapIn = createAction(CLNActions.SWAPIN_CLN, props<{ payload: { amountSats: number, shortChannelId: string, asset: string } }>());
+
+export const addSwapin = createAction(CLNActions.ADD_SWAPIN_CLN, props<{ payload: Swap }>());

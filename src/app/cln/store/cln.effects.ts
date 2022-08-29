@@ -14,8 +14,8 @@ import { SessionService } from '../../shared/services/session.service';
 import { WebSocketClientService } from '../../shared/services/web-socket.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CLNInvoiceInformationComponent } from '../transactions/invoices/invoice-information-modal/invoice-information.component';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer, OnChain, QueryRoutes, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, FetchInvoices, Channel, OfferInvoice, Offer, ListForwards, FetchListForwards, ForwardingEvent, LocalFailedEvent } from '../../shared/models/clnModels';
-import { AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLNWSEventTypeEnum, CLNActions, RTLActions, CLNForwardingEventsStatusEnum } from '../../shared/services/consts-enums-functions';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer, OnChain, QueryRoutes, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, FetchInvoices, Channel, OfferInvoice, Offer, ListForwards, FetchListForwards, ForwardingEvent, LocalFailedEvent, Swap } from '../../shared/models/clnModels';
+import { AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLNWSEventTypeEnum, CLNActions, RTLActions, CLNForwardingEventsStatusEnum, DataTypeEnum } from '../../shared/services/consts-enums-functions';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 
 import { RTLState } from '../../store/rtl.state';
@@ -966,7 +966,7 @@ export class CLNEffects implements OnDestroy {
             payload: res || []
           };
         }), catchError((err: any) => {
-          this.handleErrorWithoutAlert('FetchSwaps', UI_MESSAGES.NO_SPINNER, 'Fetching Swap Peers Failed.', err);
+          this.handleErrorWithoutAlert('FetchSwapPeers', UI_MESSAGES.NO_SPINNER, 'Fetching Swap Peers Failed.', err);
           return of({ type: RTLActions.VOID });
         }));
     })
@@ -988,6 +988,74 @@ export class CLNEffects implements OnDestroy {
           this.handleErrorWithoutAlert('FetchSwaps', UI_MESSAGES.NO_SPINNER, 'Fetching Swap Requests Failed.', err);
           return of({ type: RTLActions.VOID });
         }));
+    })
+  ));
+
+  peerswapOutCL = createEffect(() => this.actions.pipe(
+    ofType(CLNActions.SWAPOUT_CLN),
+    mergeMap((action: { type: string, payload: { amountSats: number, shortChannelId: string, asset: string } }) => {
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.PEERSWAP_SWAPOUT }));
+      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'PeerswapSwapout', status: APICallStatusEnum.INITIATED } }));
+      return this.httpClient.post(this.CHILD_API_URL + environment.PEERSWAP_API + '/swapOut', {
+        amountSats: action.payload.amountSats, shortChannelId: action.payload.shortChannelId, asset: action.payload.asset
+      }).pipe(map((postRes: Swap) => {
+        this.logger.info(postRes);
+        this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.PEERSWAP_SWAPOUT }));
+        this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'PeerswapSwapout', status: APICallStatusEnum.COMPLETED } }));
+        setTimeout(() => {
+          this.store.dispatch(openAlert({
+            payload: {
+              data: {
+                type: AlertTypeEnum.INFORMATION,
+                alertTitle: 'Swapout Initiated',
+                message: postRes.id
+              }
+            }
+          }));
+        }, 100);
+        return {
+          type: CLNActions.ADD_SWAPOUT_CLN,
+          message: [{ key: 'id', value: postRes.id, title: 'Swap Id', width: 100, type: DataTypeEnum.STRING }]
+        };
+      }), catchError((err: any) => {
+        this.handleErrorWithoutAlert('PeerswapSwapout', UI_MESSAGES.PEERSWAP_SWAPOUT, 'Swapout Failed.', err);
+        return of({ type: RTLActions.VOID });
+      })
+      );
+    })
+  ));
+
+  peerswapInCL = createEffect(() => this.actions.pipe(
+    ofType(CLNActions.SWAPIN_CLN),
+    mergeMap((action: { type: string, payload: { amountSats: number, shortChannelId: string, asset: string } }) => {
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.PEERSWAP_SWAPIN }));
+      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'PeerswapSwapin', status: APICallStatusEnum.INITIATED } }));
+      return this.httpClient.post(this.CHILD_API_URL + environment.PEERSWAP_API + '/swapIn', {
+        amountSats: action.payload.amountSats, shortChannelId: action.payload.shortChannelId, asset: action.payload.asset
+      }).pipe(map((postRes: Swap) => {
+        this.logger.info(postRes);
+        this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.PEERSWAP_SWAPIN }));
+        this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'PeerswapSwapin', status: APICallStatusEnum.COMPLETED } }));
+        setTimeout(() => {
+          this.store.dispatch(openAlert({
+            payload: {
+              data: {
+                type: AlertTypeEnum.INFORMATION,
+                alertTitle: 'Swapin Initiated',
+                message: [{ key: 'id', value: postRes.id, title: 'Swap Id', width: 100, type: DataTypeEnum.STRING }]
+              }
+            }
+          }));
+        }, 100);
+        return {
+          type: CLNActions.ADD_SWAPIN_CLN,
+          payload: postRes
+        };
+      }), catchError((err: any) => {
+        this.handleErrorWithoutAlert('PeerswapSwapin', UI_MESSAGES.PEERSWAP_SWAPIN, 'Swapin Failed.', err);
+        return of({ type: RTLActions.VOID });
+      })
+      );
     })
   ));
 

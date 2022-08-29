@@ -12,7 +12,7 @@
         <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-sm="space-between center" fxLayout.gt-sm="row wrap">
           <mat-form-field fxFlex="30" fxLayoutAlign="start end">
             <input autoFocus matInput [(ngModel)]="requestedAmount" (keyup)="calculateFee()" placeholder="Requested Amount" type="number" [step]="10000" [min]="0" tabindex="1" required name="ramount" #ramount="ngModel">
-            <span matSuffix> Sats </span>
+            <span matSuffix class="ml-1"> Sats </span>
             <mat-error *ngIf="ramount.errors?.required">Requested amount is required.</mat-error>
           </mat-form-field>
           <mat-form-field fxFlex="30" fxLayoutAlign="start end">
@@ -23,7 +23,7 @@
           <mat-form-field fxFlex="30" fxLayoutAlign="start end">
             <input matInput [(ngModel)]="localAmount" placeholder="Local Amount" type="number" [step]="10000" [min]="20000" [max]="totalBalance" tabindex="3" required name="lamount" #lamount="ngModel">
             <mat-hint>Remaining Bal: {{totalBalance - ((localAmount) ? localAmount : 0) | number}}</mat-hint>
-            <span matSuffix> Sats </span>
+            <span matSuffix class="ml-1"> Sats </span>
             <mat-error *ngIf="lamount.errors?.required">Local amount is required.</mat-error>
             <mat-error *ngIf="lamount.errors?.min">Local amount must be greater than or equal to 20,000 Sats. It's required to cover the channel force close fee, if needed.</mat-error>
             <mat-error *ngIf="lamount.errors?.max">Local amount must be less than or equal to {{totalBalance}}.</mat-error>
