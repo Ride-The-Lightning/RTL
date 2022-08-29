@@ -64,6 +64,8 @@ import { SwapPeersComponent } from './ln-services/peerswap/swap-peers/swap-peers
 import { PeerswapsCancelledComponent } from './ln-services/peerswap/swaps-cancelled/swaps-cancelled.component';
 import { PeerswapsInComponent } from './ln-services/peerswap/swaps-in/swaps-in.component';
 import { PeerswapsOutComponent } from './ln-services/peerswap/swaps-out/swaps-out.component';
+import { CLNSwapOutModalComponent } from './ln-services/peerswap/swap-out-modal/swap-out-modal.component';
+import { CLNSwapInModalComponent } from './ln-services/peerswap/swap-in-modal/swap-in-modal.component';
 
 import { CLNUnlockedGuard } from '../shared/services/auth.guard';
 
@@ -133,7 +135,9 @@ import { CLNUnlockedGuard } from '../shared/services/auth.guard';
     SwapPeersComponent,
     PeerswapsCancelledComponent,
     PeerswapsInComponent,
-    PeerswapsOutComponent
+    PeerswapsOutComponent,
+    CLNSwapOutModalComponent,
+    CLNSwapInModalComponent
   ],
   providers: [
     CLNUnlockedGuard

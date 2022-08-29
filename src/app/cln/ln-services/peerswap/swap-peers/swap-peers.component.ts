@@ -7,9 +7,10 @@ import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { faPeopleGroup } from '@fortawesome/free-solid-svg-icons';
 
 import { SwapPeerChannelsFlattened } from '../../../../shared/models/clnModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum } from '../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, DataTypeEnum, AlertTypeEnum } from '../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
@@ -18,6 +19,8 @@ import { RTLState } from '../../../../store/rtl.state';
 import { openAlert } from '../../../../store/rtl.actions';
 import { fetchSwapPeers } from '../../../store/cln.actions';
 import { swapPeers } from '../../../store/cln.selector';
+import { CLNSwapOutModalComponent } from '../swap-out-modal/swap-out-modal.component';
+import { CLNSwapInModalComponent } from '../swap-in-modal/swap-in-modal.component';
 
 @Component({
   selector: 'rtl-peerswap-peers',
@@ -31,7 +34,9 @@ export class SwapPeersComponent implements OnInit, OnDestroy {
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public faPeopleGroup = faPeopleGroup;
   public displayedColumns: any[] = [];
+  public totalSwapPeers = 0;
   public peersData: SwapPeerChannelsFlattened[] = [];
   public swapPeers: any;
   public flgSticky = false;
@@ -67,12 +72,13 @@ export class SwapPeersComponent implements OnInit, OnDestroy {
     this.router.onSameUrlNavigation = 'reload';
     this.store.dispatch(fetchSwapPeers());
     this.store.select(swapPeers).pipe(takeUntil(this.unSubs[0])).
-      subscribe((spSeletor: { swapPeers: SwapPeerChannelsFlattened[], apiCallStatus: ApiCallStatusPayload }) => {
+      subscribe((spSeletor: { totalSwapPeers: number, swapPeers: SwapPeerChannelsFlattened[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = spSeletor.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
+        this.totalSwapPeers = spSeletor.totalSwapPeers;
         this.peersData = spSeletor.swapPeers || [];
         if (this.peersData.length > 0 && this.sort && this.paginator) {
           this.loadSwapPeersTable(this.peersData);
@@ -83,27 +89,55 @@ export class SwapPeersComponent implements OnInit, OnDestroy {
 
   onSwapPeerClick(selSPeer: SwapPeerChannelsFlattened) {
     this.logger.warn(selSPeer);
-    // nodeid, alias, swaps_allowed, supported_assets[], total_fee_paid
-    // channels: {short_channel_id, local_balance, remote_balance, local_percentage, state}[]
-    // sent: {total_swaps_out, total_swaps_in, total_sats_swapped_out, total_sats_swapped_in}
-    // received: {total_swaps_out, total_swaps_in, total_sats_swapped_out, total_sats_swapped_in}
+    const reorderedSPeer = [
+      [{ key: 'nodeid', value: selSPeer.nodeid, title: 'Node Id', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'alias', value: selSPeer.alias, title: 'Alias', width: 50, type: DataTypeEnum.STRING },
+      { key: 'short_channel_id', value: selSPeer.short_channel_id, title: 'Short Channel ID', width: 50, type: DataTypeEnum.STRING }],
+      [{ key: 'local_balance', value: selSPeer.local_balance, title: 'Local Balance (Sats)', width: 50, type: DataTypeEnum.NUMBER },
+      { key: 'remote_balance', value: selSPeer.remote_balance, title: 'Remote Balance (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
+      [{ key: 'total_fee_paid', value: selSPeer.total_fee_paid, title: 'Total Fee Paid (Sats)', width: 40, type: DataTypeEnum.NUMBER },
+      { key: 'swaps_allowed', value: selSPeer.swaps_allowed ? 'Allowed' : 'Denied', title: 'Swaps Allowed', width: 30, type: DataTypeEnum.STRING },
+      { key: 'total_channels', value: selSPeer.channels?.length, title: 'Channels Opened', width: 30, type: DataTypeEnum.NUMBER }],
+      [{ key: 'sent_total_swaps_out', value: selSPeer.sent?.total_swaps_out, title: 'Swap Out Sent', width: 25, type: DataTypeEnum.NUMBER },
+      { key: 'sent_total_swaps_in', value: selSPeer.sent?.total_swaps_in, title: 'Swap In Sent', width: 25, type: DataTypeEnum.NUMBER },
+      { key: 'sent_total_sats_swapped_out', value: selSPeer.sent?.total_sats_swapped_out, title: 'Swapped Out Sent (Sats)', width: 25, type: DataTypeEnum.NUMBER },
+      { key: 'sent_total_sats_swapped_in', value: selSPeer.sent?.total_sats_swapped_in, title: 'Swapped In Sent (Sats)', width: 25, type: DataTypeEnum.NUMBER }],
+      [{ key: 'received_total_swaps_out', value: selSPeer.received?.total_swaps_out, title: 'Swap Out Received', width: 25, type: DataTypeEnum.NUMBER },
+      { key: 'received_total_swaps_in', value: selSPeer.received?.total_swaps_in, title: 'Swap In Received', width: 25, type: DataTypeEnum.NUMBER },
+      { key: 'received_total_sats_swapped_out', value: selSPeer.received?.total_sats_swapped_out, title: 'Swapped Out Received(Sats)', width: 25, type: DataTypeEnum.NUMBER },
+      { key: 'received_total_sats_swapped_in', value: selSPeer.received?.total_sats_swapped_in, title: 'Swapped In Received (Sats)', width: 25, type: DataTypeEnum.NUMBER }]
+    ];
     this.store.dispatch(openAlert({
       payload: {
         data: {
-          // invoice: reCreatedInvoice,
-          // newlyAdded: false,
-          // component: CLNInvoiceInformationComponent
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Swap Peer Information',
+          message: reorderedSPeer
         }
       }
     }));
   }
 
-  onSwapOut(sPeer) {
-    this.logger.warn('Swap Out');
+  onSwapOut(sPeer: SwapPeerChannelsFlattened) {
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          swapPeer: sPeer,
+          component: CLNSwapOutModalComponent
+        }
+      }
+    }));
   }
 
-  onSwapIn(sPeer) {
-    this.logger.warn('Swap In');
+  onSwapIn(sPeer: SwapPeerChannelsFlattened) {
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          swapPeer: sPeer,
+          component: CLNSwapInModalComponent
+        }
+      }
+    }));
   }
 
   loadSwapPeersTable(swapPeers: SwapPeerChannelsFlattened[]) {

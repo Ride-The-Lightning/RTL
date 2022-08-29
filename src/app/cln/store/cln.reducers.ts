@@ -5,10 +5,10 @@ import {
   setChildNodeSettingsCL, setFeeRates, setFees, setForwardingHistory,
   setInfo, setInvoices, setLocalRemoteBalance, setOffers, addOffer, setPayments, setPeers, setUTXOs,
   updateCLAPICallStatus, updateInvoice, updateOffer, setOfferBookmarks, addUpdateOfferBookmark, removeOfferBookmark,
-  setSwaps, setSwapPeers, setSwapRequests
+  setSwaps, setSwapPeers, setSwapRequests, addSwapout, addSwapin
 } from './cln.actions';
-import { Channel, OfferBookmark, SwapPeerChannelsFlattened } from '../../shared/models/clnModels';
-import { CLNForwardingEventsStatusEnum } from '../../shared/services/consts-enums-functions';
+import { Channel, OfferBookmark, Swap } from '../../shared/models/clnModels';
+import { CLNForwardingEventsStatusEnum, PeerswapTypes } from '../../shared/services/consts-enums-functions';
 
 export const CLNReducer = createReducer(initCLNState,
   on(updateCLAPICallStatus, (state, { payload }) => {
@@ -218,10 +218,22 @@ export const CLNReducer = createReducer(initCLNState,
       offersBookmarks: modifiedOfferBookmarks
     };
   }),
-  on(setSwaps, (state, { payload }) => ({
-    ...state,
-    swaps: payload
-  })),
+  on(setSwaps, (state, { payload }) => {
+    const swapOutArr: Swap[] = [];
+    const swapInArr: Swap[] = [];
+    payload.forEach((swap) => {
+      if (swap.type === PeerswapTypes.SWAP_OUT) {
+        swapOutArr.push(swap);
+      } else {
+        swapInArr.push(swap);
+      }
+    });
+    return {
+      ...state,
+      swapOuts: swapOutArr,
+      swapIns: swapInArr
+    };
+  }),
   on(setSwapRequests, (state, { payload }) => ({
     ...state,
     swapRequests: payload
@@ -235,7 +247,24 @@ export const CLNReducer = createReducer(initCLNState,
     }, <any[]>[]);
     return {
       ...state,
+      totalSwapPeers: payload.length || 0,
       swapPeers: flattenedSwapPeers
+    };
+  }),
+  on(addSwapout, (state, { payload }) => {
+    const newSwapOuts = state.swapOuts;
+    newSwapOuts?.unshift(payload);
+    return {
+      ...state,
+      swapOuts: newSwapOuts
+    };
+  }),
+  on(addSwapin, (state, { payload }) => {
+    const newSwapIns = state.swapIns;
+    newSwapIns?.unshift(payload);
+    return {
+      ...state,
+      swapIns: newSwapIns
     };
   })
 );

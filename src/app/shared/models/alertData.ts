@@ -1,7 +1,7 @@
 import { DataTypeEnum, LoopTypeEnum, PaymentTypes, SwapTypeEnum } from '../services/consts-enums-functions';
 import { GetInfoRoot, RTLConfiguration } from './RTLconfig';
 import { GetInfo, Invoice, Channel, Peer, PendingOpenChannel, UTXO } from './lndModels';
-import { Invoice as InvoiceCLN, GetInfo as GetInfoCLN, Peer as PeerCLN, Channel as ChannelCLN, UTXO as UTXOCLN, Offer as OfferCLN, LookupNode as LookupNodeCLN } from './clnModels';
+import { Invoice as InvoiceCLN, GetInfo as GetInfoCLN, Peer as PeerCLN, Channel as ChannelCLN, UTXO as UTXOCLN, Offer as OfferCLN, LookupNode as LookupNodeCLN, SwapPeerChannelsFlattened as SwapPeerChannelsFlattenedCLN } from './clnModels';
 import { GetInfo as GetInfoECL, Peer as PeerECL, Channel as ChannelECL, Invoice as InvoiceECL, PaymentSent as PaymentSentECL } from './eclModels';
 import { LoopQuote } from './loopModels';
 import { ServiceInfo } from './boltzModels';
@@ -117,6 +117,11 @@ export interface CLNOfferInformation {
   component?: any;
 }
 
+export interface CLNSwapInformation {
+  swapPeer: SwapPeerChannelsFlattenedCLN;
+  component?: any;
+}
+
 export interface ECLInvoiceInformation {
   invoice: InvoiceECL;
   newlyAdded?: boolean;
@@ -229,7 +234,7 @@ export interface DialogConfig {
   maxWidth?: string;
   minHeight?: string;
   data: AlertData | ConfirmationData | ErrorData | ChannelRebalanceAlert | OpenChannelAlert | CLNOpenChannelAlert | InvoiceInformation |
-  CLNPaymentInformation | CLNInvoiceInformation | CLNOfferInformation | ECLInvoiceInformation | ECLPaymentInformation | ChannelInformation | CLNChannelInformation |
-  PendingOpenChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | SwapAlert | AuthConfig |
-  OnChainLabelUTXO | OnChainSendFunds | CLNOnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert;
+  CLNPaymentInformation | CLNInvoiceInformation | CLNOfferInformation | CLNSwapInformation | ECLInvoiceInformation | ECLPaymentInformation |
+  ChannelInformation | CLNChannelInformation | PendingOpenChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert |
+  SwapAlert | AuthConfig | OnChainLabelUTXO | OnChainSendFunds | CLNOnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert;
 }

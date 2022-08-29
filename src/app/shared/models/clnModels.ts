@@ -590,6 +590,7 @@ export interface Swap {
   short_channel_id?: string;
   opening_tx_id?: string;
   claim_tx_id?: string;
+  cancel_message?: string;
 }
 
 export interface SwapChannel {
@@ -626,6 +627,7 @@ export interface SwapPeerChannelsFlattened {
   sent?: SwapPeerSentReceived;
   received?: SwapPeerSentReceived;
   total_fee_paid?: number;
+  channels?: SwapChannel[];
   // Channels array flattened
   short_channel_id?: string;
   local_balance?: number;

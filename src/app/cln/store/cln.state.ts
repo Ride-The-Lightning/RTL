@@ -24,8 +24,10 @@ export interface CLNState {
   utxos: UTXO[];
   offers: Offer[];
   offersBookmarks: OfferBookmark[];
+  totalSwapPeers: number;
   swapPeers: SwapPeerChannelsFlattened[];
-  swaps: Swap[];
+  swapOuts: Swap[];
+  swapIns: Swap[];
   swapRequests: SwapRequest[];
 }
 
@@ -70,7 +72,9 @@ export const initCLNState: CLNState = {
   utxos: [],
   offers: [],
   offersBookmarks: [],
+  totalSwapPeers: 0,
   swapPeers: [],
-  swaps: [],
+  swapOuts: [],
+  swapIns: [],
   swapRequests: []
 };

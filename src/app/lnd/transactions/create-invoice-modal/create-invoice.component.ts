@@ -99,7 +99,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
         pipe(takeUntil(this.unSubs[3])).
         subscribe({
           next: (data) => {
-            this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
+            this.invoiceValueHint = '= ' + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.symbol;
           }, error: (err) => {
             this.invoiceValueHint = 'Conversion Error: ' + err;
           }
