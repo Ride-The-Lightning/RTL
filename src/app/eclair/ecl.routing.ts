@@ -51,7 +51,7 @@ export const EclRoutes: Routes = [
               { path: 'inactive', component: ECLChannelInactiveTableComponent, canActivate: [ECLUnlockedGuard] }
             ]
           },
-          { path: 'peers', component: ECLPeersComponent, data: { sweepAll: false }, canActivate: [ECLUnlockedGuard] }
+          { path: 'peers', component: ECLPeersComponent, canActivate: [ECLUnlockedGuard] }
         ]
       },
       {

@@ -21,3 +21,14 @@ export class CamelCasePipe implements PipeTransform {
   }
 
 }
+
+@Pipe({
+  name: 'swapState'
+})
+export class SwapStatePipe implements PipeTransform {
+
+  transform(value: string, args?: any): string {
+    return value?.replace('State_', '').replace('SwapInSender_', '').replace('SwapOutSender_', '').replace('SwapInReceiver_', '').replace('SwapOutReceiver_', '').replace('_', ' ').replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => ' ' + word);
+  }
+
+}

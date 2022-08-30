@@ -90,15 +90,15 @@ export const listSwapPeers = (req, res, next) => {
 };
 
 export const allowSwapRequests = (req, res, next) => {
-  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peerswap', msg: 'Allowing/Denying Swap Requests..' });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peerswap', msg: 'Allowing/Not Allowing Swap Requests..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/peerswap/allowSwapRequests' + req.params.isAllowed;
   request(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peerswap', msg: 'Swap Request Allowed/Denied', data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peerswap', msg: 'Swap Request Allowed/Not Allowed', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
-    const err = common.handleError(errRes, 'Peerswap', 'Allow/Deny Swap Request Error', req.session.selectedNode);
+    const err = common.handleError(errRes, 'Peerswap', 'Allow/Not Allow Swap Request Error', req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
   });
 };

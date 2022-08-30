@@ -35,7 +35,7 @@
             <span *ngIf="invoice?.state === 'OPEN'" class="dot grey" matTooltip="Open" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
             <span *ngIf="invoice?.state === 'SETTLED'" class="dot green" matTooltip="Settled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
             <span *ngIf="invoice?.state === 'ACCEPTED'" class="dot yellow" matTooltip="Accepted" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-            <span *ngIf="invoice?.state === 'CANCELED'" class="dot red" matTooltip="Cancelled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+            <span *ngIf="invoice?.state === 'CANCELED'" class="dot red" matTooltip="Canceled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
             {{(invoice?.creation_date * 1000) | date:'dd/MMM/y HH:mm'}}</td>
         </ng-container>
         <ng-container matColumnDef="settle_date">

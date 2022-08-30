@@ -38,9 +38,7 @@ import { CLNLiquidityAdsListComponent } from './liquidity-ads/liquidity-ads-list
 import { LNServicesComponent } from './ln-services/ln-services.component';
 import { PeerswapComponent } from './ln-services/peerswap/peerswap.component';
 import { SwapPeersComponent } from './ln-services/peerswap/swap-peers/swap-peers.component';
-import { PeerswapsCancelledComponent } from './ln-services/peerswap/swaps-cancelled/swaps-cancelled.component';
-import { PeerswapsInComponent } from './ln-services/peerswap/swaps-in/swaps-in.component';
-import { PeerswapsOutComponent } from './ln-services/peerswap/swaps-out/swaps-out.component';
+import { PeerswapsListComponent } from './ln-services/peerswap/swaps-list/swaps-list.component';
 
 export const ClnRoutes: Routes = [
   {
@@ -113,11 +111,11 @@ export const ClnRoutes: Routes = [
         path: 'services', component: LNServicesComponent, canActivate: [CLNUnlockedGuard], children: [
           {
             path: 'peerswap', component: PeerswapComponent, canActivate: [CLNUnlockedGuard], children: [
-              { path: '', pathMatch: 'full', redirectTo: 'peers' },
-              { path: 'peers', component: SwapPeersComponent, canActivate: [CLNUnlockedGuard] },
-              { path: 'psout', component: PeerswapsOutComponent, canActivate: [CLNUnlockedGuard] },
-              { path: 'psin', component: PeerswapsInComponent, canActivate: [CLNUnlockedGuard] },
-              { path: 'pscancelled', component: PeerswapsCancelledComponent, canActivate: [CLNUnlockedGuard] }
+              { path: '', pathMatch: 'full', redirectTo: 'prs' },
+              { path: 'prs', component: SwapPeersComponent, canActivate: [CLNUnlockedGuard] },
+              { path: 'psout', component: PeerswapsListComponent, canActivate: [CLNUnlockedGuard] },
+              { path: 'psin', component: PeerswapsListComponent, canActivate: [CLNUnlockedGuard] },
+              { path: 'pscanceled', component: PeerswapsListComponent, canActivate: [CLNUnlockedGuard] }
             ]
           }
         ]

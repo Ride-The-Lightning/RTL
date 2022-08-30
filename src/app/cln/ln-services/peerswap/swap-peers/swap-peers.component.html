@@ -22,17 +22,9 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Node Alias</th>
         <td mat-cell *matCellDef="let sPeer">{{sPeer?.alias}}</td>
       </ng-container>
-      <ng-container matColumnDef="nodeid">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Node ID</th>
-        <td mat-cell *matCellDef="let sPeer">
-          <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '25rem'}">
-            <span class="ellipsis-child">{{sPeer?.nodeid}}</span>
-          </span>
-        </td>
-      </ng-container>
       <ng-container matColumnDef="swaps_allowed">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Swaps Allowed</th>
-        <td mat-cell *matCellDef="let sPeer">{{sPeer?.swaps_allowed ? 'Allowed' : 'Denied'}}</td>
+        <td mat-cell *matCellDef="let sPeer">{{sPeer?.swaps_allowed ? 'Yes' : 'No'}}</td>
       </ng-container>
       <ng-container matColumnDef="local_balance">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Local Balance (Sats)</th>

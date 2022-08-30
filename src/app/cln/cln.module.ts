@@ -61,9 +61,7 @@ import { CLNOpenLiquidityChannelComponent } from './liquidity-ads/open-liquidity
 import { LNServicesComponent } from './ln-services/ln-services.component';
 import { PeerswapComponent } from './ln-services/peerswap/peerswap.component';
 import { SwapPeersComponent } from './ln-services/peerswap/swap-peers/swap-peers.component';
-import { PeerswapsCancelledComponent } from './ln-services/peerswap/swaps-cancelled/swaps-cancelled.component';
-import { PeerswapsInComponent } from './ln-services/peerswap/swaps-in/swaps-in.component';
-import { PeerswapsOutComponent } from './ln-services/peerswap/swaps-out/swaps-out.component';
+import { PeerswapsListComponent } from './ln-services/peerswap/swaps-list/swaps-list.component';
 import { CLNSwapOutModalComponent } from './ln-services/peerswap/swap-out-modal/swap-out-modal.component';
 import { CLNSwapInModalComponent } from './ln-services/peerswap/swap-in-modal/swap-in-modal.component';
 
@@ -133,9 +131,7 @@ import { CLNUnlockedGuard } from '../shared/services/auth.guard';
     LNServicesComponent,
     PeerswapComponent,
     SwapPeersComponent,
-    PeerswapsCancelledComponent,
-    PeerswapsInComponent,
-    PeerswapsOutComponent,
+    PeerswapsListComponent,
     CLNSwapOutModalComponent,
     CLNSwapInModalComponent
   ],

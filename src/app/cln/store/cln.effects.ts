@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Subject, of } from 'rxjs';
 import { map, mergeMap, catchError, takeUntil } from 'rxjs/operators';
-import { Location } from '@angular/common';
+import { DatePipe, DecimalPipe, Location, TitleCasePipe } from '@angular/common';
 
 import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
@@ -14,15 +14,16 @@ import { SessionService } from '../../shared/services/session.service';
 import { WebSocketClientService } from '../../shared/services/web-socket.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CLNInvoiceInformationComponent } from '../transactions/invoices/invoice-information-modal/invoice-information.component';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer, OnChain, QueryRoutes, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, FetchInvoices, Channel, OfferInvoice, Offer, ListForwards, FetchListForwards, ForwardingEvent, LocalFailedEvent, Swap } from '../../shared/models/clnModels';
-import { AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLNWSEventTypeEnum, CLNActions, RTLActions, CLNForwardingEventsStatusEnum, DataTypeEnum } from '../../shared/services/consts-enums-functions';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer, OnChain, QueryRoutes, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, FetchInvoices, Channel, OfferInvoice, Offer, ListForwards, FetchListForwards, ForwardingEvent, LocalFailedEvent, Swap, ActiveSwap } from '../../shared/models/clnModels';
+import { AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLNWSEventTypeEnum, CLNActions, RTLActions, CLNForwardingEventsStatusEnum, DataTypeEnum, SwapTypeEnum } from '../../shared/services/consts-enums-functions';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 
 import { RTLState } from '../../store/rtl.state';
 import { addUpdateOfferBookmark, fetchBalance, fetchChannels, fetchFeeRates, fetchFees, fetchInvoices, fetchLocalRemoteBalance, fetchPayments, fetchPeers, fetchUTXOs, getForwardingHistory, setLookup, setPeers, setQueryRoutes, updateCLAPICallStatus, updateInvoice, setOfferInvoice, sendPaymentStatus, setForwardingHistory } from './cln.actions';
-import { allAPIsCallStatus, clnNodeInformation } from './cln.selector';
+import { allAPIsCallStatus } from './cln.selector';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 import { CLNOfferInformationComponent } from '../transactions/offers/offer-information-modal/offer-information.component';
+import { SwapStatePipe } from '../../shared/pipes/app.pipe';
 
 @Injectable()
 export class CLNEffects implements OnDestroy {
@@ -40,7 +41,11 @@ export class CLNEffects implements OnDestroy {
     private logger: LoggerService,
     private router: Router,
     private wsService: WebSocketClientService,
-    private location: Location
+    private location: Location,
+    private swapStatePipe: SwapStatePipe,
+    private titleCasePipe: TitleCasePipe,
+    private decimalPipe: DecimalPipe,
+    private datePipe: DatePipe
   ) {
     this.store.select(allAPIsCallStatus).pipe(takeUntil(this.unSubs[0])).subscribe((allApisCallStatus: ApiCallsListCL) => {
       if (
@@ -934,6 +939,25 @@ export class CLNEffects implements OnDestroy {
     })
   ));
 
+  swapGetCL = createEffect(() => this.actions.pipe(
+    ofType(CLNActions.GET_SWAP_CLN),
+    mergeMap((action: { type: string, payload: string }) => {
+      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'GetSwap', status: APICallStatusEnum.INITIATED } }));
+      return this.httpClient.get(this.CHILD_API_URL + environment.PEERSWAP_API + '/swap/' + action.payload).
+        pipe(map((swapRes: ActiveSwap) => {
+          this.logger.info(swapRes);
+          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'GetSwap', status: APICallStatusEnum.COMPLETED } }));
+          return {
+            type: CLNActions.UPDATE_SWAP_STATE_CLN,
+            payload: { swapId: action.payload, state: swapRes.current, type: swapRes.type === 1 ? SwapTypeEnum.SWAP_IN : SwapTypeEnum.SWAP_OUT }
+          };
+        }), catchError((err: any) => {
+          this.handleErrorWithoutAlert('GetSwap', UI_MESSAGES.NO_SPINNER, 'Getting Swap Failed.', err);
+          return of({ type: RTLActions.VOID });
+        }));
+    })
+  ));
+
   swapsFetchCL = createEffect(() => this.actions.pipe(
     ofType(CLNActions.FETCH_SWAPS_CLN),
     mergeMap((action: { type: string, payload: any }) => {
@@ -985,7 +1009,7 @@ export class CLNEffects implements OnDestroy {
             payload: res || []
           };
         }), catchError((err: any) => {
-          this.handleErrorWithoutAlert('FetchSwaps', UI_MESSAGES.NO_SPINNER, 'Fetching Swap Requests Failed.', err);
+          this.handleErrorWithoutAlert('FetchSwapRequests', UI_MESSAGES.NO_SPINNER, 'Fetching Swap Requests Failed.', err);
           return of({ type: RTLActions.VOID });
         }));
     })
@@ -993,13 +1017,14 @@ export class CLNEffects implements OnDestroy {
 
   peerswapOutCL = createEffect(() => this.actions.pipe(
     ofType(CLNActions.SWAPOUT_CLN),
-    mergeMap((action: { type: string, payload: { amountSats: number, shortChannelId: string, asset: string } }) => {
+    mergeMap((action: { type: string, payload: { alias: string, amountSats: number, shortChannelId: string, asset: string } }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.PEERSWAP_SWAPOUT }));
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'PeerswapSwapout', status: APICallStatusEnum.INITIATED } }));
       return this.httpClient.post(this.CHILD_API_URL + environment.PEERSWAP_API + '/swapOut', {
         amountSats: action.payload.amountSats, shortChannelId: action.payload.shortChannelId, asset: action.payload.asset
       }).pipe(map((postRes: Swap) => {
         this.logger.info(postRes);
+        postRes.alias = action.payload.alias;
         this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.PEERSWAP_SWAPOUT }));
         this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'PeerswapSwapout', status: APICallStatusEnum.COMPLETED } }));
         setTimeout(() => {
@@ -1008,7 +1033,7 @@ export class CLNEffects implements OnDestroy {
               data: {
                 type: AlertTypeEnum.INFORMATION,
                 alertTitle: 'Swapout Initiated',
-                message: postRes.id
+                message: this.reorderedSwapResponse(postRes)
               }
             }
           }));
@@ -1027,13 +1052,14 @@ export class CLNEffects implements OnDestroy {
 
   peerswapInCL = createEffect(() => this.actions.pipe(
     ofType(CLNActions.SWAPIN_CLN),
-    mergeMap((action: { type: string, payload: { amountSats: number, shortChannelId: string, asset: string } }) => {
+    mergeMap((action: { type: string, payload: { alias: string, amountSats: number, shortChannelId: string, asset: string } }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.PEERSWAP_SWAPIN }));
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'PeerswapSwapin', status: APICallStatusEnum.INITIATED } }));
       return this.httpClient.post(this.CHILD_API_URL + environment.PEERSWAP_API + '/swapIn', {
         amountSats: action.payload.amountSats, shortChannelId: action.payload.shortChannelId, asset: action.payload.asset
       }).pipe(map((postRes: Swap) => {
         this.logger.info(postRes);
+        postRes.alias = action.payload.alias;
         this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.PEERSWAP_SWAPIN }));
         this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'PeerswapSwapin', status: APICallStatusEnum.COMPLETED } }));
         setTimeout(() => {
@@ -1042,7 +1068,7 @@ export class CLNEffects implements OnDestroy {
               data: {
                 type: AlertTypeEnum.INFORMATION,
                 alertTitle: 'Swapin Initiated',
-                message: [{ key: 'id', value: postRes.id, title: 'Swap Id', width: 100, type: DataTypeEnum.STRING }]
+                message: this.reorderedSwapResponse(postRes)
               }
             }
           }));
@@ -1058,6 +1084,30 @@ export class CLNEffects implements OnDestroy {
       );
     })
   ));
+
+  reorderedSwapResponse(swapRes: Swap) {
+    const reorderedSwap = [
+      [{ key: 'id', value: swapRes.id, title: 'Swap Id', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'state', value: this.swapStatePipe.transform(swapRes.state || ''), title: 'State', width: 50, type: DataTypeEnum.STRING },
+      { key: 'role', value: this.titleCasePipe.transform(swapRes.role), title: 'Role', width: 50, type: DataTypeEnum.STRING }],
+      [{ key: 'alias', value: swapRes.alias, title: 'Alias', width: 50, type: DataTypeEnum.STRING },
+        { key: 'short_channel_id', value: swapRes.short_channel_id, title: 'Short Channel ID', width: 50, type: DataTypeEnum.STRING }],
+      [{ key: 'amount', value: this.decimalPipe.transform(swapRes.amount), title: 'Amount (Sats)', width: 50, type: DataTypeEnum.STRING },
+        { key: 'created_at', value: this.datePipe.transform(new Date(swapRes.created_at || ''), 'dd/MMM/YYYY HH:mm'), title: 'Created At', width: 50, type: DataTypeEnum.STRING }],
+      [{ key: 'peer_node_id', value: swapRes.peer_node_id, title: 'Peer Node Id', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'initiator_node_id', value: swapRes.initiator_node_id, title: 'Initiator Node Id', width: 100, type: DataTypeEnum.STRING }]
+    ];
+    if (swapRes.opening_tx_id) {
+      reorderedSwap.push([{ key: 'opening_tx_id', value: swapRes.opening_tx_id, title: 'Opening Transaction Id', width: 100, type: DataTypeEnum.STRING }]);
+    }
+    if (swapRes.claim_tx_id) {
+      reorderedSwap.push([{ key: 'claim_tx_id', value: swapRes.claim_tx_id, title: 'Claim Transaction Id', width: 100, type: DataTypeEnum.STRING }]);
+    }
+    if (swapRes.cancel_message) {
+      reorderedSwap.push([{ key: 'cancel_message', value: swapRes.cancel_message, title: 'Cancel Message', width: 100, type: DataTypeEnum.STRING }]);
+    }
+    return reorderedSwap;
+  }
 
   initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('clUnlocked', 'true');

@@ -579,6 +579,7 @@ export interface SwapRequest {
 
 export interface Swap {
   id?: string;
+  alias?: string;
   asset?: string;
   created_at?: string;
   type?: string;

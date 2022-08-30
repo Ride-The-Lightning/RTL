@@ -69,7 +69,7 @@ export const LndRoutes: Routes = [
               { path: 'activehtlcs', component: ChannelActiveHTLCsTableComponent, canActivate: [LNDUnlockedGuard] }
             ]
           },
-          { path: 'peers', component: PeersComponent, data: { sweepAll: false }, canActivate: [LNDUnlockedGuard] }
+          { path: 'peers', component: PeersComponent, canActivate: [LNDUnlockedGuard] }
         ]
       },
       {

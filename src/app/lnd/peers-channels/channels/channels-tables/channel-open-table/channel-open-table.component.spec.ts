@@ -12,7 +12,7 @@ import { LoopService } from '../../../../../shared/services/loop.service';
 
 import { ChannelOpenTableComponent } from './channel-open-table.component';
 import { SharedModule } from '../../../../../shared/shared.module';
-import { mockDataService, mockLoggerService, mockLNDEffects, mockRTLEffects, mockRouter } from '../../../../../shared/test-helpers/mock-services';
+import { mockDataService, mockLoggerService, mockLNDEffects, mockRTLEffects } from '../../../../../shared/test-helpers/mock-services';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import { LNDEffects } from '../../../../store/lnd.effects';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -34,7 +34,6 @@ describe('ChannelOpenTableComponent', () => {
       ],
       providers: [
         CommonService, LoopService,
-        { provide: Router, useClass: mockRouter },
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: RTLEffects, useClass: mockRTLEffects },

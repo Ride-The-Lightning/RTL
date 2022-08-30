@@ -6,7 +6,7 @@ import { StoreModule } from '@ngrx/store';
 import { CommonService } from '../../../../../shared/services/common.service';
 import { DataService } from '../../../../../shared/services/data.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
-import { mockCLEffects, mockDataService, mockLoggerService, mockECLEffects, mockLNDEffects, mockRTLEffects, mockRouter } from '../../../../../shared/test-helpers/mock-services';
+import { mockCLEffects, mockDataService, mockLoggerService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../../../shared/test-helpers/mock-services';
 import { SharedModule } from '../../../../../shared/shared.module';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 
@@ -16,7 +16,7 @@ import { CLNReducer } from '../../../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../../../eclair/store/ecl.reducers';
 import { CLNEffects } from '../../../../store/cln.effects';
 import { CLNChannelOpenTableComponent } from './channel-open-table.component';
-import { ExtraOptions, Route, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 describe('CLNChannelOpenTableComponent', () => {
   let component: CLNChannelOpenTableComponent;
@@ -34,7 +34,6 @@ describe('CLNChannelOpenTableComponent', () => {
       ],
       providers: [
         CommonService,
-        { provide: Router, useClass: mockRouter },
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: RTLEffects, useClass: mockRTLEffects },
