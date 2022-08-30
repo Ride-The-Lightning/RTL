@@ -57,7 +57,7 @@ export class CLNSwapInModalComponent implements OnInit, OnDestroy {
   onExecuteSwapin(): boolean | void {
     this.swapInError = '';
     if (!this.swapAmount || !this.sPeer || !this.sPeer.short_channel_id) { return true; }
-    this.store.dispatch(swapIn({ payload: { amountSats: this.swapAmount, shortChannelId: this.sPeer?.short_channel_id, asset: 'btc' } }));
+    this.store.dispatch(swapIn({ payload: { alias: this.sPeer.alias || '', amountSats: this.swapAmount, shortChannelId: this.sPeer?.short_channel_id, asset: 'btc' } }));
   }
 
   resetData() {

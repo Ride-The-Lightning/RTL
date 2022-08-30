@@ -333,11 +333,6 @@ export enum PaymentTypes {
   KEYSEND = 'KEYSEND'
 }
 
-export enum PeerswapTypes {
-  SWAP_OUT = 'swap-out',
-  SWAP_IN = 'swap-in'
-}
-
 export enum ReportBy {
   FEES = 'FEES',
   EVENTS = 'EVENTS'
@@ -532,6 +527,8 @@ export enum CLNActions {
   SET_SWAP_PEERS_CLN = 'SET_SWAP_PEERS_CLN',
   FETCH_SWAP_REQUESTS_CLN = 'FETCH_SWAP_REQUESTS_CLN',
   SET_SWAP_REQUESTS_CLN = 'SET_SWAP_REQUESTS_CLN',
+  GET_SWAP_CLN = 'GET_SWAP_CLN',
+  UPDATE_SWAP_STATE_CLN = 'UPDATE_SWAP_STATE_CLN',
   SWAPOUT_CLN = 'SWAPOUT_CLN',
   ADD_SWAPOUT_CLN = 'ADD_SWAPOUT_CLN',
   SWAPIN_CLN = 'SWAPIN_CLN',
@@ -649,4 +646,18 @@ export enum CLNForwardingEventsStatusEnum {
   SETTLED = 'settled',
   FAILED = 'failed',
   LOCAL_FAILED = 'local_failed'
+}
+
+export enum PeerswapTypes {
+  SWAP_OUT = 'swap-out',
+  SWAP_IN = 'swap-in'
+}
+
+export enum PeerswapRoles {
+  SENDER = 'sender',
+  RECEIVER = 'receiver'
+}
+
+export enum PeerswapStates {
+  SWAP_CANCELED = 'State_SwapCanceled'
 }

@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -50,7 +49,7 @@ export class SwapPeersComponent implements OnInit, OnDestroy {
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe, private router: Router) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -63,13 +62,11 @@ export class SwapPeersComponent implements OnInit, OnDestroy {
       this.displayedColumns = ['short_channel_id', 'alias', 'swaps_allowed', 'local_balance', 'remote_balance', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['short_channel_id', 'alias', 'nodeid', 'swaps_allowed', 'local_balance', 'remote_balance', 'actions'];
+      this.displayedColumns = ['short_channel_id', 'alias', 'swaps_allowed', 'local_balance', 'remote_balance', 'actions'];
     }
   }
 
   ngOnInit() {
-    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-    this.router.onSameUrlNavigation = 'reload';
     this.store.dispatch(fetchSwapPeers());
     this.store.select(swapPeers).pipe(takeUntil(this.unSubs[0])).
       subscribe((spSeletor: { totalSwapPeers: number, swapPeers: SwapPeerChannelsFlattened[], apiCallStatus: ApiCallStatusPayload }) => {
@@ -88,7 +85,6 @@ export class SwapPeersComponent implements OnInit, OnDestroy {
   }
 
   onSwapPeerClick(selSPeer: SwapPeerChannelsFlattened) {
-    this.logger.warn(selSPeer);
     const reorderedSPeer = [
       [{ key: 'nodeid', value: selSPeer.nodeid, title: 'Node Id', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'alias', value: selSPeer.alias, title: 'Alias', width: 50, type: DataTypeEnum.STRING },
@@ -96,15 +92,15 @@ export class SwapPeersComponent implements OnInit, OnDestroy {
       [{ key: 'local_balance', value: selSPeer.local_balance, title: 'Local Balance (Sats)', width: 50, type: DataTypeEnum.NUMBER },
       { key: 'remote_balance', value: selSPeer.remote_balance, title: 'Remote Balance (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'total_fee_paid', value: selSPeer.total_fee_paid, title: 'Total Fee Paid (Sats)', width: 40, type: DataTypeEnum.NUMBER },
-      { key: 'swaps_allowed', value: selSPeer.swaps_allowed ? 'Allowed' : 'Denied', title: 'Swaps Allowed', width: 30, type: DataTypeEnum.STRING },
-      { key: 'total_channels', value: selSPeer.channels?.length, title: 'Channels Opened', width: 30, type: DataTypeEnum.NUMBER }],
+      { key: 'swaps_allowed', value: selSPeer.swaps_allowed ? 'Yes' : 'No', title: 'Swaps Allowed', width: 30, type: DataTypeEnum.STRING },
+      { key: 'total_channels', value: selSPeer.channels?.length, title: 'Channels With Peer', width: 30, type: DataTypeEnum.NUMBER }],
       [{ key: 'sent_total_swaps_out', value: selSPeer.sent?.total_swaps_out, title: 'Swap Out Sent', width: 25, type: DataTypeEnum.NUMBER },
       { key: 'sent_total_swaps_in', value: selSPeer.sent?.total_swaps_in, title: 'Swap In Sent', width: 25, type: DataTypeEnum.NUMBER },
       { key: 'sent_total_sats_swapped_out', value: selSPeer.sent?.total_sats_swapped_out, title: 'Swapped Out Sent (Sats)', width: 25, type: DataTypeEnum.NUMBER },
       { key: 'sent_total_sats_swapped_in', value: selSPeer.sent?.total_sats_swapped_in, title: 'Swapped In Sent (Sats)', width: 25, type: DataTypeEnum.NUMBER }],
       [{ key: 'received_total_swaps_out', value: selSPeer.received?.total_swaps_out, title: 'Swap Out Received', width: 25, type: DataTypeEnum.NUMBER },
       { key: 'received_total_swaps_in', value: selSPeer.received?.total_swaps_in, title: 'Swap In Received', width: 25, type: DataTypeEnum.NUMBER },
-      { key: 'received_total_sats_swapped_out', value: selSPeer.received?.total_sats_swapped_out, title: 'Swapped Out Received(Sats)', width: 25, type: DataTypeEnum.NUMBER },
+      { key: 'received_total_sats_swapped_out', value: selSPeer.received?.total_sats_swapped_out, title: 'Swapped Out Received (Sats)', width: 25, type: DataTypeEnum.NUMBER },
       { key: 'received_total_sats_swapped_in', value: selSPeer.received?.total_sats_swapped_in, title: 'Swapped In Received (Sats)', width: 25, type: DataTypeEnum.NUMBER }]
     ];
     this.store.dispatch(openAlert({
@@ -148,7 +144,7 @@ export class SwapPeersComponent implements OnInit, OnDestroy {
       const newSPeer =
         (sPeer.nodeid ? sPeer.nodeid : '') +
         (sPeer.alias ? sPeer.alias.toLowerCase() : '') +
-        (sPeer.swaps_allowed ? 'allowed' : 'denied') +
+        (sPeer.swaps_allowed ? 'yes' : 'no') +
         (sPeer.short_channel_id ? sPeer.short_channel_id : '') +
         (sPeer.local_balance ? sPeer.local_balance : '') +
         (sPeer.remote_balance ? sPeer.remote_balance : '');

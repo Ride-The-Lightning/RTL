@@ -11,7 +11,7 @@ import { CommonService } from '../../../../../shared/services/common.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 
 import { ECLChannelOpenTableComponent } from './channel-open-table.component';
-import { mockDataService, mockLoggerService, mockRouter, mockRTLEffects } from '../../../../../shared/test-helpers/mock-services';
+import { mockDataService, mockLoggerService, mockRTLEffects } from '../../../../../shared/test-helpers/mock-services';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import { SharedModule } from '../../../../../shared/shared.module';
 import { DataService } from '../../../../../shared/services/data.service';
@@ -32,7 +32,6 @@ describe('ECLChannelOpenTableComponent', () => {
       ],
       providers: [
         CommonService,
-        { provide: Router, useClass: mockRouter },
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: RTLEffects, useClass: mockRTLEffects }

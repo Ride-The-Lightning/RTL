@@ -1,6 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 
-import { CLNActions } from '../../shared/services/consts-enums-functions';
+import { CLNActions, SwapTypeEnum } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfo, Fees, Peer, Payment, QueryRoutes, Channel, FeeRates, Invoice, ListInvoices, OnChain, UTXO, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, OfferInvoice, Offer, OfferBookmark, ListForwards, FetchListForwards, LocalFailedEvent, ForwardingEvent, Swap, SwapPeer, SwapRequest } from '../../shared/models/clnModels';
@@ -143,10 +143,14 @@ export const fetchSwapRequests = createAction(CLNActions.FETCH_SWAP_REQUESTS_CLN
 
 export const setSwapRequests = createAction(CLNActions.SET_SWAP_REQUESTS_CLN, props<{ payload: SwapRequest[] }>());
 
-export const swapOut = createAction(CLNActions.SWAPOUT_CLN, props<{ payload: { amountSats: number, shortChannelId: string, asset: string } }>());
+export const swapOut = createAction(CLNActions.SWAPOUT_CLN, props<{ payload: { alias: string, amountSats: number, shortChannelId: string, asset: string } }>());
 
 export const addSwapout = createAction(CLNActions.ADD_SWAPOUT_CLN, props<{ payload: Swap }>());
 
-export const swapIn = createAction(CLNActions.SWAPIN_CLN, props<{ payload: { amountSats: number, shortChannelId: string, asset: string } }>());
+export const swapIn = createAction(CLNActions.SWAPIN_CLN, props<{ payload: { alias: string, amountSats: number, shortChannelId: string, asset: string } }>());
 
 export const addSwapin = createAction(CLNActions.ADD_SWAPIN_CLN, props<{ payload: Swap }>());
+
+export const getSwap = createAction(CLNActions.GET_SWAP_CLN, props<{ payload: string }>());
+
+export const updateSwapState = createAction(CLNActions.UPDATE_SWAP_STATE_CLN, props<{ payload: { swapId: string, state: string, type: SwapTypeEnum } }>());

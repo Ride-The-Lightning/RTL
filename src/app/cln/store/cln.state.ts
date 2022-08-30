@@ -28,6 +28,7 @@ export interface CLNState {
   swapPeers: SwapPeerChannelsFlattened[];
   swapOuts: Swap[];
   swapIns: Swap[];
+  swapsCanceled: Swap[];
   swapRequests: SwapRequest[];
 }
 
@@ -76,5 +77,6 @@ export const initCLNState: CLNState = {
   swapPeers: [],
   swapOuts: [],
   swapIns: [],
+  swapsCanceled: [],
   swapRequests: []
 };

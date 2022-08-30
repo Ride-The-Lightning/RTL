@@ -98,7 +98,7 @@
                       <span fxFlex="60" class="foreground-secondary-text">
                         <span *ngIf="htlc.state === 'SETTLED'" class="dot green" matTooltip="Settled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
                         <span *ngIf="htlc.state === 'ACCEPTED'" class="dot yellow" matTooltip="Accepted" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-                        <span *ngIf="htlc.state === 'CANCELED'" class="dot red" matTooltip="Cancelled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+                        <span *ngIf="htlc.state === 'CANCELED'" class="dot red" matTooltip="Canceled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
                         {{htlc.chan_id}}
                       </span>
                       <span fxFlex="40" class="foreground-secondary-text">{{((+htlc.amt_msat/1000) || 0) | number:getDecimalFormat(htlc)}}</span>

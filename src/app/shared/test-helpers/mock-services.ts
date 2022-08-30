@@ -28,20 +28,6 @@ export class mockHttpClient {
 
 }
 
-export class mockRouter {
-
-  getCurrentNavigation() {
-    return {
-      extras: {
-        state: {
-          filter: 'DummyChannelID4325565432212367867'
-        }
-      }
-    };
-  };
-
-}
-
 export class mockDataService {
 
   private lnImplementation = 'LND';

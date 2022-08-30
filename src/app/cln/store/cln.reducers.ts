@@ -5,10 +5,10 @@ import {
   setChildNodeSettingsCL, setFeeRates, setFees, setForwardingHistory,
   setInfo, setInvoices, setLocalRemoteBalance, setOffers, addOffer, setPayments, setPeers, setUTXOs,
   updateCLAPICallStatus, updateInvoice, updateOffer, setOfferBookmarks, addUpdateOfferBookmark, removeOfferBookmark,
-  setSwaps, setSwapPeers, setSwapRequests, addSwapout, addSwapin
+  setSwaps, setSwapPeers, setSwapRequests, addSwapout, addSwapin, updateSwapState
 } from './cln.actions';
 import { Channel, OfferBookmark, Swap } from '../../shared/models/clnModels';
-import { CLNForwardingEventsStatusEnum, PeerswapTypes } from '../../shared/services/consts-enums-functions';
+import { CLNForwardingEventsStatusEnum, PeerswapTypes, SwapTypeEnum } from '../../shared/services/consts-enums-functions';
 
 export const CLNReducer = createReducer(initCLNState,
   on(updateCLAPICallStatus, (state, { payload }) => {
@@ -221,18 +221,50 @@ export const CLNReducer = createReducer(initCLNState,
   on(setSwaps, (state, { payload }) => {
     const swapOutArr: Swap[] = [];
     const swapInArr: Swap[] = [];
-    payload.forEach((swap) => {
-      if (swap.type === PeerswapTypes.SWAP_OUT) {
-        swapOutArr.push(swap);
+    const swapCanceledArr: Swap[] = [];
+    for (let i = (payload.length - 1); i >= 0; i--) {
+      payload[i].alias = state.peers?.find((peer) => peer.id === payload[i].peer_node_id)?.alias || payload[i].peer_node_id;
+      if (payload[i].state === 'State_SwapCanceled') {
+        swapCanceledArr.push(payload[i]);
       } else {
-        swapInArr.push(swap);
+        if (payload[i].type === PeerswapTypes.SWAP_OUT) {
+          swapOutArr.push(payload[i]);
+        } else {
+          swapInArr.push(payload[i]);
+        }
       }
-    });
+    }
     return {
       ...state,
       swapOuts: swapOutArr,
-      swapIns: swapInArr
+      swapIns: swapInArr,
+      swapsCanceled: swapCanceledArr
     };
+  }),
+  on(updateSwapState, (state, { payload }) => {
+    if (payload.type === SwapTypeEnum.SWAP_IN) {
+      const updatedSwapIns = [...state.swapIns];
+      const foundSwapIdx = updatedSwapIns.findIndex((swapIn) => (swapIn.id === payload.swapId));
+      if (foundSwapIdx > -1) {
+        updatedSwapIns[foundSwapIdx].state = payload.state;
+      }
+      return {
+        ...state,
+        swapIns: updatedSwapIns
+      };
+    }
+    if (payload.type === SwapTypeEnum.SWAP_OUT) {
+      const updatedSwapOuts = [...state.swapOuts];
+      const foundSwapIdx = updatedSwapOuts.findIndex((swapOut) => (swapOut.id === payload.swapId));
+      if (foundSwapIdx > -1) {
+        updatedSwapOuts[foundSwapIdx].state = payload.state;
+      }
+      return {
+        ...state,
+        swapOuts: updatedSwapOuts
+      };
+    }
+    return { ...state };
   }),
   on(setSwapRequests, (state, { payload }) => ({
     ...state,

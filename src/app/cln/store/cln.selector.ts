@@ -27,7 +27,6 @@ export const nodeInfoAndNodeSettingsAndAPIsStatus = createSelector(clnState, (st
 export const offers = createSelector(clnState, (state: CLNState) => ({ offers: state.offers, apiCallStatus: state.apisCallStatus.FetchOffers }));
 export const offerBookmarks = createSelector(clnState, (state: CLNState) => ({ offersBookmarks: state.offersBookmarks, apiCallStatus: state.apisCallStatus.FetchOfferBookmarks }));
 export const getoffer = (bolt12Str) => createSelector(clnState, (state: CLNState) => (state.offers.find((offer: Offer) => offer.bolt12 === bolt12Str)));
-export const swapOuts = createSelector(clnState, (state: CLNState) => ({ swapOuts: state.swapOuts, apiCallStatus: state.apisCallStatus.FetchSwaps }));
-export const swapIns = createSelector(clnState, (state: CLNState) => ({ swapIns: state.swapIns, apiCallStatus: state.apisCallStatus.FetchSwaps }));
+export const swaps = createSelector(clnState, (state: CLNState) => ({ swapOuts: state.swapOuts, swapIns: state.swapIns, swapsCanceled: state.swapsCanceled, apiCallStatus: state.apisCallStatus.FetchSwaps }));
 export const swapPeers = createSelector(clnState, (state: CLNState) => ({ totalSwapPeers: state.totalSwapPeers, swapPeers: state.swapPeers, apiCallStatus: state.apisCallStatus.FetchSwapPeers }));
 export const swapRequests = createSelector(clnState, (state: CLNState) => ({ swapRequests: state.swapRequests, apiCallStatus: state.apisCallStatus.FetchSwapRequests }));

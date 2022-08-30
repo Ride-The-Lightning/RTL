@@ -4,7 +4,6 @@ import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { faHandshake } from '@fortawesome/free-solid-svg-icons';
 
-
 @Component({
   selector: 'rtl-peerswap',
   templateUrl: './peerswap.component.html',
@@ -13,7 +12,7 @@ import { faHandshake } from '@fortawesome/free-solid-svg-icons';
 export class PeerswapComponent implements OnInit, OnDestroy {
 
   public faHandshake = faHandshake;
-  public links = [{ link: 'peers', name: 'Peers' }, { link: 'psout', name: 'Swap Out' }, { link: 'psin', name: 'Swap In' }, { link: 'pscancelled', name: 'Swap Cancelled' }];
+  public links = [{ link: 'prs', name: 'Peers' }, { link: 'psout', name: 'Swap Out' }, { link: 'psin', name: 'Swap In' }, { link: 'pscanceled', name: 'Swap Canceled' }];
   public activeTab = this.links[0];
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
