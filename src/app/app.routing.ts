@@ -37,11 +37,10 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'layout' },
       { path: 'layout', component: NodeSettingsComponent, canActivate: [AuthGuard] },
       {
-        path: 'services', component: ServicesSettingsComponent, canActivate: [AuthGuard], children: [
-          { path: '', pathMatch: 'full', redirectTo: 'loop' },
+        path: 'serviceconf', component: ServicesSettingsComponent, canActivate: [AuthGuard], children: [
           { path: 'loop', component: LoopServiceSettingsComponent, canActivate: [AuthGuard] },
           { path: 'boltz', component: BoltzServiceSettingsComponent, canActivate: [AuthGuard] },
-          { path: 'peerswap', component: PeerswapServiceSettingsComponent, canActivate: [AuthGuard] }
+          { path: 'prswp', component: PeerswapServiceSettingsComponent, canActivate: [AuthGuard] }
         ]
       },
       { path: 'experimental', component: ExperimentalSettingsComponent, canActivate: [AuthGuard] },

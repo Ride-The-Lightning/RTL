@@ -26,7 +26,8 @@ export class DataService implements OnDestroy {
   private APIUrl = API_URL;
   private lnImplementation = '';
   public lnImplementationUpdated: BehaviorSubject<any> = new BehaviorSubject(null);
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(),
+    new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private httpClient: HttpClient, private store: Store<RTLState>, private logger: LoggerService, private snackBar: MatSnackBar, private titleCasePipe: TitleCasePipe) { }
 
@@ -328,6 +329,70 @@ export class DataService implements OnDestroy {
         }), catchError((err) => {
           this.handleErrorWithoutAlert('Funder Policy', UI_MESSAGES.GET_FUNDER_POLICY, err);
           return throwError(() => new Error(this.extractErrorMessage(err)));
+        })
+      );
+    }));
+  }
+
+  peerswapReloadPolicy() {
+    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.RELOAD_POLICY_PEERSWAP }));
+      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + environment.PEERSWAP_API + '/reloadPolicy').pipe(
+        takeUntil(this.unSubs[12]),
+        mergeMap((res) => {
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.RELOAD_POLICY_PEERSWAP }));
+          return of(res);
+        }), catchError((err) => {
+          this.handleErrorWithoutAlert('Reload Peerswap Policy', UI_MESSAGES.RELOAD_POLICY_PEERSWAP, err);
+          return throwError(() => this.extractErrorMessage(err));
+        })
+      );
+    }));
+  }
+
+  addPeerToPeerswap(peerNodeId: string) {
+    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.ADD_PEER_PEERSWAP }));
+      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + environment.PEERSWAP_API + '/addPeer/' + peerNodeId).pipe(
+        takeUntil(this.unSubs[13]),
+        mergeMap((res) => {
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.ADD_PEER_PEERSWAP }));
+          return of(res);
+        }), catchError((err) => {
+          this.handleErrorWithoutAlert('Add Peer To Peerswap', UI_MESSAGES.ADD_PEER_PEERSWAP, err);
+          return throwError(() => this.extractErrorMessage(err));
+        })
+      );
+    }));
+  }
+
+  removePeerFromPeerswap(peerNodeId: string) {
+    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.REMOVE_PEER_PEERSWAP }));
+      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + environment.PEERSWAP_API + '/removePeer/' + peerNodeId).pipe(
+        takeUntil(this.unSubs[14]),
+        mergeMap((res) => {
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.REMOVE_PEER_PEERSWAP }));
+          return of(res);
+        }), catchError((err) => {
+          this.handleErrorWithoutAlert('Remove Peer From Peerswap', UI_MESSAGES.REMOVE_PEER_PEERSWAP, err);
+          return throwError(() => this.extractErrorMessage(err));
+        })
+      );
+    }));
+  }
+
+  allowPeerswapRequests(flgAllow: boolean) {
+    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UPDATE_ALLOW_SWAP_REQUESTS }));
+      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + environment.PEERSWAP_API + '/allowswaprequests/' + flgAllow).pipe(
+        takeUntil(this.unSubs[15]),
+        mergeMap((res) => {
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_ALLOW_SWAP_REQUESTS }));
+          return of(res);
+        }), catchError((err) => {
+          this.handleErrorWithoutAlert('Update Peerswap Request Rule', UI_MESSAGES.UPDATE_ALLOW_SWAP_REQUESTS, err);
+          return throwError(() => this.extractErrorMessage(err));
         })
       );
     }));

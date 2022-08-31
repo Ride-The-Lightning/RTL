@@ -15,7 +15,8 @@ import { CommonService } from '../../../../shared/services/common.service';
 import { RTLState } from '../../../../store/rtl.state';
 import { SelNodeChild } from '../../../../shared/models/RTLconfig';
 import { clnNodeSettings } from '../../../store/cln.selector';
-import { swapOut } from '../../../store/cln.actions';
+import { fetchSwaps, swapOut } from '../../../store/cln.actions';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'rtl-swap-out-modal',
@@ -30,9 +31,10 @@ export class CLNSwapOutModalComponent implements OnInit, OnDestroy {
   public swapAmount: number | null;
   public swapAmountHint = '';
   public swapOutError = '';
+  public flgswapCanceled = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLNSwapOutModalComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNSwapInformation, private store: Store<RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private actions: Actions) { }
+  constructor(public dialogRef: MatDialogRef<CLNSwapOutModalComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNSwapInformation, private store: Store<RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private actions: Actions, private router: Router) { }
 
   ngOnInit() {
     this.sPeer = this.data.swapPeer;
@@ -46,6 +48,9 @@ export class CLNSwapOutModalComponent implements OnInit, OnDestroy {
         if (action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN && action.payload.action === 'PeerswapSwapout') {
           if (action.payload.status === APICallStatusEnum.ERROR) {
             this.swapOutError = action.payload.message;
+            if (this.swapOutError.includes('Peerswap-listswaps')) {
+              this.flgswapCanceled = true;
+            }
           }
           if (action.payload.status === APICallStatusEnum.COMPLETED) {
             this.dialogRef.close();
@@ -54,8 +59,15 @@ export class CLNSwapOutModalComponent implements OnInit, OnDestroy {
       });
   }
 
+  goToSwapCanceled() {
+    this.store.dispatch(fetchSwaps());
+    this.router.navigate(['./cln/services/peerswap/pscanceled']);
+    this.dialogRef.close();
+  }
+
   onExecuteSwapout(): boolean | void {
     this.swapOutError = '';
+    this.flgswapCanceled = false;
     if (!this.swapAmount || !this.sPeer || !this.sPeer.short_channel_id) { return true; }
     this.store.dispatch(swapOut({ payload: { alias: this.sPeer.alias || '', amountSats: this.swapAmount, shortChannelId: this.sPeer?.short_channel_id, asset: 'btc' } }));
   }
@@ -64,6 +76,7 @@ export class CLNSwapOutModalComponent implements OnInit, OnDestroy {
     this.swapAmount = null;
     this.swapAmountHint = '';
     this.swapOutError = '';
+    this.flgswapCanceled = false;
   }
 
   onAmountChange() {

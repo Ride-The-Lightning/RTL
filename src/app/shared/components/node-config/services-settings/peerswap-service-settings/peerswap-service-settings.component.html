@@ -1,14 +1,66 @@
-<div [perfectScrollbar] fxLayout="column" fxFlex="100">
+<div fxLayout="column" fxFlex="100">
   <div fxFlex="100" class="alert alert-info mt-1">
     <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
-    <span>Please ensure that <strong>peerswap</strong> plugin is running and accessible to RTL before enabling this service. Click <strong><a href="https://www.peerswap.dev/" target="_blank">here</a></strong> to learn more about peerswap.</span>
+    <span>Please ensure that <strong>peerswap plugin</strong> is running and accessible to RTL before enabling this service. Click <strong><a href="https://www.peerswap.dev/" target="_blank">here</a></strong> to learn more about peerswap.</span>
   </div>
-  <form fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1" #form="ngForm">
-    <div fxLayout="column" fxFlex="50" fxLayoutAlign="start stretch">
-      <mat-slide-toggle autoFocus class="mb-1" tabindex="1" color="primary" [(ngModel)]="enablePeerswap" name="peerswap">Enable Peerswap Service</mat-slide-toggle>
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container">
+    <mat-slide-toggle autoFocus class="my-2" tabindex="1" color="primary" [(ngModel)]="enablePeerswap" (change)="onUpdateService()" name="peerswap">Enable Peerswap Service</mat-slide-toggle>
+    <div *ngIf="enablePeerswap && reloadPolicyError !== ''" class="padding-gap-large error-border">
+      <div fxLayout="row">
+        <div fxFlex="100" class="alert alert-danger mt-1">
+          <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+          <span>{{reloadPolicyError}}</span>
+        </div>
+      </div>
     </div>
-  </form>
-  <div fxLayout="row" class="mt-2">
-    <button mat-flat-button color="primary" type="submit" (click)="onUpdateService()" tabindex="5">Update</button>
-  </div>
+    <div *ngIf="enablePeerswap && reloadPolicyError === ''" class="padding-gap-large bordered-box">
+      <div fxLayout="row">
+        <div fxFlex="100">
+          <h4 fxLayoutAlign="start" class="font-bold-500">Accept All Peers</h4>
+          <span class="foreground-secondary-text">{{reloadPolicy?.AcceptAllPeers ? 'Yes' : 'No'}}</span>
+        </div>
+      </div>
+      <mat-divider [inset]="true" class="my-1"></mat-divider>
+      <div fxLayout="row">
+        <div fxFlex="100">
+          <h4 fxLayoutAlign="start" class="font-bold-500">Onchain Reserve (Sats)</h4>
+          <span class="foreground-secondary-text">{{reloadPolicy?.ReserveOnchainMsat / 1000 | number}}</span>
+        </div>
+      </div>
+      <mat-divider [inset]="true" class="my-1"></mat-divider>
+      <div fxLayout="row">
+        <div fxFlex="100">
+          <h4 fxLayoutAlign="start" class="font-bold-500">Update Peerswap Whitelist</h4>
+          <div *ngIf="addRemoveError !== ''" class="padding-gap error-border">
+            <div fxLayout="row">
+              <div fxFlex="100" class="alert alert-danger mt-1">
+                <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+                <span>{{addRemoveError}}</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <mat-card *ngFor="let allowedPeer of reloadPolicy?.PeerAllowlist" fxLayout="row" fxLayoutAlign="start center" class="mb-1 peer-card">
+              <div fxLayoutAlign="center center">
+                <button mat-icon-button color="primary" (click)="onRemovePeer(allowedPeer)" class="mr-1" matTooltip="Remove Peer" matTooltipPosition="below">
+                  <mat-icon>remove_circle_outline</mat-icon>
+                </button>
+              </div>
+              <div fxLayoutAlign="start center" class="mt-5px">{{allowedPeer}}</div>
+            </mat-card>
+            <mat-card fxLayout="row" fxLayoutAlign="start center" class="mb-1 peer-card" >
+              <div fxLayoutAlign="center center" matTooltip="Add Peer" matTooltipPosition="below">
+                <button mat-icon-button color="primary" [disabled]="!addPeerNodeId || addPeerNodeId === '' || addPeerNodeId.length < 50" (click)="onAddPeer()" class="mr-1">
+                  <mat-icon>add_circle_outline</mat-icon>
+                </button>
+              </div>
+              <mat-form-field fxLayoutAlign="start stretch" fxFlex="50" class="mt-5px">
+                <input matInput placeholder="Node Id" [(ngModel)]="addPeerNodeId" name="nodeId" tabindex="4">
+              </mat-form-field>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>  
 </div>

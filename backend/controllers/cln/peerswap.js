@@ -100,7 +100,7 @@ export const allowSwapRequests = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/peerswap/allowSwapRequests' + req.params.isAllowed;
+    options.url = req.session.selectedNode.ln_server_url + '/v1/peerswap/allowSwapRequests/' + req.params.isAllowed;
     request(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peerswap', msg: 'Swap Request Allowed/Not Allowed', data: body });
         res.status(200).json(body);
@@ -115,7 +115,7 @@ export const addSwapPeer = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/peerswap/addPeer' + req.params.pubkey;
+    options.url = req.session.selectedNode.ln_server_url + '/v1/peerswap/addPeer/' + req.params.pubkey;
     request(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peerswap', msg: 'Swap Peer Added', data: body });
         res.status(200).json(body);
@@ -130,7 +130,7 @@ export const removeSwapPeer = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/peerswap/removePeer' + req.params.pubkey;
+    options.url = req.session.selectedNode.ln_server_url + '/v1/peerswap/removePeer/' + req.params.pubkey;
     request(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peerswap', msg: 'Swap Peer Removed', data: body });
         res.status(200).json(body);
@@ -145,7 +145,7 @@ export const resendMessage = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/peerswap/resendMessage' + req.params.swapId;
+    options.url = req.session.selectedNode.ln_server_url + '/v1/peerswap/resendMessage/' + req.params.swapId;
     request(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peerswap', msg: 'Message Resent', data: body });
         res.status(200).json(body);

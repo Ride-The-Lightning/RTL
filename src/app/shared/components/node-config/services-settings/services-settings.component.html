@@ -5,7 +5,7 @@
 <div fxLayout="column" class="padding-gap-x">
   <mat-card>
     <mat-card-content fxLayout="column">
-      <nav mat-tab-nav-bar>
+      <nav mat-tab-nav-bar #navbar>
         <div *ngIf="selNode?.lnImplementation?.toUpperCase() === 'LND'" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[0].link" (click)="activeLink = links[0].link" routerLink="{{links[0].link}}">{{links[0].name}}</div>
         <div *ngIf="selNode?.lnImplementation?.toUpperCase() === 'LND'" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[1].link" (click)="activeLink = links[1].link" routerLink="{{links[1].link}}" [state]="{ initial: false }">{{links[1].name}}</div>
         <div *ngIf="selNode?.lnImplementation?.toUpperCase() === 'CLN'" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[2].link" (click)="activeLink = links[2].link" routerLink="{{links[2].link}}">{{links[2].name}}</div>

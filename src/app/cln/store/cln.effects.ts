@@ -947,6 +947,10 @@ export class CLNEffects implements OnDestroy {
         pipe(map((swapRes: ActiveSwap) => {
           this.logger.info(swapRes);
           this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'GetSwap', status: APICallStatusEnum.COMPLETED } }));
+          if (swapRes.current === 'State_ClaimedPreimage' || swapRes.current === 'State_ClaimedCoop') {
+            this.store.dispatch(fetchUTXOs());
+            this.store.dispatch(fetchBalance());
+          }
           return {
             type: CLNActions.UPDATE_SWAP_STATE_CLN,
             payload: { swapId: action.payload, state: swapRes.current, type: swapRes.type === 1 ? SwapTypeEnum.SWAP_IN : SwapTypeEnum.SWAP_OUT }

@@ -324,6 +324,10 @@ export const UI_MESSAGES = {
   LIST_NETWORK_NODES: 'Getting Network Nodes List...',
   PEERSWAP_SWAPOUT: 'Initializing Swapout...',
   PEERSWAP_SWAPIN: 'Initializing Swapin...',
+  RELOAD_POLICY_PEERSWAP: 'Reload Peerswap Policy...',
+  ADD_PEER_PEERSWAP: 'Adding Peer To Peerswap Allowlist...',
+  REMOVE_PEER_PEERSWAP: 'Removing Peer From Peerswap Allowlist...',
+  UPDATE_ALLOW_SWAP_REQUESTS: 'Updating Swap Request Rule...',
   LOG_OUT: 'Logging Out...'
 };
 

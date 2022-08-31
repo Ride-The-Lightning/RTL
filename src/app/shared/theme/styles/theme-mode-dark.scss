@@ -229,6 +229,15 @@
     color: $foreground-text;
   }
   
+  & .mat-form-field-appearance-legacy.mat-form-field.mat-focused {
+    & .mat-form-field-label {
+      color: $primary-darker;
+    }
+    & .mat-form-field-ripple {
+      background-color: $primary-darker;
+    }
+  }
+
   & .mat-form-field-disabled {
     & .mat-form-field-underline{
       background-color: transparent;
