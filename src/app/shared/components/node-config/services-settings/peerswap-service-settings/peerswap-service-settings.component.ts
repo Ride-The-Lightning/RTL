@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { ServicesEnum, UI_MESSAGES } from '../../../../services/consts-enums-functions';
+import { ServicesEnum, UI_MESSAGES, PeerswapPeersLists } from '../../../../services/consts-enums-functions';
 import { ConfigSettingsNode } from '../../../../models/RTLconfig';
 import { LoggerService } from '../../../../services/logger.service';
 import { DataService } from '../../../../services/data.service';
@@ -31,8 +31,9 @@ export class PeerswapServiceSettingsComponent implements OnInit, OnDestroy {
   public allowSwapRequests = false;
   public reloadPolicy: PeerswapReloadPolicy | null = null;
   public reloadPolicyError = '';
-  public addRemoveError = '';
-  public addPeerNodeId = '';
+  public peerswapPeersLists = PeerswapPeersLists;
+  public dataForAllowedList = { icon: 'check', class: 'green', title: 'whitelisted peers', dataSource: 'PeerAllowlist', list: PeerswapPeersLists.ALLOWED, ngModelVar: '', addRemoveError: '' };
+  public dataForSuspiciousList = { icon: 'close', class: 'red', title: 'suspicious peers', dataSource: 'SuspiciousPeerList', list: PeerswapPeersLists.SUSPICIOUS, ngModelVar: '', addRemoveError: '' };
   public unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private dataService: DataService) { }
@@ -78,29 +79,61 @@ export class PeerswapServiceSettingsComponent implements OnInit, OnDestroy {
     }));
   }
 
-  onAddPeer() {
-    this.addRemoveError = '';
-    this.dataService.addPeerToPeerswap(this.addPeerNodeId).pipe(takeUntil(this.unSubs[2])).
+  onAddPeer(ngModelVar: string, list: PeerswapPeersLists) {
+    if (list !== PeerswapPeersLists.ALLOWED) {
+      this.dataForSuspiciousList.addRemoveError = '';
+    } else {
+      this.dataForAllowedList.addRemoveError = '';
+    }
+    this.dataService.addPeerToPeerswap(ngModelVar, list).pipe(takeUntil(this.unSubs[2])).
       subscribe({
         next: (res) => {
           this.reloadPolicy = res;
-          this.addPeerNodeId = '';
+          if (list !== PeerswapPeersLists.ALLOWED) {
+            this.dataForSuspiciousList.ngModelVar = '';
+          } else {
+            this.dataForAllowedList.ngModelVar = '';
+          }
         }, error: (err) => {
-          this.addRemoveError = 'ERROR: ' + err;
-          setTimeout(() => { this.addRemoveError = ''; }, 3000);
+          if (list !== PeerswapPeersLists.ALLOWED) {
+            this.dataForSuspiciousList.addRemoveError = 'ERROR: ' + err;
+          } else {
+            this.dataForAllowedList.addRemoveError = 'ERROR: ' + err;
+          }
+          setTimeout(() => {
+            if (list !== PeerswapPeersLists.ALLOWED) {
+              this.dataForSuspiciousList.addRemoveError = '';
+            } else {
+              this.dataForAllowedList.addRemoveError = '';
+            }
+          }, 3000);
         }
       });
   }
 
-  onRemovePeer(peerNodeId: string) {
-    this.addRemoveError = '';
-    this.dataService.removePeerFromPeerswap(peerNodeId).pipe(takeUntil(this.unSubs[3])).
+  onRemovePeer(peerNodeId: string, list: PeerswapPeersLists) {
+    if (list !== PeerswapPeersLists.ALLOWED) {
+      this.dataForSuspiciousList.addRemoveError = '';
+    } else {
+      this.dataForAllowedList.addRemoveError = '';
+    }
+    this.dataService.removePeerFromPeerswap(peerNodeId, list).pipe(takeUntil(this.unSubs[3])).
       subscribe({
         next: (res) => {
           this.reloadPolicy = res;
         }, error: (err) => {
-          this.addRemoveError = 'ERROR: ' + err;
-          setTimeout(() => { this.addRemoveError = ''; }, 3000);
+          if (list !== PeerswapPeersLists.ALLOWED) {
+            this.dataForSuspiciousList.addRemoveError = 'ERROR: ' + err;
+          } else {
+            this.dataForAllowedList.addRemoveError = 'ERROR: ' + err;
+          }
+          setTimeout(() => {
+            if (list !== PeerswapPeersLists.ALLOWED) {
+              this.dataForSuspiciousList.addRemoveError = '';
+            } else {
+              this.dataForAllowedList.addRemoveError = '';
+            }
+          }, 3000);
         }
       });
   }

@@ -8,7 +8,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { LoggerService } from '../../shared/services/logger.service';
 import { environment, API_URL } from '../../../environments/environment';
-import { APICallStatusEnum, UI_MESSAGES } from './consts-enums-functions';
+import { APICallStatusEnum, PeerswapPeersLists, UI_MESSAGES } from './consts-enums-functions';
 import { Channel, ClosedChannel, PendingChannels, SwitchReq } from '../models/lndModels';
 import { ErrorMessageComponent } from '../components/data-modal/error-message/error-message.component';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, updateRootAPICallStatus } from '../../store/rtl.actions';
@@ -350,10 +350,10 @@ export class DataService implements OnDestroy {
     }));
   }
 
-  addPeerToPeerswap(peerNodeId: string) {
+  addPeerToPeerswap(peerNodeId: string, list: PeerswapPeersLists) {
     return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.ADD_PEER_PEERSWAP }));
-      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + environment.PEERSWAP_API + '/addPeer/' + peerNodeId).pipe(
+      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + environment.PEERSWAP_API + '/addPeer/' + list + '/' + peerNodeId).pipe(
         takeUntil(this.unSubs[13]),
         mergeMap((res) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.ADD_PEER_PEERSWAP }));
@@ -366,10 +366,10 @@ export class DataService implements OnDestroy {
     }));
   }
 
-  removePeerFromPeerswap(peerNodeId: string) {
+  removePeerFromPeerswap(peerNodeId: string, list: PeerswapPeersLists) {
     return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.REMOVE_PEER_PEERSWAP }));
-      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + environment.PEERSWAP_API + '/removePeer/' + peerNodeId).pipe(
+      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + environment.PEERSWAP_API + '/removePeer/' + list + '/' + peerNodeId).pipe(
         takeUntil(this.unSubs[14]),
         mergeMap((res) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.REMOVE_PEER_PEERSWAP }));

@@ -665,3 +665,8 @@ export enum PeerswapRoles {
 export enum PeerswapStates {
   SWAP_CANCELED = 'State_SwapCanceled'
 }
+
+export enum PeerswapPeersLists {
+  ALLOWED = 'allowed',
+  SUSPICIOUS = 'suspicious'
+}

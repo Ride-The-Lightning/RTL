@@ -501,12 +501,7 @@ export interface FetchListForwards {
 export interface PeerswapReloadPolicy {
   ReserveOnchainMsat?: number;
   PeerAllowlist?: string[];
-  AcceptAllPeers?: boolean;
-}
-
-export interface PeerswapReloadPolicy {
-  ReserveOnchainMsat?: number;
-  PeerAllowlist?: string[];
+  SuspiciousPeerList?: string[];
   AcceptAllPeers?: boolean;
 }
 
