@@ -332,9 +332,13 @@ export class ECLEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: SaveChannel }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.OPEN_CHANNEL }));
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'SaveNewChannel', status: APICallStatusEnum.INITIATED } }));
-      const reqBody = action.payload.feeRate && action.payload.feeRate > 0 ?
-        { nodeId: action.payload.nodeId, fundingSatoshis: action.payload.amount, channelFlags: +!action.payload.private, fundingFeerateSatByte: action.payload.feeRate } :
-        { nodeId: action.payload.nodeId, fundingSatoshis: action.payload.amount, channelFlags: +!action.payload.private };
+      const reqBody = { nodeId: action.payload.nodeId, fundingSatoshis: action.payload.amount, announceChannel: !action.payload.private };
+      if (action.payload.feeRate && action.payload.feeRate > 0) {
+        reqBody['fundingFeerateSatByte'] = action.payload.feeRate;
+      }
+      if (action.payload.channelType && action.payload.channelType !== '') {
+        reqBody['channelType'] = action.payload.channelType;
+      }
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API, reqBody).
         pipe(
           map((postRes: any) => {

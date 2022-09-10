@@ -4,7 +4,7 @@
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">{{alertTitle}}</span>
       </div>
-      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+      <button tabindex="11" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <form fxLayout="column" (submit)="onOpenChannel()" (reset)="resetData()" #form="ngForm">
@@ -40,9 +40,14 @@
             </mat-expansion-panel-header>
             <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
               <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
-                <div fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
-                  <mat-form-field fxFlex="100">
+                <div fxFlex="100" fxLayout="row" fxLayoutAlign="space-between center">
+                  <mat-form-field fxFlex="49">
                     <input matInput [(ngModel)]="feeRate" placeholder="Fee (Sats/vByte)" type="number" name="fee" [step]="1" [min]="0" tabindex="7" #fee="ngModel">
+                  </mat-form-field>
+                  <mat-form-field fxFlex="49">
+                    <mat-select [(ngModel)]="selChannelType" placeholder="Channel Type" tabindex="8" name="chanType">
+                      <mat-option *ngFor="let channelType of channelTypes" [value]="channelType">{{channelType.placeholder}}</mat-option>
+                    </mat-select>
                   </mat-form-field>
                 </div>
               </div>
@@ -54,8 +59,8 @@
           <span *ngIf="channelConnectionError !== ''">{{channelConnectionError}}</span>
         </div>
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
-          <button mat-button color="primary" class="mr-1" tabindex="7" type="reset">Clear Fields</button>
-          <button autoFocus mat-button color="primary" type="submit" tabindex="9">Open Channel</button>
+          <button mat-button color="primary" class="mr-1" tabindex="9" type="reset">Clear Fields</button>
+          <button autoFocus mat-button color="primary" type="submit" tabindex="10">Open Channel</button>
         </div>
       </form>
     </mat-card-content>
