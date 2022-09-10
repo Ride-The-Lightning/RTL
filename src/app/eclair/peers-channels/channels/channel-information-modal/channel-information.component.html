@@ -41,7 +41,7 @@
         <div fxLayout="row">
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Private</h4>
-            <span class="overflow-wrap foreground-secondary-text">{{channel.channelFlags === 0 ? 'Yes' : 'No'}}</span>
+            <span class="overflow-wrap foreground-secondary-text">{{!channel.announceChannel ? 'Yes' : 'No'}}</span>
           </div>
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Funder</h4>

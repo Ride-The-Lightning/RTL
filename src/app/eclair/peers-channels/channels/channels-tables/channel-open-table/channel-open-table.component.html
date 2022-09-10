@@ -12,8 +12,8 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Short Channel ID </th>
         <td mat-cell *matCellDef="let channel">
           <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '12rem' : '22rem'}">
-            <span *ngIf="channel.channelFlags === 0" class="mr-1" matTooltip="Private" matTooltipPosition="right"><fa-icon [icon]="faEyeSlash"></fa-icon></span>
-            <span *ngIf="channel.channelFlags !== 0" class="mr-1" matTooltip="Public" matTooltipPosition="right"><fa-icon [icon]="faEye"></fa-icon></span>
+            <span *ngIf="!channel.announceChannel" class="mr-1" matTooltip="Private" matTooltipPosition="right"><fa-icon [icon]="faEyeSlash"></fa-icon></span>
+            <span *ngIf="channel.announceChannel" class="mr-1" matTooltip="Public" matTooltipPosition="right"><fa-icon [icon]="faEye"></fa-icon></span>
             <span class="ellipsis-child">{{channel?.shortChannelId}}</span>
           </div>
         </td>

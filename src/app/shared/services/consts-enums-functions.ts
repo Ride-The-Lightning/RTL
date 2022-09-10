@@ -633,3 +633,28 @@ export enum CLNForwardingEventsStatusEnum {
   FAILED = 'failed',
   LOCAL_FAILED = 'local_failed'
 }
+
+export enum PeerswapTypes {
+  SWAP_OUT = 'swap-out',
+  SWAP_IN = 'swap-in'
+}
+
+export enum PeerswapRoles {
+  SENDER = 'sender',
+  RECEIVER = 'receiver'
+}
+
+export enum PeerswapStates {
+  SWAP_CANCELED = 'State_SwapCanceled'
+}
+
+export enum PeerswapPeersLists {
+  ALLOWED = 'allowed',
+  SUSPICIOUS = 'suspicious'
+}
+
+export const ECL_CHANNEL_TYPES = [
+  { id: 'standard', placeholder: 'Standard' },
+  { id: 'static_remotekey', placeholder: 'Static Remotekey' },
+  { id: 'anchor_outputs_zero_fee_htlc_tx', placeholder: 'Anchor Output' }
+];
