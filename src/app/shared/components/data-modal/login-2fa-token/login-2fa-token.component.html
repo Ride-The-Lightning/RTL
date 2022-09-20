@@ -9,12 +9,12 @@
     <mat-card-content fxLayout="row" class="padding-gap-x-large">
       <form (ngSubmit)="onVerifyToken()" #tokenForm="ngForm" fxLayout="column" fxFlex="100">
         <mat-form-field>
-          <input autoFocus matInput placeholder="Token" type="text" id="token" name="token" [(ngModel)]="token" tabindex="2" required>
+          <input autoFocus matInput placeholder="Token" type="text" autocomplete="one-time-code" id="token" name="token" [(ngModel)]="token" tabindex="2" required>
           <mat-error *ngIf="!token">Token is required.</mat-error>
         </mat-form-field>
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center" class="mt-1">
           <button mat-button color="primary" tabindex="4" type="submit">Verify Token</button>
-        </div> 
+        </div>
       </form>
     </mat-card-content>
   </div>
