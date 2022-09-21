@@ -48,7 +48,7 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
     if (this.data.message) {
       this.totalBalance = this.data.message.balance;
       this.peerAddress = (this.data.message.peer && this.data.message.peer.nodeId && this.data.message.peer.address) ? (this.data.message.peer.nodeId + '@' + this.data.message.peer.address) :
-        (this.data.message.peer && this.data.message.peer.nodeId && !this.data.message.peer.address) ? this.data.message.peer.nodeId : '';  
+        (this.data.message.peer && this.data.message.peer.nodeId && !this.data.message.peer.address) ? this.data.message.peer.nodeId : '';
     } else {
       this.totalBalance = 0;
       this.peerAddress = '';

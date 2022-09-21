@@ -30,20 +30,20 @@ export class ServicesSettingsComponent implements OnInit, OnDestroy {
       subscribe({
         next: (value: ResolveEnd | Event) => {
           const linkFound = this.links.find((link) => (<ResolveEnd>value).urlAfterRedirects.includes(link.link));
-          if(this.selNode.lnImplementation.toUpperCase() === 'CLN') {
+          if (this.selNode.lnImplementation.toUpperCase() === 'CLN') {
             this.activeLink = this.links[2].link;
           } else {
             this.activeLink = linkFound ? linkFound.link : this.links[0].link;
           }
         }
       });
-      this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).subscribe((selNode) => {
-        this.selNode = selNode;
-        if (this.selNode.lnImplementation.toUpperCase() === 'CLN') {
-          this.activeLink = this.links[2].link;
-          this.router.navigate(['./' + this.activeLink], { relativeTo: this.activatedRoute });
-        }
-      });  
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).subscribe((selNode) => {
+      this.selNode = selNode;
+      if (this.selNode.lnImplementation.toUpperCase() === 'CLN') {
+        this.activeLink = this.links[2].link;
+        this.router.navigate(['./' + this.activeLink], { relativeTo: this.activatedRoute });
+      }
+    });
   }
 
   ngOnDestroy() {

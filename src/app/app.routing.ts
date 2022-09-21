@@ -71,7 +71,7 @@ export const routes: Routes = [
           { path: 'psin', component: PeerswapsInComponent, canActivate: [AuthGuard] },
           { path: 'pscancelled', component: PeerswapsCancelledComponent, canActivate: [AuthGuard] }
         ]
-      },
+      }
     ]
   },
   { path: 'help', component: HelpComponent },

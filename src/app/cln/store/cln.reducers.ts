@@ -19,7 +19,7 @@ export const CLNReducer = createReducer(initCLNState,
         message: payload.message,
         URL: payload.URL,
         filePath: payload.filePath
-      };  
+      };
     }
     return {
       ...state,

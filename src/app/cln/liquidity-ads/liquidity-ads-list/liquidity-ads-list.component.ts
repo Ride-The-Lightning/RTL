@@ -97,7 +97,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
               return acc;
             }, a)));
           });
-          this.liquidityNodesData = (<LookupNode[]>nodeListRes).filter(node => node.nodeid !== this.information.id);
+          this.liquidityNodesData = (<LookupNode[]>nodeListRes).filter((node) => node.nodeid !== this.information.id);
           this.onCalculateOpeningFee();
           this.loadLiqNodesTable(this.liquidityNodesData);
         }, error: (err) => {
@@ -132,12 +132,12 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
     this.liquidityNodes.paginator = this.paginator;
     if (this.sort) { this.sort.sort({ id: 'channelOpeningFee', start: 'asc', disableClear: true }); }
     this.liquidityNodes.filterPredicate = (node: LookupNode, fltr: string) => {
-      const newNode = ((node.alias) ? node.alias.toLocaleLowerCase() : '') + (node.channelOpeningFee ? node.channelOpeningFee + ' Sats' : '')
-      + (node.option_will_fund?.lease_fee_base_msat ? (node.option_will_fund?.lease_fee_base_msat/1000) + ' Sats' : '') + (node.option_will_fund?.lease_fee_basis ? (this.decimalPipe.transform(node.option_will_fund?.lease_fee_basis/100, '1.2-2') + '%') : '')
-      + (node.option_will_fund?.channel_fee_max_base_msat ? (node.option_will_fund?.channel_fee_max_base_msat/1000) + ' Sats' : '') + (node.option_will_fund?.channel_fee_max_proportional_thousandths ? (node.option_will_fund?.channel_fee_max_proportional_thousandths*1000) + ' ppm' : '')
-      + (node.address_types ? node.address_types.reduce((acc, curr) => acc + (curr === 'tor' ? ' tor' : curr === 'ipv' ? ' clearnet' : (' ' + curr.toLowerCase())), '') : '');
+      const newNode = ((node.alias) ? node.alias.toLocaleLowerCase() : '') + (node.channelOpeningFee ? node.channelOpeningFee + ' Sats' : '') +
+      (node.option_will_fund?.lease_fee_base_msat ? (node.option_will_fund?.lease_fee_base_msat / 1000) + ' Sats' : '') + (node.option_will_fund?.lease_fee_basis ? (this.decimalPipe.transform(node.option_will_fund?.lease_fee_basis / 100, '1.2-2') + '%') : '') +
+      (node.option_will_fund?.channel_fee_max_base_msat ? (node.option_will_fund?.channel_fee_max_base_msat / 1000) + ' Sats' : '') + (node.option_will_fund?.channel_fee_max_proportional_thousandths ? (node.option_will_fund?.channel_fee_max_proportional_thousandths * 1000) + ' ppm' : '') +
+      (node.address_types ? node.address_types.reduce((acc, curr) => acc + (curr === 'tor' ? ' tor' : curr === 'ipv' ? ' clearnet' : (' ' + curr.toLowerCase())), '') : '');
       return newNode.includes(fltr);
-    }
+    };
     this.applyFilter();
     // this.liquidityNodes.filterPredicate = (node: LookupNode, fltr: string) => node.channelCount >= this.channelCount && node.nodeCapacity >= this.nodeCapacity;
     // this.onFilter();
