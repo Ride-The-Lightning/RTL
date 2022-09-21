@@ -379,7 +379,8 @@ export const maskPasswords = (obj) => {
             }
             if (typeof keys[i] === 'string' &&
                 (keys[i].toLowerCase().includes('password') || keys[i].toLowerCase().includes('multipass') ||
-                    keys[i].toLowerCase().includes('rpcpass') || keys[i].toLowerCase().includes('rpcpassword'))) {
+                    keys[i].toLowerCase().includes('rpcpass') || keys[i].toLowerCase().includes('rpcpassword') ||
+                    keys[i].toLowerCase().includes('rpcuser'))) {
                 obj[keys[i]] = '********************';
             }
         }
