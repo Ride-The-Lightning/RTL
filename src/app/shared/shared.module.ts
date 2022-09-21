@@ -77,6 +77,7 @@ import { SpinnerDialogComponent } from './components/data-modal/spinner-dialog/s
 import { AlertMessageComponent } from './components/data-modal/alert-message/alert-message.component';
 import { ConfirmationMessageComponent } from './components/data-modal/confirmation-message/confirmation-message.component';
 import { ErrorMessageComponent } from './components/data-modal/error-message/error-message.component';
+import { IsAuthorizedComponent } from './components/data-modal/is-authorized/is-authorized.component';
 import { TwoFactorAuthComponent } from './components/data-modal/two-factor-auth/two-factor-auth.component';
 import { LoginTokenComponent } from './components/data-modal/login-2fa-token/login-2fa-token.component';
 
@@ -315,6 +316,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     AlertMessageComponent,
     ConfirmationMessageComponent,
     ErrorMessageComponent,
+    IsAuthorizedComponent,
     TwoFactorAuthComponent,
     LoginTokenComponent,
     TransactionsReportTableComponent,

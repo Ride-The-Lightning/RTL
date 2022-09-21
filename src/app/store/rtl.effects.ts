@@ -142,6 +142,7 @@ export class RTLEffects implements OnDestroy {
         if (this.dialogRef) {
           this.dialogRef.close();
         }
+        this.logger.info(action.payload);
         return action.payload;
       })),
     { dispatch: false }
@@ -551,9 +552,11 @@ export class RTLEffects implements OnDestroy {
     const landingPage = isInitialSetup ? '' : 'HOME';
     let selNode = {};
     if (node.settings.fiatConversion && node.settings.currencyUnit) {
-      selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: [...CURRENCY_UNITS, node.settings.currencyUnit], fiatConversion: node.settings.fiatConversion, lnImplementation: node.lnImplementation, swapServerUrl: node.settings.swapServerUrl, boltzServerUrl: node.settings.boltzServerUrl, enableOffers: node.settings.enableOffers, enablePeerswap: node.settings.enablePeerswap };
+      selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, selCurrencyUnit: node.settings.currencyUnit,
+        currencyUnits: [...CURRENCY_UNITS, node.settings.currencyUnit], fiatConversion: node.settings.fiatConversion, lnImplementation: node.lnImplementation, swapServerUrl: node.settings.swapServerUrl, boltzServerUrl: node.settings.boltzServerUrl, enableOffers: node.settings.enableOffers, enablePeerswap: node.settings.enablePeerswap };
     } else {
-      selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: CURRENCY_UNITS, fiatConversion: node.settings.fiatConversion, lnImplementation: node.lnImplementation, swapServerUrl: node.settings.swapServerUrl, boltzServerUrl: node.settings.boltzServerUrl, enableOffers: node.settings.enableOffers, enablePeerswap: node.settings.enablePeerswap };
+      selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, selCurrencyUnit: node.settings.currencyUnit,
+        currencyUnits: CURRENCY_UNITS, fiatConversion: node.settings.fiatConversion, lnImplementation: node.lnImplementation, swapServerUrl: node.settings.swapServerUrl, boltzServerUrl: node.settings.boltzServerUrl, enableOffers: node.settings.enableOffers, enablePeerswap: node.settings.enablePeerswap };
     }
     this.sessionService.removeItem('lndUnlocked');
     this.sessionService.removeItem('clUnlocked');

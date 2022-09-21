@@ -1,10 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router, ResolveEnd, Event } from '@angular/router';
+import { Router, ResolveEnd, Event, ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faTools } from '@fortawesome/free-solid-svg-icons';
+import { openAlert } from '../../../store/rtl.actions';
 
+import { RTLEffects } from '../../../store/rtl.effects';
+import { IsAuthorizedComponent } from '../../components/data-modal/is-authorized/is-authorized.component';
 import { ConfigSettingsNode } from '../../models/RTLconfig';
 import { RTLState } from '../../../store/rtl.state';
 import { rootSelectedNode } from '../../../store/rtl.selector';
@@ -24,7 +27,7 @@ export class NodeConfigComponent implements OnInit, OnDestroy {
   public activeLink = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<RTLState>, private router: Router) { }
+  constructor(private store: Store<RTLState>, private router: Router, private rtlEffects: RTLEffects, private activatedRoute: ActivatedRoute) { }
 
   ngOnInit() {
     const linkFound = this.links.find((link) => this.router.url.includes(link.link));
@@ -55,6 +58,23 @@ export class NodeConfigComponent implements OnInit, OnDestroy {
       if (this.selNode.authentication && this.selNode.authentication.configPath && this.selNode.authentication.configPath.trim() !== '') {
         this.links[3].name = this.lnImplementationStr;
         this.showLnConfig = true;
+      }
+    });
+  }
+
+  showLnConfigClicked() {
+    this.store.dispatch(openAlert({
+      payload: {
+        maxWidth: '50rem',
+        data: {
+          component: IsAuthorizedComponent
+        }
+      }
+    }));
+    this.rtlEffects.closeAlert.pipe(takeUntil(this.unSubs[1])).subscribe((alertRes) => {
+      if (alertRes) {
+        this.activeLink = this.links[3].link;
+        this.router.navigate(['./' + this.activeLink], { relativeTo: this.activatedRoute });
       }
     });
   }

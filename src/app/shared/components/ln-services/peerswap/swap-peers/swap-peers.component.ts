@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 
 @Component({
@@ -6,14 +6,11 @@ import { Subject } from 'rxjs';
   templateUrl: './swap-peers.component.html',
   styleUrls: ['./swap-peers.component.scss']
 })
-export class SwapPeersComponent implements OnInit, OnDestroy {
+export class SwapPeersComponent implements OnDestroy {
 
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor() {}
-
-  ngOnInit() {
-  }
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {

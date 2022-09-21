@@ -1,19 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 
 @Component({
   selector: 'rtl-peer-swaps-in',
   templateUrl: './swaps-in.component.html',
-  styleUrls: ['./swaps-in.component.scss'],
+  styleUrls: ['./swaps-in.component.scss']
 })
-export class PeerswapsInComponent implements OnInit, OnDestroy {
+export class PeerswapsInComponent implements OnDestroy {
 
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor() {}
-
-  ngOnInit() {
-  }
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {

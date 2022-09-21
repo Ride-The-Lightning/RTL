@@ -66,7 +66,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (this.appConfig.enable2FA) {
       this.store.dispatch(openAlert({
         payload: {
-          maxWidth: '35rem', data: {
+          maxWidth: '35rem',
+          data: {
             component: LoginTokenComponent
           }
         }
