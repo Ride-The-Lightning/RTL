@@ -250,7 +250,7 @@ export class LNDEffects implements OnDestroy {
                     }
                   }
                 }));
-              }, 100);
+              }, 200);
               return {
                 type: RTLActions.CLOSE_SPINNER,
                 payload: action.payload.uiMessage
