@@ -551,7 +551,7 @@ export class ECLEffects implements OnDestroy {
                   }
                 }
               }));
-            }, 100);
+            }, 200);
             return {
               type: ECLActions.ADD_INVOICE_ECL,
               payload: postRes

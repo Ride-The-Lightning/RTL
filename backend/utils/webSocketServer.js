@@ -55,10 +55,10 @@ export class RTLWebSocketServer {
         this.mountEventsOnConnection = (websocket, request) => {
             var _a;
             const protocols = !request.headers['sec-websocket-protocol'] ? [] : (_a = request.headers['sec-websocket-protocol'].split(',')) === null || _a === void 0 ? void 0 : _a.map((s) => s.trim());
-            const cookies = parse(request.headers.cookie);
+            const cookies = request.headers.cookie ? parse(request.headers.cookie) : null;
             websocket.clientId = Date.now();
             websocket.isAlive = true;
-            websocket.sessionId = cookieParser.signedCookie(cookies['connect.sid'], this.common.secret_key);
+            websocket.sessionId = cookies && cookies['connect.sid'] ? cookieParser.signedCookie(cookies['connect.sid'], this.common.secret_key) : null;
             websocket.clientNodeIndex = +protocols[1];
             this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Connected: ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
             websocket.on('error', this.sendErrorToAllLNClients);

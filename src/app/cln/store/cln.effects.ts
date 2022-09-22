@@ -733,7 +733,7 @@ export class CLNEffects implements OnDestroy {
                   }
                 }
               }));
-            }, 100);
+            }, 200);
             return {
               type: CLNActions.ADD_INVOICE_CLN,
               payload: postRes

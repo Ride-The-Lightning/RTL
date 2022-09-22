@@ -52,7 +52,8 @@ export class CLNInvoiceInformationComponent implements OnInit, OnDestroy {
       subscribe((invoicesSelector: { listInvoices: ListInvoices, apiCallStatus: ApiCallStatusPayload }) => {
         const invoiceStatus = this.invoice.status;
         const invoices = invoicesSelector.listInvoices.invoices || [];
-        this.invoice = invoices?.find((invoice) => invoice.payment_hash === this.invoice.payment_hash)!;
+        const foundInvoice = invoices?.find((invoice) => invoice.payment_hash === this.invoice.payment_hash) || null;
+        if (foundInvoice) { this.invoice = foundInvoice; }
         if (invoiceStatus !== this.invoice.status && this.invoice.status === 'paid') {
           this.flgInvoicePaid = true;
           setTimeout(() => { this.flgInvoicePaid = false; }, 4000);
