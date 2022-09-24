@@ -34,7 +34,6 @@ export class OnChainReceiveComponent implements OnInit, OnDestroy {
       subscribe((nodeInfo: GetInfo) => {
         this.flgVersionCompatible = this.commonService.isVersionCompatible(nodeInfo.version, '0.15.0');
         this.addressTypes = (this.flgVersionCompatible) ? ADDRESS_TYPES : ADDRESS_TYPES.filter((at) => at.addressId !== '4');
-        console.warn(this.flgVersionCompatible);
       });
   }
 
