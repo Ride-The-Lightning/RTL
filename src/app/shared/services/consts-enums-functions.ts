@@ -26,7 +26,8 @@ export const PAGE_SIZE_OPTIONS = [5, 10, 25, 100];
 
 export const ADDRESS_TYPES = [
   { addressId: '0', addressCode: 'bech32', addressTp: 'Bech32 (P2WKH)', addressDetails: 'Pay to witness key hash' },
-  { addressId: '1', addressCode: 'p2sh-segwit', addressTp: 'P2SH (NP2WKH)', addressDetails: 'Pay to nested witness key hash (default)' }
+  { addressId: '1', addressCode: 'p2sh-segwit', addressTp: 'P2SH (NP2WKH)', addressDetails: 'Pay to nested witness key hash (default)' },
+  { addressId: '4', addressCode: 'p2tr', addressTp: 'Taproot (P2TR)', addressDetails: 'Pay to taproot pubkey' }
 ];
 
 export const TRANS_TYPES = [
