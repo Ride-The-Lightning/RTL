@@ -210,7 +210,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     } else {
       this.store.dispatch(saveNewInvoice({
         payload: {
-          uiMessage: UI_MESSAGES.NO_SPINNER, memo: 'Local-Rebalance-' + this.inputFormGroup.controls.rebalanceAmount.value + '-Sats', invoiceValue: this.inputFormGroup.controls.rebalanceAmount.value, private: false, expiry: 3600, pageSize: PAGE_SIZE, openModal: false
+          uiMessage: UI_MESSAGES.NO_SPINNER, memo: 'Local-Rebalance-' + this.inputFormGroup.controls.rebalanceAmount.value + '-Sats', invoiceValue: this.inputFormGroup.controls.rebalanceAmount.value, private: false, isAmp: false, expiry: 3600, pageSize: PAGE_SIZE, openModal: false
         }
       }));
     }

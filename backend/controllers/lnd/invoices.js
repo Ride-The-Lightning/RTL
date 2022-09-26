@@ -65,7 +65,8 @@ export const addInvoice = (req, res, next) => {
     options.form = {
         memo: req.body.memo,
         private: req.body.private,
-        expiry: req.body.expiry
+        expiry: req.body.expiry,
+        is_amp: req.body.isAmp
     };
     if (req.body.amount > 0 && req.body.amount < 1) {
         options.form.value_msat = req.body.amount * 1000;

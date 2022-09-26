@@ -126,7 +126,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
     this.newlyAddedInvoiceValue = this.invoiceValue;
     this.store.dispatch(saveNewInvoice({
       payload: {
-        uiMessage: UI_MESSAGES.ADD_INVOICE, memo: this.memo, invoiceValue: this.invoiceValue!, private: this.private, expiry: expiryInSecs, pageSize: this.pageSize, openModal: true
+        uiMessage: UI_MESSAGES.ADD_INVOICE, memo: this.memo, invoiceValue: this.invoiceValue!, private: this.private, isAmp: false, expiry: expiryInSecs, pageSize: this.pageSize, openModal: true
       }
     }));
     this.resetData();

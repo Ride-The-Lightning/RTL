@@ -354,6 +354,9 @@ export interface Invoice {
   htlcs?: InvoiceHTLC[];
   features?: any;
   is_keysend?: boolean;
+  payment_addr?: string;
+  is_amp?: boolean;
+  amp_invoice_state?: any;
 }
 
 export interface ListInvoices {
@@ -504,6 +507,7 @@ export interface SaveInvoice {
   memo: string;
   invoiceValue: number;
   private: boolean;
+  isAmp: boolean;
   expiry: number;
   pageSize: number;
   openModal: boolean;

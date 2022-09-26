@@ -34,6 +34,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
   public invoices: any;
   public information: GetInfo = {};
   public private = false;
+  public isAMP = false;
   public expiryStep = 100;
   public pageSize = PAGE_SIZE;
   public timeUnitEnum = TimeUnitEnum;
@@ -77,7 +78,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
     }
     this.store.dispatch(saveNewInvoice({
       payload: {
-        uiMessage: UI_MESSAGES.ADD_INVOICE, memo: this.memo, invoiceValue: this.invoiceValue!, private: this.private, expiry: expiryInSecs, pageSize: this.pageSize, openModal: true
+        uiMessage: UI_MESSAGES.ADD_INVOICE, memo: this.memo, invoiceValue: this.invoiceValue!, private: this.private, isAmp: this.isAMP, expiry: expiryInSecs, pageSize: this.pageSize, openModal: true
       }
     }));
   }
