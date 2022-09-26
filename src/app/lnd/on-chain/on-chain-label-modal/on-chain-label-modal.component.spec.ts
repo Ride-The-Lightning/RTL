@@ -11,7 +11,7 @@ import { DataService } from '../../../shared/services/data.service';
 
 import { OnChainLabelModalComponent } from './on-chain-label-modal.component';
 import { SharedModule } from '../../../shared/shared.module';
-import { mockDataService, mockLoggerService, mockMatDialogRef } from '../../../shared/test-helpers/mock-services';
+import { mockDataService, mockMatDialogRef } from '../../../shared/test-helpers/mock-services';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('OnChainLabelModalComponent', () => {
