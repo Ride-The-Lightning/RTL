@@ -16,7 +16,6 @@ import { fetchConfig } from '../../../../store/rtl.actions';
 })
 export class BitcoinConfigComponent implements OnInit, OnDestroy {
 
-  public selectedNodeType = '';
   public configData = '';
   public fileFormat = 'INI';
   public faCog = faCog;
@@ -25,14 +24,7 @@ export class BitcoinConfigComponent implements OnInit, OnDestroy {
   constructor(private store: Store<RTLState>, private rtlEffects: RTLEffects, private router: Router) { }
 
   ngOnInit() {
-    this.selectedNodeType = (this.router.url.includes('bconfig')) ? 'bitcoind' : 'ln';
-    this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe({
-        next: (value: ResolveEnd | Event) => {
-          this.selectedNodeType = ((<ResolveEnd>value).urlAfterRedirects.includes('bconfig')) ? 'bitcoind' : 'ln';
-        }
-      });
-    this.store.dispatch(fetchConfig({ payload: this.selectedNodeType }));
+    this.store.dispatch(fetchConfig({ payload: 'bitcoind' }));
     this.rtlEffects.showLnConfig.
       pipe(takeUntil(this.unSubs[1])).
       subscribe((config: any) => {

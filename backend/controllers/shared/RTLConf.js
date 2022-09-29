@@ -245,7 +245,7 @@ export const getConfig = (req, res, next) => {
                 if (jsonConfig['Application Options'] && jsonConfig['Application Options'].color) {
                     jsonConfig['Application Options'].color = '#' + jsonConfig['Application Options'].color;
                 }
-                if (req.session.selectedNode.ln_implementation === 'ECL' && !jsonConfig['eclair.api.password']) {
+                if (req.params.nodeType === 'ln' && req.session.selectedNode.ln_implementation === 'ECL' && !jsonConfig['eclair.api.password']) {
                     fileFormat = 'HOCON';
                     jsonConfig = parseHocon(data);
                 }

@@ -115,7 +115,7 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
   onUpdateFundingPolicy() {
     this.flgUpdateCalled = true;
     this.updateMsg = {};
-    this.dataService.getOrUpdateFunderPolicy(this.selPolicyType.id, this.policyMod, this.leaseFeeBaseSat, this.leaseFeeBasis, (this.channelFeeMaxBaseSat || 0) * 1000, this.channelFeeMaxProportional ? this.channelFeeMaxProportional / 1000 : 0).
+    this.dataService.getOrUpdateFunderPolicy(this.selPolicyType.id, this.policyMod, ((this.leaseFeeBaseSat || 0) * 1000), this.leaseFeeBasis, (this.channelFeeMaxBaseSat || 0) * 1000, this.channelFeeMaxProportional ? this.channelFeeMaxProportional / 1000 : 0).
       pipe(takeUntil(this.unSubs[4])).
       subscribe({
         next: (updatePolicyRes: any) => {
