@@ -12,7 +12,7 @@
             </mat-expansion-panel-header>
           <mat-panel-description fxLayout="column" fxFlex="100" fxLayoutAlign="start start">
             <span class="pre-wrap" [innerHTML]="helpTopic.help.answer"></span>
-            <a class="mt-2" [routerLink]="flgLoggedIn ? LNPLink + helpTopic.help.link : '/login'">{{!flgLoggedIn ? 'Login to go to the page' : helpTopic.help.linkCaption}}</a>
+            <a class="mt-2" [routerLink]="flgLoggedIn ? helpTopic.help.link : '/login'">{{!flgLoggedIn ? 'Login to go to the page' : helpTopic.help.linkCaption}}</a>
           </mat-panel-description>
         </mat-expansion-panel>
       </div>
