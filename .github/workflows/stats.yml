@@ -1,8 +1,17 @@
 name: Pull Request Stats
 
 on:
+  push:
+    branches: [ master, 'Release-*' ]
+    tags: [ 'v*' ]
+  release:
+    types: [released]
+  # Triggers the workflow only when merging pull request to the branches.
   pull_request:
     types: [opened, closed]
+    branches: [ master, 'Release-*', '*' ]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
   stats:
