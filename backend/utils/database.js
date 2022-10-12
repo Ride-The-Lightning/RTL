@@ -11,19 +11,23 @@ export class DatabaseService {
         this.dbDirectory = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'database');
         this.nodeDatabase = {};
     }
-    loadDatabase(selectedNode) {
+    loadDatabase(session) {
+        const { id, selectedNode } = session;
         try {
             if (!this.nodeDatabase[selectedNode.index]) {
                 this.nodeDatabase[selectedNode.index] = { adapter: null, data: null };
+                this.nodeDatabase[selectedNode.index].adapter = new DatabaseAdapter(this.dbDirectory, 'rtldb', selectedNode, id);
+                this.nodeDatabase[selectedNode.index].data = this.nodeDatabase[selectedNode.index].adapter.fetchData();
             }
-            this.nodeDatabase[selectedNode.index].adapter = new DatabaseAdapter(this.dbDirectory, 'rtldb', selectedNode);
-            this.nodeDatabase[selectedNode.index].data = this.nodeDatabase[selectedNode.index].adapter.fetchData();
+            else {
+                this.nodeDatabase[selectedNode.index].adapter.insertSession(id);
+            }
         }
         catch (err) {
             this.logger.log({ selectedNode: selectedNode, level: 'ERROR', fileName: 'Database', msg: 'Database Load Error', error: err });
         }
     }
-    create(selectedNode, collectionName, newDocument) {
+    insert(selectedNode, collectionName, newDocument) {
         return new Promise((resolve, reject) => {
             try {
                 if (!selectedNode || !selectedNode.index) {
@@ -105,7 +109,7 @@ export class DatabaseService {
             }
         });
     }
-    destroy(selectedNode, collectionName, documentFieldName, documentFieldValue) {
+    remove(selectedNode, collectionName, documentFieldName, documentFieldValue) {
         return new Promise((resolve, reject) => {
             try {
                 if (!selectedNode || !selectedNode.index) {
@@ -154,18 +158,27 @@ export class DatabaseService {
             return new Error(err);
         }
     }
-    unloadDatabase(nodeIndex) {
-        this.saveDatabase(nodeIndex);
-        this.nodeDatabase[nodeIndex] = null;
+    unloadDatabase(nodeIndex, sessionID) {
+        if (nodeIndex > 0) {
+            if (this.nodeDatabase[nodeIndex] && this.nodeDatabase[nodeIndex].adapter) {
+                this.nodeDatabase[nodeIndex].adapter.removeSession(sessionID);
+                if (this.nodeDatabase[nodeIndex].adapter.userSessions && this.nodeDatabase[nodeIndex].adapter.userSessions.length <= 0) {
+                    delete this.nodeDatabase[nodeIndex];
+                }
+            }
+        }
     }
 }
 export class DatabaseAdapter {
-    constructor(dbDirectoryPath, fileName, selNode = null) {
+    constructor(dbDirectoryPath, fileName, selNode = null, id = '') {
         this.dbDirectoryPath = dbDirectoryPath;
         this.fileName = fileName;
         this.selNode = selNode;
+        this.id = id;
         this.dbFile = '';
+        this.userSessions = [];
         this.dbFile = dbDirectoryPath + sep + fileName + '-node-' + selNode.index + '.json';
+        this.insertSession(id);
     }
     fetchData() {
         try {
@@ -207,6 +220,12 @@ export class DatabaseAdapter {
         catch (err) {
             return new Error('Database Write Error ' + JSON.stringify(err));
         }
+    }
+    insertSession(id = '') {
+        this.userSessions.push(id);
+    }
+    removeSession(sessionID = '') {
+        this.userSessions.splice(this.userSessions.findIndex((sId) => sId === sessionID), 1);
     }
 }
 export const Database = new DatabaseService();

@@ -62,6 +62,7 @@ import { AppSettingsComponent } from './components/settings/app-settings/app-set
 import { NodeConfigComponent } from './components/node-config/node-config.component';
 import { LNPConfigComponent } from './components/node-config/lnp-config/lnp-config.component';
 import { NodeSettingsComponent } from './components/node-config/node-settings/node-settings.component';
+import { PageSettingsComponent } from './components/node-config/page-settings/page-settings.component';
 import { ServicesSettingsComponent } from './components/node-config/services-settings/services-settings.component';
 import { LoopServiceSettingsComponent } from './components/node-config/services-settings/loop-service-settings/loop-service-settings.component';
 import { BoltzServiceSettingsComponent } from './components/node-config/services-settings/boltz-service-settings/boltz-service-settings.component';
@@ -248,6 +249,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     NodeConfigComponent,
     LNPConfigComponent,
     NodeSettingsComponent,
+    PageSettingsComponent,
     ServicesSettingsComponent,
     LoopServiceSettingsComponent,
     BoltzServiceSettingsComponent,
@@ -292,6 +294,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     NodeConfigComponent,
     LNPConfigComponent,
     NodeSettingsComponent,
+    PageSettingsComponent,
     ServicesSettingsComponent,
     LoopServiceSettingsComponent,
     BoltzServiceSettingsComponent,

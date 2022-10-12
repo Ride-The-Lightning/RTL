@@ -25,7 +25,7 @@ export const listOfferBookmarks = (req, res, next) => {
 
 export const deleteOfferBookmark = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Deleting Offer Bookmark..' });
-  databaseService.destroy(req.session.selectedNode, CollectionsEnum.OFFERS, CollectionFieldsEnum.BOLT12, req.params.offerStr).then((deleteRes) => {
+  databaseService.remove(req.session.selectedNode, CollectionsEnum.OFFERS, CollectionFieldsEnum.BOLT12, req.params.offerStr).then((deleteRes) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Bookmark Deleted', data: deleteRes });
     res.status(204).json(req.params.offerStr);
   }).catch((errRes) => {

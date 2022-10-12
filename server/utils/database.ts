@@ -15,19 +15,22 @@ export class DatabaseService {
 
   constructor() { }
 
-  loadDatabase(selectedNode: CommonSelectedNode) {
+  loadDatabase(session: any) {
+    const { id, selectedNode } = session;
     try {
       if (!this.nodeDatabase[selectedNode.index]) {
         this.nodeDatabase[selectedNode.index] = { adapter: null, data: null };
+        this.nodeDatabase[selectedNode.index].adapter = new DatabaseAdapter(this.dbDirectory, 'rtldb', selectedNode, id);
+        this.nodeDatabase[selectedNode.index].data = this.nodeDatabase[selectedNode.index].adapter.fetchData();
+      } else {
+        this.nodeDatabase[selectedNode.index].adapter.insertSession(id);
       }
-      this.nodeDatabase[selectedNode.index].adapter = new DatabaseAdapter(this.dbDirectory, 'rtldb', selectedNode);
-      this.nodeDatabase[selectedNode.index].data = this.nodeDatabase[selectedNode.index].adapter.fetchData();
     } catch (err) {
       this.logger.log({ selectedNode: selectedNode, level: 'ERROR', fileName: 'Database', msg: 'Database Load Error', error: err });
     }
   }
 
-  create(selectedNode: CommonSelectedNode, collectionName: CollectionsEnum, newDocument: any) {
+  insert(selectedNode: CommonSelectedNode, collectionName: CollectionsEnum, newDocument: any) {
     return new Promise((resolve, reject) => {
       try {
         if (!selectedNode || !selectedNode.index) {
@@ -105,7 +108,7 @@ export class DatabaseService {
     });
   }
 
-  destroy(selectedNode: CommonSelectedNode, collectionName: CollectionsEnum, documentFieldName: string, documentFieldValue: string) {
+  remove(selectedNode: CommonSelectedNode, collectionName: CollectionsEnum, documentFieldName: string, documentFieldValue: string) {
     return new Promise((resolve, reject) => {
       try {
         if (!selectedNode || !selectedNode.index) {
@@ -155,9 +158,15 @@ export class DatabaseService {
     }
   }
 
-  unloadDatabase(nodeIndex: number) {
-    this.saveDatabase(nodeIndex);
-    this.nodeDatabase[nodeIndex] = null;
+  unloadDatabase(nodeIndex: number, sessionID: string) {
+    if (nodeIndex > 0) {
+      if (this.nodeDatabase[nodeIndex] && this.nodeDatabase[nodeIndex].adapter) {
+        this.nodeDatabase[nodeIndex].adapter.removeSession(sessionID);
+        if (this.nodeDatabase[nodeIndex].adapter.userSessions && this.nodeDatabase[nodeIndex].adapter.userSessions.length <= 0) {
+          delete this.nodeDatabase[nodeIndex];
+        }
+      }
+    }
   }
 
 }
@@ -165,9 +174,11 @@ export class DatabaseService {
 export class DatabaseAdapter {
 
   private dbFile = '';
+  private userSessions = [];
 
-  constructor(public dbDirectoryPath: string, public fileName: string, private selNode: CommonSelectedNode = null) {
+  constructor(public dbDirectoryPath: string, public fileName: string, private selNode: CommonSelectedNode = null, private id: string = '') {
     this.dbFile = dbDirectoryPath + sep + fileName + '-node-' + selNode.index + '.json';
+    this.insertSession(id);
   }
 
   fetchData() {
@@ -208,6 +219,14 @@ export class DatabaseAdapter {
     } catch (err) {
       return new Error('Database Write Error ' + JSON.stringify(err));
     }
+  }
+
+  insertSession(id: string = '') {
+    this.userSessions.push(id);
+  }
+
+  removeSession(sessionID: string = '') {
+    this.userSessions.splice(this.userSessions.findIndex((sId) => sId === sessionID), 1);
   }
 
 }

@@ -22,7 +22,7 @@ import { LNDEffects } from '../../store/lnd.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
-import { fetchPayments, sendPayment } from '../../store/lnd.actions';
+import { sendPayment } from '../../store/lnd.actions';
 import { lndNodeInformation, lndNodeSettings, payments, peers } from '../../store/lnd.selector';
 
 @Component({
