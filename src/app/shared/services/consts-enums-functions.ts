@@ -659,3 +659,10 @@ export const ECL_CHANNEL_TYPES = [
   { id: 'static_remotekey', placeholder: 'Static Remotekey' },
   { id: 'anchor_outputs_zero_fee_htlc_tx', placeholder: 'Anchor Output' }
 ];
+
+export enum SortOrderEnum {
+  ASCENDING = 'Ascending',
+  DESCENDING = 'Descending'
+}
+
+export const SORT_ORDERS = ['Ascending', 'Descending'];
