@@ -52,16 +52,16 @@ export class CLNOfferBookmarksTableComponent implements OnInit, AfterViewInit, O
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['lastUpdatedAt', 'title', 'amountmSat', 'actions'];
+      this.displayedColumns = ['lastUpdatedAt', 'title', 'amountMSat', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['lastUpdatedAt', 'title', 'amountmSat', 'actions'];
+      this.displayedColumns = ['lastUpdatedAt', 'title', 'amountMSat', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['lastUpdatedAt', 'title', 'amountmSat', 'description', 'actions'];
+      this.displayedColumns = ['lastUpdatedAt', 'title', 'amountMSat', 'description', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['lastUpdatedAt', 'title', 'amountmSat', 'description', 'actions'];
+      this.displayedColumns = ['lastUpdatedAt', 'title', 'amountMSat', 'description', 'actions'];
     }
   }
 

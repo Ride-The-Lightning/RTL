@@ -95,11 +95,11 @@ export const postPayment = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent', data: body });
     if (req.body.paymentType === 'OFFER') {
       if (req.body.saveToDB && req.body.bolt12) {
-        const offerToUpdate: Offer = { bolt12: req.body.bolt12, amountmSat: (req.body.zeroAmtOffer ? 0 : req.body.amount), title: req.body.title, lastUpdatedAt: new Date(Date.now()).getTime() };
+        const offerToUpdate: Offer = { bolt12: req.body.bolt12, amountMSat: (req.body.zeroAmtOffer ? 0 : req.body.amount), title: req.body.title, lastUpdatedAt: new Date(Date.now()).getTime() };
         if (req.body.vendor) { offerToUpdate['vendor'] = req.body.vendor; }
         if (req.body.description) { offerToUpdate['description'] = req.body.description; }
         return databaseService.update(req.session.selectedNode, CollectionsEnum.OFFERS, offerToUpdate, CollectionFieldsEnum.BOLT12, req.body.bolt12).then((updatedOffer) => {
-          logger.log({ level: 'DEBUG', fileName: 'Offer', msg: 'Offer Updated', data: updatedOffer });
+          logger.log({ level: 'DEBUG', fileName: 'Payments', msg: 'Offer Updated', data: updatedOffer });
           return res.status(201).json({ paymentResponse: body, saveToDBResponse: updatedOffer });
         }).catch((errDB) => {
           logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Payments', msg: 'Offer DB update error', error: errDB });

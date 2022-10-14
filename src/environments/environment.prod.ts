@@ -5,6 +5,7 @@ export const environment = {
   isDebugMode: false,
   AUTHENTICATE_API: API_URL + '/authenticate',
   CONF_API: API_URL + '/conf',
+  PAGE_SETTINGS_API: API_URL + '/pagesettings',
   BALANCE_API: '/balance',
   FEES_API: '/fees',
   PEERS_API: '/peers',

@@ -25,9 +25,9 @@
             </div>
           </td>
         </ng-container>
-        <ng-container matColumnDef="amountmSat">
+        <ng-container matColumnDef="amountMSat">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pr-2"> Amount (Sats) </th>
-          <td mat-cell *matCellDef="let offersbookmark" class="pr-2"><span fxLayoutAlign="end center">{{(offersbookmark.amountmSat === 0) ? 'Open' : (offersbookmark.amountmSat / 1000) | number}}</span></td>
+          <td mat-cell *matCellDef="let offersbookmark" class="pr-2"><span fxLayoutAlign="end center">{{(offersbookmark.amountMSat === 0) ? 'Open' : (offersbookmark.amountMSat / 1000) | number}}</span></td>
         </ng-container>
         <ng-container matColumnDef="description">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>

@@ -1,4 +1,5 @@
 import { MatPaginatorIntl } from '@angular/material/paginator';
+import { PageSettingsCLN } from '../models/pageSettings';
 
 export function getPaginatorLabel(field: string) {
   const appPaginator = new MatPaginatorIntl();
@@ -323,6 +324,9 @@ export const UI_MESSAGES = {
   GET_FUNDER_POLICY: 'Getting Or Updating Funder Policy...',
   GET_LIST_CONFIGS: 'Getting Configurations List...',
   LIST_NETWORK_NODES: 'Getting Network Nodes List...',
+  GET_PAGE_SETTINGS: 'Getting Page Settings...',
+  SET_PAGE_SETTINGS: 'Setting Page Settings...',
+  UPDATE_PAGE_SETTINGS: 'Updating Page Settings...',
   LOG_OUT: 'Logging Out...'
 };
 
@@ -456,6 +460,9 @@ export enum CLNActions {
   RESET_CLN_STORE = 'RESET_CLN_STORE',
   UPDATE_API_CALL_STATUS_CLN = 'UPDATE_API_CALL_STATUS_CLN',
   SET_CHILD_NODE_SETTINGS_CLN = 'SET_CHILD_NODE_SETTINGS_CLN',
+  FETCH_PAGE_SETTINGS_CLN = 'FETCH_PAGE_SETTINGS_CLN',
+  SET_PAGE_SETTINGS_CLN = 'SET_PAGE_SETTINGS_CLN',
+  SAVE_PAGE_SETTINGS_CLN = 'SAVE_PAGE_SETTINGS_CLN',
   FETCH_INFO_CLN = 'FETCH_INFO_CL_CLN',
   SET_INFO_CLN = 'SET_INFO_CLN',
   FETCH_FEES_CLN = 'FETCH_FEES_CLN',
@@ -666,3 +673,19 @@ export enum SortOrderEnum {
 }
 
 export const SORT_ORDERS = ['Ascending', 'Descending'];
+
+export const CLN_DEFAULT_PAGE_SETTINGS: PageSettingsCLN = {
+  payments: { seq: 1, tables: [{ tableId: 'payments', recordsPerPage: 10, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,
+    showColumns: ['created_at', 'type', 'payment_hash', 'msatoshi_sent', 'msatoshi'] }] },
+  invoices: { seq: 2, tables: [{ tableId: 'invoices', recordsPerPage: 10, sortBy: 'expires_at', sortOrder: SortOrderEnum.DESCENDING,
+    showColumns: ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received'] }] },
+  utxos: { seq: 3, tables: [{ tableId: 'utxos', recordsPerPage: 10, sortBy: 'expires_at', sortOrder: SortOrderEnum.DESCENDING,
+    showColumns: ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received'] }] }
+
+};
+
+export const CLN_TABLE_FIELDS_DEF = {
+  payments: ['created_at', 'type', 'payment_hash', 'msatoshi_sent', 'msatoshi', 'amount_msat', 'amount_sent_msat', 'destination', 'status', 'memo'],
+  invoices: ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received', 'label', 'payment_hash', 'amount_msat', 'status', 'amount_received_msat'],
+  utxos: ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received', 'label', 'payment_hash', 'amount_msat', 'status', 'amount_received_msat']
+};

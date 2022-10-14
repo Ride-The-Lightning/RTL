@@ -48,6 +48,7 @@ export interface ApiCallsListCL {
   FetchBalance: ApiCallStatusPayload;
   FetchLocalRemoteBalance: ApiCallStatusPayload;
   // Non-initial calls
+  FetchPageSettings: ApiCallStatusPayload;
   FetchInvoices: ApiCallStatusPayload;
   FetchFeeRatesperkb: ApiCallStatusPayload;
   FetchFeeRatesperkw: ApiCallStatusPayload;

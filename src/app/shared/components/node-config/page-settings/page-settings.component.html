@@ -4,36 +4,36 @@
       <fa-icon [icon]="faPenRuler" class="page-title-img mr-1"></fa-icon>
       <span class="page-title">Page Settings</span>
     </div>
-    <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1" expanded="true" *ngFor="let page of pageSettings">
+    <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1" expanded="true" *ngFor="let page of pageSettings | keyvalue">
       <mat-expansion-panel-header>
-        <mat-panel-title>{{page.pageId | titlecase}}</mat-panel-title>
+        <mat-panel-title>{{page.key | titlecase}}</mat-panel-title>
       </mat-expansion-panel-header>
-      <div fxLayout="column" fxLayoutAlign="start stretch" *ngFor="let table of page.tables">
+      <div fxLayout="column" fxLayoutAlign="start stretch" *ngFor="let table of page.value.tables">
         <div fxLayout="row" fxLayoutAlign="space-between center" class="mt-1">
           <mat-form-field fxFlex="10">
-            <mat-select [(ngModel)]="table.recordsPerPage" placeholder="Records/Page" name="{{page.pageId}}-page-size-options" tabindex="1">
+            <mat-select [(ngModel)]="table.recordsPerPage" placeholder="Records/Page" name="{{table.tableId}}-page-size-options" tabindex="1" required>
               <mat-option *ngFor="let pageSizeOption of pageSizeOptions" [value]="pageSizeOption">
                 {{pageSizeOption}}
               </mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field fxFlex="10">
-            <mat-select [(ngModel)]="table.sortBy" placeholder="Sort By" name="{{page.pageId}}-sort-by" tabindex="2">
-              <mat-option *ngFor="let field of table.fieldsDef" [value]="field">
+            <mat-select [(ngModel)]="table.sortBy" placeholder="Sort By" name="{{table.tableId}}-sort-by" tabindex="2" required>
+              <mat-option *ngFor="let field of table.showColumns" [value]="field">
                 {{field | camelcaseWithReplace:'_'}}
               </mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field fxFlex="10">
-            <mat-select [(ngModel)]="table.sortOrder" placeholder="Sort Order" name="{{page.pageId}}-sort-order" tabindex="3">
+            <mat-select [(ngModel)]="table.sortOrder" placeholder="Sort Order" name="{{table.tableId}}-sort-order" tabindex="3" required>
               <mat-option *ngFor="let so of sortOrders" [value]="so">
                 {{so}}
               </mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field fxFlex="68">
-            <mat-select [(ngModel)]="table.showColumns" placeholder="Show Columns" name="{{page.pageId}}-show-columns" tabindex="4" multiple>
-              <mat-option *ngFor="let field of table.fieldsDef" [value]="field">
+            <mat-select [(ngModel)]="table.showColumns" (selectionChange)="onShowColumnsChange(table)" placeholder="Show Columns" name="{{table.tableId}}-show-columns" tabindex="4" multiple required>
+              <mat-option *ngFor="let field of tableFieldsDef[table.tableId]" [value]="field" [disabled]="table.showColumns.length < 3 && table.showColumns.includes(field)">
                 {{field | camelcaseWithReplace:'_'}}
               </mat-option>
             </mat-select>

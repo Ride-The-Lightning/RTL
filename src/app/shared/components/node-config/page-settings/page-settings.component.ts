@@ -4,17 +4,12 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faPenRuler } from '@fortawesome/free-solid-svg-icons';
 
-import { PAGE_SIZE_OPTIONS, ScreenSizeEnum, UI_MESSAGES, SORT_ORDERS } from '../../../services/consts-enums-functions';
-import { ConfigSettingsNode } from '../../../models/RTLconfig';
+import { CLN_TABLE_FIELDS_DEF, PAGE_SIZE_OPTIONS, ScreenSizeEnum, SORT_ORDERS } from '../../../services/consts-enums-functions';
 import { LoggerService } from '../../../services/logger.service';
 import { CommonService } from '../../../services/common.service';
 import { RTLState } from '../../../../store/rtl.state';
-import { saveSettings } from '../../../../store/rtl.actions';
-import { setChildNodeSettingsECL } from '../../../../eclair/store/ecl.actions';
-import { setChildNodeSettingsCL } from '../../../../cln/store/cln.actions';
-import { setChildNodeSettingsLND } from '../../../../lnd/store/lnd.actions';
-import { rootSelectedNode } from '../../../../store/rtl.selector';
-import { RTL_PAGE_SETTINGS } from '../../../models/pageSettings';
+import { TableSetting, PageSettingsCLN } from '../../../models/pageSettings';
+import { clnPageSettings } from '../../../../cln/store/cln.selector';
 
 @Component({
   selector: 'rtl-page-settings',
@@ -24,11 +19,11 @@ import { RTL_PAGE_SETTINGS } from '../../../models/pageSettings';
 export class PageSettingsComponent implements OnInit, OnDestroy {
 
   public faPenRuler = faPenRuler;
-  public selNode: ConfigSettingsNode | any;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
-  public pageSettings = null;
+  public pageSettings: PageSettingsCLN | null = null;
+  public tableFieldsDef = CLN_TABLE_FIELDS_DEF;
   public sortOrders = SORT_ORDERS;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
@@ -37,12 +32,16 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((selNode) => {
-      this.selNode = selNode;
-      this.pageSettings = RTL_PAGE_SETTINGS[this.selNode.lnImplementation.toUpperCase()].sort((x, y) => ((x.seq < y.seq) ? -1 : ((x.seq > y.seq) ? 1 : 0)));
-      this.logger.info(selNode);
-      this.logger.warn(this.pageSettings);
+    this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[0])).subscribe((settings) => {
+      this.pageSettings = settings.pageSettings;
+      this.logger.info(settings);
     });
+  }
+
+  onShowColumnsChange(table: TableSetting) {
+    if (table.showColumns && !table.showColumns.includes(table.sortBy)) {
+      table.sortBy = table.showColumns[0];
+    }
   }
 
   onUpdatePageSettings() {

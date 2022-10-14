@@ -103,7 +103,7 @@ export interface Offer {
 export interface OfferBookmark {
   lastUpdatedAt?: string;
   bolt12?: string;
-  amountmSat?: number;
+  amountMSat?: number;
   title?: string;
   vendor?: string;
   description?: string;

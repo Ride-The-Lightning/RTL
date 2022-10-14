@@ -1,11 +1,13 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { APICallStatusEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, CLN_DEFAULT_PAGE_SETTINGS, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ListInvoices, UTXO, Offer, OfferBookmark, ListForwards } from '../../shared/models/clnModels';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
+import { PageSettingsCLN } from '../../shared/models/pageSettings';
 
 export interface CLNState {
   apisCallStatus: ApiCallsListCL;
   nodeSettings: SelNodeChild | null;
+  pageSettings: PageSettingsCLN;
   information: GetInfo;
   fees: Fees;
   feeRatesPerKB: FeeRates;
@@ -28,6 +30,7 @@ export interface CLNState {
 
 export const initCLNState: CLNState = {
   apisCallStatus: {
+    FetchPageSettings: { status: APICallStatusEnum.UN_INITIATED },
     FetchInfo: { status: APICallStatusEnum.UN_INITIATED },
     FetchInvoices: { status: APICallStatusEnum.UN_INITIATED },
     FetchFees: { status: APICallStatusEnum.UN_INITIATED },
@@ -46,6 +49,7 @@ export const initCLNState: CLNState = {
     FetchOfferBookmarks: { status: APICallStatusEnum.UN_INITIATED }
   },
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [], enableOffers: false, enablePeerswap: false },
+  pageSettings: CLN_DEFAULT_PAGE_SETTINGS,
   information: {},
   fees: {},
   feeRatesPerKB: {},
