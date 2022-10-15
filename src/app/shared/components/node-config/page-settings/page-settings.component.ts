@@ -4,12 +4,13 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faPenRuler } from '@fortawesome/free-solid-svg-icons';
 
-import { CLN_TABLE_FIELDS_DEF, PAGE_SIZE_OPTIONS, ScreenSizeEnum, SORT_ORDERS } from '../../../services/consts-enums-functions';
+import { CLN_DEFAULT_PAGE_SETTINGS, CLN_TABLE_FIELDS_DEF, PAGE_SIZE_OPTIONS, ScreenSizeEnum, SORT_ORDERS } from '../../../services/consts-enums-functions';
 import { LoggerService } from '../../../services/logger.service';
 import { CommonService } from '../../../services/common.service';
 import { RTLState } from '../../../../store/rtl.state';
 import { TableSetting, PageSettingsCLN } from '../../../models/pageSettings';
 import { clnPageSettings } from '../../../../cln/store/cln.selector';
+import { savePageSettings } from '../../../../cln/store/cln.actions';
 
 @Component({
   selector: 'rtl-page-settings',
@@ -22,7 +23,8 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
-  public pageSettings: PageSettingsCLN | null = null;
+  public pageSettings: PageSettingsCLN[] = [];
+  public initialPageSettings: PageSettingsCLN[] = CLN_DEFAULT_PAGE_SETTINGS;
   public tableFieldsDef = CLN_TABLE_FIELDS_DEF;
   public sortOrders = SORT_ORDERS;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
@@ -34,6 +36,7 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[0])).subscribe((settings) => {
       this.pageSettings = settings.pageSettings;
+      this.initialPageSettings = JSON.parse(JSON.stringify(settings.pageSettings));
       this.logger.info(settings);
     });
   }
@@ -44,19 +47,15 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  onUpdatePageSettings() {
-    // if (this.selNode.settings.fiatConversion && !this.selNode.settings.currencyUnit) {
-    //   return true;
-    // }
-    // this.store.dispatch(setChildNodeSettingsECL({
-    //   payload: {
-    //     userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
-    //   }
-    // }));
+  onUpdatePageSettings(): boolean | void {
+    if (this.pageSettings.reduce((pacc, page) => pacc || (page.tables.reduce((acc, table) => !(table.recordsPerPage && table.sortBy && table.sortOrder && table.showColumns && table.showColumns.length >= 3), false)), false)) {
+      return true;
+    }
+    this.store.dispatch(savePageSettings({ payload: this.pageSettings }));
   }
 
   onResetPageSettings() {
-    // this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, prevLnNodeIndex: +prevIndex, currentLnNode: this.selNode, isInitialSetup: true } }));
+    this.pageSettings = this.initialPageSettings;
   }
 
   ngOnDestroy() {

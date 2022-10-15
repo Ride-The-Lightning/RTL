@@ -19,6 +19,17 @@ export class Offer {
 
 }
 
+export const validateDocument = (collectionName: CollectionsEnum, documentToValidate: any): any => {
+  switch (collectionName) {
+    case CollectionsEnum.OFFERS:
+      return validateOffer(documentToValidate);
+    case CollectionsEnum.PAGE_SETTINGS:
+      return validatePageSettings(documentToValidate);
+    default:
+      return ({ isValid: false, error: 'Collection does not exist' });
+  }
+};
+
 export const validateOffer = (documentToValidate): any => {
   if (!documentToValidate.hasOwnProperty(CollectionFieldsEnum.BOLT12)) {
     return ({ isValid: false, error: CollectionFieldsEnum.BOLT12 + ' is mandatory.' });
@@ -41,8 +52,7 @@ export enum SortOrderEnum {
 }
 
 export enum PageSettingsFieldsEnum {
-  PAYMENTS = 'payments',
-  INVOICES = 'invoices',
+  PAGE_ID = 'pageId',
   TABLES = 'tables'
 }
 
@@ -69,32 +79,50 @@ export class TableSetting {
 export class PageSettings {
 
   constructor(
-    public pages: {
-      payments: { tables: TableSetting[] };
-      invoices: { tables: TableSetting[] };
-    }
+    public pageId: string,
+    public tables: TableSetting[]
   ) { }
 
 }
 
 export const validatePageSettings = (documentToValidate): any => {
-  if (!documentToValidate.hasOwnProperty(CollectionFieldsEnum.PAYMENTS)) {
-    return ({ isValid: false, error: CollectionFieldsEnum.PAYMENTS + ' is mandatory.' });
-  }
-  if (!documentToValidate.hasOwnProperty(CollectionFieldsEnum.INVOICES)) {
-    return ({ isValid: false, error: CollectionFieldsEnum.INVOICES + ' is mandatory.' });
-  }
-  if (!documentToValidate.hasOwnProperty(CollectionFieldsEnum.TABLES)) {
-    return ({ isValid: false, error: CollectionFieldsEnum.TABLES + ' is mandatory.' });
-  }
-  if (!documentToValidate.hasOwnProperty(CollectionFieldsEnum.TABLE_ID)) {
-    return ({ isValid: false, error: CollectionFieldsEnum.TABLE_ID + ' is mandatory.' });
-  }
-  if (!documentToValidate.hasOwnProperty(CollectionFieldsEnum.SHOW_COLUMNS)) {
-    return ({ isValid: false, error: CollectionFieldsEnum.SHOW_COLUMNS + ' is mandatory.' });
-  }
-  if (documentToValidate[CollectionFieldsEnum.SHOW_COLUMNS].length < 3) {
-    return ({ isValid: false, error: CollectionFieldsEnum.SHOW_COLUMNS + ' should have at least 2 fields.' });
+  const errorMessages = documentToValidate.reduce((docAcc, doc: PageSettings, pageIdx) => {
+    let newDocMsgs = '';
+    if (!doc.hasOwnProperty(CollectionFieldsEnum.PAGE_ID)) {
+      newDocMsgs = newDocMsgs + ' ' + CollectionFieldsEnum.PAGE_ID + ' is mandatory.';
+    }
+    if (!doc.hasOwnProperty(CollectionFieldsEnum.TABLES)) {
+      newDocMsgs = newDocMsgs + ' ' + CollectionFieldsEnum.TABLES + ' is mandatory.';
+    }
+    newDocMsgs = newDocMsgs + ' ' + doc.tables.reduce((tableAcc, table: TableSetting, tableIdx) => {
+      if (!table.hasOwnProperty(CollectionFieldsEnum.TABLE_ID)) {
+        tableAcc = tableAcc + ' ' + CollectionFieldsEnum.TABLE_ID + ' is mandatory.';
+      }
+      if (!table.hasOwnProperty(CollectionFieldsEnum.SORT_BY)) {
+        tableAcc = tableAcc + ' ' + CollectionFieldsEnum.SORT_BY + ' is mandatory.';
+      }
+      if (!table.hasOwnProperty(CollectionFieldsEnum.SORT_ORDER)) {
+        tableAcc = tableAcc + ' ' + CollectionFieldsEnum.SORT_ORDER + ' is mandatory.';
+      }
+      if (!table.hasOwnProperty(CollectionFieldsEnum.RECORDS_PER_PAGE)) {
+        tableAcc = tableAcc + ' ' + CollectionFieldsEnum.RECORDS_PER_PAGE + ' is mandatory.';
+      }
+      if (!table.hasOwnProperty(CollectionFieldsEnum.SHOW_COLUMNS)) {
+        tableAcc = tableAcc + ' ' + CollectionFieldsEnum.SHOW_COLUMNS + ' is mandatory.';
+      }
+      if (table[CollectionFieldsEnum.SHOW_COLUMNS].length < 2) {
+        tableAcc = tableAcc + ' ' + CollectionFieldsEnum.SHOW_COLUMNS + ' should have at least 2 fields.';
+      }
+      tableAcc = tableAcc.trim() !== '' ? ('table ' + (table.hasOwnProperty(CollectionFieldsEnum.TABLE_ID) ? table[CollectionFieldsEnum.TABLE_ID] : (tableIdx + 1)) + tableAcc) : '';
+      return tableAcc;
+    }, '');
+    if (newDocMsgs.trim() !== '') {
+      docAcc = docAcc + '\nFor page ' + (doc.hasOwnProperty(CollectionFieldsEnum.PAGE_ID) ? doc[CollectionFieldsEnum.PAGE_ID] : (pageIdx + 1)) + newDocMsgs;
+    }
+    return docAcc;
+  }, '');
+  if (errorMessages !== '') {
+    return ({ isValid: false, error: errorMessages });
   }
   return ({ isValid: true });
 };
@@ -106,7 +134,7 @@ export enum CollectionsEnum {
 
 export type Collections = {
   Offers: Offer[];
-  PageSettings: PageSettings;
+  PageSettings: PageSettings[];
 }
 
 export const CollectionFieldsEnum = { ...OfferFieldsEnum, ...PageSettingsFieldsEnum, ...TableSettingsFieldsEnum };

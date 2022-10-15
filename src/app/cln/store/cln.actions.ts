@@ -14,9 +14,9 @@ export const setChildNodeSettingsCL = createAction(CLNActions.SET_CHILD_NODE_SET
 
 export const fetchPageSettingsCL = createAction(CLNActions.FETCH_PAGE_SETTINGS_CLN);
 
-export const setPageSettings = createAction(CLNActions.SET_PAGE_SETTINGS_CLN, props<{ payload: PageSettingsCLN }>());
+export const setPageSettings = createAction(CLNActions.SET_PAGE_SETTINGS_CLN, props<{ payload: PageSettingsCLN[] }>());
 
-export const savePageSettings = createAction(CLNActions.SAVE_PAGE_SETTINGS_CLN, props<{ payload: PageSettingsCLN }>());
+export const savePageSettings = createAction(CLNActions.SAVE_PAGE_SETTINGS_CLN, props<{ payload: PageSettingsCLN[] }>());
 
 export const fetchInfoCL = createAction(CLNActions.FETCH_INFO_CLN, props<{ payload: { loadPage: string } }>());
 

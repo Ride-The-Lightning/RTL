@@ -3,7 +3,7 @@ import { join, dirname, sep } from 'path';
 import { fileURLToPath } from 'url';
 import { Common, CommonService } from '../utils/common.js';
 import { Logger, LoggerService } from '../utils/logger.js';
-import { Collections, CollectionsEnum, validateOffer } from '../models/database.model.js';
+import { Collections, CollectionsEnum, validateDocument } from '../models/database.model.js';
 import { CommonSelectedNode } from '../models/config.model.js';
 
 export class DatabaseService {
@@ -36,7 +36,7 @@ export class DatabaseService {
         if (!selectedNode || !selectedNode.index) {
           reject(new Error('Selected Node Config Not Found.'));
         }
-        const validationRes = this.validateDocument(CollectionsEnum.OFFERS, newDocument);
+        const validationRes = validateDocument(collectionName, newDocument);
         if (!validationRes.isValid) {
           reject(validationRes.error);
         } else {
@@ -70,7 +70,7 @@ export class DatabaseService {
           }
           updatedDocument = foundDoc;
         }
-        const validationRes = this.validateDocument(CollectionsEnum.OFFERS, updatedDocument);
+        const validationRes = validateDocument(collectionName, updatedDocument);
         if (!validationRes.isValid) {
           reject(validationRes.error);
         } else {
@@ -126,16 +126,6 @@ export class DatabaseService {
         reject(errRes);
       }
     });
-  }
-
-  validateDocument(collectionName: CollectionsEnum, documentToValidate: any) {
-    switch (collectionName) {
-      case CollectionsEnum.OFFERS:
-        return validateOffer(documentToValidate);
-
-      default:
-        return ({ isValid: false, error: 'Collection does not exist' });
-    }
   }
 
   saveDatabase(nodeIndex: number) {

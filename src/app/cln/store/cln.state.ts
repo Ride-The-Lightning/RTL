@@ -7,7 +7,7 @@ import { PageSettingsCLN } from '../../shared/models/pageSettings';
 export interface CLNState {
   apisCallStatus: ApiCallsListCL;
   nodeSettings: SelNodeChild | null;
-  pageSettings: PageSettingsCLN;
+  pageSettings: PageSettingsCLN[];
   information: GetInfo;
   fees: Fees;
   feeRatesPerKB: FeeRates;

@@ -4,11 +4,11 @@
       <fa-icon [icon]="faPenRuler" class="page-title-img mr-1"></fa-icon>
       <span class="page-title">Page Settings</span>
     </div>
-    <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1" expanded="true" *ngFor="let page of pageSettings | keyvalue">
+    <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1" expanded="true" *ngFor="let page of pageSettings">
       <mat-expansion-panel-header>
-        <mat-panel-title>{{page.key | titlecase}}</mat-panel-title>
+        <mat-panel-title>{{page.pageId | titlecase}}</mat-panel-title>
       </mat-expansion-panel-header>
-      <div fxLayout="column" fxLayoutAlign="start stretch" *ngFor="let table of page.value.tables">
+      <div fxLayout="column" fxLayoutAlign="start stretch" *ngFor="let table of page.tables">
         <div fxLayout="row" fxLayoutAlign="space-between center" class="mt-1">
           <mat-form-field fxFlex="10">
             <mat-select [(ngModel)]="table.recordsPerPage" placeholder="Records/Page" name="{{table.tableId}}-page-size-options" tabindex="1" required>

@@ -674,18 +674,14 @@ export enum SortOrderEnum {
 
 export const SORT_ORDERS = ['Ascending', 'Descending'];
 
-export const CLN_DEFAULT_PAGE_SETTINGS: PageSettingsCLN = {
-  payments: { seq: 1, tables: [{ tableId: 'payments', recordsPerPage: 10, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,
+export const CLN_DEFAULT_PAGE_SETTINGS: PageSettingsCLN[] = [
+  { pageId: 'payments', tables: [{ tableId: 'payments', recordsPerPage: 10, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,
     showColumns: ['created_at', 'type', 'payment_hash', 'msatoshi_sent', 'msatoshi'] }] },
-  invoices: { seq: 2, tables: [{ tableId: 'invoices', recordsPerPage: 10, sortBy: 'expires_at', sortOrder: SortOrderEnum.DESCENDING,
-    showColumns: ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received'] }] },
-  utxos: { seq: 3, tables: [{ tableId: 'utxos', recordsPerPage: 10, sortBy: 'expires_at', sortOrder: SortOrderEnum.DESCENDING,
+  { pageId: 'invoices', tables: [{ tableId: 'invoices', recordsPerPage: 10, sortBy: 'expires_at', sortOrder: SortOrderEnum.DESCENDING,
     showColumns: ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received'] }] }
-
-};
+];
 
 export const CLN_TABLE_FIELDS_DEF = {
   payments: ['created_at', 'type', 'payment_hash', 'msatoshi_sent', 'msatoshi', 'amount_msat', 'amount_sent_msat', 'destination', 'status', 'memo'],
-  invoices: ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received', 'label', 'payment_hash', 'amount_msat', 'status', 'amount_received_msat'],
-  utxos: ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received', 'label', 'payment_hash', 'amount_msat', 'status', 'amount_received_msat']
+  invoices: ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received', 'label', 'payment_hash', 'amount_msat', 'status', 'amount_received_msat']
 };

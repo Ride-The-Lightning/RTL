@@ -3,7 +3,7 @@ import { join, dirname, sep } from 'path';
 import { fileURLToPath } from 'url';
 import { Common } from '../utils/common.js';
 import { Logger } from '../utils/logger.js';
-import { CollectionsEnum, validateOffer } from '../models/database.model.js';
+import { validateDocument } from '../models/database.model.js';
 export class DatabaseService {
     constructor() {
         this.common = Common;
@@ -33,7 +33,7 @@ export class DatabaseService {
                 if (!selectedNode || !selectedNode.index) {
                     reject(new Error('Selected Node Config Not Found.'));
                 }
-                const validationRes = this.validateDocument(CollectionsEnum.OFFERS, newDocument);
+                const validationRes = validateDocument(collectionName, newDocument);
                 if (!validationRes.isValid) {
                     reject(validationRes.error);
                 }
@@ -68,7 +68,7 @@ export class DatabaseService {
                     }
                     updatedDocument = foundDoc;
                 }
-                const validationRes = this.validateDocument(CollectionsEnum.OFFERS, updatedDocument);
+                const validationRes = validateDocument(collectionName, updatedDocument);
                 if (!validationRes.isValid) {
                     reject(validationRes.error);
                 }
@@ -129,14 +129,6 @@ export class DatabaseService {
                 reject(errRes);
             }
         });
-    }
-    validateDocument(collectionName, documentToValidate) {
-        switch (collectionName) {
-            case CollectionsEnum.OFFERS:
-                return validateOffer(documentToValidate);
-            default:
-                return ({ isValid: false, error: 'Collection does not exist' });
-        }
     }
     saveDatabase(nodeIndex) {
         try {

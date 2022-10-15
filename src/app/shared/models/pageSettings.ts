@@ -12,8 +12,7 @@ export class TableSetting {
 
 export class PageSettingsCLN {
 
-  payments?: { seq?: number, tables?: TableSetting[] };
-  invoices?: { seq?: number, tables?: TableSetting[] };
-  utxos?: { seq?: number, tables?: TableSetting[] };
+  pageId: string;
+  tables: TableSetting[];
 
 }

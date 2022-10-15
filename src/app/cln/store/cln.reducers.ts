@@ -219,13 +219,18 @@ export const CLNReducer = createReducer(initCLNState,
     };
   }),
   on(setPageSettings, (state, { payload }) => {
-    const sortedPageSettings = Object.keys(CLN_DEFAULT_PAGE_SETTINGS).reduce((acc, page) => {
-      acc[page] = (payload && payload.hasOwnProperty(page)) ? payload[page] : CLN_DEFAULT_PAGE_SETTINGS[page];
-      return acc;
-    }, {});
+    const newPageSettings: PageSettingsCLN[] = [];
+    CLN_DEFAULT_PAGE_SETTINGS.forEach((page) => {
+      const pageIdx = payload.findIndex((p) => p.pageId === page.pageId);
+      if (pageIdx >= 0) {
+        newPageSettings.push(payload[pageIdx]);
+      } else {
+        newPageSettings.push(page);
+      }
+    });
     return {
       ...state,
-      pageSettings: sortedPageSettings
+      pageSettings: newPageSettings
     };
   })
 );
