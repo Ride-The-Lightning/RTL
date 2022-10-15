@@ -175,7 +175,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
                 this.selectedChannelCtrl.disable();
               }
               this.zeroAmtInvoice = false;
-              if (this.selNode.fiatConversion) {
+              if (this.selNode && this.selNode.fiatConversion) {
                 this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : 'BTC'), this.selNode.fiatConversion).
                   pipe(takeUntil(this.unSubs[4])).
                   subscribe({

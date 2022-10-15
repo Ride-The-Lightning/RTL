@@ -1,16 +1,18 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
+import { Actions } from '@ngrx/effects';
 import { faPenRuler } from '@fortawesome/free-solid-svg-icons';
 
-import { CLN_DEFAULT_PAGE_SETTINGS, CLN_TABLE_FIELDS_DEF, PAGE_SIZE_OPTIONS, ScreenSizeEnum, SORT_ORDERS } from '../../../services/consts-enums-functions';
+import { APICallStatusEnum, CLNActions, CLN_DEFAULT_PAGE_SETTINGS, CLN_TABLE_FIELDS_DEF, PAGE_SIZE_OPTIONS, ScreenSizeEnum, SORT_ORDERS } from '../../../services/consts-enums-functions';
 import { LoggerService } from '../../../services/logger.service';
 import { CommonService } from '../../../services/common.service';
 import { RTLState } from '../../../../store/rtl.state';
 import { TableSetting, PageSettingsCLN } from '../../../models/pageSettings';
 import { clnPageSettings } from '../../../../cln/store/cln.selector';
 import { savePageSettings } from '../../../../cln/store/cln.actions';
+import { ApiCallStatusPayload } from '../../../models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-page-settings',
@@ -27,18 +29,33 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
   public initialPageSettings: PageSettingsCLN[] = CLN_DEFAULT_PAGE_SETTINGS;
   public tableFieldsDef = CLN_TABLE_FIELDS_DEF;
   public sortOrders = SORT_ORDERS;
-  unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  public apiCallStatus: ApiCallStatusPayload | null = null;
+  public apiCallStatusEnum = APICallStatusEnum;
+  public errorMessage: any = null;
+  unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private actions: Actions) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
   ngOnInit() {
-    this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[0])).subscribe((settings) => {
-      this.pageSettings = settings.pageSettings;
-      this.initialPageSettings = JSON.parse(JSON.stringify(settings.pageSettings));
-      this.logger.info(settings);
-    });
+    this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[0])).
+      subscribe((settings: { pageSettings: PageSettingsCLN[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessage = null;
+        this.apiCallStatus = settings.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = this.apiCallStatus.message || null;
+        }
+        this.pageSettings = settings.pageSettings;
+        this.initialPageSettings = JSON.parse(JSON.stringify(settings.pageSettings));
+        this.logger.info(settings);
+      });
+    this.actions.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN || action.type === CLNActions.SAVE_PAGE_SETTINGS_CLN)).
+      subscribe((action: any) => {
+        if (action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SavePageSettings') {
+          this.errorMessage = JSON.parse(action.payload.message);
+        }
+      });
   }
 
   onShowColumnsChange(table: TableSetting) {
@@ -51,10 +68,12 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
     if (this.pageSettings.reduce((pacc, page) => pacc || (page.tables.reduce((acc, table) => !(table.recordsPerPage && table.sortBy && table.sortOrder && table.showColumns && table.showColumns.length >= 3), false)), false)) {
       return true;
     }
+    this.errorMessage = '';
     this.store.dispatch(savePageSettings({ payload: this.pageSettings }));
   }
 
   onResetPageSettings() {
+    this.errorMessage = null;
     this.pageSettings = this.initialPageSettings;
   }
 

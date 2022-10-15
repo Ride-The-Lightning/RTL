@@ -75,45 +75,51 @@ export class PageSettings {
     }
 }
 export const validatePageSettings = (documentToValidate) => {
-    const errorMessages = documentToValidate.reduce((docAcc, doc, pageIdx) => {
-        let newDocMsgs = '';
-        if (!doc.hasOwnProperty(CollectionFieldsEnum.PAGE_ID)) {
-            newDocMsgs = newDocMsgs + ' ' + CollectionFieldsEnum.PAGE_ID + ' is mandatory.';
-        }
-        if (!doc.hasOwnProperty(CollectionFieldsEnum.TABLES)) {
-            newDocMsgs = newDocMsgs + ' ' + CollectionFieldsEnum.TABLES + ' is mandatory.';
-        }
-        newDocMsgs = newDocMsgs + ' ' + doc.tables.reduce((tableAcc, table, tableIdx) => {
-            if (!table.hasOwnProperty(CollectionFieldsEnum.TABLE_ID)) {
-                tableAcc = tableAcc + ' ' + CollectionFieldsEnum.TABLE_ID + ' is mandatory.';
-            }
-            if (!table.hasOwnProperty(CollectionFieldsEnum.SORT_BY)) {
-                tableAcc = tableAcc + ' ' + CollectionFieldsEnum.SORT_BY + ' is mandatory.';
-            }
-            if (!table.hasOwnProperty(CollectionFieldsEnum.SORT_ORDER)) {
-                tableAcc = tableAcc + ' ' + CollectionFieldsEnum.SORT_ORDER + ' is mandatory.';
-            }
-            if (!table.hasOwnProperty(CollectionFieldsEnum.RECORDS_PER_PAGE)) {
-                tableAcc = tableAcc + ' ' + CollectionFieldsEnum.RECORDS_PER_PAGE + ' is mandatory.';
-            }
-            if (!table.hasOwnProperty(CollectionFieldsEnum.SHOW_COLUMNS)) {
-                tableAcc = tableAcc + ' ' + CollectionFieldsEnum.SHOW_COLUMNS + ' is mandatory.';
-            }
-            if (table[CollectionFieldsEnum.SHOW_COLUMNS].length < 2) {
-                tableAcc = tableAcc + ' ' + CollectionFieldsEnum.SHOW_COLUMNS + ' should have at least 2 fields.';
-            }
-            tableAcc = tableAcc.trim() !== '' ? ('table ' + (table.hasOwnProperty(CollectionFieldsEnum.TABLE_ID) ? table[CollectionFieldsEnum.TABLE_ID] : (tableIdx + 1)) + tableAcc) : '';
-            return tableAcc;
-        }, '');
-        if (newDocMsgs.trim() !== '') {
-            docAcc = docAcc + '\nFor page ' + (doc.hasOwnProperty(CollectionFieldsEnum.PAGE_ID) ? doc[CollectionFieldsEnum.PAGE_ID] : (pageIdx + 1)) + newDocMsgs;
-        }
-        return docAcc;
-    }, '');
-    if (errorMessages !== '') {
-        return ({ isValid: false, error: errorMessages });
+    let errorMessages = '';
+    if (!documentToValidate.hasOwnProperty(CollectionFieldsEnum.PAGE_ID)) {
+        errorMessages = errorMessages + CollectionFieldsEnum.PAGE_ID + ' is mandatory.';
     }
-    return ({ isValid: true });
+    if (!documentToValidate.hasOwnProperty(CollectionFieldsEnum.TABLES)) {
+        errorMessages = errorMessages + CollectionFieldsEnum.TABLES + ' is mandatory.';
+    }
+    const tablesMessages = documentToValidate.tables.reduce((tableAcc, table, tableIdx) => {
+        let errMsg = '';
+        if (!table.hasOwnProperty(CollectionFieldsEnum.TABLE_ID)) {
+            errMsg = errMsg + CollectionFieldsEnum.TABLE_ID + ' is mandatory.';
+        }
+        if (!table.hasOwnProperty(CollectionFieldsEnum.SORT_BY)) {
+            errMsg = errMsg + CollectionFieldsEnum.SORT_BY + ' is mandatory.';
+        }
+        if (!table.hasOwnProperty(CollectionFieldsEnum.SORT_ORDER)) {
+            errMsg = errMsg + CollectionFieldsEnum.SORT_ORDER + ' is mandatory.';
+        }
+        if (!table.hasOwnProperty(CollectionFieldsEnum.RECORDS_PER_PAGE)) {
+            errMsg = errMsg + CollectionFieldsEnum.RECORDS_PER_PAGE + ' is mandatory.';
+        }
+        if (!table.hasOwnProperty(CollectionFieldsEnum.SHOW_COLUMNS)) {
+            errMsg = errMsg + CollectionFieldsEnum.SHOW_COLUMNS + ' is mandatory.';
+        }
+        if (table[CollectionFieldsEnum.SHOW_COLUMNS].length < 2) {
+            errMsg = errMsg + CollectionFieldsEnum.SHOW_COLUMNS + ' should have at least 2 fields.';
+        }
+        if (errMsg.trim() !== '') {
+            tableAcc.push({ table: (table.hasOwnProperty(CollectionFieldsEnum.TABLE_ID) ? table[CollectionFieldsEnum.TABLE_ID] : (tableIdx + 1)), message: errMsg });
+        }
+        return tableAcc;
+    }, []);
+    if (errorMessages.trim() === '' && tablesMessages.length && tablesMessages.length === 0) {
+        return ({ isValid: true });
+    }
+    else {
+        const errObj = { page: (documentToValidate.hasOwnProperty(CollectionFieldsEnum.PAGE_ID) ? documentToValidate[CollectionFieldsEnum.PAGE_ID] : 'Unknown') };
+        if (errorMessages.trim() !== '') {
+            errObj['message'] = errorMessages;
+        }
+        if (tablesMessages.length && tablesMessages.length > 0) {
+            errObj['tables'] = tablesMessages;
+        }
+        return ({ isValid: false, error: JSON.stringify(errObj) });
+    }
 };
 export var CollectionsEnum;
 (function (CollectionsEnum) {

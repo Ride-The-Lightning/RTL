@@ -19,10 +19,18 @@ export const savePageSettings = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Page Settings', msg: 'Saving Page Settings..' });
     req.body = [
         {
-            pageId: "payments",
             tables: [
                 {
+                    tableId: "payments",
                     recordsPerPage: 25,
+                    sortBy: "created_at",
+                    sortOrder: "Ascending",
+                    showColumns: [
+                        "msatoshi",
+                    ],
+                },
+                {
+                    tableId: "payments2",
                     sortBy: "created_at",
                     sortOrder: "Ascending",
                     showColumns: [
@@ -36,36 +44,7 @@ export const savePageSettings = (req, res, next) => {
             ],
         },
         {
-            pageId: "invoices1",
-            tables: [
-                {
-                    tableId: "invoices1",
-                    recordsPerPage: 10,
-                    showColumns: [
-                        "msatoshi_received",
-                    ],
-                },
-            ],
-        },
-        {
-            tables: [
-                {
-                    tableId: "invoices2",
-                    sortBy: "expires_at",
-                    sortOrder: "Descending",
-                    showColumns: [
-                        "expires_at",
-                        "paid_at",
-                        "type",
-                        "description",
-                        "msatoshi",
-                        "msatoshi_received",
-                    ],
-                },
-            ],
-        },
-        {
-            pageId: "invoices3",
+            pageId: "invoices",
             tables: [
                 {
                     tableId: "invoices3",
@@ -92,11 +71,4 @@ export const savePageSettings = (req, res, next) => {
         const err = common.handleError(errRes, 'Page Settings', 'Page Settings Update Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
-    // return databaseService.insert(req.session.selectedNode, CollectionsEnum.PAGE_SETTINGS, req.body).then((insertedSettings) => {
-    //   logger.log({ level: 'DEBUG', fileName: 'Page Settings', msg: 'Page Settings Updated', data: insertedSettings });
-    //   return res.status(201).json(true);
-    // }).catch((errRes) => {
-    //   const err = common.handleError(errRes, 'Page Settings', 'Page Settings Update Error', req.session.selectedNode);
-    //   return res.status(err.statusCode).json({ message: err.message, error: err.error });
-    // });
 };
