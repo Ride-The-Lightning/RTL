@@ -32,16 +32,16 @@ export const validateDocument = (collectionName: CollectionsEnum, documentToVali
 
 export const validateOffer = (documentToValidate): any => {
   if (!documentToValidate.hasOwnProperty(CollectionFieldsEnum.BOLT12)) {
-    return ({ isValid: false, error: CollectionFieldsEnum.BOLT12 + ' is mandatory.' });
+    return ({ isValid: false, error: 'Bolt12 is mandatory.' });
   }
   if (!documentToValidate.hasOwnProperty(CollectionFieldsEnum.AMOUNTMSAT)) {
-    return ({ isValid: false, error: CollectionFieldsEnum.AMOUNTMSAT + ' is mandatory.' });
+    return ({ isValid: false, error: 'Amount mSat is mandatory.' });
   }
   if (!documentToValidate.hasOwnProperty(CollectionFieldsEnum.TITLE)) {
-    return ({ isValid: false, error: CollectionFieldsEnum.TITLE + ' is mandatory.' });
+    return ({ isValid: false, error: 'Title is mandatory.' });
   }
   if ((typeof documentToValidate[CollectionFieldsEnum.AMOUNTMSAT] !== 'number')) {
-    return ({ isValid: false, error: CollectionFieldsEnum.AMOUNTMSAT + ' should be a number.' });
+    return ({ isValid: false, error: 'Amount mSat should be a number.' });
   }
   return ({ isValid: true });
 };
@@ -88,37 +88,37 @@ export class PageSettings {
 export const validatePageSettings = (documentToValidate): any => {
   let errorMessages = '';
   if (!documentToValidate.hasOwnProperty(CollectionFieldsEnum.PAGE_ID)) {
-    errorMessages = errorMessages + CollectionFieldsEnum.PAGE_ID + ' is mandatory.';
+    errorMessages = errorMessages + 'Page ID is mandatory.';
   }
   if (!documentToValidate.hasOwnProperty(CollectionFieldsEnum.TABLES)) {
-    errorMessages = errorMessages + CollectionFieldsEnum.TABLES + ' is mandatory.';
+    errorMessages = errorMessages + 'Tables is mandatory.';
   }
   const tablesMessages = documentToValidate.tables.reduce((tableAcc, table: TableSetting, tableIdx) => {
     let errMsg = '';
     if (!table.hasOwnProperty(CollectionFieldsEnum.TABLE_ID)) {
-      errMsg = errMsg + CollectionFieldsEnum.TABLE_ID + ' is mandatory.';
+      errMsg = errMsg + 'Table ID is mandatory.';
     }
     if (!table.hasOwnProperty(CollectionFieldsEnum.SORT_BY)) {
-      errMsg = errMsg + CollectionFieldsEnum.SORT_BY + ' is mandatory.';
+      errMsg = errMsg + 'Sort By is mandatory.';
     }
     if (!table.hasOwnProperty(CollectionFieldsEnum.SORT_ORDER)) {
-      errMsg = errMsg + CollectionFieldsEnum.SORT_ORDER + ' is mandatory.';
+      errMsg = errMsg + 'Sort Order is mandatory.';
     }
     if (!table.hasOwnProperty(CollectionFieldsEnum.RECORDS_PER_PAGE)) {
-      errMsg = errMsg + CollectionFieldsEnum.RECORDS_PER_PAGE + ' is mandatory.';
+      errMsg = errMsg + 'Records/Page is mandatory.';
     }
     if (!table.hasOwnProperty(CollectionFieldsEnum.SHOW_COLUMNS)) {
-      errMsg = errMsg + CollectionFieldsEnum.SHOW_COLUMNS + ' is mandatory.';
+      errMsg = errMsg + 'Show Columns is mandatory.';
     }
     if (table[CollectionFieldsEnum.SHOW_COLUMNS].length < 2) {
-      errMsg = errMsg + CollectionFieldsEnum.SHOW_COLUMNS + ' should have at least 2 fields.';
+      errMsg = errMsg + 'Show Columns should have at least 2 fields.';
     }
     if (errMsg.trim() !== '') {
       tableAcc.push({ table: (table.hasOwnProperty(CollectionFieldsEnum.TABLE_ID) ? table[CollectionFieldsEnum.TABLE_ID] : (tableIdx + 1)), message: errMsg });
     }
     return tableAcc;
   }, []);
-  if (errorMessages.trim() === '' && tablesMessages.length && tablesMessages.length === 0) {
+  if (errorMessages.trim() === '' && tablesMessages.length === 0) {
     return ({ isValid: true });
   } else {
     const errObj = { page: (documentToValidate.hasOwnProperty(CollectionFieldsEnum.PAGE_ID) ? documentToValidate[CollectionFieldsEnum.PAGE_ID] : 'Unknown') };

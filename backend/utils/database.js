@@ -214,7 +214,9 @@ export class DatabaseAdapter {
         }
     }
     insertSession(id = '') {
-        this.userSessions.push(id);
+        if (!this.userSessions.includes(id)) {
+            this.userSessions.push(id);
+        }
     }
     removeSession(sessionID = '') {
         this.userSessions.splice(this.userSessions.findIndex((sId) => sId === sessionID), 1);

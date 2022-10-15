@@ -212,7 +212,9 @@ export class DatabaseAdapter {
   }
 
   insertSession(id: string = '') {
-    this.userSessions.push(id);
+    if (!this.userSessions.includes(id)) {
+      this.userSessions.push(id);
+    }
   }
 
   removeSession(sessionID: string = '') {

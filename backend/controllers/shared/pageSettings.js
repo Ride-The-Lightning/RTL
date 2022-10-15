@@ -17,51 +17,6 @@ export const getPageSettings = (req, res, next) => {
 };
 export const savePageSettings = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Page Settings', msg: 'Saving Page Settings..' });
-    req.body = [
-        {
-            tables: [
-                {
-                    tableId: "payments",
-                    recordsPerPage: 25,
-                    sortBy: "created_at",
-                    sortOrder: "Ascending",
-                    showColumns: [
-                        "msatoshi",
-                    ],
-                },
-                {
-                    tableId: "payments2",
-                    sortBy: "created_at",
-                    sortOrder: "Ascending",
-                    showColumns: [
-                        "created_at",
-                        "type",
-                        "payment_hash",
-                        "msatoshi_sent",
-                        "msatoshi",
-                    ],
-                },
-            ],
-        },
-        {
-            pageId: "invoices",
-            tables: [
-                {
-                    tableId: "invoices3",
-                    sortBy: "expires_at",
-                    sortOrder: "Descending",
-                    showColumns: [
-                        "expires_at",
-                        "paid_at",
-                        "type",
-                        "description",
-                        "msatoshi",
-                        "msatoshi_received",
-                    ],
-                },
-            ],
-        }
-    ];
     return Promise.all(req.body.map((page) => databaseService.update(req.session.selectedNode, CollectionsEnum.PAGE_SETTINGS, page, CollectionFieldsEnum.PAGE_ID, page.pageId))).
         then((values) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'PayRequest', msg: 'Payment List Decoded', data: values });

@@ -4,57 +4,63 @@
       <fa-icon [icon]="faPenRuler" class="page-title-img mr-1"></fa-icon>
       <span class="page-title">Page Settings</span>
     </div>
-    <div class="p-2 error-border my-2" *ngIf="errorMessage">
-      <mat-list role="list">
-        <mat-panel-title>Page {{errorMessage.page | titlecase}}</mat-panel-title>
-        <mat-list-item><mat-icon class="info-icon mr-1">error</mat-icon>{{errorMessage.message}}</mat-list-item>
-        <mat-list-item *ngFor="let table of errorMessage.tables">
-          <mat-icon class="info-icon mr-1">error</mat-icon>Table {{table.table | titlecase}} {{table.message}}
-        </mat-list-item>
-      </mat-list>      
-    </div>
-    <div *ngIf="!errorMessage">
-      <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1" expanded="true" *ngFor="let page of pageSettings">
-        <mat-expansion-panel-header class="p-2 error-border my-2" *ngIf="errorMessage?.page === page.pageId">
-          <mat-panel-title>{{page.pageId | titlecase}}</mat-panel-title>
-        </mat-expansion-panel-header>
-        <div fxLayout="column" fxLayoutAlign="start stretch" *ngFor="let table of page.tables">
-          <div fxLayout="row" fxLayoutAlign="space-between center" class="mt-1">
-            <mat-form-field fxFlex="10">
-              <mat-select [(ngModel)]="table.recordsPerPage" placeholder="Records/Page" name="{{table.tableId}}-page-size-options" tabindex="1" required>
-                <mat-option *ngFor="let pageSizeOption of pageSizeOptions" [value]="pageSizeOption">
-                  {{pageSizeOption}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field fxFlex="10">
-              <mat-select [(ngModel)]="table.sortBy" placeholder="Sort By" name="{{table.tableId}}-sort-by" tabindex="2" required>
-                <mat-option *ngFor="let field of table.showColumns" [value]="field">
-                  {{field | camelcaseWithReplace:'_'}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field fxFlex="10">
-              <mat-select [(ngModel)]="table.sortOrder" placeholder="Sort Order" name="{{table.tableId}}-sort-order" tabindex="3" required>
-                <mat-option *ngFor="let so of sortOrders" [value]="so">
-                  {{so}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field fxFlex="68">
-              <mat-select [(ngModel)]="table.showColumns" (selectionChange)="onShowColumnsChange(table)" placeholder="Show Columns" name="{{table.tableId}}-show-columns" tabindex="4" multiple required>
-                <mat-option *ngFor="let field of tableFieldsDef[table.tableId]" [value]="field" [disabled]="table.showColumns.length < 3 && table.showColumns.includes(field)">
-                  {{field | camelcaseWithReplace:'_'}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
+    <ng-container *ngIf="errorMessage && errorMessage.page === 'unknown'" [ngTemplateOutlet]="errorObjectBlock" [ngTemplateOutletContext]="{error: errorMessage}"></ng-container>
+    <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1" [ngClass]="{'error-border': errorMessage?.page === page.pageId}" expanded="true" *ngFor="let page of pageSettings">
+      <mat-expansion-panel-header>
+        <mat-panel-title>{{page.pageId | titlecase}}</mat-panel-title>
+      </mat-expansion-panel-header>
+      <div fxLayout="column" fxLayoutAlign="start stretch" *ngFor="let table of page.tables" class="padding-gap-x-large">
+        <div fxLayout="row" fxLayoutAlign="space-between center" class="mt-1">
+          <mat-form-field fxFlex="10">
+            <mat-select [(ngModel)]="table.recordsPerPage" placeholder="Records/Page" name="{{table.tableId}}-page-size-options" tabindex="1" required>
+              <mat-option *ngFor="let pageSizeOption of pageSizeOptions" [value]="pageSizeOption">
+                {{pageSizeOption}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field fxFlex="10">
+            <mat-select [(ngModel)]="table.sortBy" placeholder="Sort By" name="{{table.tableId}}-sort-by" tabindex="2" required>
+              <mat-option *ngFor="let field of table.showColumns" [value]="field">
+                {{field | camelcaseWithReplace:'_'}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field fxFlex="10">
+            <mat-select [(ngModel)]="table.sortOrder" placeholder="Sort Order" name="{{table.tableId}}-sort-order" tabindex="3" required>
+              <mat-option *ngFor="let so of sortOrders" [value]="so">
+                {{so}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field fxFlex="68">
+            <mat-select [(ngModel)]="table.showColumns" (selectionChange)="onShowColumnsChange(table)" placeholder="Show Columns" name="{{table.tableId}}-show-columns" tabindex="4" multiple required>
+              <mat-option *ngFor="let field of tableFieldsDef[table.tableId]" [value]="field" [disabled]="table.showColumns.length < 3 && table.showColumns.includes(field)">
+                {{field | camelcaseWithReplace:'_'}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
-      </mat-expansion-panel>
-    </div>
+      </div>
+      <ng-container *ngIf="errorMessage && errorMessage?.page === page.pageId" [ngTemplateOutlet]="errorObjectBlock" [ngTemplateOutletContext]="{error: errorMessage}"></ng-container>
+    </mat-expansion-panel>
   </form>
   <div fxLayout="row" class="mt-1">
     <button class="mr-1" mat-stroked-button color="primary" (click)="onResetPageSettings()" tabindex="10">Reset</button>
     <button mat-flat-button color="primary" (click)="onUpdatePageSettings()" tabindex="11">Save</button>
   </div>
 </div>
+<ng-template #errorObjectBlock let-error="error">
+  <div [ngClass]="{'error-border p-2': errorMessage.page === 'unknown'}">
+    <mat-panel-title *ngIf="errorMessage.page === 'unknown'">Page {{error.page | titlecase}}</mat-panel-title>
+    <mat-list role="list">
+      <mat-list-item *ngIf="error.message">
+        <mat-icon class="ml-1 icon-small red">close</mat-icon>
+        <span>{{error.message}}</span>      
+      </mat-list-item>
+      <mat-list-item *ngFor="let table of error.tables">
+        <mat-icon class="ml-1 icon-small red">close</mat-icon>
+        <span>Table {{table.table | titlecase}} {{table.message}}</span>
+      </mat-list-item>
+    </mat-list>
+  </div>
+</ng-template>

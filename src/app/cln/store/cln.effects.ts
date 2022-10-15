@@ -944,7 +944,7 @@ export class CLNEffects implements OnDestroy {
           this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchPageSettings', status: APICallStatusEnum.COMPLETED } }));
           return {
             type: CLNActions.SET_PAGE_SETTINGS_CLN,
-            payload: pageSettings
+            payload: pageSettings || []
           };
         }),
         catchError((err: any) => {
@@ -966,9 +966,10 @@ export class CLNEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'SavePageSettings', status: APICallStatusEnum.COMPLETED } }));
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_PAGE_SETTINGS }));
+            this.store.dispatch(openSnackBar({ payload: 'Page Layout Updated Successfully!' }));
             return {
               type: CLNActions.SET_PAGE_SETTINGS_CLN,
-              payload: postRes
+              payload: postRes || []
             };
           }),
           catchError((err: any) => {

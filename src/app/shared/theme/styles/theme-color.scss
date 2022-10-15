@@ -207,6 +207,9 @@
 
   .mat-expansion-panel {
     border: 1px solid $foreground-divider;
+    &.error-border {
+      border: 1px solid red;
+    }
   }
 
   .more-button {

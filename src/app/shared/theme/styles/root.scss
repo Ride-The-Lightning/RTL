@@ -1544,7 +1544,7 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
   border-radius: 2px;
   background: none;
   & .mat-expansion-panel-header {
-    padding: 0 $gap*3 0 $gap*3;
+    padding: 0 $gap*2 0 $gap*2;
     @include for_screensize(tab-port) {
       padding: 0 $gap 0 $gap;
     }

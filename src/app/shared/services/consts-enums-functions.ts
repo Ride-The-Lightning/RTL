@@ -326,7 +326,7 @@ export const UI_MESSAGES = {
   LIST_NETWORK_NODES: 'Getting Network Nodes List...',
   GET_PAGE_SETTINGS: 'Getting Page Settings...',
   SET_PAGE_SETTINGS: 'Setting Page Settings...',
-  UPDATE_PAGE_SETTINGS: 'Updating Page Settings...',
+  UPDATE_PAGE_SETTINGS: 'Updating Page Layout...',
   LOG_OUT: 'Logging Out...'
 };
 
