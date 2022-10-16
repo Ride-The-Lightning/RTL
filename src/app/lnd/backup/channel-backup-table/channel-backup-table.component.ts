@@ -43,7 +43,6 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
   public selectedChannel: Channel | null;
   public channelsData: Channel[] = [];
   public channels: any;
-  public flgSticky = false;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';

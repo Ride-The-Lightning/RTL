@@ -39,7 +39,6 @@ export class SwapsComponent implements AfterViewInit, OnChanges, OnDestroy {
   public displayedColumns: any[] = [];
   public listSwaps: any;
   public selFilter = '';
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -49,16 +48,12 @@ export class SwapsComponent implements AfterViewInit, OnChanges, OnDestroy {
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private loopService: LoopService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['state', 'amt', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['state', 'amt', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['state', 'initiation_time', 'amt', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['state', 'initiation_time', 'amt', 'cost_server', 'cost_offchain', 'cost_onchain', 'actions'];
     }
   }

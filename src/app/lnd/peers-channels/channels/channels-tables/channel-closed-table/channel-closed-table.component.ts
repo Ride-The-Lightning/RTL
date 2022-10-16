@@ -34,7 +34,6 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
   public displayedColumns: any[] = [];
   public closedChannelsData: ClosedChannel[] = [];
   public closedChannels: any;
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -48,13 +47,10 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
   constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['remote_alias', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['close_type', 'remote_alias', 'settled_balance', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['close_type', 'remote_alias', 'capacity', 'close_height', 'settled_balance', 'actions'];
     }
   }

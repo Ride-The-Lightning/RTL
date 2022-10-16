@@ -51,7 +51,6 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   public information: GetInfo = {};
   public numPeers = -1;
   public selFilter = '';
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -68,16 +67,12 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   constructor(private logger: LoggerService, private store: Store<RTLState>, private lndEffects: LNDEffects, private commonService: CommonService, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private loopService: LoopService, private router: Router) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'balancedness', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'balancedness', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['remote_alias', 'uptime', 'total_satoshis_sent', 'total_satoshis_received', 'local_balance', 'remote_balance', 'balancedness', 'actions'];
     }
     this.selFilter = this.router.getCurrentNavigation()?.extras?.state?.filter ? this.router.getCurrentNavigation()?.extras?.state?.filter : '';

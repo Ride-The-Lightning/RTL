@@ -47,7 +47,6 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
   public channelCount = 5;
   public liquidityNodesData: LookupNode[] = [];
   public liquidityNodes: any;
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -64,16 +63,12 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
     this.nodesTooltipMsg = this.nodesTooltipMsg + '- The number of channels open on the node, the more the better\n- The channel open fee which the node will charge from you\n- The routing fee which the node will charge on the payments, the lesser the better\n- The reliability of the node, ideally uptime. Refer to the information being provided by the node explorers';
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['alias', 'channelOpeningFee', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['alias', 'leaseFee', 'routingFee', 'channelOpeningFee', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['alias', 'leaseFee', 'routingFee', 'channelOpeningFee', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['alias', 'leaseFee', 'routingFee', 'channelOpeningFee', 'actions'];
     }
   }

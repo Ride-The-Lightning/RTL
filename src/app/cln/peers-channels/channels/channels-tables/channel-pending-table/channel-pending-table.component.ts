@@ -42,7 +42,6 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
   public numPeers = -1;
   public feeRateTypes = FEE_RATE_TYPES;
   public selFilter = '';
-  public flgSticky = false;
   public CLNChannelPendingState = CLNChannelPendingState;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -56,16 +55,12 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
   constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['alias', 'state', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['alias', 'connected', 'state', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['alias', 'connected', 'state', 'msatoshi_total', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['alias', 'connected', 'state', 'msatoshi_total', 'actions'];
     }
   }

@@ -33,7 +33,6 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public displayedColumns: any[] = [];
   public RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>([]);
   public RoutingPeersOutgoing = new MatTableDataSource<RoutingPeers>([]);
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -48,16 +47,12 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['chan_id', 'events', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['chan_id', 'alias', 'events', 'total_amount'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['chan_id', 'alias', 'events', 'total_amount'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['chan_id', 'alias', 'events', 'total_amount'];
     }
   }

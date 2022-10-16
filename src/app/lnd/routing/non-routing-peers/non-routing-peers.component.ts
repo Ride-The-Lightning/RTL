@@ -30,7 +30,6 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   public routingPeersData: any[] = [];
   public displayedColumns: any[] = [];
   public NonRoutingPeers: any = new MatTableDataSource<any>([]);
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -45,16 +44,12 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private router: Router, private activatedRoute: ActivatedRoute) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['chan_id', 'remote_alias', 'local_balance', 'remote_balance', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['chan_id', 'remote_alias', 'total_satoshis_received', 'total_satoshis_sent', 'local_balance', 'remote_balance', 'actions'];
     }
   }

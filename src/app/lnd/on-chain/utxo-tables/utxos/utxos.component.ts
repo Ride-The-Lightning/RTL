@@ -40,7 +40,6 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
   faMoneyBillWave = faMoneyBillWave;
   public displayedColumns: any[] = [];
   public listUTXOs: any;
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -54,16 +53,12 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
   constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['amount_sat', 'confirmations', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['tx_id', 'output', 'amount_sat', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['tx_id', 'output', 'label', 'amount_sat', 'confirmations', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['tx_id', 'output', 'label', 'amount_sat', 'confirmations', 'actions'];
     }
   }

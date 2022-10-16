@@ -38,7 +38,6 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
   public channels: any;
   public allRestoreExists = false;
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: channels
-  public flgSticky = false;
   public selFilter = '';
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;

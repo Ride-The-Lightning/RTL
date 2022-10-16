@@ -46,7 +46,6 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   public numPeers = -1;
   public feeRateTypes = FEE_RATE_TYPES;
   public selFilter = '';
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -59,16 +58,12 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private clnEffects: CLNEffects, private commonService: CommonService, private router: Router) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['alias', 'msatoshi_to_us', 'msatoshi_to_them', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['short_channel_id', 'alias', 'msatoshi_to_us', 'msatoshi_to_them', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['short_channel_id', 'alias', 'msatoshi_to_us', 'msatoshi_to_them', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['short_channel_id', 'alias', 'msatoshi_to_us', 'msatoshi_to_them', 'balancedness', 'actions'];
     }
     this.selFilter = this.router?.getCurrentNavigation()?.extras?.state?.filter ? this.router?.getCurrentNavigation()?.extras?.state?.filter : '';

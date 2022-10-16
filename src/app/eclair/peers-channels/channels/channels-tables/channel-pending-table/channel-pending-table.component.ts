@@ -40,7 +40,6 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
   public numPeers = -1;
   public feeRateTypes = FEE_RATE_TYPES;
   public selFilter = '';
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -53,16 +52,12 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
   constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['state', 'alias', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['state', 'alias', 'toLocal', 'toRemote', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['state', 'alias', 'toLocal', 'toRemote', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['state', 'alias', 'toLocal', 'toRemote', 'actions'];
     }
   }

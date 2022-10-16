@@ -66,7 +66,7 @@
           </td>
         </ng-container>
         <tr mat-footer-row *matFooterRowDef="['no_peer']" [ngClass]="{'display-none': peers?.data && peers?.data?.length>0}"></tr>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
     </div>

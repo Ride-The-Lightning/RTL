@@ -38,7 +38,6 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
   public errorMessage = '';
   public displayedColumns: any[] = [];
   public failedLocalForwardingEvents: any;
-  public flgSticky = false;
   public selFilter = '';
   public totalLocalFailedTransactions = 0;
   public pageSize = PAGE_SIZE;
@@ -52,13 +51,10 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe, private router: Router) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['received_time', 'in_channel', 'in_msatoshi', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['received_time', 'in_channel', 'in_msatoshi', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['received_time', 'in_channel', 'in_msatoshi', 'failreason', 'actions'];
     }
   }

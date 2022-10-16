@@ -30,7 +30,6 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
   public scrollRanges = SCROLL_RANGES;
   public transactions: any;
   public displayedColumns: any[] = [];
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -39,13 +38,10 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
   constructor(private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['date', 'amount_paid', 'amount_received', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['date', 'amount_paid', 'num_payments', 'amount_received', 'num_invoices', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['date', 'amount_paid', 'num_payments', 'amount_received', 'num_invoices', 'actions'];
     }
   }

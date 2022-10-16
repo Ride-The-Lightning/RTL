@@ -36,7 +36,6 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   public successfulEvents: ForwardingEvent[] = [];
   public displayedColumns: any[] = [];
   public forwardingHistoryEvents: any;
-  public flgSticky = false;
   public totalForwardedTransactions = 0;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -50,13 +49,10 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe, private router: Router) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['in_msatoshi', 'out_msatoshi', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['received_time', 'in_msatoshi', 'out_msatoshi', 'fee', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['received_time', 'resolved_time', 'in_channel', 'out_channel', 'in_msatoshi', 'out_msatoshi', 'fee', 'actions'];
     }
   }

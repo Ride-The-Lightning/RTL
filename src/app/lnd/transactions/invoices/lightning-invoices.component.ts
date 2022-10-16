@@ -50,7 +50,6 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   public invoicesData: Invoice[] = [];
   public invoices: any;
   public information: GetInfo = {};
-  public flgSticky = false;
   public selFilter = '';
   public private = false;
   public expiryStep = 100;
@@ -69,16 +68,12 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   constructor(private logger: LoggerService, private store: Store<RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private datePipe: DatePipe, private actions: Actions) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['creation_date', 'value', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['creation_date', 'settle_date', 'value', 'amt_paid_sat', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['creation_date', 'settle_date', 'memo', 'value', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['creation_date', 'settle_date', 'memo', 'value', 'amt_paid_sat', 'actions'];
     }
   }

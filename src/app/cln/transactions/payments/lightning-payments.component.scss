@@ -1,5 +1,29 @@
-.mat-column-status {
-  max-width: 0.1rem;
+@import '../../../shared/theme/styles/mixins.scss';
+
+.mat-column-status, .mat-column-group_status {
+  max-width: 0.2rem;
+  @include for_screensize(tab-port) {
+    min-width: 1rem;
+  }
+  @include for_screensize(phone) {
+    min-width: 1rem;
+  }  
+  & .dot {
+    @include for_screensize(tab-port) {
+      width:0.6rem;
+      height: 0.6rem;
+      left: 0;
+      margin-top: 0;
+      position: absolute;
+    }
+    @include for_screensize(phone) {
+      width:0.6rem;
+      height: 0.6rem;
+      left: 0;
+      margin-top: 0;
+      position: absolute;
+    }  
+  }
 }
 
 .mat-column-payment_hash, .mat-column-bolt11, .mat-column-destination, .mat-column-label, .mat-column-memo {
@@ -14,7 +38,7 @@
   min-height: 4.8rem;
 }
 
-.mat-column-groupAction {
+.mat-column-group_actions {
   min-height: 4.8rem;
 
   & .btn-mpp-expand {
@@ -31,8 +55,15 @@
   min-height: 4.2rem;
   place-content: center flex-start;
   align-items: center;
+  &.ellipsis-parent {
+    display: flex;
+  }
+  & .dot {
+    margin-top: -0.4rem;
+    position: absolute;
+  }
 }
 
-.mat-column-groupTotal {
+.mat-column-group_created_at {
   min-width: 17rem;
 }

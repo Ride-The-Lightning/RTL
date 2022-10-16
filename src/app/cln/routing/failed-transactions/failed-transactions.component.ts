@@ -37,7 +37,6 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
   public errorMessage = '';
   public displayedColumns: any[] = [];
   public failedForwardingEvents: any;
-  public flgSticky = false;
   public selFilter = '';
   public totalFailedTransactions = 0;
   public pageSize = PAGE_SIZE;
@@ -51,13 +50,10 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe, private router: Router) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['received_time', 'in_channel', 'in_msatoshi', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['received_time', 'in_channel', 'out_channel', 'in_msatoshi', 'out_msatoshi', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['received_time', 'resolved_time', 'in_channel', 'out_channel', 'in_msatoshi', 'out_msatoshi', 'fee', 'actions'];
     }
   }

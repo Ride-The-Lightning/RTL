@@ -6,10 +6,10 @@ import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { GetInfo, Payment, PayRequest } from '../../../shared/models/clnModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, UI_MESSAGES, PaymentTypes, CLN_TABLES_DEF, CLN_DEFAULT_PAGE_SETTINGS } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, UI_MESSAGES, PaymentTypes, CLN_TABLES_DEF, CLN_DEFAULT_PAGE_SETTINGS, SORT_ORDERS, SortOrderEnum } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { DataService } from '../../../shared/services/data.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -53,9 +53,10 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
   public paymentDecodedHint = '';
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
+  public sortBy = 'created_at';
+  public sortOrder = SortOrderEnum.DESCENDING;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
@@ -67,23 +68,6 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private clnEffects: CLNEffects, private decimalPipe: DecimalPipe, private titleCasePipe: TitleCasePipe, private datePipe: DatePipe, private dataService: DataService) {
     this.screenSize = this.commonService.getScreenSize();
-    if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
-      // this.displayedColumns = ['created_at', 'actions'];
-      this.mppColumns = ['groupTotal', 'groupAction'];
-    } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
-      // this.displayedColumns = ['created_at', 'msatoshi', 'actions'];
-      this.mppColumns = ['groupTotal', 'groupAmtRecv', 'groupAction'];
-    } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
-      // this.displayedColumns = ['created_at', 'type', 'msatoshi_sent', 'msatoshi', 'actions'];
-      this.mppColumns = ['groupTotal', 'groupType', 'groupAmtSent', 'groupAmtRecv', 'groupAction'];
-    } else {
-      this.flgSticky = true;
-      // this.displayedColumns = ['created_at', 'type', 'payment_hash', 'msatoshi_sent', 'msatoshi', 'actions'];
-      this.mppColumns = ['groupTotal', 'groupType', 'groupHash', 'groupAmtSent', 'groupAmtRecv', 'groupAction'];
-    }
   }
 
   ngOnInit() {
@@ -101,10 +85,22 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           this.errorMessage = this.apiCallStatus.message || '';
         }
         this.pageSettings = settings.pageSettings;
-        this.displayedColumns = JSON.parse(JSON.stringify(this.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.TABLE_ID)?.showColumns || CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.TABLE_ID)?.showColumns));
+        let tableSettings: any = {};
+        tableSettings = this.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.TABLE_ID) || CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.TABLE_ID);
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedColumns = JSON.parse(JSON.stringify(tableSettings.showColumnsSM));
+        } else {
+          this.displayedColumns = JSON.parse(JSON.stringify(tableSettings.showColumns));
+        }
         this.displayedColumns.unshift('status');
         this.displayedColumns.push('actions');
+        this.mppColumns = [];
+        this.displayedColumns.map((col) => this.mppColumns.push('group_' + col));
+        this.pageSize = tableSettings.recordsPerPage;
+        this.sortBy = tableSettings.sortBy;
+        this.sortOrder = tableSettings.sortOrder;
         this.logger.info(this.displayedColumns);
+        this.logger.info(this.mppColumns);
       });
     this.store.select(payments).pipe(takeUntil(this.unSubs[3])).
       subscribe((paymentsSeletor: { payments: Payment[], apiCallStatus: ApiCallStatusPayload }) => {

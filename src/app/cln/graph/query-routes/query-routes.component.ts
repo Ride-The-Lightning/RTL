@@ -27,7 +27,6 @@ export class CLNQueryRoutesComponent implements OnInit, OnDestroy {
   public destinationPubkey = '';
   public amount: number | null = null;
   public qrHops: any;
-  public flgSticky = false;
   public displayedColumns: any[] = [];
   public flgLoading: Array<Boolean | 'error'> = [false]; // 0: peers
   public faRoute = faRoute;
@@ -39,16 +38,12 @@ export class CLNQueryRoutesComponent implements OnInit, OnDestroy {
   constructor(private store: Store<RTLState>, private clnEffects: CLNEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['alias', 'msatoshi', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['alias', 'direction', 'msatoshi', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['alias', 'direction', 'delay', 'msatoshi', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['alias', 'channel', 'direction', 'delay', 'msatoshi', 'actions'];
     }
   }

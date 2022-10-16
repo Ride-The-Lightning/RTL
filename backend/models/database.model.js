@@ -58,6 +58,7 @@ export var TableSettingsFieldsEnum;
     TableSettingsFieldsEnum["SORT_BY"] = "sortBy";
     TableSettingsFieldsEnum["SORT_ORDER"] = "sortOrder";
     TableSettingsFieldsEnum["SHOW_COLUMNS"] = "showColumns";
+    TableSettingsFieldsEnum["SHOW_COLUMNS_SM"] = "showColumnsSM";
 })(TableSettingsFieldsEnum || (TableSettingsFieldsEnum = {}));
 export class TableSetting {
     constructor(tableId, recordsPerPage, sortBy, sortOrder, showColumns) {
@@ -95,6 +96,15 @@ export const validatePageSettings = (documentToValidate) => {
         }
         if (!table.hasOwnProperty(CollectionFieldsEnum.RECORDS_PER_PAGE)) {
             errMsg = errMsg + 'Records/Page is mandatory.';
+        }
+        if (!table.hasOwnProperty(CollectionFieldsEnum.SHOW_COLUMNS_SM)) {
+            errMsg = errMsg + 'Show Columns Small Screen is mandatory.';
+        }
+        if (table[CollectionFieldsEnum.SHOW_COLUMNS_SM].length < 1) {
+            errMsg = errMsg + 'Show Columns Small Screen should have at least 1 field.';
+        }
+        if (table[CollectionFieldsEnum.SHOW_COLUMNS_SM].length > 2) {
+            errMsg = errMsg + 'Show Columns Small Screen should have maximum 2 fields.';
         }
         if (!table.hasOwnProperty(CollectionFieldsEnum.SHOW_COLUMNS)) {
             errMsg = errMsg + 'Show Columns is mandatory.';

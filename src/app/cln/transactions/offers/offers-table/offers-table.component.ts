@@ -53,7 +53,6 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
   public offers: any;
   public offerJSONArr: Offer[] = [];
   public information: GetInfo = {};
-  public flgSticky = false;
   public private = false;
   public expiryStep = 100;
   public pageSize = PAGE_SIZE;
@@ -69,16 +68,12 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
   constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private rtlEffects: RTLEffects, private dataService: DataService, private decimalPipe: DecimalPipe, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['offer_id', 'single_use', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['offer_id', 'single_use', 'used', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['offer_id', 'single_use', 'used', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['offer_id', 'single_use', 'used', 'actions'];
     }
   }

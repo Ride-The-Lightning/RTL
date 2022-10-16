@@ -39,7 +39,6 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public peersData: Peer[] = [];
   public peers: any;
   public information: GetInfo = {};
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -53,16 +52,12 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['alias', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['alias', 'sat_sent', 'sat_recv', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['alias', 'sat_sent', 'sat_recv', 'ping_time', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['alias', 'pub_key', 'sat_sent', 'sat_recv', 'ping_time', 'actions'];
     }
   }

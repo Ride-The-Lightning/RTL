@@ -51,7 +51,7 @@
                     <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onHopClick(hop)">View Info</button>
                   </td>
                 </ng-container>
-                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
               </table>
             </div>          

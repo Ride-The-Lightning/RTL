@@ -33,7 +33,6 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
   public channelsJSONArr: Channel[] = [];
   public displayedColumns: any[] = [];
   public htlcColumns = [];
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -47,16 +46,12 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['amount', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['amount', 'incoming', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['amount', 'incoming', 'expiration_height', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['amount', 'incoming', 'expiration_height', 'hash_lock', 'actions'];
     }
   }

@@ -38,7 +38,6 @@ export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy 
   public displayedColumns: any[] = [];
   public listSwaps: any;
   public selFilter = '';
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -66,20 +65,16 @@ export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy 
 
   setTableColumns() {
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ?
         ['status', 'id', 'expectedAmount', 'actions'] : ['status', 'id', 'onchainAmount', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ?
         ['status', 'id', 'expectedAmount', 'actions'] : ['status', 'id', 'onchainAmount', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ?
         ['status', 'id', 'expectedAmount', 'timeoutBlockHeight', 'actions'] :
         ['status', 'id', 'onchainAmount', 'timeoutBlockHeight', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ?
         ['status', 'id', 'lockupAddress', 'expectedAmount', 'timeoutBlockHeight', 'actions'] :
         ['status', 'id', 'claimAddress', 'onchainAmount', 'timeoutBlockHeight', 'actions'];

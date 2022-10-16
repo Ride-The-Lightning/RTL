@@ -37,7 +37,6 @@ export class CLNOfferBookmarksTableComponent implements OnInit, AfterViewInit, O
   public displayedColumns: any[] = [];
   public offersBookmarks: any;
   public offersBookmarksJSONArr: OfferBookmark[] = [];
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -51,16 +50,12 @@ export class CLNOfferBookmarksTableComponent implements OnInit, AfterViewInit, O
   constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private rtlEffects: RTLEffects) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['lastUpdatedAt', 'title', 'amountMSat', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['lastUpdatedAt', 'title', 'amountMSat', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['lastUpdatedAt', 'title', 'amountMSat', 'description', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['lastUpdatedAt', 'title', 'amountMSat', 'description', 'actions'];
     }
   }

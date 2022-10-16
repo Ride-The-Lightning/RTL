@@ -33,7 +33,6 @@ export class CLNOnChainUtxosComponent implements OnInit, OnChanges, AfterViewIni
   @Input() utxos: UTXO[];
   public displayedColumns: any[] = [];
   public listUTXOs: any;
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -47,16 +46,12 @@ export class CLNOnChainUtxosComponent implements OnInit, OnChanges, AfterViewIni
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['txid', 'value', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['txid', 'output', 'value', 'blockheight', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['txid', 'output', 'value', 'blockheight', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['txid', 'output', 'value', 'blockheight', 'actions'];
     }
   }

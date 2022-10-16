@@ -34,7 +34,6 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
   faHistory = faHistory;
   public displayedColumns: any[] = [];
   public listTransactions: any;
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -48,16 +47,12 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['time_stamp', 'amount', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['time_stamp', 'amount', 'num_confirmations', 'total_fees', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['time_stamp', 'label', 'amount', 'total_fees', 'num_confirmations', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['time_stamp', 'label', 'amount', 'total_fees', 'block_height', 'num_confirmations', 'actions'];
     }
   }

@@ -50,7 +50,6 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   public invoices: any;
   public invoiceJSONArr: Invoice[] = [];
   public information: GetInfo = {};
-  public flgSticky = false;
   public selFilter = '';
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -64,16 +63,12 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   constructor(private logger: LoggerService, private store: Store<RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private datePipe: DatePipe, private actions: Actions) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['timestamp', 'amount', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['timestamp', 'amount', 'amountSettled', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['timestamp', 'amount', 'amountSettled', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['timestamp', 'receivedAt', 'description', 'amount', 'amountSettled', 'actions'];
     }
   }

@@ -676,18 +676,20 @@ export const SORT_ORDERS = ['Ascending', 'Descending'];
 
 export const CLN_DEFAULT_PAGE_SETTINGS: PageSettingsCLN[] = [
   { pageId: 'payments', tables: [{ tableId: 'payments', recordsPerPage: 10, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,
+    showColumnsSM: ['created_at', 'msatoshi'],
     showColumns: ['created_at', 'type', 'payment_hash', 'msatoshi_sent', 'msatoshi'] }] },
   { pageId: 'invoices', tables: [{ tableId: 'invoices', recordsPerPage: 10, sortBy: 'expires_at', sortOrder: SortOrderEnum.DESCENDING,
+    showColumnsSM: ['expires_at', 'msatoshi'],
     showColumns: ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received'] }] }
 ];
 
 export const CLN_TABLES_DEF = {
   payments: {
-    maxColumns: 6,
-    allowedColumns: ['id', 'created_at', 'type', 'payment_hash', 'msatoshi_sent', 'msatoshi', 'bolt11', 'destination', 'memo', 'label']
+    maxColumns: 5,
+    allowedColumns: ['created_at', 'type', 'payment_hash', 'msatoshi_sent', 'msatoshi', 'bolt11', 'destination', 'memo', 'label']
   },
   invoices: {
-    maxColumns: 5,
+    maxColumns: 6,
     allowedColumns: ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received', 'label', 'payment_hash', 'status']
   }
 };

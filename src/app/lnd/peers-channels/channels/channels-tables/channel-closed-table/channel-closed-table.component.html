@@ -59,7 +59,7 @@
         </td>
       </ng-container>
       <tr mat-footer-row *matFooterRowDef="['no_closed_channel']" [ngClass]="{'display-none': closedChannels?.data && closedChannels?.data?.length>0}"></tr>
-      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
   </div>

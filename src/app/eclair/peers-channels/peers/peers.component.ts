@@ -43,7 +43,6 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public peers: any;
   public information: GetInfo = {};
   public availableBalance = 0;
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -57,16 +56,12 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private actions: Actions, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['alias', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['alias', 'nodeId', 'address', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['alias', 'nodeId', 'address', 'channels', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['alias', 'nodeId', 'address', 'channels', 'actions'];
     }
   }

@@ -98,7 +98,7 @@
         </td>
       </ng-container>
       <tr mat-footer-row *matFooterRowDef="['no_peer']" [ngClass]="{'display-none': numPeers>0 && channels?.data && channels?.data?.length>0}"></tr>
-      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
   </div>

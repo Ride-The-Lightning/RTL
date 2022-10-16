@@ -26,7 +26,6 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
   public destinationPubkey = '';
   public amount = null;
   public qrHops: any;
-  public flgSticky = false;
   public displayedColumns: any[] = [];
   public flgLoading: Array<Boolean | 'error'> = [false]; // 0: peers
   public faRoute = faRoute;
@@ -38,16 +37,12 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
   constructor(private store: Store<RTLState>, private lndEffects: LNDEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['pubkey_alias', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'fee_msat', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat', 'actions'];
     }
   }

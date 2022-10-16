@@ -51,7 +51,6 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
   public invoices: any;
   public invoiceJSONArr: Invoice[] = [];
   public information: GetInfo = {};
-  public flgSticky = false;
   public private = false;
   public expiryStep = 100;
   public pageSize = PAGE_SIZE;
@@ -67,16 +66,12 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
   constructor(private logger: LoggerService, private store: Store<RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private rtlEffects: RTLEffects, private datePipe: DatePipe, private actions: Actions) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['expires_at', 'msatoshi', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['expires_at', 'description', 'msatoshi', 'actions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['expires_at', 'type', 'description', 'msatoshi', 'msatoshi_received', 'actions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received', 'actions'];
     }
   }

@@ -33,7 +33,6 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   public displayedColumns: any[] = [];
   public RoutingPeersIncoming: any;
   public RoutingPeersOutgoing: any;
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -48,16 +47,12 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['alias', 'totalFee'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['alias', 'events', 'totalFee'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['alias', 'events', 'totalAmount', 'totalFee'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['channelId', 'alias', 'events', 'totalAmount', 'totalFee'];
     }
   }

@@ -32,8 +32,16 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-form-field fxFlex="68">
-            <mat-select [(ngModel)]="table.showColumns" (selectionChange)="onShowColumnsChange(table)" placeholder="Show Columns" name="{{table.tableId}}-show-columns" tabindex="4" multiple required>
+          <mat-form-field fxFlex="13">
+            <mat-select [(ngModel)]="table.showColumnsSM" placeholder="Small Screen Columns" name="{{table.tableId}}-show-columns-sm" tabindex="4" multiple required>
+              <mat-option *ngFor="let field of table.showColumns" [value]="field" [disabled]="(table.showColumns.length <= 1 && table.showColumns.includes(field)) || (table.showColumns.length >= 2 && !table.showColumns.includes(field))">
+                {{field | camelcaseWithReplace:'_'}}
+              </mat-option>
+            </mat-select>
+            <mat-hint>Small screen selected columns should be between 1 and 2</mat-hint>
+          </mat-form-field>
+          <mat-form-field fxFlex="55">
+            <mat-select [(ngModel)]="table.showColumns" (selectionChange)="onShowColumnsChange(table)" placeholder="Show Columns" name="{{table.tableId}}-show-columns" tabindex="5" multiple required>
               <mat-option *ngFor="let field of tableFieldsDef[table.tableId].allowedColumns" [value]="field" [disabled]="(table.showColumns.length <= 2 && table.showColumns.includes(field)) || (table.showColumns.length >= tableFieldsDef[table.tableId].maxColumns && !table.showColumns.includes(field))">
                 {{field | camelcaseWithReplace:'_'}}
               </mat-option>
@@ -46,8 +54,8 @@
     </mat-expansion-panel>
   </form>
   <div fxLayout="row" class="mt-1">
-    <button class="mr-1" mat-stroked-button color="primary" (click)="onResetPageSettings()" tabindex="10">Reset</button>
-    <button mat-flat-button color="primary" (click)="onUpdatePageSettings()" tabindex="11">Save</button>
+    <button class="mr-1" mat-stroked-button color="primary" (click)="onResetPageSettings()" tabindex="6">Reset</button>
+    <button mat-flat-button color="primary" (click)="onUpdatePageSettings()" tabindex="7">Save</button>
   </div>
 </div>
 <ng-template #errorObjectBlock let-error="error">

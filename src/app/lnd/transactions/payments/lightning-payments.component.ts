@@ -52,7 +52,6 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
   public paymentDecodedHint = '';
-  public flgSticky = false;
   private firstOffset = -1;
   private lastOffset = -1;
   public selFilter = '';
@@ -68,21 +67,17 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private decimalPipe: DecimalPipe, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
       this.displayedColumns = ['creation_date', 'fee', 'actions'];
-      this.htlcColumns = ['groupTotal', 'groupFee', 'groupAction'];
+      this.htlcColumns = ['groupTotal', 'groupFee', 'groupActions'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
       this.displayedColumns = ['creation_date', 'fee', 'value', 'hops', 'actions'];
-      this.htlcColumns = ['groupTotal', 'groupFee', 'groupValue', 'groupHops', 'groupAction'];
+      this.htlcColumns = ['groupTotal', 'groupFee', 'groupValue', 'groupHops', 'groupActions'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
       this.displayedColumns = ['creation_date', 'fee', 'value', 'hops', 'actions'];
-      this.htlcColumns = ['groupTotal', 'groupFee', 'groupValue', 'groupHops', 'groupAction'];
+      this.htlcColumns = ['groupTotal', 'groupFee', 'groupValue', 'groupHops', 'groupActions'];
     } else {
-      this.flgSticky = true;
       this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'hops', 'actions'];
-      this.htlcColumns = ['groupTotal', 'groupHash', 'groupFee', 'groupValue', 'groupHops', 'groupAction'];
+      this.htlcColumns = ['groupTotal', 'groupHash', 'groupFee', 'groupValue', 'groupHops', 'groupActions'];
     }
   }
 

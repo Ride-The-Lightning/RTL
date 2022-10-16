@@ -61,7 +61,8 @@ export enum TableSettingsFieldsEnum {
   RECORDS_PER_PAGE = 'recordsPerPage',
   SORT_BY = 'sortBy',
   SORT_ORDER = 'sortOrder',
-  SHOW_COLUMNS = 'showColumns'
+  SHOW_COLUMNS = 'showColumns',
+  SHOW_COLUMNS_SM = 'showColumnsSM'
 }
 
 export class TableSetting {
@@ -106,6 +107,15 @@ export const validatePageSettings = (documentToValidate): any => {
     }
     if (!table.hasOwnProperty(CollectionFieldsEnum.RECORDS_PER_PAGE)) {
       errMsg = errMsg + 'Records/Page is mandatory.';
+    }
+    if (!table.hasOwnProperty(CollectionFieldsEnum.SHOW_COLUMNS_SM)) {
+      errMsg = errMsg + 'Show Columns Small Screen is mandatory.';
+    }
+    if (table[CollectionFieldsEnum.SHOW_COLUMNS_SM].length < 1) {
+      errMsg = errMsg + 'Show Columns Small Screen should have at least 1 field.';
+    }
+    if (table[CollectionFieldsEnum.SHOW_COLUMNS_SM].length > 2) {
+      errMsg = errMsg + 'Show Columns Small Screen should have maximum 2 fields.';
     }
     if (!table.hasOwnProperty(CollectionFieldsEnum.SHOW_COLUMNS)) {
       errMsg = errMsg + 'Show Columns is mandatory.';
