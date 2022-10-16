@@ -27,11 +27,22 @@
       <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
         <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
         <table mat-table #table fxFlex="100" [dataSource]="payments" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
-          <ng-container matColumnDef="created_at">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Created At</th>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
             <td mat-cell *matCellDef="let payment">
               <span *ngIf="payment.status === 'complete'" class="dot green" matTooltip="Completed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
               <span *ngIf="payment.status !== 'complete'" class="dot yellow" matTooltip="Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+            <td mat-cell *matCellDef="let payment">
+              {{payment?.id}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="created_at">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Created At</th>
+            <td mat-cell *matCellDef="let payment">
               {{(payment?.created_at * 1000) | date:'dd/MMM/y HH:mm'}}
             </td>
           </ng-container>
@@ -47,16 +58,48 @@
               </span>
             </td>
           </ng-container>
+          <ng-container matColumnDef="bolt11">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Invoice</th>
+            <td mat-cell *matCellDef="let payment">
+              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+                <span class="ellipsis-child">{{payment?.bolt11}}</span>
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="label">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Label</th>
+            <td mat-cell *matCellDef="let payment">
+              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">
+                <span class="ellipsis-child">{{payment?.label}}</span>
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="destination">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Destination</th>
+            <td mat-cell *matCellDef="let payment">
+              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">
+                <span class="ellipsis-child">{{payment?.destination}}</span>
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="memo">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Memo</th>
+            <td mat-cell *matCellDef="let payment">
+              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">
+                <span class="ellipsis-child">{{payment?.memo}}</span>
+              </span>
+            </td>
+          </ng-container>
           <ng-container matColumnDef="msatoshi_sent">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Sent</th>
-            <td mat-cell *matCellDef="let payment"><span fxLayoutAlign="end center">{{payment?.msatoshi_sent/1000 | number:payment?.msatoshi_sent < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="px-1">Sats Sent</th>
+            <td mat-cell *matCellDef="let payment" class="px-1"><span fxLayoutAlign="end center">{{payment?.msatoshi_sent/1000 | number:payment?.msatoshi_sent < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
           </ng-container>
           <ng-container matColumnDef="msatoshi">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Received</th>
-            <td mat-cell *matCellDef="let payment"><span fxLayoutAlign="end center">{{payment?.msatoshi/1000 | number:payment?.msatoshi < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="px-1">Sats Received</th>
+            <td mat-cell *matCellDef="let payment" class="px-1"><span fxLayoutAlign="end center">{{payment?.msatoshi/1000 | number:payment?.msatoshi < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
           </ng-container>
           <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef class="px-3">
+            <th mat-header-cell *matHeaderCellDef class="pr-3">
               <div class="bordered-box table-actions-select">
                 <mat-select placeholder="Actions" tabindex="1" class="mr-0">
                   <mat-select-trigger></mat-select-trigger>
@@ -64,15 +107,15 @@
                 </mat-select>
               </div>
             </th>
-            <td mat-cell *matCellDef="let payment" class="px-3" fxLayoutAlign="end center">
+            <td mat-cell *matCellDef="let payment" class="pr-3" fxLayoutAlign="end center">
               <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onPaymentClick(payment)">View Info</button>
             </td>
           </ng-container>
           <ng-container matColumnDef="no_payment">
             <td mat-footer-cell *matFooterCellDef colspan="4">
-              <p *ngIf="(!payments?.data || payments?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.COMPLETED">No payment available.</p>
-              <p *ngIf="(!payments?.data || payments?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.INITIATED">Getting payments...</p>
-              <p *ngIf="(!payments?.data || payments?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+              <p *ngIf="(!payments?.data || !payments?.data?.length) && apiCallStatus?.status === apiCallStatusEnum.COMPLETED">No payment available.</p>
+              <p *ngIf="(!payments?.data || !payments?.data?.length) && apiCallStatus?.status === apiCallStatusEnum.INITIATED">Getting payments...</p>
+              <p *ngIf="(!payments?.data || !payments?.data?.length) && apiCallStatus?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
             </td>
           </ng-container>
 
@@ -145,7 +188,7 @@
           </ng-container>
           <tr mat-row *matRowDef="let row; columns: mppColumns; when: is_group;"></tr>
           <!-- Payment Group Row End -->
-          <tr mat-footer-row *matFooterRowDef="['no_payment']" [ngClass]="{'display-none': payments?.data && payments?.data?.length>0}"></tr>
+          <tr mat-footer-row *matFooterRowDef="['no_payment']" [ngClass]="{'display-none': payments?.data && payments?.data?.length && payments?.data?.length>0}"></tr>
           <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns; when: !is_group;"></tr>
         </table>

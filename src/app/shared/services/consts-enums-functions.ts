@@ -681,7 +681,13 @@ export const CLN_DEFAULT_PAGE_SETTINGS: PageSettingsCLN[] = [
     showColumns: ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received'] }] }
 ];
 
-export const CLN_TABLE_FIELDS_DEF = {
-  payments: ['created_at', 'type', 'payment_hash', 'msatoshi_sent', 'msatoshi', 'amount_msat', 'amount_sent_msat', 'destination', 'status', 'memo'],
-  invoices: ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received', 'label', 'payment_hash', 'amount_msat', 'status', 'amount_received_msat']
+export const CLN_TABLES_DEF = {
+  payments: {
+    maxColumns: 6,
+    allowedColumns: ['id', 'created_at', 'type', 'payment_hash', 'msatoshi_sent', 'msatoshi', 'bolt11', 'destination', 'memo', 'label']
+  },
+  invoices: {
+    maxColumns: 5,
+    allowedColumns: ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received', 'label', 'payment_hash', 'status']
+  }
 };

@@ -1,6 +1,10 @@
-.mat-column-payment_hash {
-  flex: 0 0 25%;
-  width: 25%;
+.mat-column-status {
+  max-width: 0.1rem;
+}
+
+.mat-column-payment_hash, .mat-column-bolt11, .mat-column-destination, .mat-column-label, .mat-column-memo {
+  flex: 0 0 10%;
+  width: 10%;
   & .ellipsis-parent {
     display: flex;
   }

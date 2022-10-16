@@ -9,7 +9,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { GetInfo, Payment, PayRequest } from '../../../shared/models/clnModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, UI_MESSAGES, PaymentTypes } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, UI_MESSAGES, PaymentTypes, CLN_TABLES_DEF, CLN_DEFAULT_PAGE_SETTINGS } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { DataService } from '../../../shared/services/data.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -23,7 +23,8 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 import { sendPayment } from '../../store/cln.actions';
-import { clnNodeInformation, clnNodeSettings, payments } from '../../store/cln.selector';
+import { clnNodeInformation, clnNodeSettings, clnPageSettings, payments } from '../../store/cln.selector';
+import { PageSettingsCLN } from '../../../shared/models/pageSettings';
 
 @Component({
   selector: 'rtl-cln-lightning-payments',
@@ -39,6 +40,8 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   @ViewChild('sendPaymentForm', { static: false }) form;
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public PAGE_ID = 'payments';
+  public TABLE_ID = 'payments';
   public faHistory = faHistory;
   public newlyAddedPayment = '';
   public selNode: SelNodeChild | null = {};
@@ -56,28 +59,29 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
+  public pageSettings: PageSettingsCLN[] = [];
   public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private clnEffects: CLNEffects, private decimalPipe: DecimalPipe, private titleCasePipe: TitleCasePipe, private datePipe: DatePipe, private dataService: DataService) {
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['created_at', 'actions'];
+      // this.displayedColumns = ['created_at', 'actions'];
       this.mppColumns = ['groupTotal', 'groupAction'];
     } else if (this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['created_at', 'msatoshi', 'actions'];
+      // this.displayedColumns = ['created_at', 'msatoshi', 'actions'];
       this.mppColumns = ['groupTotal', 'groupAmtRecv', 'groupAction'];
     } else if (this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['created_at', 'type', 'msatoshi_sent', 'msatoshi', 'actions'];
+      // this.displayedColumns = ['created_at', 'type', 'msatoshi_sent', 'msatoshi', 'actions'];
       this.mppColumns = ['groupTotal', 'groupType', 'groupAmtSent', 'groupAmtRecv', 'groupAction'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['created_at', 'type', 'payment_hash', 'msatoshi_sent', 'msatoshi', 'actions'];
+      // this.displayedColumns = ['created_at', 'type', 'payment_hash', 'msatoshi_sent', 'msatoshi', 'actions'];
       this.mppColumns = ['groupTotal', 'groupType', 'groupHash', 'groupAmtSent', 'groupAmtRecv', 'groupAction'];
     }
   }
@@ -89,7 +93,20 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
     this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => {
       this.information = nodeInfo;
     });
-    this.store.select(payments).pipe(takeUntil(this.unSubs[2])).
+    this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[2])).
+      subscribe((settings: { pageSettings: PageSettingsCLN[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessage = '';
+        this.apiCallStatus = settings.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = this.apiCallStatus.message || '';
+        }
+        this.pageSettings = settings.pageSettings;
+        this.displayedColumns = JSON.parse(JSON.stringify(this.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.TABLE_ID)?.showColumns || CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.TABLE_ID)?.showColumns));
+        this.displayedColumns.unshift('status');
+        this.displayedColumns.push('actions');
+        this.logger.info(this.displayedColumns);
+      });
+    this.store.select(payments).pipe(takeUntil(this.unSubs[3])).
       subscribe((paymentsSeletor: { payments: Payment[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = paymentsSeletor.apiCallStatus;
@@ -97,7 +114,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.paymentJSONArr = paymentsSeletor.payments || [];
-        if (this.paymentJSONArr.length > 0 && this.sort && this.paginator) {
+        if (this.paymentJSONArr.length && this.paymentJSONArr.length > 0 && this.sort && this.paginator) {
           this.loadPaymentsTable(this.paymentJSONArr);
         }
         this.logger.info(paymentsSeletor);
@@ -105,7 +122,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngAfterViewInit() {
-    if (this.paymentJSONArr.length > 0 && this.sort && this.paginator) {
+    if (this.paymentJSONArr.length && this.paymentJSONArr.length > 0 && this.sort && this.paginator) {
       this.loadPaymentsTable(this.paymentJSONArr);
     }
   }
@@ -122,7 +139,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       this.sendPayment();
     } else {
       this.dataService.decodePayment(this.paymentRequest, false).
-        pipe(takeUntil(this.unSubs[1])).subscribe((decodedPayment: PayRequest) => {
+        pipe(takeUntil(this.unSubs[4])).subscribe((decodedPayment: PayRequest) => {
           this.paymentDecoded = decodedPayment;
           if (this.paymentDecoded.created_at) {
             if (!this.paymentDecoded.msatoshi) {
@@ -210,12 +227,12 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
     this.paymentDecodedHint = '';
     if (this.paymentRequest && this.paymentRequest.length > 100) {
       this.dataService.decodePayment(this.paymentRequest, false).
-        pipe(takeUntil(this.unSubs[1])).subscribe((decodedPayment: PayRequest) => {
+        pipe(takeUntil(this.unSubs[5])).subscribe((decodedPayment: PayRequest) => {
           this.paymentDecoded = decodedPayment;
           if (this.paymentDecoded.msatoshi) {
             if (this.selNode?.fiatConversion) {
               this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
-                pipe(takeUntil(this.unSubs[3])).
+                pipe(takeUntil(this.unSubs[6])).
                 subscribe({
                   next: (data) => {
                     this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;

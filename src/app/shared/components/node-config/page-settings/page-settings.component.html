@@ -34,10 +34,11 @@
           </mat-form-field>
           <mat-form-field fxFlex="68">
             <mat-select [(ngModel)]="table.showColumns" (selectionChange)="onShowColumnsChange(table)" placeholder="Show Columns" name="{{table.tableId}}-show-columns" tabindex="4" multiple required>
-              <mat-option *ngFor="let field of tableFieldsDef[table.tableId]" [value]="field" [disabled]="table.showColumns.length < 3 && table.showColumns.includes(field)">
+              <mat-option *ngFor="let field of tableFieldsDef[table.tableId].allowedColumns" [value]="field" [disabled]="(table.showColumns.length <= 2 && table.showColumns.includes(field)) || (table.showColumns.length >= tableFieldsDef[table.tableId].maxColumns && !table.showColumns.includes(field))">
                 {{field | camelcaseWithReplace:'_'}}
               </mat-option>
             </mat-select>
+            <mat-hint>Total selected columns should be between 2 and {{tableFieldsDef[table.tableId].maxColumns}}</mat-hint>
           </mat-form-field>
         </div>
       </div>

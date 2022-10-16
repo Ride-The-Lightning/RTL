@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faPenRuler, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-import { APICallStatusEnum, CLNActions, CLN_DEFAULT_PAGE_SETTINGS, CLN_TABLE_FIELDS_DEF, PAGE_SIZE_OPTIONS, ScreenSizeEnum, SORT_ORDERS } from '../../../services/consts-enums-functions';
+import { APICallStatusEnum, CLNActions, CLN_DEFAULT_PAGE_SETTINGS, CLN_TABLES_DEF, PAGE_SIZE_OPTIONS, ScreenSizeEnum, SORT_ORDERS } from '../../../services/consts-enums-functions';
 import { LoggerService } from '../../../services/logger.service';
 import { CommonService } from '../../../services/common.service';
 import { RTLState } from '../../../../store/rtl.state';
@@ -28,7 +28,7 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public pageSettings: PageSettingsCLN[] = [];
   public initialPageSettings: PageSettingsCLN[] = CLN_DEFAULT_PAGE_SETTINGS;
-  public tableFieldsDef = CLN_TABLE_FIELDS_DEF;
+  public tableFieldsDef = CLN_TABLES_DEF;
   public sortOrders = SORT_ORDERS;
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
