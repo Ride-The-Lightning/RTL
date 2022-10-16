@@ -30,20 +30,26 @@ export class DatabaseService {
     }
   }
 
+  validateDocument(collectionName, newDocument) {
+    return new Promise((resolve, reject) => {
+      const validationRes = validateDocument(collectionName, newDocument);
+      if (!validationRes.isValid) {
+        reject(validationRes.error);
+      } else {
+        resolve(true);
+      }
+    });
+  }
+
   insert(selectedNode: CommonSelectedNode, collectionName: CollectionsEnum, newDocument: any) {
     return new Promise((resolve, reject) => {
       try {
         if (!selectedNode || !selectedNode.index) {
           reject(new Error('Selected Node Config Not Found.'));
         }
-        const validationRes = validateDocument(collectionName, newDocument);
-        if (!validationRes.isValid) {
-          reject(validationRes.error);
-        } else {
-          this.nodeDatabase[selectedNode.index].data[collectionName].push(newDocument);
-          this.saveDatabase(+selectedNode.index);
-          resolve(newDocument);
-        }
+        this.nodeDatabase[selectedNode.index].data[collectionName].push(newDocument);
+        this.saveDatabase(+selectedNode.index);
+        resolve(newDocument);
       } catch (errRes) {
         reject(errRes);
       }
@@ -70,21 +76,16 @@ export class DatabaseService {
           }
           updatedDocument = foundDoc;
         }
-        const validationRes = validateDocument(collectionName, updatedDocument);
-        if (!validationRes.isValid) {
-          reject(validationRes.error);
+        if (foundDocIdx > -1) {
+          this.nodeDatabase[selectedNode.index].data[collectionName].splice(foundDocIdx, 1, updatedDocument);
         } else {
-          if (foundDocIdx > -1) {
-            this.nodeDatabase[selectedNode.index].data[collectionName].splice(foundDocIdx, 1, updatedDocument);
-          } else {
-            if (!this.nodeDatabase[selectedNode.index].data[collectionName]) {
-              this.nodeDatabase[selectedNode.index].data[collectionName] = [];
-            }
-            this.nodeDatabase[selectedNode.index].data[collectionName].push(updatedDocument);
+          if (!this.nodeDatabase[selectedNode.index].data[collectionName]) {
+            this.nodeDatabase[selectedNode.index].data[collectionName] = [];
           }
-          this.saveDatabase(+selectedNode.index);
-          resolve(updatedDocument);
+          this.nodeDatabase[selectedNode.index].data[collectionName].push(updatedDocument);
         }
+        this.saveDatabase(+selectedNode.index);
+        resolve(updatedDocument);
       } catch (errRes) {
         reject(errRes);
       }

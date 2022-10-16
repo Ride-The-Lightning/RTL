@@ -66,7 +66,7 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
   }
 
   onUpdatePageSettings(): boolean | void {
-    if (this.pageSettings.reduce((pacc, page) => pacc || (page.tables.reduce((acc, table) => !(table.recordsPerPage && table.sortBy && table.sortOrder && table.showColumns && table.showColumns.length >= 3), false)), false)) {
+    if (this.pageSettings.reduce((pacc, page) => pacc || (page.tables.reduce((acc, table) => !(table.recordsPerPage && table.sortBy && table.sortOrder && table.showColumns && table.showColumns.length >= 2), false)), false)) {
       return true;
     }
     this.errorMessage = '';

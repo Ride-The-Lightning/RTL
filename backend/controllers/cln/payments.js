@@ -115,12 +115,17 @@ export const postPayment = (req, res, next) => {
                 if (req.body.description) {
                     offerToUpdate['description'] = req.body.description;
                 }
-                return databaseService.update(req.session.selectedNode, CollectionsEnum.OFFERS, offerToUpdate, CollectionFieldsEnum.BOLT12, req.body.bolt12).then((updatedOffer) => {
-                    logger.log({ level: 'DEBUG', fileName: 'Payments', msg: 'Offer Updated', data: updatedOffer });
-                    return res.status(201).json({ paymentResponse: body, saveToDBResponse: updatedOffer });
-                }).catch((errDB) => {
-                    logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Payments', msg: 'Offer DB update error', error: errDB });
-                    return res.status(201).json({ paymentResponse: body, saveToDBError: errDB });
+                return databaseService.validateDocument(CollectionsEnum.OFFERS, offerToUpdate).then((validated) => {
+                    databaseService.update(req.session.selectedNode, CollectionsEnum.OFFERS, offerToUpdate, CollectionFieldsEnum.BOLT12, req.body.bolt12).then((updatedOffer) => {
+                        logger.log({ level: 'DEBUG', fileName: 'Payments', msg: 'Offer Updated', data: updatedOffer });
+                        return res.status(201).json({ paymentResponse: body, saveToDBResponse: updatedOffer });
+                    }).catch((errDB) => {
+                        logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Payments', msg: 'Offer DB update error', error: errDB });
+                        return res.status(201).json({ paymentResponse: body, saveToDBError: errDB });
+                    });
+                }).catch((errValidation) => {
+                    logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Payments', msg: 'Offer DB validation error', error: errValidation });
+                    return res.status(201).json({ paymentResponse: body, saveToDBError: errValidation });
                 });
             }
             else {

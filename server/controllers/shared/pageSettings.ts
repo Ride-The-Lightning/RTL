@@ -20,13 +20,19 @@ export const getPageSettings = (req, res, next) => {
 
 export const savePageSettings = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Page Settings', msg: 'Saving Page Settings..' });
-  return Promise.all(req.body.map((page) => databaseService.update(req.session.selectedNode, CollectionsEnum.PAGE_SETTINGS, page, CollectionFieldsEnum.PAGE_ID, page.pageId))).
-    then((values) => {
-      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'PayRequest', msg: 'Payment List Decoded', data: values });
-      res.status(201).json(values);
-    }).
-    catch((errRes) => {
-      const err = common.handleError(errRes, 'Page Settings', 'Page Settings Update Error', req.session.selectedNode);
-      return res.status(err.statusCode).json({ message: err.message, error: err.error });
-    });
+  // eslint-disable-next-line arrow-body-style
+  return Promise.all(req.body.map((page) => databaseService.validateDocument(CollectionsEnum.PAGE_SETTINGS, page))).then((values) => {
+    return Promise.all(req.body.map((page) => databaseService.update(req.session.selectedNode, CollectionsEnum.PAGE_SETTINGS, page, CollectionFieldsEnum.PAGE_ID, page.pageId))).
+      then((values) => {
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'PayRequest', msg: 'Payment List Decoded', data: values });
+        res.status(201).json(values);
+      }).
+      catch((errRes) => {
+        const err = common.handleError(errRes, 'Page Settings', 'Page Settings Update Error', req.session.selectedNode);
+        throw new Error(JSON.stringify({ message: err.message, error: err.error }));
+      });
+  }).catch((errRes) => {
+    const err = common.handleError(errRes, 'Page Settings', 'Page Settings Validation Error', req.session.selectedNode);
+    return res.status(err.statusCode).json({ message: err.message, error: err.error });
+  });
 };
