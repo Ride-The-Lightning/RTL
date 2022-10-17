@@ -1,7 +1,7 @@
-<div fxLayout="row wrap" fxLayoutAlign="start start" fxLayout.gt-sm="column" fxFlex="100" fxLayoutAlign.gt-sm="start stretch" class="padding-gap-x-large">
-  <div fxLayout="column" fxLayout.gt-xs="row wrap" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container">
-    <div fxFlex="70"></div>
-    <mat-form-field fxFlex="30">
+<div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x-large">
+  <div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" class="page-sub-title-container">
+    <div fxFlex="70" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="start center"></div>
+    <mat-form-field fxFlex="30" fxLayoutAlign="start end">
       <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" placeholder="Filter">
     </mat-form-field>
   </div>
@@ -9,18 +9,41 @@
     <div [perfectScrollbar] class="table-container" fxFlex="100">
       <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table [dataSource]="listUTXOs" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
-        <ng-container matColumnDef="txid">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Transaction ID </th>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
           <td mat-cell *matCellDef="let utxo">
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '50rem'}">
+            <span fxLayout="row" fxLayoutAlign="end center" >
               <span *ngIf="numDustUTXOs > 0 && !isDustUTXO">
                 <span *ngIf="utxo.value < 1000; else emptySpace" matTooltip="Risk of dust attack" matTooltipPosition="right">
-                  <mat-icon fxLayoutAlign="start center" color="warn" class="mr-1">warning</mat-icon>
+                  <mat-icon fxLayoutAlign="start start" color="warn" class="mr-1">warning</mat-icon>
                 </span>
               </span>
               <span *ngIf="utxo.status === 'confirmed'" class="dot green" matTooltip="Confirmed" matTooltipPosition="right"></span>
               <span *ngIf="utxo.status !== 'confirmed'" class="dot yellow" matTooltip="{{utxo.status | titlecase}}" matTooltipPosition="right"></span>
+            </span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="txid">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Transaction ID </th>
+          <td mat-cell *matCellDef="let utxo">
+            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">
               <span class="ellipsis-child">{{utxo.txid}}</span>
+            </span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="address">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Address </th>
+          <td mat-cell *matCellDef="let utxo">
+            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">
+              <span class="ellipsis-child">{{utxo.address}}</span>
+            </span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="scriptpubkey">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Script Pubkey </th>
+          <td mat-cell *matCellDef="let utxo">
+            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">
+              <span class="ellipsis-child">{{utxo.scriptpubkey}}</span>
             </span>
           </td>
         </ng-container>
@@ -41,8 +64,14 @@
           <td mat-cell *matCellDef="let utxo"><span fxLayoutAlign="end center">
               {{utxo?.blockheight | number}} </span></td>
         </ng-container>
+        <ng-container matColumnDef="reserved">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-3"> Reserved </th>
+          <td mat-cell *matCellDef="let utxo" class="pl-3">
+            <span>{{utxo.reserved ? 'Yes' : 'No'}}</span>
+          </td>
+        </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="px-3">
+          <th mat-header-cell *matHeaderCellDef class="pr-3">
             <div class="bordered-box table-actions-select">
               <mat-select placeholder="Actions" tabindex="1" class="mr-0">
                 <mat-select-trigger></mat-select-trigger>
@@ -50,7 +79,7 @@
               </mat-select>
             </div>
           </th>
-          <td mat-cell *matCellDef="let utxo" class="pl-3" fxLayoutAlign="end center">
+          <td mat-cell *matCellDef="let utxo" fxLayoutAlign="end center">
             <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onUTXOClick(utxo, $event)">View Info</button>
           </td>
         </ng-container>

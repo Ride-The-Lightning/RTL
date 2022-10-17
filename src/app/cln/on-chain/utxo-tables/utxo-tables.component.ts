@@ -19,9 +19,7 @@ export class CLNUTXOTablesComponent implements OnInit, OnDestroy {
 
   @Input() selectedTableIndex = 0;
   @Output() readonly selectedTableIndexChange = new EventEmitter<number>();
-  public utxos: UTXO[] = [];
   public numUtxos = 0;
-  public dustUtxos: UTXO[] = [];
   public numDustUtxos = 0;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
@@ -31,14 +29,8 @@ export class CLNUTXOTablesComponent implements OnInit, OnDestroy {
     this.store.select(utxos).pipe(takeUntil(this.unSubs[0])).
       subscribe((utxosSeletor: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
         if (utxosSeletor.utxos && utxosSeletor.utxos.length > 0) {
-          this.utxos = utxosSeletor.utxos;
-          this.numUtxos = this.utxos.length;
-          this.dustUtxos = utxosSeletor.utxos?.filter((utxo) => +(utxo.value || 0) < 1000);
-          this.numDustUtxos = this.dustUtxos.length;
-        }
-        if (utxosSeletor.utxos && utxosSeletor.utxos.length > 0) {
-          this.utxos = utxosSeletor.utxos;
-          this.numUtxos = this.utxos.length;
+          this.numUtxos = utxosSeletor.utxos.length || 0;
+          this.numDustUtxos = utxosSeletor.utxos?.filter((utxo) => +(utxo.value || 0) < 1000).length || 0;
         }
         this.logger.info(utxosSeletor);
       });

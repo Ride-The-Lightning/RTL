@@ -57,16 +57,16 @@ export var TableSettingsFieldsEnum;
     TableSettingsFieldsEnum["RECORDS_PER_PAGE"] = "recordsPerPage";
     TableSettingsFieldsEnum["SORT_BY"] = "sortBy";
     TableSettingsFieldsEnum["SORT_ORDER"] = "sortOrder";
-    TableSettingsFieldsEnum["SHOW_COLUMNS"] = "showColumns";
-    TableSettingsFieldsEnum["SHOW_COLUMNS_SM"] = "showColumnsSM";
+    TableSettingsFieldsEnum["COLUMN_SELECTION"] = "columnSelection";
+    TableSettingsFieldsEnum["COLUMN_SELECTION_SM"] = "columnSelectionSM";
 })(TableSettingsFieldsEnum || (TableSettingsFieldsEnum = {}));
 export class TableSetting {
-    constructor(tableId, recordsPerPage, sortBy, sortOrder, showColumns) {
+    constructor(tableId, recordsPerPage, sortBy, sortOrder, columnSelection) {
         this.tableId = tableId;
         this.recordsPerPage = recordsPerPage;
         this.sortBy = sortBy;
         this.sortOrder = sortOrder;
-        this.showColumns = showColumns;
+        this.columnSelection = columnSelection;
     }
 }
 export class PageSettings {
@@ -97,20 +97,20 @@ export const validatePageSettings = (documentToValidate) => {
         if (!table.hasOwnProperty(CollectionFieldsEnum.RECORDS_PER_PAGE)) {
             errMsg = errMsg + 'Records/Page is mandatory.';
         }
-        if (!table.hasOwnProperty(CollectionFieldsEnum.SHOW_COLUMNS_SM)) {
-            errMsg = errMsg + 'Show Columns Small Screen is mandatory.';
+        if (!table.hasOwnProperty(CollectionFieldsEnum.COLUMN_SELECTION_SM)) {
+            errMsg = errMsg + 'Column Selection (Mobile) is mandatory.';
         }
-        if (table[CollectionFieldsEnum.SHOW_COLUMNS_SM].length < 1) {
-            errMsg = errMsg + 'Show Columns Small Screen should have at least 1 field.';
+        if (table[CollectionFieldsEnum.COLUMN_SELECTION_SM].length < 1) {
+            errMsg = errMsg + 'Column Selection (Mobile) should have at least 1 field.';
         }
-        if (table[CollectionFieldsEnum.SHOW_COLUMNS_SM].length > 2) {
-            errMsg = errMsg + 'Show Columns Small Screen should have maximum 2 fields.';
+        if (table[CollectionFieldsEnum.COLUMN_SELECTION_SM].length > 2) {
+            errMsg = errMsg + 'Column Selection (Mobile) should have maximum 2 fields.';
         }
-        if (!table.hasOwnProperty(CollectionFieldsEnum.SHOW_COLUMNS)) {
-            errMsg = errMsg + 'Show Columns is mandatory.';
+        if (!table.hasOwnProperty(CollectionFieldsEnum.COLUMN_SELECTION)) {
+            errMsg = errMsg + 'Column Selection (Desktop) is mandatory.';
         }
-        if (table[CollectionFieldsEnum.SHOW_COLUMNS].length < 2) {
-            errMsg = errMsg + 'Show Columns should have at least 2 fields.';
+        if (table[CollectionFieldsEnum.COLUMN_SELECTION].length < 2) {
+            errMsg = errMsg + 'Column Selection (Desktop) should have at least 2 fields.';
         }
         if (errMsg.trim() !== '') {
             tableAcc.push({ table: (table.hasOwnProperty(CollectionFieldsEnum.TABLE_ID) ? table[CollectionFieldsEnum.TABLE_ID] : (tableIdx + 1)), message: errMsg });

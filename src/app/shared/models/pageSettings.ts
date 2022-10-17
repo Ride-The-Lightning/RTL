@@ -6,8 +6,8 @@ export class TableSetting {
   recordsPerPage?: number;
   sortBy?: string;
   sortOrder?: SortOrderEnum;
-  showColumnsSM?: any[];
-  showColumns?: any[];
+  columnSelectionSM?: any[];
+  columnSelection?: any[];
 
 }
 

@@ -1,4 +1,10 @@
-.mat-column-txid {
+@import '../../../../shared/theme/styles/mixins.scss';
+
+.mat-column-status {
+  width: 6rem;
+}
+
+.mat-column-txid, .mat-column-address, .mat-column-scriptpubkey {
   flex: 0 0 15%;
   width: 15%;
   & .ellipsis-parent {

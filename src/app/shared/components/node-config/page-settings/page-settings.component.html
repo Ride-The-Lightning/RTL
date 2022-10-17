@@ -2,15 +2,16 @@
   <form fxLayout="column" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1" #form="ngForm">
     <div fxLayout="row">
       <fa-icon [icon]="faPenRuler" class="page-title-img mr-1"></fa-icon>
-      <span class="page-title">Page Settings</span>
+      <span class="page-title">Grid Settings</span>
     </div>
     <ng-container *ngIf="errorMessage && errorMessage.page === 'unknown'" [ngTemplateOutlet]="errorObjectBlock" [ngTemplateOutletContext]="{error: errorMessage}"></ng-container>
     <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1" [ngClass]="{'error-border': errorMessage?.page === page.pageId}" expanded="true" *ngFor="let page of pageSettings">
       <mat-expansion-panel-header>
         <mat-panel-title>{{page.pageId | titlecase}}</mat-panel-title>
       </mat-expansion-panel-header>
-      <div fxLayout="column" fxLayoutAlign="start stretch" *ngFor="let table of page.tables" class="padding-gap-x-large">
-        <div fxLayout="row" fxLayoutAlign="space-between center" class="mt-1">
+      <div fxLayout="column" fxLayoutAlign="start stretch" *ngFor="let table of page.tables" class="padding-gap-x-large table-setting-row">
+        <div fxLayout="row" fxLayoutAlign="space-between center">
+          <span fxFlex="10">Table {{table.tableId | camelcaseWithReplace:'_'}}: </span>
           <mat-form-field fxFlex="10">
             <mat-select [(ngModel)]="table.recordsPerPage" placeholder="Records/Page" name="{{table.tableId}}-page-size-options" tabindex="1" required>
               <mat-option *ngFor="let pageSizeOption of pageSizeOptions" [value]="pageSizeOption">
@@ -20,7 +21,7 @@
           </mat-form-field>
           <mat-form-field fxFlex="10">
             <mat-select [(ngModel)]="table.sortBy" placeholder="Sort By" name="{{table.tableId}}-sort-by" tabindex="2" required>
-              <mat-option *ngFor="let field of table.showColumns" [value]="field">
+              <mat-option *ngFor="let field of table.columnSelection" [value]="field">
                 {{field | camelcaseWithReplace:'_'}}
               </mat-option>
             </mat-select>
@@ -32,21 +33,21 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-form-field fxFlex="13">
-            <mat-select [(ngModel)]="table.showColumnsSM" placeholder="Small Screen Columns" name="{{table.tableId}}-show-columns-sm" tabindex="4" multiple required>
-              <mat-option *ngFor="let field of table.showColumns" [value]="field" [disabled]="(table.showColumns.length <= 1 && table.showColumns.includes(field)) || (table.showColumns.length >= 2 && !table.showColumns.includes(field))">
+          <mat-form-field fxFlex="18">
+            <mat-select [(ngModel)]="table.columnSelectionSM" placeholder="Column selection (Mobile)" name="{{table.tableId}}-columns-selection-sm" tabindex="4" multiple required>
+              <mat-option *ngFor="let field of tableFieldsDef[table.tableId].allowedColumns" [value]="field" [disabled]="(table.columnSelectionSM.length <= 1 && table.columnSelectionSM.includes(field)) || (table.columnSelectionSM.length >= 2 && !table.columnSelectionSM.includes(field))">
                 {{field | camelcaseWithReplace:'_'}}
               </mat-option>
             </mat-select>
-            <mat-hint>Small screen selected columns should be between 1 and 2</mat-hint>
+            <mat-hint>Columns (mobile) should be between 1 and 2</mat-hint>
           </mat-form-field>
-          <mat-form-field fxFlex="55">
-            <mat-select [(ngModel)]="table.showColumns" (selectionChange)="onShowColumnsChange(table)" placeholder="Show Columns" name="{{table.tableId}}-show-columns" tabindex="5" multiple required>
-              <mat-option *ngFor="let field of tableFieldsDef[table.tableId].allowedColumns" [value]="field" [disabled]="(table.showColumns.length <= 2 && table.showColumns.includes(field)) || (table.showColumns.length >= tableFieldsDef[table.tableId].maxColumns && !table.showColumns.includes(field))">
-                {{field | camelcaseWithReplace:'_'}}
+          <mat-form-field fxFlex="40">
+            <mat-select [(ngModel)]="table.columnSelection" (selectionChange)="oncolumnSelectionChange(table)" placeholder="Column selection (Desktop)" name="{{table.tableId}}-columns-selection" tabindex="5" multiple required>
+              <mat-option *ngFor="let field of tableFieldsDef[table.tableId].allowedColumns" [value]="field" [disabled]="(table.columnSelection.length <= 2 && table.columnSelection.includes(field)) || (table.columnSelection.length >= tableFieldsDef[table.tableId].maxColumns && !table.columnSelection.includes(field))">
+                  {{field | camelcaseWithReplace:'_'}}
               </mat-option>
             </mat-select>
-            <mat-hint>Total selected columns should be between 2 and {{tableFieldsDef[table.tableId].maxColumns}}</mat-hint>
+            <mat-hint>Column selection should be between 2 and {{tableFieldsDef[table.tableId].maxColumns}}</mat-hint>
           </mat-form-field>
         </div>
       </div>
@@ -54,8 +55,9 @@
     </mat-expansion-panel>
   </form>
   <div fxLayout="row" class="mt-1">
-    <button class="mr-1" mat-stroked-button color="primary" (click)="onResetPageSettings()" tabindex="6">Reset</button>
-    <button mat-flat-button color="primary" (click)="onUpdatePageSettings()" tabindex="7">Save</button>
+    <button class="mr-1" mat-stroked-button color="primary" (click)="onResetPageSettings('current')" tabindex="6">Reset</button>
+    <button class="mr-1" mat-stroked-button color="primary" (click)="onResetPageSettings('default')" tabindex="7">Default Settings</button>
+    <button mat-flat-button color="primary" (click)="onUpdatePageSettings()" tabindex="8">Save</button>
   </div>
 </div>
 <ng-template #errorObjectBlock let-error="error">

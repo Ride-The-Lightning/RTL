@@ -83,9 +83,9 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         }
         this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
         if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
-          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.showColumnsSM));
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
         } else {
-          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.showColumns));
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
         }
         this.displayedColumns.unshift('status');
         this.displayedColumns.push('actions');

@@ -64,7 +64,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
   public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private rtlEffects: RTLEffects, private datePipe: DatePipe, private actions: Actions) {
     this.screenSize = this.commonService.getScreenSize();
@@ -86,16 +86,16 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
         }
         this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
         if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
-          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.showColumnsSM));
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
         } else {
-          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.showColumns));
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
         }
         this.displayedColumns.unshift('status');
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
         this.logger.info(this.displayedColumns);
       });
-    this.store.select(listInvoices).pipe(takeUntil(this.unSubs[2])).
+    this.store.select(listInvoices).pipe(takeUntil(this.unSubs[3])).
       subscribe((invoicesSeletor: { listInvoices: ListInvoices, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = invoicesSeletor.apiCallStatus;
@@ -108,7 +108,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
         }
         this.logger.info(invoicesSeletor);
       });
-    this.actions.pipe(takeUntil(this.unSubs[3]), filter((action) => (action.type === CLNActions.SET_LOOKUP_CLN || action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN))).
+    this.actions.pipe(takeUntil(this.unSubs[4]), filter((action) => (action.type === CLNActions.SET_LOOKUP_CLN || action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN))).
       subscribe((resLookup: any) => {
         if (resLookup.type === CLNActions.SET_LOOKUP_CLN) {
           if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator && resLookup.payload) {
@@ -158,7 +158,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
       }
     }));
     this.rtlEffects.closeConfirm.
-      pipe(takeUntil(this.unSubs[4])).
+      pipe(takeUntil(this.unSubs[5])).
       subscribe((confirmRes) => {
         if (confirmRes) {
           this.store.dispatch(deleteExpiredInvoice({ payload: null }));
@@ -205,7 +205,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
     if (this.selNode && this.selNode.fiatConversion && this.invoiceValue! > 99) {
       this.invoiceValueHint = '';
       this.commonService.convertCurrency(this.invoiceValue!, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode?.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
-        pipe(takeUntil(this.unSubs[5])).
+        pipe(takeUntil(this.unSubs[6])).
         subscribe({
           next: (data) => {
             this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;

@@ -258,19 +258,19 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
 }
 
 .green {
-  color: #388e3c !important;
+  color: $green-color !important;
 }
 
 .yellow {
-  color: #ffd740 !important;
+  color: $yellow-color !important;
 }
 
 .red {
-  color: #c62828 !important;
+  color: $red-color !important;
 }
 
 .grey {
-  color: #CCCCCC !important;
+  color: $grey-color !important;
 }
 
 .mt-1px {
@@ -1538,11 +1538,11 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
   text-align: left;
 }
 
-.table-container {
-  // height: 400rem;
-  // overflow-y: auto;
-  // overflow-x: hidden;
-}
+// .table-container {
+//   height: 25rem;
+//   overflow: auto;
+//   overflow-x: hidden;
+// }
 
 .mat-expansion-panel.flat-expansion-panel {
   box-shadow: none;

@@ -1,4 +1,5 @@
-import { Component, ViewChild, Input, OnChanges, AfterViewInit, OnDestroy, OnInit } from '@angular/core';
+import { Component, ViewChild, Input, AfterViewInit, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -7,14 +8,15 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { UTXO } from '../../../../shared/models/clnModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS } from '../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
 
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert } from '../../../../store/rtl.actions';
-import { utxos } from '../../../store/cln.selector';
+import { clnPageSettings, utxos } from '../../../store/cln.selector';
+import { PageSettingsCLN, TableSetting } from '../../../../shared/models/pageSettings';
 
 @Component({
   selector: 'rtl-cln-on-chain-utxos',
@@ -24,14 +26,16 @@ import { utxos } from '../../../store/cln.selector';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('UTXOs') }
   ]
 })
-export class CLNOnChainUtxosComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   @Input() numDustUTXOs = 0;
   @Input() isDustUTXO = false;
-  @Input() utxos: UTXO[];
+  public PAGE_ID = 'on-chain';
+  public tableSetting: TableSetting = { tableId: 'utxos', recordsPerPage: 10, sortBy: 'status', sortOrder: SortOrderEnum.DESCENDING };
   public displayedColumns: any[] = [];
+  public utxos: UTXO[];
   public listUTXOs: any;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -41,28 +45,44 @@ export class CLNOnChainUtxosComponent implements OnInit, OnChanges, AfterViewIni
   public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private router: Router) {
     this.screenSize = this.commonService.getScreenSize();
-    if (this.screenSize === ScreenSizeEnum.XS) {
-      this.displayedColumns = ['txid', 'value', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.displayedColumns = ['txid', 'output', 'value', 'blockheight', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.displayedColumns = ['txid', 'output', 'value', 'blockheight', 'actions'];
-    } else {
-      this.displayedColumns = ['txid', 'output', 'value', 'blockheight', 'actions'];
-    }
   }
 
   ngOnInit() {
-    this.store.select(utxos).pipe(takeUntil(this.unSubs[0])).
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+    this.router.onSameUrlNavigation = 'reload';
+    this.tableSetting.tableId = this.isDustUTXO ? 'dust_utxos' : 'utxos';
+    this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[0])).
+      subscribe((settings: { pageSettings: PageSettingsCLN[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessage = '';
+        this.apiCallStatus = settings.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = this.apiCallStatus.message || '';
+        }
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
+        } else {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
+        }
+        this.displayedColumns.unshift('status');
+        this.displayedColumns.push('actions');
+        this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.logger.info(this.displayedColumns);
+      });
+    this.store.select(utxos).pipe(takeUntil(this.unSubs[1])).
       subscribe((utxosSeletor: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = utxosSeletor.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+        }
+        this.utxos = (this.isDustUTXO) ? utxosSeletor.utxos?.filter((utxo) => +(utxo.value || 0) < 1000) : utxosSeletor.utxos ? utxosSeletor.utxos : [];
+        if (this.utxos && this.utxos.length > 0 && this.sort && this.paginator) {
+          this.loadUTXOsTable(this.utxos);
         }
         this.logger.info(utxosSeletor);
       });
@@ -70,12 +90,6 @@ export class CLNOnChainUtxosComponent implements OnInit, OnChanges, AfterViewIni
 
   ngAfterViewInit() {
     if (this.utxos && this.utxos.length > 0 && this.sort && this.paginator) {
-      this.loadUTXOsTable(this.utxos);
-    }
-  }
-
-  ngOnChanges() {
-    if (this.utxos && this.utxos.length > 0) {
       this.loadUTXOsTable(this.utxos);
     }
   }
@@ -108,6 +122,7 @@ export class CLNOnChainUtxosComponent implements OnInit, OnChanges, AfterViewIni
     this.listUTXOs = new MatTableDataSource<UTXO>([...utxos]);
     this.listUTXOs.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.listUTXOs.sort = this.sort;
+    this.listUTXOs.sort.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.listUTXOs.filterPredicate = (utxo: UTXO, fltr: string) => JSON.stringify(utxo).toLowerCase().includes(fltr);
     this.listUTXOs.paginator = this.paginator;
     this.applyFilter();

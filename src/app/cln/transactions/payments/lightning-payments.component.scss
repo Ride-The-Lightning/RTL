@@ -1,29 +1,7 @@
 @import '../../../shared/theme/styles/mixins.scss';
 
 .mat-column-status, .mat-column-group_status {
-  max-width: 0.2rem;
-  @include for_screensize(tab-port) {
-    min-width: 1rem;
-  }
-  @include for_screensize(phone) {
-    min-width: 1rem;
-  }  
-  & .dot {
-    @include for_screensize(tab-port) {
-      width:0.6rem;
-      height: 0.6rem;
-      left: 4rem;
-      margin-top: -0.4rem;
-      position: absolute;
-    }
-    @include for_screensize(phone) {
-      width:0.6rem;
-      height: 0.6rem;
-      left: 0;
-      margin-top: -0.2rem;
-      position: absolute;
-    }  
-  }
+  width: 2rem;
 }
 
 .mat-column-payment_hash, .mat-column-bolt11, .mat-column-destination, .mat-column-label, .mat-column-memo {

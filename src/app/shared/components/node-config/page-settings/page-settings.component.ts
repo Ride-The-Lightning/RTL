@@ -59,23 +59,29 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
       });
   }
 
-  onShowColumnsChange(table: TableSetting) {
-    if (table.showColumns && !table.showColumns.includes(table.sortBy)) {
-      table.sortBy = table.showColumns[0];
+  oncolumnSelectionChange(table: TableSetting) {
+    if (table.columnSelection && !table.columnSelection.includes(table.sortBy)) {
+      table.sortBy = table.columnSelection[0];
     }
   }
 
   onUpdatePageSettings(): boolean | void {
-    if (this.pageSettings.reduce((pacc, page) => pacc || (page.tables.reduce((acc, table) => !(table.recordsPerPage && table.sortBy && table.sortOrder && table.showColumns && table.showColumns.length >= 2), false)), false)) {
+    if (this.pageSettings.reduce((pacc, page) => pacc || (page.tables.reduce((acc, table) => !(table.recordsPerPage && table.sortBy && table.sortOrder && table.columnSelection && table.columnSelection.length >= 2), false)), false)) {
       return true;
     }
     this.errorMessage = '';
     this.store.dispatch(savePageSettings({ payload: this.pageSettings }));
   }
 
-  onResetPageSettings() {
-    this.errorMessage = null;
-    this.pageSettings = this.initialPageSettings;
+  onResetPageSettings(prev: string) {
+    if (prev === 'current') {
+      this.errorMessage = null;
+      this.pageSettings = this.initialPageSettings;
+    } else {
+      this.errorMessage = null;
+      this.pageSettings = CLN_DEFAULT_PAGE_SETTINGS;
+      this.onUpdatePageSettings();
+    }
   }
 
   ngOnDestroy() {

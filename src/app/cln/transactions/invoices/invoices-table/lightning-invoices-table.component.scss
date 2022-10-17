@@ -1,23 +1,7 @@
 @import '../../../../shared/theme/styles/mixins.scss';
 
 .mat-column-status {
-  max-width: 1rem;
-  & .dot {
-    @include for_screensize(tab-port) {
-      width:0.6rem;
-      height: 0.6rem;
-      left: 2.8rem;
-      margin-top: -0.3rem;
-      position: absolute;
-    }
-    @include for_screensize(phone) {
-      width:0.6rem;
-      height: 0.6rem;
-      left: 0.8rem;
-      margin-top: -0.3rem;
-      position: absolute;
-    }  
-  }
+  width: 2rem;
 }
 
 .mat-column-description, .mat-column-label, .mat-column-payment_hash, .mat-column-bolt11 {

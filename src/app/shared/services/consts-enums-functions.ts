@@ -675,12 +675,24 @@ export enum SortOrderEnum {
 export const SORT_ORDERS = ['asc', 'desc'];
 
 export const CLN_DEFAULT_PAGE_SETTINGS: PageSettingsCLN[] = [
-  { pageId: 'payments', tables: [{ tableId: 'payments', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,
-    showColumnsSM: ['created_at', 'msatoshi'],
-    showColumns: ['created_at', 'type', 'payment_hash', 'msatoshi_sent', 'msatoshi'] }] },
-  { pageId: 'invoices', tables: [{ tableId: 'invoices', recordsPerPage: PAGE_SIZE, sortBy: 'expires_at', sortOrder: SortOrderEnum.DESCENDING,
-    showColumnsSM: ['expires_at', 'msatoshi'],
-    showColumns: ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received'] }] }
+  { pageId: 'payments', tables: [
+    { tableId: 'payments', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['created_at', 'msatoshi'],
+      columnSelection: ['created_at', 'type', 'payment_hash', 'msatoshi_sent', 'msatoshi'] }
+  ] },
+  { pageId: 'invoices', tables: [
+    { tableId: 'invoices', recordsPerPage: PAGE_SIZE, sortBy: 'expires_at', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['expires_at', 'msatoshi'],
+      columnSelection: ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received'] }
+  ] },
+  { pageId: 'on-chain', tables: [
+    { tableId: 'utxos', recordsPerPage: PAGE_SIZE, sortBy: 'blockheight', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['txid', 'value'],
+      columnSelection: ['txid', 'output', 'value', 'blockheight'] },
+    { tableId: 'dust_utxos', recordsPerPage: PAGE_SIZE, sortBy: 'blockheight', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['txid', 'value'],
+      columnSelection: ['txid', 'output', 'value', 'blockheight'] }
+  ] }
 ];
 
 export const CLN_TABLES_DEF = {
@@ -691,5 +703,13 @@ export const CLN_TABLES_DEF = {
   invoices: {
     maxColumns: 6,
     allowedColumns: ['expires_at', 'paid_at', 'type', 'description', 'label', 'payment_hash', 'bolt11', 'msatoshi', 'msatoshi_received']
+  },
+  utxos: {
+    maxColumns: 7,
+    allowedColumns: ['txid', 'address', 'scriptpubkey', 'output', 'value', 'blockheight', 'reserved']
+  },
+  dust_utxos: {
+    maxColumns: 7,
+    allowedColumns: ['txid', 'address', 'scriptpubkey', 'output', 'value', 'blockheight', 'reserved']
   }
 };
