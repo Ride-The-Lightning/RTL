@@ -28,7 +28,7 @@
           <mat-form-field fxFlex="10">
             <mat-select [(ngModel)]="table.sortOrder" placeholder="Sort Order" name="{{table.tableId}}-sort-order" tabindex="3" required>
               <mat-option *ngFor="let so of sortOrders" [value]="so">
-                {{so}}
+                {{so === 'desc' ? 'Descending' : 'Ascending'}}
               </mat-option>
             </mat-select>
           </mat-form-field>
