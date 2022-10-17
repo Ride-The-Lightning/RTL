@@ -29,10 +29,6 @@ export const listInvoices = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List URL', data: options.url });
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received', data: body });
-    if (body.invoices && body.invoices.length > 0) {
-      body.invoices = common.sortDescByKey(body.invoices, 'expires_at');
-    }
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Sorted Invoices List Received', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Invoice', 'List Invoices Error', req.session.selectedNode);

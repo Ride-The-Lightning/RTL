@@ -9,7 +9,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES, CLNActions } from '../../../../shared/services/consts-enums-functions';
+import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES, CLNActions, CLN_DEFAULT_PAGE_SETTINGS, SortOrderEnum } from '../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../../../shared/models/RTLconfig';
 import { GetInfo, Invoice, ListInvoices } from '../../../../shared/models/clnModels';
@@ -23,7 +23,8 @@ import { RTLEffects } from '../../../../store/rtl.effects';
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../../store/rtl.actions';
 import { deleteExpiredInvoice, invoiceLookup, saveNewInvoice } from '../../../store/cln.actions';
-import { clnNodeInformation, clnNodeSettings, listInvoices } from '../../../store/cln.selector';
+import { clnNodeInformation, clnNodeSettings, clnPageSettings, listInvoices } from '../../../store/cln.selector';
+import { PageSettingsCLN, TableSetting } from '../../../../shared/models/pageSettings';
 
 @Component({
   selector: 'rtl-cln-lightning-invoices-table',
@@ -39,6 +40,8 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   faHistory = faHistory;
+  public PAGE_ID = 'invoices';
+  public tableSetting: TableSetting = { tableId: 'invoices', recordsPerPage: 10, sortBy: 'expires_at', sortOrder: SortOrderEnum.DESCENDING };
   public selNode: SelNodeChild | null = {};
   public newlyAddedInvoiceMemo = '';
   public newlyAddedInvoiceValue = 0;
@@ -65,15 +68,6 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private rtlEffects: RTLEffects, private datePipe: DatePipe, private actions: Actions) {
     this.screenSize = this.commonService.getScreenSize();
-    if (this.screenSize === ScreenSizeEnum.XS) {
-      this.displayedColumns = ['expires_at', 'msatoshi', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.displayedColumns = ['expires_at', 'description', 'msatoshi', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.displayedColumns = ['expires_at', 'type', 'description', 'msatoshi', 'msatoshi_received', 'actions'];
-    } else {
-      this.displayedColumns = ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received', 'actions'];
-    }
   }
 
   ngOnInit() {
@@ -83,6 +77,24 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
     this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => {
       this.information = nodeInfo;
     });
+    this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[2])).
+      subscribe((settings: { pageSettings: PageSettingsCLN[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessage = '';
+        this.apiCallStatus = settings.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = this.apiCallStatus.message || '';
+        }
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.showColumnsSM));
+        } else {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.showColumns));
+        }
+        this.displayedColumns.unshift('status');
+        this.displayedColumns.push('actions');
+        this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.logger.info(this.displayedColumns);
+      });
     this.store.select(listInvoices).pipe(takeUntil(this.unSubs[2])).
       subscribe((invoicesSeletor: { listInvoices: ListInvoices, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
@@ -216,6 +228,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
     this.invoices = (invs) ? new MatTableDataSource<Invoice>([...invs]) : new MatTableDataSource([]);
     this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.invoices.sort = this.sort;
+    this.invoices.sort.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.invoices.filterPredicate = (rowData: Invoice, fltr: string) => {
       const newRowData = this.datePipe.transform(new Date((rowData.paid_at || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase()! + (this.datePipe.transform(new Date((rowData.expires_at || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase()) + ((rowData.bolt12) ? 'bolt12' : (rowData.bolt11) ? 'bolt11' : 'keysend') + JSON.stringify(rowData).toLowerCase();
       return newRowData.includes(fltr);
