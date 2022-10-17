@@ -668,11 +668,11 @@ export const ECL_CHANNEL_TYPES = [
 ];
 
 export enum SortOrderEnum {
-  ASCENDING = 'Ascending',
-  DESCENDING = 'Descending'
+  ASCENDING = 'asc',
+  DESCENDING = 'desc'
 }
 
-export const SORT_ORDERS = ['Ascending', 'Descending'];
+export const SORT_ORDERS = ['asc', 'desc'];
 
 export const CLN_DEFAULT_PAGE_SETTINGS: PageSettingsCLN[] = [
   { pageId: 'payments', tables: [{ tableId: 'payments', recordsPerPage: 10, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,

@@ -43,8 +43,8 @@ export const validateOffer = (documentToValidate) => {
 };
 export var SortOrderEnum;
 (function (SortOrderEnum) {
-    SortOrderEnum["ASCENDING"] = "Ascending";
-    SortOrderEnum["DESCENDING"] = "Descending";
+    SortOrderEnum["ASCENDING"] = "asc";
+    SortOrderEnum["DESCENDING"] = "desc";
 })(SortOrderEnum || (SortOrderEnum = {}));
 export var PageSettingsFieldsEnum;
 (function (PageSettingsFieldsEnum) {

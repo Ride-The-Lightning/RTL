@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
-import { MatSort, Sort } from '@angular/material/sort';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { GetInfo, Payment, PayRequest } from '../../../shared/models/clnModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, UI_MESSAGES, PaymentTypes, CLN_TABLES_DEF, CLN_DEFAULT_PAGE_SETTINGS, SORT_ORDERS, SortOrderEnum } from '../../../shared/services/consts-enums-functions';
@@ -24,7 +24,7 @@ import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 import { sendPayment } from '../../store/cln.actions';
 import { clnNodeInformation, clnNodeSettings, clnPageSettings, payments } from '../../store/cln.selector';
-import { PageSettingsCLN } from '../../../shared/models/pageSettings';
+import { PageSettingsCLN, TableSetting } from '../../../shared/models/pageSettings';
 
 @Component({
   selector: 'rtl-cln-lightning-payments',
@@ -41,7 +41,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public PAGE_ID = 'payments';
-  public TABLE_ID = 'payments';
+  public tableSetting: TableSetting = { tableId: 'payments' };
   public faHistory = faHistory;
   public newlyAddedPayment = '';
   public selNode: SelNodeChild | null = {};
@@ -55,8 +55,6 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   public paymentDecodedHint = '';
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
-  public sortBy = 'created_at';
-  public sortOrder = SortOrderEnum.DESCENDING;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
@@ -85,20 +83,17 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           this.errorMessage = this.apiCallStatus.message || '';
         }
         this.pageSettings = settings.pageSettings;
-        let tableSettings: any = {};
-        tableSettings = this.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.TABLE_ID) || CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.TABLE_ID);
+        this.tableSetting = this.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
         if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
-          this.displayedColumns = JSON.parse(JSON.stringify(tableSettings.showColumnsSM));
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.showColumnsSM));
         } else {
-          this.displayedColumns = JSON.parse(JSON.stringify(tableSettings.showColumns));
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.showColumns));
         }
         this.displayedColumns.unshift('status');
         this.displayedColumns.push('actions');
         this.mppColumns = [];
         this.displayedColumns.map((col) => this.mppColumns.push('group_' + col));
-        this.pageSize = tableSettings.recordsPerPage;
-        this.sortBy = tableSettings.sortBy;
-        this.sortOrder = tableSettings.sortOrder;
+        this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
         this.logger.info(this.displayedColumns);
         this.logger.info(this.mppColumns);
       });
@@ -306,6 +301,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
     this.payments = (payments) ? new MatTableDataSource<Payment>([...payments]) : new MatTableDataSource([]);
     this.payments.sort = this.sort;
     this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+    this.payments.sort.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: false });
     this.payments.filterPredicate = (rowData: Payment, fltr: string) => {
       const newRowData = ((rowData.created_at) ? this.datePipe.transform(new Date(rowData.created_at * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + ((rowData.bolt12) ? 'bolt12' : (rowData.bolt11) ? 'bolt11' : 'keysend') + JSON.stringify(rowData).toLowerCase();
       return newRowData.includes(fltr);

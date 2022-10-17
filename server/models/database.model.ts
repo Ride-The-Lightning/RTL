@@ -47,8 +47,8 @@ export const validateOffer = (documentToValidate): any => {
 };
 
 export enum SortOrderEnum {
-  ASCENDING = 'Ascending',
-  DESCENDING = 'Descending'
+  ASCENDING = 'asc',
+  DESCENDING = 'desc'
 }
 
 export enum PageSettingsFieldsEnum {
