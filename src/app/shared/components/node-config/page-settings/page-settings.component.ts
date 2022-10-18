@@ -27,7 +27,7 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public pageSettings: PageSettingsCLN[] = [];
-  public initialPageSettings: PageSettingsCLN[] = CLN_DEFAULT_PAGE_SETTINGS;
+  public initialPageSettings: PageSettingsCLN[] = Object.assign([], CLN_DEFAULT_PAGE_SETTINGS);
   public tableFieldsDef = CLN_TABLES_DEF;
   public sortOrders = SORT_ORDERS;
   public apiCallStatus: ApiCallStatusPayload | null = null;
@@ -48,7 +48,7 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
           this.errorMessage = this.apiCallStatus.message || null;
         }
         this.pageSettings = settings.pageSettings;
-        this.initialPageSettings = JSON.parse(JSON.stringify(settings.pageSettings));
+        this.initialPageSettings = settings.pageSettings;
         this.logger.info(settings);
       });
     this.actions.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN || action.type === CLNActions.SAVE_PAGE_SETTINGS_CLN)).
@@ -83,11 +83,10 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
   onResetPageSettings(prev: string) {
     if (prev === 'current') {
       this.errorMessage = null;
-      this.pageSettings = this.initialPageSettings;
+      this.pageSettings = JSON.parse(JSON.stringify(this.initialPageSettings));
     } else {
       this.errorMessage = null;
-      this.pageSettings = CLN_DEFAULT_PAGE_SETTINGS;
-      this.onUpdatePageSettings();
+      this.pageSettings = JSON.parse(JSON.stringify(CLN_DEFAULT_PAGE_SETTINGS));
     }
   }
 

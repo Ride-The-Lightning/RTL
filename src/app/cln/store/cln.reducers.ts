@@ -220,12 +220,22 @@ export const CLNReducer = createReducer(initCLNState,
   }),
   on(setPageSettings, (state, { payload }) => {
     const newPageSettings: PageSettingsCLN[] = [];
-    CLN_DEFAULT_PAGE_SETTINGS.forEach((page) => {
-      const pageIdx = payload.findIndex((p) => p.pageId === page.pageId);
-      if (pageIdx >= 0) {
-        newPageSettings.push(payload[pageIdx]);
+    CLN_DEFAULT_PAGE_SETTINGS.forEach((defaultPage) => {
+      const pageSetting = payload.find((p) => p.pageId === defaultPage.pageId) || null;
+      if (pageSetting) {
+        const tablesSettings = JSON.parse(JSON.stringify(pageSetting.tables));
+        pageSetting.tables = []; // To maintain settings order
+        defaultPage.tables.forEach((defaultTable) => {
+          const tableSetting = tablesSettings.find((t) => t.tableId === defaultTable.tableId) || null;
+          if (tableSetting) {
+            pageSetting.tables.push(tableSetting);
+          } else {
+            pageSetting.tables.push(JSON.parse(JSON.stringify(defaultTable)));
+          }
+        });
+        newPageSettings.push(pageSetting);
       } else {
-        newPageSettings.push(page);
+        newPageSettings.push(JSON.parse(JSON.stringify(defaultPage)));
       }
     });
     return {
