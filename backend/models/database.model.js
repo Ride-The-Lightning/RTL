@@ -103,8 +103,8 @@ export const validatePageSettings = (documentToValidate) => {
         if (table[CollectionFieldsEnum.COLUMN_SELECTION_SM].length < 1) {
             errMsg = errMsg + 'Column Selection (Mobile) should have at least 1 field.';
         }
-        if (table[CollectionFieldsEnum.COLUMN_SELECTION_SM].length > 2) {
-            errMsg = errMsg + 'Column Selection (Mobile) should have maximum 2 fields.';
+        if (table[CollectionFieldsEnum.COLUMN_SELECTION_SM].length > 3) {
+            errMsg = errMsg + 'Column Selection (Mobile) should have maximum 3 fields.';
         }
         if (!table.hasOwnProperty(CollectionFieldsEnum.COLUMN_SELECTION)) {
             errMsg = errMsg + 'Column Selection (Desktop) is mandatory.';

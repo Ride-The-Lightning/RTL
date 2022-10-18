@@ -33,7 +33,7 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef class="pr-3"><span fxLayoutAlign="end center">Actions</span></th>        
         <td mat-cell *matCellDef="let channel" fxLayoutAlign="end center">
-          <div class="bordered-box table-actions-select">
+          <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="1" class="mr-0">
               <mat-select-trigger></mat-select-trigger>
               <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>

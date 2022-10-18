@@ -125,7 +125,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
     this.liquidityNodes.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.liquidityNodes.sort = this.sort;
     this.liquidityNodes.paginator = this.paginator;
-    if (this.sort) { this.sort.sort({ id: 'channelOpeningFee', start: 'asc', disableClear: true }); }
+    if (this.sort) { this.sort?.sort({ id: 'channelOpeningFee', start: 'asc', disableClear: true }); }
     this.liquidityNodes.filterPredicate = (node: LookupNode, fltr: string) => {
       const newNode = ((node.alias) ? node.alias.toLocaleLowerCase() : '') + (node.channelOpeningFee ? node.channelOpeningFee + ' Sats' : '') +
       (node.option_will_fund?.lease_fee_base_msat ? (node.option_will_fund?.lease_fee_base_msat / 1000) + ' Sats' : '') + (node.option_will_fund?.lease_fee_basis ? (this.decimalPipe.transform(node.option_will_fund?.lease_fee_basis / 100, '1.2-2') + '%') : '') +

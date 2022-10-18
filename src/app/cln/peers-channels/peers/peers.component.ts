@@ -10,7 +10,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Peer, GetInfo, Balance } from '../../../shared/models/clnModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum, APICallStatusEnum, CLNActions } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum, APICallStatusEnum, CLNActions, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -21,7 +21,8 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 import { detachPeer } from '../../store/cln.actions';
-import { nodeInfoAndBalance, peers } from '../../store/cln.selector';
+import { clnPageSettings, nodeInfoAndBalance, peers } from '../../store/cln.selector';
+import { PageSettingsCLN, TableSetting } from '../../../shared/models/pageSettings';
 
 @Component({
   selector: 'rtl-cln-peers',
@@ -36,6 +37,8 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faUsers = faUsers;
+  public PAGE_ID = 'peers/channels';
+  public tableSetting: TableSetting = { tableId: 'peers', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING };
   public newlyAddedPeer = '';
   public displayedColumns: any[] = [];
   public peerAddress: string | null = '';
@@ -51,19 +54,10 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private actions: Actions, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
-    if (this.screenSize === ScreenSizeEnum.XS) {
-      this.displayedColumns = ['alias', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.displayedColumns = ['alias', 'id', 'netaddr', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.displayedColumns = ['alias', 'id', 'netaddr', 'actions'];
-    } else {
-      this.displayedColumns = ['alias', 'id', 'netaddr', 'actions'];
-    }
   }
 
   ngOnInit() {
@@ -72,7 +66,25 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
         this.information = infoBalSelector.information;
         this.availableBalance = infoBalSelector.balance.totalBalance || 0;
       });
-    this.store.select(peers).pipe(takeUntil(this.unSubs[1])).
+    this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[1])).
+      subscribe((settings: { pageSettings: PageSettingsCLN[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessage = '';
+        this.apiCallStatus = settings.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = this.apiCallStatus.message || '';
+        }
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
+        } else {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
+        }
+        this.displayedColumns.unshift('connected');
+        this.displayedColumns.push('actions');
+        this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.logger.info(this.displayedColumns);
+      });
+    this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
       subscribe((peersSeletor: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = peersSeletor.apiCallStatus;
@@ -87,7 +99,7 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     this.actions.
       pipe(
-        takeUntil(this.unSubs[2]),
+        takeUntil(this.unSubs[3]),
         filter((action) => action.type === CLNActions.SET_PEERS_CLN)
       ).subscribe((setPeers: any) => {
         this.peerAddress = null;
@@ -163,7 +175,7 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }));
     this.rtlEffects.closeConfirm.
-      pipe(takeUntil(this.unSubs[3])).
+      pipe(takeUntil(this.unSubs[4])).
       subscribe((confirmRes) => {
         if (confirmRes) {
           this.store.dispatch(detachPeer({ payload: { id: peerToDetach.id!, force: false } }));
@@ -191,6 +203,7 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     };
     this.peers.sort = this.sort;
+    this.peers.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.peers.filterPredicate = (peer: Peer, fltr: string) => JSON.stringify(peer).toLowerCase().includes(fltr);
     this.peers.paginator = this.paginator;
     this.applyFilter();

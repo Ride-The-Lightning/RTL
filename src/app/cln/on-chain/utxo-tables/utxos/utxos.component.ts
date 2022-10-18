@@ -122,7 +122,7 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
     this.listUTXOs = new MatTableDataSource<UTXO>([...utxos]);
     this.listUTXOs.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.listUTXOs.sort = this.sort;
-    this.listUTXOs.sort.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+    this.listUTXOs.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.listUTXOs.filterPredicate = (utxo: UTXO, fltr: string) => JSON.stringify(utxo).toLowerCase().includes(fltr);
     this.listUTXOs.paginator = this.paginator;
     this.applyFilter();

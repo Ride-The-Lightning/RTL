@@ -683,6 +683,17 @@ export const CLN_DEFAULT_PAGE_SETTINGS: PageSettingsCLN[] = [
       columnSelectionSM: ['txid', 'value'],
       columnSelection: ['txid', 'output', 'value', 'blockheight'] }
   ] },
+  { pageId: 'peers/channels', tables: [
+    { tableId: 'open_channels', recordsPerPage: PAGE_SIZE, sortBy: 'msatoshi_to_us', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['alias', 'msatoshi_to_us', 'msatoshi_to_them'],
+      columnSelection: ['short_channel_id', 'alias', 'msatoshi_to_us', 'msatoshi_to_them', 'balancedness'] },
+    { tableId: 'pending_inactive_channels', recordsPerPage: PAGE_SIZE, sortBy: 'state', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['alias', 'state'],
+      columnSelection: ['alias', 'connected', 'state', 'msatoshi_total'] },
+    { tableId: 'peers', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.ASCENDING,
+      columnSelectionSM: ['alias', 'id'],
+      columnSelection: ['alias', 'id', 'netaddr'] }
+  ] },
   { pageId: 'transactions', tables: [
     { tableId: 'payments', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['created_at', 'msatoshi'],
@@ -707,6 +718,18 @@ export const CLN_TABLES_DEF = {
   dust_utxos: {
     maxColumns: 7,
     allowedColumns: ['txid', 'address', 'scriptpubkey', 'output', 'value', 'blockheight', 'reserved']
+  },
+  open_channels: {
+    maxColumns: 8,
+    allowedColumns: ['short_channel_id', 'alias', 'id', 'channel_id', 'funding_txid', 'connected', 'our_channel_reserve_satoshis', 'their_channel_reserve_satoshis', 'msatoshi_total', 'spendable_msatoshi', 'msatoshi_to_us', 'msatoshi_to_them', 'balancedness']
+  },
+  pending_inactive_channels: {
+    maxColumns: 8,
+    allowedColumns: ['alias', 'id', 'channel_id', 'funding_txid', 'connected', 'state', 'our_channel_reserve_satoshis', 'their_channel_reserve_satoshis', 'msatoshi_total', 'spendable_msatoshi', 'msatoshi_to_us', 'msatoshi_to_them']
+  },
+  peers: {
+    maxColumns: 3,
+    allowedColumns: ['alias', 'id', 'netaddr']
   },
   payments: {
     maxColumns: 5,

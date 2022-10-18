@@ -299,7 +299,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
     this.payments = (payments) ? new MatTableDataSource<Payment>([...payments]) : new MatTableDataSource([]);
     this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.payments.sort = this.sort;
-    this.payments.sort.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+    this.payments.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.payments.filterPredicate = (rowData: Payment, fltr: string) => {
       const newRowData = ((rowData.created_at) ? this.datePipe.transform(new Date(rowData.created_at * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + ((rowData.bolt12) ? 'bolt12' : (rowData.bolt11) ? 'bolt11' : 'keysend') + JSON.stringify(rowData).toLowerCase();
       return newRowData.includes(fltr);

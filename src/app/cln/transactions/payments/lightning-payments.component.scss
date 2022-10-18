@@ -18,12 +18,14 @@
   min-height: 4.8rem;
 
   & .btn-mpp-expand {
-    width: 9rem; 
+    min-width: 10rem;
+    width: 10rem; 
   }
 
   & .btn-mpp-info {
-    margin-top: 0.5rem; 
-    width: 9rem; 
+    margin-top: 0.5rem;
+    min-width: 9rem;
+    width: 9rem;
   }
 }
 

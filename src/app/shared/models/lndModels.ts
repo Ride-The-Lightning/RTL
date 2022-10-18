@@ -81,7 +81,7 @@ export interface Channel {
   uptime_str?: string;
   lifetime?: string;
   static_remote_key?: boolean;
-  balancedness?: number; // Between -1 to +1
+  balancedness?: number; // Between 0-1-0
 }
 
 export interface PendingChannel {

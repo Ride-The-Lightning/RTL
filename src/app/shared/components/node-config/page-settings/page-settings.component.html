@@ -7,7 +7,7 @@
     <ng-container *ngIf="errorMessage && errorMessage.page === 'unknown'" [ngTemplateOutlet]="errorObjectBlock" [ngTemplateOutletContext]="{error: errorMessage}"></ng-container>
     <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1" [ngClass]="{'error-border': errorMessage?.page === page.pageId}" expanded="true" *ngFor="let page of pageSettings">
       <mat-expansion-panel-header>
-        <mat-panel-title>{{page.pageId | titlecase}}</mat-panel-title>
+        <mat-panel-title>{{page.pageId | camelcase}}</mat-panel-title>
       </mat-expansion-panel-header>
       <div fxLayout="column" fxLayoutAlign="start stretch" *ngFor="let table of page.tables" class="padding-gap-x-large table-setting-row">
         <div fxLayout="row" fxLayoutAlign="space-between center">
@@ -35,7 +35,7 @@
           </mat-form-field>
           <mat-form-field fxFlex="15">
             <mat-select [(ngModel)]="table.columnSelectionSM" placeholder="Column selection (Mobile)" name="{{table.tableId}}-columns-selection-sm" tabindex="5" multiple required>
-              <mat-option *ngFor="let field of tableFieldsDef[table.tableId].allowedColumns" [value]="field" [disabled]="(table.columnSelectionSM.length <= 1 && table.columnSelectionSM.includes(field)) || (table.columnSelectionSM.length >= 2 && !table.columnSelectionSM.includes(field))">
+              <mat-option *ngFor="let field of tableFieldsDef[table.tableId].allowedColumns" [value]="field" [disabled]="(table.columnSelectionSM.length <= 1 && table.columnSelectionSM.includes(field)) || (table.columnSelectionSM.length >= 3 && !table.columnSelectionSM.includes(field))">
                 {{field | camelcaseWithReplace:'_'}}
               </mat-option>
             </mat-select>

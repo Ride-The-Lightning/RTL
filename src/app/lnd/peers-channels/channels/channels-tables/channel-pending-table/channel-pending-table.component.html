@@ -76,7 +76,7 @@
           <ng-container matColumnDef="actions">
             <mat-header-cell fxLayoutAlign="end center" class="pl-4 pr-3" *matHeaderCellDef>Actions</mat-header-cell>            
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel" class="pl-4">
-              <button mat-stroked-button color="primary" type="button" tabindex="2" (click)="onForceClosingClick(channel)">View Info</button>          
+              <button mat-stroked-button color="primary" type="button" tabindex="2" (click)="onForceClosingClick(channel)"class="table-actions-button">View Info</button>          
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="no_pending_force_closing">
@@ -125,7 +125,7 @@
           <ng-container matColumnDef="actions">
             <mat-header-cell fxLayoutAlign="end center" class="pl-4 pr-3" *matHeaderCellDef>Actions</mat-header-cell>            
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel" class="pl-4">
-              <button mat-stroked-button color="primary" type="button" tabindex="3" (click)="onClosingClick(channel)">View Info</button>          
+              <button mat-stroked-button color="primary" type="button" tabindex="3" (click)="onClosingClick(channel)"class="table-actions-button">View Info</button>          
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="no_pending_closing">
@@ -180,7 +180,7 @@
           <ng-container matColumnDef="actions">
             <mat-header-cell fxLayoutAlign="end center" class="pl-4 pr-3" *matHeaderCellDef>Actions</mat-header-cell>            
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel" class="pl-4">
-              <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onWaitClosingClick(channel)">View Info</button>          
+              <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onWaitClosingClick(channel)"class="table-actions-button">View Info</button>          
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="no_pending_wait_closing">

@@ -318,7 +318,8 @@ export interface Channel {
   their_channel_reserve_satoshis?: string;
   our_channel_reserve_satoshis?: string;
   spendable_msatoshi?: string;
-  balancedness?: number; // Between -1 to +1
+  direction?: number;
+  balancedness?: number; // Between 0-1-0
 }
 
 export interface ChannelEdge {

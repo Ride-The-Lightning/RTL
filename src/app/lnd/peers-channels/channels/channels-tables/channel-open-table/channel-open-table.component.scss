@@ -43,13 +43,4 @@
 
 .mat-column-actions {
   min-height: 4.8rem;
-  & .bordered-box.table-actions-select {
-    flex: 0 0 100%;
-    @include for_screensize(tab-port) {
-      flex: 0 0 90%;
-    }
-    @include for_screensize(phone) {
-      flex: 0 0 80%;
-    }
-  }
 }

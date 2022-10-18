@@ -9,7 +9,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Channel, GetInfo, ChannelEdge, Balance } from '../../../../../shared/models/clnModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, FEE_RATE_TYPES, APICallStatusEnum, UI_MESSAGES } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, FEE_RATE_TYPES, APICallStatusEnum, UI_MESSAGES, CLN_DEFAULT_PAGE_SETTINGS, SortOrderEnum } from '../../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
@@ -21,7 +21,8 @@ import { RTLEffects } from '../../../../../store/rtl.effects';
 import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
 import { channelLookup, closeChannel, updateChannel } from '../../../../store/cln.actions';
-import { channels, nodeInfoAndBalanceAndNumPeers } from '../../../../store/cln.selector';
+import { channels, clnPageSettings, nodeInfoAndBalanceAndNumPeers } from '../../../../store/cln.selector';
+import { PageSettingsCLN, TableSetting } from '../../../../../shared/models/pageSettings';
 
 @Component({
   selector: 'rtl-cln-channel-open-table',
@@ -37,6 +38,8 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faEye = faEye;
   public faEyeSlash = faEyeSlash;
+  public PAGE_ID = 'peers/channels';
+  public tableSetting: TableSetting = { tableId: 'open_channels', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING };
   public totalBalance = 0;
   public displayedColumns: any[] = [];
   public channelsData: Channel[] = [];
@@ -53,19 +56,10 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   public errorMessage = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private clnEffects: CLNEffects, private commonService: CommonService, private router: Router) {
     this.screenSize = this.commonService.getScreenSize();
-    if (this.screenSize === ScreenSizeEnum.XS) {
-      this.displayedColumns = ['alias', 'msatoshi_to_us', 'msatoshi_to_them', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.displayedColumns = ['short_channel_id', 'alias', 'msatoshi_to_us', 'msatoshi_to_them', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.displayedColumns = ['short_channel_id', 'alias', 'msatoshi_to_us', 'msatoshi_to_them', 'actions'];
-    } else {
-      this.displayedColumns = ['short_channel_id', 'alias', 'msatoshi_to_us', 'msatoshi_to_them', 'balancedness', 'actions'];
-    }
     this.selFilter = this.router?.getCurrentNavigation()?.extras?.state?.filter ? this.router?.getCurrentNavigation()?.extras?.state?.filter : '';
   }
 
@@ -77,7 +71,25 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
         this.totalBalance = infoBalNumpeersSelector.balance.totalBalance || 0;
         this.logger.info(infoBalNumpeersSelector);
       });
-    this.store.select(channels).pipe(takeUntil(this.unSubs[1])).
+    this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[1])).
+      subscribe((settings: { pageSettings: PageSettingsCLN[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessage = '';
+        this.apiCallStatus = settings.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = this.apiCallStatus.message || '';
+        }
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
+        } else {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
+        }
+        this.displayedColumns.unshift('private');
+        this.displayedColumns.push('actions');
+        this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.logger.info(this.displayedColumns);
+      });
+    this.store.select(channels).pipe(takeUntil(this.unSubs[2])).
       subscribe((channelsSeletor: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = channelsSeletor.apiCallStatus;
@@ -154,7 +166,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
           }
         }
       }));
-      this.rtlEffects.closeConfirm.pipe(takeUntil(this.unSubs[1])).subscribe((confirmRes) => {
+      this.rtlEffects.closeConfirm.pipe(takeUntil(this.unSubs[3])).subscribe((confirmRes) => {
         if (confirmRes) {
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
@@ -196,7 +208,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
         }, 0);
       });
       this.rtlEffects.closeConfirm.
-        pipe(takeUntil(this.unSubs[2])).
+        pipe(takeUntil(this.unSubs[4])).
         subscribe((confirmRes) => {
           if (confirmRes) {
             const base_fee = confirmRes[0].inputValue;
@@ -225,7 +237,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       }
     }));
     this.rtlEffects.closeConfirm.
-      pipe(takeUntil(this.unSubs[3])).
+      pipe(takeUntil(this.unSubs[5])).
       subscribe((confirmRes) => {
         if (confirmRes) {
           this.store.dispatch(closeChannel({ payload: { id: channelToClose.id || '', channelId: channelToClose.channel_id || '', force: false } }));
@@ -250,8 +262,11 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   loadChannelsTable(mychannels) {
-    mychannels.sort((a, b) => ((a.active === b.active) ? 0 : ((b.active) ? 1 : -1)));
+    // mychannels.sort((a, b) => ((a.active === b.active) ? 0 : ((b.active) ? 1 : -1)));
     this.channels = new MatTableDataSource<Channel>([...mychannels]);
+    this.channels.sort = this.sort;
+    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+    this.channels.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.channels.filterPredicate = (channel: Channel, fltr: string) => {
       const newChannel = ((channel.connected) ? 'connected' : 'disconnected') + (channel.channel_id ? channel.channel_id.toLowerCase() : '') +
         (channel.short_channel_id ? channel.short_channel_id.toLowerCase() : '') + (channel.id ? channel.id.toLowerCase() : '') + (channel.alias ? channel.alias.toLowerCase() : '') +
@@ -261,8 +276,6 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
         (channel.our_channel_reserve_satoshis ? channel.our_channel_reserve_satoshis : '') + (channel.spendable_msatoshi ? channel.spendable_msatoshi : '');
       return newChannel.includes(fltr);
     };
-    this.channels.sort = this.sort;
-    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.channels.paginator = this.paginator;
     this.applyFilter();
     this.logger.info(this.channels);
