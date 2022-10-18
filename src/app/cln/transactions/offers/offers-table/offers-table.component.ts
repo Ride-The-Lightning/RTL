@@ -11,7 +11,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, AlertTypeEnum } from '../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, AlertTypeEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS } from '../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../../../shared/models/RTLconfig';
 import { GetInfo, Offer, OfferRequest } from '../../../../shared/models/clnModels';
@@ -26,7 +26,8 @@ import { RTLEffects } from '../../../../store/rtl.effects';
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../../store/rtl.actions';
 import { disableOffer } from '../../../store/cln.actions';
-import { clnNodeInformation, clnNodeSettings, offers } from '../../../store/cln.selector';
+import { clnNodeInformation, clnNodeSettings, clnPageSettings, offers } from '../../../store/cln.selector';
+import { PageSettingsCLN, TableSetting } from '../../../../shared/models/pageSettings';
 
 @Component({
   selector: 'rtl-cln-offers-table',
@@ -41,6 +42,8 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   faHistory = faHistory;
+  public PAGE_ID = 'transactions';
+  public tableSetting: TableSetting = { tableId: 'offers', recordsPerPage: PAGE_SIZE, sortBy: 'offer_id', sortOrder: SortOrderEnum.DESCENDING };
   public selNode: SelNodeChild | null = {};
   public newlyAddedOfferMemo = '';
   public newlyAddedOfferValue = 0;
@@ -67,15 +70,6 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private rtlEffects: RTLEffects, private dataService: DataService, private decimalPipe: DecimalPipe, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
-    if (this.screenSize === ScreenSizeEnum.XS) {
-      this.displayedColumns = ['offer_id', 'single_use', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.displayedColumns = ['offer_id', 'single_use', 'used', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.displayedColumns = ['offer_id', 'single_use', 'used', 'actions'];
-    } else {
-      this.displayedColumns = ['offer_id', 'single_use', 'used', 'actions'];
-    }
   }
 
   ngOnInit() {
@@ -85,7 +79,25 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
     this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => {
       this.information = nodeInfo;
     });
-    this.store.select(offers).pipe(takeUntil(this.unSubs[2])).
+    this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[2])).
+      subscribe((settings: { pageSettings: PageSettingsCLN[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessage = '';
+        this.apiCallStatus = settings.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = this.apiCallStatus.message || '';
+        }
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
+        } else {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
+        }
+        this.displayedColumns.unshift('active');
+        this.displayedColumns.push('actions');
+        this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.logger.info(this.displayedColumns);
+      });
+    this.store.select(offers).pipe(takeUntil(this.unSubs[3])).
       subscribe((offersSeletor: { offers: Offer[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = offersSeletor.apiCallStatus;
@@ -149,7 +161,7 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
         }
       }
     }));
-    this.rtlEffects.closeConfirm.pipe(takeUntil(this.unSubs[3])).subscribe((confirmRes) => {
+    this.rtlEffects.closeConfirm.pipe(takeUntil(this.unSubs[4])).subscribe((confirmRes) => {
       if (confirmRes) {
         this.store.dispatch(disableOffer({ payload: { offer_id: selOffer.offer_id! } }));
       }
@@ -216,6 +228,7 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
     this.offers = (offrs) ? new MatTableDataSource<Offer>([...offrs]) : new MatTableDataSource([]);
     this.offers.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.offers.sort = this.sort;
+    this.offers.sort.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.offers.filterPredicate = (rowData: Offer, fltr: string) => {
       const newRowData = ((rowData.active) ? ' active' : ' inactive') + ((rowData.used) ? ' used' : ' unused') + ((rowData.single_use) ? ' single' : ' multiple') + JSON.stringify(rowData).toLowerCase();
       if (fltr === 'active' || fltr === 'inactive' || fltr === 'used' || fltr === 'unused' || fltr === 'single' || fltr === 'multiple') {

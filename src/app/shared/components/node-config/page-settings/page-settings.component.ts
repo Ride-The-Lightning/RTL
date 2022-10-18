@@ -73,6 +73,13 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
     this.store.dispatch(savePageSettings({ payload: this.pageSettings }));
   }
 
+  onTableReset(currPageId: string, currTable: TableSetting) {
+    const pageIdx = this.pageSettings.findIndex((page) => page.pageId === currPageId);
+    const tableIdx = this.pageSettings[pageIdx].tables.findIndex((table) => table.tableId === currTable.tableId);
+    const tableToReplace = CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === currPageId)?.tables.find((table) => table.tableId === currTable.tableId) || this.pageSettings.find((page) => page.pageId === currPageId)?.tables.find((table) => table.tableId === currTable.tableId);
+    this.pageSettings[pageIdx].tables.splice(tableIdx, 1, tableToReplace!);
+  }
+
   onResetPageSettings(prev: string) {
     if (prev === 'current') {
       this.errorMessage = null;

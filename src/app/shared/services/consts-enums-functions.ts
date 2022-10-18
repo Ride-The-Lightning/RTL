@@ -675,16 +675,6 @@ export enum SortOrderEnum {
 export const SORT_ORDERS = ['asc', 'desc'];
 
 export const CLN_DEFAULT_PAGE_SETTINGS: PageSettingsCLN[] = [
-  { pageId: 'payments', tables: [
-    { tableId: 'payments', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,
-      columnSelectionSM: ['created_at', 'msatoshi'],
-      columnSelection: ['created_at', 'type', 'payment_hash', 'msatoshi_sent', 'msatoshi'] }
-  ] },
-  { pageId: 'invoices', tables: [
-    { tableId: 'invoices', recordsPerPage: PAGE_SIZE, sortBy: 'expires_at', sortOrder: SortOrderEnum.DESCENDING,
-      columnSelectionSM: ['expires_at', 'msatoshi'],
-      columnSelection: ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received'] }
-  ] },
   { pageId: 'on-chain', tables: [
     { tableId: 'utxos', recordsPerPage: PAGE_SIZE, sortBy: 'blockheight', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['txid', 'value'],
@@ -692,10 +682,32 @@ export const CLN_DEFAULT_PAGE_SETTINGS: PageSettingsCLN[] = [
     { tableId: 'dust_utxos', recordsPerPage: PAGE_SIZE, sortBy: 'blockheight', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['txid', 'value'],
       columnSelection: ['txid', 'output', 'value', 'blockheight'] }
+  ] },
+  { pageId: 'transactions', tables: [
+    { tableId: 'payments', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['created_at', 'msatoshi'],
+      columnSelection: ['created_at', 'type', 'payment_hash', 'msatoshi_sent', 'msatoshi'] },
+    { tableId: 'invoices', recordsPerPage: PAGE_SIZE, sortBy: 'expires_at', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['expires_at', 'msatoshi'],
+      columnSelection: ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received'] },
+    { tableId: 'offers', recordsPerPage: PAGE_SIZE, sortBy: 'offer_id', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['offer_id', 'single_use'],
+      columnSelection: ['offer_id', 'single_use', 'used'] },
+    { tableId: 'offer_bookmarks', recordsPerPage: PAGE_SIZE, sortBy: 'lastUpdatedAt', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['lastUpdatedAt', 'amountMSat'],
+      columnSelection: ['lastUpdatedAt', 'title', 'amountMSat', 'description'] }
   ] }
 ];
 
 export const CLN_TABLES_DEF = {
+  utxos: {
+    maxColumns: 7,
+    allowedColumns: ['txid', 'address', 'scriptpubkey', 'output', 'value', 'blockheight', 'reserved']
+  },
+  dust_utxos: {
+    maxColumns: 7,
+    allowedColumns: ['txid', 'address', 'scriptpubkey', 'output', 'value', 'blockheight', 'reserved']
+  },
   payments: {
     maxColumns: 5,
     allowedColumns: ['created_at', 'type', 'payment_hash', 'bolt11', 'destination', 'memo', 'label', 'msatoshi_sent', 'msatoshi']
@@ -704,12 +716,12 @@ export const CLN_TABLES_DEF = {
     maxColumns: 6,
     allowedColumns: ['expires_at', 'paid_at', 'type', 'description', 'label', 'payment_hash', 'bolt11', 'msatoshi', 'msatoshi_received']
   },
-  utxos: {
-    maxColumns: 7,
-    allowedColumns: ['txid', 'address', 'scriptpubkey', 'output', 'value', 'blockheight', 'reserved']
+  offers: {
+    maxColumns: 4,
+    allowedColumns: ['offer_id', 'single_use', 'used', 'bolt12']
   },
-  dust_utxos: {
-    maxColumns: 7,
-    allowedColumns: ['txid', 'address', 'scriptpubkey', 'output', 'value', 'blockheight', 'reserved']
+  offer_bookmarks: {
+    maxColumns: 5,
+    allowedColumns: ['lastUpdatedAt', 'title', 'amountMSat', 'description', 'vendor', 'bolt12']
   }
 };

@@ -36,11 +36,11 @@ import { PageSettingsCLN, TableSetting } from '../../../shared/models/pageSettin
 })
 export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @Input() calledFrom = 'transactions'; // Transactions/home
+  @Input() calledFrom = 'transactions'; // transactions/home
   @ViewChild('sendPaymentForm', { static: false }) form;
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
-  public PAGE_ID = 'payments';
+  public PAGE_ID = 'transactions';
   public tableSetting: TableSetting = { tableId: 'payments', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING };
   public faHistory = faHistory;
   public newlyAddedPayment = '';

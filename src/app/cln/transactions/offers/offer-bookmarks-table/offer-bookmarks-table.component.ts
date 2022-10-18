@@ -7,7 +7,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, PaymentTypes, AlertTypeEnum } from '../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, PaymentTypes, AlertTypeEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS } from '../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 import { OfferBookmark } from '../../../../shared/models/clnModels';
 import { LoggerService } from '../../../../shared/services/logger.service';
@@ -16,10 +16,11 @@ import { CommonService } from '../../../../shared/services/common.service';
 import { RTLEffects } from '../../../../store/rtl.effects';
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../../store/rtl.actions';
-import { offerBookmarks } from '../../../store/cln.selector';
+import { clnPageSettings, offerBookmarks } from '../../../store/cln.selector';
 import { CLNOfferInformationComponent } from '../offer-information-modal/offer-information.component';
 import { CLNLightningSendPaymentsComponent } from '../../send-payment-modal/send-payment.component';
 import { deleteOfferBookmark } from '../../../store/cln.actions';
+import { PageSettingsCLN, TableSetting } from '../../../../shared/models/pageSettings';
 
 @Component({
   selector: 'rtl-cln-offer-bookmarks-table',
@@ -34,6 +35,8 @@ export class CLNOfferBookmarksTableComponent implements OnInit, AfterViewInit, O
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   faHistory = faHistory;
+  public PAGE_ID = 'transactions';
+  public tableSetting: TableSetting = { tableId: 'offer_bookmarks', recordsPerPage: PAGE_SIZE, sortBy: 'lastUpdatedAt', sortOrder: SortOrderEnum.DESCENDING };
   public displayedColumns: any[] = [];
   public offersBookmarks: any;
   public offersBookmarksJSONArr: OfferBookmark[] = [];
@@ -49,19 +52,27 @@ export class CLNOfferBookmarksTableComponent implements OnInit, AfterViewInit, O
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private rtlEffects: RTLEffects) {
     this.screenSize = this.commonService.getScreenSize();
-    if (this.screenSize === ScreenSizeEnum.XS) {
-      this.displayedColumns = ['lastUpdatedAt', 'title', 'amountMSat', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.displayedColumns = ['lastUpdatedAt', 'title', 'amountMSat', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.displayedColumns = ['lastUpdatedAt', 'title', 'amountMSat', 'description', 'actions'];
-    } else {
-      this.displayedColumns = ['lastUpdatedAt', 'title', 'amountMSat', 'description', 'actions'];
-    }
   }
 
   ngOnInit() {
-    this.store.select(offerBookmarks).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[0])).
+      subscribe((settings: { pageSettings: PageSettingsCLN[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessage = '';
+        this.apiCallStatus = settings.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = this.apiCallStatus.message || '';
+        }
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
+        } else {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
+        }
+        this.displayedColumns.push('actions');
+        this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.logger.info(this.displayedColumns);
+      });
+    this.store.select(offerBookmarks).pipe(takeUntil(this.unSubs[1])).
       subscribe((offerBMsSeletor: { offersBookmarks: OfferBookmark[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = offerBMsSeletor.apiCallStatus;
@@ -106,7 +117,7 @@ export class CLNOfferBookmarksTableComponent implements OnInit, AfterViewInit, O
         }
       }
     }));
-    this.rtlEffects.closeConfirm.pipe(takeUntil(this.unSubs[1])).subscribe((confirmRes) => {
+    this.rtlEffects.closeConfirm.pipe(takeUntil(this.unSubs[2])).subscribe((confirmRes) => {
       if (confirmRes) {
         this.store.dispatch(deleteOfferBookmark({ payload: { bolt12: selOffer.bolt12! } }));
       }
@@ -134,6 +145,7 @@ export class CLNOfferBookmarksTableComponent implements OnInit, AfterViewInit, O
     this.offersBookmarks = (OffrBMs) ? new MatTableDataSource<OfferBookmark>([...OffrBMs]) : new MatTableDataSource([]);
     this.offersBookmarks.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.offersBookmarks.sort = this.sort;
+    this.offersBookmarks.sort.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.offersBookmarks.filterPredicate = (Ofrbm: OfferBookmark, fltr: string) => JSON.stringify(Ofrbm).toLowerCase().includes(fltr);
     this.offersBookmarks.paginator = this.paginator;
     this.applyFilter();

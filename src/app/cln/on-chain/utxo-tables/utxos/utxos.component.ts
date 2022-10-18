@@ -33,7 +33,7 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
   @Input() numDustUTXOs = 0;
   @Input() isDustUTXO = false;
   public PAGE_ID = 'on-chain';
-  public tableSetting: TableSetting = { tableId: 'utxos', recordsPerPage: 10, sortBy: 'status', sortOrder: SortOrderEnum.DESCENDING };
+  public tableSetting: TableSetting = { tableId: 'utxos', recordsPerPage: PAGE_SIZE, sortBy: 'status', sortOrder: SortOrderEnum.DESCENDING };
   public displayedColumns: any[] = [];
   public utxos: UTXO[];
   public listUTXOs: any;

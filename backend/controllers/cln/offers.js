@@ -11,9 +11,6 @@ export const listOfferBookmarks = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Getting Offer Bookmarks..' });
     databaseService.find(req.session.selectedNode, CollectionsEnum.OFFERS).then((offers) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Bookmarks Received', data: offers });
-        if (offers && offers.length > 0) {
-            offers = common.sortDescByKey(offers, 'lastUpdatedAt');
-        }
         res.status(200).json(offers);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Offers', 'Offer Bookmarks Error', req.session.selectedNode);
