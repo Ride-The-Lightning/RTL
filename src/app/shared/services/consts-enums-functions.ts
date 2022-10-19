@@ -716,16 +716,16 @@ export const CLN_DEFAULT_PAGE_SETTINGS: PageSettingsCLN[] = [
   { pageId: 'routing', tables: [
     { tableId: 'forwarding_history', recordsPerPage: PAGE_SIZE, sortBy: 'received_time', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['received_time', 'in_msatoshi', 'out_msatoshi'],
-      columnSelection: ['received_time', 'resolved_time', 'in_channel_alias', 'out_channel_alias', 'in_msatoshi', 'out_msatoshi', 'fee'] }
-    // { tableId: 'routing_peers', recordsPerPage: PAGE_SIZE, sortBy: 'expires_at', sortOrder: SortOrderEnum.DESCENDING,
-    //   columnSelectionSM: ['expires_at', 'msatoshi'],
-    //   columnSelection: ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received'] },
-    // { tableId: 'failed', recordsPerPage: PAGE_SIZE, sortBy: 'offer_id', sortOrder: SortOrderEnum.DESCENDING,
-    //   columnSelectionSM: ['offer_id', 'single_use'],
-    //   columnSelection: ['offer_id', 'single_use', 'used'] },
-    // { tableId: 'local_failed', recordsPerPage: PAGE_SIZE, sortBy: 'lastUpdatedAt', sortOrder: SortOrderEnum.DESCENDING,
-    //   columnSelectionSM: ['lastUpdatedAt', 'amountMSat'],
-    //   columnSelection: ['lastUpdatedAt', 'title', 'amountMSat', 'description'] }
+      columnSelection: ['received_time', 'resolved_time', 'in_channel_alias', 'out_channel_alias', 'in_msatoshi', 'out_msatoshi', 'fee'] },
+    { tableId: 'routing_peers', recordsPerPage: PAGE_SIZE, sortBy: 'total_fee', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['alias', 'events', 'total_fee'],
+      columnSelection: ['channel_id', 'alias', 'events', 'total_amount', 'total_fee'] },
+    { tableId: 'failed', recordsPerPage: PAGE_SIZE, sortBy: 'received_time', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['received_time', 'in_channel_alias', 'in_msatoshi'],
+      columnSelection: ['received_time', 'resolved_time', 'in_channel_alias', 'out_channel_alias', 'in_msatoshi', 'out_msatoshi', 'fee'] },
+    { tableId: 'local_failed', recordsPerPage: PAGE_SIZE, sortBy: 'received_time', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['received_time', 'in_channel_alias', 'in_msatoshi'],
+      columnSelection: ['received_time', 'in_channel_alias', 'in_msatoshi', 'style', 'failreason'] }
   ] }
 ];
 
@@ -773,5 +773,17 @@ export const CLN_TABLES_DEF = {
   forwarding_history: {
     maxColumns: 8,
     allowedColumns: ['received_time', 'resolved_time', 'in_channel', 'in_channel_alias', 'out_channel', 'out_channel_alias', 'payment_hash', 'in_msatoshi', 'out_msatoshi', 'fee']
+  },
+  routing_peers: {
+    maxColumns: 5,
+    allowedColumns: ['channel_id', 'alias', 'events', 'total_amount', 'total_fee']
+  },
+  failed: {
+    maxColumns: 7,
+    allowedColumns: ['received_time', 'resolved_time', 'in_channel', 'in_channel_alias', 'out_channel', 'out_channel_alias', 'in_msatoshi', 'out_msatoshi', 'fee']
+  },
+  local_failed: {
+    maxColumns: 6,
+    allowedColumns: ['received_time', 'in_channel', 'in_channel_alias', 'in_msatoshi', 'style', 'failreason']
   }
 };
