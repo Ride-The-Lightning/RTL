@@ -697,7 +697,7 @@ export const mockResponseData = {
         channel_fee_max_proportional_thousandths: 1,
         compact_lease: '029a0032000100004e20'
       },
-      channelOpeningFee: 22165
+      channel_opening_fee: 22165
     },
     {
       nodeid: '023b485342839753dea66ff280df74e73570abc8160ad9a3456267dc5249e7a749',
@@ -720,7 +720,7 @@ export const mockResponseData = {
         channel_fee_max_proportional_thousandths: 1,
         compact_lease: '029a003200010000271003e8'
       },
-      channelOpeningFee: 12165
+      channel_opening_fee: 12165
     }
   ],
   setSelectedNodeSuccess: {

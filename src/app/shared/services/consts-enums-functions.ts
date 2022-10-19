@@ -683,7 +683,7 @@ export const CLN_DEFAULT_PAGE_SETTINGS: PageSettingsCLN[] = [
       columnSelectionSM: ['txid', 'value'],
       columnSelection: ['txid', 'output', 'value', 'blockheight'] }
   ] },
-  { pageId: 'peers/channels', tables: [
+  { pageId: 'peers_channels', tables: [
     { tableId: 'open_channels', recordsPerPage: PAGE_SIZE, sortBy: 'msatoshi_to_us', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['alias', 'msatoshi_to_us', 'msatoshi_to_them'],
       columnSelection: ['short_channel_id', 'alias', 'msatoshi_to_us', 'msatoshi_to_them', 'balancedness'] },
@@ -693,6 +693,11 @@ export const CLN_DEFAULT_PAGE_SETTINGS: PageSettingsCLN[] = [
     { tableId: 'peers', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.ASCENDING,
       columnSelectionSM: ['alias', 'id'],
       columnSelection: ['alias', 'id', 'netaddr'] }
+  ] },
+  { pageId: 'liquidity_ads', tables: [
+    { tableId: 'liquidity_ads', recordsPerPage: PAGE_SIZE, sortBy: 'channel_opening_fee', sortOrder: SortOrderEnum.ASCENDING,
+      columnSelectionSM: ['alias', 'channel_opening_fee'],
+      columnSelection: ['alias', 'last_timestamp', 'lease_fee', 'routing_fee', 'channel_opening_fee'] }
   ] },
   { pageId: 'transactions', tables: [
     { tableId: 'payments', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,
@@ -718,6 +723,10 @@ export const CLN_TABLES_DEF = {
   dust_utxos: {
     maxColumns: 7,
     allowedColumns: ['txid', 'address', 'scriptpubkey', 'output', 'value', 'blockheight', 'reserved']
+  },
+  liquidity_ads: {
+    maxColumns: 8,
+    allowedColumns: ['alias', 'nodeid', 'last_timestamp', 'compact_lease', 'lease_fee', 'routing_fee', 'channel_opening_fee', 'funding_weight']
   },
   open_channels: {
     maxColumns: 8,

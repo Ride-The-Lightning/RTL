@@ -313,9 +313,9 @@ export class DataService implements OnDestroy {
     }));
   }
 
-  getOrUpdateFunderPolicy(policy?: any, policyMod?: any, leaseFeeBaseMsat?: any, leaseFeeBasis?: any, channelFeeMaxBaseMsat?: any, channelFeeMaxProportional?: any) {
+  getOrUpdateFunderPolicy(policy?: any, policyMod?: any, lease_feeBaseMsat?: any, lease_fee_basis?: any, channelFeeMaxBaseMsat?: any, channelFeeMaxProportional?: any) {
     return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
-      const postParams = policy ? { policy: policy, policy_mod: policyMod, lease_fee_base_msat: leaseFeeBaseMsat, lease_fee_basis: leaseFeeBasis, channel_fee_max_base_msat: channelFeeMaxBaseMsat, channel_fee_max_proportional_thousandths: channelFeeMaxProportional } : null;
+      const postParams = policy ? { policy: policy, policy_mod: policyMod, lease_fee_base_msat: lease_feeBaseMsat, lease_fee_basis: lease_fee_basis, channel_fee_max_base_msat: channelFeeMaxBaseMsat, channel_fee_max_proportional_thousandths: channelFeeMaxProportional } : null;
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_FUNDER_POLICY }));
       return this.httpClient.post(this.APIUrl + '/' + updatedLnImplementation + environment.CHANNELS_API + '/funderUpdate', postParams).pipe(
         takeUntil(this.unSubs[11]),

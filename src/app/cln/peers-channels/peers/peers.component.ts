@@ -37,7 +37,7 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faUsers = faUsers;
-  public PAGE_ID = 'peers/channels';
+  public PAGE_ID = 'peers_channels';
   public tableSetting: TableSetting = { tableId: 'peers', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING };
   public newlyAddedPeer = '';
   public displayedColumns: any[] = [];

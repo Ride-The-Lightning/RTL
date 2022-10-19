@@ -38,7 +38,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faEye = faEye;
   public faEyeSlash = faEyeSlash;
-  public PAGE_ID = 'peers/channels';
+  public PAGE_ID = 'peers_channels';
   public tableSetting: TableSetting = { tableId: 'open_channels', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING };
   public totalBalance = 0;
   public displayedColumns: any[] = [];

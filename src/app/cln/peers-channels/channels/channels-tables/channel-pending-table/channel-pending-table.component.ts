@@ -36,7 +36,7 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faEye = faEye;
   public faEyeSlash = faEyeSlash;
-  public PAGE_ID = 'peers/channels';
+  public PAGE_ID = 'peers_channels';
   public tableSetting: TableSetting = { tableId: 'pending_inactive_channels', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING };
   public isCompatibleVersion = false;
   public totalBalance = 0;

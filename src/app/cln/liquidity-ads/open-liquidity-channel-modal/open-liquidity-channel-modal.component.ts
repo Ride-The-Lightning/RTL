@@ -68,7 +68,7 @@ export class CLNOpenLiquidityChannelComponent implements OnInit, OnDestroy {
   }
 
   calculateFee() {
-    this.node.channelOpeningFee = (+(this.node.option_will_fund?.lease_fee_base_msat || 0) / 1000) + (this.requestedAmount * (+(this.node.option_will_fund?.lease_fee_basis || 0)) / 10000) + ((+(this.node.option_will_fund?.funding_weight || 0) / 4) * this.feeRate);
+    this.node.channel_opening_fee = (+(this.node.option_will_fund?.lease_fee_base_msat || 0) / 1000) + (this.requestedAmount * (+(this.node.option_will_fund?.lease_fee_basis || 0)) / 10000) + ((+(this.node.option_will_fund?.funding_weight || 0) / 4) * this.feeRate);
   }
 
   onOpenChannel(): boolean | void {

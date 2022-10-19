@@ -5,9 +5,9 @@
       <span class="page-title">Grid Settings</span>
     </div>
     <ng-container *ngIf="errorMessage && errorMessage.page === 'unknown'" [ngTemplateOutlet]="errorObjectBlock" [ngTemplateOutletContext]="{error: errorMessage}"></ng-container>
-    <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1" [ngClass]="{'error-border': errorMessage?.page === page.pageId}" expanded="true" *ngFor="let page of pageSettings">
+    <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1" [ngClass]="{'error-border': errorMessage?.page === page.pageId}" expanded="false" *ngFor="let page of pageSettings">
       <mat-expansion-panel-header>
-        <mat-panel-title>{{page.pageId | camelcase}}</mat-panel-title>
+        <mat-panel-title>{{page.pageId | camelcaseWithReplace:'_'}}</mat-panel-title>
       </mat-expansion-panel-header>
       <div fxLayout="column" fxLayoutAlign="start stretch" *ngFor="let table of page.tables" class="padding-gap-x-large table-setting-row">
         <div fxLayout="row" fxLayoutAlign="space-between center">

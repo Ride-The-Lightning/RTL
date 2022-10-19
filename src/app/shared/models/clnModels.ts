@@ -347,9 +347,9 @@ export interface LookupNode {
   last_timestamp?: number;
   address_types?: string[];
   features?: string;
-  channelCount?: number;
-  nodeCapacity?: number;
-  channelOpeningFee?: number;
+  channel_count?: number;
+  node_capacity?: number;
+  channel_opening_fee?: number;
   addresses?: Address[];
   option_will_fund?: {
     lease_fee_base_msat?: number;

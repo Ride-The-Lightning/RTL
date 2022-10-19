@@ -30,7 +30,7 @@
           </mat-form-field>
         </div>
         <div fxFlex="100" class="alert alert-info mt-4">
-          <span>Total cost to lease {{node.channelOpeningFee | number}} (Sats)</span>
+          <span>Total cost to lease {{node.channel_opening_fee | number}} (Sats)</span>
         </div>
         <div fxFlex="100" class="alert alert-danger mt-2" *ngIf="channelConnectionError !== ''">
           <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
