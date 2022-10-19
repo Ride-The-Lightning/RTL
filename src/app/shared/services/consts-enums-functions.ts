@@ -712,6 +712,20 @@ export const CLN_DEFAULT_PAGE_SETTINGS: PageSettingsCLN[] = [
     { tableId: 'offer_bookmarks', recordsPerPage: PAGE_SIZE, sortBy: 'lastUpdatedAt', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['lastUpdatedAt', 'amountMSat'],
       columnSelection: ['lastUpdatedAt', 'title', 'amountMSat', 'description'] }
+  ] },
+  { pageId: 'routing', tables: [
+    { tableId: 'forwarding_history', recordsPerPage: PAGE_SIZE, sortBy: 'received_time', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['received_time', 'in_msatoshi', 'out_msatoshi'],
+      columnSelection: ['received_time', 'resolved_time', 'in_channel_alias', 'out_channel_alias', 'in_msatoshi', 'out_msatoshi', 'fee'] }
+    // { tableId: 'routing_peers', recordsPerPage: PAGE_SIZE, sortBy: 'expires_at', sortOrder: SortOrderEnum.DESCENDING,
+    //   columnSelectionSM: ['expires_at', 'msatoshi'],
+    //   columnSelection: ['expires_at', 'paid_at', 'type', 'description', 'msatoshi', 'msatoshi_received'] },
+    // { tableId: 'failed', recordsPerPage: PAGE_SIZE, sortBy: 'offer_id', sortOrder: SortOrderEnum.DESCENDING,
+    //   columnSelectionSM: ['offer_id', 'single_use'],
+    //   columnSelection: ['offer_id', 'single_use', 'used'] },
+    // { tableId: 'local_failed', recordsPerPage: PAGE_SIZE, sortBy: 'lastUpdatedAt', sortOrder: SortOrderEnum.DESCENDING,
+    //   columnSelectionSM: ['lastUpdatedAt', 'amountMSat'],
+    //   columnSelection: ['lastUpdatedAt', 'title', 'amountMSat', 'description'] }
   ] }
 ];
 
@@ -755,5 +769,9 @@ export const CLN_TABLES_DEF = {
   offer_bookmarks: {
     maxColumns: 5,
     allowedColumns: ['lastUpdatedAt', 'title', 'amountMSat', 'description', 'vendor', 'bolt12']
+  },
+  forwarding_history: {
+    maxColumns: 8,
+    allowedColumns: ['received_time', 'resolved_time', 'in_channel', 'in_channel_alias', 'out_channel', 'out_channel_alias', 'payment_hash', 'in_msatoshi', 'out_msatoshi', 'fee']
   }
 };

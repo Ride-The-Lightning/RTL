@@ -279,6 +279,7 @@ export interface LocalFailedEvent {
   in_msat?: string;
   status?: string;
   received_time?: number;
+  resolved_time?: number;
   failcode?: number;
   failreason?: string;
 }
