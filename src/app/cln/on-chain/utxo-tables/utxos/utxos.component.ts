@@ -32,7 +32,7 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   @Input() numDustUTXOs = 0;
   @Input() isDustUTXO = false;
-  public PAGE_ID = 'on-chain';
+  public PAGE_ID = 'on_chain';
   public tableSetting: TableSetting = { tableId: 'utxos', recordsPerPage: PAGE_SIZE, sortBy: 'status', sortOrder: SortOrderEnum.DESCENDING };
   public displayedColumns: any[] = [];
   public utxos: UTXO[];

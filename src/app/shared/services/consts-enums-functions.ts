@@ -675,7 +675,7 @@ export enum SortOrderEnum {
 export const SORT_ORDERS = ['asc', 'desc'];
 
 export const CLN_DEFAULT_PAGE_SETTINGS: PageSettingsCLN[] = [
-  { pageId: 'on-chain', tables: [
+  { pageId: 'on_chain', tables: [
     { tableId: 'utxos', recordsPerPage: PAGE_SIZE, sortBy: 'blockheight', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['txid', 'value'],
       columnSelection: ['txid', 'output', 'value', 'blockheight'] },
@@ -726,64 +726,92 @@ export const CLN_DEFAULT_PAGE_SETTINGS: PageSettingsCLN[] = [
     { tableId: 'local_failed', recordsPerPage: PAGE_SIZE, sortBy: 'received_time', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['received_time', 'in_channel_alias', 'in_msatoshi'],
       columnSelection: ['received_time', 'in_channel_alias', 'in_msatoshi', 'style', 'failreason'] }
+  ] },
+  { pageId: 'reports', tables: [
+    { tableId: 'routing', recordsPerPage: PAGE_SIZE, sortBy: 'received_time', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['received_time', 'in_msatoshi', 'out_msatoshi'],
+      columnSelection: ['received_time', 'resolved_time', 'in_channel_alias', 'out_channel_alias', 'in_msatoshi', 'out_msatoshi', 'fee'] },
+    { tableId: 'transactions', recordsPerPage: PAGE_SIZE, sortBy: 'date', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['date', 'amount_paid', 'amount_received'],
+      columnSelection: ['date', 'amount_paid', 'num_payments', 'amount_received', 'num_invoices'] }
   ] }
 ];
 
 export const CLN_TABLES_DEF = {
-  utxos: {
-    maxColumns: 7,
-    allowedColumns: ['txid', 'address', 'scriptpubkey', 'output', 'value', 'blockheight', 'reserved']
+  on_chain: {
+    utxos: {
+      maxColumns: 7,
+      allowedColumns: ['txid', 'address', 'scriptpubkey', 'output', 'value', 'blockheight', 'reserved']
+    },
+    dust_utxos: {
+      maxColumns: 7,
+      allowedColumns: ['txid', 'address', 'scriptpubkey', 'output', 'value', 'blockheight', 'reserved']
+    }
   },
-  dust_utxos: {
-    maxColumns: 7,
-    allowedColumns: ['txid', 'address', 'scriptpubkey', 'output', 'value', 'blockheight', 'reserved']
+  peers_channels: {
+    open_channels: {
+      maxColumns: 8,
+      allowedColumns: ['short_channel_id', 'alias', 'id', 'channel_id', 'funding_txid', 'connected', 'our_channel_reserve_satoshis', 'their_channel_reserve_satoshis', 'msatoshi_total', 'spendable_msatoshi', 'msatoshi_to_us', 'msatoshi_to_them', 'balancedness']
+    },
+    pending_inactive_channels: {
+      maxColumns: 8,
+      allowedColumns: ['alias', 'id', 'channel_id', 'funding_txid', 'connected', 'state', 'our_channel_reserve_satoshis', 'their_channel_reserve_satoshis', 'msatoshi_total', 'spendable_msatoshi', 'msatoshi_to_us', 'msatoshi_to_them']
+    },
+    peers: {
+      maxColumns: 3,
+      allowedColumns: ['alias', 'id', 'netaddr']
+    }
   },
   liquidity_ads: {
-    maxColumns: 8,
-    allowedColumns: ['alias', 'nodeid', 'last_timestamp', 'compact_lease', 'lease_fee', 'routing_fee', 'channel_opening_fee', 'funding_weight']
+    liquidity_ads: {
+      maxColumns: 8,
+      allowedColumns: ['alias', 'nodeid', 'last_timestamp', 'compact_lease', 'lease_fee', 'routing_fee', 'channel_opening_fee', 'funding_weight']
+    }
   },
-  open_channels: {
-    maxColumns: 8,
-    allowedColumns: ['short_channel_id', 'alias', 'id', 'channel_id', 'funding_txid', 'connected', 'our_channel_reserve_satoshis', 'their_channel_reserve_satoshis', 'msatoshi_total', 'spendable_msatoshi', 'msatoshi_to_us', 'msatoshi_to_them', 'balancedness']
+  transactions: {
+    payments: {
+      maxColumns: 5,
+      allowedColumns: ['created_at', 'type', 'payment_hash', 'bolt11', 'destination', 'memo', 'label', 'msatoshi_sent', 'msatoshi']
+    },
+    invoices: {
+      maxColumns: 6,
+      allowedColumns: ['expires_at', 'paid_at', 'type', 'description', 'label', 'payment_hash', 'bolt11', 'msatoshi', 'msatoshi_received']
+    },
+    offers: {
+      maxColumns: 4,
+      allowedColumns: ['offer_id', 'single_use', 'used', 'bolt12']
+    },
+    offer_bookmarks: {
+      maxColumns: 5,
+      allowedColumns: ['lastUpdatedAt', 'title', 'amountMSat', 'description', 'vendor', 'bolt12']
+    }
   },
-  pending_inactive_channels: {
-    maxColumns: 8,
-    allowedColumns: ['alias', 'id', 'channel_id', 'funding_txid', 'connected', 'state', 'our_channel_reserve_satoshis', 'their_channel_reserve_satoshis', 'msatoshi_total', 'spendable_msatoshi', 'msatoshi_to_us', 'msatoshi_to_them']
+  routing: {
+    forwarding_history: {
+      maxColumns: 8,
+      allowedColumns: ['received_time', 'resolved_time', 'in_channel', 'in_channel_alias', 'out_channel', 'out_channel_alias', 'payment_hash', 'in_msatoshi', 'out_msatoshi', 'fee']
+    },
+    routing_peers: {
+      maxColumns: 5,
+      allowedColumns: ['channel_id', 'alias', 'events', 'total_amount', 'total_fee']
+    },
+    failed: {
+      maxColumns: 7,
+      allowedColumns: ['received_time', 'resolved_time', 'in_channel', 'in_channel_alias', 'out_channel', 'out_channel_alias', 'in_msatoshi', 'out_msatoshi', 'fee']
+    },
+    local_failed: {
+      maxColumns: 6,
+      allowedColumns: ['received_time', 'in_channel', 'in_channel_alias', 'in_msatoshi', 'style', 'failreason']
+    }
   },
-  peers: {
-    maxColumns: 3,
-    allowedColumns: ['alias', 'id', 'netaddr']
-  },
-  payments: {
-    maxColumns: 5,
-    allowedColumns: ['created_at', 'type', 'payment_hash', 'bolt11', 'destination', 'memo', 'label', 'msatoshi_sent', 'msatoshi']
-  },
-  invoices: {
-    maxColumns: 6,
-    allowedColumns: ['expires_at', 'paid_at', 'type', 'description', 'label', 'payment_hash', 'bolt11', 'msatoshi', 'msatoshi_received']
-  },
-  offers: {
-    maxColumns: 4,
-    allowedColumns: ['offer_id', 'single_use', 'used', 'bolt12']
-  },
-  offer_bookmarks: {
-    maxColumns: 5,
-    allowedColumns: ['lastUpdatedAt', 'title', 'amountMSat', 'description', 'vendor', 'bolt12']
-  },
-  forwarding_history: {
-    maxColumns: 8,
-    allowedColumns: ['received_time', 'resolved_time', 'in_channel', 'in_channel_alias', 'out_channel', 'out_channel_alias', 'payment_hash', 'in_msatoshi', 'out_msatoshi', 'fee']
-  },
-  routing_peers: {
-    maxColumns: 5,
-    allowedColumns: ['channel_id', 'alias', 'events', 'total_amount', 'total_fee']
-  },
-  failed: {
-    maxColumns: 7,
-    allowedColumns: ['received_time', 'resolved_time', 'in_channel', 'in_channel_alias', 'out_channel', 'out_channel_alias', 'in_msatoshi', 'out_msatoshi', 'fee']
-  },
-  local_failed: {
-    maxColumns: 6,
-    allowedColumns: ['received_time', 'in_channel', 'in_channel_alias', 'in_msatoshi', 'style', 'failreason']
+  reports: {
+    routing: {
+      maxColumns: 8,
+      allowedColumns: ['received_time', 'resolved_time', 'in_channel', 'in_channel_alias', 'out_channel', 'out_channel_alias', 'payment_hash', 'in_msatoshi', 'out_msatoshi', 'fee']
+    },
+    transactions: {
+      maxColumns: 5,
+      allowedColumns: ['date', 'amount_paid', 'num_payments', 'amount_received', 'num_invoices']
+    }
   }
 };

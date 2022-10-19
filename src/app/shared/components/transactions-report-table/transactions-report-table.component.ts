@@ -5,11 +5,12 @@ import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, SCROLL_RANGES } from '../../services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, SCROLL_RANGES, SortOrderEnum } from '../../services/consts-enums-functions';
 import { CommonService } from '../../services/common.service';
 
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
+import { TableSetting } from '../../models/pageSettings';
 
 @Component({
   selector: 'rtl-transactions-report-table',
@@ -24,12 +25,13 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
   @Input() dataRange = SCROLL_RANGES[0];
   @Input() dataList = [];
   @Input() filterValue = '';
+  @Input() displayedColumns: any[] = ['date', 'amount_paid', 'num_payments', 'amount_received', 'num_invoices'];
+  @Input() tableSetting: TableSetting = { tableId: 'transactions', recordsPerPage: PAGE_SIZE, sortBy: 'date', sortOrder: SortOrderEnum.DESCENDING };
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public timezoneOffset = new Date(Date.now()).getTimezoneOffset() * 60;
   public scrollRanges = SCROLL_RANGES;
   public transactions: any;
-  public displayedColumns: any[] = [];
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -37,16 +39,10 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
 
   constructor(private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
-    if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
-      this.displayedColumns = ['date', 'amount_paid', 'amount_received', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.displayedColumns = ['date', 'amount_paid', 'num_payments', 'amount_received', 'num_invoices', 'actions'];
-    } else {
-      this.displayedColumns = ['date', 'amount_paid', 'num_payments', 'amount_received', 'num_invoices', 'actions'];
-    }
   }
 
   ngOnInit() {
+    this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
     if (this.dataList && this.dataList.length > 0) {
       this.loadTransactionsTable(this.dataList);
     }
@@ -58,6 +54,7 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.dataList && !changes.dataList.firstChange) {
+      this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
       this.loadTransactionsTable(this.dataList);
     }
     if (changes.filterValue && !changes.filterValue.firstChange) {
@@ -99,6 +96,7 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
     if (this.transactions && this.transactions.data && this.transactions.data.length > 0) {
       this.transactions.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
       this.transactions.sort = this.sort;
+      this.transactions.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
       this.transactions.filterPredicate = (rowData: any, fltr: string) => {
         const newRowData = ((rowData.date) ? (this.datePipe.transform(rowData.date, 'dd/MMM') + '/' + rowData.date.getFullYear()).toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
         return newRowData.includes(fltr);

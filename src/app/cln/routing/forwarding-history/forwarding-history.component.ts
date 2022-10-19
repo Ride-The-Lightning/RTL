@@ -32,9 +32,10 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  @Input() pageId = 'routing';
+  @Input() tableId = 'forwarding_history';
   @Input() eventsData = [];
   @Input() filterValue = '';
-  public PAGE_ID = 'routing';
   public tableSetting: TableSetting = { tableId: 'forwarding_history', recordsPerPage: PAGE_SIZE, sortBy: 'received_time', sortOrder: SortOrderEnum.DESCENDING };
   public successfulEvents: ForwardingEvent[] = [];
   public displayedColumns: any[] = [];
@@ -63,7 +64,8 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = this.apiCallStatus.message || '';
         }
-        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        this.tableSetting.tableId = this.tableId;
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.pageId)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.pageId)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
         if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
           this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
         } else {

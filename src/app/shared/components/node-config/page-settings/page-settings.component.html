@@ -35,7 +35,7 @@
           </mat-form-field>
           <mat-form-field fxFlex="15">
             <mat-select [(ngModel)]="table.columnSelectionSM" placeholder="Column selection (Mobile)" name="{{table.tableId}}-columns-selection-sm" tabindex="5" multiple required>
-              <mat-option *ngFor="let field of tableFieldsDef[table.tableId].allowedColumns" [value]="field" [disabled]="(table.columnSelectionSM.length <= 1 && table.columnSelectionSM.includes(field)) || (table.columnSelectionSM.length >= 3 && !table.columnSelectionSM.includes(field))">
+              <mat-option *ngFor="let field of tableFieldsDef[page.pageId][table.tableId].allowedColumns" [value]="field" [disabled]="(table.columnSelectionSM.length <= 1 && table.columnSelectionSM.includes(field)) || (table.columnSelectionSM.length >= 3 && !table.columnSelectionSM.includes(field))">
                 {{field | camelcaseWithReplace:'_'}}
               </mat-option>
             </mat-select>
@@ -43,11 +43,11 @@
           </mat-form-field>
           <mat-form-field fxFlex="40">
             <mat-select [(ngModel)]="table.columnSelection" (selectionChange)="oncolumnSelectionChange(table)" placeholder="Column selection (Desktop)" name="{{table.tableId}}-columns-selection" tabindex="6" multiple required>
-              <mat-option *ngFor="let field of tableFieldsDef[table.tableId].allowedColumns" [value]="field" [disabled]="(table.columnSelection.length <= 2 && table.columnSelection.includes(field)) || (table.columnSelection.length >= tableFieldsDef[table.tableId].maxColumns && !table.columnSelection.includes(field))">
+              <mat-option *ngFor="let field of tableFieldsDef[page.pageId][table.tableId].allowedColumns" [value]="field" [disabled]="(table.columnSelection.length <= 2 && table.columnSelection.includes(field)) || (table.columnSelection.length >= tableFieldsDef[page.pageId][table.tableId].maxColumns && !table.columnSelection.includes(field))">
                   {{field | camelcaseWithReplace:'_'}}
               </mat-option>
             </mat-select>
-            <mat-hint>Column selection should be between 2 and {{tableFieldsDef[table.tableId].maxColumns}}</mat-hint>
+            <mat-hint>Column selection should be between 2 and {{tableFieldsDef[page.pageId][table.tableId].maxColumns}}</mat-hint>
           </mat-form-field>
           <button mat-icon-button color="primary" type="button" tabindex="7" (click)="onTableReset(page.pageId, table)" matTooltip="Reset to Default"><mat-icon>restore</mat-icon></button>
         </div>
