@@ -143,7 +143,7 @@
           <ng-container matColumnDef="group_type">
             <td mat-cell *matCellDef="let payment">
               <span fxLayoutAlign="start center" class="mpp-row-span">{{ payment?.bolt12 ? 'Bolt12' : payment?.bolt11 ? 'Bolt11' : 'Keysend' }}</span>
-              <span *ngIf="payment.is_expanded"><span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="mpp-row-span">{{ payment?.bolt12 ? 'Bolt12' : payment?.bolt11 ? 'Bolt11' : 'Keysend' }}</span></span>
+              <span *ngIf="payment.is_expanded"><span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="mpp-row-span"></span></span>
             </td>
           </ng-container>
           <ng-container matColumnDef="group_payment_hash">
@@ -165,7 +165,7 @@
               </span>
               <span *ngIf="payment.is_expanded">
                 <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="ellipsis-parent mpp-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">
-                  <span class="ellipsis-child">{{mpp?.bolt11}}</span>
+                  <span class="ellipsis-child"></span>
                 </span>
               </span>
             </td>
@@ -177,7 +177,7 @@
               </span>
               <span *ngIf="payment.is_expanded">
                 <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="ellipsis-parent mpp-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">
-                  <span class="ellipsis-child">{{mpp?.label}}</span>
+                  <span class="ellipsis-child"></span>
                 </span>
               </span>
             </td>
@@ -189,7 +189,7 @@
               </span>
               <span *ngIf="payment.is_expanded">
                 <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="ellipsis-parent mpp-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">
-                  <span class="ellipsis-child">{{mpp?.destination}}</span>
+                  <span class="ellipsis-child"></span>
                 </span>
               </span>
             </td>
@@ -201,7 +201,7 @@
               </span>
               <span *ngIf="payment.is_expanded">
                 <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="ellipsis-parent mpp-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">
-                  <span class="ellipsis-child">{{mpp?.memo}}</span>
+                  <span class="ellipsis-child"></span>
                 </span>
               </span>
             </td>

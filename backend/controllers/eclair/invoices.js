@@ -71,10 +71,7 @@ export const listInvoices = (req, res, next) => {
             const invoices = (!body[0] || body[0].length <= 0) ? [] : body[0];
             pendingInvoices = (!body[1] || body[1].length <= 0) ? [] : body[1];
             return Promise.all(invoices === null || invoices === void 0 ? void 0 : invoices.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.ln_server_url, invoice))).
-                then((values) => {
-                body = common.sortDescByKey(invoices, 'expiresAt');
-                return res.status(200).json(invoices);
-            });
+                then((values) => res.status(200).json(invoices));
         });
     }
     else {
@@ -86,7 +83,6 @@ export const listInvoices = (req, res, next) => {
             if (invoices && invoices.length > 0) {
                 return Promise.all(invoices === null || invoices === void 0 ? void 0 : invoices.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.ln_server_url, invoice))).
                     then((values) => {
-                    body = common.sortDescByKey(invoices, 'expiresAt');
                     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Sorted Invoices List Received', data: invoices });
                     return res.status(200).json(invoices);
                 }).

@@ -19,16 +19,16 @@ ORDER: Base + typography > general layout + grid > page layout > components
 
 @mixin for_screensize($breakpoint) {
     @if $breakpoint == phone {
-        @media only screen and (max-width: 60rem) { @content };    //600px
+        @media only screen and (max-width: 37.5em) { @content };    //600px
     }
     @if $breakpoint == tab-port {
-        @media only screen and (max-width: 90rem) { @content };     //900px
+        @media only screen and (max-width: 56.25em) { @content };     //900px
     }
     @if $breakpoint == tab-land {
-        @media only screen and (max-width: 120rem) { @content };    //1200px
+        @media only screen and (max-width: 75em) { @content };    //1200px
     }
     @if $breakpoint == big-desktop {
-        @media only screen and (min-width: 180rem) { @content };    //1800px
+        @media only screen and (min-width: 112.5em) { @content };    //1800px
     }
 }
 

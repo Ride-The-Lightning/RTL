@@ -147,7 +147,7 @@ body {
 .padding-gap-large {
   padding: $gap * 2 !important;
   @include for_screensize(tab-land) {
-    padding: $gap !important;
+    padding: $gap * 4 !important;
   }
   @include for_screensize(tab-port) {
     padding: math.div($gap, 2) !important;

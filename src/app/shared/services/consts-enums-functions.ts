@@ -786,11 +786,11 @@ export const CLN_TABLES_DEF = {
   },
   transactions: {
     payments: {
-      maxColumns: 5,
+      maxColumns: 7,
       allowedColumns: ['created_at', 'type', 'payment_hash', 'bolt11', 'destination', 'memo', 'label', 'msatoshi_sent', 'msatoshi']
     },
     invoices: {
-      maxColumns: 6,
+      maxColumns: 7,
       allowedColumns: ['expires_at', 'paid_at', 'type', 'description', 'label', 'payment_hash', 'bolt11', 'msatoshi', 'msatoshi_received']
     },
     offers: {
@@ -798,7 +798,7 @@ export const CLN_TABLES_DEF = {
       allowedColumns: ['offer_id', 'single_use', 'used', 'bolt12']
     },
     offer_bookmarks: {
-      maxColumns: 5,
+      maxColumns: 6,
       allowedColumns: ['lastUpdatedAt', 'title', 'amountMSat', 'description', 'vendor', 'bolt12']
     }
   },
@@ -881,24 +881,103 @@ export const LND_TABLES_DEF = {
 
 export const ECL_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
   { pageId: 'on_chain', tables: [
-    { tableId: 'utxos', recordsPerPage: PAGE_SIZE, sortBy: 'blockheight', sortOrder: SortOrderEnum.DESCENDING,
-      columnSelectionSM: ['txid', 'value'],
-      columnSelection: ['txid', 'output', 'value', 'blockheight'] },
-    { tableId: 'dust_utxos', recordsPerPage: PAGE_SIZE, sortBy: 'blockheight', sortOrder: SortOrderEnum.DESCENDING,
-      columnSelectionSM: ['txid', 'value'],
-      columnSelection: ['txid', 'output', 'value', 'blockheight'] }
+    { tableId: 'transaction', recordsPerPage: PAGE_SIZE, sortBy: 'timestamp', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['timestamp', 'amount'],
+      columnSelection: ['timestamp', 'amount', 'fees', 'confirmations', 'address'] }
+  ] },
+  { pageId: 'peers_channels', tables: [
+    { tableId: 'open_channels', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['alias', 'toLocal', 'toRemote'],
+      columnSelection: ['shortChannelId', 'alias', 'feeBaseMsat', 'feeProportionalMillionths', 'toLocal', 'toRemote', 'balancedness'] },
+    { tableId: 'pending_channels', recordsPerPage: PAGE_SIZE, sortBy: 'state', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['state', 'alias', 'toLocal'],
+      columnSelection: ['state', 'alias', 'toLocal', 'toRemote'] },
+    { tableId: 'inactive_channels', recordsPerPage: PAGE_SIZE, sortBy: 'state', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['state', 'alias', 'toLocal', 'toRemote'],
+      columnSelection: ['state', 'shortChannelId', 'alias', 'toLocal', 'toRemote', 'balancedness'] },
+    { tableId: 'peers', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.ASCENDING,
+      columnSelectionSM: ['alias', 'nodeId'],
+      columnSelection: ['alias', 'nodeId', 'address', 'channels'] }
+  ] },
+  { pageId: 'transactions', tables: [
+    { tableId: 'payments', recordsPerPage: PAGE_SIZE, sortBy: 'firstPartTimestamp', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['firstPartTimestamp', 'recipientAmount'],
+      columnSelection: ['firstPartTimestamp', 'id', 'recipientNodeAlias', 'recipientAmount'] },
+    { tableId: 'invoices', recordsPerPage: PAGE_SIZE, sortBy: 'expiresAt', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['timestamp', 'amount', 'amountSettled'],
+      columnSelection: ['timestamp', 'receivedAt', 'description', 'amount', 'amountSettled'] }
+  ] },
+  { pageId: 'routing', tables: [
+    { tableId: 'forwarding_history', recordsPerPage: PAGE_SIZE, sortBy: 'timestamp', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['timestamp', 'amountIn', 'fee'],
+      columnSelection: ['timestamp', 'fromChannelAlias', 'toChannelAlias', 'amountIn', 'amountOut', 'fee'] },
+    { tableId: 'routing_peers', recordsPerPage: PAGE_SIZE, sortBy: 'totalFee', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['alias', 'events', 'totalFee'],
+      columnSelection: ['channelId', 'alias', 'events', 'totalAmount', 'totalFee'] }
+  ] },
+  { pageId: 'reports', tables: [
+    { tableId: 'routing', recordsPerPage: PAGE_SIZE, sortBy: 'timestamp', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['timestamp', 'amountIn', 'fee'],
+      columnSelection: ['timestamp', 'fromChannelAlias', 'toChannelAlias', 'amountIn', 'amountOut', 'fee'] },
+    { tableId: 'transactions', recordsPerPage: PAGE_SIZE, sortBy: 'date', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['date', 'amount_paid', 'amount_received'],
+      columnSelection: ['date', 'amount_paid', 'num_payments', 'amount_received', 'num_invoices'] }
   ] }
 ];
 
 export const ECL_TABLES_DEF = {
   on_chain: {
-    utxos: {
-      maxColumns: 7,
-      allowedColumns: ['txid', 'address', 'scriptpubkey', 'output', 'value', 'blockheight', 'reserved']
+    transaction: {
+      maxColumns: 6,
+      allowedColumns: ['timestamp', 'amount', 'fees', 'confirmations', 'address', 'blockHash', 'txid']
+    }
+  },
+  peers_channels: {
+    open_channels: {
+      maxColumns: 8,
+      allowedColumns: ['state', 'shortChannelId', 'channelId', 'alias', 'nodeId', 'isFunder', 'buried', 'feeBaseMsat', 'feeProportionalMillionths', 'toLocal', 'toRemote', 'feeRatePerKwLocal', 'feeRatePerKwRemote', 'balancedness']
     },
-    dust_utxos: {
+    pending_channels: {
+      maxColumns: 8,
+      allowedColumns: ['state', 'shortChannelId', 'channelId', 'alias', 'nodeId', 'isFunder', 'buried', 'feeBaseMsat', 'feeProportionalMillionths', 'toLocal', 'toRemote', 'feeRatePerKwLocal', 'feeRatePerKwRemote', 'balancedness']
+    },
+    inactive_channels: {
+      maxColumns: 8,
+      allowedColumns: ['state', 'shortChannelId', 'channelId', 'alias', 'nodeId', 'isFunder', 'buried', 'feeBaseMsat', 'feeProportionalMillionths', 'toLocal', 'toRemote', 'feeRatePerKwLocal', 'feeRatePerKwRemote', 'balancedness']
+    },
+    peers: {
+      maxColumns: 4,
+      allowedColumns: ['alias', 'nodeId', 'address', 'channels']
+    }
+  },
+  transactions: {
+    payments: {
       maxColumns: 7,
-      allowedColumns: ['txid', 'address', 'scriptpubkey', 'output', 'value', 'blockheight', 'reserved']
+      allowedColumns: ['firstPartTimestamp', 'id', 'recipientNodeId', 'recipientNodeAlias', 'recipientAmount', 'description', 'paymentHash', 'paymentPreimage']
+    },
+    invoices: {
+      maxColumns: 7,
+      allowedColumns: ['timestamp', 'expiresAt', 'receivedAt', 'nodeId', 'description', 'paymentHash', 'amount', 'amountSettled']
+    }
+  },
+  routing: {
+    forwarding_history: {
+      maxColumns: 8,
+      allowedColumns: ['timestamp', 'fromChannelId', 'fromShortChannelId', 'fromChannelAlias', 'toChannelId', 'toShortChannelId', 'toChannelAlias', 'amountIn', 'amountOut', 'paymentHash', 'fee']
+    },
+    routing_peers: {
+      maxColumns: 5,
+      allowedColumns: ['channelId', 'alias', 'events', 'totalAmount', 'totalFee']
+    }
+  },
+  reports: {
+    routing: {
+      maxColumns: 8,
+      allowedColumns: ['timestamp', 'fromChannelId', 'fromShortChannelId', 'fromChannelAlias', 'toChannelId', 'toShortChannelId', 'toChannelAlias', 'amountIn', 'amountOut', 'paymentHash', 'fee']
+    },
+    transactions: {
+      maxColumns: 5,
+      allowedColumns: ['date', 'amount_paid', 'num_payments', 'amount_received', 'num_invoices']
     }
   }
 };
