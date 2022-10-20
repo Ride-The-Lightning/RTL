@@ -12,7 +12,7 @@ import { RTLState } from '../../../store/rtl.state';
 import { payments, listInvoices, clnPageSettings } from '../../store/cln.selector';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
-import { PageSettingsCLN, TableSetting } from '../../../shared/models/pageSettings';
+import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 
 @Component({
   selector: 'rtl-cln-transactions-report',
@@ -53,7 +53,7 @@ export class CLNTransactionsReportComponent implements OnInit, OnDestroy {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
     this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[0])).
-      subscribe((settings: { pageSettings: PageSettingsCLN[], apiCallStatus: ApiCallStatusPayload }) => {
+      subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
         if (settings.apiCallStatus.status === APICallStatusEnum.ERROR) {
           if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
             this.displayedColumns = ['date', 'amount_paid', 'amount_received'];

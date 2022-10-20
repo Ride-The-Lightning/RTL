@@ -11,7 +11,7 @@ export class TableSetting {
 
 }
 
-export class PageSettingsCLN {
+export class PageSettings {
 
   pageId: string;
   tables: TableSetting[];

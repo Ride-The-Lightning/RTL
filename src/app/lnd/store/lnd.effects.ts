@@ -19,7 +19,7 @@ import { RTLActions, LNDActions, AlertTypeEnum, APICallStatusEnum, FEE_LIMIT_TYP
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 import { RTLState } from '../../store/rtl.state';
 
-import { backupChannels, fetchBalanceBlockchain, fetchClosedChannels, fetchFees, fetchInfoLND, fetchInvoices, fetchNetwork, fetchPayments, fetchPeers, fetchPendingChannels, fetchTransactions, setForwardingHistory, setLookup, setPeers, setQueryRoutes, setRestoreChannelsList, updateLNDAPICallStatus, updateInvoice, fetchChannels, paymentLookup, updatePayment } from './lnd.actions';
+import { backupChannels, fetchBalanceBlockchain, fetchClosedChannels, fetchFees, fetchInfoLND, fetchInvoices, fetchNetwork, fetchPayments, fetchPeers, fetchPendingChannels, fetchTransactions, setForwardingHistory, setPeers, setQueryRoutes, setRestoreChannelsList, updateLNDAPICallStatus, updateInvoice, fetchChannels, updatePayment, fetchPageSettings } from './lnd.actions';
 import { allAPIsCallStatus, lndNodeInformation } from './lnd.selector';
 import { ApiCallsListLND } from '../../shared/models/apiCallsPayload';
 import { WebSocketClientService } from '../../shared/services/web-socket.service';
@@ -1188,6 +1188,52 @@ export class LNDEffects implements OnDestroy {
     }))
   );
 
+  pageSettingsFetch = createEffect(() => this.actions.pipe(
+    ofType(LNDActions.FETCH_PAGE_SETTINGS_LND),
+    mergeMap(() => {
+      this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchPageSettings', status: APICallStatusEnum.INITIATED } }));
+      return this.httpClient.get(environment.PAGE_SETTINGS_API).pipe(
+        map((pageSettings: any) => {
+          this.logger.info(pageSettings);
+          this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchPageSettings', status: APICallStatusEnum.COMPLETED } }));
+          return {
+            type: LNDActions.SET_PAGE_SETTINGS_LND,
+            payload: pageSettings || []
+          };
+        }),
+        catchError((err: any) => {
+          this.handleErrorWithoutAlert('FetchPageSettings', UI_MESSAGES.NO_SPINNER, 'Fetching Page Settings Failed.', err);
+          return of({ type: RTLActions.VOID });
+        })
+      );
+    })
+  ));
+
+  savePageSettings = createEffect(() => this.actions.pipe(
+    ofType(LNDActions.SAVE_PAGE_SETTINGS_LND),
+    mergeMap((action: { type: string, payload: any }) => {
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UPDATE_PAGE_SETTINGS }));
+      this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'SavePageSettings', status: APICallStatusEnum.INITIATED } }));
+      return this.httpClient.post(environment.PAGE_SETTINGS_API, action.payload).
+        pipe(
+          map((postRes: any) => {
+            this.logger.info(postRes);
+            this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'SavePageSettings', status: APICallStatusEnum.COMPLETED } }));
+            this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_PAGE_SETTINGS }));
+            this.store.dispatch(openSnackBar({ payload: 'Page Layout Updated Successfully!' }));
+            return {
+              type: LNDActions.SET_PAGE_SETTINGS_LND,
+              payload: postRes || []
+            };
+          }),
+          catchError((err: any) => {
+            this.handleErrorWithoutAlert('SavePageSettings', UI_MESSAGES.UPDATE_PAGE_SETTINGS, 'Page Settings Update Failed.', err);
+            return of({ type: RTLActions.VOID });
+          })
+        );
+    })
+  ));
+
   initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('lndUnlocked', 'true');
     const node_data = {
@@ -1210,6 +1256,7 @@ export class LNDEffects implements OnDestroy {
       newRoute = '/lnd/home';
     }
     this.router.navigate([newRoute]);
+    this.store.dispatch(fetchPageSettings());
     this.store.dispatch(fetchBalanceBlockchain());
     this.store.dispatch(fetchChannels());
     this.store.dispatch(fetchPendingChannels());

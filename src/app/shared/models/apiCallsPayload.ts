@@ -30,6 +30,7 @@ export interface ApiCallsListLND {
   FetchAllChannels: ApiCallStatusPayload;
   FetchBalanceBlockchain: ApiCallStatusPayload;
   // Non-initial calls
+  FetchPageSettings: ApiCallStatusPayload;
   FetchPeers: ApiCallStatusPayload;
   FetchClosedChannels: ApiCallStatusPayload;
   FetchInvoices: ApiCallStatusPayload;

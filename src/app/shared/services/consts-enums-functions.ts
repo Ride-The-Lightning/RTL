@@ -1,5 +1,5 @@
 import { MatPaginatorIntl } from '@angular/material/paginator';
-import { PageSettingsCLN } from '../models/pageSettings';
+import { PageSettings } from '../models/pageSettings';
 
 export function getPaginatorLabel(field: string) {
   const appPaginator = new MatPaginatorIntl();
@@ -384,6 +384,9 @@ export enum LNDActions {
   RESET_LND_STORE = 'RESET_LND_STORE',
   UPDATE_API_CALL_STATUS_LND = 'UPDATE_API_CALL_STATUS_LND',
   SET_CHILD_NODE_SETTINGS_LND = 'SET_CHILD_NODE_SETTINGS_LND',
+  FETCH_PAGE_SETTINGS_LND = 'FETCH_PAGE_SETTINGS_LND',
+  SET_PAGE_SETTINGS_LND = 'SET_PAGE_SETTINGS_LND',
+  SAVE_PAGE_SETTINGS_LND = 'SAVE_PAGE_SETTINGS_LND',
   FETCH_INFO_LND = 'FETCH_INFO_LND',
   SET_INFO_LND = 'SET_INFO_LND',
   FETCH_PEERS_LND = 'FETCH_PEERS_LND',
@@ -674,7 +677,7 @@ export enum SortOrderEnum {
 
 export const SORT_ORDERS = ['asc', 'desc'];
 
-export const CLN_DEFAULT_PAGE_SETTINGS: PageSettingsCLN[] = [
+export const CLN_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
   { pageId: 'on_chain', tables: [
     { tableId: 'utxos', recordsPerPage: PAGE_SIZE, sortBy: 'blockheight', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['txid', 'value'],
@@ -812,6 +815,41 @@ export const CLN_TABLES_DEF = {
     transactions: {
       maxColumns: 5,
       allowedColumns: ['date', 'amount_paid', 'num_payments', 'amount_received', 'num_invoices']
+    }
+  }
+};
+
+export const LND_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
+  { pageId: 'loop', tables: [
+    { tableId: 'loop', recordsPerPage: PAGE_SIZE, sortBy: 'initiation_time', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['state', 'amt'],
+      columnSelection: ['state', 'initiation_time', 'amt', 'cost_server', 'cost_offchain', 'cost_onchain'] }
+  ] },
+  { pageId: 'boltz', tables: [
+    { tableId: 'swap_in', recordsPerPage: PAGE_SIZE, sortBy: 'status', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['status', 'id', 'expectedAmount'],
+      columnSelection: ['status', 'id', 'lockupAddress', 'expectedAmount', 'timeoutBlockHeight'] },
+    { tableId: 'swap_out', recordsPerPage: PAGE_SIZE, sortBy: 'status', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['status', 'id', 'onchainAmount'],
+      columnSelection: ['status', 'id', 'claimAddress', 'onchainAmount', 'timeoutBlockHeight'] }
+  ] }
+];
+
+export const LND_TABLES_DEF = {
+  loop: {
+    loop: {
+      maxColumns: 8,
+      allowedColumns: ['state', 'initiation_time', 'last_update_time', 'amt', 'cost_server', 'cost_offchain', 'cost_onchain', 'htlc_address', 'id', 'id_bytes']
+    }
+  },
+  boltz: {
+    swap_in: {
+      maxColumns: 7,
+      allowedColumns: ['status', 'id', 'lockupAddress', 'expectedAmount', 'privateKey', 'preimage', 'redeemScript', 'invoice', 'timeoutBlockHeight', 'lockupTransactionId', 'refundTransactionId']
+    },
+    swap_out: {
+      maxColumns: 7,
+      allowedColumns: ['status', 'id', 'claimAddress', 'onchainAmount', 'privateKey', 'preimage', 'redeemScript', 'invoice', 'timeoutBlockHeight', 'lockupTransactionId', 'claimTransactionId']
     }
   }
 };

@@ -3,6 +3,7 @@ import { LNDState } from './lnd.state';
 
 export const lndState = createFeatureSelector<LNDState>('lnd');
 export const lndNodeSettings = createSelector(lndState, (state: LNDState) => state.nodeSettings);
+export const lndPageSettings = createSelector(lndState, (state: LNDState) => ({ pageSettings: state.pageSettings, apiCallStatus: state.apisCallStatus.FetchPageSettings }));
 export const lndNodeInformation = createSelector(lndState, (state: LNDState) => state.information);
 export const nodeInfoStatus = createSelector(lndState, (state: LNDState) => ({ information: state.information, apiCallStatus: state.apisCallStatus.FetchInfo }));
 export const allAPIsCallStatus = createSelector(lndState, (state: LNDState) => state.apisCallStatus);

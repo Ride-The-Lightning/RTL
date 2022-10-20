@@ -3,8 +3,8 @@ import { createAction, props } from '@ngrx/store';
 import { CLNActions } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Fees, Peer, Payment, QueryRoutes, Channel, FeeRates, Invoice, ListInvoices, OnChain, UTXO, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, OfferInvoice, Offer, OfferBookmark, ListForwards, FetchListForwards, LocalFailedEvent, ForwardingEvent } from '../../shared/models/clnModels';
-import { PageSettingsCLN } from '../../shared/models/pageSettings';
+import { GetInfo, Fees, Peer, Payment, QueryRoutes, Channel, FeeRates, Invoice, ListInvoices, OnChain, UTXO, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, OfferInvoice, Offer, OfferBookmark, ListForwards, FetchListForwards } from '../../shared/models/clnModels';
+import { PageSettings } from '../../shared/models/pageSettings';
 
 export const updateCLAPICallStatus = createAction(CLNActions.UPDATE_API_CALL_STATUS_CLN, props<{ payload: ApiCallStatusPayload }>());
 
@@ -12,11 +12,11 @@ export const resetCLStore = createAction(CLNActions.RESET_CLN_STORE, props<{ pay
 
 export const setChildNodeSettingsCL = createAction(CLNActions.SET_CHILD_NODE_SETTINGS_CLN, props<{ payload: SelNodeChild }>());
 
-export const fetchPageSettingsCL = createAction(CLNActions.FETCH_PAGE_SETTINGS_CLN);
+export const fetchPageSettings = createAction(CLNActions.FETCH_PAGE_SETTINGS_CLN);
 
-export const setPageSettings = createAction(CLNActions.SET_PAGE_SETTINGS_CLN, props<{ payload: PageSettingsCLN[] }>());
+export const setPageSettings = createAction(CLNActions.SET_PAGE_SETTINGS_CLN, props<{ payload: PageSettings[] }>());
 
-export const savePageSettings = createAction(CLNActions.SAVE_PAGE_SETTINGS_CLN, props<{ payload: PageSettingsCLN[] }>());
+export const savePageSettings = createAction(CLNActions.SAVE_PAGE_SETTINGS_CLN, props<{ payload: PageSettings[] }>());
 
 export const fetchInfoCL = createAction(CLNActions.FETCH_INFO_CLN, props<{ payload: { loadPage: string } }>());
 

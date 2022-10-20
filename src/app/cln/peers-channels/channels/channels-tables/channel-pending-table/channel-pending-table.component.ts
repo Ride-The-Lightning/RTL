@@ -20,7 +20,7 @@ import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
 import { closeChannel } from '../../../../store/cln.actions';
 import { channels, clnPageSettings, nodeInfoAndBalanceAndNumPeers } from '../../../../store/cln.selector';
-import { PageSettingsCLN, TableSetting } from '../../../../../shared/models/pageSettings';
+import { PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
 
 @Component({
   selector: 'rtl-cln-channel-pending-table',
@@ -74,7 +74,7 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
         this.logger.info(infoBalNumpeersSelector);
       });
     this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[1])).
-      subscribe((settings: { pageSettings: PageSettingsCLN[], apiCallStatus: ApiCallStatusPayload }) => {
+      subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = settings.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {

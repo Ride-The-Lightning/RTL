@@ -2,12 +2,12 @@ import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { APICallStatusEnum, CLN_DEFAULT_PAGE_SETTINGS, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ListInvoices, UTXO, Offer, OfferBookmark, ListForwards } from '../../shared/models/clnModels';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
-import { PageSettingsCLN } from '../../shared/models/pageSettings';
+import { PageSettings } from '../../shared/models/pageSettings';
 
 export interface CLNState {
   apisCallStatus: ApiCallsListCL;
   nodeSettings: SelNodeChild | null;
-  pageSettings: PageSettingsCLN[];
+  pageSettings: PageSettings[];
   information: GetInfo;
   fees: Fees;
   feeRatesPerKB: FeeRates;

@@ -8,7 +8,7 @@ import {
 } from './cln.actions';
 import { Channel, OfferBookmark } from '../../shared/models/clnModels';
 import { CLNForwardingEventsStatusEnum, CLN_DEFAULT_PAGE_SETTINGS } from '../../shared/services/consts-enums-functions';
-import { PageSettingsCLN } from '../../shared/models/pageSettings';
+import { PageSettings } from '../../shared/models/pageSettings';
 
 export const CLNReducer = createReducer(initCLNState,
   on(updateCLAPICallStatus, (state, { payload }) => {
@@ -219,7 +219,7 @@ export const CLNReducer = createReducer(initCLNState,
     };
   }),
   on(setPageSettings, (state, { payload }) => {
-    const newPageSettings: PageSettingsCLN[] = [];
+    const newPageSettings: PageSettings[] = [];
     CLN_DEFAULT_PAGE_SETTINGS.forEach((defaultPage) => {
       const pageSetting = payload.find((p) => p.pageId === defaultPage.pageId) || null;
       if (pageSetting) {

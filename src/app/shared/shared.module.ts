@@ -97,11 +97,6 @@ import { SwapServiceInfoComponent } from './components/ln-services/boltz/swap-se
 import { SwapModalComponent } from './components/ln-services/boltz/swap-modal/swap-modal.component';
 import { SwapInInfoGraphicsComponent } from './components/ln-services/boltz/swap-in-info-graphics/info-graphics.component';
 import { SwapOutInfoGraphicsComponent } from './components/ln-services/boltz/swap-out-info-graphics/info-graphics.component';
-import { PeerswapComponent } from './components/ln-services/peerswap/peerswap.component';
-import { SwapPeersComponent } from './components/ln-services/peerswap/swap-peers/swap-peers.component';
-import { PeerswapsCancelledComponent } from './components/ln-services/peerswap/swaps-cancelled/swaps-cancelled.component';
-import { PeerswapsInComponent } from './components/ln-services/peerswap/swaps-in/swaps-in.component';
-import { PeerswapsOutComponent } from './components/ln-services/peerswap/swaps-out/swaps-out.component';
 
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
@@ -273,12 +268,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     SwapServiceInfoComponent,
     SwapModalComponent,
     SwapInInfoGraphicsComponent,
-    SwapOutInfoGraphicsComponent,
-    PeerswapComponent,
-    SwapPeersComponent,
-    PeerswapsCancelledComponent,
-    PeerswapsInComponent,
-    PeerswapsOutComponent
+    SwapOutInfoGraphicsComponent
   ],
   declarations: [
     AppSettingsComponent,
@@ -339,12 +329,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     SwapServiceInfoComponent,
     SwapModalComponent,
     SwapInInfoGraphicsComponent,
-    SwapOutInfoGraphicsComponent,
-    PeerswapComponent,
-    SwapPeersComponent,
-    PeerswapsCancelledComponent,
-    PeerswapsInComponent,
-    PeerswapsOutComponent
+    SwapOutInfoGraphicsComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },

@@ -26,7 +26,9 @@
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.capacity | number}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="actions">
-            <mat-header-cell fxLayoutAlign="end center" class="pl-3 pr-4" *matHeaderCellDef>Actions</mat-header-cell>            
+            <mat-header-cell fxLayoutAlign="end center" class="pl-3 pr-4" *matHeaderCellDef>
+              <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>
+            </mat-header-cell>
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel" class="px-3">
               <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
                 <mat-select placeholder="Actions" tabindex="1" class="mr-0">
@@ -74,7 +76,9 @@
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.capacity | number}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="actions">
-            <mat-header-cell fxLayoutAlign="end center" class="pl-4 pr-3" *matHeaderCellDef>Actions</mat-header-cell>            
+            <mat-header-cell fxLayoutAlign="end center" class="pl-4 pr-3" *matHeaderCellDef>
+              <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>              
+            </mat-header-cell>            
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel" class="pl-4">
               <button mat-stroked-button color="primary" type="button" tabindex="2" (click)="onForceClosingClick(channel)"class="table-actions-button">View Info</button>          
             </mat-cell>
@@ -123,7 +127,9 @@
                 number}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="actions">
-            <mat-header-cell fxLayoutAlign="end center" class="pl-4 pr-3" *matHeaderCellDef>Actions</mat-header-cell>            
+            <mat-header-cell fxLayoutAlign="end center" class="pl-4 pr-3" *matHeaderCellDef>
+              <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>              
+            </mat-header-cell>            
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel" class="pl-4">
               <button mat-stroked-button color="primary" type="button" tabindex="3" (click)="onClosingClick(channel)"class="table-actions-button">View Info</button>          
             </mat-cell>
@@ -178,7 +184,9 @@
               number}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="actions">
-            <mat-header-cell fxLayoutAlign="end center" class="pl-4 pr-3" *matHeaderCellDef>Actions</mat-header-cell>            
+            <mat-header-cell fxLayoutAlign="end center" class="pl-4 pr-3" *matHeaderCellDef>
+              <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>              
+            </mat-header-cell>
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel" class="pl-4">
               <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onWaitClosingClick(channel)"class="table-actions-button">View Info</button>          
             </mat-cell>

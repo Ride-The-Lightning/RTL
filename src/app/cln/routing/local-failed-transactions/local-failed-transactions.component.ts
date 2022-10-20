@@ -19,7 +19,7 @@ import { openAlert } from '../../../store/rtl.actions';
 import { getForwardingHistory } from '../../store/cln.actions';
 import { clnPageSettings, localFailedForwardingHistory } from '../../store/cln.selector';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { PageSettingsCLN, TableSetting } from '../../../shared/models/pageSettings';
+import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 
 @Component({
   selector: 'rtl-cln-local-failed-history',
@@ -60,7 +60,7 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
     this.router.onSameUrlNavigation = 'reload';
     this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.LOCAL_FAILED } }));
     this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[0])).
-      subscribe((settings: { pageSettings: PageSettingsCLN[], apiCallStatus: ApiCallStatusPayload }) => {
+      subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = settings.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
