@@ -1,3 +1,11 @@
+.mat-column-claimAddress, .mat-column-lockupAddress, .mat-column-error, .mat-column-privateKey, .mat-column-preimage, .mat-column-redeemScript, .mat-column-invoice {
+  flex: 0 0 10%;
+  width: 10%;
+  & .ellipsis-parent {
+    display: flex;
+  }
+}
+
 .mat-column-actions {
   min-height: 4.8rem;
 }

@@ -11,11 +11,12 @@ import { CommonService } from '../../../services/common.service';
 import { RTLState } from '../../../../store/rtl.state';
 import { TableSetting, PageSettings } from '../../../models/pageSettings';
 import { clnNodeSettings, clnPageSettings } from '../../../../cln/store/cln.selector';
-import { savePageSettings } from '../../../../cln/store/cln.actions';
+import { savePageSettings as savePageSettingsCLN } from '../../../../cln/store/cln.actions';
 import { ApiCallStatusPayload } from '../../../models/apiCallsPayload';
 import { rootSelectedNode } from '../../../../store/rtl.selector';
 import { SelNodeChild, ConfigSettingsNode } from '../../../models/RTLconfig';
 import { lndNodeSettings, lndPageSettings } from '../../../../lnd/store/lnd.selector';
+import { savePageSettings as savePageSettingsLND } from '../../../../lnd/store/lnd.actions';
 
 @Component({
   selector: 'rtl-page-settings',
@@ -32,6 +33,7 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public pageSettings: PageSettings[] = [];
   public initialPageSettings: PageSettings[] = [];
+  public defaultSettings: PageSettings[] = [];
   public tableFieldsDef = {};
   public sortOrders = SORT_ORDERS;
   public apiCallStatus: ApiCallStatusPayload | null = null;
@@ -50,6 +52,7 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
       switch (this.selNode.lnImplementation) {
         case 'CLN':
           this.initialPageSettings = Object.assign([], CLN_DEFAULT_PAGE_SETTINGS);
+          this.defaultSettings = Object.assign([], CLN_DEFAULT_PAGE_SETTINGS);
           this.tableFieldsDef = CLN_TABLES_DEF;
           this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[1]),
             withLatestFrom(this.store.select(clnNodeSettings))).
@@ -85,6 +88,7 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
 
         default:
           this.initialPageSettings = Object.assign([], LND_DEFAULT_PAGE_SETTINGS);
+          this.defaultSettings = Object.assign([], LND_DEFAULT_PAGE_SETTINGS);
           this.tableFieldsDef = LND_TABLES_DEF;
           this.store.select(lndPageSettings).pipe(takeUntil(this.unSubs[1]),
             withLatestFrom(this.store.select(lndNodeSettings))).
@@ -130,13 +134,21 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
       return true;
     }
     this.errorMessage = '';
-    this.store.dispatch(savePageSettings({ payload: this.pageSettings }));
+    switch (this.selNode.lnImplementation) {
+      case 'CLN':
+        this.store.dispatch(savePageSettingsCLN({ payload: this.pageSettings }));
+        break;
+
+      default:
+        this.store.dispatch(savePageSettingsLND({ payload: this.pageSettings }));
+        break;
+    }
   }
 
   onTableReset(currPageId: string, currTable: TableSetting) {
     const pageIdx = this.pageSettings.findIndex((page) => page.pageId === currPageId);
     const tableIdx = this.pageSettings[pageIdx].tables.findIndex((table) => table.tableId === currTable.tableId);
-    const tableToReplace = CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === currPageId)?.tables.find((table) => table.tableId === currTable.tableId) || this.pageSettings.find((page) => page.pageId === currPageId)?.tables.find((table) => table.tableId === currTable.tableId);
+    const tableToReplace = this.defaultSettings.find((page) => page.pageId === currPageId)?.tables.find((table) => table.tableId === currTable.tableId) || this.pageSettings.find((page) => page.pageId === currPageId)?.tables.find((table) => table.tableId === currTable.tableId);
     this.pageSettings[pageIdx].tables.splice(tableIdx, 1, tableToReplace!);
   }
 
@@ -146,7 +158,7 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
       this.pageSettings = JSON.parse(JSON.stringify(this.initialPageSettings));
     } else {
       this.errorMessage = null;
-      this.pageSettings = JSON.parse(JSON.stringify(CLN_DEFAULT_PAGE_SETTINGS));
+      this.pageSettings = JSON.parse(JSON.stringify(this.defaultSettings));
     }
   }
 

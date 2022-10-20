@@ -826,12 +826,12 @@ export const LND_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
       columnSelection: ['state', 'initiation_time', 'amt', 'cost_server', 'cost_offchain', 'cost_onchain'] }
   ] },
   { pageId: 'boltz', tables: [
-    { tableId: 'swap_in', recordsPerPage: PAGE_SIZE, sortBy: 'status', sortOrder: SortOrderEnum.DESCENDING,
-      columnSelectionSM: ['status', 'id', 'expectedAmount'],
-      columnSelection: ['status', 'id', 'lockupAddress', 'expectedAmount', 'timeoutBlockHeight'] },
     { tableId: 'swap_out', recordsPerPage: PAGE_SIZE, sortBy: 'status', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['status', 'id', 'onchainAmount'],
-      columnSelection: ['status', 'id', 'claimAddress', 'onchainAmount', 'timeoutBlockHeight'] }
+      columnSelection: ['status', 'id', 'claimAddress', 'onchainAmount', 'timeoutBlockHeight'] },
+    { tableId: 'swap_in', recordsPerPage: PAGE_SIZE, sortBy: 'status', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['status', 'id', 'expectedAmount'],
+      columnSelection: ['status', 'id', 'lockupAddress', 'expectedAmount', 'timeoutBlockHeight'] }
   ] }
 ];
 
@@ -843,13 +843,13 @@ export const LND_TABLES_DEF = {
     }
   },
   boltz: {
-    swap_in: {
-      maxColumns: 7,
-      allowedColumns: ['status', 'id', 'lockupAddress', 'expectedAmount', 'privateKey', 'preimage', 'redeemScript', 'invoice', 'timeoutBlockHeight', 'lockupTransactionId', 'refundTransactionId']
-    },
     swap_out: {
       maxColumns: 7,
-      allowedColumns: ['status', 'id', 'claimAddress', 'onchainAmount', 'privateKey', 'preimage', 'redeemScript', 'invoice', 'timeoutBlockHeight', 'lockupTransactionId', 'claimTransactionId']
+      allowedColumns: ['status', 'id', 'claimAddress', 'onchainAmount', 'error', 'privateKey', 'preimage', 'redeemScript', 'invoice', 'timeoutBlockHeight', 'lockupTransactionId', 'claimTransactionId']
+    },
+    swap_in: {
+      maxColumns: 7,
+      allowedColumns: ['status', 'id', 'lockupAddress', 'expectedAmount', 'error', 'privateKey', 'preimage', 'redeemScript', 'invoice', 'timeoutBlockHeight', 'lockupTransactionId', 'refundTransactionId']
     }
   }
 };

@@ -39,7 +39,7 @@
                 {{field | camelcaseWithReplace:'_'}}
               </mat-option>
             </mat-select>
-            <mat-hint>Columns (mobile) should be between 1 and 2</mat-hint>
+            <mat-hint>Columns (mobile) should be between 1 and 3</mat-hint>
           </mat-form-field>
           <mat-form-field fxFlex="40">
             <mat-select [(ngModel)]="table.columnSelection" (selectionChange)="oncolumnSelectionChange(table)" placeholder="Column selection (Desktop)" name="{{table.tableId}}-columns-selection" tabindex="6" multiple required>
