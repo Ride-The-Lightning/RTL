@@ -536,6 +536,9 @@ export enum ECLActions {
   RESET_ECL_STORE = 'RESET_ECL_STORE',
   UPDATE_API_CALL_STATUS_ECL = 'UPDATE_API_CALL_STATUS_ECL',
   SET_CHILD_NODE_SETTINGS_ECL = 'SET_CHILD_NODE_SETTINGS_ECL',
+  FETCH_PAGE_SETTINGS_ECL = 'FETCH_PAGE_SETTINGS_ECL',
+  SET_PAGE_SETTINGS_ECL = 'SET_PAGE_SETTINGS_ECL',
+  SAVE_PAGE_SETTINGS_ECL = 'SAVE_PAGE_SETTINGS_ECL',
   FETCH_INFO_ECL = 'FETCH_INFO_ECL',
   SET_INFO_ECL = 'SET_INFO_ECL',
   FETCH_FEES_ECL = 'FETCH_FEES_ECL',
@@ -850,6 +853,30 @@ export const LND_TABLES_DEF = {
     swap_in: {
       maxColumns: 7,
       allowedColumns: ['status', 'id', 'lockupAddress', 'expectedAmount', 'error', 'privateKey', 'preimage', 'redeemScript', 'invoice', 'timeoutBlockHeight', 'lockupTransactionId', 'refundTransactionId']
+    }
+  }
+};
+
+export const ECL_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
+  { pageId: 'on_chain', tables: [
+    { tableId: 'utxos', recordsPerPage: PAGE_SIZE, sortBy: 'blockheight', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['txid', 'value'],
+      columnSelection: ['txid', 'output', 'value', 'blockheight'] },
+    { tableId: 'dust_utxos', recordsPerPage: PAGE_SIZE, sortBy: 'blockheight', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['txid', 'value'],
+      columnSelection: ['txid', 'output', 'value', 'blockheight'] }
+  ] }
+];
+
+export const ECL_TABLES_DEF = {
+  on_chain: {
+    utxos: {
+      maxColumns: 7,
+      allowedColumns: ['txid', 'address', 'scriptpubkey', 'output', 'value', 'blockheight', 'reserved']
+    },
+    dust_utxos: {
+      maxColumns: 7,
+      allowedColumns: ['txid', 'address', 'scriptpubkey', 'output', 'value', 'blockheight', 'reserved']
     }
   }
 };

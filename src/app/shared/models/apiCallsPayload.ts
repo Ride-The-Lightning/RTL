@@ -68,6 +68,7 @@ export interface ApiCallsListECL {
   FetchFees: ApiCallStatusPayload;
   FetchChannels: ApiCallStatusPayload;
   // Non-initial calls
+  FetchPageSettings: ApiCallStatusPayload;
   FetchOnchainBalance: ApiCallStatusPayload;
   FetchPeers: ApiCallStatusPayload;
   FetchPayments: ApiCallStatusPayload;

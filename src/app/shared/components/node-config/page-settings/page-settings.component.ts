@@ -5,18 +5,20 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faPenRuler, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-import { APICallStatusEnum, CLNActions, CLN_DEFAULT_PAGE_SETTINGS, CLN_TABLES_DEF, LNDActions, LND_DEFAULT_PAGE_SETTINGS, LND_TABLES_DEF, PAGE_SIZE_OPTIONS, ScreenSizeEnum, SORT_ORDERS } from '../../../services/consts-enums-functions';
+import { APICallStatusEnum, CLNActions, CLN_DEFAULT_PAGE_SETTINGS, CLN_TABLES_DEF, LNDActions, LND_DEFAULT_PAGE_SETTINGS, LND_TABLES_DEF, ECLActions, ECL_DEFAULT_PAGE_SETTINGS, ECL_TABLES_DEF, PAGE_SIZE_OPTIONS, ScreenSizeEnum, SORT_ORDERS } from '../../../services/consts-enums-functions';
 import { LoggerService } from '../../../services/logger.service';
 import { CommonService } from '../../../services/common.service';
 import { RTLState } from '../../../../store/rtl.state';
-import { TableSetting, PageSettings } from '../../../models/pageSettings';
-import { clnNodeSettings, clnPageSettings } from '../../../../cln/store/cln.selector';
-import { savePageSettings as savePageSettingsCLN } from '../../../../cln/store/cln.actions';
 import { ApiCallStatusPayload } from '../../../models/apiCallsPayload';
 import { rootSelectedNode } from '../../../../store/rtl.selector';
 import { SelNodeChild, ConfigSettingsNode } from '../../../models/RTLconfig';
+import { TableSetting, PageSettings } from '../../../models/pageSettings';
+import { clnNodeSettings, clnPageSettings } from '../../../../cln/store/cln.selector';
 import { lndNodeSettings, lndPageSettings } from '../../../../lnd/store/lnd.selector';
+import { savePageSettings as savePageSettingsCLN } from '../../../../cln/store/cln.actions';
 import { savePageSettings as savePageSettingsLND } from '../../../../lnd/store/lnd.actions';
+import { eclNodeSettings, eclPageSettings } from '../../../../eclair/store/ecl.selector';
+import { savePageSettings as savePageSettingsECL } from '../../../../eclair/store/ecl.actions';
 
 @Component({
   selector: 'rtl-page-settings',
@@ -86,6 +88,34 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
             });
           break;
 
+        case 'ECL':
+          this.initialPageSettings = Object.assign([], ECL_DEFAULT_PAGE_SETTINGS);
+          this.defaultSettings = Object.assign([], ECL_DEFAULT_PAGE_SETTINGS);
+          this.tableFieldsDef = ECL_TABLES_DEF;
+          this.store.select(eclPageSettings).pipe(takeUntil(this.unSubs[1]),
+            withLatestFrom(this.store.select(eclNodeSettings))).
+            subscribe(([settings, nodeSettings]: [{ pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }, (SelNodeChild | null)]) => {
+              const updatedPageSettings = JSON.parse(JSON.stringify(settings.pageSettings));
+              this.errorMessage = null;
+              this.apiCallStatus = settings.apiCallStatus;
+              if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+                this.errorMessage = this.apiCallStatus.message || null;
+                this.pageSettings = updatedPageSettings;
+                this.initialPageSettings = updatedPageSettings;
+              } else {
+                this.pageSettings = updatedPageSettings;
+                this.initialPageSettings = updatedPageSettings;
+              }
+              this.logger.info(updatedPageSettings);
+            });
+          this.actions.pipe(takeUntil(this.unSubs[2]), filter((action) => action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL || action.type === ECLActions.SAVE_PAGE_SETTINGS_ECL)).
+            subscribe((action: any) => {
+              if (action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SavePageSettings') {
+                this.errorMessage = JSON.parse(action.payload.message);
+              }
+            });
+          break;
+
         default:
           this.initialPageSettings = Object.assign([], LND_DEFAULT_PAGE_SETTINGS);
           this.defaultSettings = Object.assign([], LND_DEFAULT_PAGE_SETTINGS);
@@ -137,6 +167,10 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
     switch (this.selNode.lnImplementation) {
       case 'CLN':
         this.store.dispatch(savePageSettingsCLN({ payload: this.pageSettings }));
+        break;
+
+      case 'ECL':
+        this.store.dispatch(savePageSettingsECL({ payload: this.pageSettings }));
         break;
 
       default:

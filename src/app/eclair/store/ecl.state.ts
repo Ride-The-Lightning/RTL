@@ -1,11 +1,13 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfo, Channel, Fees, OnChainBalance, LightningBalance, Peer, ChannelsStatus, Payments, Transaction, Invoice } from '../../shared/models/eclModels';
 import { ApiCallsListECL } from '../../shared/models/apiCallsPayload';
-import { APICallStatusEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, ECL_DEFAULT_PAGE_SETTINGS, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
+import { PageSettings } from '../../shared/models/pageSettings';
 
 export interface ECLState {
   apisCallStatus: ApiCallsListECL;
   nodeSettings: SelNodeChild | null;
+  pageSettings: PageSettings[];
   information: GetInfo;
   fees: Fees;
   activeChannels: Channel[];
@@ -22,6 +24,7 @@ export interface ECLState {
 
 export const initECLState: ECLState = {
   apisCallStatus: {
+    FetchPageSettings: { status: APICallStatusEnum.UN_INITIATED },
     FetchInfo: { status: APICallStatusEnum.UN_INITIATED },
     FetchFees: { status: APICallStatusEnum.UN_INITIATED },
     FetchChannels: { status: APICallStatusEnum.UN_INITIATED },
@@ -32,6 +35,7 @@ export const initECLState: ECLState = {
     FetchTransactions: { status: APICallStatusEnum.UN_INITIATED }
   },
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
+  pageSettings: ECL_DEFAULT_PAGE_SETTINGS,
   information: {},
   fees: {},
   activeChannels: [],

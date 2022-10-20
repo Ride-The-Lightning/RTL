@@ -19,7 +19,7 @@ import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpi
 import { ECLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 
 import { RTLState } from '../../store/rtl.state';
-import { fetchChannels, fetchFees, fetchInvoices, fetchOnchainBalance, fetchPayments, fetchPeers, sendPaymentStatus, setActiveChannels, setChannelsStatus, setInactiveChannels, setLightningBalance, setPeers, setPendingChannels, setQueryRoutes, updateECLAPICallStatus, updateChannelState, updateInvoice, updateRelayedPayment } from './ecl.actions';
+import { fetchChannels, fetchFees, fetchInvoices, fetchOnchainBalance, fetchPayments, fetchPeers, sendPaymentStatus, setActiveChannels, setChannelsStatus, setInactiveChannels, setLightningBalance, setPeers, setPendingChannels, setQueryRoutes, updateECLAPICallStatus, updateChannelState, updateInvoice, updateRelayedPayment, fetchPageSettings } from './ecl.actions';
 import { allAPIsCallStatus } from './ecl.selector';
 import { ApiCallsListECL } from '../../shared/models/apiCallsPayload';
 
@@ -647,6 +647,52 @@ export class ECLEffects implements OnDestroy {
     { dispatch: false }
   );
 
+  pageSettingsFetchCL = createEffect(() => this.actions.pipe(
+    ofType(ECLActions.FETCH_PAGE_SETTINGS_ECL),
+    mergeMap(() => {
+      this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'FetchPageSettings', status: APICallStatusEnum.INITIATED } }));
+      return this.httpClient.get(environment.PAGE_SETTINGS_API).pipe(
+        map((pageSettings: any) => {
+          this.logger.info(pageSettings);
+          this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'FetchPageSettings', status: APICallStatusEnum.COMPLETED } }));
+          return {
+            type: ECLActions.SET_PAGE_SETTINGS_ECL,
+            payload: pageSettings || []
+          };
+        }),
+        catchError((err: any) => {
+          this.handleErrorWithoutAlert('FetchPageSettings', UI_MESSAGES.NO_SPINNER, 'Fetching Page Settings Failed.', err);
+          return of({ type: RTLActions.VOID });
+        })
+      );
+    })
+  ));
+
+  savePageSettingsCL = createEffect(() => this.actions.pipe(
+    ofType(ECLActions.SAVE_PAGE_SETTINGS_ECL),
+    mergeMap((action: { type: string, payload: any }) => {
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UPDATE_PAGE_SETTINGS }));
+      this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'SavePageSettings', status: APICallStatusEnum.INITIATED } }));
+      return this.httpClient.post(environment.PAGE_SETTINGS_API, action.payload).
+        pipe(
+          map((postRes: any) => {
+            this.logger.info(postRes);
+            this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'SavePageSettings', status: APICallStatusEnum.COMPLETED } }));
+            this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_PAGE_SETTINGS }));
+            this.store.dispatch(openSnackBar({ payload: 'Page Layout Updated Successfully!' }));
+            return {
+              type: ECLActions.SET_PAGE_SETTINGS_ECL,
+              payload: postRes || []
+            };
+          }),
+          catchError((err: any) => {
+            this.handleErrorWithoutAlert('SavePageSettings', UI_MESSAGES.UPDATE_PAGE_SETTINGS, 'Page Settings Update Failed.', err);
+            return of({ type: RTLActions.VOID });
+          })
+        );
+    })
+  ));
+
   setChannelsAndStatusAndBalances() {
     let channelTotal = 0;
     let totalLocalBalance = 0;
@@ -725,6 +771,7 @@ export class ECLEffects implements OnDestroy {
       newRoute = '/ecl/home';
     }
     this.router.navigate([newRoute]);
+    this.store.dispatch(fetchPageSettings());
     this.store.dispatch(fetchInvoices());
     this.store.dispatch(fetchChannels({ payload: { fetchPayments: true } }));
     this.store.dispatch(fetchFees());

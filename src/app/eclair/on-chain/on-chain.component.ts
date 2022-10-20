@@ -9,7 +9,7 @@ import { ECLOnChainSendModalComponent } from './on-chain-send-modal/on-chain-sen
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { RTLState } from '../../store/rtl.state';
 import { openAlert } from '../../store/rtl.actions';
-import { eclnNodeSettings, onchainBalance } from '../store/ecl.selector';
+import { eclNodeSettings, onchainBalance } from '../store/ecl.selector';
 import { OnChainBalance } from '../../shared/models/eclModels';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 
@@ -40,7 +40,7 @@ export class ECLOnChainComponent implements OnInit, OnDestroy {
           this.activeLink = linkFound ? linkFound.link : this.links[0].link;
         }
       });
-    this.store.select(eclnNodeSettings).pipe(takeUntil(this.unSubs[1])).
+    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[1])).
       subscribe((nodeSettings) => {
         this.selNode = nodeSettings;
       });

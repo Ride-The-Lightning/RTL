@@ -22,7 +22,7 @@ import { ECLInvoiceInformationComponent } from '../invoice-information-modal/inv
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
 import { createInvoice, invoiceLookup } from '../../store/ecl.actions';
-import { eclNodeInformation, eclnNodeSettings, invoices } from '../../store/ecl.selector';
+import { eclNodeInformation, eclNodeSettings, invoices } from '../../store/ecl.selector';
 
 @Component({
   selector: 'rtl-ecl-lightning-invoices',
@@ -74,7 +74,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngOnInit() {
-    this.store.select(eclnNodeSettings).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
       subscribe((nodeSettings: SelNodeChild | null) => {
         this.selNode = nodeSettings;
       });
