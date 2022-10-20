@@ -69,11 +69,14 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
               } else {
                 if (!nodeSettings?.enableOffers) {
                   const transactionsPage = updatedPageSettings.find((pg) => pg.pageId === 'transactions');
-                  transactionsPage?.tables.splice(transactionsPage?.tables.findIndex((tb) => tb.tableId === 'offers'), 1);
-                  transactionsPage?.tables.splice(transactionsPage?.tables.findIndex((tb) => tb.tableId === 'offer_bookmarks'), 1);
+                  const offerIdx = transactionsPage?.tables.findIndex((tb) => tb.tableId === 'offers');
+                  const offerBookmarkIdx = transactionsPage?.tables.findIndex((tb) => tb.tableId === 'offer_bookmarks');
+                  if (offerIdx > -1) { transactionsPage?.tables.splice(offerIdx, 1); }
+                  if (offerBookmarkIdx > -1) { transactionsPage?.tables.splice(offerBookmarkIdx, 1); }
                 }
                 if (!nodeSettings?.enablePeerswap) {
-                  updatedPageSettings.splice(updatedPageSettings.findIndex((pg) => pg.pageId === 'peerswap'), 1);
+                  const psIdx = updatedPageSettings.findIndex((pg) => pg.pageId === 'peerswap');
+                  if (psIdx > -1) { updatedPageSettings.splice(psIdx, 1); }
                 }
                 this.pageSettings = updatedPageSettings;
                 this.initialPageSettings = updatedPageSettings;
@@ -132,10 +135,12 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
                 this.initialPageSettings = updatedPageSettings;
               } else {
                 if (!nodeSettings?.swapServerUrl || nodeSettings.swapServerUrl.trim() === '') {
-                  updatedPageSettings.splice(updatedPageSettings.findIndex((pg) => pg.pageId === 'loop'), 1);
+                  const loopIdx = updatedPageSettings.findIndex((pg) => pg.pageId === 'loop');
+                  if (loopIdx > -1) { updatedPageSettings.splice(loopIdx, 1); }
                 }
                 if (!nodeSettings?.boltzServerUrl || nodeSettings.boltzServerUrl.trim() === '') {
-                  updatedPageSettings.splice(updatedPageSettings.findIndex((pg) => pg.pageId === 'boltz'), 1);
+                  const boltzIdx = updatedPageSettings.findIndex((pg) => pg.pageId === 'boltz');
+                  if (boltzIdx > -1) { updatedPageSettings.splice(boltzIdx, 1); }
                 }
                 this.pageSettings = updatedPageSettings;
                 this.initialPageSettings = updatedPageSettings;

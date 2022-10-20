@@ -740,6 +740,16 @@ export const CLN_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
     { tableId: 'transactions', recordsPerPage: PAGE_SIZE, sortBy: 'date', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['date', 'amount_paid', 'amount_received'],
       columnSelection: ['date', 'amount_paid', 'num_payments', 'amount_received', 'num_invoices'] }
+  ] },
+  { pageId: 'graph_lookup', tables: [
+    { tableId: 'query_routes', recordsPerPage: PAGE_SIZE, sortBy: 'msatoshi', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['alias', 'direction', 'msatoshi'],
+      columnSelection: ['alias', 'channel', 'direction', 'delay', 'msatoshi'] }
+  ] },
+  { pageId: 'peerswap', tables: [
+    { tableId: 'swaps', recordsPerPage: PAGE_SIZE, sortBy: '', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: [],
+      columnSelection: [] }
   ] }
 ];
 
@@ -818,6 +828,18 @@ export const CLN_TABLES_DEF = {
     transactions: {
       maxColumns: 5,
       allowedColumns: ['date', 'amount_paid', 'num_payments', 'amount_received', 'num_invoices']
+    }
+  },
+  graph_lookup: {
+    query_routes: {
+      maxColumns: 6,
+      allowedColumns: ['id', 'alias', 'channel', 'direction', 'delay', 'msatoshi']
+    }
+  },
+  peerswap: {
+    swaps: {
+      maxColumns: 5,
+      allowedColumns: []
     }
   }
 };

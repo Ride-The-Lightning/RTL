@@ -7,13 +7,16 @@ import { MatTableDataSource } from '@angular/material/table';
 import { faRoute, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { Routes } from '../../../shared/models/clnModels';
-import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, CLN_DEFAULT_PAGE_SETTINGS, DataTypeEnum, PAGE_SIZE, ScreenSizeEnum, SortOrderEnum } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { CLNEffects } from '../../store/cln.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
 import { getQueryRoutes } from '../../store/cln.actions';
+import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { clnPageSettings } from '../../store/cln.selector';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-cln-query-routes',
@@ -24,6 +27,8 @@ export class CLNQueryRoutesComponent implements OnInit, OnDestroy {
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild('queryRoutesForm', { static: true }) form: any;
+  public PAGE_ID = 'graph_lookup';
+  public tableSetting: TableSetting = { tableId: 'query_routes', recordsPerPage: PAGE_SIZE, sortBy: 'id', sortOrder: SortOrderEnum.ASCENDING };
   public destinationPubkey = '';
   public amount: number | null = null;
   public qrHops: any;
@@ -33,22 +38,23 @@ export class CLNQueryRoutesComponent implements OnInit, OnDestroy {
   public faExclamationTriangle = faExclamationTriangle;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private store: Store<RTLState>, private clnEffects: CLNEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
-    if (this.screenSize === ScreenSizeEnum.XS) {
-      this.displayedColumns = ['alias', 'msatoshi', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.displayedColumns = ['alias', 'direction', 'msatoshi', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.displayedColumns = ['alias', 'direction', 'delay', 'msatoshi', 'actions'];
-    } else {
-      this.displayedColumns = ['alias', 'channel', 'direction', 'delay', 'msatoshi', 'actions'];
-    }
   }
 
   ngOnInit() {
+    this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[0])).
+      subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
+        } else {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
+        }
+        this.displayedColumns.push('actions');
+      });
     this.clnEffects.setQueryRoutesCL.pipe(takeUntil(this.unSubs[1])).subscribe((queryRoute) => {
       this.qrHops = new MatTableDataSource([]);
       this.qrHops.data = [];
@@ -61,6 +67,7 @@ export class CLNQueryRoutesComponent implements OnInit, OnDestroy {
       }
       this.qrHops.sort = this.sort;
       this.qrHops.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+      this.qrHops.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     });
   }
 

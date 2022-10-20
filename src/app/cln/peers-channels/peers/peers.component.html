@@ -26,20 +26,26 @@
         </ng-container>
         <ng-container matColumnDef="alias">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Alias </th>
-          <td mat-cell *matCellDef="let peer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '40rem'}"> 
-            {{peer?.alias}} 
+          <td mat-cell *matCellDef="let peer"> 
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '12rem' : '40rem'}">
+              <span class="ellipsis-child">{{peer?.alias}}</span>
+            </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef class="px-3" mat-sort-header> ID </th>
-          <td mat-cell *matCellDef="let peer" class="px-3" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '40rem'}">
-            {{peer?.id}}
+          <th mat-header-cell *matHeaderCellDef class="pl-2" mat-sort-header> ID </th>
+          <td mat-cell *matCellDef="let peer" class="pl-2">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '12rem' : '40rem'}">
+              <span class="ellipsis-child">{{peer?.id}}</span>
+            </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="netaddr">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Network Address </th>
-          <td mat-cell *matCellDef="let peer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '40rem'}">
-            <span *ngFor="let addr of peer?.netaddr; last as isLast">{{addr}}<span *ngIf="!isLast">,<br></span></span>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-2"> Network Address </th>
+          <td mat-cell *matCellDef="let peer" class="pl-2">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '12rem' : '40rem'}">
+              <span class="ellipsis-child" *ngFor="let addr of peer?.netaddr; last as isLast">{{addr}}<span *ngIf="!isLast">,<br></span></span>
+            </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="actions">
