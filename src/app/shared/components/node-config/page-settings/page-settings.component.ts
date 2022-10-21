@@ -142,6 +142,10 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
                   const boltzIdx = updatedPageSettings.findIndex((pg) => pg.pageId === 'boltz');
                   if (boltzIdx > -1) { updatedPageSettings.splice(boltzIdx, 1); }
                 }
+                if (!nodeSettings?.enablePeerswap) {
+                  const psIdx = updatedPageSettings.findIndex((pg) => pg.pageId === 'peerswap');
+                  if (psIdx > -1) { updatedPageSettings.splice(psIdx, 1); }
+                }
                 this.pageSettings = updatedPageSettings;
                 this.initialPageSettings = updatedPageSettings;
               }

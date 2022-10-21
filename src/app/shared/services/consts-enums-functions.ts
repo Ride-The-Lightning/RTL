@@ -817,7 +817,7 @@ export const CLN_TABLES_DEF = {
     },
     local_failed: {
       maxColumns: 6,
-      allowedColumns: ['received_time', 'in_channel', 'in_channel_alias', 'in_msatoshi', 'style', 'failreason']
+      allowedColumns: ['received_time', 'in_channel', 'in_channel_alias', 'out_channel', 'out_channel_alias', 'in_msatoshi', 'style', 'failreason']
     }
   },
   reports: {

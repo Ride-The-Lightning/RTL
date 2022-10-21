@@ -31,6 +31,18 @@
           </span>
         </td>
       </ng-container>
+      <ng-container matColumnDef="out_channel">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Out Channel Id</th>
+        <td mat-cell *matCellDef="let fhEvent">{{fhEvent?.out_channel}}</td>
+      </ng-container>
+      <ng-container matColumnDef="out_channel_alias">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Out Channel</th>
+        <td mat-cell *matCellDef="let fhEvent">
+          <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+            <span class="ellipsis-child">{{fhEvent?.out_channel_alias}}</span>
+          </span>
+        </td>
+      </ng-container>
       <ng-container matColumnDef="in_msatoshi">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Amount In (Sats)</th>
         <td mat-cell *matCellDef="let fhEvent"><span fxLayoutAlign="end center">{{fhEvent?.in_msatoshi/1000 | number:fhEvent?.in_msatoshi < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
