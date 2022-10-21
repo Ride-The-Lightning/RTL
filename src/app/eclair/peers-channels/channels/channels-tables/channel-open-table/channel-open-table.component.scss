@@ -1,26 +1,15 @@
 @import "../../../../../shared/theme/styles/mixins.scss";
 
-.mat-column-shortChannelId {
+.mat-column-announceChannel {
+  width: 2rem;
+}
+
+.mat-column-alias, .mat-column-channelId, .mat-column-nodeId {
   flex: 0 0 15%;
   width: 15%;
   & .ellipsis-parent {
     display: flex;
   }
-}
-
-.mat-column-alias {
-  padding-left: 1rem;
-  flex: 0 0 15%;
-  width: 15%;
-  & .ellipsis-parent {
-    display: flex;
-  }
-}
-
-.mat-column-balancedness {
-  padding-left: 2rem;
-  flex: 0 0 17%;
-  width: 17%;
 }
 
 .mat-column-state, .mat-column-feeBaseMsat, .mat-column-feeProportionalMillionths, .mat-column-toLocal, .mat-column-toRemote {
@@ -37,6 +26,12 @@
   @include for_screensize(phone) {
     white-space: unset;
   }
+}
+
+.mat-column-balancedness {
+  padding-left: 2rem;
+  flex: 0 0 17%;
+  width: 17%;
 }
 
 .mat-column-actions {

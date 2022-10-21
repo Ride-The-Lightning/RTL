@@ -1,22 +1,13 @@
-.mat-column-alias {
-  flex: 1 1 10%;
-  white-space: nowrap;
-  overflow: hidden;  
-  text-overflow: ellipsis;
+.mat-column-state {
+  width: 2rem;
 }
 
-.mat-column-nodeId {
-  flex: 1 1 10%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding-right: 2rem;
-}
-
-.mat-column-address {
-  white-space: nowrap;
-  overflow: hidden;  
-  text-overflow: ellipsis;
+.mat-column-alias, .mat-column-nodeId, .mat-column-address {
+  flex: 0 0 20%;
+  width: 20%;
+  & .ellipsis-parent {
+    display: flex;
+  }
 }
 
 .mat-column-actions {

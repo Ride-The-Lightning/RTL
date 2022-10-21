@@ -34,22 +34,54 @@
           <ng-container matColumnDef="id">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
             <td mat-cell *matCellDef="let payment">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '22rem'}">
-                <span class="ellipsis-child">{{payment.id}}</span>
+              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+                <span class="ellipsis-child">{{payment?.id}}</span>
+              </div>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="recipientNodeId">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Destination Node Id</th>
+            <td mat-cell *matCellDef="let payment">
+              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+                <span class="ellipsis-child">{{payment?.recipientNodeId}}</span>
               </div>
             </td>
           </ng-container>
           <ng-container matColumnDef="recipientNodeAlias">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Destination</th>
             <td mat-cell *matCellDef="let payment">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '22rem'}">
-                <span class="ellipsis-child">{{payment.recipientNodeAlias}}</span>
+              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+                <span class="ellipsis-child">{{payment?.recipientNodeAlias}}</span>
               </div>
             </td>
           </ng-container>
           <ng-container matColumnDef="recipientAmount">
             <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Amount (Sats)</th>
             <td mat-cell *matCellDef="let payment"><span fxLayoutAlign="end center">{{(payment?.recipientAmount) | number}}</span></td>
+          </ng-container>
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+            <td mat-cell *matCellDef="let payment">
+              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+                <span class="ellipsis-child">{{payment?.description}}</span>
+              </div>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="paymentHash">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Hash</th>
+            <td mat-cell *matCellDef="let payment">
+              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+                <span class="ellipsis-child">{{payment?.paymentHash}}</span>
+              </div>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="paymentPreimage">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Preimage</th>
+            <td mat-cell *matCellDef="let payment">
+              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+                <span class="ellipsis-child">{{payment?.paymentPreimage}}</span>
+              </div>
+            </td>
           </ng-container>
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef class="px-3">
@@ -78,7 +110,7 @@
             <span fxLayoutAlign="start center" class="part-row-span">
               Total Attempts: {{payment?.parts?.length}}
             </span>
-            <ng-container *ngIf="payment.is_expanded">
+            <ng-container *ngIf="payment?.is_expanded">
               <span *ngFor="let part of payment?.parts" fxLayoutAlign="start center" class="part-row-span pl-3">
                 {{part.timestamp | date:'dd/MMM/y HH:mm'}}
               </span>
@@ -87,12 +119,12 @@
         </ng-container>
         <ng-container matColumnDef="groupId">
           <td mat-cell *matCellDef="let payment">
-            <div fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '22rem'}">
-              <span class="ellipsis-child">{{payment.id}}</span>
+            <div fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+              <span class="ellipsis-child">{{payment?.id}}</span>
             </div>
-            <span *ngIf="payment.is_expanded">
+            <span *ngIf="payment?.is_expanded">
               <span *ngFor="let part of payment?.parts" fxLayoutAlign="start center" class="part-row-span">
-                <span fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '22rem'}">
+                <span fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
                   <span class="ellipsis-child">{{part.id}}</span>
                 </span>
               </span>
@@ -101,12 +133,12 @@
         </ng-container>
         <ng-container matColumnDef="groupChannelAlias">
           <td mat-cell *matCellDef="let payment">
-            <div fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '22rem'}">
+            <div fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
               <span class="ellipsis-child">{{payment?.recipientNodeAlias}}</span>
             </div>
-            <span *ngIf="payment.is_expanded">
+            <span *ngIf="payment?.is_expanded">
               <span *ngFor="let part of payment?.parts" fxLayoutAlign="start center" class="part-row-span">
-                <span  fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '22rem'}">
+                <span  fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
                   <span class="ellipsis-child">{{part.toChannelAlias}}</span>
                 </span>
               </span>
@@ -116,7 +148,7 @@
         <ng-container matColumnDef="groupAmount">
           <td mat-cell *matCellDef="let payment">
             <span fxLayoutAlign="end center" class="part-row-span">{{payment?.recipientAmount | number:'1.0-0'}}</span>
-            <span *ngIf="payment.is_expanded">
+            <span *ngIf="payment?.is_expanded">
               <span *ngFor="let part of payment?.parts" fxLayoutAlign="end center" class="part-row-span">
                 {{part.amount | number:'1.0-0'}}
               </span>
@@ -126,9 +158,9 @@
         <ng-container matColumnDef="groupActions">
           <td mat-cell *matCellDef="let payment" class="px-3">
             <span fxLayoutAlign="end start">
-              <button mat-flat-button class="btn-part-expand" color="primary" type="button" tabindex="5" (click)="payment.is_expanded = !payment.is_expanded">{{payment.is_expanded ? 'Hide' : 'Show'}}</button>
+              <button mat-flat-button class="btn-part-expand" color="primary" type="button" tabindex="5" (click)="payment.is_expanded = !payment.is_expanded">{{payment?.is_expanded ? 'Hide' : 'Show'}}</button>
             </span>
-            <div *ngIf="payment.is_expanded">
+            <div *ngIf="payment?.is_expanded">
               <div *ngFor="let part of payment?.parts; index as i" fxLayoutAlign="end start">
                 <button mat-stroked-button class="btn-part-info" color="primary" type="button" tabindex="6" (click)="onPartClick(part, payment)">View {{i + 1}}</button>
               </div>

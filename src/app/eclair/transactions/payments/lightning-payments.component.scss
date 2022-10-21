@@ -1,8 +1,9 @@
 .mat-column-id, .mat-column-recipientNodeAlias,
+.mat-column-recipientNodeId, .mat-column-description,
+.mat-column-paymentHash, .mat-column-paymentPreimage,
 .mat-column-groupId, .mat-column-groupChannelAlias {
-  padding: 0 1rem;
-  flex: 0 0 25%;
-  width: 25%;
+  flex: 1 1 12%;
+  width: 12%;
   & .ellipsis-parent {
     display: flex;
   }

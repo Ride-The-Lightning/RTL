@@ -889,11 +889,11 @@ export const ECL_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
     { tableId: 'open_channels', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['alias', 'toLocal', 'toRemote'],
       columnSelection: ['shortChannelId', 'alias', 'feeBaseMsat', 'feeProportionalMillionths', 'toLocal', 'toRemote', 'balancedness'] },
-    { tableId: 'pending_channels', recordsPerPage: PAGE_SIZE, sortBy: 'state', sortOrder: SortOrderEnum.DESCENDING,
+    { tableId: 'pending_channels', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['state', 'alias', 'toLocal'],
       columnSelection: ['state', 'alias', 'toLocal', 'toRemote'] },
-    { tableId: 'inactive_channels', recordsPerPage: PAGE_SIZE, sortBy: 'state', sortOrder: SortOrderEnum.DESCENDING,
-      columnSelectionSM: ['state', 'alias', 'toLocal', 'toRemote'],
+    { tableId: 'inactive_channels', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['state', 'alias', 'toLocal'],
       columnSelection: ['state', 'shortChannelId', 'alias', 'toLocal', 'toRemote', 'balancedness'] },
     { tableId: 'peers', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.ASCENDING,
       columnSelectionSM: ['alias', 'nodeId'],
@@ -935,7 +935,7 @@ export const ECL_TABLES_DEF = {
   peers_channels: {
     open_channels: {
       maxColumns: 8,
-      allowedColumns: ['state', 'shortChannelId', 'channelId', 'alias', 'nodeId', 'isFunder', 'buried', 'feeBaseMsat', 'feeProportionalMillionths', 'toLocal', 'toRemote', 'feeRatePerKwLocal', 'feeRatePerKwRemote', 'balancedness']
+      allowedColumns: ['shortChannelId', 'channelId', 'alias', 'nodeId', 'isFunder', 'buried', 'feeBaseMsat', 'feeProportionalMillionths', 'toLocal', 'toRemote', 'feeRatePerKwLocal', 'feeRatePerKwRemote', 'balancedness']
     },
     pending_channels: {
       maxColumns: 8,
@@ -962,8 +962,8 @@ export const ECL_TABLES_DEF = {
   },
   routing: {
     forwarding_history: {
-      maxColumns: 8,
-      allowedColumns: ['timestamp', 'fromChannelId', 'fromShortChannelId', 'fromChannelAlias', 'toChannelId', 'toShortChannelId', 'toChannelAlias', 'amountIn', 'amountOut', 'paymentHash', 'fee']
+      maxColumns: 7,
+      allowedColumns: ['timestamp', 'fromChannelId', 'fromShortChannelId', 'fromChannelAlias', 'toChannelId', 'toShortChannelId', 'toChannelAlias', 'amountIn', 'amountOut', 'fee', 'paymentHash']
     },
     routing_peers: {
       maxColumns: 5,
@@ -972,8 +972,8 @@ export const ECL_TABLES_DEF = {
   },
   reports: {
     routing: {
-      maxColumns: 8,
-      allowedColumns: ['timestamp', 'fromChannelId', 'fromShortChannelId', 'fromChannelAlias', 'toChannelId', 'toShortChannelId', 'toChannelAlias', 'amountIn', 'amountOut', 'paymentHash', 'fee']
+      maxColumns: 7,
+      allowedColumns: ['timestamp', 'fromChannelId', 'fromShortChannelId', 'fromChannelAlias', 'toChannelId', 'toShortChannelId', 'toChannelAlias', 'amountIn', 'amountOut', 'fee', 'paymentHash']
     },
     transactions: {
       maxColumns: 5,

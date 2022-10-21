@@ -8,7 +8,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 import { Channel, ChannelsStatus, GetInfo, LightningBalance, OnChainBalance, Peer } from '../../../../../shared/models/eclModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum, APICallStatusEnum } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum, APICallStatusEnum, SortOrderEnum, ECL_DEFAULT_PAGE_SETTINGS } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 
@@ -18,7 +18,8 @@ import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPaylo
 import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
 import { closeChannel } from '../../../../store/ecl.actions';
-import { allChannelsInfo, eclNodeInformation, onchainBalance, peers } from '../../../../store/ecl.selector';
+import { allChannelsInfo, eclNodeInformation, eclPageSettings, onchainBalance, peers } from '../../../../store/ecl.selector';
+import { PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
 
 @Component({
   selector: 'rtl-ecl-channel-inactive-table',
@@ -34,6 +35,8 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faEye = faEye;
   public faEyeSlash = faEyeSlash;
+  public PAGE_ID = 'peers_channels';
+  public tableSetting: TableSetting = { tableId: 'inactive_channels', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING };
   public inactiveChannels: Channel[];
   public totalBalance = 0;
   public displayedColumns: any[] = [];
@@ -50,23 +53,32 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
   public errorMessage = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
-    if (this.screenSize === ScreenSizeEnum.XS) {
-      this.displayedColumns = ['state', 'alias', 'toLocal', 'toRemote', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.displayedColumns = ['state', 'alias', 'toLocal', 'toRemote', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.displayedColumns = ['state', 'shortChannelId', 'alias', 'toLocal', 'toRemote', 'actions'];
-    } else {
-      this.displayedColumns = ['state', 'shortChannelId', 'alias', 'toLocal', 'toRemote', 'balancedness', 'actions'];
-    }
   }
 
   ngOnInit() {
-    this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(eclPageSettings).pipe(takeUntil(this.unSubs[0])).
+      subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessage = '';
+        this.apiCallStatus = settings.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = this.apiCallStatus.message || '';
+        }
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || ECL_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
+        } else {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
+        }
+        this.displayedColumns.unshift('announceChannel');
+        this.displayedColumns.push('actions');
+        this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.logger.info(this.displayedColumns);
+      });
+    this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[1])).
       subscribe((allChannelsSelector: ({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload })) => {
         this.errorMessage = '';
         this.apiCallStatus = allChannelsSelector.apiCallStatus;
@@ -77,15 +89,15 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
         this.loadChannelsTable();
         this.logger.info(allChannelsSelector);
       });
-    this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[1])).
+    this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[2])).
       subscribe((nodeInfo: GetInfo) => {
         this.information = nodeInfo;
       });
-    this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
+    this.store.select(peers).pipe(takeUntil(this.unSubs[3])).
       subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
         this.numPeers = (peersSelector.peers && peersSelector.peers.length) ? peersSelector.peers.length : 0;
       });
-    this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[3])).
+    this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[4])).
       subscribe((ocBalSelector: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
         this.totalBalance = ocBalSelector.onchainBalance.total || 0;
       });
@@ -115,7 +127,7 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
       }
     }));
     this.rtlEffects.closeConfirm.
-      pipe(takeUntil(this.unSubs[4])).
+      pipe(takeUntil(this.unSubs[5])).
       subscribe((confirmRes) => {
         if (confirmRes) {
           this.store.dispatch(closeChannel({ payload: { channelId: channelToClose.channelId || '', force: forceClose } }));
@@ -140,10 +152,10 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
   }
 
   loadChannelsTable() {
-    this.inactiveChannels.sort((a, b) => ((a.alias === b.alias) ? 0 : ((b.alias) ? 1 : -1)));
     this.channels = new MatTableDataSource<Channel>([...this.inactiveChannels]);
     this.channels.sort = this.sort;
     this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+    this.channels.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.channels.filterPredicate = (channel: Channel, fltr: string) => JSON.stringify(channel).toLowerCase().includes(fltr);
     this.channels.paginator = this.paginator;
     this.applyFilter();

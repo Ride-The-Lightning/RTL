@@ -1,4 +1,8 @@
-.mat-column-description {
+.mat-column-status {
+  width: 2rem;
+}
+
+.mat-column-nodeId, .mat-column-paymentHash, .mat-column-description {
   flex: 0 0 15%;
   width: 15%;
   & .ellipsis-parent {

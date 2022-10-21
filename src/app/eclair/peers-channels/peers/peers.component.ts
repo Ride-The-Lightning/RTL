@@ -10,7 +10,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Peer, GetInfo, OnChainBalance } from '../../../shared/models/eclModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum, APICallStatusEnum, ECLActions } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum, APICallStatusEnum, ECLActions, SortOrderEnum, ECL_DEFAULT_PAGE_SETTINGS } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
@@ -21,7 +21,8 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 import { disconnectPeer } from '../../store/ecl.actions';
-import { eclNodeInformation, onchainBalance, peers } from '../../store/ecl.selector';
+import { eclNodeInformation, eclPageSettings, onchainBalance, peers } from '../../store/ecl.selector';
+import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 
 @Component({
   selector: 'rtl-ecl-peers',
@@ -35,6 +36,8 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public PAGE_ID = 'peers_channels';
+  public tableSetting: TableSetting = { tableId: 'peers', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING };
   public faUsers = faUsers;
   public newlyAddedPeer = '';
   public displayedColumns: any[] = [];
@@ -51,19 +54,10 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private actions: Actions, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
-    if (this.screenSize === ScreenSizeEnum.XS) {
-      this.displayedColumns = ['alias', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.displayedColumns = ['alias', 'nodeId', 'address', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.displayedColumns = ['alias', 'nodeId', 'address', 'channels', 'actions'];
-    } else {
-      this.displayedColumns = ['alias', 'nodeId', 'address', 'channels', 'actions'];
-    }
   }
 
   ngOnInit() {
@@ -71,7 +65,26 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       subscribe((nodeInfo: any) => {
         this.information = nodeInfo;
       });
-    this.store.select(peers).pipe(takeUntil(this.unSubs[1])).
+    this.store.select(eclPageSettings).pipe(takeUntil(this.unSubs[1])).
+      subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessage = '';
+        this.apiCallStatus = settings.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = this.apiCallStatus.message || '';
+        }
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || ECL_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
+        } else {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
+        }
+        this.displayedColumns.unshift('state');
+        this.displayedColumns.push('actions');
+        this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.logger.info(this.displayedColumns);
+      });
+
+    this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
       subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = peersSelector.apiCallStatus;
@@ -82,11 +95,11 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
         this.loadPeersTable(this.peersData);
         this.logger.info(peersSelector);
       });
-    this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[2])).
+    this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[3])).
       subscribe((oCBalanceSelector: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
         this.availableBalance = oCBalanceSelector.onchainBalance.total || 0;
       });
-    this.actions.pipe(takeUntil(this.unSubs[3]), filter((action) => action.type === ECLActions.SET_PEERS_ECL)).
+    this.actions.pipe(takeUntil(this.unSubs[4]), filter((action) => action.type === ECLActions.SET_PEERS_ECL)).
       subscribe((setPeers: any) => {
         this.peerAddress = null;
       });
@@ -177,7 +190,7 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       }));
     }
     this.rtlEffects.closeConfirm.
-      pipe(takeUntil(this.unSubs[4])).
+      pipe(takeUntil(this.unSubs[5])).
       subscribe((confirmRes) => {
         if (confirmRes) {
           this.store.dispatch(disconnectPeer({ payload: { nodeId: (peerToDetach.nodeId || '') } }));
@@ -193,6 +206,7 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.peers = (peers) ? new MatTableDataSource<Peer>([...peers]) : new MatTableDataSource([]);
     this.peers.sort = this.sort;
     this.peers.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+    this.peers.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.peers.filterPredicate = (peer: Peer, fltr: string) => JSON.stringify(peer).toLowerCase().includes(fltr);
     this.peers.paginator = this.paginator;
     this.applyFilter();

@@ -15,18 +15,18 @@
         [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="timestamp">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Date/Time </th>
-          <td mat-cell *matCellDef="let transaction">{{(transaction.timestamp * 1000) | date:'dd/MMM/y HH:mm'}}</td>
+          <td mat-cell *matCellDef="let transaction">{{(transaction?.timestamp * 1000) | date:'dd/MMM/y HH:mm'}}</td>
         </ng-container>
         <ng-container matColumnDef="amount">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Amount (Sats) </th>
           <td mat-cell *matCellDef="let transaction">
-            <span fxLayoutAlign="end center" *ngIf="transaction.amount > 0 || transaction.amount === 0">{{transaction.amount | number}}</span>
-            <span fxLayoutAlign="end center" class="red" *ngIf="transaction.amount < 0">({{transaction.amount * -1 | number}})</span>
+            <span fxLayoutAlign="end center" *ngIf="transaction?.amount > 0 || transaction?.amount === 0">{{transaction?.amount | number}}</span>
+            <span fxLayoutAlign="end center" class="red" *ngIf="transaction?.amount < 0">({{transaction?.amount * -1 | number}})</span>
           </td>
         </ng-container>
         <ng-container matColumnDef="fees">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Fees (Sats) </th>
-          <td mat-cell *matCellDef="let transaction"><span fxLayoutAlign="end center">{{transaction.fees | number}}</span></td>
+          <td mat-cell *matCellDef="let transaction"><span fxLayoutAlign="end center">{{transaction?.fees | number}}</span></td>
         </ng-container>
         <ng-container matColumnDef="confirmations">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pr-2"> Confirmations </th>
@@ -35,7 +35,23 @@
         </ng-container>
         <ng-container matColumnDef="address">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Address </th>
-          <td mat-cell *matCellDef="let transaction">{{transaction.address}}</td>
+          <td mat-cell *matCellDef="let transaction">{{transaction?.address}}</td>
+        </ng-container>
+        <ng-container matColumnDef="blockHash">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Blockhash </th>
+          <td mat-cell *matCellDef="let transaction">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '25rem'}">
+              <span class="ellipsis-child">{{transaction?.blockHash}}</span>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="txid">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Transaction Id </th>
+          <td mat-cell *matCellDef="let transaction">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '25rem'}">
+              <span class="ellipsis-child">{{transaction?.txid}}</span>
+            </div>
+          </td>
         </ng-container>
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef class="px-3">

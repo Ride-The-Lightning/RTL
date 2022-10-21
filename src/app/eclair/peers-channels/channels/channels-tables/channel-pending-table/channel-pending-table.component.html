@@ -12,9 +12,37 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header> State </th>
         <td mat-cell *matCellDef="let channel"> {{channel?.state | titlecase}}</td>
       </ng-container>
+      <ng-container matColumnDef="shortChannelId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Short Channel ID </th>
+        <td mat-cell *matCellDef="let channel">{{channel?.shortChannelId}}</td>
+      </ng-container>
+      <ng-container matColumnDef="channelId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel Id </th>
+        <td mat-cell *matCellDef="let channel">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '12rem' : '22rem'}">
+            <span class="ellipsis-child">{{channel?.channelId}}</span>
+          </div>
+        </td>
+      </ng-container>
       <ng-container matColumnDef="alias">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Alias </th>
         <td mat-cell *matCellDef="let channel">{{channel?.alias}}</td>
+      </ng-container>
+      <ng-container matColumnDef="nodeId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Node Id </th>
+        <td mat-cell *matCellDef="let channel">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '12rem' : '22rem'}">
+            <span class="ellipsis-child">{{channel?.nodeId}}</span>
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="isFunder">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Funder </th>
+        <td mat-cell *matCellDef="let channel">{{channel?.isFunder ? 'Yes' : 'No'}}</td>
+      </ng-container>
+      <ng-container matColumnDef="buried">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Buried </th>
+        <td mat-cell *matCellDef="let channel">{{channel?.buried ? 'Yes' : 'No'}}</td>
       </ng-container>
       <ng-container matColumnDef="toLocal">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Local Balance (Sats) </th>
@@ -25,6 +53,16 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Remote Balance (Sats) </th>
         <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
             {{channel?.toRemote | number:'1.0-0'}} </span></td>
+      </ng-container>
+      <ng-container matColumnDef="feeRatePerKwLocal">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Local Fee/KW</th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
+            {{channel?.feeRatePerKwLocal | number:'1.0-0'}} </span></td>
+      </ng-container>
+      <ng-container matColumnDef="feeRatePerKwRemote">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Remote Fee/KW </th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
+            {{channel?.feeRatePerKwRemote | number:'1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef class="pl-1">

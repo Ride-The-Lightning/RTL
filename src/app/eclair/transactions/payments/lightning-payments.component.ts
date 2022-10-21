@@ -9,7 +9,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { GetInfo, PayRequest, PaymentSent, PaymentSentPart, Payments } from '../../../shared/models/eclModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, SortOrderEnum, ECL_DEFAULT_PAGE_SETTINGS } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -23,7 +23,8 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 import { sendPayment } from '../../store/ecl.actions';
-import { eclNodeInformation, eclNodeSettings, payments } from '../../store/ecl.selector';
+import { eclNodeInformation, eclNodeSettings, eclPageSettings, payments } from '../../store/ecl.selector';
+import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 
 @Component({
   selector: 'rtl-ecl-lightning-payments',
@@ -39,6 +40,8 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   @ViewChild('sendPaymentForm', { static: false }) form;
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public PAGE_ID = 'transactions';
+  public tableSetting: TableSetting = { tableId: 'payments', recordsPerPage: PAGE_SIZE, sortBy: 'firstPartTimestamp', sortOrder: SortOrderEnum.DESCENDING };
   public faHistory = faHistory;
   public newlyAddedPayment = '';
   public selNode: SelNodeChild | null = {};
@@ -58,23 +61,19 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private dataService: DataService, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
-    if (this.screenSize === ScreenSizeEnum.XS) {
-      this.displayedColumns = ['firstPartTimestamp', 'actions'];
-      this.partColumns = ['groupTotal', 'groupActions'];
-    } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.displayedColumns = ['firstPartTimestamp', 'recipientAmount', 'actions'];
-      this.partColumns = ['groupTotal', 'groupAmount', 'groupActions'];
-    } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.displayedColumns = ['firstPartTimestamp', 'id', 'recipientAmount', 'actions'];
-      this.partColumns = ['groupTotal', 'groupId', 'groupAmount', 'groupActions'];
-    } else {
-      this.displayedColumns = ['firstPartTimestamp', 'id', 'recipientNodeAlias', 'recipientAmount', 'actions'];
-      this.partColumns = ['groupTotal', 'groupId', 'groupChannelAlias', 'groupAmount', 'groupActions'];
-    }
+    // if (this.screenSize === ScreenSizeEnum.XS) {
+    //   this.partColumns = ['groupTotal', 'groupActions'];
+    // } else if (this.screenSize === ScreenSizeEnum.SM) {
+    //   this.partColumns = ['groupTotal', 'groupAmount', 'groupActions'];
+    // } else if (this.screenSize === ScreenSizeEnum.MD) {
+    //   this.partColumns = ['groupTotal', 'groupId', 'groupAmount', 'groupActions'];
+    // } else {
+    //   this.partColumns = ['groupTotal', 'groupId', 'groupChannelAlias', 'groupAmount', 'groupActions'];
+    // }
   }
 
   ngOnInit() {
@@ -86,7 +85,24 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       subscribe((nodeInfo: GetInfo) => {
         this.information = nodeInfo;
       });
-    this.store.select(payments).pipe(takeUntil(this.unSubs[2])).
+    this.store.select(eclPageSettings).pipe(takeUntil(this.unSubs[2])).
+      subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessage = '';
+        this.apiCallStatus = settings.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = this.apiCallStatus.message || '';
+        }
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || ECL_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
+        } else {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
+        }
+        this.displayedColumns.push('actions');
+        this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.logger.info(this.displayedColumns);
+      });
+    this.store.select(payments).pipe(takeUntil(this.unSubs[3])).
       subscribe((paymentsSeletor: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = paymentsSeletor.apiCallStatus;
@@ -152,6 +168,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     };
+    this.payments.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.payments.filterPredicate = (rowData: PaymentSent, fltr: string) => {
       const newRowData = ((rowData.firstPartTimestamp) ? this.datePipe.transform(new Date(rowData.firstPartTimestamp), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
       return newRowData.includes(fltr);
@@ -261,7 +278,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           if (this.paymentDecoded.amount) {
             if (this.selNode && this.selNode.fiatConversion) {
               this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
-                pipe(takeUntil(this.unSubs[3])).
+                pipe(takeUntil(this.unSubs[4])).
                 subscribe({
                   next: (data) => {
                     this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
@@ -385,7 +402,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         return paymentReqs;
       }, '');
       this.dataService.decodePayments(paymentRequests).
-        pipe(takeUntil(this.unSubs[4])).
+        pipe(takeUntil(this.unSubs[5])).
         subscribe((decodedPayments: any[][]) => {
           decodedPayments.forEach((decodedPayment, idx) => {
             if (decodedPayment.length > 0 && decodedPayment[0].paymentRequest && decodedPayment[0].paymentRequest.description && decodedPayment[0].paymentRequest.description !== '') {

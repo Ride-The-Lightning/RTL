@@ -9,7 +9,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, ECLActions } from '../../../shared/services/consts-enums-functions';
+import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, ECLActions, SortOrderEnum, ECL_DEFAULT_PAGE_SETTINGS } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/eclModels';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
@@ -22,7 +22,8 @@ import { ECLInvoiceInformationComponent } from '../invoice-information-modal/inv
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
 import { createInvoice, invoiceLookup } from '../../store/ecl.actions';
-import { eclNodeInformation, eclNodeSettings, invoices } from '../../store/ecl.selector';
+import { eclNodeInformation, eclNodeSettings, eclPageSettings, invoices } from '../../store/ecl.selector';
+import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 
 @Component({
   selector: 'rtl-ecl-lightning-invoices',
@@ -38,6 +39,8 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   faHistory = faHistory;
+  public PAGE_ID = 'transactions';
+  public tableSetting: TableSetting = { tableId: 'invoices', recordsPerPage: PAGE_SIZE, sortBy: 'expiresAt', sortOrder: SortOrderEnum.DESCENDING };
   public selNode: SelNodeChild | null = {};
   public newlyAddedInvoiceMemo: string | null = '';
   public newlyAddedInvoiceValue: number | null = 0;
@@ -58,19 +61,10 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   public errorMessage = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private datePipe: DatePipe, private actions: Actions) {
     this.screenSize = this.commonService.getScreenSize();
-    if (this.screenSize === ScreenSizeEnum.XS) {
-      this.displayedColumns = ['timestamp', 'amount', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.displayedColumns = ['timestamp', 'amount', 'amountSettled', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.displayedColumns = ['timestamp', 'amount', 'amountSettled', 'actions'];
-    } else {
-      this.displayedColumns = ['timestamp', 'receivedAt', 'description', 'amount', 'amountSettled', 'actions'];
-    }
   }
 
   ngOnInit() {
@@ -82,7 +76,25 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
       subscribe((nodeInfo: any) => {
         this.information = <GetInfo>nodeInfo;
       });
-    this.store.select(invoices).pipe(takeUntil(this.unSubs[2])).
+    this.store.select(eclPageSettings).pipe(takeUntil(this.unSubs[2])).
+      subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessage = '';
+        this.apiCallStatus = settings.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = this.apiCallStatus.message || '';
+        }
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || ECL_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
+        } else {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
+        }
+        this.displayedColumns.unshift('status');
+        this.displayedColumns.push('actions');
+        this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.logger.info(this.displayedColumns);
+      });
+    this.store.select(invoices).pipe(takeUntil(this.unSubs[3])).
       subscribe((invoicesSelector: { invoices: Invoice[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = invoicesSelector.apiCallStatus;
@@ -95,7 +107,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
         }
         this.logger.info(invoicesSelector);
       });
-    this.actions.pipe(takeUntil(this.unSubs[3]), filter((action) => (action.type === ECLActions.SET_LOOKUP_ECL || action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL))).
+    this.actions.pipe(takeUntil(this.unSubs[4]), filter((action) => (action.type === ECLActions.SET_LOOKUP_ECL || action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL))).
       subscribe((resLookup: any) => {
         if (resLookup.type === ECLActions.SET_LOOKUP_ECL) {
           if (this.invoiceJSONArr.length > 0 && this.sort && this.paginator && resLookup.payload) {
@@ -164,6 +176,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
     this.invoices = invs ? new MatTableDataSource<Invoice>([...invs]) : new MatTableDataSource<Invoice>([]);
     this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.invoices.sort = this.sort;
+    this.invoices.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.invoices.filterPredicate = (rowData: Invoice, fltr: string) => {
       const newRowData = ((rowData.timestamp) ? this.datePipe.transform(new Date(rowData.timestamp * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
       return newRowData.includes(fltr);
@@ -187,7 +200,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
     if (this.selNode && this.selNode.fiatConversion && this.invoiceValue && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
       this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
-        pipe(takeUntil(this.unSubs[4])).
+        pipe(takeUntil(this.unSubs[5])).
         subscribe({
           next: (data) => {
             this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;

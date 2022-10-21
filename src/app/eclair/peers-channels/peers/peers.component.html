@@ -17,36 +17,41 @@
     <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
       <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table fxFlex="100" [dataSource]="peers" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
-        <ng-container matColumnDef="nodeId">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-          <td mat-cell *matCellDef="let peer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">
-            {{peer?.nodeId}}
+        <ng-container matColumnDef="state">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+          <td mat-cell *matCellDef="let peer">
+            <span *ngIf="peer.state === 'CONNECTED'" class="dot green" matTooltip="Connected" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+            <span *ngIf="peer.state === 'DISCONNECTED'" class="dot red" matTooltip="Disconnected" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
           </td>
         </ng-container>
         <ng-container matColumnDef="alias">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-3"> Alias </th>
-          <td mat-cell *matCellDef="let peer" class="px-3" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '25rem'}">
-            <span *ngIf="peer.state === 'CONNECTED'" class="dot green" matTooltip="Connected" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-            <span *ngIf="peer.state === 'DISCONNECTED'" class="dot red" matTooltip="Disconnected" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-            {{peer?.alias}}
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1"> Alias </th>
+          <td mat-cell *matCellDef="let peer" class="pl-1">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '25rem'}">
+              <span class="ellipsis-child">{{peer?.alias}}</span>
+            </div>
           </td>
         </ng-container>
-        <ng-container matColumnDef="state">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> State </th>
-          <td mat-cell *matCellDef="let peer"> {{peer?.state}} </td>
+        <ng-container matColumnDef="nodeId">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1"> ID </th>
+          <td mat-cell *matCellDef="let peer" class="pl-1">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '25rem'}">
+              <span class="ellipsis-child">{{peer?.nodeId}}</span>
+            </div>
+          </td>
         </ng-container>
         <ng-container matColumnDef="address">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Network Address </th>
-          <td mat-cell *matCellDef="let peer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1"> Network Address </th>
+          <td mat-cell *matCellDef="let peer" class="pl-1">
             {{peer?.address}}
           </td>
         </ng-container>
         <ng-container matColumnDef="channels">
-          <th mat-header-cell class="px-2" *matHeaderCellDef mat-sort-header> Channels </th>
-          <td mat-cell class="px-2" *matCellDef="let peer"> {{peer?.channels}} </td>
+          <th mat-header-cell class="pl-1" *matHeaderCellDef mat-sort-header> Channels </th>
+          <td mat-cell class="pl-1" *matCellDef="let peer"> {{peer?.channels}} </td>
         </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="px-3">
+          <th mat-header-cell *matHeaderCellDef class="px-1">
             <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="1" class="mr-0">
                 <mat-select-trigger></mat-select-trigger>
@@ -54,7 +59,7 @@
               </mat-select>
             </div>
           </th>
-          <td mat-cell *matCellDef="let peer" fxLayoutAlign="end center" class="px-3">
+          <td mat-cell *matCellDef="let peer" fxLayoutAlign="end center" class="px-1">
             <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="1" class="mr-0">
                 <mat-select-trigger></mat-select-trigger>
