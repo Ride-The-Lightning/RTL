@@ -35,7 +35,11 @@
         </ng-container>
         <ng-container matColumnDef="address">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Address </th>
-          <td mat-cell *matCellDef="let transaction">{{transaction?.address}}</td>
+          <td mat-cell *matCellDef="let transaction">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '25rem'}">
+              <span class="ellipsis-child">{{transaction?.address}}</span>
+            </div>
+          </td>
         </ng-container>
         <ng-container matColumnDef="blockHash">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Blockhash </th>

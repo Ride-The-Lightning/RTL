@@ -46,7 +46,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   public newlyAddedPayment = '';
   public selNode: SelNodeChild | null = {};
   public information: GetInfo = {};
-  public payments: any;
+  public payments: any = new MatTableDataSource<PaymentSent>([]);
   public paymentJSONArr: PaymentSent[] = [];
   public paymentDecoded: PayRequest = {};
   public displayedColumns: any[] = [];
@@ -65,15 +65,6 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private dataService: DataService, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
-    // if (this.screenSize === ScreenSizeEnum.XS) {
-    //   this.partColumns = ['groupTotal', 'groupActions'];
-    // } else if (this.screenSize === ScreenSizeEnum.SM) {
-    //   this.partColumns = ['groupTotal', 'groupAmount', 'groupActions'];
-    // } else if (this.screenSize === ScreenSizeEnum.MD) {
-    //   this.partColumns = ['groupTotal', 'groupId', 'groupAmount', 'groupActions'];
-    // } else {
-    //   this.partColumns = ['groupTotal', 'groupId', 'groupChannelAlias', 'groupAmount', 'groupActions'];
-    // }
   }
 
   ngOnInit() {
@@ -99,6 +90,8 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
         }
         this.displayedColumns.push('actions');
+        this.partColumns = [];
+        this.displayedColumns.map((col) => this.partColumns.push('group_' + col));
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
         this.logger.info(this.displayedColumns);
       });
@@ -110,26 +103,6 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.paymentJSONArr = (paymentsSeletor.payments && paymentsSeletor.payments.sent && paymentsSeletor.payments.sent.length > 0) ? paymentsSeletor.payments.sent : [];
-        // FOR MPP TESTING START
-        // If (this.paymentJSONArr.length > 0) {
-        //   This.paymentJSONArr[3].parts.push({
-        //     Id: '34b609a5-f0f1-474e-9e5d-d7783b48702d', amount: 26000, feesPaid: 22, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c87', toChannelAlias: 'ion.radar.tech1', timestamp: 1596389827075
-        //   });
-        //   This.paymentJSONArr[3].parts.push({
-        //     Id: '35b609a5-f0f1-474e-9e5d-d7783b48702e', amount: 27000, feesPaid: 20, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c86', toChannelAlias: 'ion.radar.tech2', timestamp: 1596389817075
-        //   });
-        //   This.paymentJSONArr[5].parts.push({
-        //     Id: '38b609a5-f0f1-474e-9e5d-d7783b48702h', amount: 31000, feesPaid: 18, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c85', toChannelAlias: 'ion.radar.tech3', timestamp: 1596389887075
-        //   });
-        //   This.paymentJSONArr[5].parts.push({
-        //     Id: '36b609a5-f0f1-474e-9e5d-d7783b48702f', amount: 28000, feesPaid: 13, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c84', toChannelAlias: 'ion.radar.tech4', timestamp: 1596389687075
-        //   });
-        //   This.paymentJSONArr[5].parts.push({
-        //     Id: '37b609a5-f0f1-474e-9e5d-d7783b48702g', amount: 25000, feesPaid: 19, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c83', toChannelAlias: 'ion.radar.tech5', timestamp: 1596389707075
-        //   });
-        // }
-        // This.paymentJSONArr = this.paymentJSONArr.splice(2, 5);
-        // FOR MPP TESTING END
         if (this.paymentJSONArr.length > 0 && this.sort && this.paginator) {
           this.loadPaymentsTable(this.paymentJSONArr);
         }

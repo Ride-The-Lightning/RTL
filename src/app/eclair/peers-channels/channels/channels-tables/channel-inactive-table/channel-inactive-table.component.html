@@ -65,15 +65,10 @@
         <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
             {{channel?.toRemote | number:'1.0-0'}} </span></td>
       </ng-container>
-      <ng-container matColumnDef="feeRatePerKwLocal">
+      <ng-container matColumnDef="feeRatePerKw">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Local Fee/KW</th>
         <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
-            {{channel?.feeRatePerKwLocal | number:'1.0-0'}} </span></td>
-      </ng-container>
-      <ng-container matColumnDef="feeRatePerKwRemote">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Remote Fee/KW </th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
-            {{channel?.feeRatePerKwRemote | number:'1.0-0'}} </span></td>
+            {{channel?.feeRatePerKw | number:'1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="balancedness">
         <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-3">Balance Score </th>

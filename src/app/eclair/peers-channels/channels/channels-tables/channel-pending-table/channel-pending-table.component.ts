@@ -6,6 +6,7 @@ import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 import { Channel, ChannelsStatus, GetInfo, LightningBalance, OnChainBalance, Peer } from '../../../../../shared/models/eclModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, APICallStatusEnum, SortOrderEnum, ECL_DEFAULT_PAGE_SETTINGS } from '../../../../../shared/services/consts-enums-functions';
@@ -32,6 +33,8 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public faEye = faEye;
+  public faEyeSlash = faEyeSlash;
   public PAGE_ID = 'peers_channels';
   public tableSetting: TableSetting = { tableId: 'pending_channels', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING };
   public pendingChannels: Channel[];
@@ -70,6 +73,7 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
         } else {
           this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
         }
+        this.displayedColumns.unshift('announceChannel');
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
         this.logger.info(this.displayedColumns);

@@ -903,7 +903,7 @@ export const ECL_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
     { tableId: 'payments', recordsPerPage: PAGE_SIZE, sortBy: 'firstPartTimestamp', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['firstPartTimestamp', 'recipientAmount'],
       columnSelection: ['firstPartTimestamp', 'id', 'recipientNodeAlias', 'recipientAmount'] },
-    { tableId: 'invoices', recordsPerPage: PAGE_SIZE, sortBy: 'expiresAt', sortOrder: SortOrderEnum.DESCENDING,
+    { tableId: 'invoices', recordsPerPage: PAGE_SIZE, sortBy: 'receivedAt', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['timestamp', 'amount', 'amountSettled'],
       columnSelection: ['timestamp', 'receivedAt', 'description', 'amount', 'amountSettled'] }
   ] },
@@ -935,15 +935,15 @@ export const ECL_TABLES_DEF = {
   peers_channels: {
     open_channels: {
       maxColumns: 8,
-      allowedColumns: ['shortChannelId', 'channelId', 'alias', 'nodeId', 'isFunder', 'buried', 'feeBaseMsat', 'feeProportionalMillionths', 'toLocal', 'toRemote', 'feeRatePerKwLocal', 'feeRatePerKwRemote', 'balancedness']
+      allowedColumns: ['shortChannelId', 'channelId', 'alias', 'nodeId', 'isFunder', 'buried', 'feeBaseMsat', 'feeProportionalMillionths', 'toLocal', 'toRemote', 'feeRatePerKw', 'balancedness']
     },
     pending_channels: {
-      maxColumns: 8,
-      allowedColumns: ['state', 'shortChannelId', 'channelId', 'alias', 'nodeId', 'isFunder', 'buried', 'feeBaseMsat', 'feeProportionalMillionths', 'toLocal', 'toRemote', 'feeRatePerKwLocal', 'feeRatePerKwRemote', 'balancedness']
+      maxColumns: 7,
+      allowedColumns: ['state', 'channelId', 'alias', 'nodeId', 'isFunder', 'buried', 'feeBaseMsat', 'feeProportionalMillionths', 'toLocal', 'toRemote', 'feeRatePerKw']
     },
     inactive_channels: {
       maxColumns: 8,
-      allowedColumns: ['state', 'shortChannelId', 'channelId', 'alias', 'nodeId', 'isFunder', 'buried', 'feeBaseMsat', 'feeProportionalMillionths', 'toLocal', 'toRemote', 'feeRatePerKwLocal', 'feeRatePerKwRemote', 'balancedness']
+      allowedColumns: ['state', 'shortChannelId', 'channelId', 'alias', 'nodeId', 'isFunder', 'buried', 'feeBaseMsat', 'feeProportionalMillionths', 'toLocal', 'toRemote', 'feeRatePerKw']
     },
     peers: {
       maxColumns: 4,
@@ -953,7 +953,7 @@ export const ECL_TABLES_DEF = {
   transactions: {
     payments: {
       maxColumns: 7,
-      allowedColumns: ['firstPartTimestamp', 'id', 'recipientNodeId', 'recipientNodeAlias', 'recipientAmount', 'description', 'paymentHash', 'paymentPreimage']
+      allowedColumns: ['firstPartTimestamp', 'id', 'recipientNodeId', 'recipientNodeAlias', 'description', 'paymentHash', 'paymentPreimage', 'recipientAmount']
     },
     invoices: {
       maxColumns: 7,
@@ -963,7 +963,7 @@ export const ECL_TABLES_DEF = {
   routing: {
     forwarding_history: {
       maxColumns: 7,
-      allowedColumns: ['timestamp', 'fromChannelId', 'fromShortChannelId', 'fromChannelAlias', 'toChannelId', 'toShortChannelId', 'toChannelAlias', 'amountIn', 'amountOut', 'fee', 'paymentHash']
+      allowedColumns: ['timestamp', 'fromChannelId', 'fromShortChannelId', 'fromChannelAlias', 'toChannelId', 'toShortChannelId', 'toChannelAlias', 'paymentHash', 'amountIn', 'amountOut', 'fee']
     },
     routing_peers: {
       maxColumns: 5,
@@ -973,7 +973,7 @@ export const ECL_TABLES_DEF = {
   reports: {
     routing: {
       maxColumns: 7,
-      allowedColumns: ['timestamp', 'fromChannelId', 'fromShortChannelId', 'fromChannelAlias', 'toChannelId', 'toShortChannelId', 'toChannelAlias', 'amountIn', 'amountOut', 'fee', 'paymentHash']
+      allowedColumns: ['timestamp', 'fromChannelId', 'fromShortChannelId', 'fromChannelAlias', 'toChannelId', 'toShortChannelId', 'toChannelAlias', 'paymentHash', 'amountIn', 'amountOut', 'fee']
     },
     transactions: {
       maxColumns: 5,

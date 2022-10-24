@@ -277,6 +277,8 @@ export interface LocalFailedEvent {
   in_channel_alias?: string;
   in_msatoshi?: number;
   in_msat?: string;
+  out_channel?: string;
+  out_channel_alias?: string;
   status?: string;
   received_time?: number;
   resolved_time?: number;
