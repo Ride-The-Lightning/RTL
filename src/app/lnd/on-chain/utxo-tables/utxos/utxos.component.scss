@@ -1,12 +1,8 @@
-.mat-column-label {
-  padding-left: 1rem;
-  flex: 1 1 15%;
-  white-space: nowrap;
-  overflow: hidden;  
-  text-overflow: ellipsis;
+.mat-column-is_dust {
+  width: 2rem;
 }
 
-.mat-column-tx_id {
+.mat-column-label, .mat-column-tx_id {
   flex: 1 1 15%;
   & .ellipsis-child {
     white-space: nowrap;

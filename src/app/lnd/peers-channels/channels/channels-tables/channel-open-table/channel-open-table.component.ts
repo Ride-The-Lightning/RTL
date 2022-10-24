@@ -12,7 +12,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { ChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { BlockchainBalance, Channel, ChannelsSummary, GetInfo, LightningBalance, Peer } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum, LoopTypeEnum, APICallStatusEnum, UI_MESSAGES } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum, LoopTypeEnum, APICallStatusEnum, UI_MESSAGES, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS } from '../../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { LoopService } from '../../../../../shared/services/loop.service';
@@ -26,7 +26,8 @@ import { RTLEffects } from '../../../../../store/rtl.effects';
 import { RTLState } from '../../../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
 import { channelLookup, fetchChannels, updateChannel } from '../../../../store/lnd.actions';
-import { blockchainBalance, channels, lndNodeInformation, lndNodeSettings, peers } from '../../../../store/lnd.selector';
+import { blockchainBalance, channels, lndNodeInformation, lndNodeSettings, lndPageSettings, peers } from '../../../../store/lnd.selector';
+import { PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
 
 @Component({
   selector: 'rtl-channel-open-table',
@@ -40,6 +41,8 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public PAGE_ID = 'peers_channels';
+  public tableSetting: TableSetting = { tableId: 'open', recordsPerPage: PAGE_SIZE, sortBy: 'balancedness', sortOrder: SortOrderEnum.DESCENDING };
   public timeUnit = 'mins:secs';
   public userPersonaEnum = UserPersonaEnum;
   public selNode: SelNodeChild | null = {};
@@ -66,15 +69,6 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private lndEffects: LNDEffects, private commonService: CommonService, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private loopService: LoopService, private router: Router) {
     this.screenSize = this.commonService.getScreenSize();
-    if (this.screenSize === ScreenSizeEnum.XS) {
-      this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'balancedness', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'balancedness', 'actions'];
-    } else {
-      this.displayedColumns = ['remote_alias', 'uptime', 'total_satoshis_sent', 'total_satoshis_received', 'local_balance', 'remote_balance', 'balancedness', 'actions'];
-    }
     this.selFilter = this.router.getCurrentNavigation()?.extras?.state?.filter ? this.router.getCurrentNavigation()?.extras?.state?.filter : '';
   }
 
@@ -90,15 +84,34 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
           this.versionsArr = this.information.version.split('.');
         }
       });
-    this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
+    this.store.select(lndPageSettings).pipe(takeUntil(this.unSubs[2])).
+      subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessage = '';
+        this.apiCallStatus = settings.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = this.apiCallStatus.message || '';
+        }
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
+        } else {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
+        }
+        this.displayedColumns.unshift('private');
+        this.displayedColumns.unshift('active');
+        this.displayedColumns.push('actions');
+        this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.logger.info(this.displayedColumns);
+      });
+    this.store.select(peers).pipe(takeUntil(this.unSubs[3])).
       subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
         this.numPeers = (peersSelector.peers && peersSelector.peers.length) ? peersSelector.peers.length : 0;
       });
-    this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[3])).
+    this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[4])).
       subscribe((bcBalanceSelector: { blockchainBalance: BlockchainBalance, apiCallStatus: ApiCallStatusPayload }) => {
         this.totalBalance = bcBalanceSelector.blockchainBalance?.total_balance ? +bcBalanceSelector.blockchainBalance?.total_balance : 0;
       });
-    this.store.select(channels).pipe(takeUntil(this.unSubs[4])).
+    this.store.select(channels).pipe(takeUntil(this.unSubs[5])).
       subscribe((channelsSelector: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = channelsSelector.apiCallStatus;
@@ -184,7 +197,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
         }
       }));
       this.rtlEffects.closeConfirm.
-        pipe(takeUntil(this.unSubs[5])).
+        pipe(takeUntil(this.unSubs[6])).
         subscribe((confirmRes) => {
           if (confirmRes) {
             const base_fee = confirmRes[0].inputValue;
@@ -232,7 +245,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
         }, 0);
       });
       this.rtlEffects.closeConfirm.
-        pipe(takeUntil(this.unSubs[6])).
+        pipe(takeUntil(this.unSubs[7])).
         subscribe((confirmRes: boolean | any[]) => {
           if (confirmRes) {
             const updateChanPayload = {
@@ -296,6 +309,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     };
     this.channels.sort = this.sort;
     this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+    this.channels.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.channels.paginator = this.paginator;
     this.applyFilter();
     this.logger.info(this.channels);
@@ -353,7 +367,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
 
   onLoopOut(selChannel: Channel) {
     this.loopService.getLoopOutTermsAndQuotes(this.targetConf).
-      pipe(takeUntil(this.unSubs[7])).
+      pipe(takeUntil(this.unSubs[8])).
       subscribe((response) => {
         this.store.dispatch(openAlert({
           payload: {

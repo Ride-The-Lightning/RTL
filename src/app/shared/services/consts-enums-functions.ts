@@ -845,6 +845,75 @@ export const CLN_TABLES_DEF = {
 };
 
 export const LND_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
+  { pageId: 'on_chain', tables: [
+    { tableId: 'utxos', recordsPerPage: PAGE_SIZE, sortBy: 'tx_id', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['output', 'amount_sat', 'confirmations'],
+      columnSelection: ['tx_id', 'output', 'label', 'amount_sat', 'confirmations'] },
+    { tableId: 'transactions', recordsPerPage: PAGE_SIZE, sortBy: 'time_stamp', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['time_stamp', 'amount', 'num_confirmations'],
+      columnSelection: ['time_stamp', 'label', 'amount', 'total_fees', 'block_height', 'num_confirmations'] },
+    { tableId: 'dust_utxos', recordsPerPage: PAGE_SIZE, sortBy: 'tx_id', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['output', 'amount_sat', 'confirmations'],
+      columnSelection: ['tx_id', 'output', 'label', 'amount_sat', 'confirmations'] }
+  ] },
+  { pageId: 'peers_channels', tables: [
+    { tableId: 'open', recordsPerPage: PAGE_SIZE, sortBy: 'balancedness', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['remote_alias', 'local_balance', 'remote_balance'],
+      columnSelection: ['remote_alias', 'uptime', 'total_satoshis_sent', 'total_satoshis_received', 'local_balance', 'remote_balance', 'balancedness'] },
+    { tableId: 'pending_open', recordsPerPage: PAGE_SIZE, sortBy: 'capacity', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['remote_alias', 'capacity'],
+      columnSelection: ['remote_alias', 'commit_fee', 'commit_weight', 'capacity'] },
+    { tableId: 'pending_force_closing', recordsPerPage: PAGE_SIZE, sortBy: 'limbo_balance', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['remote_alias', 'limbo_balance'],
+      columnSelection: ['remote_alias', 'recovered_balance', 'limbo_balance', 'capacity'] },
+    { tableId: 'pending_closing', recordsPerPage: PAGE_SIZE, sortBy: 'capacity', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['remote_alias', 'capacity'],
+      columnSelection: ['remote_alias', 'local_balance', 'remote_balance', 'capacity'] },
+    { tableId: 'pending_waiting_close', recordsPerPage: PAGE_SIZE, sortBy: 'limbo_balance', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['remote_alias', 'limbo_balance'],
+      columnSelection: ['remote_alias', 'limbo_balance', 'local_balance', 'remote_balance'] },
+    { tableId: 'closed', recordsPerPage: PAGE_SIZE, sortBy: 'close_type', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['remote_alias', 'settled_balance'],
+      columnSelection: ['close_type', 'remote_alias', 'capacity', 'close_height', 'settled_balance'] },
+    { tableId: 'active_HTLCs', recordsPerPage: PAGE_SIZE, sortBy: 'expiration_height', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['amount', 'incoming', 'expiration_height'],
+      columnSelection: ['amount', 'incoming', 'expiration_height', 'hash_lock'] },
+    { tableId: 'peers', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['alias', 'sat_sent', 'sat_recv'],
+      columnSelection: ['alias', 'pub_key', 'sat_sent', 'sat_recv', 'ping_time'] }
+  ] },
+  { pageId: 'transactions', tables: [
+    { tableId: 'payments', recordsPerPage: PAGE_SIZE, sortBy: 'creation_date', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['creation_date', 'fee', 'value'],
+      columnSelection: ['creation_date', 'payment_hash', 'fee', 'value', 'hops'] },
+    { tableId: 'invoices', recordsPerPage: PAGE_SIZE, sortBy: 'creation_date', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['creation_date', 'settle_date', 'value'],
+      columnSelection: ['creation_date', 'settle_date', 'memo', 'value', 'amt_paid_sat'] }
+  ] },
+  { pageId: 'routing', tables: [
+    { tableId: 'forwarding_history', recordsPerPage: PAGE_SIZE, sortBy: 'timestamp', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['timestamp', 'amt_in', 'amt_out'],
+      columnSelection: ['timestamp', 'alias_in', 'alias_out', 'amt_in', 'amt_out', 'fee_msat'] },
+    { tableId: 'routing_peers', recordsPerPage: PAGE_SIZE, sortBy: 'total_amount', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['alias', 'events', 'total_amount'],
+      columnSelection: ['chan_id', 'alias', 'events', 'total_amount'] },
+    { tableId: 'non_routing_peers', recordsPerPage: PAGE_SIZE, sortBy: 'remote_alias', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['remote_alias', 'local_balance', 'remote_balance'],
+      columnSelection: ['chan_id', 'remote_alias', 'total_satoshis_received', 'total_satoshis_sent', 'local_balance', 'remote_balance'] }
+  ] },
+  { pageId: 'reports', tables: [
+    { tableId: 'routing', recordsPerPage: PAGE_SIZE, sortBy: 'timestamp', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['timestamp', 'amt_in', 'amt_out'],
+      columnSelection: ['timestamp', 'alias_in', 'alias_out', 'amt_in', 'amt_out', 'fee_msat'] },
+    { tableId: 'transactions', recordsPerPage: PAGE_SIZE, sortBy: 'date', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['date', 'amount_paid', 'amount_received'],
+      columnSelection: ['date', 'amount_paid', 'num_payments', 'amount_received', 'num_invoices'] }
+  ] },
+  { pageId: 'graph_lookup', tables: [
+    { tableId: 'query_routes', recordsPerPage: PAGE_SIZE, sortBy: 'hop_sequence', sortOrder: SortOrderEnum.ASCENDING,
+      columnSelectionSM: ['hop_sequence', 'pubkey_alias', 'fee_msat'],
+      columnSelection: ['hop_sequence', 'pubkey_alias', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat'] }
+  ] },
   { pageId: 'loop', tables: [
     { tableId: 'loop', recordsPerPage: PAGE_SIZE, sortBy: 'initiation_time', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['state', 'amt'],
@@ -861,6 +930,94 @@ export const LND_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
 ];
 
 export const LND_TABLES_DEF = {
+  on_chain: {
+    utxos: {
+      maxColumns: 5,
+      allowedColumns: ['tx_id', 'output', 'label', 'amount_sat', 'confirmations']
+    },
+    transactions: {
+      maxColumns: 7,
+      allowedColumns: ['time_stamp', 'label', 'amount', 'total_fees', 'block_height', 'num_confirmations']
+    },
+    dust_utxos: {
+      maxColumns: 5,
+      allowedColumns: ['tx_id', 'output', 'label', 'amount_sat', 'confirmations']
+    }
+  },
+  peers_channels: {
+    open: {
+      maxColumns: 7,
+      allowedColumns: ['remote_alias', 'uptime', 'total_satoshis_sent', 'total_satoshis_received', 'local_balance', 'remote_balance', 'balancedness']
+    },
+    pending_open: {
+      maxColumns: 4,
+      allowedColumns: ['remote_alias', 'commit_fee', 'commit_weight', 'capacity']
+    },
+    pending_force_closing: {
+      maxColumns: 4,
+      allowedColumns: ['remote_alias', 'recovered_balance', 'limbo_balance', 'capacity']
+    },
+    pending_closing: {
+      maxColumns: 4,
+      allowedColumns: ['remote_alias', 'local_balance', 'remote_balance', 'capacity']
+    },
+    pending_waiting_close: {
+      maxColumns: 4,
+      allowedColumns: ['remote_alias', 'limbo_balance', 'local_balance', 'remote_balance']
+    },
+    closed: {
+      maxColumns: 5,
+      allowedColumns: ['close_type', 'remote_alias', 'capacity', 'close_height', 'settled_balance']
+    },
+    active_HTLCs: {
+      maxColumns: 4,
+      allowedColumns: ['amount', 'incoming', 'expiration_height', 'hash_lock']
+    },
+    peers: {
+      maxColumns: 3,
+      allowedColumns: ['alias', 'pub_key', 'sat_sent', 'sat_recv', 'ping_time']
+    }
+  },
+  transactions: {
+    payments: {
+      maxColumns: 5,
+      allowedColumns: ['creation_date', 'payment_hash', 'fee', 'value', 'hops']
+    },
+    invoices: {
+      maxColumns: 5,
+      allowedColumns: ['creation_date', 'settle_date', 'memo', 'value', 'amt_paid_sat']
+    }
+  },
+  routing: {
+    forwarding_history: {
+      maxColumns: 6,
+      allowedColumns: ['timestamp', 'alias_in', 'alias_out', 'amt_in', 'amt_out', 'fee_msat']
+    },
+    routing_peers: {
+      maxColumns: 4,
+      allowedColumns: ['chan_id', 'alias', 'events', 'total_amount']
+    },
+    non_routing_peers: {
+      maxColumns: 6,
+      allowedColumns: ['chan_id', 'remote_alias', 'total_satoshis_received', 'total_satoshis_sent', 'local_balance', 'remote_balance']
+    }
+  },
+  reports: {
+    routing: {
+      maxColumns: 6,
+      allowedColumns: ['timestamp', 'alias_in', 'alias_out', 'amt_in', 'amt_out', 'fee_msat']
+    },
+    transactions: {
+      maxColumns: 5,
+      allowedColumns: ['date', 'amount_paid', 'num_payments', 'amount_received', 'num_invoices']
+    }
+  },
+  graph_lookup: {
+    query_routes: {
+      maxColumns: 5,
+      allowedColumns: ['hop_sequence', 'pubkey_alias', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat']
+    }
+  },
   loop: {
     loop: {
       maxColumns: 8,

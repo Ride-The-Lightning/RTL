@@ -40,7 +40,6 @@ export const getAllChannels = (req, res, next) => {
           return getAliasForChannel(req.session.selectedNode, channel);
         })
       ).then((values) => {
-        body.channels = common.sortDescByKey(body.channels, 'balancedness');
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Sorted Channels List Received', data: body });
         return res.status(200).json(body);
       }).catch((errRes) => {
@@ -109,7 +108,6 @@ export const getClosedChannels = (req, res, next) => {
           return getAliasForChannel(req.session.selectedNode, channel);
         })
       ).then((values) => {
-        body.channels = common.sortDescByKey(body.channels, 'close_height');
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Closed Channels List Received', data: body });
         return res.status(200).json(body);
       }).catch((errRes) => {

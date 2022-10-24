@@ -219,10 +219,6 @@ export const swaps = (req, res, next) => {
   options.url = options.url + '/v1/loop/swaps';
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Swaps Received', data: body });
-    if (body.swaps && body.swaps.length > 0) {
-      body.swaps = common.sortDescByKey(body.swaps, 'initiation_time');
-      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Sorted Loop Swaps List Received', data: body });
-    }
     res.status(200).json(body.swaps);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Loop', 'List Swaps Error', req.session.selectedNode);

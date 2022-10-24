@@ -37,8 +37,10 @@
           <td mat-cell *matCellDef="let nonRPeer"><span fxLayoutAlign="end center">{{nonRPeer.remote_balance | number}}</span></td>
         </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="pr-3"><span fxLayoutAlign="end center">Actions</span></th>
-          <td mat-cell *matCellDef="let nonRPeer" class="pl-2" fxLayoutAlign="end center">
+          <th mat-header-cell *matHeaderCellDef class="pr-3">
+            <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>
+          </th>
+          <td mat-cell *matCellDef="let nonRPeer" class="pr-2" fxLayoutAlign="end center">
             <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onManagePeer(nonRPeer)">Manage</button>
           </td>
         </ng-container>

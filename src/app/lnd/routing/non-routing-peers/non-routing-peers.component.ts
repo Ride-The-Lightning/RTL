@@ -7,13 +7,14 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 
 import { ForwardingEvent, SwitchRes, Channel, ChannelsSummary, LightningBalance } from '../../../shared/models/lndModels';
-import { APICallStatusEnum, getPaginatorLabel, PAGE_SIZE, PAGE_SIZE_OPTIONS, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, getPaginatorLabel, LND_DEFAULT_PAGE_SETTINGS, PAGE_SIZE, PAGE_SIZE_OPTIONS, ScreenSizeEnum, SortOrderEnum } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { RTLState } from '../../../store/rtl.state';
-import { channels, forwardingHistory } from '../../store/lnd.selector';
+import { channels, forwardingHistory, lndPageSettings } from '../../store/lnd.selector';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 
 @Component({
   selector: 'rtl-non-routing-peers',
@@ -27,6 +28,8 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public PAGE_ID = 'routing';
+  public tableSetting: TableSetting = { tableId: 'non_routing_peers', recordsPerPage: PAGE_SIZE, sortBy: 'remote_alias', sortOrder: SortOrderEnum.DESCENDING };
   public routingPeersData: any[] = [];
   public displayedColumns: any[] = [];
   public NonRoutingPeers: any = new MatTableDataSource<any>([]);
@@ -39,23 +42,31 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   public activeChannels: Channel[] = [];
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private router: Router, private activatedRoute: ActivatedRoute) {
     this.screenSize = this.commonService.getScreenSize();
-    if (this.screenSize === ScreenSizeEnum.XS) {
-      this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.displayedColumns = ['chan_id', 'remote_alias', 'local_balance', 'remote_balance', 'actions'];
-    } else {
-      this.displayedColumns = ['chan_id', 'remote_alias', 'total_satoshis_received', 'total_satoshis_sent', 'local_balance', 'remote_balance', 'actions'];
-    }
   }
 
   ngOnInit() {
-    this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(lndPageSettings).pipe(takeUntil(this.unSubs[0])).
+      subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessage = '';
+        this.apiCallStatus = settings.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = this.apiCallStatus.message || '';
+        }
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
+        } else {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
+        }
+        this.displayedColumns.push('actions');
+        this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.logger.info(this.displayedColumns);
+      });
+    this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[1])).
       subscribe((fhSelector: { forwardingHistory: SwitchRes, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = fhSelector.apiCallStatus;
@@ -73,7 +84,7 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
         this.logger.info(fhSelector.apiCallStatus);
         this.logger.info(fhSelector.forwardingHistory);
       });
-    this.store.select(channels).pipe(takeUntil(this.unSubs[1])).
+    this.store.select(channels).pipe(takeUntil(this.unSubs[2])).
       subscribe((channelsSelector: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = channelsSelector.apiCallStatus;
@@ -126,6 +137,7 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
       const filteredNonRoutingChannels = this.activeChannels?.filter((actvChnl) => forwardingEvents.findIndex((evnt) => (evnt.chan_id_in === actvChnl.chan_id || evnt.chan_id_out === actvChnl.chan_id)) < 0);
       this.NonRoutingPeers = new MatTableDataSource<Channel>(filteredNonRoutingChannels);
       this.NonRoutingPeers.sort = this.sort;
+      this.NonRoutingPeers.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
       this.NonRoutingPeers.filterPredicate = (nrchnl: Channel, fltr: string) => JSON.stringify(nrchnl).toLowerCase().includes(fltr);
       this.NonRoutingPeers.paginator = this.paginator;
       this.logger.info(this.NonRoutingPeers);

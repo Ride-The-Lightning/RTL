@@ -46,7 +46,6 @@ export const listInvoices = (req, res, next) => {
                 invoice.r_hash = invoice.r_hash ? Buffer.from(invoice.r_hash, 'base64').toString('hex') : '';
                 invoice.description_hash = invoice.description_hash ? Buffer.from(invoice.description_hash, 'base64').toString('hex') : null;
             });
-            body.invoices = common.sortDescByKey(body.invoices, 'creation_date');
         }
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Sorted Invoices List Received', data: body });
         res.status(200).json(body);

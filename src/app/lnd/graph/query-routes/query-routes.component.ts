@@ -8,12 +8,16 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { Hop } from '../../../shared/models/lndModels';
-import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, DataTypeEnum, LND_DEFAULT_PAGE_SETTINGS, PAGE_SIZE, ScreenSizeEnum, SortOrderEnum } from '../../../shared/services/consts-enums-functions';
 
 import { LNDEffects } from '../../store/lnd.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
 import { getQueryRoutes } from '../../store/lnd.actions';
+import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { lndPageSettings } from '../../store/lnd.selector';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
+import { LoggerService } from '../../../shared/services/logger.service';
 
 @Component({
   selector: 'rtl-query-routes',
@@ -23,6 +27,8 @@ import { getQueryRoutes } from '../../store/lnd.actions';
 export class QueryRoutesComponent implements OnInit, OnDestroy {
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  public PAGE_ID = 'graph_lookup';
+  public tableSetting: TableSetting = { tableId: 'query_routes', recordsPerPage: PAGE_SIZE, sortBy: 'hop_sequence', sortOrder: SortOrderEnum.ASCENDING };
   public destinationPubkey = '';
   public amount = null;
   public qrHops: any;
@@ -32,22 +38,24 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
   public faExclamationTriangle = faExclamationTriangle;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<RTLState>, private lndEffects: LNDEffects, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private lndEffects: LNDEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
-    if (this.screenSize === ScreenSizeEnum.XS) {
-      this.displayedColumns = ['pubkey_alias', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'fee_msat', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat', 'actions'];
-    } else {
-      this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat', 'actions'];
-    }
   }
 
   ngOnInit() {
+    this.store.select(lndPageSettings).pipe(takeUntil(this.unSubs[0])).
+      subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
+        } else {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
+        }
+        this.displayedColumns.push('actions');
+        this.logger.info(this.displayedColumns);
+      });
     this.lndEffects.setQueryRoutes.pipe(takeUntil(this.unSubs[1])).subscribe((queryRoute) => {
       this.qrHops = new MatTableDataSource([]);
       if (queryRoute.routes && queryRoute.routes.length && queryRoute.routes.length > 0 && queryRoute.routes[0].hops) {
@@ -59,6 +67,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
       }
       this.qrHops.sort = this.sort;
       this.qrHops.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+      this.qrHops.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     });
   }
 

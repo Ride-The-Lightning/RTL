@@ -46,10 +46,12 @@
           <td mat-cell *matCellDef="let address"> {{address?.addr}} </td>
         </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="pl-1"><span fxLayoutAlign="end center">Actions</span></th>
+          <th mat-header-cell *matHeaderCellDef class="pl-1">
+            <div class="bordered-box table-actions-select btn-action" fxLayoutAlign="center center">Actions</div>            
+          </th>
           <td mat-cell *matCellDef="let address" class="pl-1">
             <span fxLayoutAlign="end center">
-              <button mat-stroked-button color="primary" type="button" tabindex="1" rtlClipboard [payload]="lookupResult.node.pub_key + '@' + address.addr" (copied)="onCopyNodeURI($event)">Copy Node URI</button>          
+              <button mat-stroked-button class="btn-action-copy" color="primary" type="button" tabindex="1" rtlClipboard [payload]="lookupResult.node.pub_key + '@' + address.addr" (copied)="onCopyNodeURI($event)">Copy Node URI</button>          
             </span>
           </td>
         </ng-container>

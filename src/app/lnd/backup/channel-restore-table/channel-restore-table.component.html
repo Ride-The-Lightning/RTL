@@ -26,7 +26,9 @@
         <td mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '45rem'}">{{channel?.channel_point}}</td>
       </ng-container>
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="pr-3"><span fxLayoutAlign="end center">Actions</span></th>
+        <th mat-header-cell *matHeaderCellDef>
+          <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>          
+        </th>
         <td mat-cell *matCellDef="let channel">
           <span fxLayoutAlign="end center">
             <button mat-stroked-button color="primary" type="button" tabindex="1" (click)="onRestoreChannels(channel)">Restore</button>          

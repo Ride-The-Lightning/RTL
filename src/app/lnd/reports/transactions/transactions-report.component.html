@@ -41,7 +41,7 @@
         </ngx-charts-bar-vertical-2d>      
       </div>
       <div class="mt-1">
-        <rtl-transactions-report-table *ngIf="transactionsNonZeroReportData.length > 0 && apiCallStatus.status === apiCallStatusEnum.COMPLETED" [dataList]="transactionsNonZeroReportData" [dataRange]="reportPeriod" [filterValue]="transactionFilterValue"></rtl-transactions-report-table>
+        <rtl-transactions-report-table *ngIf="transactionsNonZeroReportData.length > 0 && apiCallStatus.status === apiCallStatusEnum.COMPLETED" [displayedColumns]="displayedColumns" [tableSetting]="tableSetting" [dataList]="transactionsNonZeroReportData" [dataRange]="reportPeriod" [filterValue]="transactionFilterValue"></rtl-transactions-report-table>
       </div>
     </div>
   </div>
