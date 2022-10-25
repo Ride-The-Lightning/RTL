@@ -54,19 +54,11 @@ export class CLNTransactionsReportComponent implements OnInit, OnDestroy {
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
     this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[0])).
       subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
-        if (settings.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
-            this.displayedColumns = ['date', 'amount_paid', 'amount_received'];
-          } else {
-            this.displayedColumns = ['date', 'amount_paid', 'num_payments', 'amount_received', 'num_invoices'];
-          }
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
         } else {
-          this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
-          if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
-            this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
-          } else {
-            this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
-          }
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
         }
         this.displayedColumns.push('actions');
         this.logger.info(this.displayedColumns);

@@ -974,8 +974,8 @@ export const LND_TABLES_DEF = {
       allowedColumns: ['amount', 'incoming', 'expiration_height', 'hash_lock']
     },
     peers: {
-      maxColumns: 3,
-      allowedColumns: ['alias', 'pub_key', 'sat_sent', 'sat_recv', 'ping_time']
+      maxColumns: 8,
+      allowedColumns: ['alias', 'pub_key', 'address', 'sync_type', 'inbound', 'bytes_sent', 'bytes_recv', 'sat_sent', 'sat_recv', 'ping_time']
     }
   },
   transactions: {
