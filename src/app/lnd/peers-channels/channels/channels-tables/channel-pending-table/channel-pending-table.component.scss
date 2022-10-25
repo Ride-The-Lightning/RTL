@@ -1,4 +1,5 @@
-.mat-column-channel_point {
+.mat-column-channel_point, .mat-column-remote_alias, .mat-column-remote_node_pub,
+.mat-column-commitment_type, .mat-column-closing_txid {
   flex: 1 1 10%;
   white-space: nowrap;
   overflow: hidden;  

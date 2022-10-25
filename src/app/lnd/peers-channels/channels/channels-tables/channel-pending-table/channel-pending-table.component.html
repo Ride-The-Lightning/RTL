@@ -11,7 +11,27 @@
         <table mat-table #table fxFlex="100" [dataSource]="pendingOpenChannels" matSort [ngClass]="{'error-border bordered-box': errorMessage !== '','bordered-box': true}">
           <ng-container matColumnDef="remote_alias">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Peer </mat-header-cell>
-            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">{{channel.channel.remote_alias}}</mat-cell>
+            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{channel.channel.remote_alias}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="remote_node_pub">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Pubkey </mat-header-cell>
+            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{channel.channel.remote_node_pub}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="channel_point">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Channel </mat-header-cell>
+            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{channel.channel.channel_point}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="initiator">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Initiator </mat-header-cell>
+            <mat-cell *matCellDef="let channel">{{channel.channel.initiator}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="commitment_type">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Commitment Type </mat-header-cell>
+            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{channel.channel.commitment_type}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="confirmation_height">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Confirmation Height</mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.confirmation_height | number}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="commit_fee">
             <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Commit Fee (Sats) </mat-header-cell>
@@ -21,9 +41,21 @@
             <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Commit Weight </mat-header-cell>
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.commit_weight | number}}</mat-cell>
           </ng-container>
+          <ng-container matColumnDef="fee_per_kw">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Fee/KW</mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.fee_per_kw | number}}</mat-cell>
+          </ng-container>
           <ng-container matColumnDef="capacity">
             <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Capacity (Sats)</mat-header-cell>
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.capacity | number}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="local_balance">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Local Balance (Sats)</mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.local_balance | number}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="remote_balance">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Remote Balance (Sats)</mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.remote_balance | number}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="actions">
             <mat-header-cell fxLayoutAlign="end center" class="pl-3 pr-4" *matHeaderCellDef>
@@ -59,21 +91,57 @@
       </mat-expansion-panel-header>
       <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
         <table mat-table #table [dataSource]="pendingForceClosingChannels" matSort [ngClass]="{'error-border bordered-box': errorMessage !== '','bordered-box': true}">
+          <ng-container matColumnDef="closing_txid">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Closing Tx Id </mat-header-cell>
+            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{channel.closing_txid}}</mat-cell>
+          </ng-container>
           <ng-container matColumnDef="remote_alias">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Peer </mat-header-cell>
-            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">{{channel.channel.remote_alias}}</mat-cell>
+            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{channel.channel.remote_alias}}</mat-cell>
           </ng-container>
-          <ng-container matColumnDef="recovered_balance">
-            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Recovered Balance (Sats) </mat-header-cell>
-            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.recovered_balance | number}}</mat-cell>
+          <ng-container matColumnDef="remote_node_pub">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Pubkey </mat-header-cell>
+            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{channel.channel.remote_node_pub}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="channel_point">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Channel </mat-header-cell>
+            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{channel.channel.channel_point}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="initiator">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Initiator </mat-header-cell>
+            <mat-cell *matCellDef="let channel">{{channel.channel.initiator}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="commitment_type">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Commitment Type </mat-header-cell>
+            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{channel.channel.commitment_type}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="limbo_balance">
             <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Limbo Balance (Sats) </mat-header-cell>
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.limbo_balance | number}}</mat-cell>
           </ng-container>
+          <ng-container matColumnDef="maturity_height">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Maturity Height</mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.maturity_height | number}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="blocks_til_maturity">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Blocks till Maturity</mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.blocks_til_maturity | number}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="recovered_balance">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Recovered Balance (Sats) </mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.recovered_balance | number}}</mat-cell>
+          </ng-container>
           <ng-container matColumnDef="capacity">
             <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Capacity (Sats) </mat-header-cell>
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.capacity | number}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="local_balance">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Local Balance (Sats)</mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.local_balance | number}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="remote_balance">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Remote Balance (Sats)</mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.remote_balance | number}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="actions">
             <mat-header-cell fxLayoutAlign="end center" class="pl-4 pr-3" *matHeaderCellDef>
@@ -102,29 +170,42 @@
         <mat-panel-title>Pending Closing ({{pendingClosingChannelsLength}})</mat-panel-title>
       </mat-expansion-panel-header>
       <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
-        <table mat-table #table [dataSource]="pendingClosingChannels" matSort
-          [ngClass]="{'error-border bordered-box': errorMessage !== '','bordered-box': true}">
+        <table mat-table #table [dataSource]="pendingClosingChannels" matSort [ngClass]="{'error-border bordered-box': errorMessage !== '','bordered-box': true}">
+          <ng-container matColumnDef="closing_txid">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Closing Tx Id </mat-header-cell>
+            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{channel.closing_txid}}</mat-cell>
+          </ng-container>
           <ng-container matColumnDef="remote_alias">
-            <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Peer </mat-header-cell>
-            <mat-cell class="pl-2" *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">{{channel.channel.remote_alias}}</mat-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Peer </mat-header-cell>
+            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{channel.channel.remote_alias}}</mat-cell>
           </ng-container>
-          <ng-container matColumnDef="local_balance">
-            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-              Local Balance (Sats) </mat-header-cell>
-            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.local_balance |
-              number}}</mat-cell>
+          <ng-container matColumnDef="remote_node_pub">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Pubkey </mat-header-cell>
+            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{channel.channel.remote_node_pub}}</mat-cell>
           </ng-container>
-          <ng-container matColumnDef="remote_balance">
-            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-              Remote Balance (Sats) </mat-header-cell>
-            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.remote_balance |
-              number}}</mat-cell>
+          <ng-container matColumnDef="channel_point">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Channel </mat-header-cell>
+            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{channel.channel.channel_point}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="initiator">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Initiator </mat-header-cell>
+            <mat-cell *matCellDef="let channel">{{channel.channel.initiator}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="commitment_type">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Commitment Type </mat-header-cell>
+            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{channel.channel.commitment_type}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="capacity">
-            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-              Capacity (Sats) </mat-header-cell>
-            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.capacity |
-                number}}</mat-cell>
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Capacity (Sats) </mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.capacity | number}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="local_balance">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Local Balance (Sats)</mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.local_balance | number}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="remote_balance">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Remote Balance (Sats)</mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.remote_balance | number}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="actions">
             <mat-header-cell fxLayoutAlign="end center" class="pl-4 pr-3" *matHeaderCellDef>
@@ -153,35 +234,42 @@
         <mat-panel-title>Waiting Close ({{pendingWaitClosingChannelsLength}})</mat-panel-title>
       </mat-expansion-panel-header>
       <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
-        <table mat-table #table [dataSource]="pendingWaitClosingChannels" matSort
-          [ngClass]="{'error-border bordered-box': errorMessage !== '','bordered-box': true}">
+        <table mat-table #table [dataSource]="pendingWaitClosingChannels" matSort [ngClass]="{'error-border bordered-box': errorMessage !== '','bordered-box': true}">
           <ng-container matColumnDef="remote_alias">
-            <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Peer </mat-header-cell>
-            <mat-cell class="pl-2" *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">{{channel.channel.remote_alias}}</mat-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Peer </mat-header-cell>
+            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{channel.channel.remote_alias}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="remote_node_pub">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Pubkey </mat-header-cell>
+            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{channel.channel.remote_node_pub}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="channel_point">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Channel </mat-header-cell>
+            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{channel.channel.channel_point}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="initiator">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Initiator </mat-header-cell>
+            <mat-cell *matCellDef="let channel">{{channel.channel.initiator}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="commitment_type">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Commitment Type </mat-header-cell>
+            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{channel.channel.commitment_type}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="limbo_balance">
-            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-              Limbo Balance (Sats) </mat-header-cell>
-            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.limbo_balance | number}}
-            </mat-cell>
-          </ng-container>
-          <ng-container matColumnDef="local_balance">
-            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-              Local Balance (Sats) </mat-header-cell>
-            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.local_balance |
-              number}}</mat-cell>
-          </ng-container>
-          <ng-container matColumnDef="remote_balance">
-            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-              Remote Balance (Sats) </mat-header-cell>
-            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.remote_balance |
-            number}}</mat-cell>
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Limbo Balance (Sats) </mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.limbo_balance | number}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="capacity">
-            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-              Capacity (Sats) </mat-header-cell>
-            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.capacity |
-              number}}</mat-cell>
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Capacity (Sats) </mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.capacity | number}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="local_balance">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Local Balance (Sats)</mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.local_balance | number}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="remote_balance">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Remote Balance (Sats)</mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.remote_balance | number}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="actions">
             <mat-header-cell fxLayoutAlign="end center" class="pl-4 pr-3" *matHeaderCellDef>

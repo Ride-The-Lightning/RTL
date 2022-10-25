@@ -860,16 +860,16 @@ export const LND_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
     { tableId: 'open', recordsPerPage: PAGE_SIZE, sortBy: 'balancedness', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['remote_alias', 'local_balance', 'remote_balance'],
       columnSelection: ['remote_alias', 'uptime', 'total_satoshis_sent', 'total_satoshis_received', 'local_balance', 'remote_balance', 'balancedness'] },
-    { tableId: 'pending_open', recordsPerPage: PAGE_SIZE, sortBy: 'capacity', sortOrder: SortOrderEnum.DESCENDING,
+    { tableId: 'pending_open', sortBy: 'capacity', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['remote_alias', 'capacity'],
       columnSelection: ['remote_alias', 'commit_fee', 'commit_weight', 'capacity'] },
-    { tableId: 'pending_force_closing', recordsPerPage: PAGE_SIZE, sortBy: 'limbo_balance', sortOrder: SortOrderEnum.DESCENDING,
+    { tableId: 'pending_force_closing', sortBy: 'limbo_balance', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['remote_alias', 'limbo_balance'],
       columnSelection: ['remote_alias', 'recovered_balance', 'limbo_balance', 'capacity'] },
-    { tableId: 'pending_closing', recordsPerPage: PAGE_SIZE, sortBy: 'capacity', sortOrder: SortOrderEnum.DESCENDING,
+    { tableId: 'pending_closing', sortBy: 'capacity', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['remote_alias', 'capacity'],
       columnSelection: ['remote_alias', 'local_balance', 'remote_balance', 'capacity'] },
-    { tableId: 'pending_waiting_close', recordsPerPage: PAGE_SIZE, sortBy: 'limbo_balance', sortOrder: SortOrderEnum.DESCENDING,
+    { tableId: 'pending_waiting_close', sortBy: 'limbo_balance', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['remote_alias', 'limbo_balance'],
       columnSelection: ['remote_alias', 'limbo_balance', 'local_balance', 'remote_balance'] },
     { tableId: 'closed', recordsPerPage: PAGE_SIZE, sortBy: 'close_type', sortOrder: SortOrderEnum.DESCENDING,
@@ -950,20 +950,20 @@ export const LND_TABLES_DEF = {
       allowedColumns: ['remote_alias', 'uptime', 'total_satoshis_sent', 'total_satoshis_received', 'local_balance', 'remote_balance', 'balancedness']
     },
     pending_open: {
-      maxColumns: 4,
-      allowedColumns: ['remote_alias', 'commit_fee', 'commit_weight', 'capacity']
+      maxColumns: 7,
+      allowedColumns: ['remote_alias', 'remote_node_pub', 'channel_point', 'initiator', 'commitment_type', 'confirmation_height', 'commit_fee', 'commit_weight', 'fee_per_kw', 'capacity', 'local_balance', 'remote_balance']
     },
     pending_force_closing: {
-      maxColumns: 4,
-      allowedColumns: ['remote_alias', 'recovered_balance', 'limbo_balance', 'capacity']
+      maxColumns: 7,
+      allowedColumns: ['closing_txid', 'remote_alias', 'remote_node_pub', 'channel_point', 'initiator', 'commitment_type', 'limbo_balance', 'maturity_height', 'blocks_til_maturity', 'recovered_balance', 'capacity', 'local_balance', 'remote_balance']
     },
     pending_closing: {
-      maxColumns: 4,
-      allowedColumns: ['remote_alias', 'local_balance', 'remote_balance', 'capacity']
+      maxColumns: 7,
+      allowedColumns: ['closing_txid', 'remote_alias', 'remote_node_pub', 'channel_point', 'initiator', 'commitment_type', 'capacity', 'local_balance', 'remote_balance']
     },
     pending_waiting_close: {
-      maxColumns: 4,
-      allowedColumns: ['remote_alias', 'limbo_balance', 'local_balance', 'remote_balance']
+      maxColumns: 7,
+      allowedColumns: ['remote_alias', 'remote_node_pub', 'channel_point', 'initiator', 'commitment_type', 'limbo_balance', 'capacity', 'local_balance', 'remote_balance']
     },
     closed: {
       maxColumns: 5,

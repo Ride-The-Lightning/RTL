@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Channel, GetInfo, PendingChannels, PendingOpenChannel } from '../../../../../shared/models/lndModels';
-import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, ScreenSizeEnum } from '../../../../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, LND_DEFAULT_PAGE_SETTINGS, PAGE_SIZE, ScreenSizeEnum, SortOrderEnum } from '../../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { LoggerService } from '../../../../../shared/services/logger.service';
@@ -15,7 +15,8 @@ import { BumpFeeComponent } from '../../bump-fee-modal/bump-fee.component';
 
 import { openAlert } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
-import { lndNodeInformation, lndNodeSettings, pendingChannels } from '../../../../store/lnd.selector';
+import { lndNodeInformation, lndNodeSettings, lndPageSettings, pendingChannels } from '../../../../store/lnd.selector';
+import { PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
 
 @Component({
   selector: 'rtl-channel-pending-table',
@@ -25,20 +26,25 @@ import { lndNodeInformation, lndNodeSettings, pendingChannels } from '../../../.
 export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  public PAGE_ID = 'peers_channels';
+  public openTableSetting: TableSetting = { tableId: 'pending_open', recordsPerPage: PAGE_SIZE, sortBy: 'capacity', sortOrder: SortOrderEnum.DESCENDING };
+  public forceClosingopenTableSetting: TableSetting = { tableId: 'pending_force_closing', recordsPerPage: PAGE_SIZE, sortBy: 'limbo_balance', sortOrder: SortOrderEnum.DESCENDING };
+  public closingOpenTableSetting: TableSetting = { tableId: 'pending_closing', recordsPerPage: PAGE_SIZE, sortBy: 'capacity', sortOrder: SortOrderEnum.DESCENDING };
+  public waitingCloseopenTableSetting: TableSetting = { tableId: 'pending_waiting_close', recordsPerPage: PAGE_SIZE, sortBy: 'limbo_balance', sortOrder: SortOrderEnum.DESCENDING };
   public selNode: SelNodeChild | null = {};
   public selectedFilter = '';
   public information: GetInfo = {};
   public pendingChannels: PendingChannels = {};
-  public displayedOpenColumns = ['remote_alias', 'commit_fee', 'commit_weight', 'capacity', 'actions'];
+  public displayedOpenColumns: any[] = [];
   public pendingOpenChannelsLength = 0;
   public pendingOpenChannels: any;
-  public displayedForceClosingColumns = ['remote_alias', 'recovered_balance', 'limbo_balance', 'capacity', 'actions'];
+  public displayedForceClosingColumns: any[] = [];
   public pendingForceClosingChannelsLength = 0;
   public pendingForceClosingChannels: any;
-  public displayedClosingColumns = ['remote_alias', 'local_balance', 'remote_balance', 'capacity', 'actions'];
+  public displayedClosingColumns: any[] = [];
   public pendingClosingChannelsLength = 0;
   public pendingClosingChannels: any;
-  public displayedWaitClosingColumns = ['remote_alias', 'limbo_balance', 'local_balance', 'remote_balance', 'actions'];
+  public displayedWaitClosingColumns: any[] = [];
   public pendingWaitClosingChannelsLength = 0;
   public pendingWaitClosingChannels: any;
   public screenSize = '';
@@ -46,32 +52,56 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
   public errorMessage = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
-    if (this.screenSize === ScreenSizeEnum.XS) {
-      this.displayedOpenColumns = ['remote_alias', 'actions'];
-      this.displayedForceClosingColumns = ['remote_alias', 'actions'];
-      this.displayedClosingColumns = ['remote_alias', 'actions'];
-      this.displayedWaitClosingColumns = ['remote_alias', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
-      this.displayedOpenColumns = ['remote_alias', 'commit_fee', 'actions'];
-      this.displayedForceClosingColumns = ['remote_alias', 'limbo_balance', 'actions'];
-      this.displayedClosingColumns = ['remote_alias', 'remote_balance', 'actions'];
-      this.displayedWaitClosingColumns = ['remote_alias', 'limbo_balance', 'actions'];
-    } else {
-      this.displayedOpenColumns = ['remote_alias', 'commit_fee', 'commit_weight', 'capacity', 'actions'];
-      this.displayedForceClosingColumns = ['remote_alias', 'recovered_balance', 'limbo_balance', 'capacity', 'actions'];
-      this.displayedClosingColumns = ['remote_alias', 'local_balance', 'remote_balance', 'capacity', 'actions'];
-      this.displayedWaitClosingColumns = ['remote_alias', 'limbo_balance', 'local_balance', 'remote_balance', 'actions'];
-    }
   }
 
   ngOnInit() {
     this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => { this.selNode = nodeSettings; });
     this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => { this.information = nodeInfo; });
-    this.store.select(pendingChannels).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(lndPageSettings).pipe(takeUntil(this.unSubs[2])).
+      subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessage = '';
+        this.apiCallStatus = settings.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = this.apiCallStatus.message || '';
+        }
+        this.openTableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.openTableSetting.tableId) || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.openTableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedOpenColumns = JSON.parse(JSON.stringify(this.openTableSetting.columnSelectionSM));
+        } else {
+          this.displayedOpenColumns = JSON.parse(JSON.stringify(this.openTableSetting.columnSelection));
+        }
+        this.displayedOpenColumns.push('actions');
+        this.logger.info(this.displayedOpenColumns);
+        this.forceClosingopenTableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.forceClosingopenTableSetting.tableId) || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.forceClosingopenTableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedForceClosingColumns = JSON.parse(JSON.stringify(this.forceClosingopenTableSetting.columnSelectionSM));
+        } else {
+          this.displayedForceClosingColumns = JSON.parse(JSON.stringify(this.forceClosingopenTableSetting.columnSelection));
+        }
+        this.displayedForceClosingColumns.push('actions');
+        this.logger.info(this.displayedForceClosingColumns);
+        this.closingOpenTableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.closingOpenTableSetting.tableId) || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.closingOpenTableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedClosingColumns = JSON.parse(JSON.stringify(this.closingOpenTableSetting.columnSelectionSM));
+        } else {
+          this.displayedClosingColumns = JSON.parse(JSON.stringify(this.closingOpenTableSetting.columnSelection));
+        }
+        this.displayedClosingColumns.push('actions');
+        this.logger.info(this.displayedClosingColumns);
+        this.waitingCloseopenTableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.waitingCloseopenTableSetting.tableId) || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.waitingCloseopenTableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedWaitClosingColumns = JSON.parse(JSON.stringify(this.waitingCloseopenTableSetting.columnSelectionSM));
+        } else {
+          this.displayedWaitClosingColumns = JSON.parse(JSON.stringify(this.waitingCloseopenTableSetting.columnSelection));
+        }
+        this.displayedWaitClosingColumns.push('actions');
+        this.logger.info(this.displayedWaitClosingColumns);
+      });
+    this.store.select(pendingChannels).pipe(takeUntil(this.unSubs[3])).
       subscribe((pendingChannelsSelector: { pendingChannels: PendingChannels, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = pendingChannelsSelector.apiCallStatus;

@@ -13,7 +13,7 @@
         <div fxLayout="row" fxLayoutAlign="space-between center">
           <span fxFlex="10">{{table.tableId | camelcaseWithReplace:'_'}}: </span>
           <mat-form-field fxFlex="10">
-            <mat-select [(ngModel)]="table.recordsPerPage" placeholder="Records/Page" name="{{table.tableId}}-page-size-options" tabindex="2" required>
+            <mat-select [disabled]="disbalePageSize(page.pageId, table.tableId)" [(ngModel)]="table.recordsPerPage" placeholder="Records/Page" name="{{table.tableId}}-page-size-options" tabindex="2" required>
               <mat-option *ngFor="let pageSizeOption of pageSizeOptions" [value]="pageSizeOption">
                 {{pageSizeOption}}
               </mat-option>

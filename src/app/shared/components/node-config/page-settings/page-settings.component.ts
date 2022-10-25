@@ -205,6 +205,14 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
+
+  disbalePageSize(pageId: string, tableId: string) {
+    return (this.selNode.lnImplementation === 'LND' && pageId === 'peers_channels' && tableId === 'pending_open') ||
+    (this.selNode.lnImplementation === 'LND' && pageId === 'peers_channels' && tableId === 'pending_force_closing') ||
+    (this.selNode.lnImplementation === 'LND' && pageId === 'peers_channels' && tableId === 'pending_closing') ||
+    (this.selNode.lnImplementation === 'LND' && pageId === 'peers_channels' && tableId === 'pending_waiting_close');
+  }
+
   ngOnDestroy() {
     this.unSubs.forEach((unsub) => {
       unsub.next();

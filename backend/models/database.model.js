@@ -94,9 +94,6 @@ export const validatePageSettings = (documentToValidate) => {
         if (!table.hasOwnProperty(CollectionFieldsEnum.SORT_ORDER)) {
             errMsg = errMsg + 'Sort Order is mandatory.';
         }
-        if (!table.hasOwnProperty(CollectionFieldsEnum.RECORDS_PER_PAGE)) {
-            errMsg = errMsg + 'Records/Page is mandatory.';
-        }
         if (!table.hasOwnProperty(CollectionFieldsEnum.COLUMN_SELECTION_SM)) {
             errMsg = errMsg + 'Column Selection (Mobile) is mandatory.';
         }
