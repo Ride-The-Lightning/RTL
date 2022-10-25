@@ -1203,6 +1203,7 @@ export class LNDEffects implements OnDestroy {
           this.invoicesPageSize = (settings.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'invoices') || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'invoices')).recordsPerPage;
           this.paymentsPageSize = (settings.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'payments') || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'payments')).recordsPerPage;
           this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: this.invoicesPageSize, reversed: true } }));
+          // this.store.dispatch(fetchPayments({ payload: { max_payments: 100000, reversed: true } }));
           return {
             type: LNDActions.SET_PAGE_SETTINGS_LND,
             payload: settings || []
@@ -1228,6 +1229,16 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'SavePageSettings', status: APICallStatusEnum.COMPLETED } }));
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_PAGE_SETTINGS }));
             this.store.dispatch(openSnackBar({ payload: 'Page Layout Updated Successfully!' }));
+            const invPgSz = (postRes.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'invoices') || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'invoices')).recordsPerPage;
+            const payPgSz = (postRes.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'payments') || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'payments')).recordsPerPage;
+            if (invPgSz !== this.invoicesPageSize) {
+              this.invoicesPageSize = invPgSz;
+              this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: this.invoicesPageSize, reversed: true } }));
+            }
+            if (payPgSz !== this.paymentsPageSize) {
+              this.paymentsPageSize = payPgSz;
+              // this.store.dispatch(fetchPayments({ payload: { max_payments: 100000, reversed: true } }));
+            }
             return {
               type: LNDActions.SET_PAGE_SETTINGS_LND,
               payload: postRes || []

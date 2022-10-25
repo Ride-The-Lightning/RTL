@@ -43,10 +43,52 @@
           <ng-container matColumnDef="payment_hash">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Hash</th>
             <td mat-cell *matCellDef="let payment">
-              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">
+              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
                 <span class="ellipsis-child">{{payment?.payment_hash}}</span>
               </span>
             </td>
+          </ng-container>
+          <ng-container matColumnDef="payment_request">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Request</th>
+            <td mat-cell *matCellDef="let payment">
+              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+                <span class="ellipsis-child">{{payment?.payment_request}}</span>
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="payment_preimage">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Preimage</th>
+            <td mat-cell *matCellDef="let payment">
+              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+                <span class="ellipsis-child">{{payment?.payment_preimage}}</span>
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+            <td mat-cell *matCellDef="let payment">
+              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+                <span class="ellipsis-child">{{payment?.description}}</span>
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="description_hash">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Description Hash</th>
+            <td mat-cell *matCellDef="let payment">
+              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+                <span class="ellipsis-child">{{payment?.description_hash}}</span>
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="failure_reason">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Failure Reason</th>
+            <td mat-cell *matCellDef="let payment">
+              {{payment?.failure_reason | camelcaseWithReplace:'failure_reason':'_'}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="payment_index">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Payment Index</th>
+            <td mat-cell *matCellDef="let payment"><span fxLayoutAlign="end center">{{payment?.payment_index | number}}</span></td>
           </ng-container>
           <ng-container matColumnDef="fee">
             <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Fee (Sats)</th>
@@ -81,25 +123,35 @@
             </td>
           </ng-container>
           <!-- Payment Group Row Start -->
-          <ng-container matColumnDef="groupTotal">
+          <ng-container matColumnDef="group_status">
             <td mat-cell *matCellDef="let payment">
               <span fxLayoutAlign="start center" class="htlc-row-span">
                 <span *ngIf="payment?.status === 'SUCCEEDED'" class="dot green" matTooltip="Succeeded" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
                 <span *ngIf="payment?.status !== 'SUCCEEDED'" class="dot red" matTooltip="Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-                Total Attempts: {{payment?.htlcs?.length}}
               </span>
               <ng-container *ngIf="payment?.is_expanded">
                 <span *ngFor="let htlc of payment?.htlcs" fxLayoutAlign="start center" class="htlc-row-span pl-3">
                   <span *ngIf="htlc.status === 'SUCCEEDED'" class="dot green" matTooltip="Succeeded" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
                   <span *ngIf="htlc.status !== 'SUCCEEDED'" class="dot red" matTooltip="Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-                  {{(htlc.attempt_time * 1000) | date:'dd/MMM/y HH:mm'}}
                 </span>
               </ng-container>
             </td>
           </ng-container>
-          <ng-container matColumnDef="groupHash">
+          <ng-container matColumnDef="group_creation_date">
             <td mat-cell *matCellDef="let payment">
-              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">
+              <span fxLayoutAlign="start center" class="htlc-row-span">
+                Total Attempts: {{payment?.htlcs?.length}}
+              </span>
+              <ng-container *ngIf="payment?.is_expanded">
+                <span *ngFor="let htlc of payment?.htlcs" fxLayoutAlign="start center" class="htlc-row-span pl-3">
+                  {{(htlc.attempt_time_ns / 1000000) | date:'dd/MMM/y HH:mm'}}
+                </span>
+              </ng-container>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="group_payment_hash">
+            <td mat-cell *matCellDef="let payment">
+              <span fxLayout="row" class="ellipsis-parent htlc-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
                 <span class="ellipsis-child">{{payment?.payment_hash}}</span>
               </span>
               <span *ngIf="payment?.is_expanded">
@@ -109,7 +161,73 @@
               </span>
             </td>
           </ng-container>
-          <ng-container matColumnDef="groupFee">
+          <ng-container matColumnDef="group_payment_request">
+            <td mat-cell *matCellDef="let payment">
+              <span fxLayout="row" class="ellipsis-parent htlc-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+                <span class="ellipsis-child">{{payment?.payment_request}}</span>
+              </span>
+              <span *ngIf="payment?.is_expanded">
+                <span *ngFor="let htlc of payment?.htlcs" fxLayoutAlign="start center" class="htlc-row-span">
+                </span>
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="group_payment_preimage">
+            <td mat-cell *matCellDef="let payment">
+              <span fxLayout="row" class="ellipsis-parent htlc-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+                <span class="ellipsis-child">{{payment?.payment_preimage}}</span>
+              </span>
+              <span *ngIf="payment?.is_expanded">
+                <span *ngFor="let htlc of payment?.htlcs; index as i" fxLayoutAlign="start center" class="htlc-row-span">
+                  {{htlc?.preimage}}
+                </span>
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="group_description">
+            <td mat-cell *matCellDef="let payment">
+              <span fxLayout="row" class="ellipsis-parent htlc-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+                <span class="ellipsis-child">{{payment?.description}}</span>
+              </span>
+              <span *ngIf="payment?.is_expanded">
+                <span *ngFor="let htlc of payment?.htlcs" fxLayoutAlign="start center" class="htlc-row-span">
+                </span>
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="group_description_hash">
+            <td mat-cell *matCellDef="let payment">
+              <span fxLayout="row" class="ellipsis-parent htlc-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+                <span class="ellipsis-child">{{payment?.description_hash}}</span>
+              </span>
+              <span *ngIf="payment?.is_expanded">
+                <span *ngFor="let htlc of payment?.htlcs" fxLayoutAlign="start center" class="htlc-row-span">
+                </span>
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="group_failure_reason">
+            <td mat-cell *matCellDef="let payment">
+              <span fxLayoutAlign="start center" class="htlc-row-span">
+                {{payment?.failure_reason | camelcaseWithReplace:'failure_reason':'_'}}
+              </span>
+              <span *ngIf="payment?.is_expanded">
+                <span *ngFor="let htlc of payment?.htlcs" fxLayoutAlign="start center" class="htlc-row-span">
+                </span>
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="group_payment_index">
+            <td mat-cell *matCellDef="let payment">
+              <span fxLayoutAlign="end center" class="htlc-row-span">{{payment?.payment_index | number}}</span>
+              <span *ngIf="payment?.is_expanded">
+                <span *ngFor="let htlc of payment?.htlcs" fxLayoutAlign="end center" class="htlc-row-span">
+                  {{htlc.attempt_id | number}}
+                </span>
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="group_fee">
             <td mat-cell *matCellDef="let payment">
               <span fxLayoutAlign="end center" class="htlc-row-span">{{payment?.fee | number:'1.0-0'}}</span>
               <span *ngIf="payment?.is_expanded">
@@ -119,7 +237,7 @@
               </span>
             </td>
           </ng-container>
-          <ng-container matColumnDef="groupValue">
+          <ng-container matColumnDef="group_value">
             <td mat-cell *matCellDef="let payment">
               <span fxLayoutAlign="end center" class="htlc-row-span">{{payment?.value | number:'1.0-0'}}</span>
               <span *ngIf="payment?.is_expanded">
@@ -129,7 +247,7 @@
               </span>
             </td>
           </ng-container>
-          <ng-container matColumnDef="groupHops">
+          <ng-container matColumnDef="group_hops">
             <td mat-cell *matCellDef="let payment">
               <span fxLayoutAlign="end center" class="htlc-row-span">-</span>
               <span *ngIf="payment?.is_expanded">
@@ -139,7 +257,7 @@
               </span>
             </td>
           </ng-container>
-          <ng-container matColumnDef="groupActions">
+          <ng-container matColumnDef="group_actions">
             <td mat-cell *matCellDef="let payment" class="px-2">
               <span fxLayoutAlign="end center">
                 <button mat-flat-button class="btn-htlc-expand" color="primary" type="button" tabindex="5" (click)="payment.is_expanded = !payment?.is_expanded">{{payment?.is_expanded ? 'Hide' : 'Show'}}</button>

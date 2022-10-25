@@ -27,8 +27,15 @@ export class CamelCasePipe implements PipeTransform {
 })
 export class CamelCaseWithReplacePipe implements PipeTransform {
 
-  transform(value: string, args?: any): string {
-    return value?.replace(/\s+/g, '')?.replace(/-/g, ' ').replace(new RegExp(args, 'g'), ' ').replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => (word.toUpperCase()));
+  transform(value: string, arg1?: string, arg2?: string): string {
+    value = value?.toLowerCase().replace(/\s+/g, '')?.replace(/-/g, ' ');
+    if (arg1) {
+      value = value.replace(new RegExp(arg1, 'g'), ' ');
+    }
+    if (arg2) {
+      value = value.replace(new RegExp(arg2, 'g'), ' ');
+    }
+    return value.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => (word.toUpperCase()));
   }
 
 }

@@ -69,15 +69,6 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
 
   constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private decimalPipe: DecimalPipe, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
-    // if (this.screenSize === ScreenSizeEnum.XS) {
-    //   this.htlcColumns = ['groupTotal', 'groupFee', 'groupActions'];
-    // } else if (this.screenSize === ScreenSizeEnum.SM) {
-    //   this.htlcColumns = ['groupTotal', 'groupFee', 'groupValue', 'groupHops', 'groupActions'];
-    // } else if (this.screenSize === ScreenSizeEnum.MD) {
-    //   this.htlcColumns = ['groupTotal', 'groupFee', 'groupValue', 'groupHops', 'groupActions'];
-    // } else {
-    //   this.htlcColumns = ['groupTotal', 'groupHash', 'groupFee', 'groupValue', 'groupHops', 'groupActions'];
-    // }
   }
 
   ngOnInit() {
@@ -102,6 +93,8 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         }
         this.displayedColumns.unshift('status');
         this.displayedColumns.push('actions');
+        this.htlcColumns = [];
+        this.displayedColumns.map((col) => this.htlcColumns.push('group_' + col));
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
         this.logger.info(this.displayedColumns);
       });
@@ -300,21 +293,21 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
     this.form.resetForm();
   }
 
-  getHopDetails(hops: Hop[]) {
+  getHopDetails(currentHop: Hop) {
     const self = this;
-    return hops?.reduce((accumulator: any[], currentHop: Hop) => {
+    return new Promise((resolve, reject) => {
       const peerFound = self.peers.find((peer) => peer.pub_key === currentHop.pub_key);
       if (peerFound && peerFound.alias) {
-        accumulator.push('<pre>Channel: ' + peerFound.alias.padEnd(20) + '&Tab;&Tab;&Tab;Amount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward) + '</pre>');
+        resolve('<pre>Channel: ' + peerFound.alias.padEnd(20) + '&Tab;&Tab;&Tab;Amount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward) + '</pre>');
       } else {
         self.dataService.getAliasesFromPubkeys((currentHop.pub_key || ''), false).
           pipe(takeUntil(self.unSubs[7])).
-          subscribe((res: any) => {
-            accumulator.push('<pre>Channel: ' + (res.node && res.node.alias ? res.node.alias.padEnd(20) : (currentHop.pub_key?.substring(0, 17) + '...')) + '&Tab;&Tab;&Tab;Amount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward) + '</pre>');
+          subscribe({
+            next: (res: any) => resolve('<pre>Channel: ' + (res.node && res.node.alias ? res.node.alias.padEnd(20) : (currentHop.pub_key?.substring(0, 17) + '...')) + '&Tab;&Tab;&Tab;Amount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward) + '</pre>'),
+            error: (error) => resolve('<pre>Channel: ' + (currentHop.pub_key ? (currentHop.pub_key?.substring(0, 17) + '...') : '') + '&Tab;&Tab;&Tab;Amount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward) + '</pre>')
           });
       }
-      return accumulator;
-    }, []);
+    });
   }
 
   onHTLCClick(selHtlc: PaymentHTLC, selPayment: Payment) {
@@ -335,7 +328,35 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   }
 
   showHTLCView(selHtlc: PaymentHTLC, selPayment: Payment, decodedPayment?: PayRequest) {
-    const reorderedHTLC = [
+    if (selHtlc.route && selHtlc.route.hops && selHtlc.route.hops.length) {
+      Promise.all(selHtlc.route.hops.map((hop) => this.getHopDetails(hop))).then((detailsAll: any) => {
+        this.store.dispatch(openAlert({
+          payload: {
+            data: {
+              type: AlertTypeEnum.INFORMATION,
+              alertTitle: 'HTLC Information',
+              message: this.prepareData(selHtlc, selPayment, decodedPayment, detailsAll),
+              scrollable: selHtlc.route && selHtlc.route.hops && selHtlc.route.hops.length > 1
+            }
+          }
+        }));
+      });
+    } else {
+      this.store.dispatch(openAlert({
+        payload: {
+          data: {
+            type: AlertTypeEnum.INFORMATION,
+            alertTitle: 'HTLC Information',
+            message: this.prepareData(selHtlc, selPayment, decodedPayment, []),
+            scrollable: selHtlc.route && selHtlc.route.hops && selHtlc.route.hops.length > 1
+          }
+        }
+      }));
+    }
+  }
+
+  prepareData(selHtlc: PaymentHTLC, selPayment: Payment, decodedPayment?: PayRequest, hopsDetails?: any) {
+    const modifiedData = [
       [{ key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'preimage', value: selHtlc.preimage, title: 'Preimage', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'payment_request', value: selPayment.payment_request, title: 'Payment Request', width: 100, type: DataTypeEnum.STRING }],
@@ -345,21 +366,12 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       [{ key: 'total_amt', value: selHtlc.route?.total_amt, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.NUMBER },
       { key: 'total_fees', value: selHtlc.route?.total_fees, title: 'Fee (Sats)', width: 33, type: DataTypeEnum.NUMBER },
       { key: 'total_time_lock', value: selHtlc.route?.total_time_lock, title: 'Total Time Lock', width: 34, type: DataTypeEnum.NUMBER }],
-      [{ key: 'hops', value: this.getHopDetails(selHtlc.route?.hops || []), title: 'Hops', width: 100, type: DataTypeEnum.ARRAY }]
+      [{ key: 'hops', value: hopsDetails, title: 'Hops', width: 100, type: DataTypeEnum.ARRAY }]
     ];
     if (decodedPayment && decodedPayment.description && decodedPayment.description !== '') {
-      reorderedHTLC.splice(3, 0, [{ key: 'description', value: decodedPayment.description, title: 'Description', width: 100, type: DataTypeEnum.STRING }]);
+      modifiedData.splice(3, 0, [{ key: 'description', value: decodedPayment.description, title: 'Description', width: 100, type: DataTypeEnum.STRING }]);
     }
-    this.store.dispatch(openAlert({
-      payload: {
-        data: {
-          type: AlertTypeEnum.INFORMATION,
-          alertTitle: 'HTLC Information',
-          message: reorderedHTLC,
-          scrollable: selHtlc.route && selHtlc.route.hops && selHtlc.route.hops.length > 1
-        }
-      }
-    }));
+    return modifiedData;
   }
 
   onPaymentClick(selPayment: Payment) {

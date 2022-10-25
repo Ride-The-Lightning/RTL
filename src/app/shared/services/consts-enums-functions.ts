@@ -980,8 +980,8 @@ export const LND_TABLES_DEF = {
   },
   transactions: {
     payments: {
-      maxColumns: 5,
-      allowedColumns: ['creation_date', 'payment_hash', 'fee', 'value', 'hops']
+      maxColumns: 8,
+      allowedColumns: ['creation_date', 'payment_hash', 'payment_request', 'payment_preimage', 'description', 'description_hash', 'failure_reason', 'payment_index', 'fee', 'value', 'hops']
     },
     invoices: {
       maxColumns: 9,
