@@ -354,6 +354,9 @@ export interface Invoice {
   htlcs?: InvoiceHTLC[];
   features?: any;
   is_keysend?: boolean;
+  payment_addr?: string;
+  is_amp?: boolean;
+  amp_invoice_state?: any;
 }
 
 export interface ListInvoices {

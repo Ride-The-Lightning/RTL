@@ -1,6 +1,12 @@
-.mat-column-memo {
-  flex: 0 0 15%;
-  width: 15%;
+.mat-column-state, .mat-column-private,
+.mat-column-is_keysend, .mat-column-is_amp {
+  width: 2rem;
+}
+
+.mat-column-memo, .mat-column-r_preimage, .mat-column-r_hash,
+.mat-column-payment_addr, .mat-column-payment_request, .mat-column-description_hash {
+  flex: 0 0 10%;
+  width: 10%;
   & .ellipsis-parent {
     display: flex;
   }

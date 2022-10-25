@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -15,20 +16,23 @@ import { SessionService } from '../../shared/services/session.service';
 import { GetInfo, Fees, BlockchainBalance, NetworkInfo, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsSummary, UTXO, ListPayments, SavePeer, SaveInvoice, SaveChannel, CloseChannel, FetchInvoices, FetchPayments, SendPayment, LightningNode, GetNewAddress, ChannelsTransaction, GetQueryRoutes, QueryRoutes, InitWallet, ChannelLookup, SetRestoreChannelsList } from '../../shared/models/lndModels';
 import { InvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
-import { RTLActions, LNDActions, AlertTypeEnum, APICallStatusEnum, FEE_LIMIT_TYPES, PAGE_SIZE, UI_MESSAGES, LNDWSEventTypeEnum } from '../../shared/services/consts-enums-functions';
+import { RTLActions, LNDActions, AlertTypeEnum, APICallStatusEnum, FEE_LIMIT_TYPES, PAGE_SIZE, UI_MESSAGES, LNDWSEventTypeEnum, LND_DEFAULT_PAGE_SETTINGS } from '../../shared/services/consts-enums-functions';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 import { RTLState } from '../../store/rtl.state';
 
 import { backupChannels, fetchBalanceBlockchain, fetchClosedChannels, fetchFees, fetchInfoLND, fetchInvoices, fetchNetwork, fetchPayments, fetchPeers, fetchPendingChannels, fetchTransactions, setForwardingHistory, setPeers, setQueryRoutes, setRestoreChannelsList, updateLNDAPICallStatus, updateInvoice, fetchChannels, updatePayment, fetchPageSettings } from './lnd.actions';
-import { allAPIsCallStatus, lndNodeInformation } from './lnd.selector';
-import { ApiCallsListLND } from '../../shared/models/apiCallsPayload';
+import { allAPIsCallStatus, lndNodeInformation, lndPageSettings } from './lnd.selector';
+import { ApiCallsListLND, ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { WebSocketClientService } from '../../shared/services/web-socket.service';
+import { PageSettings } from '../../shared/models/pageSettings';
 
 @Injectable()
 export class LNDEffects implements OnDestroy {
 
   dialogRef: any;
   CHILD_API_URL = API_URL + '/lnd';
+  private invoicesPageSize = PAGE_SIZE;
+  private paymentsPageSize = PAGE_SIZE;
   private flgInitialized = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
@@ -706,7 +710,7 @@ export class LNDEffects implements OnDestroy {
           this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'SendPayment', status: APICallStatusEnum.COMPLETED } }));
           if (sendRes.payment_error) {
             if (action.payload.allowSelfPayment) {
-              this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: PAGE_SIZE, reversed: true } }));
+              this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: this.invoicesPageSize, reversed: true } }));
               return {
                 type: LNDActions.SEND_PAYMENT_STATUS_LND,
                 payload: sendRes
@@ -723,9 +727,9 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
             this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'SendPayment', status: APICallStatusEnum.COMPLETED } }));
             this.store.dispatch(fetchChannels());
-            this.store.dispatch(fetchPayments({ payload: { max_payments: PAGE_SIZE, reversed: true } }));
+            this.store.dispatch(fetchPayments({ payload: { max_payments: this.paymentsPageSize, reversed: true } }));
             if (action.payload.allowSelfPayment) {
-              this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: PAGE_SIZE, reversed: true } }));
+              this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: this.invoicesPageSize, reversed: true } }));
             } else {
               let msg = 'Payment Sent Successfully.';
               if (sendRes.payment_route && sendRes.payment_route.total_fees_msat) {
@@ -743,7 +747,7 @@ export class LNDEffects implements OnDestroy {
           this.logger.error('Error: ' + JSON.stringify(err));
           if (action.payload.allowSelfPayment) {
             this.handleErrorWithoutAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed.', err);
-            this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: PAGE_SIZE, reversed: true } }));
+            this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: this.invoicesPageSize, reversed: true } }));
             return of({
               type: LNDActions.SEND_PAYMENT_STATUS_LND,
               payload: { error: this.commonService.extractErrorMessage(err) }
@@ -1193,12 +1197,15 @@ export class LNDEffects implements OnDestroy {
     mergeMap(() => {
       this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchPageSettings', status: APICallStatusEnum.INITIATED } }));
       return this.httpClient.get(environment.PAGE_SETTINGS_API).pipe(
-        map((pageSettings: any) => {
-          this.logger.info(pageSettings);
+        map((settings: any) => {
+          this.logger.info(settings);
           this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchPageSettings', status: APICallStatusEnum.COMPLETED } }));
+          this.invoicesPageSize = (settings.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'invoices') || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'invoices')).recordsPerPage;
+          this.paymentsPageSize = (settings.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'payments') || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'payments')).recordsPerPage;
+          this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: this.invoicesPageSize, reversed: true } }));
           return {
             type: LNDActions.SET_PAGE_SETTINGS_LND,
-            payload: pageSettings || []
+            payload: settings || []
           };
         }),
         catchError((err: any) => {
@@ -1264,8 +1271,8 @@ export class LNDEffects implements OnDestroy {
     this.store.dispatch(fetchPeers());
     this.store.dispatch(fetchNetwork());
     this.store.dispatch(fetchFees()); // Fetches monthly forwarding history as well, to count total number of events
-    this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: 10, reversed: true } }));
     this.store.dispatch(fetchPayments({ payload: { max_payments: 100000, reversed: true } }));
+    // Fetching Invoices in pagesettings to get page size
     // this.store.dispatch(fetchPayments({ payload: { max_payments: 10, reversed: true } }));
     // this.store.dispatch(getAllLightningTransactions());
   }

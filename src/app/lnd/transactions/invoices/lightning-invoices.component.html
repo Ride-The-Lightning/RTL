@@ -30,12 +30,33 @@
       <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table fxFlex="100" [dataSource]="invoices" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="state">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header matTooltip="Invoice State" matTooltipPosition="right"></th>
           <td mat-cell *matCellDef="let invoice">
             <span *ngIf="invoice?.state === 'OPEN'" class="dot grey" matTooltip="Open" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
             <span *ngIf="invoice?.state === 'SETTLED'" class="dot green" matTooltip="Settled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
             <span *ngIf="invoice?.state === 'ACCEPTED'" class="dot yellow" matTooltip="Accepted" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
             <span *ngIf="invoice?.state === 'CANCELED'" class="dot red" matTooltip="Cancelled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+        </ng-container>
+        <ng-container matColumnDef="private">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header matTooltip="Is Private" matTooltipPosition="right"></th>
+          <td mat-cell *matCellDef="let invoice">
+            <span *ngIf="invoice.private" class="mr-1" matTooltip="Private" matTooltipPosition="right"><fa-icon [icon]="faEyeSlash"></fa-icon></span>
+            <span *ngIf="!invoice.private" class="mr-1" matTooltip="Public" matTooltipPosition="right"><fa-icon [icon]="faEye"></fa-icon></span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="is_keysend">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header matTooltip="Is Keysend" matTooltipPosition="right"></th>
+          <td mat-cell *matCellDef="let invoice">
+            <span *ngIf="invoice.is_keysend" class="mr-1" matTooltip="Keysend" matTooltipPosition="right"><fa-icon [icon]="faArrowsTurnToDots"></fa-icon></span>
+            <span *ngIf="!invoice.is_keysend" class="mr-1" matTooltip="Non Keysend Invoices" matTooltipPosition="right"><fa-icon [icon]="faArrowsTurnRight"></fa-icon></span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="is_amp">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header matTooltip="Is AMP" matTooltipPosition="right"></th>
+          <td mat-cell *matCellDef="let invoice">
+            <span *ngIf="!invoice.is_amp" class="mr-1" matTooltip="Non Atomic Payment" matTooltipPosition="right"><fa-icon [icon]="faMoneyBill1"></fa-icon></span>
+            <span *ngIf="invoice.is_amp" class="mr-1" matTooltip="Atomic Multi-path Payment" matTooltipPosition="right"><fa-icon [icon]="faBurst"></fa-icon></span>
+          </td>
         </ng-container>
         <ng-container matColumnDef="creation_date">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Created </th>
@@ -49,10 +70,66 @@
         <ng-container matColumnDef="memo">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Memo </th>
           <td mat-cell *matCellDef="let invoice">
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '22rem'}">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
               <span class="ellipsis-child">{{invoice?.memo}}</span>
             </div>
           </td>
+        </ng-container>
+        <ng-container matColumnDef="r_preimage">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Preimage </th>
+          <td mat-cell *matCellDef="let invoice">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+              <span class="ellipsis-child">{{invoice?.r_preimage}}</span>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="r_hash">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Preimage Hash </th>
+          <td mat-cell *matCellDef="let invoice">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+              <span class="ellipsis-child">{{invoice?.r_hash}}</span>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="payment_addr">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Payment Address </th>
+          <td mat-cell *matCellDef="let invoice">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+              <span class="ellipsis-child">{{invoice?.payment_addr}}</span>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="payment_request">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Payment Request </th>
+          <td mat-cell *matCellDef="let invoice">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+              <span class="ellipsis-child">{{invoice?.payment_request}}</span>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="description_hash">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Description Hash </th>
+          <td mat-cell *matCellDef="let invoice">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+              <span class="ellipsis-child">{{invoice?.description_hash}}</span>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="expiry">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Expiry </th>
+          <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center"> {{invoice?.expiry | number}} </span></td>
+        </ng-container>
+        <ng-container matColumnDef="cltv_expiry">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> CLTV Expiry </th>
+          <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center"> {{invoice?.cltv_expiry | number}} </span></td>
+        </ng-container>
+        <ng-container matColumnDef="add_index">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Add Index </th>
+          <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center"> {{invoice?.add_index | number}} </span></td>
+        </ng-container>
+        <ng-container matColumnDef="settle_index">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Settle Index </th>
+          <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center"> {{invoice?.settle_index | number}} </span></td>
         </ng-container>
         <ng-container matColumnDef="value">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Amount (Sats) </th>

@@ -984,8 +984,8 @@ export const LND_TABLES_DEF = {
       allowedColumns: ['creation_date', 'payment_hash', 'fee', 'value', 'hops']
     },
     invoices: {
-      maxColumns: 5,
-      allowedColumns: ['creation_date', 'settle_date', 'memo', 'value', 'amt_paid_sat']
+      maxColumns: 9,
+      allowedColumns: ['private', 'is_keysend', 'is_amp', 'creation_date', 'settle_date', 'memo', 'r_preimage', 'r_hash', 'payment_addr', 'payment_request', 'description_hash', 'expiry', 'cltv_expiry', 'add_index', 'settle_index', 'value', 'amt_paid_sat']
     }
   },
   routing: {

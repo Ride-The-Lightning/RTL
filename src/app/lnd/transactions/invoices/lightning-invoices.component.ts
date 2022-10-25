@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { faHistory } from '@fortawesome/free-solid-svg-icons';
+import { faHistory, faEye, faEyeSlash, faBurst, faMoneyBill1, faArrowsTurnToDots, faArrowsTurnRight } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -38,7 +38,13 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   @Input() calledFrom = 'transactions'; // Transactions/home
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public faEye = faEye;
+  public faEyeSlash = faEyeSlash;
   public faHistory = faHistory;
+  public faArrowsTurnToDots = faArrowsTurnToDots;
+  public faArrowsTurnRight = faArrowsTurnRight;
+  public faBurst = faBurst;
+  public faMoneyBill1 = faMoneyBill1;
   public PAGE_ID = 'transactions';
   public tableSetting: TableSetting = { tableId: 'invoices', recordsPerPage: PAGE_SIZE, sortBy: 'creation_date', sortOrder: SortOrderEnum.DESCENDING };
   public selNode: SelNodeChild | null = {};
@@ -51,7 +57,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   public displayedColumns: any[] = [];
   public invoicePaymentReq = '';
   public invoicesData: Invoice[] = [];
-  public invoices: any;
+  public invoices: any = new MatTableDataSource<Invoice>([]);
   public information: GetInfo = {};
   public selFilter = '';
   public private = false;
