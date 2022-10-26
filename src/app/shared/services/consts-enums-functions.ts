@@ -966,8 +966,8 @@ export const LND_TABLES_DEF = {
       allowedColumns: ['remote_alias', 'remote_node_pub', 'channel_point', 'initiator', 'commitment_type', 'limbo_balance', 'capacity', 'local_balance', 'remote_balance']
     },
     closed: {
-      maxColumns: 5,
-      allowedColumns: ['close_type', 'remote_alias', 'capacity', 'close_height', 'settled_balance']
+      maxColumns: 7,
+      allowedColumns: ['close_type', 'remote_alias', 'remote_pubkey', 'channel_point', 'chan_id', 'closing_tx_hash', 'chain_hash', 'open_initiator', 'close_initiator', 'time_locked_balance', 'capacity', 'close_height', 'settled_balance']
     },
     active_HTLCs: {
       maxColumns: 4,

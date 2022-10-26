@@ -3,7 +3,8 @@
   min-width: 5rem;
 }
 
-.mat-column-remote_alias {
+.mat-column-remote_alias, .mat-column-remote_pubkey, .mat-column-channel_point,
+.mat-column-chan_id, .mat-column-closing_tx_hash, .mat-column-chain_hash {
   flex: 1 1 20%;
   white-space: nowrap;
   overflow: hidden;  

@@ -150,6 +150,8 @@ export interface ClosedChannel {
   remote_pubkey?: string;
   capacity?: string;
   settled_balance?: string;
+  open_initiator?: string;
+  close_initiator?: string;
 }
 
 export interface NodeAddress {
