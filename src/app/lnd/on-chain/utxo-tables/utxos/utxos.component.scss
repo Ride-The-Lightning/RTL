@@ -2,12 +2,11 @@
   width: 2rem;
 }
 
-.mat-column-label, .mat-column-tx_id {
-  flex: 1 1 15%;
-  & .ellipsis-child {
-    white-space: nowrap;
-    overflow: hidden;  
-    text-overflow: ellipsis;
+.mat-column-label, .mat-column-tx_id, .mat-column-address {
+  flex: 0 0 15%;
+  width: 15%;
+  & .ellipsis-parent {
+    display: flex;
   }
 }
 

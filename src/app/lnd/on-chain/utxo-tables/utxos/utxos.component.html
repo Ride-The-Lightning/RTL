@@ -20,7 +20,7 @@
         <ng-container matColumnDef="tx_id">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Transaction ID </th>
           <td mat-cell *matCellDef="let utxo">
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '12rem' : '25rem'}">
+            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
               <span class="ellipsis-child">{{utxo.outpoint.txid_str}}</span>
             </span>
           </td>
@@ -34,8 +34,24 @@
         <ng-container matColumnDef="label">
           <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1"> Label </th>
           <td mat-cell *matCellDef="let utxo" class="pl-1">
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '12rem' : '25rem'}">
-              <span class="ellipsis-child">{{utxo?.label}}</span>
+            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+              <span class="ellipsis-child">{{utxo.label}}</span>
+            </span>            
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="address_type">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Address Type </th>
+          <td mat-cell *matCellDef="let utxo">
+            <div fxLayout="row" fxLayoutAlign="start center">
+              {{addressType[utxo.address_type].name}} 
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="address">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1"> Address </th>
+          <td mat-cell *matCellDef="let utxo" class="pl-1">
+            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+              <span class="ellipsis-child">{{utxo?.address}}</span>
             </span>            
           </td>
         </ng-container>

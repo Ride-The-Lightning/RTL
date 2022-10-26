@@ -145,7 +145,8 @@ export const WALLET_ADDRESS_TYPE = {
   WITNESS_PUBKEY_HASH: { name: 'Witness Pubkey Hash', tooltip: '' },
   NESTED_PUBKEY_HASH: { name: 'Nested Pubkey Hash', tooltip: '' },
   UNUSED_WITNESS_PUBKEY_HASH: { name: 'Unused Witness Pubkey Hash', tooltip: '' },
-  UNUSED_NESTED_PUBKEY_HASH: { name: 'Unused Nested Pubkey Hash', tooltip: '' }
+  UNUSED_NESTED_PUBKEY_HASH: { name: 'Unused Nested Pubkey Hash', tooltip: '' },
+  TAPROOT_PUBKEY: { name: 'Taproot Pubkey Hash', tooltip: '' }
 };
 
 export enum CLNFailReason {
@@ -932,16 +933,16 @@ export const LND_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
 export const LND_TABLES_DEF = {
   on_chain: {
     utxos: {
-      maxColumns: 5,
-      allowedColumns: ['tx_id', 'output', 'label', 'amount_sat', 'confirmations']
+      maxColumns: 7,
+      allowedColumns: ['tx_id', 'output', 'label', 'address_type', 'address', 'amount_sat', 'confirmations']
     },
     transactions: {
       maxColumns: 7,
       allowedColumns: ['time_stamp', 'label', 'amount', 'total_fees', 'block_height', 'num_confirmations']
     },
     dust_utxos: {
-      maxColumns: 5,
-      allowedColumns: ['tx_id', 'output', 'label', 'amount_sat', 'confirmations']
+      maxColumns: 7,
+      allowedColumns: ['tx_id', 'output', 'label', 'address_type', 'address', 'amount_sat', 'confirmations']
     }
   },
   peers_channels: {
