@@ -1,6 +1,6 @@
 @import "../../../../../shared/theme/styles/mixins.scss";
 
-.mat-column-remote_alias {
+.mat-column-remote_alias, .mat-column-remote_pubkey, .mat-column-channel_point, .mat-column-chan_id {
   flex: 0 0 15%;
   width: 15%;
   & .ellipsis-parent {
@@ -21,7 +21,7 @@
   }
 }
 
-.mat-column-uptime, .mat-column-local_balance, .mat-column-remote_balance, .mat-column-total_satoshis_sent, .mat-column-total_satoshis_received {
+.mat-column-uptime, .mat-column-lifetime, .mat-column-local_balance, .mat-column-remote_balance, .mat-column-total_satoshis_sent, .mat-column-total_satoshis_received {
   flex: 1 1 10%;
   width: 10%;
   white-space: nowrap;

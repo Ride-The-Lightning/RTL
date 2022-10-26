@@ -25,14 +25,82 @@
       <ng-container matColumnDef="remote_alias">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Peer </th>
         <td mat-cell *matCellDef="let channel">
-          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : (screenSize === screenSizeEnum.MD) ? '15rem' : '22rem'}">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
             <span class="ellipsis-child">{{channel.remote_alias || channel.remote_pubkey}}</span>
           </div>
         </td>
       </ng-container>
+      <ng-container matColumnDef="remote_pubkey">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Pubkey </th>
+        <td mat-cell *matCellDef="let channel">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+            <span class="ellipsis-child">{{channel.remote_pubkey}}</span>
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="channel_point">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel Point </th>
+        <td mat-cell *matCellDef="let channel">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+            <span class="ellipsis-child">{{channel.channel_point}}</span>
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="chan_id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel Id</th>
+        <td mat-cell *matCellDef="let channel">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+            <span class="ellipsis-child">{{channel.chan_id}}</span>
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="initiator">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Initiator</th>
+        <td mat-cell *matCellDef="let channel">{{channel.initiator ? 'Yes' : 'No'}}</td>
+      </ng-container>
+      <ng-container matColumnDef="static_remote_key">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Static Remote Key</th>
+        <td mat-cell *matCellDef="let channel">{{channel.static_remote_key ? 'Yes' : 'No'}}</td>
+      </ng-container>
       <ng-container matColumnDef="uptime">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Uptime ({{timeUnit}})</th>
         <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.uptime_str}} </span></td>
+      </ng-container>
+      <ng-container matColumnDef="lifetime">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Lifetime ({{timeUnit}})</th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.lifetime_str}} </span></td>
+      </ng-container>
+      <ng-container matColumnDef="commit_fee">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Commit Fee (Sats)</th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.commit_fee | number}} </span></td>
+      </ng-container>
+      <ng-container matColumnDef="commit_weight">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Commit Weight</th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.commit_weight | number}} </span></td>
+      </ng-container>
+      <ng-container matColumnDef="fee_per_kw">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Fee/KW</th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.fee_per_kw | number}} </span></td>
+      </ng-container>
+      <ng-container matColumnDef="num_updates">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Updates</th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.num_updates | number}} </span></td>
+      </ng-container>
+      <ng-container matColumnDef="unsettled_balance">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Unsettled Balance (Sats)</th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.unsettled_balance | number}} </span></td>
+      </ng-container>
+      <ng-container matColumnDef="capacity">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Capacity (Sats)</th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.capacity | number}} </span></td>
+      </ng-container>
+      <ng-container matColumnDef="local_chan_reserve_sat">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Local Reserve (Sats)</th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.local_chan_reserve_sat | number}} </span></td>
+      </ng-container>
+      <ng-container matColumnDef="remote_chan_reserve_sat">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Remote Reserve (Sats)</th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.remote_chan_reserve_sat | number}} </span></td>
       </ng-container>
       <ng-container matColumnDef="total_satoshis_sent">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Sent </th>

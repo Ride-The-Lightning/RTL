@@ -80,6 +80,7 @@ export interface Channel {
   uptime?: string;
   uptime_str?: string;
   lifetime?: string;
+  lifetime_str?: string;
   static_remote_key?: boolean;
   balancedness?: number; // Between 0-1-0
 }

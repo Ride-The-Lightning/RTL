@@ -361,6 +361,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     }
     channels.forEach((channel) => {
       channel.uptime_str = channel.uptime ? (this.decimalPipe.transform(Math.floor(+channel.uptime / maxDivider), '2.0-0') + ':' + this.decimalPipe.transform(Math.round((+channel.uptime % maxDivider) / minDivider), '2.0-0')) : '---';
+      channel.lifetime_str = channel.lifetime ? (this.decimalPipe.transform(Math.floor(+channel.lifetime / maxDivider), '2.0-0') + ':' + this.decimalPipe.transform(Math.round((+channel.lifetime % maxDivider) / minDivider), '2.0-0')) : '---';
     });
     return channels;
   }

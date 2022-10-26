@@ -946,8 +946,8 @@ export const LND_TABLES_DEF = {
   },
   peers_channels: {
     open: {
-      maxColumns: 7,
-      allowedColumns: ['remote_alias', 'uptime', 'total_satoshis_sent', 'total_satoshis_received', 'local_balance', 'remote_balance', 'balancedness']
+      maxColumns: 8,
+      allowedColumns: ['remote_alias', 'remote_pubkey', 'channel_point', 'chan_id', 'initiator', 'static_remote_key', 'uptime', 'lifetime', 'commit_fee', 'commit_weight', 'fee_per_kw', 'num_updates', 'unsettled_balance', 'capacity', 'local_chan_reserve_sat', 'remote_chan_reserve_sat', 'total_satoshis_sent', 'total_satoshis_received', 'local_balance', 'remote_balance', 'balancedness']
     },
     pending_open: {
       maxColumns: 7,
