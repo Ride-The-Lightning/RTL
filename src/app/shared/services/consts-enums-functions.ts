@@ -991,7 +991,7 @@ export const LND_TABLES_DEF = {
   routing: {
     forwarding_history: {
       maxColumns: 6,
-      allowedColumns: ['timestamp', 'alias_in', 'alias_out', 'amt_in', 'amt_out', 'fee_msat']
+      allowedColumns: ['timestamp', 'alias_in', 'chan_id_in', 'alias_out', 'chan_id_out', 'amt_in', 'amt_out', 'fee_msat']
     },
     routing_peers: {
       maxColumns: 4,
@@ -1005,7 +1005,7 @@ export const LND_TABLES_DEF = {
   reports: {
     routing: {
       maxColumns: 6,
-      allowedColumns: ['timestamp', 'alias_in', 'alias_out', 'amt_in', 'amt_out', 'fee_msat']
+      allowedColumns: ['timestamp', 'alias_in', 'chan_id_in', 'alias_out', 'chan_id_out', 'amt_in', 'amt_out', 'fee_msat']
     },
     transactions: {
       maxColumns: 5,

@@ -30,6 +30,8 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  @Input() pageId = 'routing';
+  @Input() tableId = 'forwarding_history';
   @Input() eventsData = [];
   @Input() filterValue = '';
   public PAGE_ID = 'routing';
@@ -58,7 +60,8 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = this.apiCallStatus.message || '';
         }
-        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        this.tableSetting.tableId = this.tableId;
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.pageId)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.pageId)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
         if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
           this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
         } else {

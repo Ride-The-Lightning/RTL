@@ -41,7 +41,7 @@
   </div>
   <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x">
     <div class="mt-1">
-      <rtl-forwarding-history *ngIf="events && events?.forwarding_events && events.forwarding_events.length && events.forwarding_events.length > 0" [eventsData]="events?.forwarding_events" [filterValue]="eventFilterValue"></rtl-forwarding-history>
+      <rtl-forwarding-history *ngIf="events && events?.forwarding_events && events.forwarding_events.length && events.forwarding_events.length > 0" [pageId]="'reports'" [tableId]="'routing'" [eventsData]="events?.forwarding_events" [filterValue]="eventFilterValue"></rtl-forwarding-history>
     </div>
   </div>
 </div>

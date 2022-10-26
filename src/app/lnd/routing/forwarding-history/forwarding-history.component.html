@@ -14,12 +14,20 @@
       <td mat-cell *matCellDef="let fhEvent">{{(fhEvent.timestamp * 1000) | date:'dd/MMM/y HH:mm'}}</td>
     </ng-container>
     <ng-container matColumnDef="alias_in">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Inbound Channel</th>
-      <td mat-cell *matCellDef="let fhEvent">{{fhEvent.alias_in}}</td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1">Inbound Alias</th>
+      <td mat-cell *matCellDef="let fhEvent" class="pl-1" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{fhEvent.alias_in}}</td>
+    </ng-container>
+    <ng-container matColumnDef="chan_id_in">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1">Inbound Channel</th>
+      <td mat-cell *matCellDef="let fhEvent" class="pl-1" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{fhEvent.chan_id_in}}</td>
     </ng-container>
     <ng-container matColumnDef="alias_out">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Outbound Channel</th>
-      <td mat-cell *matCellDef="let fhEvent">{{fhEvent.alias_out}}</td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1">Outbound Alias</th>
+      <td mat-cell *matCellDef="let fhEvent" class="pl-1" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{fhEvent.alias_out}}</td>
+    </ng-container>
+    <ng-container matColumnDef="chan_id_out">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1">Outbound Channel</th>
+      <td mat-cell *matCellDef="let fhEvent" class="pl-1" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{fhEvent.chan_id_out}}</td>
     </ng-container>
     <ng-container matColumnDef="amt_in">
       <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Inbound Amount (Sats)</th>

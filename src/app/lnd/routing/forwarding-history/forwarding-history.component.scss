@@ -1,3 +1,10 @@
+.mat-column-alias_in, .mat-column-alias_out, .mat-column-chan_id_in, .mat-column-chan_id_out {
+  flex: 1 1 20%;
+  white-space: nowrap;
+  overflow: hidden;  
+  text-overflow: ellipsis;
+}
+
 .mat-column-actions {
   min-height: 4.8rem;
 }
