@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -40,11 +41,12 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   public errorMessage = '';
   public filter = '';
   public activeChannels: Channel[] = [];
+  public timeUnit = 'mins:secs';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private router: Router, private activatedRoute: ActivatedRoute) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private router: Router, private activatedRoute: ActivatedRoute, private decimalPipe: DecimalPipe) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -102,6 +104,57 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
     }
   }
 
+  calculateUptime(channels: Channel[]) {
+    const minutesDivider = 60;
+    const hoursDivider = minutesDivider * 60;
+    const daysDivider = hoursDivider * 24;
+    const yearsDivider = daysDivider * 365;
+    let maxDivider = minutesDivider;
+    let minDivider = 1;
+    let max_uptime = 0;
+    channels.forEach((channel) => {
+      if (channel.uptime && +channel.uptime > max_uptime) {
+        max_uptime = +channel.uptime;
+      }
+    });
+    switch (true) {
+      case max_uptime < hoursDivider:
+        this.timeUnit = 'Mins:Secs';
+        maxDivider = minutesDivider;
+        minDivider = 1;
+        break;
+
+      case max_uptime >= hoursDivider && max_uptime < daysDivider:
+        this.timeUnit = 'Hrs:Mins';
+        maxDivider = hoursDivider;
+        minDivider = minutesDivider;
+        break;
+
+      case max_uptime >= daysDivider && max_uptime < yearsDivider:
+        this.timeUnit = 'Days:Hrs';
+        maxDivider = daysDivider;
+        minDivider = hoursDivider;
+        break;
+
+      case max_uptime > yearsDivider:
+        this.timeUnit = 'Yrs:Days';
+        maxDivider = yearsDivider;
+        minDivider = daysDivider;
+        break;
+
+      default:
+        this.timeUnit = 'Mins:Secs';
+        maxDivider = minutesDivider;
+        minDivider = 1;
+        break;
+    }
+    channels.forEach((channel) => {
+      channel.uptime_str = channel.uptime ? (this.decimalPipe.transform(Math.floor(+channel.uptime / maxDivider), '2.0-0') + ':' + this.decimalPipe.transform(Math.round((+channel.uptime % maxDivider) / minDivider), '2.0-0')) : '---';
+      channel.lifetime_str = channel.lifetime ? (this.decimalPipe.transform(Math.floor(+channel.lifetime / maxDivider), '2.0-0') + ':' + this.decimalPipe.transform(Math.round((+channel.lifetime % maxDivider) / minDivider), '2.0-0')) : '---';
+    });
+    return channels;
+  }
+
   onManagePeer(selNonRoutingChannel: Channel) {
     this.router.navigate(['../../', 'connections', 'channels', 'open'], { relativeTo: this.activatedRoute, state: { filter: selNonRoutingChannel.chan_id } });
   }
@@ -134,7 +187,7 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   loadNonRoutingPeersTable(forwardingEvents: ForwardingEvent[]) {
     if (forwardingEvents.length > 0) {
       // const grpdRoutingPeers = this.groupRoutingPeers(forwardingEvents);
-      const filteredNonRoutingChannels = this.activeChannels?.filter((actvChnl) => forwardingEvents.findIndex((evnt) => (evnt.chan_id_in === actvChnl.chan_id || evnt.chan_id_out === actvChnl.chan_id)) < 0);
+      const filteredNonRoutingChannels = this.calculateUptime(this.activeChannels?.filter((actvChnl) => forwardingEvents.findIndex((evnt) => (evnt.chan_id_in === actvChnl.chan_id || evnt.chan_id_out === actvChnl.chan_id)) < 0));
       this.NonRoutingPeers = new MatTableDataSource<Channel>(filteredNonRoutingChannels);
       this.NonRoutingPeers.sort = this.sort;
       this.NonRoutingPeers.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });

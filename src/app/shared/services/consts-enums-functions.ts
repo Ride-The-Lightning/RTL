@@ -998,8 +998,8 @@ export const LND_TABLES_DEF = {
       allowedColumns: ['chan_id', 'alias', 'events', 'total_amount']
     },
     non_routing_peers: {
-      maxColumns: 6,
-      allowedColumns: ['chan_id', 'remote_alias', 'total_satoshis_received', 'total_satoshis_sent', 'local_balance', 'remote_balance']
+      maxColumns: 8,
+      allowedColumns: ['chan_id', 'remote_alias', 'remote_pubkey', 'channel_point', 'uptime', 'lifetime', 'commit_fee', 'commit_weight', 'fee_per_kw', 'num_updates', 'unsettled_balance', 'capacity', 'local_chan_reserve_sat', 'remote_chan_reserve_sat', 'total_satoshis_sent', 'total_satoshis_received', 'local_balance', 'remote_balance']
     }
   },
   reports: {
