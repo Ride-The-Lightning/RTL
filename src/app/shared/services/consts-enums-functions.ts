@@ -938,7 +938,7 @@ export const LND_TABLES_DEF = {
     },
     transactions: {
       maxColumns: 7,
-      allowedColumns: ['time_stamp', 'label', 'amount', 'total_fees', 'block_height', 'num_confirmations']
+      allowedColumns: ['time_stamp', 'label', 'block_hash', 'tx_hash', 'amount', 'total_fees', 'block_height', 'num_confirmations']
     },
     dust_utxos: {
       maxColumns: 7,
