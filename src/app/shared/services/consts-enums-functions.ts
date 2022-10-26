@@ -970,8 +970,8 @@ export const LND_TABLES_DEF = {
       allowedColumns: ['close_type', 'remote_alias', 'remote_pubkey', 'channel_point', 'chan_id', 'closing_tx_hash', 'chain_hash', 'open_initiator', 'close_initiator', 'time_locked_balance', 'capacity', 'close_height', 'settled_balance']
     },
     active_HTLCs: {
-      maxColumns: 4,
-      allowedColumns: ['amount', 'incoming', 'expiration_height', 'hash_lock']
+      maxColumns: 7,
+      allowedColumns: ['amount', 'incoming', 'forwarding_channel', 'htlc_index', 'forwarding_htlc_index', 'expiration_height', 'hash_lock']
     },
     peers: {
       maxColumns: 8,

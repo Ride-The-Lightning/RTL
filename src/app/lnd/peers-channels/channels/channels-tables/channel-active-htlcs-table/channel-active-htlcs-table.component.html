@@ -33,6 +33,43 @@
           </ng-container>
         </td>
       </ng-container>
+      <ng-container matColumnDef="forwarding_channel">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Forwarding Channel</th>
+        <td mat-cell *matCellDef="let channel">
+          <span fxLayoutAlign="start center" class="htlc-row-span">{{' '}}</span>
+          <ng-container *ngIf="channel.is_expanded">
+            <span *ngFor="let htlc of channel?.pending_htlcs" fxLayoutAlign="start center" class="htlc-row-span">
+              {{htlc?.forwarding_channel}}
+            </span>
+          </ng-container>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="htlc_index">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">
+          <span fxLayoutAlign="end center" class="htlc-row-span">HTLC Index</span>
+        </th>
+        <td mat-cell *matCellDef="let channel">
+          <span fxLayoutAlign="end center" class="htlc-row-span">{{' '}}</span>
+          <span *ngIf="channel.is_expanded">
+            <span *ngFor="let htlc of channel?.pending_htlcs" fxLayoutAlign="end center" class="htlc-row-span">
+              {{htlc?.htlc_index | number}}
+            </span>
+          </span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="forwarding_htlc_index">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">
+          <span fxLayoutAlign="end center" class="htlc-row-span">Forwarding HTLC Index</span>
+        </th>
+        <td mat-cell *matCellDef="let channel">
+          <span fxLayoutAlign="end center" class="htlc-row-span">{{' '}}</span>
+          <span *ngIf="channel.is_expanded">
+            <span *ngFor="let htlc of channel?.pending_htlcs" fxLayoutAlign="end center" class="htlc-row-span">
+              {{htlc?.forwarding_htlc_index | number}}
+            </span>
+          </span>
+        </td>
+      </ng-container>
       <ng-container matColumnDef="expiration_height">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">
           <span fxLayoutAlign="end center" class="htlc-row-span">Expiration Height</span>

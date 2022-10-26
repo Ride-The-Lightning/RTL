@@ -40,6 +40,9 @@ export interface ChannelHTLC {
   amount?: string;
   hash_lock?: string;
   expiration_height?: number;
+  htlc_index?: number;
+  forwarding_channel?: string;
+  forwarding_htlc_index?: number;
 }
 
 export interface ChannelsSummary {
