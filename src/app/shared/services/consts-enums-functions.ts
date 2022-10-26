@@ -1014,8 +1014,8 @@ export const LND_TABLES_DEF = {
   },
   graph_lookup: {
     query_routes: {
-      maxColumns: 5,
-      allowedColumns: ['hop_sequence', 'pubkey_alias', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat']
+      maxColumns: 8,
+      allowedColumns: ['hop_sequence', 'pubkey_alias', 'pub_key', 'chan_id', 'tlv_payload', 'expiry', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat']
     }
   },
   loop: {

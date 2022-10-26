@@ -210,7 +210,8 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
     return (this.selNode.lnImplementation === 'LND' && pageId === 'peers_channels' && tableId === 'pending_open') ||
     (this.selNode.lnImplementation === 'LND' && pageId === 'peers_channels' && tableId === 'pending_force_closing') ||
     (this.selNode.lnImplementation === 'LND' && pageId === 'peers_channels' && tableId === 'pending_closing') ||
-    (this.selNode.lnImplementation === 'LND' && pageId === 'peers_channels' && tableId === 'pending_waiting_close');
+    (this.selNode.lnImplementation === 'LND' && pageId === 'peers_channels' && tableId === 'pending_waiting_close') ||
+    (this.selNode.lnImplementation === 'LND' && pageId === 'graph_lookup' && tableId === 'query_routes');
   }
 
   ngOnDestroy() {
