@@ -964,7 +964,7 @@ export const LND_TABLES_DEF = {
     },
     pending_waiting_close: {
       maxColumns: 7,
-      allowedColumns: ['remote_alias', 'remote_node_pub', 'channel_point', 'initiator', 'commitment_type', 'limbo_balance', 'capacity', 'local_balance', 'remote_balance']
+      allowedColumns: ['closing_txid', 'remote_alias', 'remote_node_pub', 'channel_point', 'initiator', 'commitment_type', 'limbo_balance', 'capacity', 'local_balance', 'remote_balance']
     },
     closed: {
       maxColumns: 7,

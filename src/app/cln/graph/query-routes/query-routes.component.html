@@ -52,13 +52,11 @@
       </ng-container>
       <ng-container matColumnDef="delay">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pl-1"> Delay </th>
-        <td mat-cell *matCellDef="let hop" class="pl-1"><span fxLayoutAlign="end center"> {{hop?.delay | number}} </span>
-        </td>
+        <td mat-cell *matCellDef="let hop" class="pl-1"><span fxLayoutAlign="end center"> {{hop?.delay | number}} </span></td>
       </ng-container>
       <ng-container matColumnDef="msatoshi">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pl-1"> Amount (Sats) </th>
-        <td mat-cell *matCellDef="let hop" class="pl-1"><span fxLayoutAlign="end center"> {{hop?.msatoshi/1000 | number}}
-          </span></td>
+        <td mat-cell *matCellDef="let hop" class="pl-1"><span fxLayoutAlign="end center"> {{hop?.msatoshi/1000 | number}}</span></td>
       </ng-container>
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef class="pl-2 pr-3">

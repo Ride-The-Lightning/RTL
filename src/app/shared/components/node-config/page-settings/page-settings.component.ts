@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { combineLatest, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { filter, takeUntil, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';

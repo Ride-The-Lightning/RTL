@@ -131,6 +131,7 @@ export interface WaitingCloseChannel {
   channel?: PendingChannel;
   limbo_balance?: string;
   commitments?: any;
+  closing_txid?: string;
 }
 
 export interface PendingChannels {

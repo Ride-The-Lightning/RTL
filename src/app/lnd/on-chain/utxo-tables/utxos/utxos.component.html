@@ -36,7 +36,7 @@
           <td mat-cell *matCellDef="let utxo" class="pl-1">
             <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
               <span class="ellipsis-child">{{utxo.label}}</span>
-            </span>            
+            </span>
           </td>
         </ng-container>
         <ng-container matColumnDef="address_type">
@@ -52,7 +52,7 @@
           <td mat-cell *matCellDef="let utxo" class="pl-1">
             <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
               <span class="ellipsis-child">{{utxo?.address}}</span>
-            </span>            
+            </span>
           </td>
         </ng-container>
         <ng-container matColumnDef="amount_sat">

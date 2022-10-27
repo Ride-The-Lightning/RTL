@@ -72,11 +72,11 @@ export const getPendingChannels = (req, res, next) => {
         if (body.pending_open_channels && body.pending_open_channels.length > 0) {
             (_a = body.pending_open_channels) === null || _a === void 0 ? void 0 : _a.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
         }
-        if (body.pending_closing_channels && body.pending_closing_channels.length > 0) {
-            (_b = body.pending_closing_channels) === null || _b === void 0 ? void 0 : _b.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
-        }
         if (body.pending_force_closing_channels && body.pending_force_closing_channels.length > 0) {
-            (_c = body.pending_force_closing_channels) === null || _c === void 0 ? void 0 : _c.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
+            (_b = body.pending_force_closing_channels) === null || _b === void 0 ? void 0 : _b.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
+        }
+        if (body.pending_closing_channels && body.pending_closing_channels.length > 0) {
+            (_c = body.pending_closing_channels) === null || _c === void 0 ? void 0 : _c.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
         }
         if (body.waiting_close_channels && body.waiting_close_channels.length > 0) {
             (_d = body.waiting_close_channels) === null || _d === void 0 ? void 0 : _d.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));

@@ -22,7 +22,7 @@
                 <rtl-loop-quote [quote]="minQuote" [termCaption]="'min'" [panelExpanded]="false" [showPanel]="true"></rtl-loop-quote>
                 <rtl-loop-quote [quote]="maxQuote" [termCaption]="'max'" [panelExpanded]="false" [showPanel]="true"></rtl-loop-quote>
               </div>
-              <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">              
+              <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">  
                 <mat-form-field [fxFlex]="direction === LoopTypeEnum.LOOP_OUT ? '35' : '48'">
                   <input autoFocus matInput placeholder="Amount" type="number" [step]="1000" tabindex="1" formControlName="amount" required>
                   <mat-hint>Range: {{minQuote.amount | number}}-{{maxQuote.amount | number}}</mat-hint>
@@ -42,7 +42,7 @@
                   <mat-error *ngIf="inputFormGroup.controls.routingFeePercent.errors?.min">Percentage must be a positive number.</mat-error>
                 </mat-form-field>
               </div>
-              <div fxLayout="row wrap" fxFlex="100" *ngIf="direction === LoopTypeEnum.LOOP_OUT" fxLayoutAlign="start center" class="mt-1">              
+              <div fxLayout="row wrap" fxFlex="100" *ngIf="direction === LoopTypeEnum.LOOP_OUT" fxLayoutAlign="start center" class="mt-1">  
                 <mat-slide-toggle tabindex="4" color="primary" formControlName="fast" fxFlex="none">Fast</mat-slide-toggle>
                 <mat-icon matTooltip="Swap immediately (Might end up paying a higher on-chain fee)" matTooltipPosition="above" class="info-icon" fxFlex="none">info_outline</mat-icon>
               </div>

@@ -1,11 +1,11 @@
-<div [perfectScrollbar] fxLayout="column" fxFlex="100">
+<div [perfectScrollbar] fxLayout="column" fxFlex="100" id="head">
   <form fxLayout="column" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1" #form="ngForm">
     <div fxLayout="row">
       <fa-icon [icon]="faPenRuler" class="page-title-img mr-1"></fa-icon>
       <span class="page-title">Grid Settings</span>
     </div>
     <ng-container *ngIf="errorMessage && errorMessage.page === 'unknown'" [ngTemplateOutlet]="errorObjectBlock" [ngTemplateOutletContext]="{error: errorMessage}"></ng-container>
-    <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1" [ngClass]="{'error-border': errorMessage?.page === page.pageId}" expanded="false" *ngFor="let page of pageSettings">
+    <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1" [ngClass]="{'error-border': errorMessage?.page === page.pageId}" expanded="true" *ngFor="let page of pageSettings">
       <mat-expansion-panel-header>
         <mat-panel-title>{{page.pageId | camelcaseWithReplace:'_'}}</mat-panel-title>
       </mat-expansion-panel-header>

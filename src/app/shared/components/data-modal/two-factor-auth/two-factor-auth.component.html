@@ -31,7 +31,7 @@
                 <fa-icon [icon]="faInfoCircle" class="mt-1 mr-1 alert-icon"></fa-icon>
                 <span>You can use a compatible authentication app to get an authentication code when you log in to RTL. e.g.: Google Authenticator.</span>
               </div>
-              <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch">              
+              <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch">  
                 <mat-form-field fxFlex="100">
                   <input autoFocus matInput placeholder="Secret Code" type="text" tabindex="4" formControlName="secret" required>
                   <fa-icon [icon]="faCopy" matSuffix rtlClipboard [payload]="secretFormGroup?.controls?.secret?.value" (copied)="onCopySecret($event)"></fa-icon>
@@ -47,7 +47,7 @@
             <form [formGroup]="tokenFormGroup" fxLayout="column" fxLayoutAlign="start" class="my-1 pr-1">
               <ng-template matStepLabel>{{tokenFormLabel}}</ng-template>
               <div fxLayout="column" *ngIf="!flgValidated || !isTokenValid">
-                <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch">              
+                <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch">  
                   <mat-form-field fxFlex="100">
                     <input autoFocus matInput placeholder="Token" type="text" tabindex="7" formControlName="token" required>
                     <mat-error *ngIf="tokenFormGroup?.controls?.token?.errors?.required">Token is required.</mat-error>

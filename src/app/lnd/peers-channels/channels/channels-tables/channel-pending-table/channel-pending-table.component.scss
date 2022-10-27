@@ -1,9 +1,9 @@
-.mat-column-channel_point, .mat-column-remote_alias, .mat-column-remote_node_pub,
-.mat-column-commitment_type, .mat-column-closing_txid {
-  flex: 1 1 10%;
-  white-space: nowrap;
-  overflow: hidden;  
-  text-overflow: ellipsis;
+.mat-column-channel_point, .mat-column-remote_alias, .mat-column-remote_node_pub, .mat-column-closing_txid {
+  flex: 0 0 15%;
+  width: 15%;
+  & .ellipsis-parent {
+    display: flex;
+  }
 }
 
 tr.mat-footer-row td.mat-footer-cell {
