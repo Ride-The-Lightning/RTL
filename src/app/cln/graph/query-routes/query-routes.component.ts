@@ -31,7 +31,7 @@ export class CLNQueryRoutesComponent implements OnInit, OnDestroy {
   public tableSetting: TableSetting = { tableId: 'query_routes', recordsPerPage: PAGE_SIZE, sortBy: 'id', sortOrder: SortOrderEnum.ASCENDING };
   public destinationPubkey = '';
   public amount: number | null = null;
-  public qrHops: any;
+  public qrHops: any = new MatTableDataSource([]);
   public displayedColumns: any[] = [];
   public flgLoading: Array<Boolean | 'error'> = [false]; // 0: peers
   public faRoute = faRoute;
@@ -56,7 +56,6 @@ export class CLNQueryRoutesComponent implements OnInit, OnDestroy {
         this.displayedColumns.push('actions');
       });
     this.clnEffects.setQueryRoutesCL.pipe(takeUntil(this.unSubs[1])).subscribe((queryRoute) => {
-      this.qrHops = new MatTableDataSource([]);
       this.qrHops.data = [];
       if (queryRoute.routes && queryRoute.routes.length && queryRoute.routes.length > 0) {
         this.flgLoading[0] = false;

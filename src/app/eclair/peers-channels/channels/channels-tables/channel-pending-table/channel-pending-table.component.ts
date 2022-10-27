@@ -40,7 +40,7 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
   public pendingChannels: Channel[];
   public totalBalance = 0;
   public displayedColumns: any[] = [];
-  public channels: any;
+  public channels: any = new MatTableDataSource([]);
   public myChanPolicy: any = {};
   public information: GetInfo = {};
   public numPeers = -1;

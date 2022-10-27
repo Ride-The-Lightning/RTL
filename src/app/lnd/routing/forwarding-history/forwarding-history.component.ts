@@ -38,7 +38,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   public tableSetting: TableSetting = { tableId: 'forwarding_history', recordsPerPage: PAGE_SIZE, sortBy: 'timestamp', sortOrder: SortOrderEnum.DESCENDING };
   public forwardingHistoryData: ForwardingEvent[] = [];
   public displayedColumns: any[] = [];
-  public forwardingHistoryEvents: any;
+  public forwardingHistoryEvents: any = new MatTableDataSource([]);
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';

@@ -49,7 +49,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
   public node_capacity = 500000;
   public channel_count = 5;
   public liquidityNodesData: LookupNode[] = [];
-  public liquidityNodes: any;
+  public liquidityNodes: any = new MatTableDataSource([]);
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';

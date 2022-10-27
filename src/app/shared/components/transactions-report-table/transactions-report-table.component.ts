@@ -31,7 +31,7 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public timezoneOffset = new Date(Date.now()).getTimezoneOffset() * 60;
   public scrollRanges = SCROLL_RANGES;
-  public transactions: any;
+  public transactions: any = new MatTableDataSource([]);
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';

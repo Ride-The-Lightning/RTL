@@ -39,7 +39,7 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   public tableSetting: TableSetting = { tableId: 'forwarding_history', recordsPerPage: PAGE_SIZE, sortBy: 'received_time', sortOrder: SortOrderEnum.DESCENDING };
   public successfulEvents: ForwardingEvent[] = [];
   public displayedColumns: any[] = [];
-  public forwardingHistoryEvents: any;
+  public forwardingHistoryEvents: any = new MatTableDataSource([]);
   public totalForwardedTransactions = 0;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;

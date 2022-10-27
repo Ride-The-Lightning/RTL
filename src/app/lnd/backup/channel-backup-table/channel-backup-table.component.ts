@@ -42,7 +42,7 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
   public displayedColumns = ['channel_point', 'actions'];
   public selectedChannel: Channel | null;
   public channelsData: Channel[] = [];
-  public channels: any;
+  public channels: any = new MatTableDataSource([]);
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';

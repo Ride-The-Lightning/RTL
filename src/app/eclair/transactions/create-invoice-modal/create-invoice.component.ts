@@ -31,7 +31,6 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
   public invoiceValue: number | null = null;
   public invoiceValueHint = '';
   public invoicePaymentReq = '';
-  public invoices: any;
   public information: GetInfo = {};
   public private = false;
   public expiryStep = 100;

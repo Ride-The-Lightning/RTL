@@ -31,7 +31,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
   public tableSetting: TableSetting = { tableId: 'query_routes', recordsPerPage: PAGE_SIZE, sortBy: 'hop_sequence', sortOrder: SortOrderEnum.ASCENDING };
   public destinationPubkey = '';
   public amount = null;
-  public qrHops: any;
+  public qrHops: any = new MatTableDataSource([]);
   public displayedColumns: any[] = [];
   public flgLoading: Array<Boolean | 'error'> = [false]; // 0: peers
   public faRoute = faRoute;

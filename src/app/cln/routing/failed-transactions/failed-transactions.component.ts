@@ -36,10 +36,10 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
   public PAGE_ID = 'routing';
   public tableSetting: TableSetting = { tableId: 'failed', recordsPerPage: PAGE_SIZE, sortBy: 'received_time', sortOrder: SortOrderEnum.DESCENDING };
   public faExclamationTriangle = faExclamationTriangle;
-  public failedEvents: any;
+  public failedEvents: any[] = [];
   public errorMessage = '';
   public displayedColumns: any[] = [];
-  public failedForwardingEvents: any;
+  public failedForwardingEvents: any = new MatTableDataSource([]);
   public selFilter = '';
   public totalFailedTransactions = 0;
   public pageSize = PAGE_SIZE;

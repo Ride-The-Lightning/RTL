@@ -43,7 +43,7 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public displayedColumns: any[] = [];
   public peerAddress: string | null = '';
   public peersData: Peer[] = [];
-  public peers: any;
+  public peers: any = new MatTableDataSource([]);
   public information: GetInfo = {};
   public availableBalance = 0;
   public pageSize = PAGE_SIZE;

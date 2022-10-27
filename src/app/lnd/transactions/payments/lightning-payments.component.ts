@@ -47,7 +47,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   public selNode: SelNodeChild | null = {};
   public information: GetInfo = {};
   public peers: Peer[] = [];
-  public payments: any;
+  public payments: any = new MatTableDataSource([]);
   public totalPayments = 100;
   public paymentJSONArr: Payment[] = [];
   public displayedColumns: any[] = [];

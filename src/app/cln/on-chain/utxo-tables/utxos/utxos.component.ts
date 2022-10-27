@@ -36,7 +36,7 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
   public tableSetting: TableSetting = { tableId: 'utxos', recordsPerPage: PAGE_SIZE, sortBy: 'status', sortOrder: SortOrderEnum.DESCENDING };
   public displayedColumns: any[] = [];
   public utxos: UTXO[];
-  public listUTXOs: any;
+  public listUTXOs: any = new MatTableDataSource([]);
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';

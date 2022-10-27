@@ -50,7 +50,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   public invoiceValueHint = '';
   public displayedColumns: any[] = [];
   public invoicePaymentReq = '';
-  public invoices: any;
+  public invoices: any = new MatTableDataSource([]);
   public invoiceJSONArr: Invoice[] = [];
   public information: GetInfo = {};
   public selFilter = '';

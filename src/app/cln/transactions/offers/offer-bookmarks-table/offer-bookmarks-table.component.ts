@@ -38,7 +38,7 @@ export class CLNOfferBookmarksTableComponent implements OnInit, AfterViewInit, O
   public PAGE_ID = 'transactions';
   public tableSetting: TableSetting = { tableId: 'offer_bookmarks', recordsPerPage: PAGE_SIZE, sortBy: 'lastUpdatedAt', sortOrder: SortOrderEnum.DESCENDING };
   public displayedColumns: any[] = [];
-  public offersBookmarks: any;
+  public offersBookmarks: any = new MatTableDataSource([]);
   public offersBookmarksJSONArr: OfferBookmark[] = [];
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;

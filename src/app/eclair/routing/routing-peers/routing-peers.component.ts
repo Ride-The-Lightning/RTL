@@ -34,8 +34,8 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   public tableSetting: TableSetting = { tableId: 'routing_peers', recordsPerPage: PAGE_SIZE, sortBy: 'totalFee', sortOrder: SortOrderEnum.DESCENDING };
   public routingPeersData: PaymentRelayed[] = [];
   public displayedColumns: any[] = [];
-  public RoutingPeersIncoming: any;
-  public RoutingPeersOutgoing: any;
+  public RoutingPeersIncoming: any = new MatTableDataSource([]);
+  public RoutingPeersOutgoing: any = new MatTableDataSource([]);
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';

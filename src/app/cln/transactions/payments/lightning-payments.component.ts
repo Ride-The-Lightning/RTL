@@ -46,7 +46,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   public newlyAddedPayment = '';
   public selNode: SelNodeChild | null = {};
   public information: GetInfo = {};
-  public payments: any;
+  public payments: any = new MatTableDataSource([]);
   public paymentJSONArr: Payment[] = [];
   public displayedColumns: any[] = [];
   public mppColumns: string[] = [];

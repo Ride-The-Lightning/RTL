@@ -44,7 +44,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
   public dustUtxos: UTXO[];
   public addressType = WALLET_ADDRESS_TYPE;
   public displayedColumns: any[] = [];
-  public listUTXOs: any;
+  public listUTXOs: any = new MatTableDataSource([]);
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';

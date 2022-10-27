@@ -42,7 +42,7 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
   public totalBalance = 0;
   public displayedColumns: any[] = [];
   public channelsData: Channel[] = [];
-  public channels: any;
+  public channels: any = new MatTableDataSource([]);
   public myChanPolicy: any = {};
   public information: GetInfo = {};
   public numPeers = -1;

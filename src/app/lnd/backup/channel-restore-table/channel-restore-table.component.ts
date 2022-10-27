@@ -35,7 +35,7 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
   public displayedColumns = ['channel_point', 'actions'];
   public selChannel: Channel;
   public channelsData = [];
-  public channels: any;
+  public channels: any = new MatTableDataSource([]);
   public allRestoreExists = false;
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: channels
   public selFilter = '';

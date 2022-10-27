@@ -36,7 +36,7 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
   public PAGE_ID = 'on_chain';
   public tableSetting: TableSetting = { tableId: 'transaction', recordsPerPage: PAGE_SIZE, sortBy: 'timestamp', sortOrder: SortOrderEnum.DESCENDING };
   public displayedColumns: any[] = [];
-  public listTransactions: any;
+  public listTransactions: any = new MatTableDataSource([]);
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';

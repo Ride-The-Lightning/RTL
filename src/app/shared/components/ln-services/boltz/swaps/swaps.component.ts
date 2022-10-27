@@ -42,7 +42,7 @@ export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, On
   public faHistory = faHistory;
   public swapCaption = 'Swap Out';
   public displayedColumns: any[] = [];
-  public listSwaps: any;
+  public listSwaps: any = new MatTableDataSource([]);
   public selFilter = '';
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;

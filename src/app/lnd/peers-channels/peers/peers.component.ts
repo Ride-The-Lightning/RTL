@@ -40,7 +40,7 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public faUsers = faUsers;
   public displayedColumns: any[] = [];
   public peersData: Peer[] = [];
-  public peers: any;
+  public peers: any = new MatTableDataSource([]);
   public information: GetInfo = {};
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;

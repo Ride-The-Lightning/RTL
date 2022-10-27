@@ -22,7 +22,6 @@ export class LookupsComponent implements OnInit, OnDestroy {
   public lookupKey = '';
   public lookupValue = {};
   public flgSetLookupValue = false;
-  public temp: any;
   public messageObj = [];
   public selectedFieldId = 0;
   public lookupFields = [

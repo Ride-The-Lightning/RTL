@@ -32,7 +32,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public PAGE_ID = 'peers_channels';
   public tableSetting: TableSetting = { tableId: 'active_HTLCs', recordsPerPage: PAGE_SIZE, sortBy: 'expiration_height', sortOrder: SortOrderEnum.DESCENDING };
-  public channels: any;
+  public channels: any = new MatTableDataSource([]);
   public channelsJSONArr: Channel[] = [];
   public displayedColumns: any[] = [];
   public htlcColumns = [];

@@ -37,10 +37,10 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
   public PAGE_ID = 'routing';
   public tableSetting: TableSetting = { tableId: 'local_failed', recordsPerPage: PAGE_SIZE, sortBy: 'received_time', sortOrder: SortOrderEnum.DESCENDING };
   public CLNFailReason = CLNFailReason;
-  public failedLocalEvents: any;
+  public failedLocalEvents: any[] = [];
   public errorMessage = '';
   public displayedColumns: any[] = [];
-  public failedLocalForwardingEvents: any;
+  public failedLocalForwardingEvents: any = new MatTableDataSource([]);
   public selFilter = '';
   public totalLocalFailedTransactions = 0;
   public pageSize = PAGE_SIZE;

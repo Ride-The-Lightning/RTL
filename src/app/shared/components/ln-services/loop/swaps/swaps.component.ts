@@ -41,7 +41,7 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
   public faHistory = faHistory;
   public swapCaption = 'Loop Out';
   public displayedColumns: any[] = [];
-  public listSwaps: any;
+  public listSwaps: any = new MatTableDataSource([]);
   public selFilter = '';
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;

@@ -36,7 +36,7 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
   public faHistory = faHistory;
   public displayedColumns: any[] = [];
   public closedChannelsData: ClosedChannel[] = [];
-  public closedChannels: any;
+  public closedChannels: any = new MatTableDataSource([]);
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';

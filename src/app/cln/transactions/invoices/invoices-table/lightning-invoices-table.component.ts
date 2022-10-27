@@ -51,7 +51,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
   public invoiceValueHint = '';
   public displayedColumns: any[] = [];
   public invoicePaymentReq = '';
-  public invoices: any;
+  public invoices: any = new MatTableDataSource([]);
   public invoiceJSONArr: Invoice[] = [];
   public information: GetInfo = {};
   public private = false;

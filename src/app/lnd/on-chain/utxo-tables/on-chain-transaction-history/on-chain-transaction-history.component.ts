@@ -36,7 +36,7 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
   public transactions: Transaction[];
   public faHistory = faHistory;
   public displayedColumns: any[] = [];
-  public listTransactions: any;
+  public listTransactions: any = new MatTableDataSource([]);
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';

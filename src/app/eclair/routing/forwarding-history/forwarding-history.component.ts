@@ -36,7 +36,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   @Input() filterValue = '';
   public tableSetting: TableSetting = { tableId: 'forwarding_history', recordsPerPage: PAGE_SIZE, sortBy: 'timestamp', sortOrder: SortOrderEnum.DESCENDING };
   public displayedColumns: any[] = [];
-  public forwardingHistoryEvents: any;
+  public forwardingHistoryEvents: any = new MatTableDataSource([]);
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
