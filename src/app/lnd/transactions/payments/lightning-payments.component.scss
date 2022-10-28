@@ -30,13 +30,16 @@
   }
 }
 
+.mat-column-group_status, .mat-column-group_creation_date {
+  .htlc-row-span:not(:first-of-type) {
+    padding-left: 3rem;
+  }
+}
+
 .htlc-row-span {
   min-height: 4.2rem;
   place-content: center flex-start;
   align-items: center;
-  &:not(:first-of-type) {
-    padding-left: 3rem;
-  }
   &.ellipsis-parent {
     display: flex;
   }

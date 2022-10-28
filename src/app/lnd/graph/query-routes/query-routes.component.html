@@ -32,15 +32,27 @@
       </ng-container>
       <ng-container matColumnDef="pubkey_alias">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Peer </th>
-        <td mat-cell *matCellDef="let hop" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}"> {{hop?.pubkey_alias}} </td>
+        <td mat-cell *matCellDef="let hop">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+            <span class="ellipsis-child">{{hop?.pubkey_alias}}</span>
+          </div>
+        </td>
       </ng-container>
       <ng-container matColumnDef="pub_key">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Peer Pubkey </th>
-        <td mat-cell *matCellDef="let hop" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}"> {{hop?.pub_key}} </td>
+        <td mat-cell *matCellDef="let hop">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+            <span class="ellipsis-child">{{hop?.pub_key}}</span>
+          </div>
+        </td>
       </ng-container>
       <ng-container matColumnDef="chan_id">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel </th>
-        <td mat-cell *matCellDef="let hop" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}"> {{hop?.chan_id}} </td>
+        <td mat-cell *matCellDef="let hop">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+            <span class="ellipsis-child">{{hop?.chan_id}}</span>
+          </div>
+        </td>
       </ng-container>
       <ng-container matColumnDef="tlv_payload">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> TLV Payload </th>

@@ -1,6 +1,6 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+<div fxLayout="column" fxFlex="colWidth" fxLayoutAlign="space-between stretch">
   <form *ngIf="calledFrom === 'home'" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" #sendPaymentForm="ngForm">
-    <mat-form-field fxFlex="100">
+    <mat-form-field fxFlex="colWidth">
       <textarea [perfectScrollbar] matInput placeholder="Payment Request" name="paymentRequest" tabindex="1" [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" required (matTextareaAutosize)="true" #paymentReq="ngModel"></textarea>
       <mat-hint *ngIf="paymentRequest && paymentDecodedHint !== ''">{{paymentDecodedHint}}</mat-hint>
       <mat-error *ngIf="!paymentRequest">Payment request is required.</mat-error>
@@ -24,9 +24,9 @@
       </mat-form-field>
     </div>
     <div fxLayout="row" fxLayoutAlign="start start">
-      <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+      <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="colWidth" class="table-container">
         <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-        <table mat-table #table fxFlex="100" [dataSource]="payments" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
+        <table mat-table #table fxFlex="colWidth" [dataSource]="payments" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
           <ng-container matColumnDef="firstPartTimestamp">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Date/Time</th>
             <td mat-cell *matCellDef="let payment">{{payment?.firstPartTimestamp | date:'dd/MMM/y HH:mm'}}</td>
@@ -34,7 +34,7 @@
           <ng-container matColumnDef="id">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
             <td mat-cell *matCellDef="let payment">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{payment?.id}}</span>
               </div>
             </td>
@@ -42,7 +42,7 @@
           <ng-container matColumnDef="recipientNodeId">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Destination Node Id</th>
             <td mat-cell *matCellDef="let payment">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{payment?.recipientNodeId}}</span>
               </div>
             </td>
@@ -50,7 +50,7 @@
           <ng-container matColumnDef="recipientNodeAlias">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Destination</th>
             <td mat-cell *matCellDef="let payment">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{payment?.recipientNodeAlias}}</span>
               </div>
             </td>
@@ -62,7 +62,7 @@
           <ng-container matColumnDef="description">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
             <td mat-cell *matCellDef="let payment">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{payment?.description}}</span>
               </div>
             </td>
@@ -70,7 +70,7 @@
           <ng-container matColumnDef="paymentHash">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Hash</th>
             <td mat-cell *matCellDef="let payment">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{payment?.paymentHash}}</span>
               </div>
             </td>
@@ -78,7 +78,7 @@
           <ng-container matColumnDef="paymentPreimage">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Preimage</th>
             <td mat-cell *matCellDef="let payment">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{payment?.paymentPreimage}}</span>
               </div>
             </td>
@@ -119,12 +119,12 @@
         </ng-container>
         <ng-container matColumnDef="group_id">
           <td mat-cell *matCellDef="let payment">
-            <div fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+            <div fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{payment?.id}}</span>
             </div>
             <span *ngIf="payment?.is_expanded">
               <span *ngFor="let part of payment?.parts" fxLayoutAlign="start center" class="part-row-span">
-                <span fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+                <span fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                   <span class="ellipsis-child">{{part.id}}</span>
                 </span>
               </span>
@@ -133,12 +133,12 @@
         </ng-container>
         <ng-container matColumnDef="group_recipientNodeId">
           <td mat-cell *matCellDef="let payment">
-            <div fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+            <div fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{payment?.recipientNodeId}}</span>
             </div>
             <span *ngIf="payment?.is_expanded">
               <span *ngFor="let part of payment?.parts" fxLayoutAlign="start center" class="part-row-span">
-                <span  fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+                <span  fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                   <span class="ellipsis-child">{{part.toChannelId}}</span>
                 </span>
               </span>
@@ -147,12 +147,12 @@
         </ng-container>
         <ng-container matColumnDef="group_recipientNodeAlias">
           <td mat-cell *matCellDef="let payment">
-            <div fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+            <div fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{payment?.recipientNodeAlias}}</span>
             </div>
             <span *ngIf="payment?.is_expanded">
               <span *ngFor="let part of payment?.parts" fxLayoutAlign="start center" class="part-row-span">
-                <span  fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+                <span  fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                   <span class="ellipsis-child">{{part.toChannelAlias}}</span>
                 </span>
               </span>
@@ -171,12 +171,12 @@
         </ng-container>
         <ng-container matColumnDef="group_description">
           <td mat-cell *matCellDef="let payment">
-            <div fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+            <div fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{payment?.description}}</span>
             </div>
             <span *ngIf="payment?.is_expanded">
               <span *ngFor="let part of payment?.parts" fxLayoutAlign="start center" class="part-row-span">
-                <span  fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+                <span  fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                   <span class="ellipsis-child">Fee Paid: {{part.feesPaid | number:'1.0-0'}} (Sats)</span>
                 </span>
               </span>
@@ -185,12 +185,12 @@
         </ng-container>
         <ng-container matColumnDef="group_paymentHash">
           <td mat-cell *matCellDef="let payment">
-            <div fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+            <div fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{payment?.paymentHash}}</span>
             </div>
             <span *ngIf="payment?.is_expanded">
               <span *ngFor="let part of payment?.parts" fxLayoutAlign="start center" class="part-row-span">
-                <span  fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+                <span  fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                   <span class="ellipsis-child">Fee Paid: {{part.feesPaid | number:'1.0-0'}} (Sats)</span>
                 </span>
               </span>
@@ -199,12 +199,12 @@
         </ng-container>
         <ng-container matColumnDef="group_paymentPreimage">
           <td mat-cell *matCellDef="let payment">
-            <div fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+            <div fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{payment?.paymentPreimage}}</span>
             </div>
             <span *ngIf="payment?.is_expanded">
               <span *ngFor="let part of payment?.parts" fxLayoutAlign="start center" class="part-row-span">
-                <span  fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+                <span  fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                   <span class="ellipsis-child">Fee Paid: {{part.feesPaid | number:'1.0-0'}} (Sats)</span>
                 </span>
               </span>

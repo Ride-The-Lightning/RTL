@@ -64,15 +64,15 @@ export class DatabaseService {
             }
         });
     }
-    insert(selectedNode, collectionName, newDocument) {
+    insert(selectedNode, collectionName, newCollection) {
         return new Promise((resolve, reject) => {
             try {
                 if (!selectedNode || !selectedNode.index) {
                     reject(new Error('Selected Node Config Not Found.'));
                 }
-                this.nodeDatabase[selectedNode.index].data[collectionName].push(newDocument);
-                this.saveDatabase(+selectedNode.index);
-                resolve(newDocument);
+                this.nodeDatabase[selectedNode.index].data[collectionName] = newCollection;
+                this.saveDatabase(selectedNode, collectionName);
+                resolve(this.nodeDatabase[selectedNode.index].data[collectionName]);
             }
             catch (errRes) {
                 reject(errRes);
@@ -108,7 +108,7 @@ export class DatabaseService {
                     }
                     this.nodeDatabase[selectedNode.index].data[collectionName].push(updatedDocument);
                 }
-                this.saveDatabase(+selectedNode.index);
+                this.saveDatabase(selectedNode, collectionName);
                 resolve(updatedDocument);
             }
             catch (errRes) {
@@ -147,7 +147,7 @@ export class DatabaseService {
                 else {
                     reject(new Error('Unable to delete, document not found.'));
                 }
-                this.saveDatabase(+selectedNode.index);
+                this.saveDatabase(selectedNode, collectionName);
                 resolve(documentFieldValue);
             }
             catch (errRes) {
@@ -155,9 +155,10 @@ export class DatabaseService {
             }
         });
     }
-    saveDatabase(nodeIndex) {
+    saveDatabase(selectedNode, collectionName) {
+        const nodeIndex = +selectedNode.index;
         try {
-            if (+nodeIndex < 1) {
+            if (nodeIndex < 1) {
                 return true;
             }
             const selNode = this.nodeDatabase[nodeIndex] && this.nodeDatabase[nodeIndex].adapter && this.nodeDatabase[nodeIndex].adapter.selNode ? this.nodeDatabase[nodeIndex].adapter.selNode : null;
@@ -165,8 +166,8 @@ export class DatabaseService {
                 this.logger.log({ selectedNode: selNode, level: 'ERROR', fileName: 'Database', msg: 'Database Save Error: Selected Node Setup Not Found.' });
                 throw new Error('Database Save Error: Selected Node Setup Not Found.');
             }
-            this.nodeDatabase[nodeIndex].adapter.saveData(this.nodeDatabase[nodeIndex].data);
-            this.logger.log({ selectedNode: this.nodeDatabase[nodeIndex].adapter.selNode, level: 'INFO', fileName: 'Database', msg: 'Database Saved' });
+            this.nodeDatabase[nodeIndex].adapter.saveData(collectionName, this.nodeDatabase[selectedNode.index].data[collectionName]);
+            this.logger.log({ selectedNode: this.nodeDatabase[nodeIndex].adapter.selNode, level: 'INFO', fileName: 'Database', msg: 'Database Collection ' + collectionName + ' Saved' });
             return true;
         }
         catch (err) {
@@ -206,6 +207,8 @@ export class DatabaseAdapter {
         const newFileName = this.dbFilePath + sep + 'rtldb-' + selNode.ln_implementation + '-Offers.json';
         try {
             this.common.createDirectory(this.dbFilePath);
+            const oldOffers = JSON.parse(fs.readFileSync(oldFileName, 'utf-8'));
+            fs.writeFileSync(oldFileName, JSON.stringify(oldOffers.Offers, null, 2));
             fs.renameSync(oldFileName, newFileName);
         }
         catch (err) {
@@ -224,7 +227,7 @@ export class DatabaseAdapter {
         const collectionFileName = this.dbFilePath + sep + 'rtldb-' + this.selNode.ln_implementation + '-' + collectionName + '.json';
         try {
             if (!fs.existsSync(collectionFileName)) {
-                fs.writeFileSync(collectionFileName, '{}');
+                fs.writeFileSync(collectionFileName, '[]');
             }
         }
         catch (err) {
@@ -242,17 +245,13 @@ export class DatabaseAdapter {
     getSelNode() {
         return this.selNode;
     }
-    saveData(data) {
+    saveData(collectionName, collectionData) {
         try {
-            if (data) {
-                for (const collectionName in data) {
-                    if (data.hasOwnProperty(collectionName)) {
-                        const collectionFileName = this.dbFilePath + sep + 'rtldb-' + this.selNode.ln_implementation + '-' + collectionName + '.json';
-                        const tempFile = collectionFileName + '.tmp';
-                        fs.writeFileSync(tempFile, JSON.stringify(data, null, 2));
-                        fs.renameSync(tempFile, collectionFileName);
-                    }
-                }
+            if (collectionData) {
+                const collectionFileName = this.dbFilePath + sep + 'rtldb-' + this.selNode.ln_implementation + '-' + collectionName + '.json';
+                const tempFile = collectionFileName + '.tmp';
+                fs.writeFileSync(tempFile, JSON.stringify(collectionData, null, 2));
+                fs.renameSync(tempFile, collectionFileName);
             }
             return true;
         }

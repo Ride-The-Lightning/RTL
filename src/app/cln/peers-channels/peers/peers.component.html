@@ -27,7 +27,7 @@
         <ng-container matColumnDef="alias">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Alias </th>
           <td mat-cell *matCellDef="let peer"> 
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '12rem' : '40rem'}">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '40rem'}">
               <span class="ellipsis-child">{{peer?.alias}}</span>
             </div>
           </td>
@@ -35,7 +35,7 @@
         <ng-container matColumnDef="id">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
           <td mat-cell *matCellDef="let peer">
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '12rem' : '40rem'}">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '40rem'}">
               <span class="ellipsis-child">{{peer?.id}}</span>
             </div>
           </td>
@@ -43,7 +43,7 @@
         <ng-container matColumnDef="netaddr">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Network Address </th>
           <td mat-cell *matCellDef="let peer">
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '12rem' : '40rem'}">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '40rem'}">
               <span class="ellipsis-child" *ngFor="let addr of peer?.netaddr; last as isLast">{{addr}}<span *ngIf="!isLast">,<br></span></span>
             </div>
           </td>

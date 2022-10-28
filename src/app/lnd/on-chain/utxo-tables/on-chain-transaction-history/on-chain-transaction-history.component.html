@@ -14,15 +14,27 @@
         </ng-container>
         <ng-container matColumnDef="label">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Label </th>
-          <td mat-cell *matCellDef="let transaction" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}"> {{transaction?.label}} </td>
+          <td mat-cell *matCellDef="let transaction">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+              <span class="ellipsis-child">{{transaction?.label}}</span>
+            </div>
+          </td>
         </ng-container>
         <ng-container matColumnDef="block_hash">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Block Hash </th>
-          <td mat-cell *matCellDef="let transaction" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}"> {{transaction?.block_hash}} </td>
+          <td mat-cell *matCellDef="let transaction">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+              <span class="ellipsis-child">{{transaction?.block_hash}}</span>
+            </div>
+          </td>
         </ng-container>
         <ng-container matColumnDef="tx_hash">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Transaction Hash </th>
-          <td mat-cell *matCellDef="let transaction" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}"> {{transaction?.tx_hash}} </td>
+          <td mat-cell *matCellDef="let transaction">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+              <span class="ellipsis-child">{{transaction?.tx_hash}}</span>
+            </div>
+          </td>
         </ng-container>
         <ng-container matColumnDef="amount">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Amount (Sats) </th>

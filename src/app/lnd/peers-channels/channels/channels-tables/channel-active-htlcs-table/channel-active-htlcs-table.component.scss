@@ -9,13 +9,17 @@
   text-overflow: ellipsis;
 }
 
+.mat-column-amount {
+  .htlc-row-span:not(:first-of-type) {
+    padding-left: 3rem;
+    padding-right: 2rem;
+  }
+}
+
 .htlc-row-span {
   min-height: 4.2rem;
   place-content: center flex-start;
   align-items: center;
-  &:not(:first-of-type) {
-    padding-left: 3rem;
-  }
 }
 
 .mat-column-actions {

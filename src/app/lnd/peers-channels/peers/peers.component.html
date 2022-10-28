@@ -17,15 +17,27 @@
       <table mat-table #table [dataSource]="peers" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="alias">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Alias </th>
-          <td mat-cell *matCellDef="let peer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '25rem'}"> {{peer?.alias}} </td>
+          <td mat-cell *matCellDef="let peer">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '25rem'}">
+              <span class="ellipsis-child">{{peer?.alias}}</span>
+            </div>
+          </td>
         </ng-container>
         <ng-container matColumnDef="pub_key">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Public Key </th>
-          <td mat-cell *matCellDef="let peer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '25rem'}"> {{peer?.pub_key}} </td>
+          <td mat-cell *matCellDef="let peer">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '25rem'}">
+              <span class="ellipsis-child">{{peer?.pub_key}}</span>
+            </div>
+          </td>
         </ng-container>
         <ng-container matColumnDef="address">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Address </th>
-          <td mat-cell *matCellDef="let peer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '25rem'}"> {{peer?.address}} </td>
+          <td mat-cell *matCellDef="let peer">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '25rem'}">
+              <span class="ellipsis-child">{{peer?.address}}</span>
+            </div>
+          </td>
         </ng-container>
         <ng-container matColumnDef="sync_type">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Sync Type </th>

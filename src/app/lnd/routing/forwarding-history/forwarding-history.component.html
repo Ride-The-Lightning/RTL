@@ -15,19 +15,35 @@
     </ng-container>
     <ng-container matColumnDef="alias_in">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Inbound Alias</th>
-      <td mat-cell *matCellDef="let fhEvent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{fhEvent.alias_in}}</td>
+      <td mat-cell *matCellDef="let fhEvent">
+        <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+          <span class="ellipsis-child">{{fhEvent?.alias_in}}</span>
+        </div>
+      </td>
     </ng-container>
     <ng-container matColumnDef="chan_id_in">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Inbound Channel</th>
-      <td mat-cell *matCellDef="let fhEvent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{fhEvent.chan_id_in}}</td>
+      <td mat-cell *matCellDef="let fhEvent">
+        <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+          <span class="ellipsis-child">{{fhEvent?.chan_id_in}}</span>
+        </div>
+      </td>
     </ng-container>
     <ng-container matColumnDef="alias_out">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Outbound Alias</th>
-      <td mat-cell *matCellDef="let fhEvent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{fhEvent.alias_out}}</td>
+      <td mat-cell *matCellDef="let fhEvent">
+        <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+          <span class="ellipsis-child">{{fhEvent?.alias_out}}</span>
+        </div>
+      </td>
     </ng-container>
     <ng-container matColumnDef="chan_id_out">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Outbound Channel</th>
-      <td mat-cell *matCellDef="let fhEvent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{fhEvent.chan_id_out}}</td>
+      <td mat-cell *matCellDef="let fhEvent">
+        <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+          <span class="ellipsis-child">{{fhEvent?.chan_id_out}}</span>
+        </div>
+      </td>
     </ng-container>
     <ng-container matColumnDef="amt_in">
       <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Inbound Amount (Sats)</th>

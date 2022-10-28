@@ -13,11 +13,19 @@
         <table mat-table #tableIn [dataSource]="RoutingPeersIncoming" matSort class="overflow-auto incoming-table">
           <ng-container matColumnDef="channel_id">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel ID</th>
-            <td mat-cell *matCellDef="let rPeer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '5rem' : '10rem'}">{{rPeer.channel_id}}</td>
+            <td mat-cell *matCellDef="let rPeer">
+              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '10rem'}">
+                <span class="ellipsis-child">{{rPeer.channel_id}}</span>
+              </div>
+            </td>
           </ng-container>
           <ng-container matColumnDef="alias">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer Alias</th>
-            <td mat-cell *matCellDef="let rPeer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '5rem' : '10rem'}">{{rPeer.alias}}</td>
+            <td mat-cell *matCellDef="let rPeer">
+              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '10rem'}">
+                <span class="ellipsis-child">{{rPeer.alias}}</span>
+              </div>
+            </td>
           </ng-container>
           <ng-container matColumnDef="events">
             <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Events</th>
@@ -58,11 +66,19 @@
         <table mat-table #tableOut [dataSource]="RoutingPeersOutgoing" matSort class="overflow-auto outgoing-table">
           <ng-container matColumnDef="channel_id">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel ID</th>
-            <td mat-cell *matCellDef="let rPeer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '5rem' : '10rem'}">{{rPeer.channel_id}}</td>
+            <td mat-cell *matCellDef="let rPeer">
+              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '10rem'}">
+                <span class="ellipsis-child">{{rPeer.channel_id}}</span>
+              </div>
+            </td>
           </ng-container>
           <ng-container matColumnDef="alias">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer Alias</th>
-            <td mat-cell *matCellDef="let rPeer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '5rem' : '10rem'}">{{rPeer.alias}}</td>
+            <td mat-cell *matCellDef="let rPeer">
+              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '10rem'}">
+                <span class="ellipsis-child">{{rPeer.alias}}</span>
+              </div>
+            </td>
           </ng-container>
           <ng-container matColumnDef="events">
             <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Events</th>

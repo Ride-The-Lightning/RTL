@@ -4,9 +4,8 @@
 .mat-column-group_id, .mat-column-group_recipientNodeId,
 .mat-column-group_recipientNodeAlias, .mat-column-group_recipientAmount,
 .mat-column-group_description, .mat-column-group_paymentHash, .mat-column-group_paymentPreimage {
-  padding-left: 2rem;
-  flex: 1 1 12%;
-  width: 12%;
+  flex: 0 0 20%;
+  width: 20%;
   & .ellipsis-parent {
     display: flex;
   }
@@ -31,13 +30,16 @@
   }
 }
 
+.mat-column-group_firstPartTimestamp {
+  .part-row-span:not(:first-of-type) {
+    padding-left: 3rem;
+  }
+}
+
 .part-row-span {
   min-height: 4.2rem;
   place-content: center flex-start;
   align-items: center;
-  &:not(:first-of-type) {
-    padding-left: 3rem;
-  }
   &.ellipsis-parent {
     display: flex;
   }

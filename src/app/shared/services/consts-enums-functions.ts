@@ -748,9 +748,9 @@ export const CLN_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
       columnSelection: ['alias', 'channel', 'direction', 'delay', 'msatoshi'] }
   ] },
   { pageId: 'peerswap', tables: [
-    { tableId: 'swaps', recordsPerPage: PAGE_SIZE, sortBy: '', sortOrder: SortOrderEnum.DESCENDING,
-      columnSelectionSM: [],
-      columnSelection: [] }
+    { tableId: 'swaps', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['id', 'state', 'amount'],
+      columnSelection: ['id', 'alias', 'short_channel_id', 'created_at', 'state', 'amount'] }
   ] }
 ];
 
@@ -839,8 +839,8 @@ export const CLN_TABLES_DEF = {
   },
   peerswap: {
     swaps: {
-      maxColumns: 5,
-      allowedColumns: []
+      maxColumns: 6,
+      allowedColumns: ['id', 'alias', 'short_channel_id', 'created_at', 'state', 'amount']
     }
   }
 };
