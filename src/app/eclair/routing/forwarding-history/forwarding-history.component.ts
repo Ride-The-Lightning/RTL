@@ -65,6 +65,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
         } else {
           this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
         }
+        this.displayedColumns.unshift('type');
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
         this.logger.info(this.displayedColumns);

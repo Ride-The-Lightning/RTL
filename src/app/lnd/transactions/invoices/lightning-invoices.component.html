@@ -30,7 +30,7 @@
       <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table fxFlex="100" [dataSource]="invoices" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="state">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header matTooltip="Invoice State" matTooltipPosition="right"></th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header matTooltip="State" matTooltipPosition="right"></th>
           <td mat-cell *matCellDef="let invoice">
             <span *ngIf="invoice?.state === 'OPEN'" class="dot grey" matTooltip="Open" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
             <span *ngIf="invoice?.state === 'SETTLED'" class="dot green" matTooltip="Settled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
@@ -38,21 +38,21 @@
             <span *ngIf="invoice?.state === 'CANCELED'" class="dot red" matTooltip="Cancelled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
         </ng-container>
         <ng-container matColumnDef="private">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header matTooltip="Is Private" matTooltipPosition="right"></th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header matTooltip="Private" matTooltipPosition="right"></th>
           <td mat-cell *matCellDef="let invoice">
             <span *ngIf="invoice.private" class="mr-1" matTooltip="Private" matTooltipPosition="right"><fa-icon [icon]="faEyeSlash"></fa-icon></span>
             <span *ngIf="!invoice.private" class="mr-1" matTooltip="Public" matTooltipPosition="right"><fa-icon [icon]="faEye"></fa-icon></span>
           </td>
         </ng-container>
         <ng-container matColumnDef="is_keysend">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header matTooltip="Is Keysend" matTooltipPosition="right"></th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header matTooltip="Keysend" matTooltipPosition="right"></th>
           <td mat-cell *matCellDef="let invoice">
             <span *ngIf="invoice.is_keysend" class="mr-1" matTooltip="Keysend" matTooltipPosition="right"><fa-icon [icon]="faArrowsTurnToDots"></fa-icon></span>
             <span *ngIf="!invoice.is_keysend" class="mr-1" matTooltip="Non Keysend Invoices" matTooltipPosition="right"><fa-icon [icon]="faArrowsTurnRight"></fa-icon></span>
           </td>
         </ng-container>
         <ng-container matColumnDef="is_amp">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header matTooltip="Is AMP" matTooltipPosition="right"></th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header matTooltip="AMP" matTooltipPosition="right"></th>
           <td mat-cell *matCellDef="let invoice">
             <span *ngIf="!invoice.is_amp" class="mr-1" matTooltip="Non Atomic Payment" matTooltipPosition="right"><fa-icon [icon]="faMoneyBill1"></fa-icon></span>
             <span *ngIf="invoice.is_amp" class="mr-1" matTooltip="Atomic Multi-path Payment" matTooltipPosition="right"><fa-icon [icon]="faBurst"></fa-icon></span>
@@ -159,7 +159,7 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="no_invoice">
-          <td mat-footer-cell *matFooterCellDef colspan="4">
+          <td mat-footer-cell *matFooterCellDef colspan="6">
             <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No invoice available.</p>
             <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting invoices...</p>
             <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>

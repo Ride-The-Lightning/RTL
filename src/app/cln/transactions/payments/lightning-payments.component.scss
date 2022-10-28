@@ -1,5 +1,6 @@
 .mat-column-status, .mat-column-group_status {
-  width: 2rem;
+  max-width: 1.2rem;
+  width:1.2rem;
 }
 
 .mat-column-payment_hash, .mat-column-bolt11, .mat-column-destination, .mat-column-label, .mat-column-memo {

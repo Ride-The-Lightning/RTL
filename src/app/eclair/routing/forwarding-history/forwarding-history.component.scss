@@ -1,3 +1,12 @@
+.mat-column-type {
+  max-width: 1.2rem;
+  width:1.2rem;
+  & svg {
+    max-width: 1.6rem;
+    width:1.6rem;
+  }
+}
+
 .mat-column-fromChannelId, .mat-column-fromAlias, .mat-column-toChannelId, .mat-column-toAlias, .mat-column-paymentHash {
   padding-left: 1rem;
   flex: 1 1 15%;

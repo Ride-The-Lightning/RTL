@@ -18,7 +18,7 @@
       <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table [dataSource]="peers" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="connected">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header matTooltip="Connected" matTooltipPosition="right"></th>
           <td mat-cell *matCellDef="let peer"> 
             <span *ngIf="peer?.connected" class="dot green" matTooltip="Connected" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
             <span *ngIf="!peer?.connected" class="dot red" matTooltip="Disconnected" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>

@@ -1,6 +1,13 @@
-.mat-column-state, .mat-column-private,
-.mat-column-is_keysend, .mat-column-is_amp {
-  width: 2rem;
+.mat-column-state {
+  max-width: 1.2rem;
+  width:1.2rem;
+  padding-right: 0.5rem;
+}
+
+.mat-column-private, .mat-column-is_keysend, .mat-column-is_amp {
+  padding-right: 0.5rem;
+  max-width: 1.6rem;
+  width:1.6rem;
 }
 
 .mat-column-memo, .mat-column-r_preimage, .mat-column-r_hash,

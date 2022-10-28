@@ -1,5 +1,17 @@
 @import "../../../../../shared/theme/styles/mixins.scss";
 
+.mat-column-active {
+  max-width: 1.2rem;
+  width:1.2rem;
+  padding-right: 0.5rem;
+}
+
+.mat-column-private {
+  padding-right: 0.5rem;
+  max-width: 1.6rem;
+  width:1.6rem;
+}
+
 .mat-column-remote_alias, .mat-column-remote_pubkey, .mat-column-channel_point, .mat-column-chan_id {
   flex: 0 0 15%;
   width: 15%;

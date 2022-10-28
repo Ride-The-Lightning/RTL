@@ -1,7 +1,8 @@
 @import "../../../../../shared/theme/styles/mixins.scss";
 
 .mat-column-announceChannel {
-  width: 2rem;
+  max-width: 1.2rem;
+  width:1.2rem;
 }
 
 .mat-column-alias, .mat-column-channelId, .mat-column-nodeId {

@@ -1,7 +1,8 @@
 @import "../../../../../shared/theme/styles/mixins.scss";
 
 .mat-column-private {
-  width: 2rem;
+  max-width: 1.2rem;
+  width:1.2rem;
 }
 
 .mat-column-short_channel_id, .mat-column-alias, .mat-column-id, .mat-column-channel_id, .mat-column-funding_txid {

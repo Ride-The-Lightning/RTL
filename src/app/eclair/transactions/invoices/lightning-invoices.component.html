@@ -31,7 +31,7 @@
       <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table fxFlex="100" [dataSource]="invoices" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header matTooltip="Status" matTooltipPosition="right"></th>
           <td mat-cell *matCellDef="let invoice">
             <span *ngIf="invoice?.status === 'received'" class="dot green" matTooltip="Received" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
             <span *ngIf="invoice?.status === 'unpaid'" class="dot yellow" matTooltip="Unpaid" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
