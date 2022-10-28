@@ -63,7 +63,7 @@
             {{channel?.feeRatePerKw | number:'1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="pl-1">
+        <th mat-header-cell *matHeaderCellDef>
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="1" class="mr-0">
               <mat-select-trigger></mat-select-trigger>
@@ -71,7 +71,7 @@
             </mat-select>
           </div>
         </th>        
-        <td mat-cell *matCellDef="let channel" class="pl-1" fxLayoutAlign="end center">
+        <td mat-cell *matCellDef="let channel" fxLayoutAlign="end center">
           <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onChannelClick(channel, $event)" class="table-actions-button">View Info</button>
         </td>
       </ng-container>

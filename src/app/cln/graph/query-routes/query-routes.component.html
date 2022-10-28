@@ -35,34 +35,34 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="alias">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1"> Alias </th>
-        <td mat-cell *matCellDef="let hop" class="pl-1"> 
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Alias </th>
+        <td mat-cell *matCellDef="let hop"> 
           <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '12rem' : '40rem'}">
             <span class="ellipsis-child">{{hop?.alias}}</span>
           </div>
         </td>
       </ng-container>
       <ng-container matColumnDef="channel">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1"> Channel </th>
-        <td mat-cell *matCellDef="let hop" class="pl-1"> {{hop?.channel}} </td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel </th>
+        <td mat-cell *matCellDef="let hop"> {{hop?.channel}} </td>
       </ng-container>
       <ng-container matColumnDef="direction">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1"> Direction </th>
-        <td mat-cell *matCellDef="let hop" class="pl-1"> {{hop?.direction}} </td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Direction </th>
+        <td mat-cell *matCellDef="let hop"> {{hop?.direction}} </td>
       </ng-container>
       <ng-container matColumnDef="delay">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pl-1"> Delay </th>
-        <td mat-cell *matCellDef="let hop" class="pl-1"><span fxLayoutAlign="end center"> {{hop?.delay | number}} </span></td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Delay </th>
+        <td mat-cell *matCellDef="let hop"><span fxLayoutAlign="end center"> {{hop?.delay | number}} </span></td>
       </ng-container>
       <ng-container matColumnDef="msatoshi">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pl-1"> Amount (Sats) </th>
-        <td mat-cell *matCellDef="let hop" class="pl-1"><span fxLayoutAlign="end center"> {{hop?.msatoshi/1000 | number}}</span></td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Amount (Sats) </th>
+        <td mat-cell *matCellDef="let hop"><span fxLayoutAlign="end center"> {{hop?.msatoshi/1000 | number}}</span></td>
       </ng-container>
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="pl-2 pr-3">
+        <th mat-header-cell *matHeaderCellDef>
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>
         </th>
-        <td mat-cell *matCellDef="let hop" class="pl-2 pr-3" fxLayoutAlign="end center">
+        <td mat-cell *matCellDef="let hop" fxLayoutAlign="end center">
           <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onHopClick(hop, $event)" class="table-actions-button">View Info</button>          
         </td>
       </ng-container>

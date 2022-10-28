@@ -150,3 +150,7 @@ export type Collections = {
 }
 
 export const CollectionFieldsEnum = { ...OfferFieldsEnum, ...PageSettingsFieldsEnum, ...TableSettingsFieldsEnum };
+
+export const LNDCollection = [CollectionsEnum.PAGE_SETTINGS];
+export const ECLCollection = [CollectionsEnum.PAGE_SETTINGS];
+export const CLNCollection = [CollectionsEnum.PAGE_SETTINGS, CollectionsEnum.OFFERS];

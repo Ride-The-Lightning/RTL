@@ -48,15 +48,15 @@
         <td mat-cell *matCellDef="let fhEvent"><span fxLayoutAlign="end center">{{fhEvent?.in_msatoshi/1000 | number:fhEvent?.in_msatoshi < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
       </ng-container>
       <ng-container matColumnDef="style">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1">Style</th>
-        <td mat-cell *matCellDef="let fhEvent" class="pl-1">{{fhEvent?.style}}</td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Style</th>
+        <td mat-cell *matCellDef="let fhEvent">{{fhEvent?.style}}</td>
       </ng-container>
       <ng-container matColumnDef="failreason">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1">Fail Reason</th>
-        <td mat-cell *matCellDef="let fhEvent" class="pl-1">{{CLNFailReason[fhEvent?.failreason]}}</td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fail Reason</th>
+        <td mat-cell *matCellDef="let fhEvent">{{CLNFailReason[fhEvent?.failreason]}}</td>
       </ng-container>
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="px-3">
+        <th mat-header-cell *matHeaderCellDef>
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="1" class="mr-0">
               <mat-select-trigger></mat-select-trigger>
@@ -64,7 +64,7 @@
             </mat-select>
           </div>
         </th>
-        <td mat-cell *matCellDef="let fhEvent" class="px-3" fxLayoutAlign="end center">
+        <td mat-cell *matCellDef="let fhEvent" fxLayoutAlign="end center">
           <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onFailedLocalEventClick(fhEvent)" class="table-actions-button">View Info</button>          
         </td>
       </ng-container>

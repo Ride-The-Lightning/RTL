@@ -74,57 +74,57 @@
               </td>
             </ng-container>
             <ng-container matColumnDef="nodeid">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1"> Node Id </th>
-              <td mat-cell *matCellDef="let lqNode" class="pl-1">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Node Id </th>
+              <td mat-cell *matCellDef="let lqNode">
                 <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
                   <span class="ellipsis-child">{{lqNode?.nodeid}}</span>
                 </div>
               </td>
             </ng-container>
             <ng-container matColumnDef="last_timestamp">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1"> Last Announcement At </th>
-              <td mat-cell *matCellDef="let lqNode" class="pl-1">{{((lqNode?.last_timestamp * 1000) | date:'dd/MMM/y HH:mm') || '-'}}</td>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Last Announcement At </th>
+              <td mat-cell *matCellDef="let lqNode">{{((lqNode?.last_timestamp * 1000) | date:'dd/MMM/y HH:mm') || '-'}}</td>
             </ng-container>
             <ng-container matColumnDef="compact_lease">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1"> Compact Lease </th>
-              <td mat-cell *matCellDef="let lqNode" class="pl-1">{{ lqNode?.option_will_fund?.compact_lease }}</td>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Compact Lease </th>
+              <td mat-cell *matCellDef="let lqNode">{{ lqNode?.option_will_fund?.compact_lease }}</td>
             </ng-container>
             <!-- <ng-container matColumnDef="capacity_channels">
-              <th mat-header-cell *matHeaderCellDef class="pl-1"> Capacity/Channels </th>
-              <td mat-cell *matCellDef="let lqNode" class="pl-1">
+              <th mat-header-cell *matHeaderCellDef> Capacity/Channels </th>
+              <td mat-cell *matCellDef="let lqNode">
                 {{lqNode?.node_capacity/100000000 | number:'1.0-2'}} BTC / {{lqNode?.channel_count | number:'1.0-0'}} 
               </td>
             </ng-container> -->
             <ng-container matColumnDef="lease_fee">
-              <th mat-header-cell *matHeaderCellDef class="pl-1"> Lease Fee </th>
-              <td mat-cell *matCellDef="let lqNode" class="pl-1">
+              <th mat-header-cell *matHeaderCellDef> Lease Fee </th>
+              <td mat-cell *matCellDef="let lqNode">
                 {{lqNode?.option_will_fund?.lease_fee_base_msat/1000 | number:'1.0-0'}} Sats + {{(lqNode?.option_will_fund?.lease_fee_basis/100) | number:'1.2-2'}}%
               </td>
             </ng-container>
             <ng-container matColumnDef="routing_fee">
-              <th mat-header-cell *matHeaderCellDef class="pl-1"> Routing Fee </th>
-              <td mat-cell *matCellDef="let lqNode" class="pl-1">
+              <th mat-header-cell *matHeaderCellDef> Routing Fee </th>
+              <td mat-cell *matCellDef="let lqNode">
                 {{lqNode?.option_will_fund?.channel_fee_max_base_msat/1000 | number:'1.0-0'}} Sats + {{lqNode?.option_will_fund?.channel_fee_max_proportional_thousandths * 1000 | number:'1.0-0'}} ppm
               </td>
             </ng-container>
             <ng-container matColumnDef="channel_opening_fee">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pl-1"> Channel Opening Fee (Sats) </th>
-              <td mat-cell *matCellDef="let lqNode" class="pl-1">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Channel Opening Fee (Sats) </th>
+              <td mat-cell *matCellDef="let lqNode">
                 <span fxLayoutAlign="end center">
                   {{lqNode.channel_opening_fee | number:'1.0-0'}}
                 </span>
               </td>
             </ng-container>
             <ng-container matColumnDef="funding_weight">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pl-1"> Funding Weight </th>
-              <td mat-cell *matCellDef="let lqNode" class="pl-1">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Funding Weight </th>
+              <td mat-cell *matCellDef="let lqNode">
                 <span fxLayoutAlign="end center">
                   {{lqNode?.option_will_fund?.funding_weight | number:'1.0-0'}}
                 </span>
               </td>
             </ng-container>
             <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef class="px-3">
+              <th mat-header-cell *matHeaderCellDef>
                 <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
                   <mat-select placeholder="Actions" tabindex="1" class="mr-0">
                     <mat-select-trigger></mat-select-trigger>
@@ -132,7 +132,7 @@
                   </mat-select>
                 </div>
               </th>
-              <td mat-cell *matCellDef="let lqNode" fxLayoutAlign="end center" class="px-3">
+              <td mat-cell *matCellDef="let lqNode" fxLayoutAlign="end center">
                 <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
                   <mat-select placeholder="Actions" tabindex="1" class="mr-0">
                     <mat-select-trigger></mat-select-trigger>

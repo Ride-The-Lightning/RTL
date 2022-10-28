@@ -7,10 +7,10 @@
   }
 }
 
-.mat-column-fromChannelId, .mat-column-fromAlias, .mat-column-toChannelId, .mat-column-toAlias, .mat-column-paymentHash {
+.mat-column-fromChannelId, .mat-column-fromChannelAlias, .mat-column-toChannelId, .mat-column-toChannelAlias, .mat-column-paymentHash {
   padding-left: 1rem;
-  flex: 1 1 15%;
-  width: 15%;
+  flex: 0 0 25%;
+  width: 25%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

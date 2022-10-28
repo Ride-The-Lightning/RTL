@@ -11,9 +11,9 @@ const databaseService: DatabaseService = Database;
 
 export const listOfferBookmarks = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Getting Offer Bookmarks..' });
-  databaseService.find(req.session.selectedNode, CollectionsEnum.OFFERS).then((offers: Offer[]) => {
+  databaseService.find(req.session.selectedNode, CollectionsEnum.OFFERS).then((offers: any) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Bookmarks Received', data: offers });
-    res.status(200).json(offers);
+    res.status(200).json(offers.Offers);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Offers', 'Offer Bookmarks Error', req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });

@@ -226,7 +226,7 @@ export const LNDReducer = createReducer(initLNDState,
   on(setPageSettings, (state, { payload }) => {
     const newPageSettings: PageSettings[] = [];
     LND_DEFAULT_PAGE_SETTINGS.forEach((defaultPage) => {
-      const pageSetting = payload.find((p) => p.pageId === defaultPage.pageId) || null;
+      const pageSetting = payload && Object.keys(payload).length > 0 ? payload.find((p) => p.pageId === defaultPage.pageId) : null;
       if (pageSetting) {
         const tablesSettings = JSON.parse(JSON.stringify(pageSetting.tables));
         pageSetting.tables = []; // To maintain settings order

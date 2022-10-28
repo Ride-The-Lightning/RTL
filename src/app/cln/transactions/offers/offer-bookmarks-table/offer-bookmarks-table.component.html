@@ -26,8 +26,8 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="amountMSat">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pr-2"> Amount (Sats) </th>
-          <td mat-cell *matCellDef="let offersbookmark" class="pr-2"><span fxLayoutAlign="end center">{{(offersbookmark.amountMSat === 0) ? 'Open' : (offersbookmark.amountMSat / 1000) | number}}</span></td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Amount (Sats) </th>
+          <td mat-cell *matCellDef="let offersbookmark"><span fxLayoutAlign="end center">{{(offersbookmark.amountMSat === 0) ? 'Open' : (offersbookmark.amountMSat / 1000) | number}}</span></td>
         </ng-container>
         <ng-container matColumnDef="description">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
@@ -42,15 +42,15 @@
           <td mat-cell *matCellDef="let offersbookmark">{{offersbookmark.vendor}}</td>
         </ng-container>
         <ng-container matColumnDef="bolt12">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1"> Invoice </th>
-          <td mat-cell *matCellDef="let offersbookmark" class="pl-1">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Invoice </th>
+          <td mat-cell *matCellDef="let offersbookmark">
             <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '20rem' : '30rem'}">
               <span class="ellipsis-child">{{offersbookmark.bolt12}}</span>
             </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="pr-3">
+          <th mat-header-cell *matHeaderCellDef>
             <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="1" class="mr-0">
                 <mat-select-trigger></mat-select-trigger>
@@ -58,7 +58,7 @@
               </mat-select>
             </div>
           </th>
-          <td mat-cell *matCellDef="let offer" [ngClass]="{'pr-3': screenSize !== screenSizeEnum.XS}" fxLayoutAlign="end center">
+          <td mat-cell *matCellDef="let offer" fxLayoutAlign="end center">
             <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="4" class="mr-0">
                 <mat-select-trigger></mat-select-trigger>

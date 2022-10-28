@@ -26,8 +26,8 @@
         <td mat-cell *matCellDef="let fhEvent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{fhEvent?.fromChannelId}}</td>
       </ng-container>
       <ng-container matColumnDef="fromShortChannelId">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1">In Channel Short Id</th>
-        <td mat-cell *matCellDef="let fhEvent" class="pl-1">{{fhEvent?.fromShortChannelId}}</td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>In Channel Short Id</th>
+        <td mat-cell *matCellDef="let fhEvent">{{fhEvent?.fromShortChannelId}}</td>
       </ng-container>
       <ng-container matColumnDef="fromChannelAlias">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>In Channel</th>
@@ -38,31 +38,31 @@
         <td mat-cell *matCellDef="let fhEvent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{fhEvent?.toChannelId}}</td>
       </ng-container>
       <ng-container matColumnDef="toShortChannelId">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1">Out Channel Short Id</th>
-        <td mat-cell *matCellDef="let fhEvent" class="pl-1">{{fhEvent?.toShortChannelId}}</td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Out Channel Short Id</th>
+        <td mat-cell *matCellDef="let fhEvent">{{fhEvent?.toShortChannelId}}</td>
       </ng-container>
       <ng-container matColumnDef="toChannelAlias">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Out Channel</th>
         <td mat-cell *matCellDef="let fhEvent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{fhEvent?.toChannelAlias}}</td>
       </ng-container>
       <ng-container matColumnDef="amountIn">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pl-1">Amount In (Sats)</th>
-        <td mat-cell *matCellDef="let fhEvent" class="pl-1"><span fxLayoutAlign="end center">{{fhEvent?.amountIn | number}}</span></td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Amount In (Sats)</th>
+        <td mat-cell *matCellDef="let fhEvent"><span fxLayoutAlign="end center">{{fhEvent?.amountIn | number}}</span></td>
       </ng-container>
       <ng-container matColumnDef="amountOut">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pl-1">Amount Out (Sats)</th>
-        <td mat-cell *matCellDef="let fhEvent" class="pl-1"><span fxLayoutAlign="end center">{{fhEvent?.amountOut | number}}</span></td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Amount Out (Sats)</th>
+        <td mat-cell *matCellDef="let fhEvent"><span fxLayoutAlign="end center">{{fhEvent?.amountOut | number}}</span></td>
       </ng-container>
       <ng-container matColumnDef="fee">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pl-1">Fee Earned (Sats)</th>
-        <td mat-cell *matCellDef="let fhEvent" class="pl-1"><span fxLayoutAlign="end center">{{(fhEvent?.amountIn - fhEvent?.amountOut) | number}}</span></td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Fee Earned (Sats)</th>
+        <td mat-cell *matCellDef="let fhEvent"><span fxLayoutAlign="end center">{{(fhEvent?.amountIn - fhEvent?.amountOut) | number}}</span></td>
       </ng-container>
       <ng-container matColumnDef="paymentHash">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Hash</th>
         <td mat-cell *matCellDef="let fhEvent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{fhEvent?.paymentHash}}</td>
       </ng-container>
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="pl-2">
+        <th mat-header-cell *matHeaderCellDef>
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="1" class="mr-0">
               <mat-select-trigger></mat-select-trigger>
@@ -70,7 +70,7 @@
             </mat-select>
           </div>
         </th>
-        <td mat-cell *matCellDef="let fhEvent" class="pl-3" fxLayoutAlign="end center">
+        <td mat-cell *matCellDef="let fhEvent" fxLayoutAlign="end center">
           <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onForwardingEventClick(fhEvent,$event)" class="table-actions-button">View Info</button>
         </td>
       </ng-container>

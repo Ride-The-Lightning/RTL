@@ -3,7 +3,7 @@ import { join, dirname, sep } from 'path';
 import { fileURLToPath } from 'url';
 import { Common, CommonService } from '../utils/common.js';
 import { Logger, LoggerService } from '../utils/logger.js';
-import { Collections, CollectionsEnum, validateDocument } from '../models/database.model.js';
+import { Collections, CollectionsEnum, validateDocument, LNDCollection, ECLCollection, CLNCollection } from '../models/database.model.js';
 import { CommonSelectedNode } from '../models/config.model.js';
 
 export class DatabaseService {
@@ -19,14 +19,43 @@ export class DatabaseService {
     const { id, selectedNode } = session;
     try {
       if (!this.nodeDatabase[selectedNode.index]) {
-        this.nodeDatabase[selectedNode.index] = { adapter: null, data: null };
-        this.nodeDatabase[selectedNode.index].adapter = new DatabaseAdapter(this.dbDirectory, 'rtldb', selectedNode, id);
-        this.nodeDatabase[selectedNode.index].data = this.nodeDatabase[selectedNode.index].adapter.fetchData();
+        this.nodeDatabase[selectedNode.index] = { adapter: null, data: {} };
+        this.nodeDatabase[selectedNode.index].adapter = new DatabaseAdapter(this.dbDirectory, selectedNode, id);
+        this.fetchNodeData(selectedNode);
+        this.logger.log({ selectedNode: selectedNode, level: 'DEBUG', fileName: 'Database', msg: 'Database Loaded', data: this.nodeDatabase[selectedNode.index].data });
       } else {
         this.nodeDatabase[selectedNode.index].adapter.insertSession(id);
       }
     } catch (err) {
       this.logger.log({ selectedNode: selectedNode, level: 'ERROR', fileName: 'Database', msg: 'Database Load Error', error: err });
+    }
+  }
+
+  fetchNodeData(selectedNode: CommonSelectedNode) {
+    switch (selectedNode.ln_implementation) {
+      case 'CLN':
+        for (const collectionName in CLNCollection) {
+          if (CLNCollection.hasOwnProperty(collectionName)) {
+            this.nodeDatabase[selectedNode.index].data[CLNCollection[collectionName]] = this.nodeDatabase[selectedNode.index].adapter.fetchData(CLNCollection[collectionName]);
+          }
+        }
+        break;
+
+      case 'ECL':
+        for (const collectionName in ECLCollection) {
+          if (ECLCollection.hasOwnProperty(collectionName)) {
+            this.nodeDatabase[selectedNode.index].data[ECLCollection[collectionName]] = this.nodeDatabase[selectedNode.index].adapter.fetchData(ECLCollection[collectionName]);
+          }
+        }
+        break;
+
+      default:
+        for (const collectionName in LNDCollection) {
+          if (LNDCollection.hasOwnProperty(collectionName)) {
+            this.nodeDatabase[selectedNode.index].data[LNDCollection[collectionName]] = this.nodeDatabase[selectedNode.index].adapter.fetchData(LNDCollection[collectionName]);
+          }
+        }
+        break;
     }
   }
 
@@ -164,32 +193,48 @@ export class DatabaseService {
 
 export class DatabaseAdapter {
 
-  private dbFile = '';
+  private logger: LoggerService = Logger;
+  private common: CommonService = Common;
+  private dbFilePath = '';
   private userSessions = [];
 
-  constructor(public dbDirectoryPath: string, public fileName: string, private selNode: CommonSelectedNode = null, private id: string = '') {
-    this.dbFile = dbDirectoryPath + sep + fileName + '-node-' + selNode.index + '.json';
+  constructor(public dbDirectoryPath: string, private selNode: CommonSelectedNode = null, private id: string = '') {
+    this.dbFilePath = dbDirectoryPath + sep + 'node-' + selNode.index;
+    const oldFileName = dbDirectoryPath + sep + 'rtldb-node-' + selNode.index + '.json';
+    if (selNode.ln_implementation === 'CLN' && fs.existsSync(oldFileName)) { this.renameOldDB(oldFileName, selNode); }
     this.insertSession(id);
   }
 
-  fetchData() {
+  renameOldDB(oldFileName: string, selNode: CommonSelectedNode = null) {
+    const newFileName = this.dbFilePath + sep + 'rtldb-' + selNode.ln_implementation + '-Offers.json';
     try {
-      if (!fs.existsSync(this.dbDirectoryPath)) {
-        fs.mkdirSync(this.dbDirectoryPath);
+      this.common.createDirectory(this.dbFilePath);
+      fs.renameSync(oldFileName, newFileName);
+    } catch (err) {
+      this.logger.log({ selectedNode: selNode, level: 'ERROR', fileName: 'Database', msg: 'Rename Old Database Error', error: err });
+    }
+  }
+
+  fetchData(collectionName: string) {
+    try {
+      if (!fs.existsSync(this.dbFilePath)) {
+        fs.mkdirSync(this.dbFilePath);
       }
     } catch (err) {
       return new Error('Unable to Create Directory Error ' + JSON.stringify(err));
     }
+    const collectionFileName = this.dbFilePath + sep + 'rtldb-' + this.selNode.ln_implementation + '-' + collectionName + '.json';
     try {
-      if (!fs.existsSync(this.dbFile)) {
-        fs.writeFileSync(this.dbFile, '{}');
+      if (!fs.existsSync(collectionFileName)) {
+        fs.writeFileSync(collectionFileName, '{}');
       }
     } catch (err) {
       return new Error('Unable to Create Database File Error ' + JSON.stringify(err));
     }
     try {
-      const dataFromFile = fs.readFileSync(this.dbFile, 'utf-8');
-      return !dataFromFile ? null : (<Collections>JSON.parse(dataFromFile));
+      const dataFromFile = fs.readFileSync(collectionFileName, 'utf-8');
+      const dataObj = !dataFromFile ? null : (<Collections>JSON.parse(dataFromFile));
+      return dataObj;
     } catch (err) {
       return new Error('Database Read Error ' + JSON.stringify(err));
     }
@@ -202,9 +247,14 @@ export class DatabaseAdapter {
   saveData(data: any) {
     try {
       if (data) {
-        const tempFile = this.dbFile + '.tmp';
-        fs.writeFileSync(tempFile, JSON.stringify(data, null, 2));
-        fs.renameSync(tempFile, this.dbFile);
+        for (const collectionName in data) {
+          if (data.hasOwnProperty(collectionName)) {
+            const collectionFileName = this.dbFilePath + sep + 'rtldb-' + this.selNode.ln_implementation + '-' + collectionName + '.json';
+            const tempFile = collectionFileName + '.tmp';
+            fs.writeFileSync(tempFile, JSON.stringify(data, null, 2));
+            fs.renameSync(tempFile, collectionFileName);
+          }
+        }
       }
       return true;
     } catch (err) {

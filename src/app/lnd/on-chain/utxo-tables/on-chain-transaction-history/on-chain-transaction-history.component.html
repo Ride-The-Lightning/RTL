@@ -45,7 +45,7 @@
               {{transaction?.num_confirmations | number}} </span></td>
         </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="px-3">
+          <th mat-header-cell *matHeaderCellDef>
             <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="1" class="mr-0">
                 <mat-select-trigger></mat-select-trigger>
@@ -53,7 +53,7 @@
               </mat-select>
             </div>
           </th>
-          <td mat-cell *matCellDef="let transaction" class="pl-3" fxLayoutAlign="end center">
+          <td mat-cell *matCellDef="let transaction" fxLayoutAlign="end center">
             <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onTransactionClick(transaction)" class="table-actions-button">View Info</button>
           </td>
         </ng-container>

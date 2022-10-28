@@ -13,6 +13,9 @@
   min-height: 4.2rem;
   place-content: center flex-start;
   align-items: center;
+  &:not(:first-of-type) {
+    padding-left: 3rem;
+  }
 }
 
 .mat-column-actions {

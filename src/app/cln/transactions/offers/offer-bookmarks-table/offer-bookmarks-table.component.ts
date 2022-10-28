@@ -80,7 +80,7 @@ export class CLNOfferBookmarksTableComponent implements OnInit, AfterViewInit, O
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.offersBookmarksJSONArr = offerBMsSeletor.offersBookmarks || [];
-        if (this.offersBookmarksJSONArr && this.offersBookmarksJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
+        if (this.offersBookmarksJSONArr && this.offersBookmarksJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadOffersTable(this.offersBookmarksJSONArr);
         }
         this.logger.info(offerBMsSeletor);
@@ -88,7 +88,7 @@ export class CLNOfferBookmarksTableComponent implements OnInit, AfterViewInit, O
   }
 
   ngAfterViewInit() {
-    if (this.offersBookmarksJSONArr && this.offersBookmarksJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
+    if (this.offersBookmarksJSONArr && this.offersBookmarksJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
       this.loadOffersTable(this.offersBookmarksJSONArr);
     }
   }

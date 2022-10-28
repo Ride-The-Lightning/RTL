@@ -1200,8 +1200,8 @@ export class LNDEffects implements OnDestroy {
         map((settings: any) => {
           this.logger.info(settings);
           this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchPageSettings', status: APICallStatusEnum.COMPLETED } }));
-          this.invoicesPageSize = (settings ? (settings.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'invoices')) : LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'invoices')).recordsPerPage;
-          this.paymentsPageSize = (settings ? (settings.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'payments')) : LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'payments')).recordsPerPage;
+          this.invoicesPageSize = (settings && Object.keys(settings).length > 0 ? (settings.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'invoices')) : LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'invoices')).recordsPerPage;
+          this.paymentsPageSize = (settings && Object.keys(settings).length > 0 ? (settings.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'payments')) : LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'payments')).recordsPerPage;
           this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: this.invoicesPageSize, reversed: true } }));
           // this.store.dispatch(fetchPayments({ payload: { max_payments: 100000, reversed: true } }));
           return {

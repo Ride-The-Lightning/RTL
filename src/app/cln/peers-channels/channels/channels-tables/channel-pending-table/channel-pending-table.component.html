@@ -16,77 +16,77 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="alias">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1"> Alias </th>
-        <td mat-cell *matCellDef="let channel" class="pl-1">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Alias </th>
+        <td mat-cell *matCellDef="let channel">
           <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '12rem' : '22rem'}">
             <span class="ellipsis-child">{{channel?.alias}}</span>
           </div>
         </td>
       </ng-container>
       <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1"> Id </th>
-        <td mat-cell *matCellDef="let channel" class="pl-1">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Id </th>
+        <td mat-cell *matCellDef="let channel">
           <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '12rem' : '22rem'}">
             <span class="ellipsis-child">{{channel?.id}}</span>
           </div>
         </td>
       </ng-container>
       <ng-container matColumnDef="channel_id">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1"> Channel Id </th>
-        <td mat-cell *matCellDef="let channel" class="pl-1">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel Id </th>
+        <td mat-cell *matCellDef="let channel">
           <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '12rem' : '22rem'}">
             <span class="ellipsis-child">{{channel?.channel_id}}</span>
           </div>
         </td>
       </ng-container>
       <ng-container matColumnDef="funding_txid">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1"> Funding Transaction Id </th>
-        <td mat-cell *matCellDef="let channel" class="pl-1">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Funding Transaction Id </th>
+        <td mat-cell *matCellDef="let channel">
           <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '12rem' : '22rem'}">
             <span class="ellipsis-child">{{channel?.funding_txid}}</span>
           </div>
         </td>
       </ng-container>
       <ng-container matColumnDef="connected">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-1"> Connected </th>
-        <td mat-cell *matCellDef="let channel" class="pl-1"> {{(channel?.connected) ? 'Connected' : 'Disconnected'}} </td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Connected </th>
+        <td mat-cell *matCellDef="let channel"> {{(channel?.connected) ? 'Connected' : 'Disconnected'}} </td>
       </ng-container>
       <ng-container matColumnDef="state">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> State </th>
         <td mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '12rem' : '22rem'}"> {{CLNChannelPendingState[channel?.state]}} </td>
       </ng-container>
       <ng-container matColumnDef="our_channel_reserve_satoshis">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pl-1"> Local Reserve (Sats) </th>
-        <td mat-cell *matCellDef="let channel" class="pl-1"><span fxLayoutAlign="end center">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Local Reserve (Sats) </th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
             {{channel?.our_channel_reserve_satoshis | number:'1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="their_channel_reserve_satoshis">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pl-1"> Remote Reserve (Sats) </th>
-        <td mat-cell *matCellDef="let channel" class="pl-1"><span fxLayoutAlign="end center">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Remote Reserve (Sats) </th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
             {{channel?.their_channel_reserve_satoshis | number:'1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="msatoshi_total">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pl-1"> Total (Sats) </th>
-        <td mat-cell *matCellDef="let channel" class="pl-1"><span fxLayoutAlign="end center">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Total (Sats) </th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
             {{channel?.msatoshi_total/1000 | number:channel?.msatoshi_to_us < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="spendable_msatoshi">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pl-1"> Spendable (Sats) </th>
-        <td mat-cell *matCellDef="let channel" class="pl-1"><span fxLayoutAlign="end center">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Spendable (Sats) </th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
             {{channel?.spendable_msatoshi/1000 | number:channel?.msatoshi_to_us < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="msatoshi_to_us">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pl-1"> Local Balance (Sats) </th>
-        <td mat-cell *matCellDef="let channel" class="pl-1"><span fxLayoutAlign="end center">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Local Balance (Sats) </th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
             {{channel?.msatoshi_to_us/1000 | number:channel?.msatoshi_to_us < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="msatoshi_to_them">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pl-1"> Remote Balance (Sats) </th>
-        <td mat-cell *matCellDef="let channel" class="pl-1"><span fxLayoutAlign="end center">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Remote Balance (Sats) </th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
             {{channel?.msatoshi_to_them/1000 | number:channel?.msatoshi_to_them < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="px-2">
+        <th mat-header-cell *matHeaderCellDef>
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="1" class="mr-0">
               <mat-select-trigger></mat-select-trigger>
@@ -94,7 +94,7 @@
             </mat-select>
           </div>
         </th>
-        <td mat-cell *matCellDef="let channel" fxLayoutAlign="end center" class="px-2">
+        <td mat-cell *matCellDef="let channel" fxLayoutAlign="end center">
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="4" class="mr-0">
               <mat-select-trigger></mat-select-trigger>

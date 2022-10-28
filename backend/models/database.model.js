@@ -134,3 +134,6 @@ export var CollectionsEnum;
     CollectionsEnum["PAGE_SETTINGS"] = "PageSettings";
 })(CollectionsEnum || (CollectionsEnum = {}));
 export const CollectionFieldsEnum = Object.assign(Object.assign(Object.assign({}, OfferFieldsEnum), PageSettingsFieldsEnum), TableSettingsFieldsEnum);
+export const LNDCollection = [CollectionsEnum.PAGE_SETTINGS];
+export const ECLCollection = [CollectionsEnum.PAGE_SETTINGS];
+export const CLNCollection = [CollectionsEnum.PAGE_SETTINGS, CollectionsEnum.OFFERS];

@@ -29,10 +29,10 @@
             <td mat-cell *matCellDef="let rPeer"><span fxLayoutAlign="end center">{{rPeer.total_amount | number}}</span></td>
           </ng-container>
           <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef class="pr-3">
+            <th mat-header-cell *matHeaderCellDef>
               <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>  
             </th>
-            <td mat-cell *matCellDef="let rPeer" class="pl-2" fxLayoutAlign="end center">
+            <td mat-cell *matCellDef="let rPeer" fxLayoutAlign="end center">
               <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onRoutingPeerClick(rPeer, $event, 'in')" class="table-actions-button">View Info</button>
             </td>
           </ng-container>

@@ -1,5 +1,6 @@
 .mat-column-status, .mat-column-group_status {
-  width: 1.5rem;
+  max-width: 1.2rem;
+  width: 1.2rem;
 }
 
 .mat-column-payment_hash, .mat-column-payment_request, .mat-column-payment_preimage, .mat-column-description, .mat-column-description_hash {
@@ -33,6 +34,9 @@
   min-height: 4.2rem;
   place-content: center flex-start;
   align-items: center;
+  &:not(:first-of-type) {
+    padding-left: 3rem;
+  }
   &.ellipsis-parent {
     display: flex;
   }

@@ -85,15 +85,15 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="msatoshi_sent">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="px-1">Sats Sent</th>
-            <td mat-cell *matCellDef="let payment" class="px-1"><span fxLayoutAlign="end center">{{payment?.msatoshi_sent/1000 | number:payment?.msatoshi_sent < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Sent</th>
+            <td mat-cell *matCellDef="let payment"><span fxLayoutAlign="end center">{{payment?.msatoshi_sent/1000 | number:payment?.msatoshi_sent < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
           </ng-container>
           <ng-container matColumnDef="msatoshi">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="px-1">Sats Received</th>
-            <td mat-cell *matCellDef="let payment" class="px-1"><span fxLayoutAlign="end center">{{payment?.msatoshi/1000 | number:payment?.msatoshi < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Received</th>
+            <td mat-cell *matCellDef="let payment"><span fxLayoutAlign="end center">{{payment?.msatoshi/1000 | number:payment?.msatoshi < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
           </ng-container>
           <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef class="pr-3">
+            <th mat-header-cell *matHeaderCellDef>
               <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
                 <mat-select placeholder="Actions" tabindex="1" class="mr-0">
                   <mat-select-trigger></mat-select-trigger>
@@ -101,7 +101,7 @@
                 </mat-select>
               </div>
             </th>
-            <td mat-cell *matCellDef="let payment" class="pr-3" fxLayoutAlign="end center">
+            <td mat-cell *matCellDef="let payment" fxLayoutAlign="end center">
               <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onPaymentClick(payment)" class="table-actions-button">View Info</button>
             </td>
           </ng-container>
@@ -121,7 +121,7 @@
                 <span *ngIf="payment.status !== 'complete'" class="dot yellow" matTooltip="Incomplete/Failed" matTooltipPosition="right"></span>
               </span>
               <ng-container *ngIf="payment.is_expanded">
-                <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="mpp-row-span pl-3">
+                <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="mpp-row-span">
                   <span *ngIf="mpp.status === 'complete'" class="dot green" matTooltip="Completed" matTooltipPosition="right"></span>
                   <span *ngIf="mpp.status !== 'complete'" class="dot yellow" matTooltip="Incomplete/Failed" matTooltipPosition="right"></span>
                 </span>
@@ -134,7 +134,7 @@
                 Total Attempts: {{payment?.total_parts}}
               </span>
               <ng-container *ngIf="payment.is_expanded">
-                <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="mpp-row-span pl-3">
+                <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="mpp-row-span">
                   {{(mpp.created_at * 1000) | date:'dd/MMM/y HH:mm'}}
                 </span>
               </ng-container>
@@ -207,7 +207,7 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="group_msatoshi_sent">
-            <td mat-cell *matCellDef="let payment" class="px-1">
+            <td mat-cell *matCellDef="let payment">
               <span fxLayoutAlign="end center" class="mpp-row-span">{{payment?.msatoshi_sent/1000 | number:payment?.msatoshi_sent < 1000 ? '1.0-4' : '1.0-0'}}</span>
               <span *ngIf="payment.is_expanded">
                 <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="end center" class="mpp-row-span">
@@ -217,7 +217,7 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="group_msatoshi">
-            <td mat-cell *matCellDef="let payment" class="px-1">
+            <td mat-cell *matCellDef="let payment">
               <span fxLayoutAlign="end center" class="mpp-row-span">{{payment?.msatoshi/1000 | number:payment?.msatoshi < 1000 ? '1.0-4' : '1.0-0'}}</span>
               <span *ngIf="payment.is_expanded">
                 <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="end center" class="mpp-row-span">
@@ -227,7 +227,7 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="group_actions">
-            <td mat-cell *matCellDef="let payment" class="pr-3">
+            <td mat-cell *matCellDef="let payment">
               <span fxLayoutAlign="end center">
                 <button mat-flat-button class="btn-mpp-expand" color="primary" type="button" tabindex="5" (click)="payment.is_expanded = !payment.is_expanded">{{payment.is_expanded ? 'Hide' : 'Show'}}</button>
               </span>

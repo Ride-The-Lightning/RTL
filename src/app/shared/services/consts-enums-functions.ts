@@ -718,7 +718,7 @@ export const CLN_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
       columnSelection: ['offer_id', 'single_use', 'used'] },
     { tableId: 'offer_bookmarks', recordsPerPage: PAGE_SIZE, sortBy: 'lastUpdatedAt', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['lastUpdatedAt', 'amountMSat'],
-      columnSelection: ['lastUpdatedAt', 'title', 'amountMSat', 'description'] }
+      columnSelection: ['lastUpdatedAt', 'title', 'description', 'amountMSat'] }
   ] },
   { pageId: 'routing', tables: [
     { tableId: 'forwarding_history', recordsPerPage: PAGE_SIZE, sortBy: 'received_time', sortOrder: SortOrderEnum.DESCENDING,
@@ -800,7 +800,7 @@ export const CLN_TABLES_DEF = {
     },
     offer_bookmarks: {
       maxColumns: 6,
-      allowedColumns: ['lastUpdatedAt', 'title', 'amountMSat', 'description', 'vendor', 'bolt12']
+      allowedColumns: ['lastUpdatedAt', 'title', 'description', 'vendor', 'bolt12', 'amountMSat']
     }
   },
   routing: {
