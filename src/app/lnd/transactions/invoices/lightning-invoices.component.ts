@@ -110,7 +110,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
         this.firstOffset = +(invoicesSelector.listInvoices.first_index_offset || -1);
         this.lastOffset = +(invoicesSelector.listInvoices.last_index_offset || -1);
         this.invoicesData = invoicesSelector.listInvoices.invoices || [];
-        if (this.invoicesData.length > 0 && this.sort && this.paginator) {
+        if (this.invoicesData.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
           this.loadInvoicesTable(this.invoicesData);
         }
         this.logger.info(invoicesSelector);

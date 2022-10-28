@@ -81,7 +81,7 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.utxos = (this.isDustUTXO) ? utxosSeletor.utxos?.filter((utxo) => +(utxo.value || 0) < 1000) : utxosSeletor.utxos ? utxosSeletor.utxos : [];
-        if (this.utxos && this.utxos.length > 0 && this.sort && this.paginator) {
+        if (this.utxos && this.utxos.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
           this.loadUTXOsTable(this.utxos);
         }
         this.logger.info(utxosSeletor);
@@ -89,7 +89,7 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   ngAfterViewInit() {
-    if (this.utxos && this.utxos.length > 0 && this.sort && this.paginator) {
+    if (this.utxos && this.utxos.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
       this.loadUTXOsTable(this.utxos);
     }
   }

@@ -109,7 +109,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         this.totalPayments = this.paymentJSONArr.length;
         this.firstOffset = +(paymentsSelector.listPayments.first_index_offset || -1);
         this.lastOffset = +(paymentsSelector.listPayments.last_index_offset || -1);
-        if (this.paymentJSONArr && this.paymentJSONArr.length > 0 && this.sort && this.paginator) {
+        if (this.paymentJSONArr && this.paymentJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
           // this.loadPaymentsTable(this.paymentJSONArr);
           this.loadPaymentsTable(this.paymentJSONArr.slice(0, this.pageSize));
         }

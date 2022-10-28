@@ -102,7 +102,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.invoiceJSONArr = (invoicesSelector.invoices && invoicesSelector.invoices.length > 0) ? invoicesSelector.invoices : [];
-        if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator) {
+        if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
           this.loadInvoicesTable(this.invoiceJSONArr);
         }
         this.logger.info(invoicesSelector);
@@ -119,7 +119,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngAfterViewInit() {
-    if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator) {
+    if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
       this.loadInvoicesTable(this.invoiceJSONArr);
     }
   }

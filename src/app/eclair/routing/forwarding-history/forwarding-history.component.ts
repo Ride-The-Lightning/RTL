@@ -79,7 +79,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
             this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
           }
           this.eventsData = paymentsSelector.payments && paymentsSelector.payments.relayed ? paymentsSelector.payments.relayed : [];
-          if (this.eventsData.length > 0 && this.sort && this.paginator) {
+          if (this.eventsData.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
             this.loadForwardingEventsTable(this.eventsData);
           }
           this.logger.info(this.eventsData);

@@ -103,7 +103,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.invoiceJSONArr = invoicesSeletor.listInvoices.invoices || [];
-        if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator) {
+        if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
           this.loadInvoicesTable(this.invoiceJSONArr);
         }
         this.logger.info(invoicesSeletor);
@@ -120,7 +120,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
   }
 
   ngAfterViewInit() {
-    if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator) {
+    if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
       this.loadInvoicesTable(this.invoiceJSONArr);
     }
   }

@@ -60,7 +60,7 @@ export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, On
         this.tableSettingSwapOut = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSettingSwapOut.tableId) || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSettingSwapOut.tableId)!;
         this.tableSettingSwapIn = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSettingSwapIn.tableId) || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSettingSwapIn.tableId)!;
         this.setTableColumns();
-        if (this.swapsData && this.swapsData.length > 0 && this.sort && this.paginator) {
+        if (this.swapsData && this.swapsData.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
           this.loadSwapsTable(this.swapsData);
         }
         this.logger.info(this.displayedColumns);

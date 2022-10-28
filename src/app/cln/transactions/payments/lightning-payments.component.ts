@@ -103,7 +103,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.paymentJSONArr = paymentsSeletor.payments || [];
-        if (this.paymentJSONArr.length && this.paymentJSONArr.length > 0 && this.sort && this.paginator) {
+        if (this.paymentJSONArr.length && this.paymentJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
           this.loadPaymentsTable(this.paymentJSONArr);
         }
         this.logger.info(paymentsSeletor);
@@ -111,7 +111,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngAfterViewInit() {
-    if (this.paymentJSONArr.length && this.paymentJSONArr.length > 0 && this.sort && this.paginator) {
+    if (this.paymentJSONArr.length && this.paymentJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
       this.loadPaymentsTable(this.paymentJSONArr);
     }
   }
