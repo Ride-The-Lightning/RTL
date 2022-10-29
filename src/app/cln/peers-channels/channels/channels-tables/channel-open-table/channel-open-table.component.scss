@@ -1,35 +1,10 @@
-@import "../../../../../shared/theme/styles/mixins.scss";
-
 .mat-column-private {
   max-width: 1.2rem;
   width:1.2rem;
 }
 
-.mat-column-short_channel_id, .mat-column-alias, .mat-column-id, .mat-column-channel_id, .mat-column-funding_txid {
-  flex: 0 0 15%;
-  width: 15%;
-  & .ellipsis-parent {
-    display: flex;
-  }
-}
-
 .mat-column-balancedness {
-  padding-left: 3rem;
-  flex: 0 0 22%;
-  width: 22%;
-}
-
-.mat-column-state, .mat-column-msatoshi_to_us, .mat-column-msatoshi_to_them {
-  flex: 1 1 15%;
-  width: 15%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  @include for_screensize(phone) {
-    white-space: unset;
-  }
-}
-
-.mat-column-actions {
-  min-height: 4.8rem;
+  padding-left: 2rem;
+  min-width: 15rem;
+  max-width: 30rem;
 }

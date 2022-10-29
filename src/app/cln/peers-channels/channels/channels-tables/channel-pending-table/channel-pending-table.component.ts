@@ -36,6 +36,7 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faEye = faEye;
   public faEyeSlash = faEyeSlash;
+  public colWidth = '20rem';
   public PAGE_ID = 'peers_channels';
   public tableSetting: TableSetting = { tableId: 'pending_inactive_channels', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING };
   public isCompatibleVersion = false;
@@ -89,6 +90,7 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
         this.displayedColumns.unshift('private');
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(channels).pipe(takeUntil(this.unSubs[2])).

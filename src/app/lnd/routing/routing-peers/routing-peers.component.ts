@@ -30,6 +30,7 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('tableOut', { read: MatSort, static: false }) sortOut: MatSort;
   @ViewChild('paginatorIn', { static: false }) paginatorIn: MatPaginator | undefined;
   @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator | undefined;
+  public colWidth = '20rem';
   public PAGE_ID = 'routing';
   public tableSetting: TableSetting = { tableId: 'routing_peers', recordsPerPage: PAGE_SIZE, sortBy: 'total_amount', sortOrder: SortOrderEnum.DESCENDING };
   public routingPeersData: any[] = [];
@@ -66,6 +67,7 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
           this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
         }
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[1])).

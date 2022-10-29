@@ -30,6 +30,7 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public colWidth = '20rem';
   public PAGE_ID = 'peers_channels';
   public tableSetting: TableSetting = { tableId: 'closed', recordsPerPage: PAGE_SIZE, sortBy: 'close_type', sortOrder: SortOrderEnum.DESCENDING };
   public channelClosureType = CHANNEL_CLOSURE_TYPE;
@@ -67,6 +68,7 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
         }
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(closedChannels).pipe(takeUntil(this.unSubs[1])).

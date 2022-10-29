@@ -32,7 +32,8 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
-  faHistory = faHistory;
+  public faHistory = faHistory;
+  public colWidth = '20rem';
   public PAGE_ID = 'on_chain';
   public tableSetting: TableSetting = { tableId: 'transaction', recordsPerPage: PAGE_SIZE, sortBy: 'timestamp', sortOrder: SortOrderEnum.DESCENDING };
   public displayedColumns: any[] = [];
@@ -68,6 +69,7 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
         }
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(transactions).pipe(takeUntil(this.unSubs[1])).

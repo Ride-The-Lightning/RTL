@@ -7,16 +7,3 @@
   max-width: 1.6rem;
   width:1.6rem;
 }
-
-.mat-column-memo, .mat-column-r_preimage, .mat-column-r_hash,
-.mat-column-payment_addr, .mat-column-payment_request, .mat-column-description_hash {
-  flex: 0 0 10%;
-  width: 10%;
-  & .ellipsis-parent {
-    display: flex;
-  }
-}
-
-.mat-column-actions {
-  min-height: 4.8rem;
-}

@@ -1552,11 +1552,13 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
   text-align: left;
 }
 
-// .table-container {
-//   height: 25rem;
-//   overflow: auto;
-//   overflow-x: hidden;
-// }
+.ellipsis-parent {
+  display: flex;
+}
+
+.mat-column-actions {
+  min-height: 4.8rem;
+}
 
 .mat-expansion-panel.flat-expansion-panel {
   box-shadow: none;

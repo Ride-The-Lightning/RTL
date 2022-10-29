@@ -34,6 +34,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   @Input() tableId = 'forwarding_history';
   @Input() eventsData: PaymentRelayed[] = [];
   @Input() filterValue = '';
+  public colWidth = '20rem';
   public tableSetting: TableSetting = { tableId: 'forwarding_history', recordsPerPage: PAGE_SIZE, sortBy: 'timestamp', sortOrder: SortOrderEnum.DESCENDING };
   public displayedColumns: any[] = [];
   public forwardingHistoryEvents: any = new MatTableDataSource([]);
@@ -68,6 +69,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
         this.displayedColumns.unshift('type');
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(payments).pipe(takeUntil(this.unSubs[1])).
@@ -79,7 +81,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
             this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
           }
           this.eventsData = paymentsSelector.payments && paymentsSelector.payments.relayed ? paymentsSelector.payments.relayed : [];
-          if (this.eventsData.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
+          if (this.eventsData.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
             this.loadForwardingEventsTable(this.eventsData);
           }
           this.logger.info(this.eventsData);

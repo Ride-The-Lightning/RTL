@@ -35,6 +35,7 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faEye = faEye;
   public faEyeSlash = faEyeSlash;
+  public colWidth = '20rem';
   public PAGE_ID = 'peers_channels';
   public tableSetting: TableSetting = { tableId: 'inactive_channels', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING };
   public inactiveChannels: Channel[];
@@ -76,6 +77,7 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
         this.displayedColumns.unshift('announceChannel');
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[1])).

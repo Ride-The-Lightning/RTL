@@ -27,6 +27,7 @@ export class CLNTransactionsReportComponent implements OnInit, OnDestroy {
   public secondsInADay = 24 * 60 * 60;
   public payments: Payment[] = [];
   public invoices: Invoice[] = [];
+  public colWidth = '20rem';
   public PAGE_ID = 'reports';
   public tableSetting: TableSetting = { tableId: 'transactions', recordsPerPage: PAGE_SIZE, sortBy: 'date', sortOrder: SortOrderEnum.DESCENDING };
   public displayedColumns: any[] = ['date', 'amount_paid', 'num_payments', 'amount_received', 'num_invoices'];
@@ -61,6 +62,7 @@ export class CLNTransactionsReportComponent implements OnInit, OnDestroy {
           this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
         }
         this.displayedColumns.push('actions');
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(payments).pipe(takeUntil(this.unSubs[1]),

@@ -33,6 +33,7 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public colWidth = '20rem';
   public PAGE_ID = 'routing';
   public tableSetting: TableSetting = { tableId: 'failed', recordsPerPage: PAGE_SIZE, sortBy: 'received_time', sortOrder: SortOrderEnum.DESCENDING };
   public faExclamationTriangle = faExclamationTriangle;
@@ -73,6 +74,7 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
         }
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(failedForwardingHistory).pipe(takeUntil(this.unSubs[1])).
@@ -84,7 +86,7 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
         }
         this.totalFailedTransactions = ffhSeletor.failedForwardingHistory.totalForwards || 0;
         this.failedEvents = ffhSeletor.failedForwardingHistory.listForwards || [];
-        if (this.failedEvents.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
+        if (this.failedEvents.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadFailedEventsTable(this.failedEvents);
         }
         this.logger.info(ffhSeletor);

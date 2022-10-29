@@ -24,7 +24,7 @@
       <ng-container matColumnDef="in_channel_alias">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>In Channel</th>
         <td mat-cell *matCellDef="let fhEvent">
-          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{fhEvent?.in_channel_alias}}</span>
           </div>          
         </td>
@@ -36,7 +36,7 @@
       <ng-container matColumnDef="out_channel_alias">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Out Channel</th>
         <td mat-cell *matCellDef="let fhEvent">
-          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{fhEvent?.out_channel_alias}}</span>
           </div>          
         </td>
@@ -44,7 +44,7 @@
       <ng-container matColumnDef="payment_hash">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Hash</th>
         <td mat-cell *matCellDef="let fhEvent">
-          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{fhEvent?.payment_hash}}</span>
           </div>
         </td>

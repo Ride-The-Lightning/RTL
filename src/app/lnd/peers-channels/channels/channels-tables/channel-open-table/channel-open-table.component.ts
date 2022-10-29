@@ -41,6 +41,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public colWidth = '20rem';
   public PAGE_ID = 'peers_channels';
   public tableSetting: TableSetting = { tableId: 'open', recordsPerPage: PAGE_SIZE, sortBy: 'balancedness', sortOrder: SortOrderEnum.DESCENDING };
   public timeUnit = 'mins:secs';
@@ -101,6 +102,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
         this.displayedColumns.unshift('active');
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(peers).pipe(takeUntil(this.unSubs[3])).

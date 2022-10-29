@@ -40,6 +40,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   @ViewChild('sendPaymentForm', { static: false }) form;
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public colWidth = '20rem';
   public PAGE_ID = 'transactions';
   public tableSetting: TableSetting = { tableId: 'payments', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING };
   public faHistory = faHistory;
@@ -92,6 +93,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         this.mppColumns = [];
         this.displayedColumns.map((col) => this.mppColumns.push('group_' + col));
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
         this.logger.info(this.mppColumns);
       });
@@ -103,7 +105,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.paymentJSONArr = paymentsSeletor.payments || [];
-        if (this.paymentJSONArr.length && this.paymentJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
+        if (this.paymentJSONArr.length && this.paymentJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadPaymentsTable(this.paymentJSONArr);
         }
         this.logger.info(paymentsSeletor);
@@ -111,7 +113,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngAfterViewInit() {
-    if (this.paymentJSONArr.length && this.paymentJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
+    if (this.paymentJSONArr.length && this.paymentJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
       this.loadPaymentsTable(this.paymentJSONArr);
     }
   }

@@ -16,7 +16,7 @@
       <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>      
       <table mat-table #table fxFlex="100" [dataSource]="offers" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="active">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header matTooltip="Active" matTooltipPosition="right"></th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" matTooltip="Active" matTooltipPosition="right"></th>
           <td mat-cell *matCellDef="let offer">
             <span *ngIf="offer.active" class="dot green" matTooltip="Active" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
             <span *ngIf="!offer.active" class="dot red" matTooltip="Inactive" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
@@ -25,7 +25,7 @@
         <ng-container matColumnDef="offer_id">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Offer ID </th>
           <td mat-cell *matCellDef="let offer">
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '50rem'}">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">
                 {{offer.offer_id}}
               </span>
@@ -45,7 +45,7 @@
         <ng-container matColumnDef="bolt12">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Invoice </th>
           <td mat-cell *matCellDef="let offer">
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '50rem'}">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">
                 {{offer.bolt12}}
               </span>

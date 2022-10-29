@@ -30,7 +30,7 @@
       <ng-container matColumnDef="in_channel_alias">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>In Channel</th>
         <td mat-cell *matCellDef="let fhEvent">
-          <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+          <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{fhEvent?.in_channel_alias}}</span>
           </span>
         </td>
@@ -42,7 +42,7 @@
       <ng-container matColumnDef="out_channel_alias">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Out Channel</th>
         <td mat-cell *matCellDef="let fhEvent">
-          <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+          <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{fhEvent?.out_channel_alias}}</span>
           </span>          
         </td>

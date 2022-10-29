@@ -190,8 +190,19 @@
     thead tr th {
       color: $foreground-base;
     }
-  thead tr th:not(:first-of-type), tbody tr td:not(:first-of-type) {
+    thead tr th:not(:first-of-type), tbody tr td:not(:first-of-type) {
       padding-left: 1rem;
+    }
+    tbody tr td.mat-cell {
+      @include for_screensize(tab-land) {
+        white-space: unset;
+      }
+      @include for_screensize(tab-port) {
+        white-space: unset;
+      }
+      @include for_screensize(phone) {
+        white-space: unset;
+      }
     }
     &.error-border {
       border: 1px solid red;
@@ -281,9 +292,9 @@
   .table-actions-select {
     padding: 0.5rem 1rem;
     margin: 0.9rem 0;
-    min-width: 10rem;
     min-height: 3.6rem;
-    width: 10rem;
+    min-width: 9rem;
+    width: 9rem;
     float: right;
     & .mat-select-placeholder {
       color: $foreground-text;
@@ -291,8 +302,8 @@
   }
 
   .table-actions-button {
-    min-width: 10rem;
-    width: 10rem;
+    min-width: 9rem;
+    width: 9rem;
   }
 
   .mat-select-panel .mat-option.mat-active {

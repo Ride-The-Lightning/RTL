@@ -40,6 +40,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   faHistory = faHistory;
+  public colWidth = '20rem';
   public PAGE_ID = 'transactions';
   public tableSetting: TableSetting = { tableId: 'invoices', recordsPerPage: PAGE_SIZE, sortBy: 'expires_at', sortOrder: SortOrderEnum.DESCENDING };
   public selNode: SelNodeChild | null = {};
@@ -93,6 +94,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
         this.displayedColumns.unshift('status');
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(listInvoices).pipe(takeUntil(this.unSubs[3])).
@@ -103,7 +105,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.invoiceJSONArr = invoicesSeletor.listInvoices.invoices || [];
-        if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
+        if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadInvoicesTable(this.invoiceJSONArr);
         }
         this.logger.info(invoicesSeletor);
@@ -120,7 +122,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
   }
 
   ngAfterViewInit() {
-    if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
+    if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
       this.loadInvoicesTable(this.invoiceJSONArr);
     }
   }

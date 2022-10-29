@@ -1,20 +1,3 @@
-.mat-column-id, .mat-column-recipientNodeAlias,
-.mat-column-recipientNodeId, .mat-column-description,
-.mat-column-paymentHash, .mat-column-paymentPreimage,
-.mat-column-group_id, .mat-column-group_recipientNodeId,
-.mat-column-group_recipientNodeAlias, .mat-column-group_recipientAmount,
-.mat-column-group_description, .mat-column-group_paymentHash, .mat-column-group_paymentPreimage {
-  flex: 0 0 20%;
-  width: 20%;
-  & .ellipsis-parent {
-    display: flex;
-  }
-}
-
-.mat-column-actions {
-  min-height: 4.8rem;
-}
-
 .mat-column-group_actions {
   min-height: 4.8rem;
 
@@ -40,9 +23,6 @@
   min-height: 4.2rem;
   place-content: center flex-start;
   align-items: center;
-  &.ellipsis-parent {
-    display: flex;
-  }
 }
 
 .mat-column-group_firstPartTimestamp {

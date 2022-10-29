@@ -38,6 +38,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
   @Input() isDustUTXO = false;
   public faMoneyBillWave = faMoneyBillWave;
   public DUST_AMOUNT = 1000;
+  public colWidth = '20rem';
   public PAGE_ID = 'on_chain';
   public tableSetting: TableSetting = { tableId: 'utxos', recordsPerPage: PAGE_SIZE, sortBy: 'tx_id', sortOrder: SortOrderEnum.DESCENDING };
   public utxos: UTXO[];
@@ -78,6 +79,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
         }
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(utxos).pipe(takeUntil(this.unSubs[1])).

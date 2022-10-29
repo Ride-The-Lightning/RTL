@@ -18,7 +18,7 @@
       <ng-container matColumnDef="alias">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Alias </th>
         <td mat-cell *matCellDef="let channel">
-          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '22rem'}">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{channel?.alias}}</span>
           </div>
         </td>
@@ -26,7 +26,7 @@
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Id </th>
         <td mat-cell *matCellDef="let channel">
-          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '22rem'}">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{channel?.id}}</span>
           </div>
         </td>
@@ -34,7 +34,7 @@
       <ng-container matColumnDef="channel_id">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel Id </th>
         <td mat-cell *matCellDef="let channel">
-          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '22rem'}">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{channel?.channel_id}}</span>
           </div>
         </td>
@@ -42,7 +42,7 @@
       <ng-container matColumnDef="funding_txid">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Funding Transaction Id </th>
         <td mat-cell *matCellDef="let channel">
-          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '22rem'}">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{channel?.funding_txid}}</span>
           </div>
         </td>
@@ -53,7 +53,7 @@
       </ng-container>
       <ng-container matColumnDef="state">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> State </th>
-        <td mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '22rem'}"> {{CLNChannelPendingState[channel?.state]}} </td>
+        <td mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}"> {{CLNChannelPendingState[channel?.state]}} </td>
       </ng-container>
       <ng-container matColumnDef="our_channel_reserve_satoshis">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Local Reserve (Sats) </th>

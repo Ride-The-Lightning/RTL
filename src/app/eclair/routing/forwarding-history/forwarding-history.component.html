@@ -10,7 +10,7 @@
     <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>    
     <table mat-table #table [dataSource]="forwardingHistoryEvents" fxFlex="100" matSort class="overflow-auto">
       <ng-container matColumnDef="type">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header matTooltip="Type (if not payment relayed)" matTooltipPosition="right"></th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" matTooltip="Type (if not payment relayed)" matTooltipPosition="right"></th>
         <td mat-cell *matCellDef="let fhEvent">
           <span *ngIf="fhEvent?.type !== 'payment-relayed'" class="dot yellow" matTooltip="{{fhEvent?.type | camelcase}}" matTooltipPosition="right" [ngClass]="{'ml-0': screenSize === screenSizeEnum.XS}"></span>
         </td>
@@ -24,7 +24,7 @@
       <ng-container matColumnDef="fromChannelId">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>In Channel Id</th>
         <td mat-cell *matCellDef="let fhEvent">
-          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{fhEvent?.fromChannelId}}</span>
           </div>
         </td>
@@ -36,7 +36,7 @@
       <ng-container matColumnDef="fromChannelAlias">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>In Channel</th>
         <td mat-cell *matCellDef="let fhEvent">
-          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{fhEvent?.fromChannelAlias}}</span>
           </div>
         </td>
@@ -44,7 +44,7 @@
       <ng-container matColumnDef="toChannelId">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Out Channel Id</th>
         <td mat-cell *matCellDef="let fhEvent">
-          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{fhEvent?.toChannelId}}</span>
           </div>
         </td>
@@ -56,7 +56,7 @@
       <ng-container matColumnDef="toChannelAlias">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Out Channel</th>
         <td mat-cell *matCellDef="let fhEvent">
-          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{fhEvent?.toChannelAlias}}</span>
           </div>
         </td>
@@ -76,7 +76,7 @@
       <ng-container matColumnDef="paymentHash">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Hash</th>
         <td mat-cell *matCellDef="let fhEvent">
-          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{fhEvent?.paymentHash}}</span>
           </div>
         </td>

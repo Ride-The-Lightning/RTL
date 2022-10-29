@@ -42,6 +42,7 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   faHistory = faHistory;
+  public colWidth = '20rem';
   public PAGE_ID = 'transactions';
   public tableSetting: TableSetting = { tableId: 'offers', recordsPerPage: PAGE_SIZE, sortBy: 'offer_id', sortOrder: SortOrderEnum.DESCENDING };
   public selNode: SelNodeChild | null = {};
@@ -95,6 +96,7 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
         this.displayedColumns.unshift('active');
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(offers).pipe(takeUntil(this.unSubs[3])).

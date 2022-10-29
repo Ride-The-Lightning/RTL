@@ -23,7 +23,7 @@
         <ng-container matColumnDef="claimAddress">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Claim Address </th>
           <td mat-cell *matCellDef="let swap">
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{swap?.claimAddress}}</span>
             </span>
           </td>
@@ -31,7 +31,7 @@
         <ng-container matColumnDef="lockupAddress">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Lockup Address </th>
           <td mat-cell *matCellDef="let swap">
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{swap?.lockupAddress}}</span>
             </span>
           </td>
@@ -51,7 +51,7 @@
         <ng-container matColumnDef="error">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Error </th>
           <td mat-cell *matCellDef="let swap">
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{swap?.error}}</span>
             </span>
           </td>
@@ -59,7 +59,7 @@
         <ng-container matColumnDef="privateKey">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Private Key </th>
           <td mat-cell *matCellDef="let swap">
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{swap?.privateKey}}</span>
             </span>
           </td>
@@ -67,7 +67,7 @@
         <ng-container matColumnDef="preimage">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Preimage </th>
           <td mat-cell *matCellDef="let swap">
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{swap?.preimage}}</span>
             </span>
           </td>
@@ -75,7 +75,7 @@
         <ng-container matColumnDef="redeemScript">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Redeem Script </th>
           <td mat-cell *matCellDef="let swap">
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{swap?.redeemScript}}</span>
             </span>
           </td>
@@ -83,7 +83,7 @@
         <ng-container matColumnDef="invoice">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Invoice </th>
           <td mat-cell *matCellDef="let swap">
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{swap?.invoice}}</span>
             </span>
           </td>

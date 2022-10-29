@@ -36,6 +36,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faEye = faEye;
   public faEyeSlash = faEyeSlash;
+  public colWidth = '20rem';
   public PAGE_ID = 'peers_channels';
   public tableSetting: TableSetting = { tableId: 'open_channels', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING };
   public activeChannels: Channel[];
@@ -78,6 +79,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
         this.displayedColumns.unshift('announceChannel');
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[1])).
@@ -88,7 +90,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.activeChannels = allChannelsSelector.activeChannels;
-        if (this.activeChannels.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
+        if (this.activeChannels.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadChannelsTable();
         }
         this.logger.info(allChannelsSelector);
@@ -108,7 +110,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngAfterViewInit() {
-    if (this.activeChannels.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
+    if (this.activeChannels.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
       this.loadChannelsTable();
     }
   }

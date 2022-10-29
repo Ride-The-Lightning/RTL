@@ -14,7 +14,7 @@
           <ng-container matColumnDef="channel_id">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel ID</th>
             <td mat-cell *matCellDef="let rPeer">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '10rem'}">
+              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{rPeer.channel_id}}</span>
               </div>
             </td>
@@ -22,7 +22,7 @@
           <ng-container matColumnDef="alias">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer Alias</th>
             <td mat-cell *matCellDef="let rPeer">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '10rem'}">
+              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{rPeer.alias}}</span>
               </div>
             </td>
@@ -67,7 +67,7 @@
           <ng-container matColumnDef="channel_id">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel ID</th>
             <td mat-cell *matCellDef="let rPeer">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '10rem'}">
+              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{rPeer.channel_id}}</span>
               </div>
             </td>
@@ -75,7 +75,7 @@
           <ng-container matColumnDef="alias">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer Alias</th>
             <td mat-cell *matCellDef="let rPeer">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '10rem'}">
+              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{rPeer.alias}}</span>
               </div>
             </td>

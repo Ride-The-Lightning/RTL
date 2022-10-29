@@ -36,6 +36,7 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   @Input() tableId = 'forwarding_history';
   @Input() eventsData = [];
   @Input() filterValue = '';
+  public colWidth = '20rem';
   public tableSetting: TableSetting = { tableId: 'forwarding_history', recordsPerPage: PAGE_SIZE, sortBy: 'received_time', sortOrder: SortOrderEnum.DESCENDING };
   public successfulEvents: ForwardingEvent[] = [];
   public displayedColumns: any[] = [];
@@ -73,6 +74,7 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
         }
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.pipe(take(1)).subscribe((state) => {
@@ -90,7 +92,7 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
         if (this.eventsData.length <= 0 && fhSeletor.forwardingHistory.listForwards) {
           this.totalForwardedTransactions = fhSeletor.forwardingHistory.totalForwards || 0;
           this.successfulEvents = fhSeletor.forwardingHistory.listForwards || [];
-          if (this.successfulEvents.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
+          if (this.successfulEvents.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
             this.loadForwardingEventsTable(this.successfulEvents);
           }
           this.logger.info(fhSeletor);

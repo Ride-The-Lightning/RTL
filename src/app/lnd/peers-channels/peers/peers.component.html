@@ -18,7 +18,7 @@
         <ng-container matColumnDef="alias">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Alias </th>
           <td mat-cell *matCellDef="let peer">
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '25rem'}">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{peer?.alias}}</span>
             </div>
           </td>
@@ -26,7 +26,7 @@
         <ng-container matColumnDef="pub_key">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Public Key </th>
           <td mat-cell *matCellDef="let peer">
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '25rem'}">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{peer?.pub_key}}</span>
             </div>
           </td>
@@ -34,7 +34,7 @@
         <ng-container matColumnDef="address">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Address </th>
           <td mat-cell *matCellDef="let peer">
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '25rem'}">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{peer?.address}}</span>
             </div>
           </td>

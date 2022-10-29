@@ -1041,7 +1041,7 @@ export const ECL_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
   { pageId: 'on_chain', tables: [
     { tableId: 'transaction', recordsPerPage: PAGE_SIZE, sortBy: 'timestamp', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['timestamp', 'amount'],
-      columnSelection: ['timestamp', 'amount', 'fees', 'confirmations', 'address'] }
+      columnSelection: ['timestamp', 'address', 'amount', 'fees', 'confirmations'] }
   ] },
   { pageId: 'peers_channels', tables: [
     { tableId: 'open_channels', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING,
@@ -1087,7 +1087,7 @@ export const ECL_TABLES_DEF = {
   on_chain: {
     transaction: {
       maxColumns: 6,
-      allowedColumns: ['timestamp', 'amount', 'fees', 'confirmations', 'address', 'blockHash', 'txid']
+      allowedColumns: ['timestamp', 'address', 'blockHash', 'txid', 'amount', 'fees', 'confirmations']
     }
   },
   peers_channels: {

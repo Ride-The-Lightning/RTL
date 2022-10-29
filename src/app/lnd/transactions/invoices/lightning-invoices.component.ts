@@ -45,6 +45,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   public faArrowsTurnRight = faArrowsTurnRight;
   public faBurst = faBurst;
   public faMoneyBill1 = faMoneyBill1;
+  public colWidth = '20rem';
   public PAGE_ID = 'transactions';
   public tableSetting: TableSetting = { tableId: 'invoices', recordsPerPage: PAGE_SIZE, sortBy: 'creation_date', sortOrder: SortOrderEnum.DESCENDING };
   public selNode: SelNodeChild | null = {};
@@ -97,6 +98,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
         this.displayedColumns.unshift('state');
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(invoices).pipe(takeUntil(this.unSubs[3])).
@@ -110,7 +112,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
         this.firstOffset = +(invoicesSelector.listInvoices.first_index_offset || -1);
         this.lastOffset = +(invoicesSelector.listInvoices.last_index_offset || -1);
         this.invoicesData = invoicesSelector.listInvoices.invoices || [];
-        if (this.invoicesData.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
+        if (this.invoicesData.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadInvoicesTable(this.invoicesData);
         }
         this.logger.info(invoicesSelector);

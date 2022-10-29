@@ -29,6 +29,7 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public colWidth = '20rem';
   public PAGE_ID = 'routing';
   public tableSetting: TableSetting = { tableId: 'non_routing_peers', recordsPerPage: PAGE_SIZE, sortBy: 'remote_alias', sortOrder: SortOrderEnum.DESCENDING };
   public routingPeersData: any[] = [];
@@ -66,6 +67,7 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
         }
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[1])).
@@ -80,7 +82,7 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
         } else {
           this.routingPeersData = [];
         }
-        if (this.routingPeersData.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
+        if (this.routingPeersData.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadNonRoutingPeersTable(this.routingPeersData);
         }
         this.logger.info(fhSelector.apiCallStatus);

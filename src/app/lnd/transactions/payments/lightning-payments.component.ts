@@ -41,6 +41,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faHistory = faHistory;
+  public colWidth = '20rem';
   public PAGE_ID = 'transactions';
   public tableSetting: TableSetting = { tableId: 'payments', recordsPerPage: PAGE_SIZE, sortBy: 'creation_date', sortOrder: SortOrderEnum.DESCENDING };
   public newlyAddedPayment = '';
@@ -96,6 +97,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         this.htlcColumns = [];
         this.displayedColumns.map((col) => this.htlcColumns.push('group_' + col));
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(payments).pipe(takeUntil(this.unSubs[5])).
@@ -109,7 +111,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         this.totalPayments = this.paymentJSONArr.length;
         this.firstOffset = +(paymentsSelector.listPayments.first_index_offset || -1);
         this.lastOffset = +(paymentsSelector.listPayments.last_index_offset || -1);
-        if (this.paymentJSONArr && this.paymentJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
+        if (this.paymentJSONArr && this.paymentJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
           // this.loadPaymentsTable(this.paymentJSONArr);
           this.loadPaymentsTable(this.paymentJSONArr.slice(0, this.pageSize));
         }

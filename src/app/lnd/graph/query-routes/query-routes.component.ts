@@ -27,6 +27,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 export class QueryRoutesComponent implements OnInit, OnDestroy {
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
+  public colWidth = '20rem';
   public PAGE_ID = 'graph_lookup';
   public tableSetting: TableSetting = { tableId: 'query_routes', recordsPerPage: PAGE_SIZE, sortBy: 'hop_sequence', sortOrder: SortOrderEnum.ASCENDING };
   public destinationPubkey = '';
@@ -54,6 +55,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
           this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
         }
         this.displayedColumns.push('actions');
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.lndEffects.setQueryRoutes.pipe(takeUntil(this.unSubs[1])).subscribe((queryRoute) => {

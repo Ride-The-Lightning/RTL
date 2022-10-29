@@ -36,7 +36,7 @@
         <ng-container matColumnDef="address">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Address </th>
           <td mat-cell *matCellDef="let transaction">
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '25rem'}">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{transaction?.address}}</span>
             </div>
           </td>
@@ -44,7 +44,7 @@
         <ng-container matColumnDef="blockHash">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Blockhash </th>
           <td mat-cell *matCellDef="let transaction">
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '25rem'}">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{transaction?.blockHash}}</span>
             </div>
           </td>
@@ -52,7 +52,7 @@
         <ng-container matColumnDef="txid">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Transaction Id </th>
           <td mat-cell *matCellDef="let transaction">
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '25rem'}">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{transaction?.txid}}</span>
             </div>
           </td>

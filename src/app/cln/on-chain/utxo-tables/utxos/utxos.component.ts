@@ -32,6 +32,7 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   @Input() numDustUTXOs = 0;
   @Input() isDustUTXO = false;
+  public colWidth = '20rem';
   public PAGE_ID = 'on_chain';
   public tableSetting: TableSetting = { tableId: 'utxos', recordsPerPage: PAGE_SIZE, sortBy: 'status', sortOrder: SortOrderEnum.DESCENDING };
   public displayedColumns: any[] = [];
@@ -71,6 +72,7 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
         this.displayedColumns.unshift('status');
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(utxos).pipe(takeUntil(this.unSubs[1])).
@@ -81,7 +83,7 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.utxos = (this.isDustUTXO) ? utxosSeletor.utxos?.filter((utxo) => +(utxo.value || 0) < 1000) : utxosSeletor.utxos ? utxosSeletor.utxos : [];
-        if (this.utxos && this.utxos.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
+        if (this.utxos && this.utxos.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadUTXOsTable(this.utxos);
         }
         this.logger.info(utxosSeletor);
@@ -89,7 +91,7 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   ngAfterViewInit() {
-    if (this.utxos && this.utxos.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0)  {
+    if (this.utxos && this.utxos.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
       this.loadUTXOsTable(this.utxos);
     }
   }
