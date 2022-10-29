@@ -111,8 +111,9 @@ export const postPayment = (req, res, next) => {
                 if (req.body.description) {
                     offerToUpdate['description'] = req.body.description;
                 }
+                // eslint-disable-next-line arrow-body-style
                 return databaseService.validateDocument(CollectionsEnum.OFFERS, offerToUpdate).then((validated) => {
-                    databaseService.update(req.session.selectedNode, CollectionsEnum.OFFERS, offerToUpdate, CollectionFieldsEnum.BOLT12, req.body.bolt12).then((updatedOffer) => {
+                    return databaseService.update(req.session.selectedNode, CollectionsEnum.OFFERS, offerToUpdate, CollectionFieldsEnum.BOLT12, req.body.bolt12).then((updatedOffer) => {
                         logger.log({ level: 'DEBUG', fileName: 'Payments', msg: 'Offer Updated', data: updatedOffer });
                         return res.status(201).json({ paymentResponse: body, saveToDBResponse: updatedOffer });
                     }).catch((errDB) => {

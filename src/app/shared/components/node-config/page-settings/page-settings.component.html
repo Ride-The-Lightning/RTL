@@ -7,11 +7,11 @@
     <ng-container *ngIf="errorMessage && errorMessage.page === 'unknown'" [ngTemplateOutlet]="errorObjectBlock" [ngTemplateOutletContext]="{error: errorMessage}"></ng-container>
     <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1" [ngClass]="{'error-border': errorMessage?.page === page.pageId}" expanded="true" *ngFor="let page of pageSettings">
       <mat-expansion-panel-header>
-        <mat-panel-title>{{page.pageId | camelcaseWithReplace:'_'}}</mat-panel-title>
+        <mat-panel-title>{{selNode.lnImplementation === 'ECL' ? (page.pageId | camelCaseWithSpaces) : (page.pageId | camelcaseWithReplace:'_')}}</mat-panel-title>
       </mat-expansion-panel-header>
       <div fxLayout="column" fxLayoutAlign="start stretch" *ngFor="let table of page.tables" class="padding-gap-x-large table-setting-row">
         <div fxLayout="row" fxLayoutAlign="space-between center">
-          <span fxFlex="10">{{table.tableId | camelcaseWithReplace:'_'}}:</span>
+          <span fxFlex="10">{{selNode.lnImplementation === 'ECL' ? (table.tableId | camelCaseWithSpaces) : (table.tableId | camelcaseWithReplace:'_')}}:</span>
           <mat-form-field fxFlex="10">
             <mat-select [disabled]="disbalePageSize(page.pageId, table.tableId)" [(ngModel)]="table.recordsPerPage" placeholder="Records/Page" name="{{page.pageId}}{{table.tableId}}-page-size-options" tabindex="2" required>
               <mat-option *ngFor="let pageSizeOption of pageSizeOptions" [value]="pageSizeOption">
@@ -22,7 +22,7 @@
           <mat-form-field fxFlex="10">
             <mat-select [(ngModel)]="table.sortBy" placeholder="Sort By" name="{{page.pageId}}{{table.tableId}}-sort-by" tabindex="3" required>
               <mat-option *ngFor="let field of table.columnSelection" [value]="field">
-                {{field | camelcaseWithReplace:'_'}}
+                {{selNode.lnImplementation === 'ECL' ? (field | camelCaseWithSpaces) : (field | camelcaseWithReplace:'_')}}
               </mat-option>
             </mat-select>
           </mat-form-field>
@@ -36,7 +36,7 @@
           <mat-form-field fxFlex="15">
             <mat-select [(ngModel)]="table.columnSelectionSM" placeholder="Column selection (Mobile)" name="{{page.pageId}}{{table.tableId}}-columns-selection-sm" tabindex="5" multiple required>
               <mat-option *ngFor="let field of tableFieldsDef[page.pageId][table.tableId].allowedColumns" [value]="field" [disabled]="(table.columnSelectionSM.length <= 1 && table.columnSelectionSM.includes(field)) || (table.columnSelectionSM.length >= 3 && !table.columnSelectionSM.includes(field))">
-                {{field | camelcaseWithReplace:'_'}}
+                {{selNode.lnImplementation === 'ECL' ? (field | camelCaseWithSpaces) : (field | camelcaseWithReplace:'_')}}
               </mat-option>
             </mat-select>
             <mat-hint>Column selected (mobile) should be between 1 and 3</mat-hint>
@@ -44,7 +44,7 @@
           <mat-form-field fxFlex="40">
             <mat-select [(ngModel)]="table.columnSelection" (selectionChange)="oncolumnSelectionChange(table)" placeholder="Column selection (Desktop)" name="{{page.pageId}}{{table.tableId}}-columns-selection" tabindex="6" multiple required>
               <mat-option *ngFor="let field of tableFieldsDef[page.pageId][table.tableId].allowedColumns" [value]="field" [disabled]="(table.columnSelection.length <= 2 && table.columnSelection.includes(field)) || (table.columnSelection.length >= tableFieldsDef[page.pageId][table.tableId].maxColumns && !table.columnSelection.includes(field))">
-                  {{field | camelcaseWithReplace:'_'}}
+                  {{selNode.lnImplementation === 'ECL' ? (field | camelCaseWithSpaces) : (field | camelcaseWithReplace:'_')}}
               </mat-option>
             </mat-select>
             <mat-hint>Number of column selected should be between 2 and {{tableFieldsDef[page.pageId][table.tableId].maxColumns}}</mat-hint>

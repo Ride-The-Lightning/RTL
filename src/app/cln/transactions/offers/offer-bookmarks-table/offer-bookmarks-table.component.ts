@@ -7,7 +7,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, PaymentTypes, AlertTypeEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS } from '../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, PaymentTypes, AlertTypeEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, UI_MESSAGES } from '../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 import { OfferBookmark } from '../../../../shared/models/clnModels';
 import { LoggerService } from '../../../../shared/services/logger.service';
@@ -19,7 +19,7 @@ import { openAlert, openConfirmation } from '../../../../store/rtl.actions';
 import { clnPageSettings, offerBookmarks } from '../../../store/cln.selector';
 import { CLNOfferInformationComponent } from '../offer-information-modal/offer-information.component';
 import { CLNLightningSendPaymentsComponent } from '../../send-payment-modal/send-payment.component';
-import { deleteOfferBookmark } from '../../../store/cln.actions';
+import { deleteOfferBookmark, sendPayment } from '../../../store/cln.actions';
 import { PageSettings, TableSetting } from '../../../../shared/models/pageSettings';
 
 @Component({
@@ -82,7 +82,7 @@ export class CLNOfferBookmarksTableComponent implements OnInit, AfterViewInit, O
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.offersBookmarksJSONArr = offerBMsSeletor.offersBookmarks || [];
-        if (this.offersBookmarksJSONArr && this.offersBookmarksJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+        if (this.offersBookmarksJSONArr && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadOffersTable(this.offersBookmarksJSONArr);
         }
         this.logger.info(offerBMsSeletor);
@@ -90,7 +90,7 @@ export class CLNOfferBookmarksTableComponent implements OnInit, AfterViewInit, O
   }
 
   ngAfterViewInit() {
-    if (this.offersBookmarksJSONArr && this.offersBookmarksJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+    if (this.offersBookmarksJSONArr && this.sort && this.paginator && this.displayedColumns.length > 0) {
       this.loadOffersTable(this.offersBookmarksJSONArr);
     }
   }

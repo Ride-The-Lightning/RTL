@@ -23,6 +23,17 @@ export class CamelCasePipe implements PipeTransform {
 }
 
 @Pipe({
+  name: 'camelCaseWithSpaces'
+})
+export class CamelCase implements PipeTransform {
+
+  transform(value: string, arg1?: string, arg2?: string): string {
+    return value.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => (' ' + word.toUpperCase()));
+  }
+
+}
+
+@Pipe({
   name: 'camelcaseWithReplace'
 })
 export class CamelCaseWithReplacePipe implements PipeTransform {
