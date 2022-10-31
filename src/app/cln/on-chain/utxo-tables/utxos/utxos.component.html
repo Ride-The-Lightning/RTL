@@ -10,7 +10,7 @@
       <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table [dataSource]="listUTXOs" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" matTooltip="UTXO Status" matTooltipPosition="right"></th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" matTooltip="UTXO Status"></th>
           <td mat-cell *matCellDef="let utxo">
             <span fxLayout="row" fxLayoutAlign="end center" >
               <span *ngIf="numDustUTXOs > 0 && !isDustUTXO">

@@ -10,7 +10,7 @@
     <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>    
     <table mat-table #table [dataSource]="forwardingHistoryEvents" fxFlex="100" matSort class="overflow-auto">
       <ng-container matColumnDef="type">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" matTooltip="Type (if not payment relayed)" matTooltipPosition="right"></th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" matTooltip="Type (if not payment relayed)"></th>
         <td mat-cell *matCellDef="let fhEvent">
           <span *ngIf="fhEvent?.type !== 'payment-relayed'" class="dot yellow" matTooltip="{{fhEvent?.type | camelcase}}" matTooltipPosition="right" [ngClass]="{'ml-0': screenSize === screenSizeEnum.XS}"></span>
         </td>
