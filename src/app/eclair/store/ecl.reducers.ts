@@ -1,7 +1,9 @@
 import { createReducer, on } from '@ngrx/store';
 
 import { initECLState } from './ecl.state';
-import { addInvoice, removeChannel, removePeer, resetECLStore, setActiveChannels, setChannelsStatus, setChildNodeSettingsECL, setFees, setInactiveChannels, setInfo, setInvoices, setLightningBalance, setOnchainBalance, setPayments, setPeers, setPendingChannels, setTransactions, updateECLAPICallStatus, updateChannelState, updateInvoice, updateRelayedPayment, setPageSettings } from './ecl.actions';
+import { addInvoice, removeChannel, removePeer, resetECLStore, setActiveChannels, setChannelsStatus, setChildNodeSettingsECL,
+  setFees, setInactiveChannels, setInfo, setInvoices, setLightningBalance, setOnchainBalance, setPayments, setPeers, setPendingChannels,
+  setTransactions, updateECLAPICallStatus, updateChannelState, updateInvoice, updateRelayedPayment, setPageSettings } from './ecl.actions';
 import { Channel, PaymentReceived, PaymentRelayed } from '../../shared/models/eclModels';
 import { PageSettings } from '../../shared/models/pageSettings';
 import { ECL_DEFAULT_PAGE_SETTINGS } from '../../shared/services/consts-enums-functions';

@@ -1,7 +1,9 @@
 import { createReducer, on } from '@ngrx/store';
 
 import { initLNDState } from './lnd.state';
-import { addInvoice, removeChannel, removePeer, resetLNDStore, setChannels, setAllLightningTransactions, setBalanceBlockchain, setChildNodeSettingsLND, setClosedChannels, setFees, setForwardingHistory, setInfo, setInvoices, setNetwork, setPayments, setPeers, setPendingChannels, setTransactions, setUTXOs, updateLNDAPICallStatus, updateInvoice, updatePayment, setPageSettings } from './lnd.actions';
+import { addInvoice, removeChannel, removePeer, resetLNDStore, setChannels, setAllLightningTransactions, setBalanceBlockchain,
+  setChildNodeSettingsLND, setClosedChannels, setFees, setForwardingHistory, setInfo, setInvoices, setNetwork, setPayments, setPeers,
+  setPendingChannels, setTransactions, setUTXOs, updateLNDAPICallStatus, updateInvoice, updatePayment, setPageSettings } from './lnd.actions';
 import { Channel, ClosedChannel, SetAllLightningTransactions } from '../../shared/models/lndModels';
 import { PageSettings } from '../../shared/models/pageSettings';
 import { LND_DEFAULT_PAGE_SETTINGS } from '../../shared/services/consts-enums-functions';

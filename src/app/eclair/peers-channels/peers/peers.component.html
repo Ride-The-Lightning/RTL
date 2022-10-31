@@ -33,7 +33,7 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="nodeId">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Node ID </th>
           <td mat-cell *matCellDef="let peer">
             <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{peer?.nodeId}}</span>

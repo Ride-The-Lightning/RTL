@@ -232,7 +232,9 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
     this.invoices.sort = this.sort;
     this.invoices.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.invoices.filterPredicate = (rowData: Invoice, fltr: string) => {
-      const newRowData = this.datePipe.transform(new Date((rowData.paid_at || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase()! + (this.datePipe.transform(new Date((rowData.expires_at || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase()) + ((rowData.bolt12) ? 'bolt12' : (rowData.bolt11) ? 'bolt11' : 'keysend') + JSON.stringify(rowData).toLowerCase();
+      const newRowData = this.datePipe.transform(new Date((rowData.paid_at || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase()! +
+      (this.datePipe.transform(new Date((rowData.expires_at || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase()) +
+      ((rowData.bolt12) ? 'bolt12' : (rowData.bolt11) ? 'bolt11' : 'keysend') + JSON.stringify(rowData).toLowerCase();
       return newRowData.includes(fltr);
     };
     this.invoices.paginator = this.paginator;

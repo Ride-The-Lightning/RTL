@@ -142,7 +142,8 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
       });
     this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[3]),
       withLatestFrom(this.store.select(onchainBalance))).
-      subscribe(([allChannelsSelector, oCBalanceSelector]: [({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload }), ({ onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload })]) => {
+      subscribe(([allChannelsSelector, oCBalanceSelector]: [({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload }),
+        ({ onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload })]) => {
         this.errorMessages[2] = '';
         this.errorMessages[3] = '';
         this.apiCallStatusAllChannels = allChannelsSelector.apiCallStatus;

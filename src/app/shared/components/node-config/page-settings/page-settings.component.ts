@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faPenRuler, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-import { APICallStatusEnum, CLNActions, CLN_DEFAULT_PAGE_SETTINGS, CLN_TABLES_DEF, LNDActions, LND_DEFAULT_PAGE_SETTINGS, LND_TABLES_DEF, ECLActions, ECL_DEFAULT_PAGE_SETTINGS, ECL_TABLES_DEF, PAGE_SIZE_OPTIONS, ScreenSizeEnum, SORT_ORDERS } from '../../../services/consts-enums-functions';
+import { APICallStatusEnum, CLNActions, CLN_DEFAULT_PAGE_SETTINGS, CLN_PAGE_DEFS, LNDActions, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS, ECLActions, ECL_DEFAULT_PAGE_SETTINGS, ECL_PAGE_DEFS, PAGE_SIZE_OPTIONS, ScreenSizeEnum, SORT_ORDERS } from '../../../services/consts-enums-functions';
 import { LoggerService } from '../../../services/logger.service';
 import { CommonService } from '../../../services/common.service';
 import { RTLState } from '../../../../store/rtl.state';
@@ -36,7 +36,7 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
   public pageSettings: PageSettings[] = [];
   public initialPageSettings: PageSettings[] = [];
   public defaultSettings: PageSettings[] = [];
-  public tableFieldsDef = {};
+  public nodePageDefs = {};
   public sortOrders = SORT_ORDERS;
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
@@ -55,7 +55,7 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
         case 'CLN':
           this.initialPageSettings = Object.assign([], CLN_DEFAULT_PAGE_SETTINGS);
           this.defaultSettings = Object.assign([], CLN_DEFAULT_PAGE_SETTINGS);
-          this.tableFieldsDef = CLN_TABLES_DEF;
+          this.nodePageDefs = CLN_PAGE_DEFS;
           this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[1]),
             withLatestFrom(this.store.select(clnNodeSettings))).
             subscribe(([settings, nodeSettings]: [{ pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }, (SelNodeChild | null)]) => {
@@ -94,7 +94,7 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
         case 'ECL':
           this.initialPageSettings = Object.assign([], ECL_DEFAULT_PAGE_SETTINGS);
           this.defaultSettings = Object.assign([], ECL_DEFAULT_PAGE_SETTINGS);
-          this.tableFieldsDef = ECL_TABLES_DEF;
+          this.nodePageDefs = ECL_PAGE_DEFS;
           this.store.select(eclPageSettings).pipe(takeUntil(this.unSubs[1]),
             withLatestFrom(this.store.select(eclNodeSettings))).
             subscribe(([settings, nodeSettings]: [{ pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }, (SelNodeChild | null)]) => {
@@ -122,7 +122,7 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
         default:
           this.initialPageSettings = Object.assign([], LND_DEFAULT_PAGE_SETTINGS);
           this.defaultSettings = Object.assign([], LND_DEFAULT_PAGE_SETTINGS);
-          this.tableFieldsDef = LND_TABLES_DEF;
+          this.nodePageDefs = LND_PAGE_DEFS;
           this.store.select(lndPageSettings).pipe(takeUntil(this.unSubs[1]),
             withLatestFrom(this.store.select(lndNodeSettings))).
             subscribe(([settings, nodeSettings]: [{ pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }, (SelNodeChild | null)]) => {
@@ -163,7 +163,7 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
   }
 
   oncolumnSelectionChange(table: TableSetting) {
-    if (table.columnSelection && !table.columnSelection.includes(table.sortBy)) {
+    if (table.columnSelection && (!table.sortBy || !table.columnSelection.includes(table.sortBy))) {
       table.sortBy = table.columnSelection[0];
     }
   }
@@ -203,15 +203,6 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
       this.errorMessage = null;
       this.pageSettings = JSON.parse(JSON.stringify(this.defaultSettings));
     }
-  }
-
-
-  disbalePageSize(pageId: string, tableId: string) {
-    return (this.selNode.lnImplementation === 'LND' && pageId === 'peers_channels' && tableId === 'pending_open') ||
-    (this.selNode.lnImplementation === 'LND' && pageId === 'peers_channels' && tableId === 'pending_force_closing') ||
-    (this.selNode.lnImplementation === 'LND' && pageId === 'peers_channels' && tableId === 'pending_closing') ||
-    (this.selNode.lnImplementation === 'LND' && pageId === 'peers_channels' && tableId === 'pending_waiting_close') ||
-    (this.selNode.lnImplementation === 'LND' && pageId === 'graph_lookup' && tableId === 'query_routes');
   }
 
   ngOnDestroy() {

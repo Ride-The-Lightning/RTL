@@ -148,7 +148,9 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
         data: {
           type: AlertTypeEnum.CONFIRM,
           alertTitle: 'Force Close Channel',
-          titleMessage: 'Force closing channel: ' + ((!channelToClose.alias && !channelToClose.short_channel_id) ? channelToClose.channel_id : (channelToClose.alias && channelToClose.short_channel_id) ? channelToClose.alias + ' (' + channelToClose.short_channel_id + ')' : channelToClose.alias ? channelToClose.alias : channelToClose.short_channel_id),
+          titleMessage: 'Force closing channel: ' + ((!channelToClose.alias && !channelToClose.short_channel_id) ? channelToClose.channel_id :
+            (channelToClose.alias && channelToClose.short_channel_id) ? channelToClose.alias + ' (' + channelToClose.short_channel_id + ')' :
+              channelToClose.alias ? channelToClose.alias : channelToClose.short_channel_id),
           noBtnText: 'Cancel',
           yesBtnText: 'Force Close'
         }

@@ -60,8 +60,7 @@
           <td mat-cell *matCellDef="let peer"><span fxLayoutAlign="end center"> {{peer?.sat_sent | number}} </span></td>
         </ng-container>
         <ng-container matColumnDef="sat_recv">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">
-            Sats Received </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Sats Received </th>
           <td mat-cell *matCellDef="let peer"><span fxLayoutAlign="end center"> {{peer?.sat_recv | number}} </span></td>
         </ng-container>
         <ng-container matColumnDef="ping_time">

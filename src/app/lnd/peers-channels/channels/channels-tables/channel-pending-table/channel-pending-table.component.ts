@@ -76,7 +76,8 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
         }
         this.displayedOpenColumns.push('actions');
         this.logger.info(this.displayedOpenColumns);
-        this.forceClosingopenTableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.forceClosingopenTableSetting.tableId) || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.forceClosingopenTableSetting.tableId)!;
+        this.forceClosingopenTableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.forceClosingopenTableSetting.tableId) ||
+          LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.forceClosingopenTableSetting.tableId)!;
         if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
           this.displayedForceClosingColumns = JSON.parse(JSON.stringify(this.forceClosingopenTableSetting.columnSelectionSM));
         } else {
@@ -84,7 +85,8 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
         }
         this.displayedForceClosingColumns.push('actions');
         this.logger.info(this.displayedForceClosingColumns);
-        this.closingOpenTableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.closingOpenTableSetting.tableId) || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.closingOpenTableSetting.tableId)!;
+        this.closingOpenTableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.closingOpenTableSetting.tableId) ||
+          LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.closingOpenTableSetting.tableId)!;
         if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
           this.displayedClosingColumns = JSON.parse(JSON.stringify(this.closingOpenTableSetting.columnSelectionSM));
         } else {
@@ -92,7 +94,8 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
         }
         this.displayedClosingColumns.push('actions');
         this.logger.info(this.displayedClosingColumns);
-        this.waitingCloseopenTableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.waitingCloseopenTableSetting.tableId) || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.waitingCloseopenTableSetting.tableId)!;
+        this.waitingCloseopenTableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.waitingCloseopenTableSetting.tableId) ||
+          LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.waitingCloseopenTableSetting.tableId)!;
         if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
           this.displayedWaitClosingColumns = JSON.parse(JSON.stringify(this.waitingCloseopenTableSetting.columnSelectionSM));
         } else {

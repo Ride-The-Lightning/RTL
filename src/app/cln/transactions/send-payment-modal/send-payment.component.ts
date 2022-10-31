@@ -77,7 +77,15 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public isCompatibleVersion = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLNLightningSendPaymentsComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNPaymentInformation, private store: Store<RTLState>, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions, private dataService: DataService) { }
+  constructor(
+    public dialogRef: MatDialogRef<CLNLightningSendPaymentsComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: CLNPaymentInformation,
+    private store: Store<RTLState>,
+    private logger: LoggerService,
+    private commonService: CommonService,
+    private decimalPipe: DecimalPipe,
+    private actions: Actions,
+    private dataService: DataService) { }
 
   ngOnInit() {
     if (this.data && this.data.paymentType) {
@@ -225,7 +233,10 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
         }
       } else {
         if (this.offerAmount) {
-          this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.OFFER, invoice: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, bolt12: this.offerRequest, amount: this.offerAmount * 1000, zeroAmtOffer: this.zeroAmtOffer, title: this.offerTitle, vendor: this.offerVendor, description: this.offerDescription, fromDialog: true } }));
+          this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.OFFER,
+            invoice: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, bolt12: this.offerRequest, amount: this.offerAmount * 1000,
+            zeroAmtOffer: this.zeroAmtOffer, title: this.offerTitle, vendor: this.offerVendor, description: this.offerDescription,
+            fromDialog: true } }));
         }
       }
     }

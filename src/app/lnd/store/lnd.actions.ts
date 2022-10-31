@@ -5,7 +5,9 @@ import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import {
   GetInfo, Peer, NetworkInfo, Fees, Channel, Invoice, ListInvoices, ChannelsTransaction, ClosedChannel, Transaction, SwitchReq,
-  SwitchRes, QueryRoutes, LightningNode, UTXO, ListPayments, SavePeer, SaveInvoice, SaveChannel, CloseChannel, FetchInvoices, FetchPayments, SendPayment, GetNewAddress, GetQueryRoutes, InitWallet, ChannelLookup, SetRestoreChannelsList, NewlyAddedPeer, BlockchainBalance, SetPendingChannels, BackupChannels, SetAllLightningTransactions, Payment
+  SwitchRes, QueryRoutes, LightningNode, UTXO, ListPayments, SavePeer, SaveInvoice, SaveChannel, CloseChannel, FetchInvoices,
+  FetchPayments, SendPayment, GetNewAddress, GetQueryRoutes, InitWallet, ChannelLookup, SetRestoreChannelsList, NewlyAddedPeer,
+  BlockchainBalance, SetPendingChannels, BackupChannels, SetAllLightningTransactions, Payment
 } from '../../shared/models/lndModels';
 import { PageSettings } from '../../shared/models/pageSettings';
 

@@ -47,7 +47,7 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="chan_id">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel ID</th>
         <td mat-cell *matCellDef="let hop">
           <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{hop?.chan_id}}</span>

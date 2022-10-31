@@ -187,7 +187,9 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
           this.myChanPolicy = { fee_base_msat: 0, fee_rate_milli_msat: 0 };
         }
         this.logger.info(this.myChanPolicy);
-        const titleMsg = 'Update fee policy for Channel: ' + ((!channelToUpdate.alias && !channelToUpdate.short_channel_id) ? channelToUpdate.channel_id : (channelToUpdate.alias && channelToUpdate.short_channel_id) ? channelToUpdate.alias + ' (' + channelToUpdate.short_channel_id + ')' : channelToUpdate.alias ? channelToUpdate.alias : channelToUpdate.short_channel_id);
+        const titleMsg = 'Update fee policy for Channel: ' + ((!channelToUpdate.alias && !channelToUpdate.short_channel_id) ?
+          channelToUpdate.channel_id : (channelToUpdate.alias && channelToUpdate.short_channel_id) ? channelToUpdate.alias +
+        ' (' + channelToUpdate.short_channel_id + ')' : channelToUpdate.alias ? channelToUpdate.alias : channelToUpdate.short_channel_id);
         const confirmationMsg = [];
         setTimeout(() => {
           this.store.dispatch(openConfirmation({
@@ -232,7 +234,9 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
         data: {
           type: AlertTypeEnum.CONFIRM,
           alertTitle: 'Close Channel',
-          titleMessage: 'Closing channel: ' + ((!channelToClose.alias && !channelToClose.short_channel_id) ? channelToClose.channel_id : (channelToClose.alias && channelToClose.short_channel_id) ? channelToClose.alias + ' (' + channelToClose.short_channel_id + ')' : channelToClose.alias ? channelToClose.alias : channelToClose.short_channel_id),
+          titleMessage: 'Closing channel: ' + ((!channelToClose.alias && !channelToClose.short_channel_id) ? channelToClose.channel_id :
+            (channelToClose.alias && channelToClose.short_channel_id) ? channelToClose.alias + ' (' + channelToClose.short_channel_id + ')' :
+              channelToClose.alias ? channelToClose.alias : channelToClose.short_channel_id),
           noBtnText: 'Cancel',
           yesBtnText: 'Close Channel'
         }

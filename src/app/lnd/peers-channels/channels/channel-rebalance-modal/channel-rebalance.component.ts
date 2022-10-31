@@ -55,7 +55,15 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   statusFormGroup: FormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ChannelRebalanceComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelRebalanceAlert, private logger: LoggerService, private store: Store<RTLState>, private actions: Actions, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe, private commonService: CommonService) { }
+  constructor(
+    public dialogRef: MatDialogRef<ChannelRebalanceComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: ChannelRebalanceAlert,
+    private logger: LoggerService,
+    private store: Store<RTLState>,
+    private actions: Actions,
+    private formBuilder: FormBuilder,
+    private decimalPipe: DecimalPipe,
+    private commonService: CommonService) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
@@ -156,7 +164,9 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
       case 1:
         if (this.inputFormGroup.controls.rebalanceAmount.value || this.inputFormGroup.controls.selRebalancePeer.value.remote_alias) {
           this.inputFormLabel = 'Rebalancing Amount: ' +
-            (this.decimalPipe.transform(this.inputFormGroup.controls.rebalanceAmount.value ? this.inputFormGroup.controls.rebalanceAmount.value : 0)) + ' Sats | Peer: ' + (this.inputFormGroup.controls.selRebalancePeer.value.remote_alias ? this.inputFormGroup.controls.selRebalancePeer.value.remote_alias : (this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey.substring(0, 15) + '...'));
+            (this.decimalPipe.transform(this.inputFormGroup.controls.rebalanceAmount.value ? this.inputFormGroup.controls.rebalanceAmount.value : 0)) +
+            ' Sats | Peer: ' + (this.inputFormGroup.controls.selRebalancePeer.value.remote_alias ? this.inputFormGroup.controls.selRebalancePeer.value.remote_alias :
+            (this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey.substring(0, 15) + '...'));
         } else {
           this.inputFormLabel = 'Amount to rebalance';
         }
@@ -166,7 +176,9 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
       case 2:
         if (this.inputFormGroup.controls.rebalanceAmount.value || this.inputFormGroup.controls.selRebalancePeer.value.remote_alias) {
           this.inputFormLabel = 'Rebalancing Amount: ' +
-            (this.decimalPipe.transform(this.inputFormGroup.controls.rebalanceAmount.value ? this.inputFormGroup.controls.rebalanceAmount.value : 0)) + ' Sats | Peer: ' + (this.inputFormGroup.controls.selRebalancePeer.value.remote_alias ? this.inputFormGroup.controls.selRebalancePeer.value.remote_alias : (this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey.substring(0, 15) + '...'));
+            (this.decimalPipe.transform(this.inputFormGroup.controls.rebalanceAmount.value ? this.inputFormGroup.controls.rebalanceAmount.value : 0)) +
+            ' Sats | Peer: ' + (this.inputFormGroup.controls.selRebalancePeer.value.remote_alias ? this.inputFormGroup.controls.selRebalancePeer.value.remote_alias :
+            (this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey.substring(0, 15) + '...'));
         } else {
           this.inputFormLabel = 'Amount to rebalance';
         }
@@ -192,7 +204,10 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   }
 
   onRebalance(): boolean | void {
-    if (!this.inputFormGroup.controls.rebalanceAmount.value || this.inputFormGroup.controls.rebalanceAmount.value <= 0 || (this.selChannel.local_balance && this.inputFormGroup.controls.rebalanceAmount.value > +this.selChannel.local_balance) || !this.feeFormGroup.controls.feeLimit.value || this.feeFormGroup.controls.feeLimit.value < 0 || !this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey) {
+    if (!this.inputFormGroup.controls.rebalanceAmount.value || this.inputFormGroup.controls.rebalanceAmount.value <= 0 ||
+      (this.selChannel.local_balance && this.inputFormGroup.controls.rebalanceAmount.value > +this.selChannel.local_balance) ||
+      !this.feeFormGroup.controls.feeLimit.value || this.feeFormGroup.controls.feeLimit.value < 0 ||
+      !this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey) {
       return true;
     }
     this.feeFormGroup.controls.hiddenFeeLimit.setValue(this.feeFormGroup.controls.feeLimit.value);
@@ -224,20 +239,26 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     this.flgInvoiceGenerated = true;
     this.paymentRequest = payReq;
     if (this.feeFormGroup.controls.selFeeLimitType.value.id === 'percent' && !(+this.feeFormGroup.controls.feeLimit.value % 1 === 0)) {
-      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, paymentReq: payReq, outgoingChannel: this.selChannel, feeLimitType: 'fixed', feeLimit: Math.ceil((+this.feeFormGroup.controls.feeLimit.value * +this.inputFormGroup.controls.rebalanceAmount.value) / 100), allowSelfPayment: true, lastHopPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, fromDialog: true } }));
+      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, paymentReq: payReq, outgoingChannel: this.selChannel,
+        feeLimitType: 'fixed', feeLimit: Math.ceil((+this.feeFormGroup.controls.feeLimit.value * +this.inputFormGroup.controls.rebalanceAmount.value) / 100),
+        allowSelfPayment: true, lastHopPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, fromDialog: true } }));
     } else {
-      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, paymentReq: payReq, outgoingChannel: this.selChannel, feeLimitType: this.feeFormGroup.controls.selFeeLimitType.value.id, feeLimit: this.feeFormGroup.controls.feeLimit.value, allowSelfPayment: true, lastHopPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, fromDialog: true } }));
+      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, paymentReq: payReq, outgoingChannel: this.selChannel,
+        feeLimitType: this.feeFormGroup.controls.selFeeLimitType.value.id, feeLimit: this.feeFormGroup.controls.feeLimit.value, allowSelfPayment: true,
+        lastHopPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, fromDialog: true } }));
     }
   }
 
   filterActiveChannels() {
     return this.activeChannels?.filter((channel) => channel.remote_balance && channel.remote_balance >= this.inputFormGroup.controls.rebalanceAmount.value &&
-      channel.chan_id !== this.selChannel.chan_id && ((channel.remote_alias?.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0) || (channel.chan_id?.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0)));
+      channel.chan_id !== this.selChannel.chan_id && ((channel.remote_alias?.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0) ||
+      (channel.chan_id?.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0)));
   }
 
   onSelectedPeerChanged() {
     if (this.inputFormGroup.controls.selRebalancePeer.value && this.inputFormGroup.controls.selRebalancePeer.value.length > 0 && typeof this.inputFormGroup.controls.selRebalancePeer.value === 'string') {
-      const foundChannels = this.activeChannels?.filter((channel) => channel.remote_alias?.length === this.inputFormGroup.controls.selRebalancePeer.value.length && channel.remote_alias?.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0);
+      const foundChannels = this.activeChannels?.filter((channel) => channel.remote_alias?.length === this.inputFormGroup.controls.selRebalancePeer.value.length &&
+        channel.remote_alias?.toLowerCase().indexOf(this.inputFormGroup.controls.selRebalancePeer.value ? this.inputFormGroup.controls.selRebalancePeer.value.toLowerCase() : '') === 0);
       if (foundChannels && foundChannels.length > 0) {
         this.inputFormGroup.controls.selRebalancePeer.setValue(foundChannels[0]);
         this.inputFormGroup.controls.selRebalancePeer.setErrors(null);

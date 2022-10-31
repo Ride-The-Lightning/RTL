@@ -175,7 +175,8 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
     this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.invoices.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.invoices.filterPredicate = (invoice: Invoice, fltr: string) => {
-      const newInvoice = (invoice.creation_date ? this.datePipe.transform(new Date(invoice.creation_date * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '')! + (invoice.settle_date ? this.datePipe.transform(new Date(invoice.settle_date * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(invoice).toLowerCase();
+      const newInvoice = (invoice.creation_date ? this.datePipe.transform(new Date(invoice.creation_date * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '')! +
+      (invoice.settle_date ? this.datePipe.transform(new Date(invoice.settle_date * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(invoice).toLowerCase();
       return newInvoice.includes(fltr);
     };
     this.applyFilter();

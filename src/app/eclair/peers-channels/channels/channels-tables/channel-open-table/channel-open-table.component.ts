@@ -120,7 +120,9 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       return;
     }
     const titleMsg = channelToUpdate === 'all' ? 'Update fee policy for all channels' :
-      ('Update fee policy for Channel: ' + ((!channelToUpdate.alias && !channelToUpdate.shortChannelId) ? channelToUpdate.channelId : (channelToUpdate.alias && channelToUpdate.shortChannelId) ? channelToUpdate.alias + ' (' + channelToUpdate.shortChannelId + ')' : channelToUpdate.alias ? channelToUpdate.alias : channelToUpdate.shortChannelId));
+      ('Update fee policy for Channel: ' + ((!channelToUpdate.alias && !channelToUpdate.shortChannelId) ? channelToUpdate.channelId :
+        (channelToUpdate.alias && channelToUpdate.shortChannelId) ? channelToUpdate.alias + ' (' + channelToUpdate.shortChannelId + ')' :
+          channelToUpdate.alias ? channelToUpdate.alias : channelToUpdate.shortChannelId));
     const confirmationMsg = [];
     this.store.dispatch(openConfirmation({
       payload: {
@@ -183,8 +185,12 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
     const alertTitle = (forceClose) ? 'Force Close Channel' : 'Close Channel';
     const yesBtnText = (forceClose) ? 'Force Close' : 'Close Channel';
     const titleMessage = (forceClose) ?
-      ('Force closing channel: ' + ((!channelToClose.alias && !channelToClose.shortChannelId) ? channelToClose.channelId : (channelToClose.alias && channelToClose.shortChannelId) ? channelToClose.alias + ' (' + channelToClose.shortChannelId + ')' : channelToClose.alias ? channelToClose.alias : channelToClose.shortChannelId)) :
-      ('Closing channel: ' + ((!channelToClose.alias && !channelToClose.shortChannelId) ? channelToClose.channelId : (channelToClose.alias && channelToClose.shortChannelId) ? channelToClose.alias + ' (' + channelToClose.shortChannelId + ')' : channelToClose.alias ? channelToClose.alias : channelToClose.shortChannelId));
+      ('Force closing channel: ' + ((!channelToClose.alias && !channelToClose.shortChannelId) ? channelToClose.channelId :
+        (channelToClose.alias && channelToClose.shortChannelId) ? channelToClose.alias + ' (' + channelToClose.shortChannelId + ')' :
+          channelToClose.alias ? channelToClose.alias : channelToClose.shortChannelId)) : ('Closing channel: ' +
+      ((!channelToClose.alias && !channelToClose.shortChannelId) ? channelToClose.channelId :
+        (channelToClose.alias && channelToClose.shortChannelId) ? channelToClose.alias + ' (' + channelToClose.shortChannelId + ')' :
+          channelToClose.alias ? channelToClose.alias : channelToClose.shortChannelId));
     this.store.dispatch(openConfirmation({
       payload: {
         data: {

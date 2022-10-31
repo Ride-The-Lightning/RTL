@@ -115,8 +115,12 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
     const alertTitle = (forceClose) ? 'Force Close Channel' : 'Close Channel';
     const yesBtnText = (forceClose) ? 'Force Close' : 'Close Channel';
     const titleMessage = (forceClose) ?
-      ('Force closing channel: ' + ((!channelToClose.alias && !channelToClose.shortChannelId) ? channelToClose.channelId : (channelToClose.alias && channelToClose.shortChannelId) ? channelToClose.alias + ' (' + channelToClose.shortChannelId + ')' : channelToClose.alias ? channelToClose.alias : channelToClose.shortChannelId)) :
-      ('Closing channel: ' + ((!channelToClose.alias && !channelToClose.shortChannelId) ? channelToClose.channelId : (channelToClose.alias && channelToClose.shortChannelId) ? channelToClose.alias + ' (' + channelToClose.shortChannelId + ')' : channelToClose.alias ? channelToClose.alias : channelToClose.shortChannelId));
+      ('Force closing channel: ' + ((!channelToClose.alias && !channelToClose.shortChannelId) ? channelToClose.channelId :
+        (channelToClose.alias && channelToClose.shortChannelId) ? channelToClose.alias + ' (' + channelToClose.shortChannelId + ')' :
+          channelToClose.alias ? channelToClose.alias : channelToClose.shortChannelId)) :
+      ('Closing channel: ' + ((!channelToClose.alias && !channelToClose.shortChannelId) ? channelToClose.channelId :
+        (channelToClose.alias && channelToClose.shortChannelId) ? channelToClose.alias + ' (' + channelToClose.shortChannelId + ')' :
+          channelToClose.alias ? channelToClose.alias : channelToClose.shortChannelId));
     this.store.dispatch(openConfirmation({
       payload: {
         data: {

@@ -64,7 +64,9 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
   constructor(private logger: LoggerService, private store: Store<RTLState>, private dataService: DataService, private commonService: CommonService, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe) {
     this.askTooltipMsg = 'Specify the liquidity requirements for your node: \n 1. Channel Amount - Amount in Sats you need on the channel opened to your node \n 2. Channel opening fee rate - Rate in Sats/vByte that you are willing to pay to open the channel to you';
     this.nodesTooltipMsg = 'These nodes are advertising their liquidity offering on the network.\nYou should pay attention to the following aspects to evaluate each node offer: \n- The total bitcoin deployed on the node, the more the better\n';
-    this.nodesTooltipMsg = this.nodesTooltipMsg + '- The number of channels open on the node, the more the better\n- The channel open fee which the node will charge from you\n- The routing fee which the node will charge on the payments, the lesser the better\n- The reliability of the node, ideally uptime. Refer to the information being provided by the node explorers';
+    this.nodesTooltipMsg = this.nodesTooltipMsg + '- The number of channels open on the node, the more the better' +
+    '\n- The channel open fee which the node will charge from you\n- The routing fee which the node will charge on the payments, the lesser the better' +
+    '\n- The reliability of the node, ideally uptime. Refer to the information being provided by the node explorers';
     this.screenSize = this.commonService.getScreenSize();
   }
 
