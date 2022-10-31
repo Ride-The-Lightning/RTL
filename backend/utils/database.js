@@ -197,19 +197,21 @@ export class DatabaseAdapter {
         this.dbFilePath = '';
         this.userSessions = [];
         this.dbFilePath = dbDirectoryPath + sep + 'node-' + selNode.index;
-        const oldFileName = dbDirectoryPath + sep + 'rtldb-node-' + selNode.index + '.json';
-        if (selNode.ln_implementation === 'CLN' && fs.existsSync(oldFileName)) {
-            this.renameOldDB(oldFileName, selNode);
+        // For backward compatibility Start
+        const oldFilePath = dbDirectoryPath + sep + 'rtldb-node-' + selNode.index + '.json';
+        if (selNode.ln_implementation === 'CLN' && fs.existsSync(oldFilePath)) {
+            this.renameOldDB(oldFilePath, selNode);
         }
+        // For backward compatibility End
         this.insertSession(id);
     }
-    renameOldDB(oldFileName, selNode = null) {
-        const newFileName = this.dbFilePath + sep + 'rtldb-' + selNode.ln_implementation + '-Offers.json';
+    renameOldDB(oldFilePath, selNode = null) {
+        const newFilePath = this.dbFilePath + sep + 'rtldb-' + selNode.ln_implementation + '-Offers.json';
         try {
             this.common.createDirectory(this.dbFilePath);
-            const oldOffers = JSON.parse(fs.readFileSync(oldFileName, 'utf-8'));
-            fs.writeFileSync(oldFileName, JSON.stringify(oldOffers.Offers, null, 2));
-            fs.renameSync(oldFileName, newFileName);
+            const oldOffers = JSON.parse(fs.readFileSync(oldFilePath, 'utf-8'));
+            fs.writeFileSync(oldFilePath, JSON.stringify(oldOffers.Offers, null, 2));
+            fs.renameSync(oldFilePath, newFilePath);
         }
         catch (err) {
             this.logger.log({ selectedNode: selNode, level: 'ERROR', fileName: 'Database', msg: 'Rename Old Database Error', error: err });
@@ -224,17 +226,28 @@ export class DatabaseAdapter {
         catch (err) {
             return new Error('Unable to Create Directory Error ' + JSON.stringify(err));
         }
-        const collectionFileName = this.dbFilePath + sep + 'rtldb-' + this.selNode.ln_implementation + '-' + collectionName + '.json';
+        const collectionFilePath = this.dbFilePath + sep + 'rtldb-' + this.selNode.ln_implementation + '-' + collectionName + '.json';
         try {
-            if (!fs.existsSync(collectionFileName)) {
-                fs.writeFileSync(collectionFileName, '[]');
+            if (!fs.existsSync(collectionFilePath)) {
+                fs.writeFileSync(collectionFilePath, '[]');
             }
         }
         catch (err) {
             return new Error('Unable to Create Database File Error ' + JSON.stringify(err));
         }
         try {
-            const dataFromFile = fs.readFileSync(collectionFileName, 'utf-8');
+            const otherFiles = fs.readdirSync(this.dbFilePath);
+            otherFiles.forEach((oFileName) => {
+                if (oFileName.endsWith('.json') && oFileName !== ('rtldb-' + this.selNode.ln_implementation + '-' + collectionName + '.json')) {
+                    fs.renameSync(this.dbFilePath + sep + oFileName, this.dbFilePath + sep + oFileName + '.tmp');
+                }
+            });
+        }
+        catch (err) {
+            this.logger.log({ selectedNode: this.selNode, level: 'ERROR', fileName: 'Database', msg: 'Rename Other Implementation DB Error', error: err });
+        }
+        try {
+            const dataFromFile = fs.readFileSync(collectionFilePath, 'utf-8');
             const dataObj = !dataFromFile ? null : JSON.parse(dataFromFile);
             return dataObj;
         }
@@ -248,10 +261,10 @@ export class DatabaseAdapter {
     saveData(collectionName, collectionData) {
         try {
             if (collectionData) {
-                const collectionFileName = this.dbFilePath + sep + 'rtldb-' + this.selNode.ln_implementation + '-' + collectionName + '.json';
-                const tempFile = collectionFileName + '.tmp';
+                const collectionFilePath = this.dbFilePath + sep + 'rtldb-' + this.selNode.ln_implementation + '-' + collectionName + '.json';
+                const tempFile = collectionFilePath + '.tmp';
                 fs.writeFileSync(tempFile, JSON.stringify(collectionData, null, 2));
-                fs.renameSync(tempFile, collectionFileName);
+                fs.renameSync(tempFile, collectionFilePath);
             }
             return true;
         }
