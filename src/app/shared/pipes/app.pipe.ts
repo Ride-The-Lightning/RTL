@@ -1,4 +1,4 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { NgModule, Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'removeleadingzeros'
@@ -25,7 +25,7 @@ export class CamelCasePipe implements PipeTransform {
 @Pipe({
   name: 'camelCaseWithSpaces'
 })
-export class CamelCase implements PipeTransform {
+export class CamelCaseWithSpacesPipe implements PipeTransform {
 
   transform(value: string, arg1?: string, arg2?: string): string {
     return value.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => (' ' + word.toUpperCase()));
