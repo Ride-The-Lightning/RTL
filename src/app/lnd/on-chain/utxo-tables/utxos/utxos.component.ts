@@ -10,7 +10,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { UTXO } from '../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, WALLET_ADDRESS_TYPE, APICallStatusEnum, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS } from '../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, WALLET_ADDRESS_TYPE, APICallStatusEnum, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS } from '../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
@@ -21,7 +21,8 @@ import { RTLEffects } from '../../../../store/rtl.effects';
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../../store/rtl.actions';
 import { lndPageSettings, utxos } from '../../../store/lnd.selector';
-import { PageSettings, TableSetting } from '../../../../shared/models/pageSettings';
+import { ColumnDefinition, PageSettings, TableSetting } from '../../../../shared/models/pageSettings';
+import { CamelCaseWithReplacePipe } from '../../../../shared/pipes/app.pipe';
 
 @Component({
   selector: 'rtl-on-chain-utxos',
@@ -38,6 +39,8 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
   @Input() isDustUTXO = false;
   public faMoneyBillWave = faMoneyBillWave;
   public DUST_AMOUNT = 1000;
+  public nodePageDefs = LND_PAGE_DEFS;
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'on_chain';
   public tableSetting: TableSetting = { tableId: 'utxos', recordsPerPage: PAGE_SIZE, sortBy: 'tx_id', sortOrder: SortOrderEnum.DESCENDING };
@@ -56,7 +59,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private router: Router) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -108,8 +111,51 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  getLabel(column: string) {
+    const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'All';
+  }
+
   applyFilter() {
     this.listUTXOs.filter = this.selFilter.trim().toLowerCase();
+  }
+
+  setFilterPredicate() {
+    this.listUTXOs.filterPredicate = (utxo: UTXO, fltr: string) => {
+      let newUTXO = '';
+      switch (this.selFilterBy) {
+        case 'all':
+          for (let i = 0; i < this.displayedColumns.length - 1; i++) {
+            newUTXO = newUTXO + (
+              (this.displayedColumns[i] === 'tx_id') ?
+                (utxo.outpoint && utxo.outpoint.txid_str ? utxo.outpoint.txid_str.toLowerCase() : '') :
+                (this.displayedColumns[i] === 'output') ?
+                  (utxo.outpoint && utxo.outpoint.output_index ? utxo.outpoint.output_index.toString() : '0') :
+                  (this.displayedColumns[i] === 'address_type') ?
+                    (utxo.address_type && this.addressType[utxo.address_type] && this.addressType[utxo.address_type].name ? this.addressType[utxo.address_type].name.toLowerCase() : '') :
+                    (utxo[this.displayedColumns[i]] ? utxo[this.displayedColumns[i]].toLowerCase() : '')
+            ) + ', ';
+          }
+          break;
+
+        case 'tx_id':
+          newUTXO = (utxo.outpoint && utxo.outpoint.txid_str ? utxo.outpoint.txid_str.toLowerCase() : '');
+          break;
+
+        case 'output':
+          newUTXO = (utxo.outpoint && utxo.outpoint.output_index ? utxo.outpoint.output_index.toString() : '0');
+          break;
+
+        case 'address_type':
+          newUTXO = (utxo.address_type && this.addressType[utxo.address_type] && this.addressType[utxo.address_type].name ? this.addressType[utxo.address_type].name.toLowerCase() : '');
+          break;
+
+        default:
+          newUTXO = (utxo[this.selFilterBy] ? utxo[this.selFilterBy].toLowerCase() : '');
+          break;
+      }
+      return newUTXO.includes(fltr);
+    };
   }
 
   onUTXOClick(selUTXO: UTXO) {
@@ -146,13 +192,8 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
     };
     this.listUTXOs.sort = this.sort;
     this.listUTXOs.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
-    this.listUTXOs.filterPredicate = (utxo: UTXO, fltr: string) => {
-      const newUTXO = ((utxo.label ? utxo.label.toLowerCase() : '') + (utxo.outpoint?.txid_str ? utxo.outpoint.txid_str.toLowerCase() : '') + (utxo.outpoint?.output_index ? utxo.outpoint?.output_index : '') +
-        (utxo.outpoint?.txid_bytes ? utxo.outpoint?.txid_bytes.toLowerCase() : '') + (utxo.address ? utxo.address.toLowerCase() : '') + (utxo.address_type ? this.addressType[utxo.address_type].name.toLowerCase() : '') +
-        (utxo.amount_sat ? utxo.amount_sat : '') + (utxo.confirmations ? utxo.confirmations : ''));
-      return newUTXO.includes(fltr);
-    };
     this.listUTXOs.paginator = this.paginator;
+    this.setFilterPredicate();
     this.applyFilter();
     this.logger.info(this.listUTXOs);
   }
