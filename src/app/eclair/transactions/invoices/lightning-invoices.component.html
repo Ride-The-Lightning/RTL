@@ -39,19 +39,19 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="timestamp">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Created </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Date Created</th>
           <td mat-cell *matCellDef="let invoice">{{(invoice?.timestamp * 1000) | date:'dd/MMM/y HH:mm'}}</td>
         </ng-container>
         <ng-container matColumnDef="expiresAt">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Expiry </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Date Expiry</th>
           <td mat-cell *matCellDef="let invoice">{{((invoice?.expiresAt * 1000) | date:'dd/MMM/y HH:mm') || '-'}}</td>
         </ng-container>
         <ng-container matColumnDef="receivedAt">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Settled </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Date Settled</th>
           <td mat-cell *matCellDef="let invoice">{{((invoice?.receivedAt * 1000) | date:'dd/MMM/y HH:mm') || '-'}}</td>
         </ng-container>
         <ng-container matColumnDef="nodeId">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Node ID </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Node ID</th>
           <td mat-cell *matCellDef="let invoice">
             <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{invoice?.nodeId}}</span>
@@ -59,7 +59,7 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="description">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
           <td mat-cell *matCellDef="let invoice">
             <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{invoice?.description}}</span>
@@ -67,7 +67,7 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="paymentHash">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Payment Hash </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Hash</th>
           <td mat-cell *matCellDef="let invoice">
             <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{invoice?.paymentHash}}</span>
@@ -75,15 +75,15 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="amount">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Amount (Sats) </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Amount (Sats)</th>
           <td mat-cell *matCellDef="let invoice">
-            <span fxLayoutAlign="end center"> {{invoice?.amount ? (invoice?.amount | number:'1.0-0') : '-'}}</span>
+            <span fxLayoutAlign="end center">{{invoice?.amount ? (invoice?.amount | number:'1.0-0') : '-'}}</span>
           </td>
         </ng-container>
         <ng-container matColumnDef="amountSettled">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="p1-3"> Amount Settled (Sats) </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="p1-3"> Amount Settled (Sats)</th>
           <td mat-cell *matCellDef="let invoice">
-            <span fxLayoutAlign="end center"> {{invoice?.amountSettled ? (invoice?.amountSettled | number:'1.0-0') : '-'}}</span>
+            <span fxLayoutAlign="end center">{{invoice?.amountSettled ? (invoice?.amountSettled | number:'1.0-0') : '-'}}</span>
           </td>
         </ng-container>
         <ng-container matColumnDef="actions">
@@ -94,7 +94,7 @@
                 <mat-option (click)="onDownloadCSV()">Download CSV</mat-option>
               </mat-select>
             </div>
-          </th>
+         </th>
           <td mat-cell *matCellDef="let invoice" fxLayoutAlign="end center">
             <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="4" class="mr-0">

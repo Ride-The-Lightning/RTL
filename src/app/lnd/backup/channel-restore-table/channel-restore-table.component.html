@@ -22,7 +22,7 @@
     <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
     <table mat-table #table [dataSource]="channels" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
       <ng-container matColumnDef="channel_point">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel Point </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel Point</th>
         <td mat-cell *matCellDef="let channel">
           <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '25rem' : '60rem'}">
             <span class="ellipsis-child">{{channel?.channel_point}}</span>
@@ -32,7 +32,7 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>          
-        </th>
+       </th>
         <td mat-cell *matCellDef="let channel">
           <span fxLayoutAlign="end center">
             <button mat-stroked-button color="primary" type="button" tabindex="1" (click)="onRestoreChannels(channel)">Restore</button>          

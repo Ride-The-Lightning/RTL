@@ -10,7 +10,7 @@
         <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
         <table mat-table #table fxFlex="100" [dataSource]="pendingOpenChannels" matSort [ngClass]="{'error-border bordered-box': errorMessage !== '','bordered-box': true}">
           <ng-container matColumnDef="remote_alias">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Peer </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer</th>
             <td mat-cell *matCellDef="let channel">
               <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.remote_alias}}</span>
@@ -18,7 +18,7 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="remote_node_pub">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Pubkey </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Pubkey</th>
             <td mat-cell *matCellDef="let channel">
               <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.remote_node_pub}}</span>
@@ -26,7 +26,7 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="channel_point">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel Point</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel Point</th>
             <td mat-cell *matCellDef="let channel">
               <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.channel_point}}</span>
@@ -34,23 +34,23 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="initiator">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Initiator </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Initiator</th>
             <td mat-cell *matCellDef="let channel">{{channel.channel.initiator | camelcaseWithReplace:'initiator_'}}</td>
           </ng-container>
           <ng-container matColumnDef="commitment_type">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Commitment Type </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Commitment Type</th>
             <td mat-cell *matCellDef="let channel">{{channel.channel.commitment_type | camelcaseWithReplace:'commitment_type':'_'}}</td>
           </ng-container>
           <ng-container matColumnDef="confirmation_height">
             <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Confirmation Height</th>
-            <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center"> {{channel.confirmation_height | number}}</span></td>
+            <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.confirmation_height | number}}</span></td>
           </ng-container>
           <ng-container matColumnDef="commit_fee">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Commit Fee (Sats) </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Commit Fee (Sats)</th>
             <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.commit_fee | number}}</span></td>
           </ng-container>
           <ng-container matColumnDef="commit_weight">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Commit Weight </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Commit Weight</th>
             <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.commit_weight | number}}</span></td>
           </ng-container>
           <ng-container matColumnDef="fee_per_kw">
@@ -72,7 +72,7 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>
               <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>
-            </th>
+           </th>
             <td mat-cell fxLayoutAlign="end center" *matCellDef="let channel">
               <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
                 <mat-select placeholder="Actions" tabindex="1" class="mr-0">
@@ -104,7 +104,7 @@
       <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
         <table mat-table #table [dataSource]="pendingForceClosingChannels" matSort [ngClass]="{'error-border bordered-box': errorMessage !== '','bordered-box': true}">
           <ng-container matColumnDef="closing_txid">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Closing Tx ID </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Closing Tx ID</th>
             <td mat-cell *matCellDef="let channel">
               <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.closing_txid}}</span>
@@ -112,7 +112,7 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="remote_alias">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Peer </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer</th>
             <td mat-cell *matCellDef="let channel">
               <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.remote_alias}}</span>
@@ -120,7 +120,7 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="remote_node_pub">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Pubkey </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Pubkey</th>
             <td mat-cell *matCellDef="let channel">
               <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.remote_node_pub}}</span>
@@ -128,7 +128,7 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="channel_point">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel Point </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel Point</th>
             <td mat-cell *matCellDef="let channel">
               <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.channel_point}}</span>
@@ -136,15 +136,15 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="initiator">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Initiator </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Initiator</th>
             <td mat-cell *matCellDef="let channel">{{channel.channel.initiator | camelcaseWithReplace:'initiator_'}}</td>
           </ng-container>
           <ng-container matColumnDef="commitment_type">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Commitment Type </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Commitment Type</th>
             <td mat-cell *matCellDef="let channel">{{channel.channel.commitment_type | camelcaseWithReplace:'commitment_type':'_'}}</td>
           </ng-container>
           <ng-container matColumnDef="limbo_balance">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Limbo Balance (Sats) </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Limbo Balance (Sats)</th>
             <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.limbo_balance | number}}</span></td>
           </ng-container>
           <ng-container matColumnDef="maturity_height">
@@ -156,11 +156,11 @@
             <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.blocks_til_maturity | number}}</span></td>
           </ng-container>
           <ng-container matColumnDef="recovered_balance">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Recovered Balance (Sats) </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Recovered Balance (Sats)</th>
             <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.recovered_balance | number}}</span></td>
           </ng-container>
           <ng-container matColumnDef="capacity">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Capacity (Sats) </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Capacity (Sats)</th>
             <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.channel.capacity | number}}</span></td>
           </ng-container>
           <ng-container matColumnDef="local_balance">
@@ -174,7 +174,7 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>
               <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>
-            </th>
+           </th>
             <td mat-cell fxLayoutAlign="end center" *matCellDef="let channel">
               <button mat-stroked-button color="primary" type="button" tabindex="2" (click)="onForceClosingClick(channel)" class="table-actions-button">View Info</button>          
             </td>
@@ -200,7 +200,7 @@
       <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
         <table mat-table #table [dataSource]="pendingClosingChannels" matSort [ngClass]="{'error-border bordered-box': errorMessage !== '','bordered-box': true}">
           <ng-container matColumnDef="closing_txid">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Closing Tx ID </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Closing Tx ID</th>
             <td mat-cell *matCellDef="let channel">
               <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.closing_txid}}</span>
@@ -208,7 +208,7 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="remote_alias">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Peer </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer</th>
             <td mat-cell *matCellDef="let channel">
               <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.remote_alias}}</span>
@@ -216,7 +216,7 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="remote_node_pub">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Pubkey </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Pubkey</th>
             <td mat-cell *matCellDef="let channel">
               <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.remote_node_pub}}</span>
@@ -224,7 +224,7 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="channel_point">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel Point</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel Point</th>
             <td mat-cell *matCellDef="let channel">
               <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.channel_point}}</span>
@@ -232,15 +232,15 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="initiator">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Initiator </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Initiator</th>
             <td mat-cell *matCellDef="let channel">{{channel.channel.initiator | camelcaseWithReplace:'initiator_'}}</td>
           </ng-container>
           <ng-container matColumnDef="commitment_type">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Commitment Type </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Commitment Type</th>
             <td mat-cell *matCellDef="let channel">{{channel.channel.commitment_type | camelcaseWithReplace:'commitment_type':'_'}}</td>
           </ng-container>
           <ng-container matColumnDef="capacity">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Capacity (Sats) </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Capacity (Sats)</th>
             <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.channel.capacity | number}}</span></td>
           </ng-container>
           <ng-container matColumnDef="local_balance">
@@ -254,7 +254,7 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>
               <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>
-            </th>
+           </th>
             <td mat-cell fxLayoutAlign="end center" *matCellDef="let channel">
               <button mat-stroked-button color="primary" type="button" tabindex="3" (click)="onClosingClick(channel)" class="table-actions-button">View Info</button>          
             </td>
@@ -280,7 +280,7 @@
       <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
         <table mat-table #table [dataSource]="pendingWaitClosingChannels" matSort [ngClass]="{'error-border bordered-box': errorMessage !== '','bordered-box': true}">
           <ng-container matColumnDef="remote_alias">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Peer </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer</th>
             <td mat-cell *matCellDef="let channel">
               <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.remote_alias}}</span>
@@ -288,7 +288,7 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="remote_node_pub">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Pubkey </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Pubkey</th>
             <td mat-cell *matCellDef="let channel">
               <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.remote_node_pub}}</span>
@@ -296,7 +296,7 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="channel_point">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel Point</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel Point</th>
             <td mat-cell *matCellDef="let channel">
               <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.channel_point}}</span>
@@ -304,19 +304,19 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="initiator">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Initiator </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Initiator</th>
             <td mat-cell *matCellDef="let channel">{{channel.channel.initiator | camelcaseWithReplace:'initiator_'}}</td>
           </ng-container>
           <ng-container matColumnDef="commitment_type">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Commitment Type </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Commitment Type</th>
             <td mat-cell *matCellDef="let channel">{{channel.channel.commitment_type | camelcaseWithReplace:'commitment_type':'_'}}</td>
           </ng-container>
           <ng-container matColumnDef="limbo_balance">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Limbo Balance (Sats) </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Limbo Balance (Sats)</th>
             <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.limbo_balance | number}}</span></td>
           </ng-container>
           <ng-container matColumnDef="capacity">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Capacity (Sats) </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Capacity (Sats)</th>
             <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.channel.capacity | number}}</span></td>
           </ng-container>
           <ng-container matColumnDef="local_balance">
@@ -330,7 +330,7 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef>
               <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>  
-            </th>
+           </th>
             <td mat-cell fxLayoutAlign="end center" *matCellDef="let channel">
               <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onWaitClosingClick(channel)" class="table-actions-button">View Info</button>          
             </td>

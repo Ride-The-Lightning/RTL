@@ -61,8 +61,6 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit() {
-    // this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-    // this.router.onSameUrlNavigation = 'reload';
     this.tableSetting.tableId = this.isDustUTXO ? 'dust_utxos' : 'utxos';
     this.store.select(lndPageSettings).pipe(takeUntil(this.unSubs[0])).
       subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
@@ -150,8 +148,8 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
     this.listUTXOs.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.listUTXOs.filterPredicate = (utxo: UTXO, fltr: string) => {
       const newUTXO = ((utxo.label ? utxo.label.toLowerCase() : '') + (utxo.outpoint?.txid_str ? utxo.outpoint.txid_str.toLowerCase() : '') + (utxo.outpoint?.output_index ? utxo.outpoint?.output_index : '') +
-        (utxo.outpoint?.txid_bytes ? utxo.outpoint?.txid_bytes.toLowerCase() : '') + (utxo.address ? utxo.address.toLowerCase() : '') + (utxo.address_type ? utxo.address_type.toLowerCase() : '') +
-        (utxo.amount_sat ? utxo.amount_sat : '') + (utxo.confirmations ? utxo.confirmations : '') + (utxo.pk_script ? utxo.pk_script.toLowerCase() : ''));
+        (utxo.outpoint?.txid_bytes ? utxo.outpoint?.txid_bytes.toLowerCase() : '') + (utxo.address ? utxo.address.toLowerCase() : '') + (utxo.address_type ? this.addressType[utxo.address_type].name.toLowerCase() : '') +
+        (utxo.amount_sat ? utxo.amount_sat : '') + (utxo.confirmations ? utxo.confirmations : ''));
       return newUTXO.includes(fltr);
     };
     this.listUTXOs.paginator = this.paginator;
