@@ -117,10 +117,10 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
       { key: 'amountOut', value: selFEvent.amountOut, title: 'Amount Out (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'fromChannelAlias', value: selFEvent.fromChannelAlias, title: 'From Channel Alias', width: 50, type: DataTypeEnum.STRING },
       { key: 'fromShortChannelId', value: selFEvent.fromShortChannelId, title: 'From Short Channel ID', width: 50, type: DataTypeEnum.STRING }],
-      [{ key: 'fromChannelId', value: selFEvent.fromChannelId, title: 'From Channel Id', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'fromChannelId', value: selFEvent.fromChannelId, title: 'From Channel ID', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'toChannelAlias', value: selFEvent.toChannelAlias, title: 'To Channel Alias', width: 50, type: DataTypeEnum.STRING },
       { key: 'toShortChannelId', value: selFEvent.toShortChannelId, title: 'To Short Channel ID', width: 50, type: DataTypeEnum.STRING }],
-      [{ key: 'toChannelId', value: selFEvent.toChannelId, title: 'To Channel Id', width: 100, type: DataTypeEnum.STRING }]
+      [{ key: 'toChannelId', value: selFEvent.toChannelId, title: 'To Channel ID', width: 100, type: DataTypeEnum.STRING }]
     ];
     if (selFEvent.type !== 'payment-relayed') {
       reorderedFHEvent?.unshift([{ key: 'type', value: this.commonService.camelCase(selFEvent.type), title: 'Relay Type', width: 100, type: DataTypeEnum.STRING }]);

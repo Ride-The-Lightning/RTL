@@ -51,7 +51,7 @@
           <td mat-cell *matCellDef="let invoice">{{((invoice?.receivedAt * 1000) | date:'dd/MMM/y HH:mm') || '-'}}</td>
         </ng-container>
         <ng-container matColumnDef="nodeId">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Node Id </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Node ID </th>
           <td mat-cell *matCellDef="let invoice">
             <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{invoice?.nodeId}}</span>

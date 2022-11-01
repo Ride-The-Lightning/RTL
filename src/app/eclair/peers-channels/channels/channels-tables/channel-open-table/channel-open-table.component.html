@@ -20,7 +20,7 @@
         <td mat-cell *matCellDef="let channel">{{channel?.shortChannelId}}</td>
       </ng-container>
       <ng-container matColumnDef="channelId">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel Id </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel ID </th>
         <td mat-cell *matCellDef="let channel">
           <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{channel?.channelId}}</span>
@@ -36,7 +36,7 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="nodeId">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Node Id </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Node ID </th>
         <td mat-cell *matCellDef="let channel">
           <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{channel?.nodeId}}</span>

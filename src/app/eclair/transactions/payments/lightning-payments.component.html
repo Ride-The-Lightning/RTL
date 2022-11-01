@@ -40,7 +40,7 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="recipientNodeId">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Destination Node Id</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Destination Node ID</th>
             <td mat-cell *matCellDef="let payment">
               <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{payment?.recipientNodeId}}</span>
