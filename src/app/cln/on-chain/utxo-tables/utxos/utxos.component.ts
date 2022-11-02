@@ -34,7 +34,7 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
   @Input() numDustUTXOs = 0;
   @Input() isDustUTXO = false;
   public nodePageDefs = CLN_PAGE_DEFS;
-  public selFilterBy = 'all';
+  public selFilterBy = 'All';
   public colWidth = '20rem';
   public PAGE_ID = 'on_chain';
   public tableSetting: TableSetting = { tableId: 'utxos', recordsPerPage: PAGE_SIZE, sortBy: 'status', sortOrder: SortOrderEnum.DESCENDING };
@@ -99,13 +99,33 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
     }
   }
 
+  onUTXOClick(selUtxo: UTXO, event: any) {
+    const reorderedUTXO = [
+      [{ key: 'txid', value: selUtxo.txid, title: 'Transaction ID', width: 100 }],
+      [{ key: 'output', value: selUtxo.output, title: 'Output', width: 50, type: DataTypeEnum.NUMBER },
+      { key: 'value', value: selUtxo.value, title: 'Value (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
+      [{ key: 'status', value: this.commonService.titleCase(selUtxo.status || ''), title: 'Status', width: 50, type: DataTypeEnum.STRING },
+      { key: 'blockheight', value: selUtxo.blockheight, title: 'Blockheight', width: 50, type: DataTypeEnum.NUMBER }],
+      [{ key: 'address', value: selUtxo.address, title: 'Address', width: 100 }]
+    ];
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'UTXO Information',
+          message: reorderedUTXO
+        }
+      }
+    }));
+  }
+
   applyFilter() {
     this.listUTXOs.filter = this.selFilter.trim().toLowerCase();
   }
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'all';
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'All';
   }
 
   setFilterPredicate() {
@@ -113,7 +133,7 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
     // this.listUTXOs.filterPredicate = (rowData: UTXO, fltr: string) => {
     //   let rowToFilter = '';
     //   switch (this.selFilterBy) {
-    //     case 'all':
+    //     case 'All':
     //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
     //         rowToFilter = rowToFilter + (
     //           (this.displayedColumns[i] === '') ?
@@ -133,26 +153,6 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
     //   }
     //   return rowToFilter.includes(fltr);
     // };
-  }
-
-  onUTXOClick(selUtxo: UTXO, event: any) {
-    const reorderedUTXO = [
-      [{ key: 'txid', value: selUtxo.txid, title: 'Transaction ID', width: 100 }],
-      [{ key: 'output', value: selUtxo.output, title: 'Output', width: 50, type: DataTypeEnum.NUMBER },
-      { key: 'value', value: selUtxo.value, title: 'Value (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
-      [{ key: 'status', value: this.commonService.titleCase(selUtxo.status || ''), title: 'Status', width: 50, type: DataTypeEnum.STRING },
-      { key: 'blockheight', value: selUtxo.blockheight, title: 'Blockheight', width: 50, type: DataTypeEnum.NUMBER }],
-      [{ key: 'address', value: selUtxo.address, title: 'Address', width: 100 }]
-    ];
-    this.store.dispatch(openAlert({
-      payload: {
-        data: {
-          type: AlertTypeEnum.INFORMATION,
-          alertTitle: 'UTXO Information',
-          message: reorderedUTXO
-        }
-      }
-    }));
   }
 
   loadUTXOsTable(utxos: any[]) {

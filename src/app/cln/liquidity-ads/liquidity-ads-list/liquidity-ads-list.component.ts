@@ -36,7 +36,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public nodePageDefs = CLN_PAGE_DEFS;
-  public selFilterBy = 'all';
+  public selFilterBy = 'All';
   public colWidth = '20rem';
   public PAGE_ID = 'liquidity_ads';
   public tableSetting: TableSetting = { tableId: 'liquidity_ads', recordsPerPage: PAGE_SIZE, sortBy: 'channel_opening_fee', sortOrder: SortOrderEnum.ASCENDING };
@@ -140,7 +140,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'all';
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'All';
   }
 
   setFilterPredicate() {
@@ -154,7 +154,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
     // this.liquidityNodes.filterPredicate = (rowData: LookupNode, fltr: string) => {
     //   let rowToFilter = '';
     //   switch (this.selFilterBy) {
-    //     case 'all':
+    //     case 'All':
     //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
     //         rowToFilter = rowToFilter + (
     //           (this.displayedColumns[i] === '') ?

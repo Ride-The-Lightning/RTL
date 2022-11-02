@@ -31,7 +31,7 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public nodePageDefs = LND_PAGE_DEFS;
-  public selFilterBy = 'all';
+  public selFilterBy = 'All';
   public colWidth = '20rem';
   public PAGE_ID = 'routing';
   public tableSetting: TableSetting = { tableId: 'non_routing_peers', recordsPerPage: PAGE_SIZE, sortBy: 'remote_alias', sortOrder: SortOrderEnum.DESCENDING };
@@ -195,7 +195,7 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'all';
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'All';
   }
 
   setFilterPredicate() {
@@ -203,7 +203,7 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
     // this.peers.filterPredicate = (rowData: Peer, fltr: string) => {
     //   let rowToFilter = '';
     //   switch (this.selFilterBy) {
-    //     case 'all':
+    //     case 'All':
     //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
     //         rowToFilter = rowToFilter + (
     //           (this.displayedColumns[i] === '') ?

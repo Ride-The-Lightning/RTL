@@ -35,8 +35,8 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
   @Input() eventsData = [];
   @Input() selFilter = '';
   public nodePageDefs = CLN_PAGE_DEFS;
-  public selFilterByIn = 'all';
-  public selFilterByOut = 'all';
+  public selFilterByIn = 'All';
+  public selFilterByOut = 'All';
   public colWidth = '20rem';
   public PAGE_ID = 'routing';
   public tableSetting: TableSetting = { tableId: 'routing_peers', recordsPerPage: PAGE_SIZE, sortBy: 'total_fee', sortOrder: SortOrderEnum.DESCENDING };
@@ -116,17 +116,17 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
     }
   }
 
-  applyIncomingFilter() {
+  applyFilterIncoming() {
     this.routingPeersIncoming.filter = this.filterIn.toLowerCase();
   }
 
-  applyOutgoingFilter() {
+  applyFilterOutgoing() {
     this.routingPeersOutgoing.filter = this.filterOut.toLowerCase();
   }
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'all';
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'All';
   }
 
   setFilterPredicate() {
@@ -135,7 +135,7 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
     // this.routingPeersIncoming.filterPredicate = (rowData: RoutingPeer, fltr: string) => {
     //   let rowToFilter = '';
     //   switch (this.selFilterBy) {
-    //     case 'all':
+    //     case 'All':
     //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
     //         rowToFilter = rowToFilter + (
     //           (this.displayedColumns[i] === '') ?
@@ -176,8 +176,8 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
       this.routingPeersOutgoing = new MatTableDataSource<RoutingPeer>([]);
     }
     this.setFilterPredicate();
-    this.applyIncomingFilter();
-    this.applyOutgoingFilter();
+    this.applyFilterIncoming();
+    this.applyFilterOutgoing();
     this.logger.info(this.routingPeersIncoming);
     this.logger.info(this.routingPeersOutgoing);
   }

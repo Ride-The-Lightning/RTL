@@ -36,7 +36,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   @Input() eventsData: PaymentRelayed[] = [];
   @Input() selFilter = '';
   public nodePageDefs = ECL_PAGE_DEFS;
-  public selFilterBy = 'all';
+  public selFilterBy = 'All';
   public colWidth = '20rem';
   public tableSetting: TableSetting = { tableId: 'forwarding_history', recordsPerPage: PAGE_SIZE, sortBy: 'timestamp', sortOrder: SortOrderEnum.DESCENDING };
   public displayedColumns: any[] = [];
@@ -147,7 +147,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.pageId][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'all';
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'All';
   }
 
   setFilterPredicate() {
@@ -158,7 +158,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
     // this.forwardingHistoryEvents.filterPredicate = (rowData: PaymentRelayed, fltr: string) => {
     //   let rowToFilter = '';
     //   switch (this.selFilterBy) {
-    //     case 'all':
+    //     case 'All':
     //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
     //         rowToFilter = rowToFilter + (
     //           (this.displayedColumns[i] === '') ?

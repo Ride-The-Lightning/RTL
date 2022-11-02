@@ -6,12 +6,12 @@
         <div fxFlex="70">Incoming</div>
         <div fxFlex="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
           <mat-form-field fxFlex="49">
-            <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterByIn" (selectionChange)="selFilterIn=''; applyIncomingFilter()" name="filterByIn">
-              <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
+            <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterByIn" (selectionChange)="selFilterIn=''; applyFilterIncoming()" name="filterByIn">
+              <mat-option *ngFor="let column of ['All'].concat(displayedColumns)" [value]="column">{{getLabel(column)}}</mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field fxFlex="49">
-            <input matInput [(ngModel)]="selFilterIn" (input)="applyIncomingFilter()" (keyup)="applyIncomingFilter()" name="filterin" placeholder="Filter">
+            <input matInput [(ngModel)]="selFilterIn" (input)="applyFilterIncoming()" (keyup)="applyFilterIncoming()" name="filterin" placeholder="Filter">
           </mat-form-field>
         </div>
       </div>
@@ -66,12 +66,12 @@
         <div fxFlex="70">Outgoing</div>
         <div fxFlex="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
           <mat-form-field fxFlex="49">
-            <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterByOut" (selectionChange)="selFilterOut=''; applyOutgoingFilter()" name="filterByOut">
-              <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
+            <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterByOut" (selectionChange)="selFilterOut=''; applyFilterOutgoing()" name="filterByOut">
+              <mat-option *ngFor="let column of ['All'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field fxFlex="49">
-            <input matInput [(ngModel)]="selFilterOut" (input)="applyOutgoingFilter()" (keyup)="applyOutgoingFilter()" name="filterout" placeholder="Filter">
+            <input matInput [(ngModel)]="selFilterOut" (input)="applyFilterOutgoing()" (keyup)="applyFilterOutgoing()" name="filterout" placeholder="Filter">
           </mat-form-field>
         </div>
       </div>

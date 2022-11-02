@@ -33,7 +33,7 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public nodePageDefs: any = LND_PAGE_DEFS;
-  public selFilterBy = 'all';
+  public selFilterBy = 'All';
   public timezoneOffset = new Date(Date.now()).getTimezoneOffset() * 60;
   public scrollRanges = SCROLL_RANGES;
   public transactions: any = new MatTableDataSource([]);
@@ -99,7 +99,7 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs['reports'][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'all';
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'All';
   }
 
   setFilterPredicate() {
@@ -110,7 +110,7 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
     // this.transactions.filterPredicate = (rowData: LoopSwapStatus, fltr: string) => {
     //   let rowToFilter = '';
     //   switch (this.selFilterBy) {
-    //     case 'all':
+    //     case 'All':
     //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
     //         rowToFilter = rowToFilter + (
     //           (this.displayedColumns[i] === '') ?

@@ -14,7 +14,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { openAlert } from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
 import { forwardingHistory, lndPageSettings } from '../../store/lnd.selector';
-import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 
 @Component({
@@ -32,8 +32,8 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('paginatorIn', { static: false }) paginatorIn: MatPaginator | undefined;
   @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator | undefined;
   public nodePageDefs = LND_PAGE_DEFS;
-  public selFilterByIn = 'all';
-  public selFilterByOut = 'all';
+  public selFilterByIn = 'All';
+  public selFilterByOut = 'All';
   public colWidth = '20rem';
   public PAGE_ID = 'routing';
   public tableSetting: TableSetting = { tableId: 'routing_peers', recordsPerPage: PAGE_SIZE, sortBy: 'total_amount', sortOrder: SortOrderEnum.DESCENDING };
@@ -124,19 +124,58 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
     }));
   }
 
+  applyFilterIncoming() {
+    this.routingPeersIncoming.filter = this.filterIn.toLowerCase();
+  }
+
+  applyFilterOutgoing() {
+    this.routingPeersOutgoing.filter = this.filterOut.toLowerCase();
+  }
+
+  getLabel(column: string) {
+    const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'All';
+  }
+
+  setFilterPredicate() {
+    this.routingPeersIncoming.filterPredicate = (rpIn: RoutingPeers, fltr: string) => JSON.stringify(rpIn).toLowerCase().includes(fltr);
+    this.routingPeersOutgoing.filterPredicate = (rpOut: RoutingPeers, fltr: string) => JSON.stringify(rpOut).toLowerCase().includes(fltr);
+    // this.routingPeersIncoming.filterPredicate = (rowData: RoutingPeer, fltr: string) => {
+    //   let rowToFilter = '';
+    //   switch (this.selFilterBy) {
+    //     case 'All':
+    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
+    //         rowToFilter = rowToFilter + (
+    //           (this.displayedColumns[i] === '') ?
+    //             (rowData ? rowData..toLowerCase() : '') :
+    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
+    //         ) + ', ';
+    //       }
+    //       break;
+
+    //     case '':
+    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
+    //       break;
+
+    //     default:
+    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
+    //       break;
+    //   }
+    //   return rowToFilter.includes(fltr);
+    // };
+  }
+
   loadRoutingPeersTable(forwardingEvents: ForwardingEvent[]) {
     if (forwardingEvents.length > 0) {
       const results = this.groupRoutingPeers(forwardingEvents);
       this.routingPeersIncoming = new MatTableDataSource<RoutingPeers>(results[0]);
       this.routingPeersIncoming.sort = this.sortIn;
       this.routingPeersIncoming.sort.sort({ id: this.tableSetting.sortBy || 'total_amount', start: this.tableSetting.sortOrder || SortOrderEnum.DESCENDING, disableClear: true });
-      this.routingPeersIncoming.filterPredicate = (rpIn: RoutingPeers, fltr: string) => JSON.stringify(rpIn).toLowerCase().includes(fltr);
       this.routingPeersIncoming.paginator = this.paginatorIn!;
       this.logger.info(this.routingPeersIncoming);
       this.routingPeersOutgoing = new MatTableDataSource<RoutingPeers>(results[1]);
       this.routingPeersOutgoing.sort = this.sortOut;
       this.routingPeersOutgoing.sort.sort({ id: this.tableSetting.sortBy || 'total_amount', start: this.tableSetting.sortOrder || SortOrderEnum.DESCENDING, disableClear: true });
-      this.routingPeersOutgoing.filterPredicate = (rpOut: RoutingPeers, fltr: string) => JSON.stringify(rpOut).toLowerCase().includes(fltr);
       this.routingPeersOutgoing.paginator = this.paginatorOut!;
       this.logger.info(this.routingPeersOutgoing);
     } else {
@@ -144,8 +183,9 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       this.routingPeersIncoming = new MatTableDataSource<RoutingPeers>([]);
       this.routingPeersOutgoing = new MatTableDataSource<RoutingPeers>([]);
     }
-    this.applyIncomingFilter();
-    this.applyOutgoingFilter();
+    this.setFilterPredicate();
+    this.applyFilterIncoming();
+    this.applyFilterOutgoing();
   }
 
   groupRoutingPeers(forwardingEvents: ForwardingEvent[]) {
@@ -168,14 +208,6 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     return [this.commonService.sortDescByKey(incomingResults, 'total_amount'), this.commonService.sortDescByKey(outgoingResults, 'total_amount')];
-  }
-
-  applyIncomingFilter() {
-    this.routingPeersIncoming.filter = this.filterIn.toLowerCase();
-  }
-
-  applyOutgoingFilter() {
-    this.routingPeersOutgoing.filter = this.filterOut.toLowerCase();
   }
 
   ngOnDestroy() {

@@ -121,15 +121,7 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
     this.channels.sort = this.sort;
     this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.channels.paginator = this.paginator;
-    this.channels.filterPredicate = (channel: Channel, fltr: string) => {
-      const newChannel = ((channel.active) ? 'active' : 'inactive') + (channel.channel_point ? channel.channel_point.toLowerCase() : '') + (channel.chan_id ? channel.chan_id.toLowerCase() : '') +
-        (channel.remote_pubkey ? channel.remote_pubkey.toLowerCase() : '') + (channel.remote_alias ? channel.remote_alias.toLowerCase() : '') +
-        (channel.capacity ? channel.capacity : '') + (channel.local_balance ? channel.local_balance : '') +
-        (channel.remote_balance ? channel.remote_balance : '') + (channel.total_satoshis_sent ? channel.total_satoshis_sent : '') +
-        (channel.total_satoshis_received ? channel.total_satoshis_received : '') + (channel.commit_fee ? channel.commit_fee : '') +
-        (channel.private ? 'private' : 'public');
-      return newChannel.includes(fltr);
-    };
+    this.channels.filterPredicate = (channel: Channel, fltr: string) => (channel.channel_point ? channel.channel_point.toLowerCase() : '').includes(fltr);
     this.applyFilter();
   }
 
