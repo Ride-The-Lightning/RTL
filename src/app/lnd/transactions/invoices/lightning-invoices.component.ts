@@ -9,7 +9,7 @@ import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/pag
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES, LNDActions, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS } from '../../../shared/services/consts-enums-functions';
+import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES, LNDActions, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice, ListInvoices } from '../../../shared/models/lndModels';
@@ -23,7 +23,8 @@ import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
 import { fetchInvoices, invoiceLookup, saveNewInvoice } from '../../store/lnd.actions';
 import { invoices, lndNodeInformation, lndNodeSettings, lndPageSettings } from '../../store/lnd.selector';
-import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 
 @Component({
   selector: 'rtl-lightning-invoices',
@@ -45,6 +46,8 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   public faArrowsTurnRight = faArrowsTurnRight;
   public faBurst = faBurst;
   public faMoneyBill1 = faMoneyBill1;
+  public nodePageDefs = LND_PAGE_DEFS;
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'transactions';
   public tableSetting: TableSetting = { tableId: 'invoices', recordsPerPage: PAGE_SIZE, sortBy: 'creation_date', sortOrder: SortOrderEnum.DESCENDING };
@@ -75,7 +78,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private datePipe: DatePipe, private actions: Actions) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private datePipe: DatePipe, private actions: Actions, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -169,16 +172,53 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
     this.invoicesData = this.invoicesData?.map((invoice) => ((invoice.r_hash === newInvoice.r_hash) ? newInvoice : invoice));
   }
 
-  loadInvoicesTable(invoices) {
-    this.invoices = invoices ? new MatTableDataSource<Invoice>([...invoices]) : new MatTableDataSource<Invoice>([]);
-    this.invoices.sort = this.sort;
-    this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    this.invoices.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+
+  applyFilter() {
+    this.invoices.filter = this.selFilter.trim().toLowerCase();
+  }
+
+  getLabel(column: string) {
+    const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'all';
+  }
+
+  setFilterPredicate() {
     this.invoices.filterPredicate = (invoice: Invoice, fltr: string) => {
       const newInvoice = (invoice.creation_date ? this.datePipe.transform(new Date(invoice.creation_date * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '')! +
       (invoice.settle_date ? this.datePipe.transform(new Date(invoice.settle_date * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(invoice).toLowerCase();
       return newInvoice.includes(fltr);
     };
+    // this.invoices.filterPredicate = (rowData: Invoice, fltr: string) => {
+    //   let rowToFilter = '';
+    //   switch (this.selFilterBy) {
+    //     case 'all':
+    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
+    //         rowToFilter = rowToFilter + (
+    //           (this.displayedColumns[i] === '') ?
+    //             (rowData ? rowData..toLowerCase() : '') :
+    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
+    //         ) + ', ';
+    //       }
+    //       break;
+
+    //     case '':
+    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
+    //       break;
+
+    //     default:
+    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
+    //       break;
+    //   }
+    //   return rowToFilter.includes(fltr);
+    // };
+  }
+
+  loadInvoicesTable(invoices) {
+    this.invoices = invoices ? new MatTableDataSource<Invoice>([...invoices]) : new MatTableDataSource<Invoice>([]);
+    this.invoices.sort = this.sort;
+    this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+    this.invoices.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+    this.setFilterPredicate();
     this.applyFilter();
     this.logger.info(this.invoices);
   }
@@ -189,10 +229,6 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
     this.private = false;
     this.expiry = null;
     this.invoiceValueHint = '';
-  }
-
-  applyFilter() {
-    this.invoices.filter = this.selFilter.trim().toLowerCase();
   }
 
   onPageChange(event: PageEvent) {

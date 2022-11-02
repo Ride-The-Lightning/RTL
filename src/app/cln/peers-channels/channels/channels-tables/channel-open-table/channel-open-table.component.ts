@@ -9,7 +9,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Channel, GetInfo, ChannelEdge, Balance } from '../../../../../shared/models/clnModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, FEE_RATE_TYPES, APICallStatusEnum, UI_MESSAGES, CLN_DEFAULT_PAGE_SETTINGS, SortOrderEnum } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, FEE_RATE_TYPES, APICallStatusEnum, UI_MESSAGES, CLN_DEFAULT_PAGE_SETTINGS, SortOrderEnum, CLN_PAGE_DEFS } from '../../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
@@ -22,7 +22,8 @@ import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
 import { channelLookup, closeChannel, updateChannel } from '../../../../store/cln.actions';
 import { channels, clnPageSettings, nodeInfoAndBalanceAndNumPeers } from '../../../../store/cln.selector';
-import { PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
+import { ColumnDefinition, PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
+import { CamelCaseWithReplacePipe } from '../../../../../shared/pipes/app.pipe';
 
 @Component({
   selector: 'rtl-cln-channel-open-table',
@@ -38,6 +39,8 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faEye = faEye;
   public faEyeSlash = faEyeSlash;
+  public nodePageDefs = CLN_PAGE_DEFS;
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'peers_channels';
   public tableSetting: TableSetting = { tableId: 'open_channels', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING };
@@ -59,7 +62,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private clnEffects: CLNEffects, private commonService: CommonService, private router: Router) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private clnEffects: CLNEffects, private commonService: CommonService, private router: Router, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
     this.selFilter = this.router?.getCurrentNavigation()?.extras?.state?.filter ? this.router?.getCurrentNavigation()?.extras?.state?.filter : '';
   }
@@ -251,10 +254,6 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       });
   }
 
-  applyFilter() {
-    this.channels.filter = this.selFilter.trim().toLowerCase();
-  }
-
   onChannelClick(selChannel: Channel, event: any) {
     this.store.dispatch(openAlert({
       payload: {
@@ -267,12 +266,16 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
     }));
   }
 
-  loadChannelsTable(mychannels) {
-    // mychannels.sort((a, b) => ((a.active === b.active) ? 0 : ((b.active) ? 1 : -1)));
-    this.channels = new MatTableDataSource<Channel>([...mychannels]);
-    this.channels.sort = this.sort;
-    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    this.channels.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+  applyFilter() {
+    this.channels.filter = this.selFilter.trim().toLowerCase();
+  }
+
+  getLabel(column: string) {
+    const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'all';
+  }
+
+  setFilterPredicate() {
     this.channels.filterPredicate = (channel: Channel, fltr: string) => {
       const newChannel = ((channel.connected) ? 'connected' : 'disconnected') + (channel.channel_id ? channel.channel_id.toLowerCase() : '') +
         (channel.short_channel_id ? channel.short_channel_id.toLowerCase() : '') + (channel.id ? channel.id.toLowerCase() : '') + (channel.alias ? channel.alias.toLowerCase() : '') +
@@ -282,7 +285,38 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
         (channel.our_channel_reserve_satoshis ? channel.our_channel_reserve_satoshis : '') + (channel.spendable_msatoshi ? channel.spendable_msatoshi : '');
       return newChannel.includes(fltr);
     };
+    // this.invoices.filterPredicate = (rowData: Invoice, fltr: string) => {
+    //   let rowToFilter = '';
+    //   switch (this.selFilterBy) {
+    //     case 'all':
+    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
+    //         rowToFilter = rowToFilter + (
+    //           (this.displayedColumns[i] === '') ?
+    //             (rowData ? rowData..toLowerCase() : '') :
+    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
+    //         ) + ', ';
+    //       }
+    //       break;
+
+    //     case '':
+    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
+    //       break;
+
+    //     default:
+    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
+    //       break;
+    //   }
+    //   return rowToFilter.includes(fltr);
+    // };
+  }
+
+  loadChannelsTable(mychannels) {
+    this.channels = new MatTableDataSource<Channel>([...mychannels]);
+    this.channels.sort = this.sort;
+    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+    this.channels.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.channels.paginator = this.paginator;
+    this.setFilterPredicate();
     this.applyFilter();
     this.logger.info(this.channels);
   }

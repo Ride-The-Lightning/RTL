@@ -9,7 +9,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { GetInfo, PayRequest, PaymentSent, PaymentSentPart, Payments } from '../../../shared/models/eclModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, SortOrderEnum, ECL_DEFAULT_PAGE_SETTINGS } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, SortOrderEnum, ECL_DEFAULT_PAGE_SETTINGS, ECL_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -24,7 +24,8 @@ import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 import { sendPayment } from '../../store/ecl.actions';
 import { eclNodeInformation, eclNodeSettings, eclPageSettings, payments } from '../../store/ecl.selector';
-import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 
 @Component({
   selector: 'rtl-ecl-lightning-payments',
@@ -40,6 +41,8 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   @ViewChild('sendPaymentForm', { static: false }) form;
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public nodePageDefs = ECL_PAGE_DEFS;
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'transactions';
   public tableSetting: TableSetting = { tableId: 'payments', recordsPerPage: PAGE_SIZE, sortBy: 'firstPartTimestamp', sortOrder: SortOrderEnum.DESCENDING };
@@ -64,7 +67,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private dataService: DataService, private datePipe: DatePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private dataService: DataService, private datePipe: DatePipe, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -118,6 +121,45 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
     }
   }
 
+  applyFilter() {
+    this.payments.filter = this.selFilter.trim().toLowerCase();
+  }
+
+  getLabel(column: string) {
+    const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'all';
+  }
+
+  setFilterPredicate() {
+    this.payments.filterPredicate = (rowData: PaymentSent, fltr: string) => {
+      const newRowData = ((rowData.firstPartTimestamp) ? this.datePipe.transform(new Date(rowData.firstPartTimestamp), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      return newRowData.includes(fltr);
+    };
+    // this.payments.filterPredicate = (rowData: PaymentSent, fltr: string) => {
+    //   let rowToFilter = '';
+    //   switch (this.selFilterBy) {
+    //     case 'all':
+    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
+    //         rowToFilter = rowToFilter + (
+    //           (this.displayedColumns[i] === '') ?
+    //             (rowData ? rowData..toLowerCase() : '') :
+    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
+    //         ) + ', ';
+    //       }
+    //       break;
+
+    //     case '':
+    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
+    //       break;
+
+    //     default:
+    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
+    //       break;
+    //   }
+    //   return rowToFilter.includes(fltr);
+    // };
+  }
+
   loadPaymentsTable(payms: PaymentSent[]) {
     this.payments = payms ? new MatTableDataSource<PaymentSent>([...payms]) : new MatTableDataSource<PaymentSent>([]);
     this.payments.sort = this.sort;
@@ -144,11 +186,8 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       }
     };
     this.payments.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
-    this.payments.filterPredicate = (rowData: PaymentSent, fltr: string) => {
-      const newRowData = ((rowData.firstPartTimestamp) ? this.datePipe.transform(new Date(rowData.firstPartTimestamp), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
-      return newRowData.includes(fltr);
-    };
     this.payments.paginator = this.paginator;
+    this.setFilterPredicate();
     this.applyFilter();
   }
 
@@ -361,10 +400,6 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         }
       }
     }));
-  }
-
-  applyFilter() {
-    this.payments.filter = this.selFilter.trim().toLowerCase();
   }
 
   onDownloadCSV() {

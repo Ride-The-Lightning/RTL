@@ -33,7 +33,7 @@
       <ng-container matColumnDef="pubkey_alias">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer</th>
         <td mat-cell *matCellDef="let hop">
-          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+          <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{hop?.pubkey_alias}}</span>
           </div>
         </td>
@@ -41,7 +41,7 @@
       <ng-container matColumnDef="pub_key">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer Pubkey</th>
         <td mat-cell *matCellDef="let hop">
-          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+          <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{hop?.pub_key}}</span>
           </div>
         </td>
@@ -49,7 +49,7 @@
       <ng-container matColumnDef="chan_id">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel ID</th>
         <td mat-cell *matCellDef="let hop">
-          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+          <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{hop?.chan_id}}</span>
           </div>
         </td>

@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, CLNForwardingEventsStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, CLNForwardingEventsStatusEnum, CLN_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
 import { ForwardingEvent, ListForwards, RoutingPeer } from '../../../shared/models/clnModels';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -14,8 +14,9 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import { RTLState } from '../../../store/rtl.state';
 import { clnPageSettings, forwardingHistory } from '../../store/cln.selector';
-import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { getForwardingHistory } from '../../store/cln.actions';
+import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 
 @Component({
   selector: 'rtl-cln-routing-peers',
@@ -32,14 +33,17 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
   @ViewChild('paginatorIn', { static: false }) paginatorIn: MatPaginator | undefined;
   @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator | undefined;
   @Input() eventsData = [];
-  @Input() filterValue = '';
+  @Input() selFilter = '';
+  public nodePageDefs = CLN_PAGE_DEFS;
+  public selFilterByIn = 'all';
+  public selFilterByOut = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'routing';
   public tableSetting: TableSetting = { tableId: 'routing_peers', recordsPerPage: PAGE_SIZE, sortBy: 'total_fee', sortOrder: SortOrderEnum.DESCENDING };
   public successfulEvents: ForwardingEvent[] = [];
   public displayedColumns: any[] = [];
-  public RoutingPeersIncoming: any = [];
-  public RoutingPeersOutgoing: any = [];
+  public routingPeersIncoming: any = [];
+  public routingPeersOutgoing: any = [];
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -51,7 +55,7 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -112,30 +116,70 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
     }
   }
 
+  applyIncomingFilter() {
+    this.routingPeersIncoming.filter = this.filterIn.toLowerCase();
+  }
+
+  applyOutgoingFilter() {
+    this.routingPeersOutgoing.filter = this.filterOut.toLowerCase();
+  }
+
+  getLabel(column: string) {
+    const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'all';
+  }
+
+  setFilterPredicate() {
+    this.routingPeersIncoming.filterPredicate = (rpIn: RoutingPeer, fltr: string) => JSON.stringify(rpIn).toLowerCase().includes(fltr);
+    this.routingPeersOutgoing.filterPredicate = (rpOut: RoutingPeer, fltr: string) => JSON.stringify(rpOut).toLowerCase().includes(fltr);
+    // this.routingPeersIncoming.filterPredicate = (rowData: RoutingPeer, fltr: string) => {
+    //   let rowToFilter = '';
+    //   switch (this.selFilterBy) {
+    //     case 'all':
+    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
+    //         rowToFilter = rowToFilter + (
+    //           (this.displayedColumns[i] === '') ?
+    //             (rowData ? rowData..toLowerCase() : '') :
+    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
+    //         ) + ', ';
+    //       }
+    //       break;
+
+    //     case '':
+    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
+    //       break;
+
+    //     default:
+    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
+    //       break;
+    //   }
+    //   return rowToFilter.includes(fltr);
+    // };
+  }
+
   loadRoutingPeersTable(events: ForwardingEvent[]) {
     if (events.length > 0) {
       const results = this.groupRoutingPeers(events);
-      this.RoutingPeersIncoming = new MatTableDataSource<RoutingPeer[]>(results[0]);
-      this.RoutingPeersIncoming.sort = this.sortIn;
-      this.RoutingPeersIncoming.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
-      this.RoutingPeersIncoming.filterPredicate = (rpIn: RoutingPeer, fltr: string) => JSON.stringify(rpIn).toLowerCase().includes(fltr);
-      this.RoutingPeersIncoming.paginator = this.paginatorIn;
-      this.logger.info(this.RoutingPeersIncoming);
-      this.RoutingPeersOutgoing = new MatTableDataSource<RoutingPeer[]>(results[1]);
-      this.RoutingPeersOutgoing.sort = this.sortOut;
-      this.RoutingPeersOutgoing.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
-      this.RoutingPeersOutgoing.filterPredicate = (rpOut: RoutingPeer, fltr: string) => JSON.stringify(rpOut).toLowerCase().includes(fltr);
-      this.RoutingPeersOutgoing.paginator = this.paginatorOut;
-      this.logger.info(this.RoutingPeersOutgoing);
+      this.routingPeersIncoming = new MatTableDataSource<RoutingPeer[]>(results[0]);
+      this.routingPeersIncoming.sort = this.sortIn;
+      this.routingPeersIncoming.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+      this.routingPeersIncoming.paginator = this.paginatorIn;
+      this.logger.info(this.routingPeersIncoming);
+      this.routingPeersOutgoing = new MatTableDataSource<RoutingPeer[]>(results[1]);
+      this.routingPeersOutgoing.sort = this.sortOut;
+      this.routingPeersOutgoing.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+      this.routingPeersOutgoing.paginator = this.paginatorOut;
+      this.logger.info(this.routingPeersOutgoing);
     } else {
       // To reset table after other Forwarding history calls
-      this.RoutingPeersIncoming = new MatTableDataSource<RoutingPeer>([]);
-      this.RoutingPeersOutgoing = new MatTableDataSource<RoutingPeer>([]);
+      this.routingPeersIncoming = new MatTableDataSource<RoutingPeer>([]);
+      this.routingPeersOutgoing = new MatTableDataSource<RoutingPeer>([]);
     }
+    this.setFilterPredicate();
     this.applyIncomingFilter();
     this.applyOutgoingFilter();
-    this.logger.info(this.RoutingPeersIncoming);
-    this.logger.info(this.RoutingPeersOutgoing);
+    this.logger.info(this.routingPeersIncoming);
+    this.logger.info(this.routingPeersOutgoing);
   }
 
   groupRoutingPeers(forwardingEvents: ForwardingEvent[]) {
@@ -160,14 +204,6 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
       }
     });
     return [this.commonService.sortDescByKey(incomingResults, 'total_fee'), this.commonService.sortDescByKey(outgoingResults, 'total_fee')];
-  }
-
-  applyIncomingFilter() {
-    this.RoutingPeersIncoming.filter = this.filterIn.toLowerCase();
-  }
-
-  applyOutgoingFilter() {
-    this.RoutingPeersOutgoing.filter = this.filterOut.toLowerCase();
   }
 
   ngOnDestroy() {

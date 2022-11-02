@@ -9,7 +9,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { GetInfo, Payment, PayRequest } from '../../../shared/models/clnModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, UI_MESSAGES, PaymentTypes, CLN_DEFAULT_PAGE_SETTINGS, SortOrderEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, UI_MESSAGES, PaymentTypes, CLN_DEFAULT_PAGE_SETTINGS, SortOrderEnum, CLN_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { DataService } from '../../../shared/services/data.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -24,7 +24,8 @@ import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 import { sendPayment } from '../../store/cln.actions';
 import { clnNodeInformation, clnNodeSettings, clnPageSettings, payments } from '../../store/cln.selector';
-import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 
 @Component({
   selector: 'rtl-cln-lightning-payments',
@@ -40,6 +41,8 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   @ViewChild('sendPaymentForm', { static: false }) form;
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public nodePageDefs = CLN_PAGE_DEFS;
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'transactions';
   public tableSetting: TableSetting = { tableId: 'payments', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING };
@@ -64,7 +67,16 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private clnEffects: CLNEffects, private decimalPipe: DecimalPipe, private titleCasePipe: TitleCasePipe, private datePipe: DatePipe, private dataService: DataService) {
+  constructor(
+    private logger: LoggerService,
+    private commonService: CommonService,
+    private store: Store<RTLState>,
+    private rtlEffects: RTLEffects,
+    private decimalPipe: DecimalPipe,
+    private titleCasePipe: TitleCasePipe,
+    private datePipe: DatePipe,
+    private dataService: DataService,
+    private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -301,16 +313,48 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
     this.payments.filter = this.selFilter.trim().toLowerCase();
   }
 
+  getLabel(column: string) {
+    const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'all';
+  }
+
+  setFilterPredicate() {
+    this.payments.filterPredicate = (rowData: Payment, fltr: string) => {
+      const newRowData = ((rowData.created_at) ? this.datePipe.transform(new Date(rowData.created_at * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + ((rowData.bolt12) ? 'bolt12' : (rowData.bolt11) ? 'bolt11' : 'keysend') + JSON.stringify(rowData).toLowerCase();
+      return newRowData.includes(fltr);
+    };
+    // this.payments.filterPredicate = (rowData: Payment, fltr: string) => {
+    //   let rowToFilter = '';
+    //   switch (this.selFilterBy) {
+    //     case 'all':
+    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
+    //         rowToFilter = rowToFilter + (
+    //           (this.displayedColumns[i] === '') ?
+    //             (rowData ? rowData..toLowerCase() : '') :
+    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
+    //         ) + ', ';
+    //       }
+    //       break;
+
+    //     case '':
+    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
+    //       break;
+
+    //     default:
+    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
+    //       break;
+    //   }
+    //   return rowToFilter.includes(fltr);
+    // };
+  }
+
   loadPaymentsTable(payments: Payment[]) {
     this.payments = (payments) ? new MatTableDataSource<Payment>([...payments]) : new MatTableDataSource([]);
     this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.payments.sort = this.sort;
     this.payments.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
-    this.payments.filterPredicate = (rowData: Payment, fltr: string) => {
-      const newRowData = ((rowData.created_at) ? this.datePipe.transform(new Date(rowData.created_at * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + ((rowData.bolt12) ? 'bolt12' : (rowData.bolt11) ? 'bolt11' : 'keysend') + JSON.stringify(rowData).toLowerCase();
-      return newRowData.includes(fltr);
-    };
     this.payments.paginator = this.paginator;
+    this.setFilterPredicate();
     this.applyFilter();
   }
 

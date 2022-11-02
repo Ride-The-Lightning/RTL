@@ -8,16 +8,17 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Swap, ReverseSwap } from '../../../../models/boltzModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, SwapTypeEnum, SwapStateEnum, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS } from '../../../../services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, SwapTypeEnum, SwapStateEnum, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS } from '../../../../services/consts-enums-functions';
 import { LoggerService } from '../../../../services/logger.service';
 import { CommonService } from '../../../../services/common.service';
 import { BoltzService } from '../../../../services/boltz.service';
 
 import { openAlert } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
-import { PageSettings, TableSetting } from '../../../../models/pageSettings';
+import { ColumnDefinition, PageSettings, TableSetting } from '../../../../models/pageSettings';
 import { lndPageSettings } from '../../../../../lnd/store/lnd.selector';
 import { ApiCallStatusPayload } from '../../../../models/apiCallsPayload';
+import { CamelCaseWithReplacePipe } from '../../../../pipes/app.pipe';
 
 @Component({
   selector: 'rtl-boltz-swaps',
@@ -35,6 +36,8 @@ export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, On
   @Input() emptyTableMessage = 'No swaps available.';
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public nodePageDefs = LND_PAGE_DEFS;
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'boltz';
   public tableSettingSwapOut: TableSetting = { tableId: 'swap_out', recordsPerPage: PAGE_SIZE, sortBy: 'status', sortOrder: SortOrderEnum.DESCENDING };
@@ -51,7 +54,7 @@ export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, On
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private boltzService: BoltzService) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private boltzService: BoltzService, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -111,6 +114,39 @@ export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, On
     }
   }
 
+  getLabel(column: string) {
+    const tableId = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? this.tableSettingSwapIn.tableId : this.tableSettingSwapOut.tableId;
+    const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][tableId].allowedColumns.find((col) => col.column === column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'all';
+  }
+
+  setFilterPredicate() {
+    this.listSwaps.filterPredicate = (swap: Swap, fltr: string) => JSON.stringify(swap).toLowerCase().includes(fltr);
+    // this.listSwaps.filterPredicate = (rowData: Swap, fltr: string) => {
+    //   let rowToFilter = '';
+    //   switch (this.selFilterBy) {
+    //     case 'all':
+    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
+    //         rowToFilter = rowToFilter + (
+    //           (this.displayedColumns[i] === '') ?
+    //             (rowData ? rowData..toLowerCase() : '') :
+    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
+    //         ) + ', ';
+    //       }
+    //       break;
+
+    //     case '':
+    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
+    //       break;
+
+    //     default:
+    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
+    //       break;
+    //   }
+    //   return rowToFilter.includes(fltr);
+    // };
+  }
+
   onSwapClick(selSwap: Swap | ReverseSwap, event: any) {
     this.boltzService.swapInfo(selSwap.id || '').pipe(takeUntil(this.unSubs[1])).
       subscribe((fetchedSwap: any) => {
@@ -153,11 +189,11 @@ export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, On
     } else {
       this.listSwaps.sort?.sort({ id: this.tableSettingSwapOut.sortBy, start: this.tableSettingSwapOut.sortOrder, disableClear: true });
     }
-    this.listSwaps.filterPredicate = (swap: Swap, fltr: string) => JSON.stringify(swap).toLowerCase().includes(fltr);
     if (this.paginator) {
       this.paginator.firstPage();
     }
     this.listSwaps.paginator = this.paginator;
+    this.setFilterPredicate();
     this.applyFilter();
     this.logger.info(this.listSwaps);
   }

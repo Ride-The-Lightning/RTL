@@ -7,7 +7,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, PaymentTypes, AlertTypeEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, UI_MESSAGES } from '../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, PaymentTypes, AlertTypeEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, UI_MESSAGES, CLN_PAGE_DEFS } from '../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 import { OfferBookmark } from '../../../../shared/models/clnModels';
 import { LoggerService } from '../../../../shared/services/logger.service';
@@ -20,7 +20,8 @@ import { clnPageSettings, offerBookmarks } from '../../../store/cln.selector';
 import { CLNOfferInformationComponent } from '../offer-information-modal/offer-information.component';
 import { CLNLightningSendPaymentsComponent } from '../../send-payment-modal/send-payment.component';
 import { deleteOfferBookmark, sendPayment } from '../../../store/cln.actions';
-import { PageSettings, TableSetting } from '../../../../shared/models/pageSettings';
+import { ColumnDefinition, PageSettings, TableSetting } from '../../../../shared/models/pageSettings';
+import { CamelCaseWithReplacePipe } from '../../../../shared/pipes/app.pipe';
 
 @Component({
   selector: 'rtl-cln-offer-bookmarks-table',
@@ -35,6 +36,8 @@ export class CLNOfferBookmarksTableComponent implements OnInit, AfterViewInit, O
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   faHistory = faHistory;
+  public nodePageDefs = CLN_PAGE_DEFS;
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'transactions';
   public tableSetting: TableSetting = { tableId: 'offer_bookmarks', recordsPerPage: PAGE_SIZE, sortBy: 'lastUpdatedAt', sortOrder: SortOrderEnum.DESCENDING };
@@ -51,7 +54,7 @@ export class CLNOfferBookmarksTableComponent implements OnInit, AfterViewInit, O
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private rtlEffects: RTLEffects) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private rtlEffects: RTLEffects, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -143,13 +146,45 @@ export class CLNOfferBookmarksTableComponent implements OnInit, AfterViewInit, O
     this.offersBookmarks.filter = this.selFilter.trim().toLowerCase();
   }
 
+  getLabel(column: string) {
+    const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'all';
+  }
+
+  setFilterPredicate() {
+    this.offersBookmarks.filterPredicate = (Ofrbm: OfferBookmark, fltr: string) => JSON.stringify(Ofrbm).toLowerCase().includes(fltr);
+    // this.offersBookmarks.filterPredicate = (rowData: OfferBookmark, fltr: string) => {
+    //   let rowToFilter = '';
+    //   switch (this.selFilterBy) {
+    //     case 'all':
+    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
+    //         rowToFilter = rowToFilter + (
+    //           (this.displayedColumns[i] === '') ?
+    //             (rowData ? rowData..toLowerCase() : '') :
+    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
+    //         ) + ', ';
+    //       }
+    //       break;
+
+    //     case '':
+    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
+    //       break;
+
+    //     default:
+    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
+    //       break;
+    //   }
+    //   return rowToFilter.includes(fltr);
+    // };
+  }
+
   loadOffersTable(OffrBMs: OfferBookmark[]) {
     this.offersBookmarks = (OffrBMs) ? new MatTableDataSource<OfferBookmark>([...OffrBMs]) : new MatTableDataSource([]);
     this.offersBookmarks.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.offersBookmarks.sort = this.sort;
     this.offersBookmarks.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
-    this.offersBookmarks.filterPredicate = (Ofrbm: OfferBookmark, fltr: string) => JSON.stringify(Ofrbm).toLowerCase().includes(fltr);
     this.offersBookmarks.paginator = this.paginator;
+    this.setFilterPredicate();
     this.applyFilter();
   }
 

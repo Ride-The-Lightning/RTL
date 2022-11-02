@@ -4,17 +4,24 @@
     <div fxLayout="column" fxFlex="49" fxLayoutAlign="start stretch" class="mb-4">
       <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="page-sub-title-container w-100" [ngClass]="{'mt-2': screenSize === screenSizeEnum.XS, 'mt-1': screenSize === screenSizeEnum.SM}">
         <div fxFlex="70">Incoming</div>
-        <mat-form-field fxFlex="30">
-          <input matInput (keyup)="applyIncomingFilter()" [(ngModel)]="filterIn" placeholder="Filter">
-        </mat-form-field>
+        <div fxFlex="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
+          <mat-form-field fxFlex="49">
+            <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterByIn" (selectionChange)="selFilterIn=''; applyIncomingFilter()" name="filterByIn">
+              <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field fxFlex="49">
+            <input matInput [(ngModel)]="selFilterIn" (input)="applyIncomingFilter()" (keyup)="applyIncomingFilter()" name="filterin" placeholder="Filter">
+          </mat-form-field>
+        </div>
       </div>
       <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start start" fxFlex="100" class="table-container">
         <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-        <table mat-table #tableIn [dataSource]="RoutingPeersIncoming" matSort class="overflow-auto incoming-table">
+        <table mat-table #tableIn [dataSource]="routingPeersIncoming" matSort class="overflow-auto incoming-table">
           <ng-container matColumnDef="channelId">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel ID</th>
             <td mat-cell *matCellDef="let rPeer">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{rPeer?.channelId}}</span>
               </div>
             </td>
@@ -22,7 +29,7 @@
           <ng-container matColumnDef="alias">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer Alias</th>
             <td mat-cell *matCellDef="let rPeer">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{rPeer?.alias}}</span>
               </div>
             </td>
@@ -42,12 +49,12 @@
           </ng-container>
           <ng-container matColumnDef="no_incoming_event">
             <td mat-footer-cell *matFooterCellDef colspan="4">
-              <p *ngIf="(!RoutingPeersIncoming?.data || RoutingPeersIncoming?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No incoming routing peer available.</p>
-              <p *ngIf="(!RoutingPeersIncoming?.data || RoutingPeersIncoming?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting incoming routing peers...</p>
-              <p *ngIf="(!RoutingPeersIncoming?.data || RoutingPeersIncoming?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+              <p *ngIf="(!routingPeersIncoming?.data || routingPeersIncoming?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No incoming routing peer available.</p>
+              <p *ngIf="(!routingPeersIncoming?.data || routingPeersIncoming?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting incoming routing peers...</p>
+              <p *ngIf="(!routingPeersIncoming?.data || routingPeersIncoming?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
             </td>
           </ng-container>
-          <tr mat-footer-row *matFooterRowDef="['no_incoming_event']" [ngClass]="{'display-none': RoutingPeersIncoming?.data && RoutingPeersIncoming?.data?.length>0}"></tr>
+          <tr mat-footer-row *matFooterRowDef="['no_incoming_event']" [ngClass]="{'display-none': routingPeersIncoming?.data && routingPeersIncoming?.data?.length>0}"></tr>
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
@@ -57,17 +64,24 @@
     <div fxLayout="column" fxFlex="49" fxLayoutAlign="end stretch" class="mb-4">
       <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="page-sub-title-container w-100" [ngClass]="{'mt-2': screenSize !== screenSizeEnum.LG}">
         <div fxFlex="70">Outgoing</div>
-        <mat-form-field fxFlex="30">
-          <input matInput (keyup)="applyOutgoingFilter()" [(ngModel)]="filterOut" placeholder="Filter">
-        </mat-form-field>
+        <div fxFlex="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
+          <mat-form-field fxFlex="49">
+            <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterByOut" (selectionChange)="selFilterOut=''; applyOutgoingFilter()" name="filterByOut">
+              <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field fxFlex="49">
+            <input matInput [(ngModel)]="selFilterOut" (input)="applyOutgoingFilter()" (keyup)="applyOutgoingFilter()" name="filterout" placeholder="Filter">
+          </mat-form-field>
+        </div>
       </div>
       <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container">
         <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-        <table mat-table #tableOut [dataSource]="RoutingPeersOutgoing" matSort class="overflow-auto outgoing-table">
+        <table mat-table #tableOut [dataSource]="routingPeersOutgoing" matSort class="overflow-auto outgoing-table">
           <ng-container matColumnDef="channelId">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel ID</th>
             <td mat-cell *matCellDef="let rPeer">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{rPeer?.channelId}}</span>
               </div>
             </td>
@@ -75,7 +89,7 @@
           <ng-container matColumnDef="alias">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer Alias</th>
             <td mat-cell *matCellDef="let rPeer">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{rPeer?.alias}}</span>
               </div>
             </td>
@@ -95,12 +109,12 @@
           </ng-container>
           <ng-container matColumnDef="no_outgoing_event">
             <td mat-footer-cell *matFooterCellDef colspan="4">
-              <p *ngIf="(!RoutingPeersOutgoing?.data || RoutingPeersOutgoing?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No outgoing routing peer available.</p>
-              <p *ngIf="(!RoutingPeersOutgoing?.data || RoutingPeersOutgoing?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting outgoing routing peers...</p>
-              <p *ngIf="(!RoutingPeersOutgoing?.data || RoutingPeersOutgoing?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+              <p *ngIf="(!routingPeersOutgoing?.data || routingPeersOutgoing?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No outgoing routing peer available.</p>
+              <p *ngIf="(!routingPeersOutgoing?.data || routingPeersOutgoing?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting outgoing routing peers...</p>
+              <p *ngIf="(!routingPeersOutgoing?.data || routingPeersOutgoing?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
             </td>
           </ng-container>
-          <tr mat-footer-row *matFooterRowDef="['no_outgoing_event']" [ngClass]="{'display-none': RoutingPeersOutgoing?.data && RoutingPeersOutgoing?.data?.length>0}"></tr>
+          <tr mat-footer-row *matFooterRowDef="['no_outgoing_event']" [ngClass]="{'display-none': routingPeersOutgoing?.data && routingPeersOutgoing?.data?.length>0}"></tr>
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>

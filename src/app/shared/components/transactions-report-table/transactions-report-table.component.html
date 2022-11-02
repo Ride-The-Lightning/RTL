@@ -2,9 +2,16 @@
   <div fxLayout="column" fxLayoutAlign="start stretch">
     <div fxLayout="column" fxLayoutAlign="start stretch" fxLayout.gt-sm="row wrap" class="page-sub-title-container mt-1">
       <div fxFlex="70"></div>
-      <mat-form-field fxFlex="30" fxLayoutAlign="start end">
-        <input matInput [(ngModel)]="filterValue" (input)="applyFilter()" (keyup)="applyFilter()" name="filter" placeholder="Filter">
-      </mat-form-field>
+      <div fxFlex="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
+        <mat-form-field fxFlex="49">
+          <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()" name="filterBy">
+            <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field fxFlex="49">
+          <input matInput [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()" name="filter" placeholder="Filter">
+        </mat-form-field>
+      </div>
     </div>
     <div fxLayout="row" fxLayoutAlign="start start">
       <div [perfectScrollbar] fxLayout="column" class="table-container" fxFlex="100">

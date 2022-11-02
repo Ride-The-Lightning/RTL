@@ -2,9 +2,16 @@
   <div class="p-2 error-border my-2" *ngIf="errorMessage !== ''">{{errorMessage}}</div>
   <div *ngIf="errorMessage === ''" fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container">
     <div fxFlex="70"></div>
-    <mat-form-field fxFlex="30">
-      <input matInput [(ngModel)]="filterValue" (input)="applyFilter()" (keyup)="applyFilter()" name="filter" placeholder="Filter">
-    </mat-form-field>
+    <div fxFlex="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
+      <mat-form-field fxFlex="49">
+        <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()" name="filterBy">
+          <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field fxFlex="49">
+        <input matInput [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()" name="filter" placeholder="Filter">
+      </mat-form-field>
+    </div>
   </div>
   <div *ngIf="errorMessage === ''" [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
     <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
@@ -24,7 +31,7 @@
       <ng-container matColumnDef="in_channel_alias">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>In Channel</th>
         <td mat-cell *matCellDef="let fhEvent">
-          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+          <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{fhEvent?.in_channel_alias}}</span>
           </div>          
         </td>
@@ -36,7 +43,7 @@
       <ng-container matColumnDef="out_channel_alias">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Out Channel</th>
         <td mat-cell *matCellDef="let fhEvent">
-          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+          <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{fhEvent?.out_channel_alias}}</span>
           </div>          
         </td>
@@ -44,7 +51,7 @@
       <ng-container matColumnDef="payment_hash">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Hash</th>
         <td mat-cell *matCellDef="let fhEvent">
-          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+          <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{fhEvent?.payment_hash}}</span>
           </div>
         </td>

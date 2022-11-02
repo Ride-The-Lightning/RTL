@@ -42,7 +42,7 @@
       </ngx-charts-bar-vertical>
     </div>
     <div class="mt-1">
-      <rtl-cln-forwarding-history *ngIf="filteredEventsBySelectedPeriod && filteredEventsBySelectedPeriod.length > 0" [pageId]="'reports'" [tableId]="'routing'" [eventsData]="filteredEventsBySelectedPeriod" [filterValue]="eventFilterValue"></rtl-cln-forwarding-history>
+      <rtl-cln-forwarding-history *ngIf="filteredEventsBySelectedPeriod && filteredEventsBySelectedPeriod.length > 0" [pageId]="'reports'" [tableId]="'routing'" [eventsData]="filteredEventsBySelectedPeriod" [selFilter]="eventFilterValue"></rtl-cln-forwarding-history>
     </div>
   </div>
 </div>

@@ -8,14 +8,15 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 
 import { ForwardingEvent, SwitchRes, Channel, ChannelsSummary, LightningBalance } from '../../../shared/models/lndModels';
-import { APICallStatusEnum, getPaginatorLabel, LND_DEFAULT_PAGE_SETTINGS, PAGE_SIZE, PAGE_SIZE_OPTIONS, ScreenSizeEnum, SortOrderEnum } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, getPaginatorLabel, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS, PAGE_SIZE, PAGE_SIZE_OPTIONS, ScreenSizeEnum, SortOrderEnum } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { RTLState } from '../../../store/rtl.state';
 import { channels, forwardingHistory, lndPageSettings } from '../../store/lnd.selector';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 
 @Component({
   selector: 'rtl-non-routing-peers',
@@ -29,25 +30,27 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public nodePageDefs = LND_PAGE_DEFS;
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'routing';
   public tableSetting: TableSetting = { tableId: 'non_routing_peers', recordsPerPage: PAGE_SIZE, sortBy: 'remote_alias', sortOrder: SortOrderEnum.DESCENDING };
   public routingPeersData: any[] = [];
   public displayedColumns: any[] = [];
-  public NonRoutingPeers: any = new MatTableDataSource<any>([]);
+  public nonRoutingPeers: any = new MatTableDataSource<any>([]);
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public filter = '';
+  public selFilter = '';
   public activeChannels: Channel[] = [];
   public timeUnit = 'mins:secs';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private router: Router, private activatedRoute: ActivatedRoute, private decimalPipe: DecimalPipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private router: Router, private activatedRoute: ActivatedRoute, private decimalPipe: DecimalPipe, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -186,24 +189,57 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   //   return this.commonService.sortDescByKey(results, 'alias');
   // }
 
+  applyFilter() {
+    this.nonRoutingPeers.filter = this.selFilter.toLowerCase();
+  }
+
+  getLabel(column: string) {
+    const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'all';
+  }
+
+  setFilterPredicate() {
+    this.nonRoutingPeers.filterPredicate = (nrchnl: Channel, fltr: string) => JSON.stringify(nrchnl).toLowerCase().includes(fltr);
+    // this.peers.filterPredicate = (rowData: Peer, fltr: string) => {
+    //   let rowToFilter = '';
+    //   switch (this.selFilterBy) {
+    //     case 'all':
+    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
+    //         rowToFilter = rowToFilter + (
+    //           (this.displayedColumns[i] === '') ?
+    //             (rowData ? rowData..toLowerCase() : '') :
+    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
+    //         ) + ', ';
+    //       }
+    //       break;
+
+    //     case '':
+    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
+    //       break;
+
+    //     default:
+    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
+    //       break;
+    //   }
+    //   return rowToFilter.includes(fltr);
+    // };
+  }
+
   loadNonRoutingPeersTable(forwardingEvents: ForwardingEvent[]) {
     if (forwardingEvents.length > 0) {
       // const grpdRoutingPeers = this.groupRoutingPeers(forwardingEvents);
       const filteredNonRoutingChannels = this.calculateUptime(this.activeChannels?.filter((actvChnl) => forwardingEvents.findIndex((evnt) => (evnt.chan_id_in === actvChnl.chan_id || evnt.chan_id_out === actvChnl.chan_id)) < 0));
-      this.NonRoutingPeers = new MatTableDataSource<Channel>(filteredNonRoutingChannels);
-      this.NonRoutingPeers.sort = this.sort;
-      this.NonRoutingPeers.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
-      this.NonRoutingPeers.filterPredicate = (nrchnl: Channel, fltr: string) => JSON.stringify(nrchnl).toLowerCase().includes(fltr);
-      this.NonRoutingPeers.paginator = this.paginator;
-      this.logger.info(this.NonRoutingPeers);
+      this.nonRoutingPeers = new MatTableDataSource<Channel>(filteredNonRoutingChannels);
+      this.nonRoutingPeers.sort = this.sort;
+      this.nonRoutingPeers.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+      this.nonRoutingPeers.paginator = this.paginator;
+      this.setFilterPredicate();
+      this.applyFilter();
+      this.logger.info(this.nonRoutingPeers);
     } else {
-      this.NonRoutingPeers = new MatTableDataSource<Channel>([]);
+      this.nonRoutingPeers = new MatTableDataSource<Channel>([]);
     }
     this.applyFilter();
-  }
-
-  applyFilter() {
-    this.NonRoutingPeers.filter = this.filter.toLowerCase();
   }
 
   ngOnDestroy() {

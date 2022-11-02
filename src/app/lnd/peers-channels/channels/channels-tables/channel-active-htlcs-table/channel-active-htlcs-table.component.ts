@@ -8,7 +8,7 @@ import { MatTableDataSource } from '@angular/material/table';
 
 import { ChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { Channel, ChannelHTLC, ChannelsSummary, LightningBalance } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS } from '../../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
@@ -16,7 +16,8 @@ import { CommonService } from '../../../../../shared/services/common.service';
 import { openAlert } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
 import { channels, lndPageSettings } from '../../../../store/lnd.selector';
-import { PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
+import { ColumnDefinition, PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
+import { CamelCaseWithReplacePipe } from '../../../../../shared/pipes/app.pipe';
 
 @Component({
   selector: 'rtl-channel-active-htlcs-table',
@@ -30,6 +31,8 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public nodePageDefs = LND_PAGE_DEFS;
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'peers_channels';
   public tableSetting: TableSetting = { tableId: 'active_HTLCs', recordsPerPage: PAGE_SIZE, sortBy: 'expiration_height', sortOrder: SortOrderEnum.DESCENDING };
@@ -47,7 +50,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -122,6 +125,42 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
     this.channels.filter = this.selFilter.trim().toLowerCase();
   }
 
+  getLabel(column: string) {
+    const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'all';
+  }
+
+  setFilterPredicate() {
+    this.channels.filterPredicate = (channel: Channel, fltr: string) => {
+      const newChannel = (channel.remote_alias ? channel.remote_alias.toLowerCase() : '') +
+        channel.pending_htlcs?.map((htlc) => JSON.stringify(htlc) + (htlc.incoming ? 'yes' : 'no'));
+      return newChannel.includes(fltr);
+    };
+    // this.channels.filterPredicate = (rowData: Channel, fltr: string) => {
+    //   let rowToFilter = '';
+    //   switch (this.selFilterBy) {
+    //     case 'all':
+    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
+    //         rowToFilter = rowToFilter + (
+    //           (this.displayedColumns[i] === '') ?
+    //             (rowData ? rowData..toLowerCase() : '') :
+    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
+    //         ) + ', ';
+    //       }
+    //       break;
+
+    //     case '':
+    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
+    //       break;
+
+    //     default:
+    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
+    //       break;
+    //   }
+    //   return rowToFilter.includes(fltr);
+    // };
+  }
+
   loadHTLCsTable(channels: Channel[]) {
     this.channels = (channels) ? new MatTableDataSource<Channel>([...channels]) : new MatTableDataSource([]);
     this.channels.sort = this.sort;
@@ -149,11 +188,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
     };
     this.channels.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.channels.paginator = this.paginator;
-    this.channels.filterPredicate = (channel: Channel, fltr: string) => {
-      const newChannel = (channel.remote_alias ? channel.remote_alias.toLowerCase() : '') +
-        channel.pending_htlcs?.map((htlc) => JSON.stringify(htlc) + (htlc.incoming ? 'yes' : 'no'));
-      return newChannel.includes(fltr);
-    };
+    this.setFilterPredicate();
     this.applyFilter();
   }
 

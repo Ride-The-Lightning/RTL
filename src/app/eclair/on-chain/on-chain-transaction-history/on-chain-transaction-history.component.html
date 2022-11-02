@@ -4,9 +4,16 @@
       <fa-icon [icon]="faHistory" class="page-title-img mr-1"></fa-icon>
       <span class="page-title">Transaction History</span>
     </div>
-    <mat-form-field fxFlex="30">
-      <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" placeholder="Filter">
-    </mat-form-field>
+    <div fxFlex="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
+      <mat-form-field fxFlex="49">
+        <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()" name="filterBy">
+          <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field fxFlex="49">
+        <input matInput [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()" name="filter" placeholder="Filter">
+      </mat-form-field>
+    </div>
   </div>
   <div fxLayout="row" fxLayoutAlign="start start">
     <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container">
@@ -20,7 +27,7 @@
         <ng-container matColumnDef="address">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Address</th>
           <td mat-cell *matCellDef="let transaction">
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{transaction?.address}}</span>
             </div>
           </td>
@@ -28,7 +35,7 @@
         <ng-container matColumnDef="blockHash">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Blockhash</th>
           <td mat-cell *matCellDef="let transaction">
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{transaction?.blockHash}}</span>
             </div>
           </td>
@@ -36,7 +43,7 @@
         <ng-container matColumnDef="txid">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Transaction ID</th>
           <td mat-cell *matCellDef="let transaction">
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{transaction?.txid}}</span>
             </div>
           </td>

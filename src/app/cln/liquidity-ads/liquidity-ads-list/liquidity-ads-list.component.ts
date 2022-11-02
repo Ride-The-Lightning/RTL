@@ -10,7 +10,7 @@ import { faBullhorn, faExclamationTriangle, faUsers } from '@fortawesome/free-so
 import { DataService } from '../../../shared/services/data.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
-import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, getPaginatorLabel, PAGE_SIZE, PAGE_SIZE_OPTIONS, ScreenSizeEnum, NODE_FEATURES_CLN, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS } from '../../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, getPaginatorLabel, PAGE_SIZE, PAGE_SIZE_OPTIONS, ScreenSizeEnum, NODE_FEATURES_CLN, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, CLN_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
 import { GetInfo, LookupNode } from '../../../shared/models/clnModels';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
@@ -20,7 +20,8 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import { CLNOpenLiquidityChannelComponent } from '../open-liquidity-channel-modal/open-liquidity-channel-modal.component';
 import { clnPageSettings, nodeInfoAndNodeSettingsAndBalance } from '../../store/cln.selector';
 import { DecimalPipe } from '@angular/common';
-import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 
 @Component({
   selector: 'rtl-cln-liquidity-ads-list',
@@ -34,6 +35,8 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public nodePageDefs = CLN_PAGE_DEFS;
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'liquidity_ads';
   public tableSetting: TableSetting = { tableId: 'liquidity_ads', recordsPerPage: PAGE_SIZE, sortBy: 'channel_opening_fee', sortOrder: SortOrderEnum.ASCENDING };
@@ -61,7 +64,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<RTLState>, private dataService: DataService, private commonService: CommonService, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private dataService: DataService, private commonService: CommonService, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.askTooltipMsg = 'Specify the liquidity requirements for your node: \n 1. Channel Amount - Amount in Sats you need on the channel opened to your node \n 2. Channel opening fee rate - Rate in Sats/vByte that you are willing to pay to open the channel to you';
     this.nodesTooltipMsg = 'These nodes are advertising their liquidity offering on the network.\nYou should pay attention to the following aspects to evaluate each node offer: \n- The total bitcoin deployed on the node, the more the better\n';
     this.nodesTooltipMsg = this.nodesTooltipMsg + '- The number of channels open on the node, the more the better' +
@@ -135,11 +138,12 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
     this.liquidityNodes.filter = this.selFilter.trim().toLowerCase();
   }
 
-  loadLiqNodesTable(liqNodes: LookupNode[]) {
-    this.liquidityNodes = new MatTableDataSource<LookupNode>([...liqNodes]);
-    this.liquidityNodes.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    this.liquidityNodes.sort = this.sort;
-    this.liquidityNodes.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+  getLabel(column: string) {
+    const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'all';
+  }
+
+  setFilterPredicate() {
     this.liquidityNodes.filterPredicate = (node: LookupNode, fltr: string) => {
       const newNode = ((node.alias) ? node.alias.toLocaleLowerCase() : '') + (node.channel_opening_fee ? node.channel_opening_fee + ' Sats' : '') +
       (node.option_will_fund?.lease_fee_base_msat ? (node.option_will_fund?.lease_fee_base_msat / 1000) + ' Sats' : '') + (node.option_will_fund?.lease_fee_basis ? (this.decimalPipe.transform(node.option_will_fund?.lease_fee_basis / 100, '1.2-2') + '%') : '') +
@@ -147,9 +151,40 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
       (node.address_types ? node.address_types.reduce((acc, curr) => acc + (curr === 'tor' ? ' tor' : curr === 'ipv' ? ' clearnet' : (' ' + curr.toLowerCase())), '') : '');
       return newNode.includes(fltr);
     };
+    // this.liquidityNodes.filterPredicate = (rowData: LookupNode, fltr: string) => {
+    //   let rowToFilter = '';
+    //   switch (this.selFilterBy) {
+    //     case 'all':
+    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
+    //         rowToFilter = rowToFilter + (
+    //           (this.displayedColumns[i] === '') ?
+    //             (rowData ? rowData..toLowerCase() : '') :
+    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
+    //         ) + ', ';
+    //       }
+    //       break;
+
+    //     case '':
+    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
+    //       break;
+
+    //     default:
+    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
+    //       break;
+    //   }
+    //   return rowToFilter.includes(fltr);
+    // };
+  }
+
+  loadLiqNodesTable(liqNodes: LookupNode[]) {
+    this.liquidityNodes = new MatTableDataSource<LookupNode>([...liqNodes]);
+    this.liquidityNodes.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+    this.liquidityNodes.sort = this.sort;
+    this.liquidityNodes.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+    this.setFilterPredicate();
     this.applyFilter();
     this.liquidityNodes.paginator = this.paginator;
-    // this.liquidityNodes.filterPredicate = (node: LookupNode, fltr: string) => node.channel_count >= this.channel_count && node.node_capacity >= this.node_capacity;
+    // this.liquidityNodes.filterPredicate = (rowData: LookupNode, fltr: string) => rowData.channel_count >= this.channel_count && rowData.node_capacity >= this.node_capacity;
     // this.onFilter();
   }
 

@@ -28,11 +28,10 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   public PAGE_ID = 'peers_channels';
   public openTableSetting: TableSetting = { tableId: 'pending_open', recordsPerPage: PAGE_SIZE, sortBy: 'capacity', sortOrder: SortOrderEnum.DESCENDING };
-  public forceClosingopenTableSetting: TableSetting = { tableId: 'pending_force_closing', recordsPerPage: PAGE_SIZE, sortBy: 'limbo_balance', sortOrder: SortOrderEnum.DESCENDING };
-  public closingOpenTableSetting: TableSetting = { tableId: 'pending_closing', recordsPerPage: PAGE_SIZE, sortBy: 'capacity', sortOrder: SortOrderEnum.DESCENDING };
-  public waitingCloseopenTableSetting: TableSetting = { tableId: 'pending_waiting_close', recordsPerPage: PAGE_SIZE, sortBy: 'limbo_balance', sortOrder: SortOrderEnum.DESCENDING };
+  public forceClosingTableSetting: TableSetting = { tableId: 'pending_force_closing', recordsPerPage: PAGE_SIZE, sortBy: 'limbo_balance', sortOrder: SortOrderEnum.DESCENDING };
+  public closingTableSetting: TableSetting = { tableId: 'pending_closing', recordsPerPage: PAGE_SIZE, sortBy: 'capacity', sortOrder: SortOrderEnum.DESCENDING };
+  public waitingCloseTableSetting: TableSetting = { tableId: 'pending_waiting_close', recordsPerPage: PAGE_SIZE, sortBy: 'limbo_balance', sortOrder: SortOrderEnum.DESCENDING };
   public selNode: SelNodeChild | null = {};
-  public selectedFilter = '';
   public information: GetInfo = {};
   public pendingChannels: PendingChannels = {};
   public displayedOpenColumns: any[] = [];
@@ -76,30 +75,30 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
         }
         this.displayedOpenColumns.push('actions');
         this.logger.info(this.displayedOpenColumns);
-        this.forceClosingopenTableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.forceClosingopenTableSetting.tableId) ||
-          LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.forceClosingopenTableSetting.tableId)!;
+        this.forceClosingTableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.forceClosingTableSetting.tableId) ||
+          LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.forceClosingTableSetting.tableId)!;
         if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
-          this.displayedForceClosingColumns = JSON.parse(JSON.stringify(this.forceClosingopenTableSetting.columnSelectionSM));
+          this.displayedForceClosingColumns = JSON.parse(JSON.stringify(this.forceClosingTableSetting.columnSelectionSM));
         } else {
-          this.displayedForceClosingColumns = JSON.parse(JSON.stringify(this.forceClosingopenTableSetting.columnSelection));
+          this.displayedForceClosingColumns = JSON.parse(JSON.stringify(this.forceClosingTableSetting.columnSelection));
         }
         this.displayedForceClosingColumns.push('actions');
         this.logger.info(this.displayedForceClosingColumns);
-        this.closingOpenTableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.closingOpenTableSetting.tableId) ||
-          LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.closingOpenTableSetting.tableId)!;
+        this.closingTableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.closingTableSetting.tableId) ||
+          LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.closingTableSetting.tableId)!;
         if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
-          this.displayedClosingColumns = JSON.parse(JSON.stringify(this.closingOpenTableSetting.columnSelectionSM));
+          this.displayedClosingColumns = JSON.parse(JSON.stringify(this.closingTableSetting.columnSelectionSM));
         } else {
-          this.displayedClosingColumns = JSON.parse(JSON.stringify(this.closingOpenTableSetting.columnSelection));
+          this.displayedClosingColumns = JSON.parse(JSON.stringify(this.closingTableSetting.columnSelection));
         }
         this.displayedClosingColumns.push('actions');
         this.logger.info(this.displayedClosingColumns);
-        this.waitingCloseopenTableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.waitingCloseopenTableSetting.tableId) ||
-          LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.waitingCloseopenTableSetting.tableId)!;
+        this.waitingCloseTableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.waitingCloseTableSetting.tableId) ||
+          LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.waitingCloseTableSetting.tableId)!;
         if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
-          this.displayedWaitClosingColumns = JSON.parse(JSON.stringify(this.waitingCloseopenTableSetting.columnSelectionSM));
+          this.displayedWaitClosingColumns = JSON.parse(JSON.stringify(this.waitingCloseTableSetting.columnSelectionSM));
         } else {
-          this.displayedWaitClosingColumns = JSON.parse(JSON.stringify(this.waitingCloseopenTableSetting.columnSelection));
+          this.displayedWaitClosingColumns = JSON.parse(JSON.stringify(this.waitingCloseTableSetting.columnSelection));
         }
         this.displayedWaitClosingColumns.push('actions');
         this.logger.info(this.displayedWaitClosingColumns);
@@ -264,42 +263,38 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   loadOpenChannelsTable(channels) {
-    channels.sort((a, b) => ((a.active === b.active) ? 0 : ((b.active) ? -1 : 1)));
     this.pendingOpenChannelsLength = (channels.length) ? channels.length : 0;
     this.pendingOpenChannels = new MatTableDataSource<Channel>([...channels]);
     this.pendingOpenChannels.sort = this.sort;
     this.pendingOpenChannels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    this.pendingOpenChannels.filterPredicate = (channel: any, fltr: string) => JSON.stringify(channel).toLowerCase().includes(fltr);
+    this.pendingOpenChannels.sort?.sort({ id: this.openTableSetting.sortBy, start: this.openTableSetting.sortOrder, disableClear: true });
     this.logger.info(this.pendingOpenChannels);
   }
 
   loadForceClosingChannelsTable(channels) {
-    channels.sort((a, b) => ((a.active === b.active) ? 0 : ((b.active) ? -1 : 1)));
     this.pendingForceClosingChannelsLength = (channels.length) ? channels.length : 0;
     this.pendingForceClosingChannels = new MatTableDataSource<Channel>([...channels]);
     this.pendingForceClosingChannels.sort = this.sort;
     this.pendingForceClosingChannels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    this.pendingForceClosingChannels.filterPredicate = (channel: any, fltr: string) => JSON.stringify(channel).toLowerCase().includes(fltr);
+    this.pendingForceClosingChannels.sort?.sort({ id: this.forceClosingTableSetting.sortBy, start: this.forceClosingTableSetting.sortOrder, disableClear: true });
     this.logger.info(this.pendingForceClosingChannels);
   }
 
   loadClosingChannelsTable(channels) {
-    channels.sort((a, b) => ((a.active === b.active) ? 0 : ((b.active) ? -1 : 1)));
     this.pendingClosingChannelsLength = (channels.length) ? channels.length : 0;
     this.pendingClosingChannels = new MatTableDataSource<Channel>([...channels]);
     this.pendingClosingChannels.sort = this.sort;
     this.pendingClosingChannels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    this.pendingClosingChannels.filterPredicate = (channel: any, fltr: string) => JSON.stringify(channel).toLowerCase().includes(fltr);
+    this.pendingClosingChannels.sort?.sort({ id: this.closingTableSetting.sortBy, start: this.closingTableSetting.sortOrder, disableClear: true });
     this.logger.info(this.pendingClosingChannels);
   }
 
   loadWaitClosingChannelsTable(channels) {
-    channels.sort((a, b) => ((a.active === b.active) ? 0 : ((b.active) ? -1 : 1)));
     this.pendingWaitClosingChannelsLength = (channels.length) ? channels.length : 0;
     this.pendingWaitClosingChannels = new MatTableDataSource<Channel>([...channels]);
     this.pendingWaitClosingChannels.sort = this.sort;
     this.pendingWaitClosingChannels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    this.pendingWaitClosingChannels.filterPredicate = (channel: any, fltr: string) => JSON.stringify(channel).toLowerCase().includes(fltr);
+    this.pendingWaitClosingChannels.sort?.sort({ id: this.waitingCloseTableSetting.sortBy, start: this.waitingCloseTableSetting.sortOrder, disableClear: true });
     this.logger.info(this.pendingWaitClosingChannels);
   }
 

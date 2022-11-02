@@ -7,7 +7,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { PaymentRelayed, Payments, RoutingPeers } from '../../../shared/models/eclModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, ECL_DEFAULT_PAGE_SETTINGS } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, ECL_DEFAULT_PAGE_SETTINGS, ECL_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -15,6 +15,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { RTLState } from '../../../store/rtl.state';
 import { eclPageSettings, payments } from '../../store/ecl.selector';
 import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 
 @Component({
   selector: 'rtl-ecl-routing-peers',
@@ -30,13 +31,16 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   @ViewChild('tableOut', { read: MatSort, static: false }) sortOut: MatSort;
   @ViewChild('paginatorIn', { static: false }) paginatorIn: MatPaginator | undefined;
   @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator | undefined;
+  public nodePageDefs = ECL_PAGE_DEFS;
+  public selFilterByIn = 'all';
+  public selFilterByOut = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'routing';
   public tableSetting: TableSetting = { tableId: 'routing_peers', recordsPerPage: PAGE_SIZE, sortBy: 'totalFee', sortOrder: SortOrderEnum.DESCENDING };
   public routingPeersData: PaymentRelayed[] = [];
   public displayedColumns: any[] = [];
-  public RoutingPeersIncoming: any = new MatTableDataSource([]);
-  public RoutingPeersOutgoing: any = new MatTableDataSource([]);
+  public routingPeersIncoming: any = new MatTableDataSource([]);
+  public routingPeersOutgoing: any = new MatTableDataSource([]);
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -48,7 +52,7 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -94,22 +98,22 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   loadRoutingPeersTable(forwardingEvents: PaymentRelayed[]) {
     if (forwardingEvents.length > 0) {
       const results = this.groupRoutingPeers(forwardingEvents);
-      this.RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>(results[0]);
-      this.RoutingPeersIncoming.sort = this.sortIn;
-      this.RoutingPeersIncoming.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
-      this.RoutingPeersIncoming.filterPredicate = (rpIn: RoutingPeers, fltr: string) => JSON.stringify(rpIn).toLowerCase().includes(fltr);
-      this.RoutingPeersIncoming.paginator = this.paginatorIn;
-      this.logger.info(this.RoutingPeersIncoming);
-      this.RoutingPeersOutgoing = new MatTableDataSource<RoutingPeers>(results[1]);
-      this.RoutingPeersOutgoing.sort = this.sortOut;
-      this.RoutingPeersOutgoing.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
-      this.RoutingPeersOutgoing.filterPredicate = (rpOut: RoutingPeers, fltr: string) => JSON.stringify(rpOut).toLowerCase().includes(fltr);
-      this.RoutingPeersOutgoing.paginator = this.paginatorOut;
-      this.logger.info(this.RoutingPeersOutgoing);
+      this.routingPeersIncoming = new MatTableDataSource<RoutingPeers>(results[0]);
+      this.routingPeersIncoming.sort = this.sortIn;
+      this.routingPeersIncoming.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+      this.routingPeersIncoming.filterPredicate = (rpIn: RoutingPeers, fltr: string) => JSON.stringify(rpIn).toLowerCase().includes(fltr);
+      this.routingPeersIncoming.paginator = this.paginatorIn;
+      this.logger.info(this.routingPeersIncoming);
+      this.routingPeersOutgoing = new MatTableDataSource<RoutingPeers>(results[1]);
+      this.routingPeersOutgoing.sort = this.sortOut;
+      this.routingPeersOutgoing.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+      this.routingPeersOutgoing.filterPredicate = (rpOut: RoutingPeers, fltr: string) => JSON.stringify(rpOut).toLowerCase().includes(fltr);
+      this.routingPeersOutgoing.paginator = this.paginatorOut;
+      this.logger.info(this.routingPeersOutgoing);
     } else {
       // To reset table after other Forwarding history calls
-      this.RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>([]);
-      this.RoutingPeersOutgoing = new MatTableDataSource<RoutingPeers>([]);
+      this.routingPeersIncoming = new MatTableDataSource<RoutingPeers>([]);
+      this.routingPeersOutgoing = new MatTableDataSource<RoutingPeers>([]);
     }
     this.applyIncomingFilter();
     this.applyOutgoingFilter();
@@ -140,11 +144,11 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   applyIncomingFilter() {
-    this.RoutingPeersIncoming.filter = this.filterIn.toLowerCase();
+    this.routingPeersIncoming.filter = this.filterIn.toLowerCase();
   }
 
   applyOutgoingFilter() {
-    this.RoutingPeersOutgoing.filter = this.filterOut.toLowerCase();
+    this.routingPeersOutgoing.filter = this.filterOut.toLowerCase();
   }
 
   ngOnDestroy() {

@@ -8,7 +8,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { ForwardingEvent, SwitchRes } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -16,7 +16,8 @@ import { openAlert } from '../../../store/rtl.actions';
 
 import { RTLState } from '../../../store/rtl.state';
 import { forwardingHistory, lndPageSettings } from '../../store/lnd.selector';
-import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 
 @Component({
   selector: 'rtl-forwarding-history',
@@ -33,7 +34,9 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   @Input() pageId = 'routing';
   @Input() tableId = 'forwarding_history';
   @Input() eventsData = [];
-  @Input() filterValue = '';
+  @Input() selFilter = '';
+  public nodePageDefs = LND_PAGE_DEFS;
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'routing';
   public tableSetting: TableSetting = { tableId: 'forwarding_history', recordsPerPage: PAGE_SIZE, sortBy: 'timestamp', sortOrder: SortOrderEnum.DESCENDING };
@@ -49,7 +52,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -104,7 +107,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
         this.loadForwardingEventsTable(this.forwardingHistoryData);
       }
     }
-    if (changes.filterValue && !changes.filterValue.firstChange) {
+    if (changes.selFilter && !changes.selFilter.firstChange) {
       this.applyFilter();
     }
   }
@@ -131,28 +134,61 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
     }));
   }
 
+  applyFilter() {
+    if (this.forwardingHistoryEvents) {
+      this.forwardingHistoryEvents.filter = this.selFilter.trim().toLowerCase();
+    }
+  }
+
+  getLabel(column: string) {
+    const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'all';
+  }
+
+  setFilterPredicate() {
+    this.forwardingHistoryEvents.filterPredicate = (rowData: ForwardingEvent, fltr: string) => {
+      const newRowData = ((rowData.timestamp) ? this.datePipe.transform(new Date(rowData.timestamp * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      return newRowData.includes(fltr);
+    };
+    // this.forwardingHistoryEvents.filterPredicate = (rowData: ForwardingEvent, fltr: string) => {
+    //   let rowToFilter = '';
+    //   switch (this.selFilterBy) {
+    //     case 'all':
+    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
+    //         rowToFilter = rowToFilter + (
+    //           (this.displayedColumns[i] === '') ?
+    //             (rowData ? rowData..toLowerCase() : '') :
+    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
+    //         ) + ', ';
+    //       }
+    //       break;
+
+    //     case '':
+    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
+    //       break;
+
+    //     default:
+    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
+    //       break;
+    //   }
+    //   return rowToFilter.includes(fltr);
+    // };
+  }
+
   loadForwardingEventsTable(forwardingEvents: ForwardingEvent[]) {
     this.forwardingHistoryEvents = forwardingEvents ? new MatTableDataSource<ForwardingEvent>([...forwardingEvents]) : new MatTableDataSource([]);
     this.forwardingHistoryEvents.sort = this.sort;
     this.forwardingHistoryEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.forwardingHistoryEvents.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
-    this.forwardingHistoryEvents.filterPredicate = (rowData: ForwardingEvent, fltr: string) => {
-      const newRowData = ((rowData.timestamp) ? this.datePipe.transform(new Date(rowData.timestamp * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
-      return newRowData.includes(fltr);
-    };
     this.forwardingHistoryEvents.paginator = this.paginator;
+    this.setFilterPredicate();
+    this.applyFilter();
     this.logger.info(this.forwardingHistoryEvents);
   }
 
   onDownloadCSV() {
     if (this.forwardingHistoryEvents && this.forwardingHistoryEvents.data && this.forwardingHistoryEvents.data.length > 0) {
       this.commonService.downloadFile(this.forwardingHistoryEvents.data, 'Forwarding-history');
-    }
-  }
-
-  applyFilter() {
-    if (this.forwardingHistoryEvents) {
-      this.forwardingHistoryEvents.filter = this.filterValue.trim().toLowerCase();
     }
   }
 

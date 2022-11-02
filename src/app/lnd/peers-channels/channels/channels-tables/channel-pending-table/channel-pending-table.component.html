@@ -12,7 +12,7 @@
           <ng-container matColumnDef="remote_alias">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer</th>
             <td mat-cell *matCellDef="let channel">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.remote_alias}}</span>
               </div>
             </td>
@@ -20,7 +20,7 @@
           <ng-container matColumnDef="remote_node_pub">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Pubkey</th>
             <td mat-cell *matCellDef="let channel">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.remote_node_pub}}</span>
               </div>
             </td>
@@ -28,7 +28,7 @@
           <ng-container matColumnDef="channel_point">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel Point</th>
             <td mat-cell *matCellDef="let channel">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.channel_point}}</span>
               </div>
             </td>
@@ -106,7 +106,7 @@
           <ng-container matColumnDef="closing_txid">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Closing Tx ID</th>
             <td mat-cell *matCellDef="let channel">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.closing_txid}}</span>
               </div>
             </td>
@@ -114,7 +114,7 @@
           <ng-container matColumnDef="remote_alias">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer</th>
             <td mat-cell *matCellDef="let channel">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.remote_alias}}</span>
               </div>
             </td>
@@ -122,7 +122,7 @@
           <ng-container matColumnDef="remote_node_pub">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Pubkey</th>
             <td mat-cell *matCellDef="let channel">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.remote_node_pub}}</span>
               </div>
             </td>
@@ -130,7 +130,7 @@
           <ng-container matColumnDef="channel_point">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel Point</th>
             <td mat-cell *matCellDef="let channel">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.channel_point}}</span>
               </div>
             </td>
@@ -202,7 +202,7 @@
           <ng-container matColumnDef="closing_txid">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Closing Tx ID</th>
             <td mat-cell *matCellDef="let channel">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.closing_txid}}</span>
               </div>
             </td>
@@ -210,7 +210,7 @@
           <ng-container matColumnDef="remote_alias">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer</th>
             <td mat-cell *matCellDef="let channel">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.remote_alias}}</span>
               </div>
             </td>
@@ -218,7 +218,7 @@
           <ng-container matColumnDef="remote_node_pub">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Pubkey</th>
             <td mat-cell *matCellDef="let channel">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.remote_node_pub}}</span>
               </div>
             </td>
@@ -226,7 +226,7 @@
           <ng-container matColumnDef="channel_point">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel Point</th>
             <td mat-cell *matCellDef="let channel">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.channel_point}}</span>
               </div>
             </td>
@@ -282,7 +282,7 @@
           <ng-container matColumnDef="remote_alias">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer</th>
             <td mat-cell *matCellDef="let channel">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.remote_alias}}</span>
               </div>
             </td>
@@ -290,7 +290,7 @@
           <ng-container matColumnDef="remote_node_pub">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Pubkey</th>
             <td mat-cell *matCellDef="let channel">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.remote_node_pub}}</span>
               </div>
             </td>
@@ -298,7 +298,7 @@
           <ng-container matColumnDef="channel_point">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel Point</th>
             <td mat-cell *matCellDef="let channel">
-              <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
                 <span class="ellipsis-child">{{channel.channel.channel_point}}</span>
               </div>
             </td>

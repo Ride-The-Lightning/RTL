@@ -111,50 +111,50 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  getLabel(column: string) {
-    const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'All';
-  }
-
   applyFilter() {
     this.listUTXOs.filter = this.selFilter.trim().toLowerCase();
   }
 
+  getLabel(column: string) {
+    const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'all';
+  }
+
   setFilterPredicate() {
-    this.listUTXOs.filterPredicate = (utxo: UTXO, fltr: string) => {
-      let newUTXO = '';
+    this.listUTXOs.filterPredicate = (rowData: UTXO, fltr: string) => {
+      let rowToFilter = '';
       switch (this.selFilterBy) {
         case 'all':
           for (let i = 0; i < this.displayedColumns.length - 1; i++) {
-            newUTXO = newUTXO + (
+            rowToFilter = rowToFilter + (
               (this.displayedColumns[i] === 'tx_id') ?
-                (utxo.outpoint && utxo.outpoint.txid_str ? utxo.outpoint.txid_str.toLowerCase() : '') :
+                (rowData.outpoint && rowData.outpoint.txid_str ? rowData.outpoint.txid_str.toLowerCase() : '') :
                 (this.displayedColumns[i] === 'output') ?
-                  (utxo.outpoint && utxo.outpoint.output_index ? utxo.outpoint.output_index.toString() : '0') :
+                  (rowData.outpoint && rowData.outpoint.output_index ? rowData.outpoint.output_index.toString() : '0') :
                   (this.displayedColumns[i] === 'address_type') ?
-                    (utxo.address_type && this.addressType[utxo.address_type] && this.addressType[utxo.address_type].name ? this.addressType[utxo.address_type].name.toLowerCase() : '') :
-                    (utxo[this.displayedColumns[i]] ? utxo[this.displayedColumns[i]].toLowerCase() : '')
+                    (rowData.address_type && this.addressType[rowData.address_type] && this.addressType[rowData.address_type].name ? this.addressType[rowData.address_type].name.toLowerCase() : '') :
+                    (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
             ) + ', ';
           }
           break;
 
         case 'tx_id':
-          newUTXO = (utxo.outpoint && utxo.outpoint.txid_str ? utxo.outpoint.txid_str.toLowerCase() : '');
+          rowToFilter = (rowData.outpoint && rowData.outpoint.txid_str ? rowData.outpoint.txid_str.toLowerCase() : '');
           break;
 
         case 'output':
-          newUTXO = (utxo.outpoint && utxo.outpoint.output_index ? utxo.outpoint.output_index.toString() : '0');
+          rowToFilter = (rowData.outpoint && rowData.outpoint.output_index ? rowData.outpoint.output_index.toString() : '0');
           break;
 
         case 'address_type':
-          newUTXO = (utxo.address_type && this.addressType[utxo.address_type] && this.addressType[utxo.address_type].name ? this.addressType[utxo.address_type].name.toLowerCase() : '');
+          rowToFilter = (rowData.address_type && this.addressType[rowData.address_type] && this.addressType[rowData.address_type].name ? this.addressType[rowData.address_type].name.toLowerCase() : '');
           break;
 
         default:
-          newUTXO = (utxo[this.selFilterBy] ? utxo[this.selFilterBy].toLowerCase() : '');
+          rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
           break;
       }
-      return newUTXO.includes(fltr);
+      return rowToFilter.includes(fltr);
     };
   }
 

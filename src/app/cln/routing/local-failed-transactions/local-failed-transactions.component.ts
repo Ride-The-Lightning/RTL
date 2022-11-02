@@ -9,7 +9,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { ListForwards, LocalFailedEvent } from '../../../shared/models/clnModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, CLNFailReason, CLNForwardingEventsStatusEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, CLNFailReason, CLNForwardingEventsStatusEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, CLN_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -19,7 +19,8 @@ import { openAlert } from '../../../store/rtl.actions';
 import { getForwardingHistory } from '../../store/cln.actions';
 import { clnPageSettings, localFailedForwardingHistory } from '../../store/cln.selector';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 
 @Component({
   selector: 'rtl-cln-local-failed-history',
@@ -34,6 +35,8 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faExclamationTriangle = faExclamationTriangle;
+  public nodePageDefs = CLN_PAGE_DEFS;
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'routing';
   public tableSetting: TableSetting = { tableId: 'local_failed', recordsPerPage: PAGE_SIZE, sortBy: 'received_time', sortOrder: SortOrderEnum.DESCENDING };
@@ -52,7 +55,7 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe, private router: Router) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe, private router: Router, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -118,6 +121,48 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
     }));
   }
 
+  applyFilter() {
+    this.failedLocalForwardingEvents.filter = this.selFilter.trim().toLowerCase();
+  }
+
+  getLabel(column: string) {
+    const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'all';
+  }
+
+  setFilterPredicate() {
+    this.failedLocalForwardingEvents.filterPredicate = (event: LocalFailedEvent, fltr: string) => {
+      const newEvent = (event.received_time ? this.datePipe.transform(new Date(event.received_time * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') +
+        (event.in_channel_alias ? event.in_channel_alias.toLowerCase() : '') +
+        ((event.failreason && this.CLNFailReason[event.failreason]) ? this.CLNFailReason[event.failreason].toLowerCase() : '') +
+        (event.in_msatoshi ? (event.in_msatoshi / 1000) : '');
+      return newEvent?.includes(fltr) || false;
+    };
+    // this.failedLocalForwardingEvents.filterPredicate = (rowData: LocalFailedEvent, fltr: string) => {
+    //   let rowToFilter = '';
+    //   switch (this.selFilterBy) {
+    //     case 'all':
+    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
+    //         rowToFilter = rowToFilter + (
+    //           (this.displayedColumns[i] === '') ?
+    //             (rowData ? rowData..toLowerCase() : '') :
+    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
+    //         ) + ', ';
+    //       }
+    //       break;
+
+    //     case '':
+    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
+    //       break;
+
+    //     default:
+    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
+    //       break;
+    //   }
+    //   return rowToFilter.includes(fltr);
+    // };
+  }
+
   loadLocalfailedLocalEventsTable(forwardingEvents: LocalFailedEvent[]) {
     this.failedLocalForwardingEvents = new MatTableDataSource<LocalFailedEvent>([...forwardingEvents]);
     this.failedLocalForwardingEvents.sort = this.sort;
@@ -131,14 +176,8 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
       }
     };
     this.failedLocalForwardingEvents.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
-    this.failedLocalForwardingEvents.filterPredicate = (event: LocalFailedEvent, fltr: string) => {
-      const newEvent = (event.received_time ? this.datePipe.transform(new Date(event.received_time * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') +
-        (event.in_channel_alias ? event.in_channel_alias.toLowerCase() : '') +
-        ((event.failreason && this.CLNFailReason[event.failreason]) ? this.CLNFailReason[event.failreason].toLowerCase() : '') +
-        (event.in_msatoshi ? (event.in_msatoshi / 1000) : '');
-      return newEvent?.includes(fltr) || false;
-    };
     this.failedLocalForwardingEvents.paginator = this.paginator;
+    this.setFilterPredicate();
     this.applyFilter();
     this.logger.info(this.failedLocalForwardingEvents);
   }
@@ -147,10 +186,6 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
     if (this.failedLocalForwardingEvents && this.failedLocalForwardingEvents.data && this.failedLocalForwardingEvents.data.length > 0) {
       this.commonService.downloadFile(this.failedLocalForwardingEvents.data, 'Local-failed-transactions');
     }
-  }
-
-  applyFilter() {
-    this.failedLocalForwardingEvents.filter = this.selFilter.trim().toLowerCase();
   }
 
   ngOnDestroy() {

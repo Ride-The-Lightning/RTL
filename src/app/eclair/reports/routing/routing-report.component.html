@@ -37,7 +37,7 @@
       </ngx-charts-bar-vertical>
     </div>
     <div class="mt-1">
-      <rtl-ecl-forwarding-history *ngIf="filteredEventsBySelectedPeriod.length > 0" [pageId]="'reports'" [tableId]="'routing'"[eventsData]="filteredEventsBySelectedPeriod" [filterValue]="eventFilterValue"></rtl-ecl-forwarding-history>
+      <rtl-ecl-forwarding-history *ngIf="filteredEventsBySelectedPeriod.length > 0" [pageId]="'reports'" [tableId]="'routing'"[eventsData]="filteredEventsBySelectedPeriod" [selFilter]="eventFilterValue"></rtl-ecl-forwarding-history>
     </div>
   </div>
 </div>

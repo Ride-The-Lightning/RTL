@@ -8,7 +8,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { PaymentRelayed, Payments } from '../../../shared/models/eclModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, ECL_DEFAULT_PAGE_SETTINGS } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, ECL_DEFAULT_PAGE_SETTINGS, ECL_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -16,7 +16,8 @@ import { CommonService } from '../../../shared/services/common.service';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
 import { eclPageSettings, payments } from '../../store/ecl.selector';
-import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 
 @Component({
   selector: 'rtl-ecl-forwarding-history',
@@ -33,7 +34,9 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   @Input() pageId = 'routing';
   @Input() tableId = 'forwarding_history';
   @Input() eventsData: PaymentRelayed[] = [];
-  @Input() filterValue = '';
+  @Input() selFilter = '';
+  public nodePageDefs = ECL_PAGE_DEFS;
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public tableSetting: TableSetting = { tableId: 'forwarding_history', recordsPerPage: PAGE_SIZE, sortBy: 'timestamp', sortOrder: SortOrderEnum.DESCENDING };
   public displayedColumns: any[] = [];
@@ -47,7 +50,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -103,7 +106,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
         this.loadForwardingEventsTable(this.eventsData);
       }
     }
-    if (changes.filterValue && !changes.filterValue.firstChange) {
+    if (changes.selFilter && !changes.selFilter.firstChange) {
       this.applyFilter();
     }
   }
@@ -136,6 +139,47 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
     }));
   }
 
+  applyFilter() {
+    if (this.forwardingHistoryEvents) {
+      this.forwardingHistoryEvents.filter = this.selFilter.trim().toLowerCase();
+    }
+  }
+
+  getLabel(column: string) {
+    const returnColumn: ColumnDefinition = this.nodePageDefs[this.pageId][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'all';
+  }
+
+  setFilterPredicate() {
+    this.forwardingHistoryEvents.filterPredicate = (rowData: PaymentRelayed, fltr: string) => {
+      const newRowData = ((rowData.timestamp) ? this.datePipe.transform(new Date(rowData.timestamp), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      return newRowData.includes(fltr);
+    };
+    // this.forwardingHistoryEvents.filterPredicate = (rowData: PaymentRelayed, fltr: string) => {
+    //   let rowToFilter = '';
+    //   switch (this.selFilterBy) {
+    //     case 'all':
+    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
+    //         rowToFilter = rowToFilter + (
+    //           (this.displayedColumns[i] === '') ?
+    //             (rowData ? rowData..toLowerCase() : '') :
+    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
+    //         ) + ', ';
+    //       }
+    //       break;
+
+    //     case '':
+    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
+    //       break;
+
+    //     default:
+    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
+    //       break;
+    //   }
+    //   return rowToFilter.includes(fltr);
+    // };
+  }
+
   loadForwardingEventsTable(forwardingEvents: PaymentRelayed[]) {
     this.forwardingHistoryEvents = new MatTableDataSource<PaymentRelayed>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
@@ -149,11 +193,8 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
       }
     };
     this.forwardingHistoryEvents.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
-    this.forwardingHistoryEvents.filterPredicate = (rowData: PaymentRelayed, fltr: string) => {
-      const newRowData = ((rowData.timestamp) ? this.datePipe.transform(new Date(rowData.timestamp), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
-      return newRowData.includes(fltr);
-    };
     this.forwardingHistoryEvents.paginator = this.paginator;
+    this.setFilterPredicate();
     this.applyFilter();
     this.logger.info(this.forwardingHistoryEvents);
   }
@@ -161,12 +202,6 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   onDownloadCSV() {
     if (this.forwardingHistoryEvents && this.forwardingHistoryEvents.data && this.forwardingHistoryEvents.data.length > 0) {
       this.commonService.downloadFile(this.forwardingHistoryEvents.data, 'Forwarding-history');
-    }
-  }
-
-  applyFilter() {
-    if (this.forwardingHistoryEvents) {
-      this.forwardingHistoryEvents.filter = this.filterValue.trim().toLowerCase();
     }
   }
 
