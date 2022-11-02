@@ -38,7 +38,7 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
   public faEye = faEye;
   public faEyeSlash = faEyeSlash;
   public nodePageDefs = CLN_PAGE_DEFS;
-  public selFilterBy = 'All';
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'peers_channels';
   public tableSetting: TableSetting = { tableId: 'pending_inactive_channels', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING };
@@ -170,42 +170,43 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'All';
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : this.commonService.titleCase(column);
   }
 
   setFilterPredicate() {
-    this.channels.filterPredicate = (channel: Channel, fltr: string) => {
-      const newChannel = ((channel.connected) ? 'connected' : 'disconnected') + (channel.channel_id ? channel.channel_id.toLowerCase() : '') +
-        (channel.short_channel_id ? channel.short_channel_id.toLowerCase() : '') + (channel.id ? channel.id.toLowerCase() : '') + (channel.alias ? channel.alias.toLowerCase() : '') +
-        (channel.private ? 'private' : 'public') + ((channel.state && this.CLNChannelPendingState[channel.state]) ? this.CLNChannelPendingState[channel.state].toLowerCase() : '') +
-        (channel.funding_txid ? channel.funding_txid.toLowerCase() : '') + (channel.msatoshi_to_us ? channel.msatoshi_to_us : '') +
-        (channel.msatoshi_total ? channel.msatoshi_total : '') + (channel.their_channel_reserve_satoshis ? channel.their_channel_reserve_satoshis : '') +
-        (channel.our_channel_reserve_satoshis ? channel.our_channel_reserve_satoshis : '') + (channel.spendable_msatoshi ? channel.spendable_msatoshi : '');
-      return newChannel.includes(fltr);
+    this.channels.filterPredicate = (rowData: Channel, fltr: string) => {
+      let rowToFilter = '';
+      switch (this.selFilterBy) {
+        case 'all':
+          rowToFilter = ((rowData.connected) ? 'connected' : 'disconnected') + (rowData.channel_id ? rowData.channel_id.toLowerCase() : '') +
+          (rowData.short_channel_id ? rowData.short_channel_id.toLowerCase() : '') + (rowData.id ? rowData.id.toLowerCase() : '') + (rowData.alias ? rowData.alias.toLowerCase() : '') +
+          (rowData.private ? 'private' : 'public') + ((rowData.state && this.CLNChannelPendingState[rowData.state]) ? this.CLNChannelPendingState[rowData.state].toLowerCase() : '') +
+          (rowData.funding_txid ? rowData.funding_txid.toLowerCase() : '') + (rowData.msatoshi_to_us ? rowData.msatoshi_to_us : '') +
+          (rowData.msatoshi_total ? rowData.msatoshi_total : '') + (rowData.their_channel_reserve_satoshis ? rowData.their_channel_reserve_satoshis : '') +
+          (rowData.our_channel_reserve_satoshis ? rowData.our_channel_reserve_satoshis : '') + (rowData.spendable_msatoshi ? rowData.spendable_msatoshi : '');
+          break;
+
+        case 'private':
+          rowToFilter = rowData?.private ? 'private' : 'public';
+          break;
+
+        case 'connected':
+          rowToFilter = rowData?.connected ? 'connected' : 'disconnected';
+          break;
+
+        case 'msatoshi_total':
+        case 'spendable_msatoshi':
+        case 'msatoshi_to_us':
+        case 'msatoshi_to_them':
+          rowToFilter = ((+(rowData[this.selFilterBy] || 0)) / 1000)?.toString() || '';
+          break;
+
+        default:
+          rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          break;
+      }
+      return this.selFilterBy === 'connected' ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);
     };
-    // this.invoices.filterPredicate = (rowData: Invoice, fltr: string) => {
-    //   let rowToFilter = '';
-    //   switch (this.selFilterBy) {
-    //     case 'All':
-    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
-    //         rowToFilter = rowToFilter + (
-    //           (this.displayedColumns[i] === '') ?
-    //             (rowData ? rowData..toLowerCase() : '') :
-    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
-    //         ) + ', ';
-    //       }
-    //       break;
-
-    //     case '':
-    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
-    //       break;
-
-    //     default:
-    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
-    //       break;
-    //   }
-    //   return rowToFilter.includes(fltr);
-    // };
   }
 
   loadChannelsTable(mychannels) {

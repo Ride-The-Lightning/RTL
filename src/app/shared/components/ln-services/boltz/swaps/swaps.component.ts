@@ -37,7 +37,7 @@ export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, On
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public nodePageDefs = LND_PAGE_DEFS;
-  public selFilterBy = 'All';
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'boltz';
   public tableSettingSwapOut: TableSetting = { tableId: 'swap_out', recordsPerPage: PAGE_SIZE, sortBy: 'status', sortOrder: SortOrderEnum.DESCENDING };
@@ -117,15 +117,15 @@ export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, On
   getLabel(column: string) {
     const tableId = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? this.tableSettingSwapIn.tableId : this.tableSettingSwapOut.tableId;
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'All';
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : this.commonService.titleCase(column);
   }
 
   setFilterPredicate() {
-    this.listSwaps.filterPredicate = (swap: Swap, fltr: string) => JSON.stringify(swap).toLowerCase().includes(fltr);
+    this.listSwaps.filterPredicate = (rowData: Swap, fltr: string) => JSON.stringify(rowData).toLowerCase().includes(fltr);
     // this.listSwaps.filterPredicate = (rowData: Swap, fltr: string) => {
     //   let rowToFilter = '';
     //   switch (this.selFilterBy) {
-    //     case 'All':
+    //     case 'all':
     //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
     //         rowToFilter = rowToFilter + (
     //           (this.displayedColumns[i] === '') ?
@@ -136,11 +136,11 @@ export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, On
     //       break;
 
     //     case '':
-    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
+    //       rowToFilter = rowData?..toLowerCase() || '';
     //       break;
 
     //     default:
-    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
+    //       rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
     //       break;
     //   }
     //   return rowToFilter.includes(fltr);

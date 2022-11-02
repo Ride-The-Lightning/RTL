@@ -36,7 +36,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   @Input() eventsData: PaymentRelayed[] = [];
   @Input() selFilter = '';
   public nodePageDefs = ECL_PAGE_DEFS;
-  public selFilterBy = 'All';
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public tableSetting: TableSetting = { tableId: 'forwarding_history', recordsPerPage: PAGE_SIZE, sortBy: 'timestamp', sortOrder: SortOrderEnum.DESCENDING };
   public displayedColumns: any[] = [];
@@ -147,7 +147,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.pageId][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'All';
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : this.commonService.titleCase(column);
   }
 
   setFilterPredicate() {
@@ -158,7 +158,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
     // this.forwardingHistoryEvents.filterPredicate = (rowData: PaymentRelayed, fltr: string) => {
     //   let rowToFilter = '';
     //   switch (this.selFilterBy) {
-    //     case 'All':
+    //     case 'all':
     //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
     //         rowToFilter = rowToFilter + (
     //           (this.displayedColumns[i] === '') ?
@@ -169,11 +169,11 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
     //       break;
 
     //     case '':
-    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
+    //       rowToFilter = rowData?..toLowerCase() || '';
     //       break;
 
     //     default:
-    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
+    //       rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
     //       break;
     //   }
     //   return rowToFilter.includes(fltr);

@@ -43,7 +43,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public nodePageDefs = LND_PAGE_DEFS;
-  public selFilterBy = 'All';
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'peers_channels';
   public tableSetting: TableSetting = { tableId: 'open', recordsPerPage: PAGE_SIZE, sortBy: 'balancedness', sortOrder: SortOrderEnum.DESCENDING };
@@ -313,23 +313,23 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'All';
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : this.commonService.titleCase(column);
   }
 
   setFilterPredicate() {
-    this.channels.filterPredicate = (channel: Channel, fltr: string) => {
-      const newChannel = ((channel.active) ? 'active' : 'inactive') + (channel.chan_id ? channel.chan_id.toLowerCase() : '') +
-        (channel.remote_pubkey ? channel.remote_pubkey.toLowerCase() : '') + (channel.remote_alias ? channel.remote_alias.toLowerCase() : '') +
-        (channel.capacity ? channel.capacity : '') + (channel.local_balance ? channel.local_balance : '') +
-        (channel.remote_balance ? channel.remote_balance : '') + (channel.total_satoshis_sent ? channel.total_satoshis_sent : '') +
-        (channel.total_satoshis_received ? channel.total_satoshis_received : '') + (channel.commit_fee ? channel.commit_fee : '') +
-        (channel.private ? 'private' : 'public');
-      return newChannel.includes(fltr);
+    this.channels.filterPredicate = (rowData: Channel, fltr: string) => {
+      const rowToFilter = ((rowData.active) ? 'active' : 'inactive') + (rowData.chan_id ? rowData.chan_id.toLowerCase() : '') +
+        (rowData.remote_pubkey ? rowData.remote_pubkey.toLowerCase() : '') + (rowData.remote_alias ? rowData.remote_alias.toLowerCase() : '') +
+        (rowData.capacity ? rowData.capacity : '') + (rowData.local_balance ? rowData.local_balance : '') +
+        (rowData.remote_balance ? rowData.remote_balance : '') + (rowData.total_satoshis_sent ? rowData.total_satoshis_sent : '') +
+        (rowData.total_satoshis_received ? rowData.total_satoshis_received : '') + (rowData.commit_fee ? rowData.commit_fee : '') +
+        (rowData.private ? 'private' : 'public');
+      return rowToFilter.includes(fltr);
     };
     // this.channels.filterPredicate = (rowData: Channel, fltr: string) => {
     //   let rowToFilter = '';
     //   switch (this.selFilterBy) {
-    //     case 'All':
+    //     case 'all':
     //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
     //         rowToFilter = rowToFilter + (
     //           (this.displayedColumns[i] === '') ?
@@ -339,15 +339,23 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     //       }
     //       break;
 
+    //     case 'active':
+    //       rowToFilter = rowData?.active ? 'active' : 'inactive';
+    //       break;
+
+    //     case 'private':
+    //       rowToFilter = rowData?.private ? 'private' : 'public';
+    //       break;
+
     //     case '':
-    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
+    //       rowToFilter = rowData?..toLowerCase() || '';
     //       break;
 
     //     default:
-    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
+    //       rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
     //       break;
     //   }
-    //   return rowToFilter.includes(fltr);
+    //   return this.selFilterBy === 'active' ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);
     // };
   }
 

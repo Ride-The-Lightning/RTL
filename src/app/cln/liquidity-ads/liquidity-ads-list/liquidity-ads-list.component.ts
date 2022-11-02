@@ -19,7 +19,7 @@ import { RTLState } from '../../../store/rtl.state';
 import { RTLEffects } from '../../../store/rtl.effects';
 import { CLNOpenLiquidityChannelComponent } from '../open-liquidity-channel-modal/open-liquidity-channel-modal.component';
 import { clnPageSettings, nodeInfoAndNodeSettingsAndBalance } from '../../store/cln.selector';
-import { DecimalPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 
@@ -36,7 +36,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public nodePageDefs = CLN_PAGE_DEFS;
-  public selFilterBy = 'All';
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'liquidity_ads';
   public tableSetting: TableSetting = { tableId: 'liquidity_ads', recordsPerPage: PAGE_SIZE, sortBy: 'channel_opening_fee', sortOrder: SortOrderEnum.ASCENDING };
@@ -64,7 +64,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<RTLState>, private dataService: DataService, private commonService: CommonService, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private dataService: DataService, private commonService: CommonService, private rtlEffects: RTLEffects, private datePipe: DatePipe, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.askTooltipMsg = 'Specify the liquidity requirements for your node: \n 1. Channel Amount - Amount in Sats you need on the channel opened to your node \n 2. Channel opening fee rate - Rate in Sats/vByte that you are willing to pay to open the channel to you';
     this.nodesTooltipMsg = 'These nodes are advertising their liquidity offering on the network.\nYou should pay attention to the following aspects to evaluate each node offer: \n- The total bitcoin deployed on the node, the more the better\n';
     this.nodesTooltipMsg = this.nodesTooltipMsg + '- The number of channels open on the node, the more the better' +
@@ -140,40 +140,46 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'All';
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : this.commonService.titleCase(column);
   }
 
   setFilterPredicate() {
-    this.liquidityNodes.filterPredicate = (node: LookupNode, fltr: string) => {
-      const newNode = ((node.alias) ? node.alias.toLocaleLowerCase() : '') + (node.channel_opening_fee ? node.channel_opening_fee + ' Sats' : '') +
-      (node.option_will_fund?.lease_fee_base_msat ? (node.option_will_fund?.lease_fee_base_msat / 1000) + ' Sats' : '') + (node.option_will_fund?.lease_fee_basis ? (this.decimalPipe.transform(node.option_will_fund?.lease_fee_basis / 100, '1.2-2') + '%') : '') +
-      (node.option_will_fund?.channel_fee_max_base_msat ? (node.option_will_fund?.channel_fee_max_base_msat / 1000) + ' Sats' : '') + (node.option_will_fund?.channel_fee_max_proportional_thousandths ? (node.option_will_fund?.channel_fee_max_proportional_thousandths * 1000) + ' ppm' : '') +
-      (node.address_types ? node.address_types.reduce((acc, curr) => acc + (curr === 'tor' ? ' tor' : curr === 'ipv' ? ' clearnet' : (' ' + curr.toLowerCase())), '') : '');
-      return newNode.includes(fltr);
+    this.liquidityNodes.filterPredicate = (rowData: LookupNode, fltr: string) => {
+      let rowToFilter = '';
+      switch (this.selFilterBy) {
+        case 'all':
+          rowToFilter = ((rowData.alias) ? rowData.alias.toLocaleLowerCase() : '') + (rowData.channel_opening_fee ? rowData.channel_opening_fee + ' Sats' : '') +
+          (rowData.option_will_fund?.lease_fee_base_msat ? (rowData.option_will_fund?.lease_fee_base_msat / 1000) + ' Sats' : '') + (rowData.option_will_fund?.lease_fee_basis ? ((rowData.option_will_fund?.lease_fee_basis / 100) + '%') : '') +
+          (rowData.option_will_fund?.channel_fee_max_base_msat ? (rowData.option_will_fund?.channel_fee_max_base_msat / 1000) + ' Sats' : '') + (rowData.option_will_fund?.channel_fee_max_proportional_thousandths ? (rowData.option_will_fund?.channel_fee_max_proportional_thousandths * 1000) + ' ppm' : '') +
+          (rowData.address_types ? rowData.address_types.reduce((acc, curr) => acc + (curr === 'tor' ? ' tor' : curr === 'ipv' ? ' clearnet' : (' ' + curr.toLowerCase())), '') : '');
+          break;
+
+        case 'alias':
+          rowToFilter = ((rowData?.alias?.toLowerCase() || ' ') + rowData?.address_types?.reduce((acc, curr) => acc + (!curr ? '' : (curr === 'ipv' ? 'clearnet' : curr)), ' ')) || '';
+          break;
+
+        case 'last_timestamp':
+          rowToFilter = this.datePipe.transform(new Date((rowData.last_timestamp || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() || '';
+          break;
+
+        case 'compact_lease':
+          rowToFilter = rowData?.option_will_fund?.compact_lease?.toLowerCase() || '';
+          break;
+
+        case 'lease_fee':
+          rowToFilter = ((((rowData.option_will_fund?.lease_fee_base_msat || 0) / 1000) + ' sats ' || ' ') + (((rowData.option_will_fund?.lease_fee_basis || 0) / 100) + '%')) || '';
+          break;
+
+        case 'routing_fee':
+          rowToFilter = ((((rowData.option_will_fund?.channel_fee_max_base_msat || 0) / 1000) + ' sats ' || ' ') + (((rowData.option_will_fund?.channel_fee_max_proportional_thousandths || 0) * 1000) + ' ppm')) || '';
+          break;
+
+        default:
+          rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          break;
+      }
+      return rowToFilter.includes(fltr);
     };
-    // this.liquidityNodes.filterPredicate = (rowData: LookupNode, fltr: string) => {
-    //   let rowToFilter = '';
-    //   switch (this.selFilterBy) {
-    //     case 'All':
-    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
-    //         rowToFilter = rowToFilter + (
-    //           (this.displayedColumns[i] === '') ?
-    //             (rowData ? rowData..toLowerCase() : '') :
-    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
-    //         ) + ', ';
-    //       }
-    //       break;
-
-    //     case '':
-    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
-    //       break;
-
-    //     default:
-    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
-    //       break;
-    //   }
-    //   return rowToFilter.includes(fltr);
-    // };
   }
 
   loadLiqNodesTable(liqNodes: LookupNode[]) {

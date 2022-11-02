@@ -3,7 +3,7 @@
     <div fxFlex="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
       <mat-form-field fxFlex="49">
         <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()" name="filterBy">
-          <mat-option *ngFor="let column of (utxos && utxos.length > 0 && dustUtxos && dustUtxos.length > 0 && !isDustUTXO ? ['All'].concat(displayedColumns.slice(1).slice(0, -1)) : ['All'].concat(displayedColumns.slice(0, -1)))" [value]="column">{{getLabel(column)}}</mat-option>
+          <mat-option *ngFor="let column of (utxos && utxos.length > 0 && dustUtxos && dustUtxos.length > 0 && !isDustUTXO ? ['all'].concat(displayedColumns.slice(0, -1)) : ['all'].concat(displayedColumns.slice(0, -1)))" [value]="column">{{getLabel(column)}}</mat-option>
         </mat-select>
       </mat-form-field>
       <mat-form-field fxFlex="49">
@@ -16,7 +16,7 @@
       <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table fxFlex="100" [dataSource]="listUTXOs" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="is_dust">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header matTooltip="Dust/Non-dust"></th>
           <td mat-cell *matCellDef="let utxo">
             <span *ngIf="utxo.amount_sat < DUST_AMOUNT; else emptySpace" matTooltip="Risk of dust attack" matTooltipPosition="right">
               <mat-icon fxLayoutAlign="start center" color="warn" class="small-icon">warning</mat-icon>

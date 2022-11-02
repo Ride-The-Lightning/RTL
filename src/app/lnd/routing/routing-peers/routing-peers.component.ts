@@ -32,8 +32,8 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('paginatorIn', { static: false }) paginatorIn: MatPaginator | undefined;
   @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator | undefined;
   public nodePageDefs = LND_PAGE_DEFS;
-  public selFilterByIn = 'All';
-  public selFilterByOut = 'All';
+  public selFilterByIn = 'all';
+  public selFilterByOut = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'routing';
   public tableSetting: TableSetting = { tableId: 'routing_peers', recordsPerPage: PAGE_SIZE, sortBy: 'total_amount', sortOrder: SortOrderEnum.DESCENDING };
@@ -134,16 +134,16 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'All';
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : this.commonService.titleCase(column);
   }
 
   setFilterPredicate() {
-    this.routingPeersIncoming.filterPredicate = (rpIn: RoutingPeers, fltr: string) => JSON.stringify(rpIn).toLowerCase().includes(fltr);
-    this.routingPeersOutgoing.filterPredicate = (rpOut: RoutingPeers, fltr: string) => JSON.stringify(rpOut).toLowerCase().includes(fltr);
+    this.routingPeersIncoming.filterPredicate = (rowDataIn: RoutingPeers, fltr: string) => JSON.stringify(rowDataIn).toLowerCase().includes(fltr);
+    this.routingPeersOutgoing.filterPredicate = (rowDataOut: RoutingPeers, fltr: string) => JSON.stringify(rowDataOut).toLowerCase().includes(fltr);
     // this.routingPeersIncoming.filterPredicate = (rowData: RoutingPeer, fltr: string) => {
     //   let rowToFilter = '';
     //   switch (this.selFilterBy) {
-    //     case 'All':
+    //     case 'all':
     //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
     //         rowToFilter = rowToFilter + (
     //           (this.displayedColumns[i] === '') ?
@@ -154,11 +154,11 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
     //       break;
 
     //     case '':
-    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
+    //       rowToFilter = rowData?..toLowerCase() || '';
     //       break;
 
     //     default:
-    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
+    //       rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
     //       break;
     //   }
     //   return rowToFilter.includes(fltr);

@@ -175,7 +175,7 @@ export class DatabaseService {
     } catch (err) {
       const selNode = this.nodeDatabase[nodeIndex] && this.nodeDatabase[nodeIndex].adapter && this.nodeDatabase[nodeIndex].adapter.selNode ? this.nodeDatabase[nodeIndex].adapter.selNode : null;
       this.logger.log({ selectedNode: selNode, level: 'ERROR', fileName: 'Database', msg: 'Database Save Error', error: err });
-      return new Error(err);
+      throw err;
     }
   }
 
@@ -223,10 +223,10 @@ export class DatabaseAdapter {
   fetchData(collectionName: string) {
     try {
       if (!fs.existsSync(this.dbFilePath)) {
-        fs.mkdirSync(this.dbFilePath);
+        this.common.createDirectory(this.dbFilePath);
       }
     } catch (err) {
-      return new Error('Unable to Create Directory Error ' + JSON.stringify(err));
+      throw new Error(JSON.stringify(err));
     }
     const collectionFilePath = this.dbFilePath + sep + 'rtldb-' + this.selNode.ln_implementation + '-' + collectionName + '.json';
     try {
@@ -234,7 +234,7 @@ export class DatabaseAdapter {
         fs.writeFileSync(collectionFilePath, '[]');
       }
     } catch (err) {
-      return new Error('Unable to Create Database File Error ' + JSON.stringify(err));
+      throw new Error(JSON.stringify(err));
     }
     try {
       const otherFiles = fs.readdirSync(this.dbFilePath);
@@ -251,7 +251,7 @@ export class DatabaseAdapter {
       const dataObj = !dataFromFile ? null : (<Collections>JSON.parse(dataFromFile));
       return dataObj;
     } catch (err) {
-      return new Error('Database Read Error ' + JSON.stringify(err));
+      throw new Error(JSON.stringify(err));
     }
   }
 
@@ -269,7 +269,7 @@ export class DatabaseAdapter {
       }
       return true;
     } catch (err) {
-      return new Error('Database Write Error ' + JSON.stringify(err));
+      throw err;
     }
   }
 

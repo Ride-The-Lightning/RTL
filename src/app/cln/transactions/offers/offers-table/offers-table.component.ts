@@ -44,7 +44,7 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   faHistory = faHistory;
   public nodePageDefs = CLN_PAGE_DEFS;
-  public selFilterBy = 'All';
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'transactions';
   public tableSetting: TableSetting = { tableId: 'offers', recordsPerPage: PAGE_SIZE, sortBy: 'offer_id', sortOrder: SortOrderEnum.DESCENDING };
@@ -231,40 +231,30 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'All';
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : this.commonService.titleCase(column);
   }
 
   setFilterPredicate() {
     this.offers.filterPredicate = (rowData: Offer, fltr: string) => {
-      const newRowData = ((rowData.active) ? ' active' : ' inactive') + ((rowData.used) ? ' used' : ' unused') + ((rowData.single_use) ? ' single' : ' multiple') + JSON.stringify(rowData).toLowerCase();
-      if (fltr === 'active' || fltr === 'inactive' || fltr === 'used' || fltr === 'unused' || fltr === 'single' || fltr === 'multiple') {
-        fltr = ' ' + fltr;
+      let rowToFilter = '';
+      switch (this.selFilterBy) {
+        case 'all':
+          rowToFilter = ((rowData.active) ? ' active' : ' inactive') + ((rowData.used) ? ' yes' : ' no') + ((rowData.single_use) ? ' single' : ' multiple') + JSON.stringify(rowData).toLowerCase();
+          if (fltr === 'active' || fltr === 'inactive' || fltr === 'single' || fltr === 'multiple') {
+            fltr = ' ' + fltr;
+          }
+          break;
+
+        case 'active':
+          rowToFilter = rowData?.active ? 'active' : 'inactive';
+          break;
+
+        default:
+          rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          break;
       }
-      return newRowData.includes(fltr);
+      return this.selFilterBy === 'active' ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);
     };
-    // this.offers.filterPredicate = (rowData: Offer, fltr: string) => {
-    //   let rowToFilter = '';
-    //   switch (this.selFilterBy) {
-    //     case 'All':
-    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
-    //         rowToFilter = rowToFilter + (
-    //           (this.displayedColumns[i] === '') ?
-    //             (rowData ? rowData..toLowerCase() : '') :
-    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
-    //         ) + ', ';
-    //       }
-    //       break;
-
-    //     case '':
-    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
-    //       break;
-
-    //     default:
-    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
-    //       break;
-    //   }
-    //   return rowToFilter.includes(fltr);
-    // };
   }
 
   loadOffersTable(offrs: Offer[]) {

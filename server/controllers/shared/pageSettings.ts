@@ -1,7 +1,7 @@
 import { Database, DatabaseService } from '../../utils/database.js';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
-import { CollectionFieldsEnum, CollectionsEnum, PageSettings } from '../../models/database.model.js';
+import { CollectionsEnum, PageSettings } from '../../models/database.model.js';
 
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
@@ -27,7 +27,7 @@ export const savePageSettings = (req, res, next) => {
       res.status(201).json(insertRes);
     }).catch((insertErrRes) => {
       const err = common.handleError(insertErrRes, 'Page Settings', 'Page Settings Update Error', req.session.selectedNode);
-      throw new Error(JSON.stringify({ message: err.message, error: err.error }));
+      return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Page Settings', 'Page Settings Validation Error', req.session.selectedNode);

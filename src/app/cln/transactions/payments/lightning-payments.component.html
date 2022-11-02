@@ -22,7 +22,7 @@
       <div fxFlex="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
         <mat-form-field fxFlex="49">
           <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()" name="filterBy">
-            <mat-option *ngFor="let column of ['All'].concat(displayedColumns.slice(1).slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
+            <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
           </mat-select>
         </mat-form-field>
         <mat-form-field fxFlex="49">
@@ -38,7 +38,7 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" matTooltip="Status"></th>
             <td mat-cell *matCellDef="let payment">
               <span *ngIf="payment.status === 'complete'" class="dot green" matTooltip="Completed" matTooltipPosition="right"></span>
-              <span *ngIf="payment.status !== 'complete'" class="dot yellow" matTooltip="Failed" matTooltipPosition="right"></span>
+              <span *ngIf="payment.status !== 'complete'" class="dot yellow" matTooltip="Incomplete/Failed" matTooltipPosition="right"></span>
             </td>
           </ng-container>
           <ng-container matColumnDef="created_at">

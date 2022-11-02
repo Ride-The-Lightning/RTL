@@ -47,7 +47,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   public faBurst = faBurst;
   public faMoneyBill1 = faMoneyBill1;
   public nodePageDefs = LND_PAGE_DEFS;
-  public selFilterBy = 'All';
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'transactions';
   public tableSetting: TableSetting = { tableId: 'invoices', recordsPerPage: PAGE_SIZE, sortBy: 'creation_date', sortOrder: SortOrderEnum.DESCENDING };
@@ -179,19 +179,19 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'All';
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : this.commonService.titleCase(column);
   }
 
   setFilterPredicate() {
-    this.invoices.filterPredicate = (invoice: Invoice, fltr: string) => {
-      const newInvoice = (invoice.creation_date ? this.datePipe.transform(new Date(invoice.creation_date * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '')! +
-      (invoice.settle_date ? this.datePipe.transform(new Date(invoice.settle_date * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(invoice).toLowerCase();
-      return newInvoice.includes(fltr);
+    this.invoices.filterPredicate = (rowData: Invoice, fltr: string) => {
+      const rowToFilter = (rowData.creation_date ? this.datePipe.transform(new Date(rowData.creation_date * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '')! +
+      (rowData.settle_date ? this.datePipe.transform(new Date(rowData.settle_date * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      return rowToFilter.includes(fltr);
     };
     // this.invoices.filterPredicate = (rowData: Invoice, fltr: string) => {
     //   let rowToFilter = '';
     //   switch (this.selFilterBy) {
-    //     case 'All':
+    //     case 'all':
     //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
     //         rowToFilter = rowToFilter + (
     //           (this.displayedColumns[i] === '') ?
@@ -202,11 +202,11 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
     //       break;
 
     //     case '':
-    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
+    //       rowToFilter = rowData?..toLowerCase() || '';
     //       break;
 
     //     default:
-    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
+    //       rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
     //       break;
     //   }
     //   return rowToFilter.includes(fltr);

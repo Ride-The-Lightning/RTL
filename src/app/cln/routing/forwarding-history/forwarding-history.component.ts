@@ -38,7 +38,7 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   @Input() eventsData = [];
   @Input() selFilter = '';
   public nodePageDefs = CLN_PAGE_DEFS;
-  public selFilterBy = 'All';
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public tableSetting: TableSetting = { tableId: 'forwarding_history', recordsPerPage: PAGE_SIZE, sortBy: 'received_time', sortOrder: SortOrderEnum.DESCENDING };
   public successfulEvents: ForwardingEvent[] = [];
@@ -156,41 +156,37 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.pageId][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'All';
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : this.commonService.titleCase(column);
   }
 
   setFilterPredicate() {
-    this.forwardingHistoryEvents.filterPredicate = (event: ForwardingEvent, fltr: string) => {
-      const newEvent = (event.received_time ? this.datePipe.transform(new Date(event.received_time * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() + ' ' : '') +
-        (event.resolved_time ? this.datePipe.transform(new Date(event.resolved_time * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() + ' ' : '') +
-        (event.in_channel ? event.in_channel.toLowerCase() + ' ' : '') + (event.out_channel ? event.out_channel.toLowerCase() + ' ' : '') +
-        (event.in_channel_alias ? event.in_channel_alias.toLowerCase() + ' ' : '') + (event.out_channel_alias ? event.out_channel_alias.toLowerCase() + ' ' : '') +
-        (event.in_msatoshi ? (event.in_msatoshi / 1000) + ' ' : '') + (event.out_msatoshi ? (event.out_msatoshi / 1000) + ' ' : '') + (event.fee ? event.fee + ' ' : '');
-      return newEvent.includes(fltr);
+    this.forwardingHistoryEvents.filterPredicate = (rowData: ForwardingEvent, fltr: string) => {
+      let rowToFilter = '';
+      switch (this.selFilterBy) {
+        case 'all':
+          rowToFilter = (rowData.received_time ? this.datePipe.transform(new Date(rowData.received_time * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() + ' ' : '') +
+          (rowData.resolved_time ? this.datePipe.transform(new Date(rowData.resolved_time * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() + ' ' : '') +
+          (rowData.in_channel ? rowData.in_channel.toLowerCase() + ' ' : '') + (rowData.out_channel ? rowData.out_channel.toLowerCase() + ' ' : '') +
+          (rowData.in_channel_alias ? rowData.in_channel_alias.toLowerCase() + ' ' : '') + (rowData.out_channel_alias ? rowData.out_channel_alias.toLowerCase() + ' ' : '') +
+          (rowData.in_msatoshi ? (rowData.in_msatoshi / 1000) + ' ' : '') + (rowData.out_msatoshi ? (rowData.out_msatoshi / 1000) + ' ' : '') + (rowData.fee ? rowData.fee + ' ' : '');
+          break;
+
+        case 'received_time':
+        case 'resolved_time':
+          rowToFilter = this.datePipe.transform(new Date((rowData[this.selFilterBy] || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() || '';
+          break;
+
+        case 'in_msatoshi':
+        case 'out_msatoshi':
+          rowToFilter = ((+(rowData[this.selFilterBy] || 0)) / 1000)?.toString() || '';
+          break;
+
+        default:
+          rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          break;
+      }
+      return rowToFilter.includes(fltr);
     };
-    // this.forwardingHistoryEvents.filterPredicate = (rowData: ForwardingEvent, fltr: string) => {
-    //   let rowToFilter = '';
-    //   switch (this.selFilterBy) {
-    //     case 'All':
-    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
-    //         rowToFilter = rowToFilter + (
-    //           (this.displayedColumns[i] === '') ?
-    //             (rowData ? rowData..toLowerCase() : '') :
-    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
-    //         ) + ', ';
-    //       }
-    //       break;
-
-    //     case '':
-    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
-    //       break;
-
-    //     default:
-    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
-    //       break;
-    //   }
-    //   return rowToFilter.includes(fltr);
-    // };
   }
 
   loadForwardingEventsTable(forwardingEvents: ForwardingEvent[]) {

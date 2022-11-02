@@ -35,8 +35,8 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
   @Input() eventsData = [];
   @Input() selFilter = '';
   public nodePageDefs = CLN_PAGE_DEFS;
-  public selFilterByIn = 'All';
-  public selFilterByOut = 'All';
+  public selFilterByIn = 'all';
+  public selFilterByOut = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'routing';
   public tableSetting: TableSetting = { tableId: 'routing_peers', recordsPerPage: PAGE_SIZE, sortBy: 'total_fee', sortOrder: SortOrderEnum.DESCENDING };
@@ -126,35 +126,47 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'All';
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : this.commonService.titleCase(column);
   }
 
   setFilterPredicate() {
-    this.routingPeersIncoming.filterPredicate = (rpIn: RoutingPeer, fltr: string) => JSON.stringify(rpIn).toLowerCase().includes(fltr);
-    this.routingPeersOutgoing.filterPredicate = (rpOut: RoutingPeer, fltr: string) => JSON.stringify(rpOut).toLowerCase().includes(fltr);
-    // this.routingPeersIncoming.filterPredicate = (rowData: RoutingPeer, fltr: string) => {
-    //   let rowToFilter = '';
-    //   switch (this.selFilterBy) {
-    //     case 'All':
-    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
-    //         rowToFilter = rowToFilter + (
-    //           (this.displayedColumns[i] === '') ?
-    //             (rowData ? rowData..toLowerCase() : '') :
-    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
-    //         ) + ', ';
-    //       }
-    //       break;
+    this.routingPeersIncoming.filterPredicate = (rowDataIn: RoutingPeer, fltr: string) => {
+      let rowToFilter = '';
+      switch (this.selFilterByIn) {
+        case 'all':
+          rowToFilter = JSON.stringify(rowDataIn).toLowerCase();
+          break;
 
-    //     case '':
-    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
-    //       break;
+        case 'total_amount':
+        case 'total_fee':
+          rowToFilter = ((+(rowDataIn[this.selFilterByIn] || 0)) / 1000)?.toString() || '';
+          break;
 
-    //     default:
-    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
-    //       break;
-    //   }
-    //   return rowToFilter.includes(fltr);
-    // };
+        default:
+          rowToFilter = typeof rowDataIn[this.selFilterByIn] === 'string' ? rowDataIn[this.selFilterByIn].toLowerCase() : typeof rowDataIn[this.selFilterByIn] === 'boolean' ? (rowDataIn[this.selFilterByIn] ? 'yes' : 'no') : rowDataIn[this.selFilterByIn].toString();
+          break;
+      }
+      return rowToFilter.includes(fltr);
+    };
+
+    this.routingPeersIncoming.filterPredicate = (rowDataOut: RoutingPeer, fltr: string) => {
+      let rowToFilter = '';
+      switch (this.selFilterByOut) {
+        case 'all':
+          rowToFilter = JSON.stringify(rowDataOut).toLowerCase();
+          break;
+
+        case 'total_amount':
+        case 'total_fee':
+          rowToFilter = ((+(rowDataOut[this.selFilterByOut] || 0)) / 1000)?.toString() || '';
+          break;
+
+        default:
+          rowToFilter = typeof rowDataOut[this.selFilterByOut] === 'string' ? rowDataOut[this.selFilterByOut].toLowerCase() : typeof rowDataOut[this.selFilterByOut] === 'boolean' ? (rowDataOut[this.selFilterByOut] ? 'yes' : 'no') : rowDataOut[this.selFilterByOut].toString();
+          break;
+      }
+      return rowToFilter.includes(fltr);
+    };
   }
 
   loadRoutingPeersTable(events: ForwardingEvent[]) {

@@ -7,7 +7,7 @@
         <div fxFlex="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
           <mat-form-field fxFlex="49">
             <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterByIn" (selectionChange)="selFilterIn=''; applyFilterIncoming()" name="filterByIn">
-              <mat-option *ngFor="let column of ['All'].concat(displayedColumns)" [value]="column">{{getLabel(column)}}</mat-option>
+              <mat-option *ngFor="let column of ['all'].concat(displayedColumns)" [value]="column">{{getLabel(column)}}</mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field fxFlex="49">
@@ -71,7 +71,7 @@
         <div fxFlex="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
           <mat-form-field fxFlex="49">
             <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterByOut" (selectionChange)="selFilterOut=''; applyFilterOutgoing()" name="filterByOut">
-              <mat-option *ngFor="let column of ['All'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
+              <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field fxFlex="49">

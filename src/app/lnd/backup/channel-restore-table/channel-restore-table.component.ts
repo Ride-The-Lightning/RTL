@@ -83,7 +83,7 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
     this.channels.sort = this.sort;
     this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.channels.paginator = this.paginator;
-    this.channels.filterPredicate = (channel: Channel, fltr: string) => (channel.channel_point ? channel.channel_point.toLowerCase() : '').includes(fltr);
+    this.channels.filterPredicate = (rowData: Channel, fltr: string) => (rowData.channel_point ? rowData.channel_point.toLowerCase() : '').includes(fltr);
     this.applyFilter();
   }
 

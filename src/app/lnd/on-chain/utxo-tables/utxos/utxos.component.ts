@@ -38,9 +38,9 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   @Input() isDustUTXO = false;
   public faMoneyBillWave = faMoneyBillWave;
-  public DUST_AMOUNT = 1000;
+  public DUST_AMOUNT = 50000;
   public nodePageDefs = LND_PAGE_DEFS;
-  public selFilterBy = 'All';
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'on_chain';
   public tableSetting: TableSetting = { tableId: 'utxos', recordsPerPage: PAGE_SIZE, sortBy: 'tx_id', sortOrder: SortOrderEnum.DESCENDING };
@@ -117,14 +117,14 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'All';
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : column === 'is_dust' ? 'Dust' : this.commonService.titleCase(column);
   }
 
   setFilterPredicate() {
     this.listUTXOs.filterPredicate = (rowData: UTXO, fltr: string) => {
       let rowToFilter = '';
       switch (this.selFilterBy) {
-        case 'All':
+        case 'all':
           for (let i = 0; i < this.displayedColumns.length - 1; i++) {
             rowToFilter = rowToFilter + (
               (this.displayedColumns[i] === 'tx_id') ?
@@ -136,6 +136,10 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
                     (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
             ) + ', ';
           }
+          break;
+
+        case 'is_dust':
+          rowToFilter = (rowData?.amount_sat || 0) < this.DUST_AMOUNT ? 'dust' : 'non-dust';
           break;
 
         case 'tx_id':
@@ -151,10 +155,10 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
           break;
 
         default:
-          rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
+          rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
           break;
       }
-      return rowToFilter.includes(fltr);
+      return this.selFilterBy === 'is_dust' ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);
     };
   }
 

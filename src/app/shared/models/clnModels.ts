@@ -395,8 +395,9 @@ export interface UTXO {
   value?: number;
   status?: string;
   blockheight?: string;
+  scriptpubkey?: string;
   address?: string;
-  amount_msat?: string;
+  reserved?: boolean;
 }
 
 export interface RoutingPeer {

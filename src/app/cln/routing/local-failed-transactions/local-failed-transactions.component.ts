@@ -36,7 +36,7 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faExclamationTriangle = faExclamationTriangle;
   public nodePageDefs = CLN_PAGE_DEFS;
-  public selFilterBy = 'All';
+  public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'routing';
   public tableSetting: TableSetting = { tableId: 'local_failed', recordsPerPage: PAGE_SIZE, sortBy: 'received_time', sortOrder: SortOrderEnum.DESCENDING };
@@ -127,40 +127,38 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'All';
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : this.commonService.titleCase(column);
   }
 
   setFilterPredicate() {
-    this.failedLocalForwardingEvents.filterPredicate = (event: LocalFailedEvent, fltr: string) => {
-      const newEvent = (event.received_time ? this.datePipe.transform(new Date(event.received_time * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') +
-        (event.in_channel_alias ? event.in_channel_alias.toLowerCase() : '') +
-        ((event.failreason && this.CLNFailReason[event.failreason]) ? this.CLNFailReason[event.failreason].toLowerCase() : '') +
-        (event.in_msatoshi ? (event.in_msatoshi / 1000) : '');
-      return newEvent?.includes(fltr) || false;
+    this.failedLocalForwardingEvents.filterPredicate = (rowData: LocalFailedEvent, fltr: string) => {
+      let rowToFilter = '';
+      switch (this.selFilterBy) {
+        case 'all':
+          rowToFilter = (rowData.received_time ? this.datePipe.transform(new Date(rowData.received_time * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') +
+          (rowData.in_channel_alias ? rowData.in_channel_alias.toLowerCase() : '') +
+          ((rowData.failreason && this.CLNFailReason[rowData.failreason]) ? this.CLNFailReason[rowData.failreason].toLowerCase() : '') +
+          (rowData.in_msatoshi ? (rowData.in_msatoshi / 1000) : '');
+          break;
+
+        case 'received_time':
+          rowToFilter = this.datePipe.transform(new Date((rowData.received_time || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() || '';
+          break;
+
+        case 'in_msatoshi':
+          rowToFilter = ((+(rowData.in_msatoshi || 0)) / 1000)?.toString() || '';
+          break;
+
+        case 'failreason':
+          rowToFilter = rowData?.failreason ? this.CLNFailReason[rowData?.failreason] : '';
+          break;
+
+        default:
+          rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          break;
+      }
+      return rowToFilter.includes(fltr);
     };
-    // this.failedLocalForwardingEvents.filterPredicate = (rowData: LocalFailedEvent, fltr: string) => {
-    //   let rowToFilter = '';
-    //   switch (this.selFilterBy) {
-    //     case 'All':
-    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
-    //         rowToFilter = rowToFilter + (
-    //           (this.displayedColumns[i] === '') ?
-    //             (rowData ? rowData..toLowerCase() : '') :
-    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
-    //         ) + ', ';
-    //       }
-    //       break;
-
-    //     case '':
-    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
-    //       break;
-
-    //     default:
-    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
-    //       break;
-    //   }
-    //   return rowToFilter.includes(fltr);
-    // };
   }
 
   loadLocalfailedLocalEventsTable(forwardingEvents: LocalFailedEvent[]) {
