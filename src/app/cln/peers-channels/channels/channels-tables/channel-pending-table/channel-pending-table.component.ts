@@ -201,11 +201,15 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
           rowToFilter = ((+(rowData[this.selFilterBy] || 0)) / 1000)?.toString() || '';
           break;
 
+        case 'state':
+          rowToFilter = rowData?.state ? this.CLNChannelPendingState[rowData?.state] : '';
+          break;
+
         default:
           rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
           break;
       }
-      return this.selFilterBy === 'connected' ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);
+      return (this.selFilterBy === 'connected' || this.selFilterBy === 'state') ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);
     };
   }
 

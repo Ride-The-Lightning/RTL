@@ -125,17 +125,9 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
       let rowToFilter = '';
       switch (this.selFilterBy) {
         case 'all':
-          for (let i = 0; i < this.displayedColumns.length - 1; i++) {
-            rowToFilter = rowToFilter + (
-              (this.displayedColumns[i] === 'tx_id') ?
-                (rowData.outpoint && rowData.outpoint.txid_str ? rowData.outpoint.txid_str.toLowerCase() : '') :
-                (this.displayedColumns[i] === 'output') ?
-                  (rowData.outpoint && rowData.outpoint.output_index ? rowData.outpoint.output_index.toString() : '0') :
-                  (this.displayedColumns[i] === 'address_type') ?
-                    (rowData.address_type && this.addressType[rowData.address_type] && this.addressType[rowData.address_type].name ? this.addressType[rowData.address_type].name.toLowerCase() : '') :
-                    (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
-            ) + ', ';
-          }
+          rowToFilter = ((rowData.label ? rowData.label.toLowerCase() : '') + (rowData.outpoint?.txid_str ? rowData.outpoint.txid_str.toLowerCase() : '') + (rowData.outpoint?.output_index ? rowData.outpoint?.output_index : '') +
+          (rowData.outpoint?.txid_bytes ? rowData.outpoint?.txid_bytes.toLowerCase() : '') + (rowData.address ? rowData.address.toLowerCase() : '') + (rowData.address_type ? this.addressType[rowData.address_type].name.toLowerCase() : '') +
+          (rowData.amount_sat ? rowData.amount_sat : '') + (rowData.confirmations ? rowData.confirmations : ''));
           break;
 
         case 'is_dust':
