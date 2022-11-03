@@ -17,7 +17,7 @@ import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
 import { eclPageSettings, payments } from '../../store/ecl.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
-import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
+import { CamelCaseWithSpacesPipe } from '../../../shared/pipes/app.pipe';
 
 @Component({
   selector: 'rtl-ecl-forwarding-history',
@@ -50,7 +50,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe, private camelCaseWithSpaces: CamelCaseWithSpacesPipe) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -148,7 +148,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.pageId][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : this.commonService.titleCase(column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithSpaces.transform(returnColumn.column) : this.commonService.titleCase(column);
   }
 
   setFilterPredicate() {

@@ -19,7 +19,7 @@ import { openAlert } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
 import { allChannelsInfo, eclNodeInformation, eclPageSettings, onchainBalance, peers } from '../../../../store/ecl.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
-import { CamelCaseWithReplacePipe } from '../../../../../shared/pipes/app.pipe';
+import { CamelCaseWithSpacesPipe } from '../../../../../shared/pipes/app.pipe';
 
 
 @Component({
@@ -59,7 +59,7 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private camelCaseWithSpaces: CamelCaseWithSpacesPipe) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -132,7 +132,7 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : column === 'announceChannel' ? 'Private' : this.commonService.titleCase(column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithSpaces.transform(returnColumn.column, '_') : column === 'announceChannel' ? 'Private' : this.commonService.titleCase(column);
   }
 
   setFilterPredicate() {

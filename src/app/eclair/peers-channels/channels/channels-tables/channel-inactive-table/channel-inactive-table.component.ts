@@ -20,7 +20,7 @@ import { RTLState } from '../../../../../store/rtl.state';
 import { closeChannel } from '../../../../store/ecl.actions';
 import { allChannelsInfo, eclNodeInformation, eclPageSettings, onchainBalance, peers } from '../../../../store/ecl.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
-import { CamelCaseWithReplacePipe } from '../../../../../shared/pipes/app.pipe';
+import { CamelCaseWithSpacesPipe } from '../../../../../shared/pipes/app.pipe';
 
 @Component({
   selector: 'rtl-ecl-channel-inactive-table',
@@ -59,7 +59,7 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private camelCaseWithSpaces: CamelCaseWithSpacesPipe) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -162,7 +162,7 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : column === 'announceChannel' ? 'Private' : this.commonService.titleCase(column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithSpaces.transform(returnColumn.column, '_') : column === 'announceChannel' ? 'Private' : this.commonService.titleCase(column);
   }
 
   setFilterPredicate() {
