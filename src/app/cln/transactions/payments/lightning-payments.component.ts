@@ -323,7 +323,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       let rowToFilter = '';
       switch (this.selFilterBy) {
         case 'all':
-          rowToFilter = ((rowData.created_at) ? this.datePipe.transform(new Date(rowData.created_at * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + ((rowData.bolt12) ? 'bolt12' : (rowData.bolt11) ? 'bolt11' : 'keysend') + JSON.stringify(rowData).toLowerCase();
+          rowToFilter = ((rowData.created_at) ? this.datePipe.transform(new Date(rowData.created_at * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() : '') + ((rowData.bolt12) ? 'bolt12' : (rowData.bolt11) ? 'bolt11' : 'keysend') + JSON.stringify(rowData).toLowerCase();
           break;
 
         case 'status':
@@ -331,7 +331,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           break;
 
         case 'created_at':
-          rowToFilter = this.datePipe.transform(new Date((rowData[this.selFilterBy] || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() || '';
+          rowToFilter = this.datePipe.transform(new Date((rowData[this.selFilterBy] || 0) * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() || '';
           break;
 
         case 'msatoshi_sent':

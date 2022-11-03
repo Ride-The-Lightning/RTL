@@ -141,7 +141,7 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
       switch (this.selFilterBy) {
         case 'all':
           rowToFilter = (rowData.received_time ? this.datePipe.transform(new Date(rowData.received_time * 1000), 'dd/MMM/YYYY HH:mm')!.toLowerCase() : '') +
-          (rowData.resolved_time ? this.datePipe.transform(new Date(rowData.resolved_time * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') +
+          (rowData.resolved_time ? this.datePipe.transform(new Date(rowData.resolved_time * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() : '') +
           (rowData.payment_hash ? rowData.payment_hash.toLowerCase() : '') +
           (rowData.in_channel ? rowData.in_channel.toLowerCase() : '') + (rowData.out_channel ? rowData.out_channel.toLowerCase() : '') +
           (rowData.in_channel_alias ? rowData.in_channel_alias.toLowerCase() : '') + (rowData.out_channel_alias ? rowData.out_channel_alias.toLowerCase() : '') +
@@ -150,7 +150,7 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
 
         case 'received_time':
         case 'resolved_time':
-          rowToFilter = this.datePipe.transform(new Date((rowData[this.selFilterBy] || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() || '';
+          rowToFilter = this.datePipe.transform(new Date((rowData[this.selFilterBy] || 0) * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() || '';
           break;
 
         case 'in_msatoshi':

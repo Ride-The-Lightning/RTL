@@ -191,7 +191,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
       let rowToFilter = '';
       switch (this.selFilterBy) {
         case 'all':
-          rowToFilter = ((rowData.timestamp) ? this.datePipe.transform(new Date(rowData.timestamp * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+          rowToFilter = ((rowData.timestamp) ? this.datePipe.transform(new Date(rowData.timestamp * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
           break;
 
         case 'status':
@@ -201,7 +201,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
         case 'timestamp':
         case 'expiresAt':
         case 'receivedAt':
-          rowToFilter = this.datePipe.transform(new Date((rowData[this.selFilterBy] || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() || '';
+          rowToFilter = this.datePipe.transform(new Date((rowData[this.selFilterBy] || 0) * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() || '';
           break;
 
         case 'amount':

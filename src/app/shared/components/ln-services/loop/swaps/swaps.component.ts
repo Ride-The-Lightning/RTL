@@ -111,7 +111,7 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
 
         case 'initiation_time':
         case 'last_update_time':
-          rowToFilter = this.datePipe.transform(new Date((rowData[this.selFilterBy] || 0) / 1000000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() || '';
+          rowToFilter = this.datePipe.transform(new Date((rowData[this.selFilterBy] || 0) / 1000000), 'dd/MMM/y HH:mm')?.toLowerCase() || '';
           break;
 
         default:

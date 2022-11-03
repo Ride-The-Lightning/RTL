@@ -187,13 +187,13 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
       let rowToFilter = '';
       switch (this.selFilterBy) {
         case 'all':
-          rowToFilter = (rowData.creation_date ? this.datePipe.transform(new Date(rowData.creation_date * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '')! +
-          (rowData.settle_date ? this.datePipe.transform(new Date(rowData.settle_date * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+          rowToFilter = (rowData.creation_date ? this.datePipe.transform(new Date(rowData.creation_date * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() : '')! +
+          (rowData.settle_date ? this.datePipe.transform(new Date(rowData.settle_date * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
           break;
 
         case 'creation_date':
         case 'settle_date':
-          rowToFilter = this.datePipe.transform(new Date((rowData[this.selFilterBy] || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() || '';
+          rowToFilter = this.datePipe.transform(new Date((rowData[this.selFilterBy] || 0) * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() || '';
           break;
 
         case 'private':

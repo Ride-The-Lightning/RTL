@@ -444,7 +444,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       let rowToFilter = '';
       switch (this.selFilterBy) {
         case 'all':
-          rowToFilter = ((rowData.creation_date) ? this.datePipe.transform(new Date(rowData.creation_date * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+          rowToFilter = ((rowData.creation_date) ? this.datePipe.transform(new Date(rowData.creation_date * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
           break;
 
         case 'status':
@@ -453,7 +453,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
           break;
 
         case 'creation_date':
-          rowToFilter = this.datePipe.transform(new Date((rowData[this.selFilterBy] || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() || '';
+          rowToFilter = this.datePipe.transform(new Date((rowData[this.selFilterBy] || 0) * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() || '';
           break;
 
         case 'failure_reason':

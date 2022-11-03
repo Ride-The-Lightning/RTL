@@ -161,7 +161,7 @@ export class CLNOfferBookmarksTableComponent implements OnInit, AfterViewInit, O
           break;
 
         case 'lastUpdatedAt':
-          rowToFilter = this.datePipe.transform(new Date(rowData.lastUpdatedAt || 0), 'dd/MMM/YYYY HH:mm')?.toLowerCase() || '';
+          rowToFilter = this.datePipe.transform(new Date(rowData.lastUpdatedAt || 0), 'dd/MMM/y HH:mm')?.toLowerCase() || '';
           break;
 
         case 'amountMSat':

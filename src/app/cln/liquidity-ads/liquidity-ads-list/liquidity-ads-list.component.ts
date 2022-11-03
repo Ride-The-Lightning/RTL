@@ -159,7 +159,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
           break;
 
         case 'last_timestamp':
-          rowToFilter = this.datePipe.transform(new Date((rowData.last_timestamp || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() || '';
+          rowToFilter = this.datePipe.transform(new Date((rowData.last_timestamp || 0) * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() || '';
           break;
 
         case 'compact_lease':

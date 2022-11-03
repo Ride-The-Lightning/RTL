@@ -135,14 +135,14 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
       let rowToFilter = '';
       switch (this.selFilterBy) {
         case 'all':
-          rowToFilter = (rowData.received_time ? this.datePipe.transform(new Date(rowData.received_time * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') +
+          rowToFilter = (rowData.received_time ? this.datePipe.transform(new Date(rowData.received_time * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() : '') +
           (rowData.in_channel_alias ? rowData.in_channel_alias.toLowerCase() : '') +
           ((rowData.failreason && this.CLNFailReason[rowData.failreason]) ? this.CLNFailReason[rowData.failreason].toLowerCase() : '') +
           (rowData.in_msatoshi ? (rowData.in_msatoshi / 1000) : '');
           break;
 
         case 'received_time':
-          rowToFilter = this.datePipe.transform(new Date((rowData.received_time || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() || '';
+          rowToFilter = this.datePipe.transform(new Date((rowData.received_time || 0) * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() || '';
           break;
 
         case 'in_msatoshi':

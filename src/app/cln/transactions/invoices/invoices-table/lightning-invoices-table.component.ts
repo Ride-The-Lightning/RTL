@@ -216,8 +216,8 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
       let rowToFilter = '';
       switch (this.selFilterBy) {
         case 'all':
-          rowToFilter = this.datePipe.transform(new Date((rowData.paid_at || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase()! +
-          (this.datePipe.transform(new Date((rowData.expires_at || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase()) +
+          rowToFilter = this.datePipe.transform(new Date((rowData.paid_at || 0) * 1000), 'dd/MMM/y HH:mm')?.toLowerCase()! +
+          (this.datePipe.transform(new Date((rowData.expires_at || 0) * 1000), 'dd/MMM/y HH:mm')?.toLowerCase()) +
           ((rowData.bolt12) ? 'bolt12' : (rowData.bolt11) ? 'bolt11' : 'keysend') + JSON.stringify(rowData).toLowerCase();
           break;
 
@@ -227,7 +227,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
 
         case 'expires_at':
         case 'paid_at':
-          rowToFilter = this.datePipe.transform(new Date((rowData[this.selFilterBy] || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() || '';
+          rowToFilter = this.datePipe.transform(new Date((rowData[this.selFilterBy] || 0) * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() || '';
           break;
 
         case 'type':

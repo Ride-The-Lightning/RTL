@@ -135,11 +135,11 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       let rowToFilter = '';
       switch (this.selFilterBy) {
         case 'all':
-          rowToFilter = ((rowData.firstPartTimestamp) ? this.datePipe.transform(new Date(rowData.firstPartTimestamp), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+          rowToFilter = ((rowData.firstPartTimestamp) ? this.datePipe.transform(new Date(rowData.firstPartTimestamp), 'dd/MMM/y HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
           break;
 
         case 'firstPartTimestamp':
-          rowToFilter = this.datePipe.transform(new Date(rowData.firstPartTimestamp || 0), 'dd/MMM/YYYY HH:mm')?.toLowerCase() || '';
+          rowToFilter = this.datePipe.transform(new Date(rowData.firstPartTimestamp || 0), 'dd/MMM/y HH:mm')?.toLowerCase() || '';
           break;
 
         default:
