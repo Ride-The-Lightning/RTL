@@ -121,6 +121,7 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
       }
     }
     if (changes.selFilter && !changes.selFilter.firstChange) {
+      this.selFilterBy = 'all';
       this.applyFilter();
     }
   }
@@ -182,7 +183,7 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
           break;
 
         default:
-          rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          rowToFilter = !rowData[this.selFilterBy] ? '' : typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
           break;
       }
       return rowToFilter.includes(fltr);

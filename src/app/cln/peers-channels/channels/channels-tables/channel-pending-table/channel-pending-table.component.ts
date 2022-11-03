@@ -206,7 +206,7 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
           break;
 
         default:
-          rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          rowToFilter = !rowData[this.selFilterBy] ? '' : typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
           break;
       }
       return (this.selFilterBy === 'connected' || this.selFilterBy === 'state') ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);

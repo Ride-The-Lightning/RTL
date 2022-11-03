@@ -37,8 +37,8 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   @Input() isDustUTXO = false;
+  @Input() dustAmount = 1000;
   public faMoneyBillWave = faMoneyBillWave;
-  public DUST_AMOUNT = 50000;
   public nodePageDefs = LND_PAGE_DEFS;
   public selFilterBy = 'all';
   public colWidth = '20rem';
@@ -91,7 +91,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         if (utxosSelector.utxos && utxosSelector.utxos.length > 0) {
-          this.dustUtxos = utxosSelector.utxos?.filter((utxo) => +(utxo.amount_sat || 0) < this.DUST_AMOUNT);
+          this.dustUtxos = utxosSelector.utxos?.filter((utxo) => +(utxo.amount_sat || 0) < this.dustAmount);
           this.utxos = utxosSelector.utxos;
           if (this.utxos.length > 0 && this.dustUtxos.length > 0 && !this.isDustUTXO) {
             this.displayedColumns.unshift('is_dust');
@@ -131,7 +131,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
           break;
 
         case 'is_dust':
-          rowToFilter = (rowData?.amount_sat || 0) < this.DUST_AMOUNT ? 'dust' : 'non-dust';
+          rowToFilter = (rowData?.amount_sat || 0) < this.dustAmount ? 'dust' : 'nondust';
           break;
 
         case 'tx_id':
@@ -147,7 +147,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
           break;
 
         default:
-          rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          rowToFilter = !rowData[this.selFilterBy] ? '' : typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
           break;
       }
       return (this.selFilterBy === 'is_dust' || this.selFilterBy === 'address_type') ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);
@@ -180,7 +180,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
     this.listUTXOs = new MatTableDataSource<UTXO>([...UTXOs]);
     this.listUTXOs.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
-        case 'is_dust': return +(data.amount_sat || 0) < this.DUST_AMOUNT;
+        case 'is_dust': return +(data.amount_sat || 0) < this.dustAmount;
         case 'tx_id': return data.outpoint.txid_str.toLocaleLowerCase();
         case 'output': return +data.outpoint.output_index;
         default: return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;

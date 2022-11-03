@@ -68,6 +68,7 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
       this.loadTransactionsTable(this.dataList);
     }
     if (changes.selFilter && !changes.selFilter.firstChange) {
+      this.selFilterBy = 'all';
       this.applyFilter();
     }
   }
@@ -115,7 +116,7 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
           break;
 
         default:
-          rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          rowToFilter = !rowData[this.selFilterBy] ? '' : typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
           break;
       }
       return rowToFilter.includes(fltr);

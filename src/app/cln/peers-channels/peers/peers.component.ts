@@ -210,11 +210,11 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
           break;
 
         case 'netaddr':
-          rowToFilter = (rowData?.netaddr?.reduce((acc, curr) => acc + curr), ' ') || '';
+          rowToFilter = rowData.netaddr ? rowData.netaddr.reduce((acc, curr) => acc + curr, ' ') : '';
           break;
 
         default:
-          rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          rowToFilter = !rowData[this.selFilterBy] ? '' : typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
           break;
       }
       return this.selFilterBy === 'connected' ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);

@@ -33,6 +33,7 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   @Input() numDustUTXOs = 0;
   @Input() isDustUTXO = false;
+  @Input() dustAmount = 1000;
   public nodePageDefs = CLN_PAGE_DEFS;
   public selFilterBy = 'all';
   public colWidth = '20rem';
@@ -40,6 +41,7 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
   public tableSetting: TableSetting = { tableId: 'utxos', recordsPerPage: PAGE_SIZE, sortBy: 'status', sortOrder: SortOrderEnum.DESCENDING };
   public displayedColumns: any[] = [];
   public utxos: UTXO[];
+  public dustUtxos: UTXO[];
   public listUTXOs: any = new MatTableDataSource([]);
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -79,17 +81,27 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
         this.logger.info(this.displayedColumns);
       });
     this.store.select(utxos).pipe(takeUntil(this.unSubs[1])).
-      subscribe((utxosSeletor: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
+      subscribe((utxosSelector: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apiCallStatus = utxosSeletor.apiCallStatus;
+        this.apiCallStatus = utxosSelector.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        this.utxos = (this.isDustUTXO) ? utxosSeletor.utxos?.filter((utxo) => +(utxo.value || 0) < 1000) : utxosSeletor.utxos ? utxosSeletor.utxos : [];
-        if (this.utxos && this.utxos.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
-          this.loadUTXOsTable(this.utxos);
+        if (utxosSelector.utxos && utxosSelector.utxos.length > 0) {
+          this.dustUtxos = utxosSelector.utxos?.filter((utxo) => +(utxo.value || 0) < this.dustAmount);
+          this.utxos = utxosSelector.utxos;
+          if (this.isDustUTXO) {
+            if (this.dustUtxos && this.dustUtxos.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+              this.loadUTXOsTable(this.dustUtxos);
+            }
+          } else {
+            this.displayedColumns.unshift('is_dust');
+            if (this.utxos && this.utxos.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+              this.loadUTXOsTable(this.utxos);
+            }
+          }
         }
-        this.logger.info(utxosSeletor);
+        this.logger.info(utxosSelector);
       });
   }
 
@@ -125,7 +137,7 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : this.commonService.titleCase(column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : column === 'is_dust' ? 'Dust' : this.commonService.titleCase(column);
   }
 
   setFilterPredicate() {
@@ -136,17 +148,30 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
           rowToFilter = JSON.stringify(rowData).toLowerCase();
           break;
 
+        case 'is_dust':
+          rowToFilter = (rowData?.value || 0) < this.dustAmount ? 'dust' : 'nondust';
+          break;
+
+        case 'status':
+          rowToFilter = rowData?.status?.toLowerCase() || '';
+          break;
+
         default:
-          rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          rowToFilter = !rowData[this.selFilterBy] ? '' : typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
           break;
       }
-      return rowToFilter.includes(fltr);
+      return (this.selFilterBy === 'is_dust' || this.selFilterBy === 'status') ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);
     };
   }
 
   loadUTXOsTable(utxos: any[]) {
     this.listUTXOs = new MatTableDataSource<UTXO>([...utxos]);
-    this.listUTXOs.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+    this.listUTXOs.sortingDataAccessor = (data: UTXO, sortHeaderId: string) => {
+      switch (sortHeaderId) {
+        case 'is_dust': return +(data.value || 0) < this.dustAmount;
+        default: return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+      }
+    };
     this.listUTXOs.sort = this.sort;
     this.listUTXOs.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.listUTXOs.paginator = this.paginator;

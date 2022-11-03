@@ -71,7 +71,7 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
           this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
         }
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
-        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / (this.displayedColumns.length * 2)) / 10) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[1])).
@@ -125,11 +125,11 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   applyFilterIncoming() {
-    this.routingPeersIncoming.filter = this.filterIn.toLowerCase();
+    this.routingPeersIncoming.filter = this.filterIn.trim().toLowerCase();
   }
 
   applyFilterOutgoing() {
-    this.routingPeersOutgoing.filter = this.filterOut.toLowerCase();
+    this.routingPeersOutgoing.filter = this.filterOut.trim().toLowerCase();
   }
 
   getLabel(column: string) {

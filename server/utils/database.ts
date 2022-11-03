@@ -239,7 +239,21 @@ export class DatabaseAdapter {
     try {
       const otherFiles = fs.readdirSync(this.dbFilePath);
       otherFiles.forEach((oFileName) => {
-        if (oFileName.endsWith('.json') && oFileName !== ('rtldb-' + this.selNode.ln_implementation + '-' + collectionName + '.json')) {
+        let collectionValid = false;
+        switch (this.selNode.ln_implementation) {
+          case 'CLN':
+            collectionValid = CLNCollection.reduce((acc, collection) => acc || oFileName === ('rtldb-' + this.selNode.ln_implementation + '-' + collection + '.json'), false);
+            break;
+
+          case 'ECL':
+            collectionValid = ECLCollection.reduce((acc, collection) => acc || oFileName === ('rtldb-' + this.selNode.ln_implementation + '-' + collection + '.json'), false);
+            break;
+
+          default:
+            collectionValid = LNDCollection.reduce((acc, collection) => acc || oFileName === ('rtldb-' + this.selNode.ln_implementation + '-' + collection + '.json'), false);
+            break;
+        }
+        if (oFileName.endsWith('.json') && !collectionValid) {
           fs.renameSync(this.dbFilePath + sep + oFileName, this.dbFilePath + sep + oFileName + '.tmp');
         }
       });

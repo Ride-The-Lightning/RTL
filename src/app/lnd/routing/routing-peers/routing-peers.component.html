@@ -1,18 +1,18 @@
 <div fxLayout="column" fxLayoutAlign="start stretch" class="padding-gap-x">
   <div class="p-2 error-border my-2" *ngIf="errorMessage !== ''">{{errorMessage}}</div>
-  <div *ngIf="errorMessage === ''" fxLayout="column" fxLayout.gt-md="row" fxFlex="100" fxLayoutAlign="space-between start" class="page-sub-title-container">
+  <div *ngIf="errorMessage === ''" fxLayout="column" fxLayout.gt-md="row" fxFlex="100" fxLayoutAlign="space-between start" class="page-sub-title-container mt-2">
     <div fxLayout="column" fxFlex="49" fxLayoutAlign="start stretch" class="mb-4">
       <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="page-sub-title-container w-100" [ngClass]="{'mt-2': screenSize === screenSizeEnum.XS, 'mt-1': screenSize === screenSizeEnum.SM}">
         <div fxFlex="70">Incoming</div>
         <div fxFlex="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
-          <mat-form-field fxFlex="49">
+          <!-- <mat-form-field fxFlex="49">
             <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterByIn" (selectionChange)="selFilterIn=''; applyFilterIncoming()" name="filterByIn">
               <mat-option *ngFor="let column of ['all'].concat(displayedColumns)" [value]="column">{{getLabel(column)}}</mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field fxFlex="49">
             <input matInput [(ngModel)]="selFilterIn" (input)="applyFilterIncoming()" (keyup)="applyFilterIncoming()" name="filterin" placeholder="Filter">
-          </mat-form-field>
+          </mat-form-field> -->
         </div>
       </div>
       <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start start" fxFlex="100" class="table-container">
@@ -69,14 +69,14 @@
       <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="page-sub-title-container w-100" [ngClass]="{'mt-2': screenSize !== screenSizeEnum.LG}">
         <div fxFlex="70">Outgoing</div>
         <div fxFlex="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
-          <mat-form-field fxFlex="49">
+          <!-- <mat-form-field fxFlex="49">
             <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterByOut" (selectionChange)="selFilterOut=''; applyFilterOutgoing()" name="filterByOut">
               <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field fxFlex="49">
             <input matInput [(ngModel)]="selFilterOut" (input)="applyFilterOutgoing()" (keyup)="applyFilterOutgoing()" name="filterout" placeholder="Filter">
-          </mat-form-field>
+          </mat-form-field> -->
         </div>
       </div>
       <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start start" fxFlex="100" class="table-container">

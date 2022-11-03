@@ -20,6 +20,7 @@ export class UTXOTablesComponent implements OnInit, OnDestroy {
 
   @Input() selectedTableIndex = 0;
   @Output() readonly selectedTableIndexChange = new EventEmitter<number>();
+  public DUST_AMOUNT = 1000;
   public numTransactions = 0;
   public numUtxos = 0;
   public numDustUtxos = 0;
@@ -34,7 +35,7 @@ export class UTXOTablesComponent implements OnInit, OnDestroy {
       subscribe((utxosSelector: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
         if (utxosSelector.utxos && utxosSelector.utxos.length > 0) {
           this.numUtxos = utxosSelector.utxos.length;
-          this.numDustUtxos = utxosSelector.utxos?.filter((utxo) => utxo.amount_sat && +utxo.amount_sat < 1000).length;
+          this.numDustUtxos = utxosSelector.utxos?.filter((utxo) => utxo.amount_sat && +utxo.amount_sat < this.DUST_AMOUNT).length;
         }
         this.logger.info(utxosSelector);
       });

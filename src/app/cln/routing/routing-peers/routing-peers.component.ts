@@ -42,8 +42,8 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
   public tableSetting: TableSetting = { tableId: 'routing_peers', recordsPerPage: PAGE_SIZE, sortBy: 'total_fee', sortOrder: SortOrderEnum.DESCENDING };
   public successfulEvents: ForwardingEvent[] = [];
   public displayedColumns: any[] = [];
-  public routingPeersIncoming: any = [];
-  public routingPeersOutgoing: any = [];
+  public routingPeersIncoming: any = new MatTableDataSource([]);
+  public routingPeersOutgoing: any = new MatTableDataSource([]);
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -79,7 +79,7 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
           this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
         }
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
-        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / (this.displayedColumns.length * 2)) / 10) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[1])).
@@ -116,57 +116,45 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
     }
   }
 
-  applyFilterIncoming() {
+  applyIncomingFilter() {
     this.routingPeersIncoming.filter = this.filterIn.toLowerCase();
   }
 
-  applyFilterOutgoing() {
+  applyOutgoingFilter() {
     this.routingPeersOutgoing.filter = this.filterOut.toLowerCase();
   }
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : this.commonService.titleCase(column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : 'all';
   }
 
   setFilterPredicate() {
-    this.routingPeersIncoming.filterPredicate = (rowDataIn: RoutingPeer, fltr: string) => {
-      let rowToFilterIn = '';
-      switch (this.selFilterByIn) {
-        case 'all':
-          rowToFilterIn = JSON.stringify(rowDataIn).toLowerCase();
-          break;
+    this.routingPeersIncoming.filterPredicate = (rpIn: RoutingPeer, fltr: string) => JSON.stringify(rpIn).toLowerCase().includes(fltr);
+    this.routingPeersOutgoing.filterPredicate = (rpOut: RoutingPeer, fltr: string) => JSON.stringify(rpOut).toLowerCase().includes(fltr);
+    // this.routingPeersIncoming.filterPredicate = (rowData: RoutingPeer, fltr: string) => {
+    //   let rowToFilter = '';
+    //   switch (this.selFilterBy) {
+    //     case 'all':
+    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
+    //         rowToFilter = rowToFilter + (
+    //           (this.displayedColumns[i] === '') ?
+    //             (rowData ? rowData..toLowerCase() : '') :
+    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
+    //         ) + ', ';
+    //       }
+    //       break;
 
-        case 'total_amount':
-        case 'total_fee':
-          rowToFilterIn = ((+(rowDataIn[this.selFilterByIn] || 0)) / 1000)?.toString() || '';
-          break;
+    //     case '':
+    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
+    //       break;
 
-        default:
-          rowToFilterIn = typeof rowDataIn[this.selFilterByIn] === 'string' ? rowDataIn[this.selFilterByIn].toLowerCase() : typeof rowDataIn[this.selFilterByIn] === 'boolean' ? (rowDataIn[this.selFilterByIn] ? 'yes' : 'no') : rowDataIn[this.selFilterByIn].toString();
-          break;
-      }
-      return rowToFilterIn.includes(fltr);
-    };
-
-    this.routingPeersOutgoing.filterPredicate = (rowDataOut: RoutingPeer, fltr: string) => {
-      let rowToFilterOut = '';
-      switch (this.selFilterByOut) {
-        case 'all':
-          rowToFilterOut = JSON.stringify(rowDataOut).toLowerCase();
-          break;
-
-        case 'total_amount':
-        case 'total_fee':
-          rowToFilterOut = ((+(rowDataOut[this.selFilterByOut] || 0)) / 1000)?.toString() || '';
-          break;
-
-        default:
-          rowToFilterOut = typeof rowDataOut[this.selFilterByOut] === 'string' ? rowDataOut[this.selFilterByOut].toLowerCase() : typeof rowDataOut[this.selFilterByOut] === 'boolean' ? (rowDataOut[this.selFilterByOut] ? 'yes' : 'no') : rowDataOut[this.selFilterByOut].toString();
-          break;
-      }
-      return rowToFilterOut.includes(fltr);
-    };
+    //     default:
+    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
+    //       break;
+    //   }
+    //   return rowToFilter.includes(fltr);
+    // };
   }
 
   loadRoutingPeersTable(events: ForwardingEvent[]) {
@@ -188,8 +176,8 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
       this.routingPeersOutgoing = new MatTableDataSource<RoutingPeer>([]);
     }
     this.setFilterPredicate();
-    this.applyFilterIncoming();
-    this.applyFilterOutgoing();
+    this.applyIncomingFilter();
+    this.applyOutgoingFilter();
     this.logger.info(this.routingPeersIncoming);
     this.logger.info(this.routingPeersOutgoing);
   }
