@@ -19,6 +19,10 @@
   </div>
   <div>
     <h4 class="dashboard-info-title">Chain</h4>
-    <span class="overflow-wrap dashboard-info-value" *ngFor="let chain of chains">{{chain}}</span>
+    <span class="overflow-wrap dashboard-info-value" *ngFor="let chain of chains">
+      <span *ngIf="information.synced_to_chain" class="dot green mr-1" matTooltip="Synced to Chain" matTooltipPosition="right"></span>
+      <span *ngIf="!information.synced_to_chain" class="dot red mr-1" matTooltip="Not Synced to Chain" matTooltipPosition="right"></span>
+      {{chain}}
+    </span>
   </div>
 </div>
