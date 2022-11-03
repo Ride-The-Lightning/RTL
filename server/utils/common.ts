@@ -271,7 +271,7 @@ export class CommonService {
         break;
     }
     this.logger.log({ selectedNode: selectedNode, level: 'ERROR', fileName: fileName, msg: errMsg, error: (typeof err === 'object' ? JSON.stringify(err) : (typeof err === 'string') ? err : 'Unknown Error') });
-    let newErrorObj = {};
+    let newErrorObj = { statusCode: 500, message: '', error: '' };
     if (err.code && err.code === 'ENOENT') {
       newErrorObj = {
         statusCode: 500,
