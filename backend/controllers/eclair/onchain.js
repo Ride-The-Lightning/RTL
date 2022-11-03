@@ -66,9 +66,6 @@ export const getTransactions = (req, res, next) => {
     };
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'Getting On Chain Transactions Options', data: options.form });
     request.post(options).then((body) => {
-        if (body && body.length > 0) {
-            body = common.sortDescByKey(body, 'timestamp');
-        }
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'On Chain Transactions Received', data: body });
         res.status(200).json(body);
     }).catch((errRes) => {

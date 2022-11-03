@@ -18,7 +18,7 @@
         </mat-form-field>
         <mat-form-field fxFlex="24" fxLayoutAlign="start end">
           <input matInput [(ngModel)]="expiry" placeholder="Expiry" type="number" [step]="selTimeUnit === timeUnitEnum.SECS ? 300 : selTimeUnit === timeUnitEnum.MINS ? 10 : selTimeUnit === timeUnitEnum.HOURS ? 2 : 1" [min]="1" tabindex="3" name="expiry">
-          <span matSuffix> {{selTimeUnit | titlecase}} </span>
+          <span matSuffix>{{selTimeUnit | titlecase}} </span>
         </mat-form-field>
         <mat-form-field fxFlex="24" fxLayoutAlign="start end">
           <mat-select [value]="selTimeUnit" tabindex="4" name="timeUnit" (selectionChange)="onTimeUnitChange($event)">

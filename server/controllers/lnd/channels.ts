@@ -40,7 +40,6 @@ export const getAllChannels = (req, res, next) => {
           return getAliasForChannel(req.session.selectedNode, channel);
         })
       ).then((values) => {
-        body.channels = common.sortDescByKey(body.channels, 'balancedness');
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Sorted Channels List Received', data: body });
         return res.status(200).json(body);
       }).catch((errRes) => {
@@ -72,11 +71,11 @@ export const getPendingChannels = (req, res, next) => {
     if (body.pending_open_channels && body.pending_open_channels.length > 0) {
       body.pending_open_channels?.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
     }
-    if (body.pending_closing_channels && body.pending_closing_channels.length > 0) {
-      body.pending_closing_channels?.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
-    }
     if (body.pending_force_closing_channels && body.pending_force_closing_channels.length > 0) {
       body.pending_force_closing_channels?.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
+    }
+    if (body.pending_closing_channels && body.pending_closing_channels.length > 0) {
+      body.pending_closing_channels?.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
     }
     if (body.waiting_close_channels && body.waiting_close_channels.length > 0) {
       body.waiting_close_channels?.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
@@ -109,7 +108,6 @@ export const getClosedChannels = (req, res, next) => {
           return getAliasForChannel(req.session.selectedNode, channel);
         })
       ).then((values) => {
-        body.channels = common.sortDescByKey(body.channels, 'close_height');
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Closed Channels List Received', data: body });
         return res.status(200).json(body);
       }).catch((errRes) => {

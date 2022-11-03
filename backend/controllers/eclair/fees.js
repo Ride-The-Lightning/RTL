@@ -88,9 +88,6 @@ export const arrangePayments = (selNode, body) => {
             relayedEle.amountOut = Math.round(relayedEle.amountOut / 1000);
         }
     });
-    payments.sent = common.sortDescByKey(payments.sent, 'firstPartTimestamp');
-    payments.received = common.sortDescByKey(payments.received, 'firstPartTimestamp');
-    payments.relayed = common.sortDescByKey(payments.relayed, 'timestamp');
     logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Fees', msg: 'Arranged Payments Received', data: payments });
     return payments;
 };

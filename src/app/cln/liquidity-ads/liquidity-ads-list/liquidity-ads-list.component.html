@@ -9,7 +9,7 @@
         <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" #formAsk="ngForm">
           <div fxFlex="100" fxLayout="row" class="alert alert-warn">
             <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
-            <span>Ads should be supplemented with additional research of the nodes, before buying liquidity.</span>
+            <span>Ads should be supplemented with additional research of the node, before buying liquidity.</span>
           </div>
           <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start start" class="page-sub-title-container mt-1">
             <div fxFlex="30">
@@ -23,8 +23,8 @@
               <mat-error *ngIf="!channelAmount">Channel amount is required.</mat-error>
             </mat-form-field>
             <mat-form-field fxFlex="34">
-              <input matInput placeholder="Channel Opening Fee Rate (Sats/vByte)" name="channelOpeningFeeRate" [(ngModel)]="channelOpeningFeeRate" (keyup)="onCalculateOpeningFee()" type="number" step="10" tabindex="2" required>
-              <mat-error *ngIf="!channelOpeningFeeRate">Channel opening fee rate is required.</mat-error>
+              <input matInput placeholder="Channel Opening Fee Rate (Sats/vByte)" name="channel_opening_feeRate" [(ngModel)]="channel_opening_feeRate" (keyup)="onCalculateOpeningFee()" type="number" step="10" tabindex="2" required>
+              <mat-error *ngIf="!channel_opening_feeRate">Channel opening fee rate is required.</mat-error>
             </mat-form-field>
           </div>
         </form>
@@ -38,11 +38,11 @@
               </span>
             </div>
             <mat-form-field fxFlex="34">
-              <input matInput placeholder="Node Capacity (Sats)" name="nodeCapacity" [(ngModel)]="nodeCapacity" (keyup)="onFilter()" tabindex="5" type="number" min="0" step="1000">
-              <mat-error *ngIf="!nodeCapacity">Node capacity is required.</mat-error>
+              <input matInput placeholder="Node Capacity (Sats)" name="node_capacity" [(ngModel)]="node_capacity" (keyup)="onFilter()" tabindex="5" type="number" min="0" step="1000">
+              <mat-error *ngIf="!node_capacity">Node capacity is required.</mat-error>
             </mat-form-field>
             <mat-form-field fxFlex="34">
-              <input matInput placeholder="Channel Count" name="channelCount" [(ngModel)]="channelCount" (keyup)="onFilter()" type="number" step="1" min="0" tabindex="6">
+              <input matInput placeholder="Channel Count" name="channel_count" [(ngModel)]="channel_count" (keyup)="onFilter()" type="number" step="1" min="0" tabindex="6">
             </mat-form-field>
           </div>
         </form> -->
@@ -51,62 +51,95 @@
             <fa-icon [icon]="faUsers" class="page-title-img mr-1"></fa-icon>
             <span class="page-title">Liquidity Providing Peers</span>
           </div>
-          <mat-form-field fxFlex="30">
-            <div fxLayout="row" fxLayoutAlign="start start">
-              <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" placeholder="Filter">
-            </div>
-          </mat-form-field>
+          <div fxFlex="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
+            <mat-form-field fxFlex="49">
+              <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()" name="filterBy">
+                <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field fxFlex="49">
+              <input matInput [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()" name="filter" placeholder="Filter">
+            </mat-form-field>
+          </div>
         </div>
         <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
           <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
           <table mat-table #table [dataSource]="liquidityNodes" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
             <ng-container matColumnDef="alias">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> Alias </th>
-              <td mat-cell *matCellDef="let lqNode" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '50rem'}" fxLayout="row" fxLayoutAlign="start center"> 
-                {{lqNode?.alias}}
-                <mat-chip-list class="ml-half" aria-label="Address Types">
-                  <mat-chip *ngFor="let addrType of lqNode.address_types" color="primary" selected>
-                    {{addrType === 'tor' ? 'Tor' : addrType === 'ipv' ? 'Clearnet' : addrType}}
-                  </mat-chip>
-                </mat-chip-list>
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="capacityChannels">
-              <th mat-header-cell *matHeaderCellDef> Capacity/Channels </th>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Alias</th>
               <td mat-cell *matCellDef="let lqNode">
-                {{lqNode?.nodeCapacity/100000000 | number:'1.0-2'}} BTC / {{lqNode?.channelCount | number:'1.0-0'}} 
+                <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+                  <span fxLayout="row" fxLayoutAlign="start center" class="ellipsis-child">
+                    {{lqNode?.alias}}
+                    <mat-chip-list class="ml-half" aria-label="Address Types">
+                      <mat-chip *ngFor="let addrType of lqNode.address_types" color="primary" selected>
+                        {{addrType === 'tor' ? 'Tor' : addrType === 'ipv' ? 'Clearnet' : addrType}}
+                      </mat-chip>
+                    </mat-chip-list>
+                  </span>
+                </div>
               </td>
             </ng-container>
-            <ng-container matColumnDef="leaseFee">
-              <th mat-header-cell *matHeaderCellDef> Lease Fee </th>
+            <ng-container matColumnDef="nodeid">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Node ID</th>
+              <td mat-cell *matCellDef="let lqNode">
+                <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+                  <span class="ellipsis-child">{{lqNode?.nodeid}}</span>
+                </div>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="last_timestamp">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Last Announcement At</th>
+              <td mat-cell *matCellDef="let lqNode">{{((lqNode?.last_timestamp * 1000) | date:'dd/MMM/y HH:mm') || '-'}}</td>
+            </ng-container>
+            <ng-container matColumnDef="compact_lease">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Compact Lease</th>
+              <td mat-cell *matCellDef="let lqNode">{{ lqNode?.option_will_fund?.compact_lease }}</td>
+            </ng-container>
+            <!-- <ng-container matColumnDef="capacity_channels">
+              <th mat-header-cell *matHeaderCellDef> Capacity/Channels</th>
+              <td mat-cell *matCellDef="let lqNode">
+                {{lqNode?.node_capacity/100000000 | number:'1.0-2'}} BTC / {{lqNode?.channel_count | number:'1.0-0'}} 
+              </td>
+            </ng-container> -->
+            <ng-container matColumnDef="lease_fee">
+              <th mat-header-cell *matHeaderCellDef> Lease Fee</th>
               <td mat-cell *matCellDef="let lqNode">
                 {{lqNode?.option_will_fund?.lease_fee_base_msat/1000 | number:'1.0-0'}} Sats + {{(lqNode?.option_will_fund?.lease_fee_basis/100) | number:'1.2-2'}}%
               </td>
             </ng-container>
-            <ng-container matColumnDef="routingFee">
-              <th mat-header-cell *matHeaderCellDef> Routing Fee </th>
+            <ng-container matColumnDef="routing_fee">
+              <th mat-header-cell *matHeaderCellDef> Routing Fee</th>
               <td mat-cell *matCellDef="let lqNode">
                 {{lqNode?.option_will_fund?.channel_fee_max_base_msat/1000 | number:'1.0-0'}} Sats + {{lqNode?.option_will_fund?.channel_fee_max_proportional_thousandths * 1000 | number:'1.0-0'}} ppm
               </td>
             </ng-container>
-            <ng-container matColumnDef="channelOpeningFee">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Channel Opening Fee </th>
+            <ng-container matColumnDef="channel_opening_fee">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Channel Opening Fee (Sats)</th>
               <td mat-cell *matCellDef="let lqNode">
                 <span fxLayoutAlign="end center">
-                  {{lqNode.channelOpeningFee | number:'1.0-0'}} Sats
+                  {{lqNode.channel_opening_fee | number:'1.0-0'}}
+                </span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="funding_weight">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Funding Weight</th>
+              <td mat-cell *matCellDef="let lqNode">
+                <span fxLayoutAlign="end center">
+                  {{lqNode?.option_will_fund?.funding_weight | number:'1.0-0'}}
                 </span>
               </td>
             </ng-container>
             <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef class="px-3">
-                <div class="bordered-box table-actions-select">
+              <th mat-header-cell *matHeaderCellDef>
+                <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
                   <mat-select placeholder="Actions" tabindex="1" class="mr-0">
                     <mat-select-trigger></mat-select-trigger>
                     <mat-option (click)="onDownloadCSV()">Download CSV</mat-option>
                   </mat-select>
                 </div>
-              </th>
-              <td mat-cell *matCellDef="let lqNode" fxLayoutAlign="end center" class="px-3">
+             </th>
+              <td mat-cell *matCellDef="let lqNode" fxLayoutAlign="end center">
                 <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
                   <mat-select placeholder="Actions" tabindex="1" class="mr-0">
                     <mat-select-trigger></mat-select-trigger>
@@ -126,7 +159,7 @@
               </td>
             </ng-container>
             <tr mat-footer-row *matFooterRowDef="['no_lqNode']" [ngClass]="{'display-none': liquidityNodes?.data && liquidityNodes?.data?.length>0}"></tr>
-            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
           </table>
         </div>

@@ -31,7 +31,6 @@ export class CLNCreateInvoiceComponent implements OnInit, OnDestroy {
   public invoiceValue: number | null;
   public invoiceValueHint = '';
   public invoicePaymentReq = '';
-  public invoices: any;
   public information: GetInfo = {};
   public private = false;
   public expiryStep = 100;

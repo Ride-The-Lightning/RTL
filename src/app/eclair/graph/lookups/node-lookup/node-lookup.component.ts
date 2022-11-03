@@ -16,7 +16,7 @@ export class ECLNodeLookupComponent implements OnInit {
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @Input() lookupResult: LookupNode = {};
-  public addresses: any;
+  public addresses: any = new MatTableDataSource([]);
   public displayedColumns = ['address', 'actions'];
   public nodeFeaturesEnum = NodeFeaturesECL;
 

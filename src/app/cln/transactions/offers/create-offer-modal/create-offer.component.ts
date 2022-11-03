@@ -30,7 +30,6 @@ export class CLNCreateOfferComponent implements OnInit, OnDestroy {
   public offerValue: number | null;
   public vendor = '';
   public offerValueHint = '';
-  public offers: any;
   public information: GetInfo = {};
   public pageSize = PAGE_SIZE;
   public offerError = '';

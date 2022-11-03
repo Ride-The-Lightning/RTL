@@ -190,6 +190,20 @@
     thead tr th {
       color: $foreground-base;
     }
+    thead tr th:not(:first-of-type), tbody tr td:not(:first-of-type) {
+      padding-left: 1rem;
+    }
+    tbody tr td.mat-cell {
+      @include for_screensize(tab-land) {
+        white-space: unset;
+      }
+      @include for_screensize(tab-port) {
+        white-space: unset;
+      }
+      @include for_screensize(phone) {
+        white-space: unset;
+      }
+    }
     &.error-border {
       border: 1px solid red;
       box-shadow: 0 3px 1px -2px rgba(255,0,0,.2), 0 2px 2px 0 rgba(255,0,0,.14), 0 1px 5px 0 rgba(255,0,0,.12) !important;
@@ -207,6 +221,9 @@
 
   .mat-expansion-panel {
     border: 1px solid $foreground-divider;
+    &.error-border {
+      border: 1px solid red;
+    }
   }
 
   .more-button {
@@ -274,13 +291,19 @@
 
   .table-actions-select {
     padding: 0.5rem 1rem;
-    margin: 0.7rem 0;
-    min-width: 10rem;
-    width: 10rem;
+    margin: 0.9rem 0;
+    min-height: 3.6rem;
+    min-width: 9rem;
+    width: 9rem;
     float: right;
     & .mat-select-placeholder {
       color: $foreground-text;
     }
+  }
+
+  .table-actions-button {
+    min-width: 9rem;
+    width: 9rem;
   }
 
   .mat-select-panel .mat-option.mat-active {

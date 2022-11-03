@@ -14,13 +14,15 @@ import { SessionService } from '../../shared/services/session.service';
 import { WebSocketClientService } from '../../shared/services/web-socket.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CLNInvoiceInformationComponent } from '../transactions/invoices/invoice-information-modal/invoice-information.component';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer, OnChain, QueryRoutes, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, FetchInvoices, Channel, OfferInvoice, Offer, ListForwards, FetchListForwards, ForwardingEvent, LocalFailedEvent } from '../../shared/models/clnModels';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer, OnChain, QueryRoutes, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, FetchInvoices, Channel, OfferInvoice, Offer } from '../../shared/models/clnModels';
 import { AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLNWSEventTypeEnum, CLNActions, RTLActions, CLNForwardingEventsStatusEnum } from '../../shared/services/consts-enums-functions';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 
 import { RTLState } from '../../store/rtl.state';
-import { addUpdateOfferBookmark, fetchBalance, fetchChannels, fetchFeeRates, fetchFees, fetchInvoices, fetchLocalRemoteBalance, fetchPayments, fetchPeers, fetchUTXOs, getForwardingHistory, setLookup, setPeers, setQueryRoutes, updateCLAPICallStatus, updateInvoice, setOfferInvoice, sendPaymentStatus, setForwardingHistory } from './cln.actions';
-import { allAPIsCallStatus, clnNodeInformation } from './cln.selector';
+import { addUpdateOfferBookmark, fetchBalance, fetchChannels, fetchFeeRates, fetchFees, fetchInvoices, fetchLocalRemoteBalance,
+  fetchPayments, fetchPeers, fetchUTXOs, setLookup, setPeers, setQueryRoutes, updateCLAPICallStatus, updateInvoice, setOfferInvoice,
+  sendPaymentStatus, setForwardingHistory, fetchPageSettings } from './cln.actions';
+import { allAPIsCallStatus } from './cln.selector';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 import { CLNOfferInformationComponent } from '../transactions/offers/offer-information-modal/offer-information.component';
 
@@ -934,6 +936,52 @@ export class CLNEffects implements OnDestroy {
     })
   ));
 
+  pageSettingsFetchCL = createEffect(() => this.actions.pipe(
+    ofType(CLNActions.FETCH_PAGE_SETTINGS_CLN),
+    mergeMap(() => {
+      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchPageSettings', status: APICallStatusEnum.INITIATED } }));
+      return this.httpClient.get(environment.PAGE_SETTINGS_API).pipe(
+        map((pageSettings: any) => {
+          this.logger.info(pageSettings);
+          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchPageSettings', status: APICallStatusEnum.COMPLETED } }));
+          return {
+            type: CLNActions.SET_PAGE_SETTINGS_CLN,
+            payload: pageSettings || []
+          };
+        }),
+        catchError((err: any) => {
+          this.handleErrorWithoutAlert('FetchPageSettings', UI_MESSAGES.NO_SPINNER, 'Fetching Page Settings Failed.', err);
+          return of({ type: RTLActions.VOID });
+        })
+      );
+    })
+  ));
+
+  savePageSettingsCL = createEffect(() => this.actions.pipe(
+    ofType(CLNActions.SAVE_PAGE_SETTINGS_CLN),
+    mergeMap((action: { type: string, payload: any }) => {
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UPDATE_PAGE_SETTINGS }));
+      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'SavePageSettings', status: APICallStatusEnum.INITIATED } }));
+      return this.httpClient.post(environment.PAGE_SETTINGS_API, action.payload).
+        pipe(
+          map((postRes: any) => {
+            this.logger.info(postRes);
+            this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'SavePageSettings', status: APICallStatusEnum.COMPLETED } }));
+            this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_PAGE_SETTINGS }));
+            this.store.dispatch(openSnackBar({ payload: 'Page Layout Updated Successfully!' }));
+            return {
+              type: CLNActions.SET_PAGE_SETTINGS_CLN,
+              payload: postRes || []
+            };
+          }),
+          catchError((err: any) => {
+            this.handleErrorWithAlert('SavePageSettings', UI_MESSAGES.UPDATE_PAGE_SETTINGS, 'Page Settings Update Failed.', environment.PAGE_SETTINGS_API, err);
+            return of({ type: RTLActions.VOID });
+          })
+        );
+    })
+  ));
+
   initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('clUnlocked', 'true');
     const node_data = {
@@ -958,6 +1006,7 @@ export class CLNEffects implements OnDestroy {
       newRoute = '/cln/home';
     }
     this.router.navigate([newRoute]);
+    this.store.dispatch(fetchPageSettings());
     this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: 1000000, index_offset: 0, reversed: true } }));
     this.store.dispatch(fetchFees());
     this.store.dispatch(fetchChannels());

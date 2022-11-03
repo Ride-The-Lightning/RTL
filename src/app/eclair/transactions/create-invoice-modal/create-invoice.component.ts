@@ -15,7 +15,7 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import { RTLState } from '../../../store/rtl.state';
 import { createInvoice } from '../../store/ecl.actions';
-import { eclNodeInformation, eclnNodeSettings } from '../../store/ecl.selector';
+import { eclNodeInformation, eclNodeSettings } from '../../store/ecl.selector';
 
 @Component({
   selector: 'rtl-ecl-create-invoices',
@@ -31,7 +31,6 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
   public invoiceValue: number | null = null;
   public invoiceValueHint = '';
   public invoicePaymentReq = '';
-  public invoices: any;
   public information: GetInfo = {};
   public private = false;
   public expiryStep = 100;
@@ -46,7 +45,7 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageSize = this.data.pageSize;
-    this.store.select(eclnNodeSettings).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
       subscribe((nodeSettings: SelNodeChild | null) => {
         this.selNode = nodeSettings;
       });

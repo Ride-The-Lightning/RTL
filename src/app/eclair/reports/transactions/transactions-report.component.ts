@@ -5,13 +5,14 @@ import { Store } from '@ngrx/store';
 
 import { PaymentSent, Invoice, Payments } from '../../../shared/models/eclModels';
 import { CommonService } from '../../../shared/services/common.service';
-import { MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, ECL_DEFAULT_PAGE_SETTINGS, MONTHS, PAGE_SIZE, ScreenSizeEnum, SCROLL_RANGES, SortOrderEnum } from '../../../shared/services/consts-enums-functions';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
 import { RTLState } from '../../../store/rtl.state';
-import { invoices, payments } from '../../store/ecl.selector';
+import { eclPageSettings, invoices, payments } from '../../store/ecl.selector';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
+import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 
 @Component({
   selector: 'rtl-ecl-transactions-report',
@@ -26,6 +27,10 @@ export class ECLTransactionsReportComponent implements OnInit, OnDestroy {
   public secondsInADay = 24 * 60 * 60;
   public payments: PaymentSent[] = [];
   public invoices: Invoice[] = [];
+  public colWidth = '20rem';
+  public PAGE_ID = 'reports';
+  public tableSetting: TableSetting = { tableId: 'transactions', recordsPerPage: PAGE_SIZE, sortBy: 'date', sortOrder: SortOrderEnum.DESCENDING };
+  public displayedColumns: any[] = ['date', 'amount_paid', 'num_payments', 'amount_received', 'num_invoices'];
   public transactionsReportSummary = { paymentsSelectedPeriod: 0, invoicesSelectedPeriod: 0, amountPaidSelectedPeriod: 0, amountReceivedSelectedPeriod: 0 };
   public transactionFilterValue = '';
   public today = new Date(Date.now());
@@ -41,14 +46,27 @@ export class ECLTransactionsReportComponent implements OnInit, OnDestroy {
   public showYAxisLabel = true;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select(payments).pipe(takeUntil(this.unSubs[0]),
+    this.store.select(eclPageSettings).pipe(takeUntil(this.unSubs[0])).
+      subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || ECL_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
+        } else {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
+        }
+        this.displayedColumns.push('actions');
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.logger.info(this.displayedColumns);
+      });
+
+    this.store.select(payments).pipe(takeUntil(this.unSubs[1]),
       withLatestFrom(this.store.select(invoices))).
       subscribe(([paymentsSelector, invoicesSelector]: [({ payments: Payments, apiCallStatus: ApiCallStatusPayload }), ({ invoices: Invoice[], apiCallStatus: ApiCallStatusPayload })]) => {
         this.payments = paymentsSelector.payments.sent ? paymentsSelector.payments.sent : [];
@@ -58,7 +76,7 @@ export class ECLTransactionsReportComponent implements OnInit, OnDestroy {
           this.transactionsNonZeroReportData = this.prepareTableData();
         }
       });
-    this.commonService.containerSizeUpdated.pipe(takeUntil(this.unSubs[1])).subscribe((CONTAINER_SIZE) => {
+    this.commonService.containerSizeUpdated.pipe(takeUntil(this.unSubs[2])).subscribe((CONTAINER_SIZE) => {
       switch (this.screenSize) {
         case ScreenSizeEnum.MD:
           this.screenPaddingX = CONTAINER_SIZE.width / 10;

@@ -39,17 +39,19 @@
       <table mat-table #table [dataSource]="lookupResult.node.addresses" matSort>
         <ng-container matColumnDef="network">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Network</th>
-          <td mat-cell *matCellDef="let address"> {{address?.network}} </td>
+          <td mat-cell *matCellDef="let address">{{address?.network}}</td>
         </ng-container>
         <ng-container matColumnDef="addr">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Address</th>
-          <td mat-cell *matCellDef="let address"> {{address?.addr}} </td>
+          <td mat-cell *matCellDef="let address">{{address?.addr}}</td>
         </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="pl-1"><span fxLayoutAlign="end center">Actions</span></th>
-          <td mat-cell *matCellDef="let address" class="pl-1">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="bordered-box table-actions-select btn-action" fxLayoutAlign="center center">Actions</div>
+         </th>
+          <td mat-cell *matCellDef="let address">
             <span fxLayoutAlign="end center">
-              <button mat-stroked-button color="primary" type="button" tabindex="1" rtlClipboard [payload]="lookupResult.node.pub_key + '@' + address.addr" (copied)="onCopyNodeURI($event)">Copy Node URI</button>          
+              <button mat-stroked-button class="btn-action-copy" color="primary" type="button" tabindex="1" rtlClipboard [payload]="lookupResult.node.pub_key + '@' + address.addr" (copied)="onCopyNodeURI($event)">Copy Node URI</button>          
             </span>
           </td>
         </ng-container>

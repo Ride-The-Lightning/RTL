@@ -62,6 +62,7 @@ import { AppSettingsComponent } from './components/settings/app-settings/app-set
 import { NodeConfigComponent } from './components/node-config/node-config.component';
 import { LNPConfigComponent } from './components/node-config/lnp-config/lnp-config.component';
 import { NodeSettingsComponent } from './components/node-config/node-settings/node-settings.component';
+import { PageSettingsComponent } from './components/node-config/page-settings/page-settings.component';
 import { ServicesSettingsComponent } from './components/node-config/services-settings/services-settings.component';
 import { LoopServiceSettingsComponent } from './components/node-config/services-settings/loop-service-settings/loop-service-settings.component';
 import { BoltzServiceSettingsComponent } from './components/node-config/services-settings/boltz-service-settings/boltz-service-settings.component';
@@ -96,18 +97,13 @@ import { SwapServiceInfoComponent } from './components/ln-services/boltz/swap-se
 import { SwapModalComponent } from './components/ln-services/boltz/swap-modal/swap-modal.component';
 import { SwapInInfoGraphicsComponent } from './components/ln-services/boltz/swap-in-info-graphics/info-graphics.component';
 import { SwapOutInfoGraphicsComponent } from './components/ln-services/boltz/swap-out-info-graphics/info-graphics.component';
-import { PeerswapComponent } from './components/ln-services/peerswap/peerswap.component';
-import { SwapPeersComponent } from './components/ln-services/peerswap/swap-peers/swap-peers.component';
-import { PeerswapsCancelledComponent } from './components/ln-services/peerswap/swaps-cancelled/swaps-cancelled.component';
-import { PeerswapsInComponent } from './components/ln-services/peerswap/swaps-in/swaps-in.component';
-import { PeerswapsOutComponent } from './components/ln-services/peerswap/swaps-out/swaps-out.component';
 
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
 import { MonthlyDateDirective, YearlyDateDirective } from './directive/date-formats.directive';
 import { MaxValidator } from './directive/max-amount.directive';
 import { MinValidator } from './directive/min-amount.directive';
-import { RemoveLeadingZerosPipe, CamelCasePipe } from './pipes/app.pipe';
+import { RemoveLeadingZerosPipe, CamelCasePipe, CamelCaseWithReplacePipe, CamelCaseWithSpacesPipe } from './pipes/app.pipe';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: false,
@@ -232,6 +228,8 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     YearlyDateDirective,
     RemoveLeadingZerosPipe,
     CamelCasePipe,
+    CamelCaseWithReplacePipe,
+    CamelCaseWithSpacesPipe,
     MaxValidator,
     MinValidator,
     AppSettingsComponent,
@@ -248,6 +246,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     NodeConfigComponent,
     LNPConfigComponent,
     NodeSettingsComponent,
+    PageSettingsComponent,
     ServicesSettingsComponent,
     LoopServiceSettingsComponent,
     BoltzServiceSettingsComponent,
@@ -270,12 +269,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     SwapServiceInfoComponent,
     SwapModalComponent,
     SwapInInfoGraphicsComponent,
-    SwapOutInfoGraphicsComponent,
-    PeerswapComponent,
-    SwapPeersComponent,
-    PeerswapsCancelledComponent,
-    PeerswapsInComponent,
-    PeerswapsOutComponent
+    SwapOutInfoGraphicsComponent
   ],
   declarations: [
     AppSettingsComponent,
@@ -292,6 +286,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     NodeConfigComponent,
     LNPConfigComponent,
     NodeSettingsComponent,
+    PageSettingsComponent,
     ServicesSettingsComponent,
     LoopServiceSettingsComponent,
     BoltzServiceSettingsComponent,
@@ -308,6 +303,8 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     MinValidator,
     RemoveLeadingZerosPipe,
     CamelCasePipe,
+    CamelCaseWithReplacePipe,
+    CamelCaseWithSpacesPipe,
     AuthSettingsComponent,
     TransactionsReportTableComponent,
     OnChainGeneratedAddressComponent,
@@ -334,12 +331,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     SwapServiceInfoComponent,
     SwapModalComponent,
     SwapInInfoGraphicsComponent,
-    SwapOutInfoGraphicsComponent,
-    PeerswapComponent,
-    SwapPeersComponent,
-    PeerswapsCancelledComponent,
-    PeerswapsInComponent,
-    PeerswapsOutComponent
+    SwapOutInfoGraphicsComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },
@@ -349,7 +341,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     { provide: DateAdapter, useClass: DefaultDateAdapter },
     { provide: MAT_DATE_FORMATS, useValue: DEFAULT_DATE_FORMAT },
     { provide: OverlayContainer, useClass: ThemeOverlay },
-    DecimalPipe, TitleCasePipe, DatePipe
+    DecimalPipe, TitleCasePipe, DatePipe, RemoveLeadingZerosPipe, CamelCasePipe, CamelCaseWithReplacePipe, CamelCaseWithSpacesPipe
   ]
 })
 export class SharedModule { }

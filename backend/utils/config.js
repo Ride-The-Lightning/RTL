@@ -71,7 +71,7 @@ export class ConfigService {
                     }
                 ]
             };
-            if (+process.env.RTL_SSO === 0) {
+            if (+process.env.RTL_SSO === 0 || configData.SSO.rtlSSO === 0) {
                 configData['multiPass'] = 'password';
             }
             return configData;

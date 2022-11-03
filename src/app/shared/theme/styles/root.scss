@@ -147,7 +147,7 @@ body {
 .padding-gap-large {
   padding: $gap * 2 !important;
   @include for_screensize(tab-land) {
-    padding: $gap !important;
+    padding: $gap * 4 !important;
   }
   @include for_screensize(tab-port) {
     padding: math.div($gap, 2) !important;
@@ -258,19 +258,19 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
 }
 
 .green {
-  color: #388e3c !important;
+  color: $green-color !important;
 }
 
 .yellow {
-  color: #ffd740 !important;
+  color: $yellow-color !important;
 }
 
 .red {
-  color: #c62828 !important;
+  color: $red-color !important;
 }
 
 .grey {
-  color: #CCCCCC !important;
+  color: $grey-color !important;
 }
 
 .mt-1px {
@@ -652,6 +652,16 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
   }
 }
 
+.pl-5px {
+  padding-left: 0.5rem !important;
+  @include for_screensize(tab-port) {
+    padding-left: 0.4rem !important;
+  }
+  @include for_screensize(phone) {
+    padding-left: 0.3rem !important;
+  }
+}
+
 .pl-1 {
   padding-left: 1rem !important;
   @include for_screensize(tab-port) {
@@ -708,6 +718,10 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
 
 .pr-4px {
   padding-right: 0.4rem !important;
+}
+
+.pr-6px {
+  padding-right: 0.6rem !important;
 }
 
 .p-0 {
@@ -1343,7 +1357,7 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
   width: $dot-size;
   height: $dot-size;
   border-radius: $dot-size;
-  margin: 0.4rem 1rem 0 0;
+  margin: 0.4rem 0 0 0;
   &.tiny-dot {
     width: $tiny-dot-size;
     height: $tiny-dot-size;
@@ -1538,13 +1552,21 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
   text-align: left;
 }
 
+.ellipsis-parent {
+  display: flex;
+}
+
+.mat-column-actions {
+  min-height: 4.8rem;
+}
+
 .mat-expansion-panel.flat-expansion-panel {
   box-shadow: none;
   padding: 0;
   border-radius: 2px;
   background: none;
   & .mat-expansion-panel-header {
-    padding: 0 $gap*3 0 $gap*3;
+    padding: 0 $gap*2 0 $gap*2;
     @include for_screensize(tab-port) {
       padding: 0 $gap 0 $gap;
     }

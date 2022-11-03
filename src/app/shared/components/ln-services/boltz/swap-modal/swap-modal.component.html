@@ -16,7 +16,7 @@
               <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
                 <rtl-boltz-service-info [serviceInfo]="serviceInfo" [direction]="direction"></rtl-boltz-service-info>
               </div>
-              <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">              
+              <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">  
                 <mat-form-field fxFlex="48">
                   <input autoFocus matInput placeholder="Amount" type="number" [step]="1000" tabindex="1" formControlName="amount" required>
                   <mat-hint>Range: {{serviceInfo?.limits?.minimal | number}}-{{serviceInfo?.limits?.maximal | number}}</mat-hint>

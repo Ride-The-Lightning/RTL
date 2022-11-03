@@ -26,10 +26,6 @@ export const getPeers = (req, res, next) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peers List Received', data: body });
         const peers = !body.peers ? [] : body.peers;
         return Promise.all(peers === null || peers === void 0 ? void 0 : peers.map((peer) => getAliasForPeers(req.session.selectedNode, peer))).then((values) => {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peers with Alias before Sort', data: body });
-            if (body.peers) {
-                body.peers = common.sortDescByStrKey(body.peers, 'alias');
-            }
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Sorted Peers List Received', data: body.peers });
             res.status(200).json(body.peers);
         });
@@ -56,7 +52,6 @@ export const postPeer = (req, res, next) => {
             const peers = (!body.peers) ? [] : body.peers;
             return Promise.all(peers === null || peers === void 0 ? void 0 : peers.map((peer) => getAliasForPeers(req.session.selectedNode, peer))).then((values) => {
                 if (body.peers) {
-                    body.peers = common.sortDescByStrKey(body.peers, 'alias');
                     body.peers = common.newestOnTop(body.peers, 'pub_key', req.body.pubkey);
                     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peers List after Connect Received', data: body });
                 }

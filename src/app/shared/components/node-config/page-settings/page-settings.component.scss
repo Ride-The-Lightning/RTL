@@ -1,0 +1,9 @@
+.table-setting-row {
+  &:last-child {
+    margin-bottom: 3rem;
+  }
+  &:not(:first-child) {
+    margin: 3rem 0;
+  }
+}
+

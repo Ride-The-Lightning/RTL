@@ -37,7 +37,7 @@
                   <span fxFlex="100" class="foreground-secondary-text">&nbsp;</span>
                 </ng-template>
                 <mat-divider class="w-100 my-1"></mat-divider>
-              </div>                
+              </div>    
             </div>
           </div>
         </div>
@@ -45,7 +45,7 @@
           <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="pb-1">{{data.titleMessage}}</p>
           <div fxLayout="row wrap" fxLayoutAlign="space-between center">
             <ng-container *ngFor="let getInput of getInputs; index as i">
-              <mat-form-field *ngIf="!getInput.advancedField || showAdvanced" [fxFlex]="getInput.width">                              
+              <mat-form-field *ngIf="!getInput.advancedField || showAdvanced" [fxFlex]="getInput.width">                  
                 <input matInput [autoFocus]="i === 0" [placeholder]="getInput.placeholder" name="input{{i}}" [min]="getInput.min" [step]="getInput.step" [type]="getInput.inputType | lowercase" [(ngModel)]="getInput.inputValue" [tabindex]="i+1" required>
                 <mat-error *ngIf="!getInput.inputValue">{{getInput.placeholder}} is required.</mat-error>
                 <mat-hint>{{getInput.hintFunction ? getInput.hintFunction(getInput.inputValue) : getInput.hintText}}</mat-hint>

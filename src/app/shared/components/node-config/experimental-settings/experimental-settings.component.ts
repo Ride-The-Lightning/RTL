@@ -36,8 +36,8 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
   public policyTypes = LADS_POLICY;
   public selPolicyType = LADS_POLICY[0];
   public policyMod: number | null;
-  public leaseFeeBaseSat: number | null;
-  public leaseFeeBasis: number | null;
+  public lease_fee_base_sat: number | null;
+  public lease_fee_basis: number | null;
   public channelFeeMaxBaseSat: number | null;
   public channelFeeMaxProportional: number | null;
   public flgUpdateCalled = false;
@@ -79,8 +79,8 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
           this.selPolicyType = LADS_POLICY.find((policy) => policy.id === this.fundingPolicy.policy) || this.policyTypes[0];
         }
         this.policyMod = this.fundingPolicy.policy_mod || this.fundingPolicy.policy_mod === 0 ? this.fundingPolicy.policy_mod : null;
-        this.leaseFeeBaseSat = this.fundingPolicy.lease_fee_base_msat ? this.fundingPolicy.lease_fee_base_msat / 1000 : this.fundingPolicy.lease_fee_base_msat === 0 ? 0 : null;
-        this.leaseFeeBasis = this.fundingPolicy.lease_fee_basis || this.fundingPolicy.lease_fee_basis === 0 ? this.fundingPolicy.lease_fee_basis : null;
+        this.lease_fee_base_sat = this.fundingPolicy.lease_fee_base_msat ? this.fundingPolicy.lease_fee_base_msat / 1000 : this.fundingPolicy.lease_fee_base_msat === 0 ? 0 : null;
+        this.lease_fee_basis = this.fundingPolicy.lease_fee_basis || this.fundingPolicy.lease_fee_basis === 0 ? this.fundingPolicy.lease_fee_basis : null;
         this.channelFeeMaxBaseSat = this.fundingPolicy.channel_fee_max_base_msat ? this.fundingPolicy.channel_fee_max_base_msat / 1000 : this.fundingPolicy.channel_fee_max_base_msat === 0 ? 0 : null;
         this.channelFeeMaxProportional = this.fundingPolicy.channel_fee_max_proportional_thousandths || this.fundingPolicy.channel_fee_max_proportional_thousandths === 0 ? (this.fundingPolicy.channel_fee_max_proportional_thousandths * 1000) : null;
       });
@@ -115,7 +115,7 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
   onUpdateFundingPolicy() {
     this.flgUpdateCalled = true;
     this.updateMsg = {};
-    this.dataService.getOrUpdateFunderPolicy(this.selPolicyType.id, this.policyMod, ((this.leaseFeeBaseSat || 0) * 1000), this.leaseFeeBasis, (this.channelFeeMaxBaseSat || 0) * 1000, this.channelFeeMaxProportional ? this.channelFeeMaxProportional / 1000 : 0).
+    this.dataService.getOrUpdateFunderPolicy(this.selPolicyType.id, this.policyMod, ((this.lease_fee_base_sat || 0) * 1000), this.lease_fee_basis, (this.channelFeeMaxBaseSat || 0) * 1000, this.channelFeeMaxProportional ? this.channelFeeMaxProportional / 1000 : 0).
       pipe(takeUntil(this.unSubs[4])).
       subscribe({
         next: (updatePolicyRes: any) => {
@@ -140,8 +140,8 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
       this.selPolicyType = LADS_POLICY[0];
     }
     this.policyMod = this.fundingPolicy.policy_mod || this.fundingPolicy.policy_mod === 0 ? this.fundingPolicy.policy_mod : null;
-    this.leaseFeeBaseSat = this.fundingPolicy.lease_fee_base_msat ? this.fundingPolicy.lease_fee_base_msat / 1000 : this.fundingPolicy.lease_fee_base_msat === 0 ? 0 : null;
-    this.leaseFeeBasis = this.fundingPolicy.lease_fee_basis || this.fundingPolicy.lease_fee_basis === 0 ? this.fundingPolicy.lease_fee_basis : null;
+    this.lease_fee_base_sat = this.fundingPolicy.lease_fee_base_msat ? this.fundingPolicy.lease_fee_base_msat / 1000 : this.fundingPolicy.lease_fee_base_msat === 0 ? 0 : null;
+    this.lease_fee_basis = this.fundingPolicy.lease_fee_basis || this.fundingPolicy.lease_fee_basis === 0 ? this.fundingPolicy.lease_fee_basis : null;
     this.channelFeeMaxBaseSat = this.fundingPolicy.channel_fee_max_base_msat ? this.fundingPolicy.channel_fee_max_base_msat / 1000 : this.fundingPolicy.channel_fee_max_base_msat === 0 ? 0 : null;
     this.channelFeeMaxProportional = this.fundingPolicy.channel_fee_max_proportional_thousandths || this.fundingPolicy.channel_fee_max_proportional_thousandths === 0 ? (this.fundingPolicy.channel_fee_max_proportional_thousandths * 1000) : null;
   }

@@ -24,7 +24,6 @@ export class CLNLookupsComponent implements OnInit, OnDestroy {
   public nodeLookupValue = { nodeid: '' };
   public channelLookupValue = [];
   public flgSetLookupValue = false;
-  public temp: any;
   public messageObj = [];
   public selectedFieldId = 0;
   public lookupFields = [

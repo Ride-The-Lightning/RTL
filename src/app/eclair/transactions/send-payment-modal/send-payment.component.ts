@@ -18,7 +18,7 @@ import { DataService } from '../../../shared/services/data.service';
 import { ECLEffects } from '../../store/ecl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { sendPayment } from '../../store/ecl.actions';
-import { allChannelsInfo, eclnNodeSettings } from '../../store/ecl.selector';
+import { allChannelsInfo, eclNodeSettings } from '../../store/ecl.selector';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
@@ -47,7 +47,7 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   constructor(public dialogRef: MatDialogRef<ECLLightningSendPaymentsComponent>, private store: Store<RTLState>, private eclEffects: ECLEffects, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions, private dataService: DataService) { }
 
   ngOnInit() {
-    this.store.select(eclnNodeSettings).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
       subscribe((nodeSettings: SelNodeChild | null) => {
         this.selNode = nodeSettings;
       });

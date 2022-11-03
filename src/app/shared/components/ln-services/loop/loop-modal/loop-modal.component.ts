@@ -57,7 +57,16 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   statusFormGroup: FormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<LoopModalComponent>, @Inject(MAT_DIALOG_DATA) public data: LoopAlert, private store: Store<RTLState>, private loopService: LoopService, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe, private logger: LoggerService, private router: Router, private commonService: CommonService) { }
+  constructor(
+    public dialogRef: MatDialogRef<LoopModalComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: LoopAlert,
+    private store: Store<RTLState>,
+    private loopService: LoopService,
+    private formBuilder: FormBuilder,
+    private decimalPipe: DecimalPipe,
+    private logger: LoggerService,
+    private router: Router,
+    private commonService: CommonService) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
@@ -152,7 +161,10 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
       const swapRoutingFee = Math.ceil(this.inputFormGroup.controls.amount.value * (this.inputFormGroup.controls.routingFeePercent.value / 100));
       const destAddress = this.addressFormGroup.controls.addressType.value === 'external' ? this.addressFormGroup.controls.address.value : '';
       const swapPublicationDeadline = this.inputFormGroup.controls.fast.value ? 0 : new Date().getTime() + (30 * 60000);
-      this.loopService.loopOut(this.inputFormGroup.controls.amount.value, (this.channel && this.channel.chan_id ? this.channel.chan_id : ''), this.inputFormGroup.controls.sweepConfTarget.value, swapRoutingFee, +(this.quote.htlc_sweep_fee_sat || 0), this.prepayRoutingFee, +(this.quote.prepay_amt_sat || 0), +(this.quote.swap_fee_sat || 0), swapPublicationDeadline, destAddress).pipe(takeUntil(this.unSubs[1])).
+      this.loopService.loopOut(
+        this.inputFormGroup.controls.amount.value, (this.channel && this.channel.chan_id ? this.channel.chan_id : ''),
+        this.inputFormGroup.controls.sweepConfTarget.value, swapRoutingFee, +(this.quote.htlc_sweep_fee_sat || 0), this.prepayRoutingFee,
+        +(this.quote.prepay_amt_sat || 0), +(this.quote.swap_fee_sat || 0), swapPublicationDeadline, destAddress).pipe(takeUntil(this.unSubs[1])).
         subscribe({
           next: (loopStatus: any) => {
             this.loopStatus = loopStatus;
@@ -168,7 +180,9 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onEstimateQuote(): boolean | void {
-    if (!this.inputFormGroup.controls.amount.value || (this.minQuote.amount && this.inputFormGroup.controls.amount.value < this.minQuote.amount) || (this.maxQuote.amount && this.inputFormGroup.controls.amount.value > this.maxQuote.amount) || !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2) {
+    if (!this.inputFormGroup.controls.amount.value || (this.minQuote.amount && this.inputFormGroup.controls.amount.value < this.minQuote.amount) ||
+    (this.maxQuote.amount && this.inputFormGroup.controls.amount.value > this.maxQuote.amount) ||
+    !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2) {
       return true;
     }
     const swapPublicationDeadline = this.inputFormGroup.controls.fast.value ? 0 : new Date().getTime() + (30 * 60000);
@@ -202,7 +216,9 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
       case 1:
         if (this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.sweepConfTarget.value) {
           if (this.direction === LoopTypeEnum.LOOP_IN) {
-            this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.sweepConfTarget.value ? this.inputFormGroup.controls.sweepConfTarget.value : 6);
+            this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' +
+            (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) +
+            ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.sweepConfTarget.value ? this.inputFormGroup.controls.sweepConfTarget.value : 6);
           } else {
             this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' +
               (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' +
@@ -220,7 +236,10 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
       case 2:
         if (this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.sweepConfTarget.value) {
           if (this.direction === LoopTypeEnum.LOOP_IN) {
-            this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.sweepConfTarget.value ? this.inputFormGroup.controls.sweepConfTarget.value : 6);
+            this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' +
+            (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) +
+            ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.sweepConfTarget.value ?
+              this.inputFormGroup.controls.sweepConfTarget.value : 6);
           } else {
             this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' +
               (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' +

@@ -77,7 +77,17 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLNOnChainSendModalComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNOnChainSendFunds, private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions, private formBuilder: FormBuilder, private rtlEffects: RTLEffects, private snackBar: MatSnackBar) {
+  constructor(
+    public dialogRef: MatDialogRef<CLNOnChainSendModalComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: CLNOnChainSendFunds,
+    private logger: LoggerService,
+    private store: Store<RTLState>,
+    private commonService: CommonService,
+    private decimalPipe: DecimalPipe,
+    private actions: Actions,
+    private formBuilder: FormBuilder,
+    private rtlEffects: RTLEffects,
+    private snackBar: MatSnackBar) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -196,7 +206,9 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
         this.transaction.minconf = this.sendFundFormGroup.controls.flgMinConf.value ? this.sendFundFormGroup.controls.minConfValue.value : null;
       } else {
         delete this.transaction.minconf;
-        this.transaction.feeRate = (this.sendFundFormGroup.controls.selFeeRate.value === 'customperkb' && !this.sendFundFormGroup.controls.flgMinConf.value && this.sendFundFormGroup.controls.customFeeRate.value) ? ((this.sendFundFormGroup.controls.customFeeRate.value * 1000) + 'perkb') : this.sendFundFormGroup.controls.selFeeRate.value;
+        this.transaction.feeRate = (this.sendFundFormGroup.controls.selFeeRate.value === 'customperkb' &&
+        !this.sendFundFormGroup.controls.flgMinConf.value && this.sendFundFormGroup.controls.customFeeRate.value) ?
+          ((this.sendFundFormGroup.controls.customFeeRate.value * 1000) + 'perkb') : this.sendFundFormGroup.controls.selFeeRate.value;
       }
       delete this.transaction.utxos;
       this.store.dispatch(setChannelTransaction({ payload: this.transaction }));

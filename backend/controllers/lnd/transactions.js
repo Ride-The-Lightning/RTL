@@ -13,10 +13,6 @@ export const getTransactions = (req, res, next) => {
     options.url = req.session.selectedNode.ln_server_url + '/v1/transactions';
     request(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Transactions', msg: 'Transactions List Received', data: body });
-        if (body.transactions && body.transactions.length > 0) {
-            body.transactions = common.sortDescByKey(body.transactions, 'time_stamp');
-        }
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Transactions', msg: 'Sorted Transactions List Received', data: body.transactions });
         res.status(200).json(body.transactions);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Transactions', 'List Transactions Error', req.session.selectedNode);

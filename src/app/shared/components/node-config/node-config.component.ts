@@ -23,7 +23,7 @@ export class NodeConfigComponent implements OnInit, OnDestroy {
   public showLnConfig = false;
   public selNode: ConfigSettingsNode | any;
   public lnImplementationStr = '';
-  public links = [{ link: 'layout', name: 'Layout' }, { link: 'services', name: 'Services' }, { link: 'experimental', name: 'Experimental' }, { link: 'lnconfig', name: this.lnImplementationStr }];
+  public links = [{ link: 'applayout', name: 'Application Layout' }, { link: 'pglayout', name: 'Page Layout' }, { link: 'services', name: 'Services' }, { link: 'experimental', name: 'Experimental' }, { link: 'lnconfig', name: this.lnImplementationStr }];
   public activeLink = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -56,7 +56,7 @@ export class NodeConfigComponent implements OnInit, OnDestroy {
           break;
       }
       if (this.selNode.authentication && this.selNode.authentication.configPath && this.selNode.authentication.configPath.trim() !== '') {
-        this.links[3].name = this.lnImplementationStr;
+        this.links[4].name = this.lnImplementationStr;
         this.showLnConfig = true;
       }
     });
@@ -73,7 +73,7 @@ export class NodeConfigComponent implements OnInit, OnDestroy {
     }));
     this.rtlEffects.closeAlert.pipe(takeUntil(this.unSubs[1])).subscribe((alertRes) => {
       if (alertRes) {
-        this.activeLink = this.links[3].link;
+        this.activeLink = this.links[4].link;
         this.router.navigate(['./' + this.activeLink], { relativeTo: this.activatedRoute });
       }
     });

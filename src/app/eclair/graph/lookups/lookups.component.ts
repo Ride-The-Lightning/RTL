@@ -27,7 +27,6 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
   public nodeLookupValue: LookupNode = {};
   public channelLookupValue = [];
   public flgSetLookupValue = false;
-  public temp: any;
   public messageObj = [];
   public selectedFieldId = 0;
   public lookupFields = [
