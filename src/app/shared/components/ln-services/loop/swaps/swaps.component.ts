@@ -19,6 +19,7 @@ import { ColumnDefinition, PageSettings, TableSetting } from '../../../../models
 import { lndPageSettings } from '../../../../../lnd/store/lnd.selector';
 import { ApiCallStatusPayload } from '../../../../models/apiCallsPayload';
 import { CamelCaseWithReplacePipe } from '../../../../pipes/app.pipe';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'rtl-swaps',
@@ -53,7 +54,7 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private loopService: LoopService, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private loopService: LoopService, private datePipe: DatePipe, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -97,30 +98,28 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
   }
 
   setFilterPredicate() {
-    this.listSwaps.filterPredicate = (rowData: LoopSwapStatus, fltr: string) => JSON.stringify(rowData).toLowerCase().includes(fltr);
-    // this.listSwaps.filterPredicate = (rowData: LoopSwapStatus, fltr: string) => {
-    //   let rowToFilter = '';
-    //   switch (this.selFilterBy) {
-    //     case 'all':
-    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
-    //         rowToFilter = rowToFilter + (
-    //           (this.displayedColumns[i] === '') ?
-    //             (rowData ? rowData..toLowerCase() : '') :
-    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
-    //         ) + ', ';
-    //       }
-    //       break;
+    this.listSwaps.filterPredicate = (rowData: LoopSwapStatus, fltr: string) => {
+      let rowToFilter = '';
+      switch (this.selFilterBy) {
+        case 'all':
+          rowToFilter = JSON.stringify(rowData).toLowerCase();
+          break;
 
-    //     case '':
-    //       rowToFilter = rowData?..toLowerCase() || '';
-    //       break;
+        case 'state':
+          rowToFilter = rowData?.state ? this.LoopStateEnum[rowData?.state] : '';
+          break;
 
-    //     default:
-    //       rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
-    //       break;
-    //   }
-    //   return rowToFilter.includes(fltr);
-    // };
+        case 'initiation_time':
+        case 'last_update_time':
+          rowToFilter = this.datePipe.transform(new Date((rowData[this.selFilterBy] || 0) / 1000000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() || '';
+          break;
+
+        default:
+          rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          break;
+      }
+      return this.selFilterBy === 'state' ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);
+    };
   }
 
   onSwapClick(selSwap: LoopSwapStatus, event: any) {

@@ -150,7 +150,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
           rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
           break;
       }
-      return this.selFilterBy === 'is_dust' ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);
+      return (this.selFilterBy === 'is_dust' || this.selFilterBy === 'address_type') ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);
     };
   }
 

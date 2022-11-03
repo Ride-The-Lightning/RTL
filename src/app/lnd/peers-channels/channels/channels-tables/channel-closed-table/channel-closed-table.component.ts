@@ -125,7 +125,7 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
           rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
           break;
       }
-      return rowToFilter.includes(fltr);
+      return this.selFilterBy === 'close_type' ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);
     };
   }
 

@@ -448,6 +448,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
           break;
 
         case 'status':
+        case 'group_status':
           rowToFilter = rowData?.status === 'SUCCEEDED' ? 'succeeded' : 'failed';
           break;
 
@@ -456,6 +457,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
           break;
 
         case 'failure_reason':
+        case 'group_failure_reason':
           rowToFilter = this.camelCaseWithReplace.transform((rowData.failure_reason || ''), 'failure_reason', '_');
           break;
 
