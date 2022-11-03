@@ -136,34 +136,23 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
   }
 
   setFilterPredicate() {
-    this.channels.filterPredicate = (rowData: Channel, fltr: string) => JSON.stringify(rowData).toLowerCase().includes(fltr);
-    // this.channels.filterPredicate = (rowData: Channel, fltr: string) => {
-    //   let rowToFilter = '';
-    //   switch (this.selFilterBy) {
-    //     case 'all':
-    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
-    //         rowToFilter = rowToFilter + (
-    //           (this.displayedColumns[i] === '') ?
-    //             (rowData ? rowData..toLowerCase() : '') :
-    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
-    //         ) + ', ';
-    //       }
-    //       break;
+    this.channels.filterPredicate = (rowData: Channel, fltr: string) => {
+      let rowToFilter = '';
+      switch (this.selFilterBy) {
+        case 'all':
+          rowToFilter = JSON.stringify(rowData).toLowerCase();
+          break;
 
-    //     case 'announceChannel':
-    //       rowToFilter = rowData?.private ? 'private' : 'public';
-    //       break;
+        case 'announceChannel':
+          rowToFilter = rowData?.announceChannel ? 'public' : 'private';
+          break;
 
-    //     case '':
-    //       rowToFilter = rowData?..toLowerCase() || '';
-    //       break;
-
-    //     default:
-    //       rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
-    //       break;
-    //   }
-    //   return rowToFilter.includes(fltr);
-    // };
+        default:
+          rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          break;
+      }
+      return rowToFilter.includes(fltr);
+    };
   }
 
   loadChannelsTable() {

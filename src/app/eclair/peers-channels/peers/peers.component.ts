@@ -213,30 +213,23 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   setFilterPredicate() {
-    this.peers.filterPredicate = (rowData: Peer, fltr: string) => JSON.stringify(rowData).toLowerCase().includes(fltr);
-    // this.peers.filterPredicate = (rowData: Peer, fltr: string) => {
-    //   let rowToFilter = '';
-    //   switch (this.selFilterBy) {
-    //     case 'all':
-    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
-    //         rowToFilter = rowToFilter + (
-    //           (this.displayedColumns[i] === '') ?
-    //             (rowData ? rowData..toLowerCase() : '') :
-    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
-    //         ) + ', ';
-    //       }
-    //       break;
+    this.peers.filterPredicate = (rowData: Peer, fltr: string) => {
+      let rowToFilter = '';
+      switch (this.selFilterBy) {
+        case 'all':
+          rowToFilter = JSON.stringify(rowData).toLowerCase();
+          break;
 
-    //     case '':
-    //       rowToFilter = rowData?..toLowerCase() || '';
-    //       break;
+        case 'state':
+          rowToFilter = rowData?.state?.toLowerCase() || '';
+          break;
 
-    //     default:
-    //       rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
-    //       break;
-    //   }
-    //   return rowToFilter.includes(fltr);
-    // };
+        default:
+          rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          break;
+      }
+      return this.selFilterBy === 'state' ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);
+    };
   }
 
   loadPeersTable(peers: Peer[]) {
