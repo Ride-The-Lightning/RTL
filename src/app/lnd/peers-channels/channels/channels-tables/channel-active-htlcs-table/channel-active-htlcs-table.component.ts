@@ -132,33 +132,19 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
 
   setFilterPredicate() {
     this.channels.filterPredicate = (rowData: Channel, fltr: string) => {
-      const rowToFilter = (rowData.remote_alias ? rowData.remote_alias.toLowerCase() : '') +
-        rowData.pending_htlcs?.map((htlc) => JSON.stringify(htlc) + (htlc.incoming ? 'yes' : 'no'));
+      let rowToFilter = '';
+      switch (this.selFilterBy) {
+        case 'all':
+          rowToFilter = (rowData.remote_alias ? rowData.remote_alias.toLowerCase() : '') +
+          rowData.pending_htlcs?.map((htlc) => JSON.stringify(htlc) + (htlc.incoming ? 'yes' : 'no'));
+          break;
+
+        default:
+          rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          break;
+      }
       return rowToFilter.includes(fltr);
     };
-    // this.channels.filterPredicate = (rowData: Channel, fltr: string) => {
-    //   let rowToFilter = '';
-    //   switch (this.selFilterBy) {
-    //     case 'all':
-    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
-    //         rowToFilter = rowToFilter + (
-    //           (this.displayedColumns[i] === '') ?
-    //             (rowData ? rowData..toLowerCase() : '') :
-    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
-    //         ) + ', ';
-    //       }
-    //       break;
-
-    //     case '':
-    //       rowToFilter = rowData?..toLowerCase() || '';
-    //       break;
-
-    //     default:
-    //       rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
-    //       break;
-    //   }
-    //   return rowToFilter.includes(fltr);
-    // };
   }
 
   loadHTLCsTable(channels: Channel[]) {

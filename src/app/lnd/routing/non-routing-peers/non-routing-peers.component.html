@@ -49,11 +49,11 @@
             </div>
           </td>
         </ng-container>
-        <ng-container matColumnDef="uptime">
+        <ng-container matColumnDef="uptime_str">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Uptime ({{timeUnit}})</th>
           <td mat-cell *matCellDef="let nonRPeer"><span fxLayoutAlign="end center">{{nonRPeer.uptime_str}} </span></td>
         </ng-container>
-        <ng-container matColumnDef="lifetime">
+        <ng-container matColumnDef="lifetime_str">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Lifetime ({{timeUnit}})</th>
           <td mat-cell *matCellDef="let nonRPeer"><span fxLayoutAlign="end center">{{nonRPeer.lifetime_str}} </span></td>
         </ng-container>

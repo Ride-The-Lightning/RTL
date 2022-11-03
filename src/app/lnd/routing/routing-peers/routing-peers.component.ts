@@ -138,31 +138,38 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   setFilterPredicate() {
-    this.routingPeersIncoming.filterPredicate = (rowDataIn: RoutingPeers, fltr: string) => JSON.stringify(rowDataIn).toLowerCase().includes(fltr);
-    this.routingPeersOutgoing.filterPredicate = (rowDataOut: RoutingPeers, fltr: string) => JSON.stringify(rowDataOut).toLowerCase().includes(fltr);
-    // this.routingPeersIncoming.filterPredicate = (rowData: RoutingPeer, fltr: string) => {
-    //   let rowToFilter = '';
-    //   switch (this.selFilterBy) {
-    //     case 'all':
-    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
-    //         rowToFilter = rowToFilter + (
-    //           (this.displayedColumns[i] === '') ?
-    //             (rowData ? rowData..toLowerCase() : '') :
-    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
-    //         ) + ', ';
-    //       }
-    //       break;
+    this.routingPeersIncoming.filterPredicate = (rowDataIn: RoutingPeers, fltr: string) => {
+      let rowToFilterIn = '';
+      switch (this.selFilterByIn) {
+        case 'all':
+          rowToFilterIn = JSON.stringify(rowDataIn).toLowerCase();
+          break;
 
-    //     case '':
-    //       rowToFilter = rowData?..toLowerCase() || '';
-    //       break;
+        default:
+          rowToFilterIn = typeof rowDataIn[this.selFilterByIn] === 'string' ? rowDataIn[this.selFilterByIn].toLowerCase() : typeof rowDataIn[this.selFilterByIn] === 'boolean' ? (rowDataIn[this.selFilterByIn] ? 'yes' : 'no') : rowDataIn[this.selFilterByIn].toString();
+          break;
+      }
+      return rowToFilterIn.includes(fltr);
+    };
 
-    //     default:
-    //       rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
-    //       break;
-    //   }
-    //   return rowToFilter.includes(fltr);
-    // };
+    this.routingPeersOutgoing.filterPredicate = (rowDataOut: RoutingPeers, fltr: string) => {
+      let rowToFilterOut = '';
+      switch (this.selFilterByOut) {
+        case 'all':
+          rowToFilterOut = JSON.stringify(rowDataOut).toLowerCase();
+          break;
+
+        case 'total_amount':
+        case 'total_fee':
+          rowToFilterOut = ((+(rowDataOut[this.selFilterByOut] || 0)) / 1000)?.toString() || '';
+          break;
+
+        default:
+          rowToFilterOut = typeof rowDataOut[this.selFilterByOut] === 'string' ? rowDataOut[this.selFilterByOut].toLowerCase() : typeof rowDataOut[this.selFilterByOut] === 'boolean' ? (rowDataOut[this.selFilterByOut] ? 'yes' : 'no') : rowDataOut[this.selFilterByOut].toString();
+          break;
+      }
+      return rowToFilterOut.includes(fltr);
+    };
   }
 
   loadRoutingPeersTable(forwardingEvents: ForwardingEvent[]) {

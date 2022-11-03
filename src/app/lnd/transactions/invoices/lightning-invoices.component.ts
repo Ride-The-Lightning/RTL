@@ -184,33 +184,36 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
 
   setFilterPredicate() {
     this.invoices.filterPredicate = (rowData: Invoice, fltr: string) => {
-      const rowToFilter = (rowData.creation_date ? this.datePipe.transform(new Date(rowData.creation_date * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '')! +
-      (rowData.settle_date ? this.datePipe.transform(new Date(rowData.settle_date * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
-      return rowToFilter.includes(fltr);
+      let rowToFilter = '';
+      switch (this.selFilterBy) {
+        case 'all':
+          rowToFilter = (rowData.creation_date ? this.datePipe.transform(new Date(rowData.creation_date * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '')! +
+          (rowData.settle_date ? this.datePipe.transform(new Date(rowData.settle_date * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+          break;
+
+        case 'creation_date':
+        case 'settle_date':
+          rowToFilter = this.datePipe.transform(new Date((rowData[this.selFilterBy] || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() || '';
+          break;
+
+        case 'private':
+          rowToFilter = rowData?.private ? 'private' : 'public';
+          break;
+
+        case 'is_keysend':
+          rowToFilter = rowData?.is_keysend ? 'keysend invoices' : 'non keysend invoices';
+          break;
+
+        case 'is_amp':
+          rowToFilter = rowData?.is_amp ? 'atomic multi path payment' : 'non atomic payment';
+          break;
+
+        default:
+          rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          break;
+      }
+      return (this.selFilterBy === 'is_keysend' || this.selFilterBy === 'is_amp') ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);
     };
-    // this.invoices.filterPredicate = (rowData: Invoice, fltr: string) => {
-    //   let rowToFilter = '';
-    //   switch (this.selFilterBy) {
-    //     case 'all':
-    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
-    //         rowToFilter = rowToFilter + (
-    //           (this.displayedColumns[i] === '') ?
-    //             (rowData ? rowData..toLowerCase() : '') :
-    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
-    //         ) + ', ';
-    //       }
-    //       break;
-
-    //     case '':
-    //       rowToFilter = rowData?..toLowerCase() || '';
-    //       break;
-
-    //     default:
-    //       rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
-    //       break;
-    //   }
-    //   return rowToFilter.includes(fltr);
-    // };
   }
 
   loadInvoicesTable(invoices) {

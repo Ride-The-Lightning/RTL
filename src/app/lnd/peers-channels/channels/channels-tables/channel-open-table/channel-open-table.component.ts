@@ -318,45 +318,31 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
 
   setFilterPredicate() {
     this.channels.filterPredicate = (rowData: Channel, fltr: string) => {
-      const rowToFilter = ((rowData.active) ? 'active' : 'inactive') + (rowData.chan_id ? rowData.chan_id.toLowerCase() : '') +
-        (rowData.remote_pubkey ? rowData.remote_pubkey.toLowerCase() : '') + (rowData.remote_alias ? rowData.remote_alias.toLowerCase() : '') +
-        (rowData.capacity ? rowData.capacity : '') + (rowData.local_balance ? rowData.local_balance : '') +
-        (rowData.remote_balance ? rowData.remote_balance : '') + (rowData.total_satoshis_sent ? rowData.total_satoshis_sent : '') +
-        (rowData.total_satoshis_received ? rowData.total_satoshis_received : '') + (rowData.commit_fee ? rowData.commit_fee : '') +
-        (rowData.private ? 'private' : 'public');
-      return rowToFilter.includes(fltr);
+      let rowToFilter = '';
+      switch (this.selFilterBy) {
+        case 'all':
+          rowToFilter = ((rowData.active) ? 'active' : 'inactive') + (rowData.chan_id ? rowData.chan_id.toLowerCase() : '') +
+          (rowData.remote_pubkey ? rowData.remote_pubkey.toLowerCase() : '') + (rowData.remote_alias ? rowData.remote_alias.toLowerCase() : '') +
+          (rowData.capacity ? rowData.capacity : '') + (rowData.local_balance ? rowData.local_balance : '') +
+          (rowData.remote_balance ? rowData.remote_balance : '') + (rowData.total_satoshis_sent ? rowData.total_satoshis_sent : '') +
+          (rowData.total_satoshis_received ? rowData.total_satoshis_received : '') + (rowData.commit_fee ? rowData.commit_fee : '') +
+          (rowData.private ? 'private' : 'public');
+          break;
+
+        case 'active':
+          rowToFilter = rowData?.active ? 'active' : 'inactive';
+          break;
+
+        case 'private':
+          rowToFilter = rowData?.private ? 'private' : 'public';
+          break;
+
+        default:
+          rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          break;
+      }
+      return this.selFilterBy === 'active' ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);
     };
-    // this.channels.filterPredicate = (rowData: Channel, fltr: string) => {
-    //   let rowToFilter = '';
-    //   switch (this.selFilterBy) {
-    //     case 'all':
-    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
-    //         rowToFilter = rowToFilter + (
-    //           (this.displayedColumns[i] === '') ?
-    //             (rowData ? rowData..toLowerCase() : '') :
-    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
-    //         ) + ', ';
-    //       }
-    //       break;
-
-    //     case 'active':
-    //       rowToFilter = rowData?.active ? 'active' : 'inactive';
-    //       break;
-
-    //     case 'private':
-    //       rowToFilter = rowData?.private ? 'private' : 'public';
-    //       break;
-
-    //     case '':
-    //       rowToFilter = rowData?..toLowerCase() || '';
-    //       break;
-
-    //     default:
-    //       rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
-    //       break;
-    //   }
-    //   return this.selFilterBy === 'active' ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);
-    // };
   }
 
   loadChannelsTable(mychannels: Channel[]) {

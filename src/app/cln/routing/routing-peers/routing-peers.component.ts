@@ -131,41 +131,41 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
 
   setFilterPredicate() {
     this.routingPeersIncoming.filterPredicate = (rowDataIn: RoutingPeer, fltr: string) => {
-      let rowToFilter = '';
+      let rowToFilterIn = '';
       switch (this.selFilterByIn) {
         case 'all':
-          rowToFilter = JSON.stringify(rowDataIn).toLowerCase();
+          rowToFilterIn = JSON.stringify(rowDataIn).toLowerCase();
           break;
 
         case 'total_amount':
         case 'total_fee':
-          rowToFilter = ((+(rowDataIn[this.selFilterByIn] || 0)) / 1000)?.toString() || '';
+          rowToFilterIn = ((+(rowDataIn[this.selFilterByIn] || 0)) / 1000)?.toString() || '';
           break;
 
         default:
-          rowToFilter = typeof rowDataIn[this.selFilterByIn] === 'string' ? rowDataIn[this.selFilterByIn].toLowerCase() : typeof rowDataIn[this.selFilterByIn] === 'boolean' ? (rowDataIn[this.selFilterByIn] ? 'yes' : 'no') : rowDataIn[this.selFilterByIn].toString();
+          rowToFilterIn = typeof rowDataIn[this.selFilterByIn] === 'string' ? rowDataIn[this.selFilterByIn].toLowerCase() : typeof rowDataIn[this.selFilterByIn] === 'boolean' ? (rowDataIn[this.selFilterByIn] ? 'yes' : 'no') : rowDataIn[this.selFilterByIn].toString();
           break;
       }
-      return rowToFilter.includes(fltr);
+      return rowToFilterIn.includes(fltr);
     };
 
-    this.routingPeersIncoming.filterPredicate = (rowDataOut: RoutingPeer, fltr: string) => {
-      let rowToFilter = '';
+    this.routingPeersOutgoing.filterPredicate = (rowDataOut: RoutingPeer, fltr: string) => {
+      let rowToFilterOut = '';
       switch (this.selFilterByOut) {
         case 'all':
-          rowToFilter = JSON.stringify(rowDataOut).toLowerCase();
+          rowToFilterOut = JSON.stringify(rowDataOut).toLowerCase();
           break;
 
         case 'total_amount':
         case 'total_fee':
-          rowToFilter = ((+(rowDataOut[this.selFilterByOut] || 0)) / 1000)?.toString() || '';
+          rowToFilterOut = ((+(rowDataOut[this.selFilterByOut] || 0)) / 1000)?.toString() || '';
           break;
 
         default:
-          rowToFilter = typeof rowDataOut[this.selFilterByOut] === 'string' ? rowDataOut[this.selFilterByOut].toLowerCase() : typeof rowDataOut[this.selFilterByOut] === 'boolean' ? (rowDataOut[this.selFilterByOut] ? 'yes' : 'no') : rowDataOut[this.selFilterByOut].toString();
+          rowToFilterOut = typeof rowDataOut[this.selFilterByOut] === 'string' ? rowDataOut[this.selFilterByOut].toLowerCase() : typeof rowDataOut[this.selFilterByOut] === 'boolean' ? (rowDataOut[this.selFilterByOut] ? 'yes' : 'no') : rowDataOut[this.selFilterByOut].toString();
           break;
       }
-      return rowToFilter.includes(fltr);
+      return rowToFilterOut.includes(fltr);
     };
   }
 

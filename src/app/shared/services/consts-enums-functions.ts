@@ -968,7 +968,7 @@ export const LND_PAGE_DEFS: LNDPageDefinitions = {
     open: {
       maxColumns: 8,
       allowedColumns: [{ column:'remote_alias', label: 'Peer' }, { column:'remote_pubkey', label: 'Pubkey' }, { column:'channel_point' }, { column:'chan_id', label: 'Channel ID' }, { column:'initiator' },
-      { column:'static_remote_key' }, { column:'uptime' }, { column:'lifetime' }, { column:'commit_fee' }, { column:'commit_weight' }, { column:'fee_per_kw', label: 'Fee/KW' },
+      { column:'static_remote_key' }, { column:'uptime_str', label: 'Uptime' }, { column:'lifetime_str', label: 'Lifetime' }, { column:'commit_fee' }, { column:'commit_weight' }, { column:'fee_per_kw', label: 'Fee/KW' },
       { column:'num_updates', label: 'Updates' }, { column:'unsettled_balance' }, { column:'capacity' }, { column:'local_chan_reserve_sat', label: 'Local Reserve' },
       { column:'remote_chan_reserve_sat', label: 'Remote Reserve' }, { column:'total_satoshis_sent', label: 'Sats Sent' }, { column:'total_satoshis_received', label: 'Sats Received' }, { column:'local_balance' },
       { column:'remote_balance' }, { column:'balancedness', label: 'Balance Score' }]
@@ -1025,7 +1025,7 @@ export const LND_PAGE_DEFS: LNDPageDefinitions = {
     },
     invoices: {
       maxColumns: 9,
-      allowedColumns: [{ column:'private' }, { column:'is_keysend' }, { column:'is_amp' }, { column:'creation_date', label: 'Date Created' }, { column:'settle_date', label: 'Date Settled' },
+      allowedColumns: [{ column:'private' }, { column:'is_keysend', label: 'Keysend' }, { column:'is_amp', label: 'AMP' }, { column:'creation_date', label: 'Date Created' }, { column:'settle_date', label: 'Date Settled' },
       { column:'memo' }, { column:'r_preimage', label: 'Preimage' }, { column:'r_hash', label: 'Preimage Hash' }, { column:'payment_addr', label: 'Payment Address' }, { column:'payment_request' }, { column:'description_hash' },
       { column:'expiry' }, { column:'cltv_expiry' }, { column:'add_index' }, { column:'settle_index' }, { column:'value', label: 'Amount' }, { column:'amt_paid_sat', label: 'Amount Settled' }]
     }
@@ -1042,8 +1042,8 @@ export const LND_PAGE_DEFS: LNDPageDefinitions = {
     },
     non_routing_peers: {
       maxColumns: 8,
-      allowedColumns: [{ column:'chan_id', label: 'Channel ID' }, { column:'remote_alias', label: 'Peer Alias' }, { column:'remote_pubkey', label: 'Peer Pubkey' }, { column:'channel_point' }, { column:'uptime' },
-      { column:'lifetime' }, { column:'commit_fee' }, { column:'commit_weight' }, { column:'fee_per_kw', label: 'Fee/KW' }, { column:'num_updates', label: 'Updates' },
+      allowedColumns: [{ column:'chan_id', label: 'Channel ID' }, { column:'remote_alias', label: 'Peer Alias' }, { column:'remote_pubkey', label: 'Peer Pubkey' }, { column:'channel_point' }, { column:'uptime_str', label: 'Uptime' },
+      { column:'lifetime_str', label: 'Lifetime' }, { column:'commit_fee' }, { column:'commit_weight' }, { column:'fee_per_kw', label: 'Fee/KW' }, { column:'num_updates', label: 'Updates' },
       { column:'unsettled_balance' }, { column:'capacity' }, { column:'local_chan_reserve_sat', label: 'Local Reserve' }, { column:'remote_chan_reserve_sat', label: 'Remote Reserve' },
       { column:'total_satoshis_sent', label: 'Sats Sent' }, { column:'total_satoshis_received', label: 'Sats Received' }, { column:'local_balance' }, { column:'remote_balance' }]
     }

@@ -33,7 +33,7 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer</th>
         <td mat-cell *matCellDef="let channel">
           <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
-            <span class="ellipsis-child">{{channel.remote_alias || channel.remote_pubkey}}</span>
+            <span class="ellipsis-child">{{channel.remote_alias}}</span>
           </div>
         </td>
       </ng-container>
@@ -69,11 +69,11 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Static Remote Key</th>
         <td mat-cell *matCellDef="let channel">{{channel.static_remote_key ? 'Yes' : 'No'}}</td>
       </ng-container>
-      <ng-container matColumnDef="uptime">
+      <ng-container matColumnDef="uptime_str">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Uptime ({{timeUnit}})</th>
         <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.uptime_str}} </span></td>
       </ng-container>
-      <ng-container matColumnDef="lifetime">
+      <ng-container matColumnDef="lifetime_str">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Lifetime ({{timeUnit}})</th>
         <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.lifetime_str}} </span></td>
       </ng-container>

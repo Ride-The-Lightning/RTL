@@ -105,30 +105,28 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   setFilterPredicate() {
-    this.closedChannels.filterPredicate = (rowData: ClosedChannel, fltr: string) => JSON.stringify(rowData).toLowerCase().includes(fltr);
-    // this.closedChannels.filterPredicate = (rowData: ClosedChannel, fltr: string) => {
-    //   let rowToFilter = '';
-    //   switch (this.selFilterBy) {
-    //     case 'all':
-    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
-    //         rowToFilter = rowToFilter + (
-    //           (this.displayedColumns[i] === '') ?
-    //             (rowData ? rowData..toLowerCase() : '') :
-    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
-    //         ) + ', ';
-    //       }
-    //       break;
+    this.closedChannels.filterPredicate = (rowData: ClosedChannel, fltr: string) => {
+      let rowToFilter = '';
+      switch (this.selFilterBy) {
+        case 'all':
+          rowToFilter = JSON.stringify(rowData).toLowerCase();
+          break;
 
-    //     case '':
-    //       rowToFilter = rowData?..toLowerCase() || '';
-    //       break;
+        case 'close_type':
+          rowToFilter = (rowData.close_type && this.channelClosureType[rowData.close_type] && this.channelClosureType[rowData.close_type].name ? this.channelClosureType[rowData.close_type].name.toLowerCase() : '');
+          break;
 
-    //     default:
-    //       rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
-    //       break;
-    //   }
-    //   return rowToFilter.includes(fltr);
-    // };
+        case 'open_initiator':
+        case 'close_initiator':
+          rowToFilter = this.camelCaseWithReplace.transform((rowData[this.selFilterBy] || ''), 'initiator_');
+          break;
+
+        default:
+          rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          break;
+      }
+      return rowToFilter.includes(fltr);
+    };
   }
 
   onClosedChannelClick(selChannel: ClosedChannel, event: any) {

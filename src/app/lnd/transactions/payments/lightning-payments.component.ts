@@ -441,36 +441,34 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
 
   setFilterPredicate() {
     this.payments.filterPredicate = (rowData: Payment, fltr: string) => {
-      const rowToFilter = ((rowData.creation_date) ? this.datePipe.transform(new Date(rowData.creation_date * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      let rowToFilter = '';
+      switch (this.selFilterBy) {
+        case 'all':
+          rowToFilter = ((rowData.creation_date) ? this.datePipe.transform(new Date(rowData.creation_date * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+          break;
+
+        case 'status':
+          rowToFilter = rowData?.status === 'SUCCEEDED' ? 'succeeded' : 'failed';
+          break;
+
+        case 'creation_date':
+          rowToFilter = this.datePipe.transform(new Date((rowData[this.selFilterBy] || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() || '';
+          break;
+
+        case 'failure_reason':
+          rowToFilter = this.camelCaseWithReplace.transform((rowData.failure_reason || ''), 'failure_reason', '_');
+          break;
+
+        case 'hops':
+          rowToFilter = rowData.htlcs && rowData.htlcs[0] && rowData.htlcs[0].route && rowData.htlcs[0].route.hops && rowData.htlcs[0].route.hops.length ? rowData.htlcs[0].route.hops.length.toString() : '0';
+          break;
+
+        default:
+          rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          break;
+      }
       return rowToFilter.includes(fltr);
     };
-    // this.channels.filterPredicate = (rowData: Channel, fltr: string) => {
-    //   let rowToFilter = '';
-    //   switch (this.selFilterBy) {
-    //     case 'all':
-    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
-    //         rowToFilter = rowToFilter + (
-    //           (this.displayedColumns[i] === '') ?
-    //             (rowData ? rowData..toLowerCase() : '') :
-    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
-    //         ) + ', ';
-    //       }
-    //       break;
-
-    //     case 'status':
-    //        rowToFilter = rowData?.status === 'SUCCEEDED' ? 'succeeded' : 'failed';
-    //        break;
-
-    //     case '':
-    //       rowToFilter = rowData?..toLowerCase() || '';
-    //       break;
-
-    //     default:
-    //       rowToFilter = typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
-    //       break;
-    //   }
-    //   return rowToFilter.includes(fltr);
-    // };
   }
 
   loadPaymentsTable(payms) {
