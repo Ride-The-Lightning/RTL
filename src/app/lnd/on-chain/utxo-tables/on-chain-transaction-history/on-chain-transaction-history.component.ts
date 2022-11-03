@@ -137,11 +137,11 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
           break;
 
         case 'time_stamp':
-          rowToFilter = this.datePipe.transform(new Date((rowData?.time_stamp || 0) * 1000), 'dd/MMM/YYYY HH:mm') || '';
+          rowToFilter = this.datePipe.transform(new Date((rowData?.time_stamp || 0) * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() || '';
           break;
 
         default:
-          rowToFilter = !rowData[this.selFilterBy] ? '' : typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          rowToFilter = typeof rowData[this.selFilterBy] === 'undefined' ? '' : typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
           break;
       }
       return rowToFilter.includes(fltr);

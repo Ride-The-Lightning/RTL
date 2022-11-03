@@ -38,7 +38,6 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   public nodePageDefs = LND_PAGE_DEFS;
   public selFilterBy = 'all';
   public colWidth = '20rem';
-  public PAGE_ID = 'routing';
   public tableSetting: TableSetting = { tableId: 'forwarding_history', recordsPerPage: PAGE_SIZE, sortBy: 'timestamp', sortOrder: SortOrderEnum.DESCENDING };
   public forwardingHistoryData: ForwardingEvent[] = [];
   public displayedColumns: any[] = [];
@@ -142,7 +141,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   }
 
   getLabel(column: string) {
-    const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
+    const returnColumn: ColumnDefinition = this.nodePageDefs[this.pageId][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
     return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : this.commonService.titleCase(column);
   }
 
@@ -159,7 +158,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
           break;
 
         default:
-          rowToFilter = !rowData[this.selFilterBy] ? '' : typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          rowToFilter = typeof rowData[this.selFilterBy] === 'undefined' ? '' : typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
           break;
       }
       return rowToFilter.includes(fltr);

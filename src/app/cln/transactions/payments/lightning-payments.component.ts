@@ -344,7 +344,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           break;
 
         default:
-          rowToFilter = !rowData[this.selFilterBy] ? '' : typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          rowToFilter = typeof rowData[this.selFilterBy] === 'undefined' ? '' : typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
           break;
       }
       return (this.selFilterBy === 'status' || this.selFilterBy === 'type') ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);

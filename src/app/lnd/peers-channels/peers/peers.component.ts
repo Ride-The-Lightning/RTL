@@ -194,14 +194,14 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
           break;
 
         case 'sync_type':
-          rowToFilter = this.camelCaseWithReplace.transform((rowData.sync_type || ''), 'sync', '_');
+          rowToFilter = this.camelCaseWithReplace.transform((rowData.sync_type || ''), 'sync', '_').trim().toLowerCase();
           break;
 
         default:
-          rowToFilter = !rowData[this.selFilterBy] ? '' : typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          rowToFilter = typeof rowData[this.selFilterBy] === 'undefined' ? '' : typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
           break;
       }
-      return rowToFilter.includes(fltr);
+      return this.selFilterBy === 'sync_type' ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);
     };
   }
 

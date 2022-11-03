@@ -458,7 +458,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
 
         case 'failure_reason':
         case 'group_failure_reason':
-          rowToFilter = this.camelCaseWithReplace.transform((rowData.failure_reason || ''), 'failure_reason', '_');
+          rowToFilter = this.camelCaseWithReplace.transform((rowData.failure_reason || ''), 'failure_reason', '_').trim().toLowerCase();
           break;
 
         case 'hops':
@@ -466,10 +466,10 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
           break;
 
         default:
-          rowToFilter = !rowData[this.selFilterBy] ? '' : typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          rowToFilter = typeof rowData[this.selFilterBy] === 'undefined' ? '' : typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
           break;
       }
-      return rowToFilter.includes(fltr);
+      return (this.selFilterBy === 'failure_reason' || this.selFilterBy === 'group_failure_reason') ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);
     };
   }
 

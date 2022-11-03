@@ -118,14 +118,14 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
 
         case 'open_initiator':
         case 'close_initiator':
-          rowToFilter = this.camelCaseWithReplace.transform((rowData[this.selFilterBy] || ''), 'initiator_');
+          rowToFilter = this.camelCaseWithReplace.transform((rowData[this.selFilterBy] || ''), 'initiator_').trim().toLowerCase();
           break;
 
         default:
-          rowToFilter = !rowData[this.selFilterBy] ? '' : typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          rowToFilter = typeof rowData[this.selFilterBy] === 'undefined' ? '' : typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
           break;
       }
-      return this.selFilterBy === 'close_type' ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);
+      return (this.selFilterBy === 'close_type' || this.selFilterBy === 'open_initiator' || this.selFilterBy === 'close_initiator') ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);
     };
   }
 

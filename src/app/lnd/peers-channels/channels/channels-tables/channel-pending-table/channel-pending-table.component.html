@@ -279,6 +279,14 @@
       </mat-expansion-panel-header>
       <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
         <table mat-table #table [dataSource]="pendingWaitClosingChannels" matSort [ngClass]="{'error-border bordered-box': errorMessage !== '','bordered-box': true}">
+          <ng-container matColumnDef="closing_txid">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Closing Tx ID</th>
+            <td mat-cell *matCellDef="let channel">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+                <span class="ellipsis-child">{{channel.closing_txid}}</span>
+              </div>
+            </td>
+          </ng-container>
           <ng-container matColumnDef="remote_alias">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer</th>
             <td mat-cell *matCellDef="let channel">
