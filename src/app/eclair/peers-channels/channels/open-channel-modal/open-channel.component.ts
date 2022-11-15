@@ -8,7 +8,7 @@ import { Actions } from '@ngrx/effects';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { Peer, GetInfo, SaveChannel } from '../../../../shared/models/eclModels';
-import { APICallStatusEnum, ECLActions, ECL_CHANNEL_TYPES } from '../../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, ECLActions } from '../../../../shared/services/consts-enums-functions';
 import { ECLOpenChannelAlert } from '../../../../shared/models/alertData';
 
 import { RTLState } from '../../../../store/rtl.state';
@@ -37,7 +37,6 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
   public selectedPubkey = '';
   public isPrivate = false;
   public feeRate: number | null = null;
-  public channelTypes = ECL_CHANNEL_TYPES;
   public selChannelType: any = null;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
@@ -136,9 +135,8 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
     if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0))) {
       return true;
     }
-    const saveChannelPayload: SaveChannel = { nodeId: ((!this.peer || !this.peer.nodeId) ? this.selectedPubkey : this.peer.nodeId), amount: this.fundingAmount, private: this.isPrivate };
+    const saveChannelPayload: SaveChannel = { nodeId: ((!this.peer || !this.peer.nodeId) ? this.selectedPubkey : this.peer.nodeId), amount: this.fundingAmount, private: this.isPrivate, channelType: 'anchor_outputs_zero_fee_htlc_tx' };
     if (this.feeRate) { saveChannelPayload['feeRate'] = this.feeRate; }
-    if (this.selChannelType && this.selChannelType.id && this.selChannelType.id !== '') { saveChannelPayload['channelType'] = this.selChannelType.id; }
     this.store.dispatch(saveNewChannel({ payload: saveChannelPayload }));
   }
 

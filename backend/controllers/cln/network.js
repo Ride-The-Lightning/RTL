@@ -78,8 +78,10 @@ export const listNodes = (req, res, next) => {
         body.forEach((node) => {
             var _a, _b;
             if (node.option_will_fund) {
-                node.option_will_fund.lease_fee_base_msat = (node.option_will_fund.lease_fee_base_msat && typeof node.option_will_fund.lease_fee_base_msat === 'string' && node.option_will_fund.lease_fee_base_msat.includes('msat')) ? (_a = node.option_will_fund.lease_fee_base_msat) === null || _a === void 0 ? void 0 : _a.replace('msat', '') : node.option_will_fund.lease_fee_base_msat;
-                node.option_will_fund.channel_fee_max_base_msat = (node.option_will_fund.channel_fee_max_base_msat && typeof node.option_will_fund.channel_fee_max_base_msat === 'string' && node.option_will_fund.channel_fee_max_base_msat.includes('msat')) ? (_b = node.option_will_fund.channel_fee_max_base_msat) === null || _b === void 0 ? void 0 : _b.replace('msat', '') : node.option_will_fund.channel_fee_max_base_msat;
+                node.option_will_fund.lease_fee_base_msat = (node.option_will_fund.lease_fee_base_msat && typeof node.option_will_fund.lease_fee_base_msat === 'string' &&
+                    node.option_will_fund.lease_fee_base_msat.includes('msat')) ? (_a = node.option_will_fund.lease_fee_base_msat) === null || _a === void 0 ? void 0 : _a.replace('msat', '') : node.option_will_fund.lease_fee_base_msat;
+                node.option_will_fund.channel_fee_max_base_msat = (node.option_will_fund.channel_fee_max_base_msat && typeof node.option_will_fund.channel_fee_max_base_msat === 'string' &&
+                    node.option_will_fund.channel_fee_max_base_msat.includes('msat')) ? (_b = node.option_will_fund.channel_fee_max_base_msat) === null || _b === void 0 ? void 0 : _b.replace('msat', '') : node.option_will_fund.channel_fee_max_base_msat;
             }
             return node;
         });

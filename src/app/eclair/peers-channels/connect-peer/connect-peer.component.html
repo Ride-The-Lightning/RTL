@@ -30,7 +30,7 @@
               <ng-template matStepLabel disabled="true">{{channelFormLabel}}</ng-template>
               <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
                 <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
-                  <mat-form-field fxFlex="60" fxLayoutAlign="start end">
+                  <mat-form-field fxFlex="30" fxLayoutAlign="start end">
                     <input matInput autoFocus formControlName="fundingAmount" placeholder="Amount" type="number" [step]="1000" tabindex="1" required>
                     <mat-hint>Remaining Bal: {{totalBalance - ((channelFormGroup.controls.fundingAmount.value) ? channelFormGroup.controls.fundingAmount.value : 0)}}</mat-hint>
                     <span matSuffix> Sats </span>
@@ -38,20 +38,11 @@
                     <mat-error *ngIf="channelFormGroup.controls.fundingAmount.errors?.min">Amount must be a positive number.</mat-error>
                     <mat-error *ngIf="channelFormGroup.controls.fundingAmount.errors?.max">Amount must be less than or equal to {{totalBalance}}.</mat-error>
                   </mat-form-field>
+                  <mat-form-field fxFlex="30">
+                    <input matInput formControlName="feeRate" placeholder="Fee (Sats/vByte)" type="number" name="feeRate" [step]="1" [min]="0" tabindex="7">
+                  </mat-form-field>
                   <div fxFlex="35" fxLayoutAlign="start center">
                     <mat-slide-toggle tabindex="2" color="primary" formControlName="isPrivate" name="isPrivate">Private Channel</mat-slide-toggle>
-                  </div>
-                </div>
-                <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
-                  <div fxFlex="100" fxLayout="row" fxLayoutAlign="space-between center">
-                    <mat-form-field fxFlex="49">
-                      <input matInput formControlName="feeRate" placeholder="Fee (Sats/vByte)" type="number" name="feeRate" [step]="1" [min]="0" tabindex="7">
-                    </mat-form-field>
-                    <mat-form-field fxFlex="49">
-                      <mat-select formControlName="selChannelType" placeholder="Channel Type" tabindex="8" name="chanType">
-                        <mat-option *ngFor="let channelType of channelTypes" [value]="channelType">{{channelType.placeholder}}</mat-option>
-                      </mat-select>
-                    </mat-form-field>  
                   </div>
                 </div>
               </div>
