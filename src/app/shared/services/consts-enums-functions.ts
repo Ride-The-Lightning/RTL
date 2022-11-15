@@ -668,12 +668,6 @@ export enum PeerswapPeersLists {
   SUSPICIOUS = 'suspicious'
 }
 
-export const ECL_CHANNEL_TYPES = [
-  { id: 'standard', placeholder: 'Standard' },
-  { id: 'static_remotekey', placeholder: 'Static Remotekey' },
-  { id: 'anchor_outputs_zero_fee_htlc_tx', placeholder: 'Anchor Output' }
-];
-
 export enum SortOrderEnum {
   ASCENDING = 'asc',
   DESCENDING = 'desc'

@@ -9,7 +9,7 @@ import { MatStepper } from '@angular/material/stepper';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { Peer } from '../../../shared/models/eclModels';
-import { APICallStatusEnum, ECLActions, ECL_CHANNEL_TYPES } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, ECLActions } from '../../../shared/services/consts-enums-functions';
 import { ECLOpenChannelAlert } from '../../../shared/models/alertData';
 import { LoggerService } from '../../../shared/services/logger.service';
 
@@ -36,7 +36,6 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
   public channelConnectionError = '';
   public peerFormLabel = 'Peer Details';
   public channelFormLabel = 'Open Channel (Optional)';
-  public channelTypes = ECL_CHANNEL_TYPES;
   peerFormGroup: FormGroup;
   channelFormGroup: FormGroup;
   statusFormGroup: FormGroup;
@@ -104,7 +103,7 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
     this.channelConnectionError = '';
     this.store.dispatch(saveNewChannel({
       payload: {
-        nodeId: this.newlyAddedPeer?.nodeId!, amount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value, feeRate: this.channelFormGroup.controls.feeRate.value, channelType: this.channelFormGroup.controls.selChannelType.value?.id
+        nodeId: this.newlyAddedPeer?.nodeId!, amount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value, feeRate: this.channelFormGroup.controls.feeRate.value, channelType: 'anchor_outputs_zero_fee_htlc_tx'
       }
     }));
   }

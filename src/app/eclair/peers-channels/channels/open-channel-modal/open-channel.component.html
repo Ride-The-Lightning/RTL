@@ -44,11 +44,6 @@
                   <mat-form-field fxFlex="49">
                     <input matInput [(ngModel)]="feeRate" placeholder="Fee (Sats/vByte)" type="number" name="fee" [step]="1" [min]="0" tabindex="7" #fee="ngModel">
                   </mat-form-field>
-                  <mat-form-field fxFlex="49">
-                    <mat-select [(ngModel)]="selChannelType" placeholder="Channel Type" tabindex="8" name="chanType">
-                      <mat-option *ngFor="let channelType of channelTypes" [value]="channelType">{{channelType.placeholder}}</mat-option>
-                    </mat-select>
-                  </mat-form-field>
                 </div>
               </div>
             </div>
