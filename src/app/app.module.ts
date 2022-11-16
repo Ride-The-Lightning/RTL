@@ -39,7 +39,7 @@ import { ECLReducer } from './eclair/store/ecl.reducers';
     routing,
     LayoutModule,
     HammerModule,
-    UserIdleModule.forRoot({ idle: 3590, timeout: 10, ping: 12000 }), // One hour
+    UserIdleModule.forRoot({ idle: 3590, timeout: 10, ping: 12000 }), // One hour => 3590 + 10 = 3600
     StoreModule.forRoot(
       { root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer },
       {

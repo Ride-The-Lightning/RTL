@@ -232,7 +232,6 @@ export interface SaveChannel {
   nodeId: string;
   amount: number;
   private: boolean;
-  channelType?: string;
   feeRate?: number;
 }
 

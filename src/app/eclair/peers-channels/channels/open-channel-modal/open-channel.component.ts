@@ -40,7 +40,6 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
   public selectedPubkey = '';
   public isPrivate = false;
   public feeRate: number | null = null;
-  public selChannelType: any = null;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<ECLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLOpenChannelAlert, private store: Store<RTLState>, private actions: Actions) { }
@@ -122,7 +121,6 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
     this.fundingAmount = null;
     this.isPrivate = !!this.selNode?.unannouncedChannels;
     this.channelConnectionError = '';
-    this.selChannelType = null;
     this.advancedTitle = 'Advanced Options';
     this.form.resetForm();
   }
@@ -133,9 +131,6 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
       if (this.feeRate && this.feeRate > 0) {
         this.advancedTitle = this.advancedTitle + ' | Fee (Sats/vByte): ' + this.feeRate;
       }
-      if (this.selChannelType && this.selChannelType.id && this.selChannelType.id !== '') {
-        this.advancedTitle = this.advancedTitle + ' | Channel Type: ' + this.selChannelType.placeholder;
-      }
     }
   }
 
@@ -143,7 +138,7 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
     if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0))) {
       return true;
     }
-    const saveChannelPayload: SaveChannel = { nodeId: ((!this.peer || !this.peer.nodeId) ? this.selectedPubkey : this.peer.nodeId), amount: this.fundingAmount, private: this.isPrivate, channelType: 'anchor_outputs_zero_fee_htlc_tx' };
+    const saveChannelPayload: SaveChannel = { nodeId: ((!this.peer || !this.peer.nodeId) ? this.selectedPubkey : this.peer.nodeId), amount: this.fundingAmount, private: this.isPrivate };
     if (this.feeRate) { saveChannelPayload['feeRate'] = this.feeRate; }
     this.store.dispatch(saveNewChannel({ payload: saveChannelPayload }));
   }

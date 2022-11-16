@@ -341,9 +341,6 @@ export class ECLEffects implements OnDestroy {
       if (action.payload.feeRate && action.payload.feeRate > 0) {
         reqBody['fundingFeerateSatByte'] = action.payload.feeRate;
       }
-      if (action.payload.channelType && action.payload.channelType !== '') {
-        reqBody['channelType'] = action.payload.channelType;
-      }
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API, reqBody).
         pipe(
           map((postRes: any) => {

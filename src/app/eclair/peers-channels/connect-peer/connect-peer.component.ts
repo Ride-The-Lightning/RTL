@@ -63,7 +63,6 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
       fundingAmount: ['', [Validators.required, Validators.min(1), Validators.max(this.totalBalance)]],
       isPrivate: [!!this.selNode?.unannouncedChannels],
       feeRate: [null],
-      selChannelType: [null],
       hiddenAmount: ['', [Validators.required]]
     });
     this.statusFormGroup = this.formBuilder.group({});
@@ -111,7 +110,7 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
     this.channelConnectionError = '';
     this.store.dispatch(saveNewChannel({
       payload: {
-        nodeId: this.newlyAddedPeer?.nodeId!, amount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value, feeRate: this.channelFormGroup.controls.feeRate.value, channelType: 'anchor_outputs_zero_fee_htlc_tx'
+        nodeId: this.newlyAddedPeer?.nodeId!, amount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value, feeRate: this.channelFormGroup.controls.feeRate.value
       }
     }));
   }

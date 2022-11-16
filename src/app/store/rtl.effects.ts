@@ -448,21 +448,22 @@ export class RTLEffects implements OnDestroy {
   logOut = createEffect(
     () => this.actions.pipe(
       ofType(RTLActions.LOGOUT),
-      withLatestFrom(this.store.select(rootAppConfig)),
-      mergeMap(([action, appConfig]) => {
+      mergeMap((appConfig: RTLConfiguration) => {
         this.store.dispatch(openSpinner({ payload: UI_MESSAGES.LOG_OUT }));
+        if (appConfig.sso && +appConfig.sso.rtlSSO) {
+          window.location.href = appConfig.sso.logoutRedirectLink;
+        } else {
+          this.router.navigate(['./login']);
+        }
+        this.sessionService.clearAll();
+        this.store.dispatch(setNodeData({ payload: {} }));
+        this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.LOG_OUT }));
+        this.logger.info('Logged out from browser');
         return this.httpClient.get(environment.AUTHENTICATE_API + '/logout').
           pipe(map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.LOG_OUT }));
-            if (+appConfig.sso.rtlSSO) {
-              window.location.href = appConfig.sso.logoutRedirectLink;
-            } else {
-              this.router.navigate(['./login']);
-            }
-            this.sessionService.clearAll();
-            this.store.dispatch(setNodeData({ payload: {} }));
-            this.logger.warn('LOGGED OUT');
+            this.logger.info('Logged out from server');
           }));
       })),
     { dispatch: false }

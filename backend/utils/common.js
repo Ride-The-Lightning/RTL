@@ -276,6 +276,9 @@ export class CommonService {
                                         (err.message && typeof err.message === 'string') ? err.message : (typeof err === 'string') ? err : 'Unknown Error')
                 };
             }
+            if (selectedNode.ln_implementation === 'ECL' && err.message.indexOf('Authentication Error') < 0 && err.name === 'StatusCodeError') {
+                newErrorObj.statusCode = 500;
+            }
             return newErrorObj;
         };
         this.getRequestIP = (req) => ((typeof req.headers['x-forwarded-for'] === 'string' && req.headers['x-forwarded-for'].split(',').shift()) ||
