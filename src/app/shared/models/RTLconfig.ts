@@ -15,8 +15,9 @@ export class Settings {
     public userPersona: string,
     public themeMode: string,
     public themeColor: string,
-    public currencyUnits: Array<string>,
+    public unannouncedChannels: boolean,
     public fiatConversion: boolean,
+    public currencyUnits: Array<string>,
     public bitcoindConfigPath?: string,
     public logLevel?: string,
     public lnServerUrl?: string,
@@ -81,6 +82,7 @@ export interface SelNodeChild {
   selCurrencyUnit?: string;
   currencyUnits?: string[];
   fiatConversion?: boolean;
+  unannouncedChannels?: boolean;
   lnImplementation?: string;
   swapServerUrl?: string;
   boltzServerUrl?: string;

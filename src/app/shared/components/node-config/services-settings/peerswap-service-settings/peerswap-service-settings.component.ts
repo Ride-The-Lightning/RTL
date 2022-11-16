@@ -43,19 +43,19 @@ export class PeerswapServiceSettingsComponent implements OnInit, OnDestroy {
     this.store.dispatch(setChildNodeSettingsLND({
       payload: {
         userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
-        lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.selNode.settings.enableOffers, enablePeerswap: this.selNode.settings.enablePeerswap
+        unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.selNode.settings.enableOffers, enablePeerswap: this.selNode.settings.enablePeerswap
       }
     }));
     this.store.dispatch(setChildNodeSettingsCL({
       payload: {
         userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
-        lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.selNode.settings.enableOffers, enablePeerswap: this.selNode.settings.enablePeerswap
+        unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.selNode.settings.enableOffers, enablePeerswap: this.selNode.settings.enablePeerswap
       }
     }));
     this.store.dispatch(setChildNodeSettingsECL({
       payload: {
         userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
-        lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.selNode.settings.enableOffers, enablePeerswap: this.selNode.settings.enablePeerswap
+        unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.selNode.settings.enableOffers, enablePeerswap: this.selNode.settings.enablePeerswap
       }
     }));
   }

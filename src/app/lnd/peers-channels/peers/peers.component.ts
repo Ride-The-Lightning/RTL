@@ -106,10 +106,11 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onPeerClick(selPeer: Peer, event: any) {
+    // const encodedStr = encodeURIComponent('&#181;');
     const reorderedPeer = [
       [{ key: 'pub_key', value: selPeer.pub_key, title: 'Public Key', width: 100 }],
       [{ key: 'address', value: selPeer.address, title: 'Address', width: 100 }],
-      [{ key: 'alias', value: selPeer.alias, title: 'Alias', width: 40 }, { key: 'inbound', value: selPeer.inbound ? 'True' : 'False', title: 'Inbound', width: 30 }, { key: 'ping_time', value: selPeer.ping_time, title: 'Ping Time', width: 30, type: DataTypeEnum.NUMBER }],
+      [{ key: 'alias', value: selPeer.alias, title: 'Alias', width: 40 }, { key: 'inbound', value: selPeer.inbound ? 'True' : 'False', title: 'Inbound', width: 30 }, { key: 'ping_time', value: selPeer.ping_time, title: 'Ping Time (\u00B5s)', width: 30, type: DataTypeEnum.NUMBER }],
       [{ key: 'sat_sent', value: selPeer.sat_sent, title: 'Satoshis Sent', width: 50, type: DataTypeEnum.NUMBER }, { key: 'sat_recv', value: selPeer.sat_recv, title: 'Satoshis Received', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'bytes_sent', value: selPeer.bytes_sent, title: 'Bytes Sent', width: 50, type: DataTypeEnum.NUMBER }, { key: 'bytes_recv', value: selPeer.bytes_recv, title: 'Bytes Received', width: 50, type: DataTypeEnum.NUMBER }]
     ];

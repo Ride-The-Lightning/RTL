@@ -16,6 +16,8 @@ import { APICallStatusEnum, CLNActions, FEE_RATE_TYPES, ScreenSizeEnum } from '.
 
 import { RTLState } from '../../../store/rtl.state';
 import { saveNewChannel, saveNewPeer } from '../../store/cln.actions';
+import { clnNodeSettings } from '../../store/cln.selector';
+import { SelNodeChild } from '../../../shared/models/RTLconfig';
 
 @Component({
   selector: 'rtl-cln-connect-peer',
@@ -27,6 +29,7 @@ export class CLNConnectPeerComponent implements OnInit, OnDestroy {
   @ViewChild('peersForm', { static: false }) form: any;
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
+  public selNode: SelNodeChild | null = {};
   public peerAddress = '';
   public totalBalance = 0;
   public feeRateTypes = FEE_RATE_TYPES;
@@ -43,7 +46,7 @@ export class CLNConnectPeerComponent implements OnInit, OnDestroy {
   peerFormGroup: FormGroup;
   channelFormGroup: FormGroup;
   statusFormGroup: FormGroup;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<CLNConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNOpenChannelAlert, private store: Store<RTLState>, private formBuilder: FormBuilder, private actions: Actions, private logger: LoggerService, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
@@ -64,7 +67,7 @@ export class CLNConnectPeerComponent implements OnInit, OnDestroy {
     });
     this.channelFormGroup = this.formBuilder.group({
       fundingAmount: ['', [Validators.required, Validators.min(1), Validators.max(this.totalBalance)]],
-      isPrivate: [false],
+      isPrivate: [!!this.selNode?.unannouncedChannels],
       selFeeRate: [null],
       customFeeRate: [null],
       flgMinConf: [false],
@@ -72,7 +75,12 @@ export class CLNConnectPeerComponent implements OnInit, OnDestroy {
       hiddenAmount: ['', [Validators.required]]
     });
     this.statusFormGroup = this.formBuilder.group({});
-    this.channelFormGroup.controls.flgMinConf.valueChanges.pipe(takeUntil(this.unSubs[0])).subscribe((flg) => {
+    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeSettings: SelNodeChild | null) => {
+        this.selNode = nodeSettings;
+        this.channelFormGroup.controls.isPrivate.setValue(!!nodeSettings?.unannouncedChannels);
+      });
+    this.channelFormGroup.controls.flgMinConf.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe((flg) => {
       if (flg) {
         this.channelFormGroup.controls.selFeeRate.setValue(null);
         this.channelFormGroup.controls.selFeeRate.disable();
@@ -87,7 +95,7 @@ export class CLNConnectPeerComponent implements OnInit, OnDestroy {
         this.channelFormGroup.controls.minConfValue.setValidators(null);
       }
     });
-    this.channelFormGroup.controls.selFeeRate.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe((feeRate) => {
+    this.channelFormGroup.controls.selFeeRate.valueChanges.pipe(takeUntil(this.unSubs[2])).subscribe((feeRate) => {
       this.channelFormGroup.controls.customFeeRate.setValue(null);
       this.channelFormGroup.controls.customFeeRate.reset();
       if (feeRate === 'customperkb' && !this.channelFormGroup.controls.flgMinConf.value) {
@@ -97,7 +105,7 @@ export class CLNConnectPeerComponent implements OnInit, OnDestroy {
       }
     });
     this.actions.pipe(
-      takeUntil(this.unSubs[2]),
+      takeUntil(this.unSubs[3]),
       filter((action) => action.type === CLNActions.NEWLY_ADDED_PEER_CLN || action.type === CLNActions.FETCH_CHANNELS_CLN || action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN)).
       subscribe((action: any) => {
         if (action.type === CLNActions.NEWLY_ADDED_PEER_CLN) {

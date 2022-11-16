@@ -34,7 +34,7 @@ export const initECLState: ECLState = {
     FetchInvoices: { status: APICallStatusEnum.UN_INITIATED },
     FetchTransactions: { status: APICallStatusEnum.UN_INITIATED }
   },
-  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
+  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, unannouncedChannels: false, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
   pageSettings: ECL_DEFAULT_PAGE_SETTINGS,
   information: {},
   fees: {},
