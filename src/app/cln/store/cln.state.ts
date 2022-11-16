@@ -48,7 +48,7 @@ export const initCLNState: CLNState = {
     FetchOffers: { status: APICallStatusEnum.UN_INITIATED },
     FetchOfferBookmarks: { status: APICallStatusEnum.UN_INITIATED }
   },
-  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [], enableOffers: false, enablePeerswap: false },
+  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, unannouncedChannels: false, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [], enableOffers: false, enablePeerswap: false },
   pageSettings: CLN_DEFAULT_PAGE_SETTINGS,
   information: {},
   fees: {},

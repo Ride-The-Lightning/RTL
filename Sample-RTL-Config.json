@@ -27,7 +27,8 @@
         "lnServerUrl": "https://localhost:8080",
         "swapServerUrl": "https://localhost:8081",
         "boltzServerUrl": "https://localhost:9003",
-        "fiatConversion": false
+        "fiatConversion": false,
+        "unannouncedChannels": false
       }
     }
   ]

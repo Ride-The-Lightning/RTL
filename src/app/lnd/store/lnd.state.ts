@@ -45,7 +45,7 @@ export const initLNDState: LNDState = {
     FetchLightningTransactions: { status: APICallStatusEnum.UN_INITIATED },
     FetchNetwork: { status: APICallStatusEnum.UN_INITIATED }
   },
-  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, fiatConversion: false, channelBackupPath: '', currencyUnits: [], selCurrencyUnit: '', lnImplementation: '', swapServerUrl: '' },
+  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, unannouncedChannels: false, fiatConversion: false, channelBackupPath: '', currencyUnits: [], selCurrencyUnit: '', lnImplementation: '', swapServerUrl: '' },
   pageSettings: LND_DEFAULT_PAGE_SETTINGS,
   information: {},
   peers: [],

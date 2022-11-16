@@ -49,10 +49,11 @@ export const getRTLConfigInitial = (req, res, next) => {
             const nodesArr = [];
             if (common.nodes && common.nodes.length > 0) {
                 common.nodes.forEach((node, i) => {
-                    const settings = {};
+                    const settings = { unannouncedChannels: false };
                     settings.userPersona = node.user_persona ? node.user_persona : 'MERCHANT';
                     settings.themeMode = (node.theme_mode) ? node.theme_mode : 'DAY';
                     settings.themeColor = (node.theme_color) ? node.theme_color : 'PURPLE';
+                    settings.unannouncedChannels = !!node.unannounced_channels || false;
                     settings.fiatConversion = (node.fiat_conversion) ? !!node.fiat_conversion : false;
                     settings.currencyUnit = node.currency_unit;
                     nodesArr.push({
@@ -97,10 +98,11 @@ export const getRTLConfig = (req, res, next) => {
                     authentication.configPath = (node.config_path) ? node.config_path : '';
                     authentication.swapMacaroonPath = (node.swap_macaroon_path) ? node.swap_macaroon_path : '';
                     authentication.boltzMacaroonPath = (node.boltz_macaroon_path) ? node.boltz_macaroon_path : '';
-                    const settings = {};
+                    const settings = { unannouncedChannels: false };
                     settings.userPersona = node.user_persona ? node.user_persona : 'MERCHANT';
                     settings.themeMode = (node.theme_mode) ? node.theme_mode : 'DAY';
                     settings.themeColor = (node.theme_color) ? node.theme_color : 'PURPLE';
+                    settings.unannouncedChannels = !!node.unannounced_channels || false;
                     settings.fiatConversion = (node.fiat_conversion) ? !!node.fiat_conversion : false;
                     settings.bitcoindConfigPath = node.bitcoind_config_path;
                     settings.logLevel = node.log_level ? node.log_level : 'ERROR';
@@ -135,6 +137,7 @@ export const updateUISettings = (req, res, next) => {
         node.Settings.userPersona = req.body.updatedSettings.userPersona;
         node.Settings.themeMode = req.body.updatedSettings.themeMode;
         node.Settings.themeColor = req.body.updatedSettings.themeColor;
+        node.Settings.unannouncedChannels = req.body.updatedSettings.unannouncedChannels;
         node.Settings.fiatConversion = req.body.updatedSettings.fiatConversion;
         if (req.body.updatedSettings.fiatConversion) {
             node.Settings.currencyUnit = req.body.updatedSettings.currencyUnit ? req.body.updatedSettings.currencyUnit : 'USD';
@@ -146,6 +149,7 @@ export const updateUISettings = (req, res, next) => {
         selectedNode.user_persona = req.body.updatedSettings.userPersona;
         selectedNode.theme_mode = req.body.updatedSettings.themeMode;
         selectedNode.theme_color = req.body.updatedSettings.themeColor;
+        selectedNode.unannounced_channels = req.body.updatedSettings.unannouncedChannels;
         selectedNode.fiat_conversion = req.body.updatedSettings.fiatConversion;
         if (req.body.updatedSettings.fiatConversion) {
             selectedNode.currency_unit = req.body.updatedSettings.currencyUnit ? req.body.updatedSettings.currencyUnit : 'USD';

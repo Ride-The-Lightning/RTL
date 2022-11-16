@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { faMoneyBillAlt, faPaintBrush, faInfoCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faMoneyBillAlt, faPaintBrush, faInfoCircle, faExclamationTriangle, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 import { CURRENCY_UNITS, UserPersonaEnum, ScreenSizeEnum, FIAT_CURRENCY_UNITS, NODE_SETTINGS, UI_MESSAGES } from '../../../services/consts-enums-functions';
 import { ConfigSettingsNode, Settings } from '../../../models/RTLconfig';
@@ -26,6 +26,7 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
   public faMoneyBillAlt = faMoneyBillAlt;
   public faPaintBrush = faPaintBrush;
   public faInfoCircle = faInfoCircle;
+  public faEyeSlash = faEyeSlash;
   public selNode: ConfigSettingsNode | any;
   public userPersonas = [UserPersonaEnum.OPERATOR, UserPersonaEnum.MERCHANT];
   public currencyUnits = FIAT_CURRENCY_UNITS;
@@ -62,22 +63,23 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
     this.selNode.settings.currencyUnits = [...CURRENCY_UNITS, event.value];
     this.store.dispatch(setChildNodeSettingsLND({
       payload: {
-        userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: event.value, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
+        userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: event.value,
+        currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, unannouncedChannels: this.selNode.settings.unannouncedChannels,
         lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
       }
     }));
     this.store.dispatch(setChildNodeSettingsCL({
       payload: {
         userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: event.value,
-        currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation,
-        swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
+        currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, unannouncedChannels: this.selNode.settings.unannouncedChannels,
+        lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
       }
     }));
     this.store.dispatch(setChildNodeSettingsECL({
       payload: {
         userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: event.value,
-        currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation,
-        swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
+        currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, unannouncedChannels: this.selNode.settings.unannouncedChannels,
+        lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
       }
     }));
   }
@@ -105,7 +107,7 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
       payload: {
         userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath,
         selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits,
-        fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation,
+        fiatConversion: this.selNode.settings.fiatConversion, unannouncedChannels: this.selNode.settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation,
         swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
       }
     }));
@@ -113,7 +115,7 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
       payload: {
         userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath,
         selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits,
-        fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation,
+        fiatConversion: this.selNode.settings.fiatConversion, unannouncedChannels: this.selNode.settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation,
         swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
       }
     }));
@@ -121,7 +123,7 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
       payload: {
         userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath,
         selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits,
-        fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation,
+        fiatConversion: this.selNode.settings.fiatConversion, unannouncedChannels: this.selNode.settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation,
         swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
       }
     }));

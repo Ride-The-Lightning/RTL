@@ -66,7 +66,8 @@ export class ConfigService {
                             channelBackupPath: channelBackupPath,
                             logLevel: 'ERROR',
                             lnServerUrl: 'https://localhost:8080',
-                            fiatConversion: false
+                            fiatConversion: false,
+                            unannouncedChannels: false
                         }
                     }
                 ]
@@ -211,6 +212,7 @@ export class ConfigService {
                     this.common.nodes[idx].user_persona = node.Settings.userPersona ? node.Settings.userPersona : 'MERCHANT';
                     this.common.nodes[idx].theme_mode = node.Settings.themeMode ? node.Settings.themeMode : 'DAY';
                     this.common.nodes[idx].theme_color = node.Settings.themeColor ? node.Settings.themeColor : 'PURPLE';
+                    this.common.nodes[idx].unannounced_channels = node.Settings.unannouncedChannels ? !!node.Settings.unannouncedChannels : false;
                     this.common.nodes[idx].log_level = node.Settings.logLevel ? node.Settings.logLevel : 'ERROR';
                     this.common.nodes[idx].fiat_conversion = node.Settings.fiatConversion ? !!node.Settings.fiatConversion : false;
                     if (this.common.nodes[idx].fiat_conversion) {

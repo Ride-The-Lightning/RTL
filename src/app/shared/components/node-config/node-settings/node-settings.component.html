@@ -1,33 +1,56 @@
 <div [perfectScrollbar] fxLayout="column" fxFlex="100">
   <form fxLayout="column" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1" #form="ngForm">
-    <div fxLayout="row">
-      <fa-icon [icon]="faMoneyBillAlt" class="page-title-img mr-1"></fa-icon>
-      <span class="page-title">Balance Display</span>
-    </div>
-    <div fxLayout="column" fxLayoutAlign="start stretch" class="mt-1 bordered-box padding-gap-large">
-      <div fxFlex="100" class="alert alert-warn">
-        <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
-        <span>Fiat conversion calls <strong><a href="https://www.blockchain.com/api/exchange_rates_api" target="blank">Blockchain.com</a></strong> API to get conversion rates.</span>
-      </div>
-      <div fxLayout="row wrap" fxLayoutAlign="start center">
-        <mat-slide-toggle tabindex="2" color="primary" [(ngModel)]="selNode.settings.fiatConversion" (change)="selNode.settings.currencyUnit = !$event.checked ? null : selNode.settings.currencyUnit" name="fiatConversion">Enable Fiat Conversion</mat-slide-toggle>
-        <mat-form-field>
-          <mat-select autoFocus [(ngModel)]="selNode.settings.currencyUnit" (selectionChange)="onCurrencyChange($event)" placeholder="Fiat Currency" [disabled]="!selNode.settings.fiatConversion" tabindex="3" [required]="selNode.settings.fiatConversion" name="currencyUnit" #currencyUnit="ngModel">
-            <mat-option *ngFor="let currencyUnit of currencyUnits" [value]="currencyUnit.id">
-              {{currencyUnit.id}}
-            </mat-option>
-          </mat-select>
-          <mat-error *ngIf="selNode.settings.fiatConversion && !selNode.settings.currencyUnit">Currency unit is required.</mat-error>
-        </mat-form-field>
-      </div>
-    </div>
-    <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
-      <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayout.gt-sm="column" fxFlex="100" fxLayoutAlign.gt-sm="space-between stretch" class="settings-container page-sub-title-container mt-1">
-        <div class="mt-1">
-          <fa-icon [icon]="faPaintBrush" class="page-title-img mr-1"></fa-icon>
-          <span class="page-title">Customization</span>
+    <mat-accordion displayMode="flat" multi="false">
+      <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <fa-icon [icon]="faEyeSlash" class="page-title-img mr-1"></fa-icon>
+            <span class="page-title">Open Unannounced Channels</span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div fxLayout="column" fxLayoutAlign="start stretch">
+          <div fxLayout="row" fxFlex="100" class="alert alert-info mb-1">
+            <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
+            <span>Use this control to toggle setting which defaults to opening Unannounced Channels.</span>
+          </div>
+          <div fxLayout="row wrap" fxLayoutAlign="start center">
+            <mat-slide-toggle tabindex="1" color="primary" [(ngModel)]="selNode.settings.unannouncedChannels" (change)="selNode.settings.unannouncedChannels = !$event.checked ? null : selNode.settings.unannouncedChannels" name="unannouncedChannels">Open Unannounced Channels</mat-slide-toggle>
+          </div>
         </div>
-        <div fxLayout="column" fxLayoutAlign="start stretch" class="mt-1 bordered-box padding-gap-large">
+      </mat-expansion-panel>
+      <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <fa-icon [icon]="faMoneyBillAlt" class="page-title-img mr-1"></fa-icon>
+            <span class="page-title">Balance Display</span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div fxLayout="column" fxLayoutAlign="start stretch">
+          <div fxFlex="100" class="alert alert-warn">
+            <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+            <span>Fiat conversion calls <strong><a href="https://www.blockchain.com/api/exchange_rates_api" target="blank">Blockchain.com</a></strong> API to get conversion rates.</span>
+          </div>
+          <div fxLayout="row wrap" fxLayoutAlign="start center">
+            <mat-slide-toggle tabindex="2" color="primary" [(ngModel)]="selNode.settings.fiatConversion" (change)="selNode.settings.currencyUnit = !$event.checked ? null : selNode.settings.currencyUnit" name="fiatConversion">Enable Fiat Conversion</mat-slide-toggle>
+            <mat-form-field>
+              <mat-select autoFocus [(ngModel)]="selNode.settings.currencyUnit" (selectionChange)="onCurrencyChange($event)" placeholder="Fiat Currency" [disabled]="!selNode.settings.fiatConversion" tabindex="3" [required]="selNode.settings.fiatConversion" name="currencyUnit" #currencyUnit="ngModel">
+                <mat-option *ngFor="let currencyUnit of currencyUnits" [value]="currencyUnit.id">
+                  {{currencyUnit.id}}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="selNode.settings.fiatConversion && !selNode.settings.currencyUnit">Currency unit is required.</mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-expansion-panel>
+      <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <fa-icon [icon]="faPaintBrush" class="page-title-img mr-1"></fa-icon>
+            <span class="page-title">Customization</span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div fxLayout="column" fxLayoutAlign="start stretch">
           <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100">
             <div fxLayout="row" fxFlex="100" class="alert alert-info mb-0">
               <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
@@ -65,8 +88,8 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </mat-expansion-panel>
+    </mat-accordion>
   </form>
   <div fxLayout="row" class="mt-1">
     <button class="mr-1" mat-stroked-button color="primary" (click)="onResetSettings()" tabindex="10">Reset</button>

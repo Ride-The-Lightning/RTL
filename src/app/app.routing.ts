@@ -37,8 +37,8 @@ export const routes: Routes = [
   },
   {
     path: 'config', component: NodeConfigComponent, canActivate: [AuthGuard], children: [
-      { path: '', pathMatch: 'full', redirectTo: 'applayout' },
-      { path: 'applayout', component: NodeSettingsComponent, canActivate: [AuthGuard] },
+      { path: '', pathMatch: 'full', redirectTo: 'nodelayout' },
+      { path: 'nodelayout', component: NodeSettingsComponent, canActivate: [AuthGuard] },
       { path: 'pglayout', component: PageSettingsComponent, canActivate: [AuthGuard] },
       {
         path: 'services', component: ServicesSettingsComponent, canActivate: [AuthGuard], children: [

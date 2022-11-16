@@ -35,6 +35,7 @@ parameters have `default` values for initial setup and can be updated after RTL 
         "logLevel": <logging levels, will log in accordance with the logLevel value provided, Allowed values ERROR, WARN, INFO, DEBUG>,
         "fiatConversion": <parameter to turn fiat conversion off/on. Allowed values - true, false, default false, Required>,
         "currencyUnit": "<Optional: Fiat current Unit for currency conversion, default 'USD' If fiatConversion is true, Required if fiatConversion is true>",
+        "unannouncedChannels": <parameter to turn off/on setting for opening announced Channels, default false, Optional>
         "lnServerUrl": "<Service url for LND/Core Lightning REST APIs for the node, e.g. https://192.168.0.1:8080 OR https://192.168.0.1:3001 OR http://192.168.0.1:8080. Default 'https://localhost:8080', Required",
         "swapServerUrl": "<Service url for swap server REST APIs for the node, e.g. https://localhost:8081, Optional>",
         "boltzServerUrl": "<Service url for boltz server REST APIs for the node, e.g. https://localhost:9003, Optional>"
