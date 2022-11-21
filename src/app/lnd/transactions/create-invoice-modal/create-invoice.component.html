@@ -30,10 +30,10 @@
             <mat-slide-toggle tabindex="4" color="primary" [(ngModel)]="private" name="private">Private Routing Hints</mat-slide-toggle>
             <mat-icon matTooltip="Include routing hints for private channels" matTooltipPosition="above" class="info-icon">info_outline</mat-icon>
           </div>
-          <!-- <div fxFlex="49">
+          <div fxFlex="49">
             <mat-slide-toggle tabindex="5" color="primary" [(ngModel)]="isAmp" name="amp">AMP Invoice</mat-slide-toggle>
             <mat-icon matTooltip="Atomic multipath payment invoice" matTooltipPosition="above" class="info-icon">info_outline</mat-icon>
-          </div> -->
+          </div>
         </div>
         <div fxFlex="100" class="alert alert-danger mt-1" *ngIf="invoiceError !== ''">
           <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
