@@ -11,11 +11,11 @@ export const getAliasForChannel = (selNode: CommonSelectedNode, channel) => {
   options.url = selNode.ln_server_url + '/v1/graph/node/' + pubkey;
   return request(options).then((aliasBody) => {
     logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Channels', msg: 'Alias Received', data: aliasBody.node.alias });
-    channel.remote_alias = aliasBody.node.alias;
-    return aliasBody.node.alias;
+    channel.remote_alias = aliasBody.node.alias && aliasBody.node.alias !== '' ? aliasBody.node.alias : aliasBody.node.pub_key.slice(0, 20);
+    return channel;
   }).catch((err) => {
     channel.remote_alias = pubkey.slice(0, 20);
-    return pubkey;
+    return channel;
   });
 };
 
@@ -154,7 +154,7 @@ export const postTransactions = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Sending Payment..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.ln_server_url + '/v1/channels/transactions';
+  options.url = req.session.selectedNode.ln_server_url + '/v1/channels/transaction-stream';
   options.form = { payment_request: req.body.paymentReq };
   if (req.body.paymentAmount) {
     options.form.amt = req.body.paymentAmount;
