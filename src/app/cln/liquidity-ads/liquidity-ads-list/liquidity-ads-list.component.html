@@ -11,7 +11,7 @@
             <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
             <span>Ads should be supplemented with additional research of the node, before buying liquidity.</span>
           </div>
-          <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start start" class="page-sub-title-container mt-1">
+          <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="page-sub-title-container mt-1">
             <div fxFlex="30">
               <span class="page-title">
                 Liquidity Ask
@@ -46,12 +46,12 @@
             </mat-form-field>
           </div>
         </form> -->
-        <div fxLayout="row" fxLayoutAlign="start center" class="page-sub-title-container padding-gap-x mt-2">
-          <div fxFlex="30" fxFlex.gt-xs="70">
+        <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container mt-2">
+          <div fxFlex="70">
             <fa-icon [icon]="faUsers" class="page-title-img mr-1"></fa-icon>
             <span class="page-title">Liquidity Providing Peers</span>
           </div>
-          <div fxFlex="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
+          <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
             <mat-form-field fxFlex="49">
               <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()" name="filterBy">
                 <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
@@ -62,9 +62,9 @@
             </mat-form-field>
           </div>
         </div>
-        <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+        <div [perfectScrollbar] fxLayout="column" fxFlex="100" class="table-container">
           <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-          <table mat-table #table [dataSource]="liquidityNodes" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
+          <table mat-table #table [dataSource]="liquidityNodes" matSort [ngClass]="{'error-border': errorMessage !== ''}">
             <ng-container matColumnDef="alias">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>Alias</th>
               <td mat-cell *matCellDef="let lqNode">

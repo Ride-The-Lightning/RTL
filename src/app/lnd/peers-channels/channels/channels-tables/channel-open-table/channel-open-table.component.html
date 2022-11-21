@@ -1,7 +1,7 @@
 <div fxLayout="column" class="padding-gap-x">
   <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container">
     <div fxFlex="70"></div>
-    <div fxFlex="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
+    <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
       <mat-form-field fxFlex="49">
         <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()" name="filterBy">
           <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
@@ -12,9 +12,9 @@
       </mat-form-field>
     </div>
   </div>
-  <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+  <div [perfectScrollbar] fxLayout="column" fxFlex="100" class="table-container">
     <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-    <table mat-table #table fxFlex="100" [dataSource]="channels" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
+    <table mat-table #table fxFlex="100" [dataSource]="channels" matSort [ngClass]="{'error-border': errorMessage !== ''}">
       <ng-container matColumnDef="active">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" matTooltip="Active"></th>
         <td mat-cell *matCellDef="let channel">

@@ -13,7 +13,7 @@ export const getAliasForPeers = (selNode: CommonSelectedNode, peer) => {
     peer.alias = aliasBody.node.alias;
     return aliasBody.node.alias;
   }).catch((err) => {
-    peer.alias = peer.pub_key.slice(0, 10) + '...' + peer.pub_key.slice(-10);
+    peer.alias = peer.pub_key.slice(0, 20);
     return peer.pub_key;
   });
 };

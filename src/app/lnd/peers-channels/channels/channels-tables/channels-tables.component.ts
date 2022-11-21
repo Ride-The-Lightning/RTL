@@ -65,7 +65,7 @@ export class ChannelsTablesComponent implements OnInit, OnDestroy {
         this.peers = peersSelector.peers;
         this.peers.forEach((peer) => {
           if (!peer.alias || peer.alias === '') {
-            peer.alias = peer.pub_key?.substring(0, 15) + '...';
+            peer.alias = peer.pub_key?.substring(0, 20);
           }
         });
         this.logger.info(peersSelector);

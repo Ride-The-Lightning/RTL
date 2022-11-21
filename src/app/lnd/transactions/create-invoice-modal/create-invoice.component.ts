@@ -28,6 +28,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
   public selNode: SelNodeChild | null = {};
   public memo = '';
   public expiry: number | null;
+  public isAmp = false;
   public invoiceValue: number | null;
   public invoiceValueHint = '';
   public invoicePaymentReq = '';
@@ -76,7 +77,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
     }
     this.store.dispatch(saveNewInvoice({
       payload: {
-        uiMessage: UI_MESSAGES.ADD_INVOICE, memo: this.memo, invoiceValue: this.invoiceValue!, private: this.private, expiry: expiryInSecs, pageSize: this.pageSize, openModal: true
+        uiMessage: UI_MESSAGES.ADD_INVOICE, memo: this.memo, value: this.invoiceValue!, private: this.private, expiry: expiryInSecs, is_amp: this.isAmp, pageSize: this.pageSize, openModal: true
       }
     }));
   }
@@ -85,6 +86,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
     this.memo = '';
     this.invoiceValue = null;
     this.private = false;
+    this.isAmp = false;
     this.expiry = null;
     this.invoiceValueHint = '';
     this.selTimeUnit = TimeUnitEnum.SECS;

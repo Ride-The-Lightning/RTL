@@ -106,19 +106,19 @@ export const validatePageSettings = (documentToValidate): any => {
       errMsg = errMsg + 'Sort Order is mandatory.';
     }
     if (!table.hasOwnProperty(CollectionFieldsEnum.COLUMN_SELECTION_SM)) {
-      errMsg = errMsg + 'Column Selection (Mobile) is mandatory.';
+      errMsg = errMsg + 'Column Selection (Mobile Resolution) is mandatory.';
     }
     if (table[CollectionFieldsEnum.COLUMN_SELECTION_SM].length < 1) {
-      errMsg = errMsg + 'Column Selection (Mobile) should have at least 1 field.';
+      errMsg = errMsg + 'Column Selection (Mobile Resolution) should have at least 1 field.';
     }
     if (table[CollectionFieldsEnum.COLUMN_SELECTION_SM].length > 3) {
-      errMsg = errMsg + 'Column Selection (Mobile) should have maximum 3 fields.';
+      errMsg = errMsg + 'Column Selection (Mobile Resolution) should have maximum 3 fields.';
     }
     if (!table.hasOwnProperty(CollectionFieldsEnum.COLUMN_SELECTION)) {
-      errMsg = errMsg + 'Column Selection (Desktop) is mandatory.';
+      errMsg = errMsg + 'Column Selection (Desktop Resolution) is mandatory.';
     }
     if (table[CollectionFieldsEnum.COLUMN_SELECTION].length < 2) {
-      errMsg = errMsg + 'Column Selection (Desktop) should have at least 2 fields.';
+      errMsg = errMsg + 'Column Selection (Desktop Resolution) should have at least 2 fields.';
     }
     if (errMsg.trim() !== '') {
       tableAcc.push({ table: (table.hasOwnProperty(CollectionFieldsEnum.TABLE_ID) ? table[CollectionFieldsEnum.TABLE_ID] : (tableIdx + 1)), message: errMsg });

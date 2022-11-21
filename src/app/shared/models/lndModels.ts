@@ -512,11 +512,12 @@ export interface SavePeer {
 export interface SaveInvoice {
   uiMessage: string;
   memo: string;
-  invoiceValue: number;
+  value: number;
   private: boolean;
   expiry: number;
   pageSize: number;
   openModal: boolean;
+  is_amp: boolean;
 }
 
 export interface SaveChannel {

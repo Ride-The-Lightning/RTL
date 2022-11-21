@@ -235,7 +235,7 @@ export class LNDEffects implements OnDestroy {
       this.store.dispatch(openSpinner({ payload: action.payload.uiMessage }));
       this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'SaveNewInvoice', status: APICallStatusEnum.INITIATED } }));
       return this.httpClient.post(this.CHILD_API_URL + environment.INVOICES_API, {
-        memo: action.payload.memo, amount: action.payload.invoiceValue, private: action.payload.private, expiry: action.payload.expiry
+        memo: action.payload.memo, value: action.payload.value, private: action.payload.private, expiry: action.payload.expiry, is_amp: action.payload.is_amp
       }).
         pipe(
           map((postRes: any) => {
@@ -244,10 +244,11 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: action.payload.pageSize, reversed: true } }));
             if (action.payload.openModal) {
               postRes.memo = action.payload.memo;
-              postRes.value = action.payload.invoiceValue;
+              postRes.value = action.payload.value;
               postRes.expiry = action.payload.expiry;
-              postRes.cltv_expiry = '144';
               postRes.private = action.payload.private;
+              postRes.is_amp = action.payload.is_amp;
+              postRes.cltv_expiry = '144';
               postRes.creation_date = Math.round(new Date().getTime() / 1000).toString();
               setTimeout(() => {
                 this.store.dispatch(openAlert({

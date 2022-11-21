@@ -106,19 +106,26 @@
   </div>
   <mat-divider [inset]="true" class="my-1"></mat-divider>
   <div fxLayout="row">
-    <div fxFlex="34">
+    <div fxFlex="50">
       <h4 fxLayoutAlign="start" class="font-bold-500">State</h4>
       <span class="overflow-wrap foreground-secondary-text">{{invoice?.state}}</span>
     </div>
-    <div fxFlex="33">
+    <div fxFlex="50">
       <h4 fxLayoutAlign="start" class="font-bold-500">Expiry</h4>
-      <span class="overflow-wrap foreground-secondary-text">{{invoice?.expiry}}</span>
+      <span class="overflow-wrap foreground-secondary-text">{{(+invoice?.creation_date + +invoice?.expiry) * 1000 | date:'dd/MMM/y HH:mm'}}</span>
     </div>
-    <div fxFlex="33">
+  </div>
+  <mat-divider [inset]="true" class="my-1"></mat-divider>
+  <div fxLayout="row">
+    <div fxFlex="50">
       <h4 fxLayoutAlign="start" class="font-bold-500">Private Routing Hints</h4>
       <span class="overflow-wrap foreground-secondary-text">{{invoice?.private ? 'Yes' : 'No'}}</span>
     </div>
-  </div>
+    <div fxFlex="50">
+      <h4 fxLayoutAlign="start" class="font-bold-500">AMP Invoice</h4>
+      <span class="overflow-wrap foreground-secondary-text">{{invoice?.is_amp ? 'Yes' : 'No'}}</span>
+    </div>
+  </div>  
   <mat-divider [inset]="true" class="my-1"></mat-divider>
   <div fxLayout="row" *ngIf="invoice?.htlcs && invoice?.htlcs.length > 0">
     <mat-expansion-panel (opened)="flgOpened = true" (closed)="onExpansionClosed()" class="flat-expansion-panel" fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100">

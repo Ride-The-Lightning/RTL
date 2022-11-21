@@ -58,17 +58,7 @@ export const addInvoice = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/invoices';
-  options.form = {
-    memo: req.body.memo,
-    private: req.body.private,
-    expiry: req.body.expiry
-  };
-  if (req.body.amount > 0 && req.body.amount < 1) {
-    options.form.value_msat = req.body.amount * 1000;
-  } else {
-    options.form.value = req.body.amount;
-  }
-  options.form = JSON.stringify(options.form);
+  options.form = JSON.stringify(req.body);
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Invoice Added', data: body });
     try {

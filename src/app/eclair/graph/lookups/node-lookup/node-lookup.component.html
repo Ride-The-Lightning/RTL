@@ -31,7 +31,7 @@
   <mat-divider [inset]="true" class="my-1"></mat-divider>
   <div fxLayout="column">
     <h4 fxFlex="100" fxLayoutAlign="start" class="font-bold-500 mb-1">Addresses</h4>
-    <div [perfectScrollbar] fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+    <div [perfectScrollbar] fxLayout="row" fxFlex="100" class="table-container">
       <table mat-table #table [dataSource]="addresses" matSort class="overflow-auto">
         <ng-container matColumnDef="address">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Address</th>

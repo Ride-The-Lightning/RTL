@@ -869,7 +869,7 @@ export const LND_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
   ] },
   { pageId: 'peers_channels', tables: [
     { tableId: 'open', recordsPerPage: PAGE_SIZE, sortBy: 'balancedness', sortOrder: SortOrderEnum.DESCENDING,
-      columnSelectionSM: ['remote_alias', 'local_balance', 'remote_balance'],
+      columnSelectionSM: ['remote_alias', 'local_balance'],
       columnSelection: ['remote_alias', 'uptime_str', 'total_satoshis_sent', 'total_satoshis_received', 'local_balance', 'remote_balance', 'balancedness'] },
     { tableId: 'pending_open', sortBy: 'capacity', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['remote_alias', 'capacity'],

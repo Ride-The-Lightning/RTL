@@ -11,7 +11,7 @@
         <div fxLayout="column" fxLayoutAlign="start stretch">
           <div fxLayout="row" fxFlex="100" class="alert alert-info mb-1">
             <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
-            <span>Use this control to toggle setting which defaults to opening Unannounced Channels.</span>
+            <span>Use this control to toggle setting which defaults to opening unannounced channels only.</span>
           </div>
           <div fxLayout="row wrap" fxLayoutAlign="start center">
             <mat-slide-toggle tabindex="1" color="primary" [(ngModel)]="selNode.settings.unannouncedChannels" (change)="selNode.settings.unannouncedChannels = !$event.checked ? null : selNode.settings.unannouncedChannels" name="unannouncedChannels">Open Unannounced Channels</mat-slide-toggle>

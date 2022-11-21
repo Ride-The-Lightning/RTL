@@ -12,7 +12,7 @@ export const getAliasFromPubkey = (selNode: CommonSelectedNode, pubkey) => {
     logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Graph', msg: 'Alias Received', data: res.node.alias });
     return res.node.alias;
   }).
-    catch((err) => pubkey.substring(0, 17) + '...');
+    catch((err) => pubkey.substring(0, 20));
 };
 
 export const getDescribeGraph = (req, res, next) => {

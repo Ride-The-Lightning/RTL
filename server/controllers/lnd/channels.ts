@@ -14,7 +14,7 @@ export const getAliasForChannel = (selNode: CommonSelectedNode, channel) => {
     channel.remote_alias = aliasBody.node.alias;
     return aliasBody.node.alias;
   }).catch((err) => {
-    channel.remote_alias = pubkey.slice(0, 10) + '...' + pubkey.slice(-10);
+    channel.remote_alias = pubkey.slice(0, 20);
     return pubkey;
   });
 };
