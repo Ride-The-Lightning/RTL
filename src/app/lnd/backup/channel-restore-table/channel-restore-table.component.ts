@@ -35,10 +35,9 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
   public displayedColumns = ['channel_point', 'actions'];
   public selChannel: Channel;
   public channelsData = [];
-  public channels: any;
+  public channels: any = new MatTableDataSource([]);
   public allRestoreExists = false;
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: channels
-  public flgSticky = false;
   public selFilter = '';
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
@@ -83,8 +82,8 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
     this.channels = new MatTableDataSource([...channels]);
     this.channels.sort = this.sort;
     this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    this.channels.filterPredicate = (channel: Channel, fltr: string) => JSON.stringify(channel).toLowerCase().includes(fltr);
     this.channels.paginator = this.paginator;
+    this.channels.filterPredicate = (rowData: Channel, fltr: string) => (rowData.channel_point ? rowData.channel_point.toLowerCase() : '').includes(fltr);
     this.applyFilter();
   }
 

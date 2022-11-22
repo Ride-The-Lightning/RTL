@@ -11,11 +11,11 @@ export const getAliasForChannel = (selNode: CommonSelectedNode, channel) => {
   options.url = selNode.ln_server_url + '/v1/graph/node/' + pubkey;
   return request(options).then((aliasBody) => {
     logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Channels', msg: 'Alias Received', data: aliasBody.node.alias });
-    channel.remote_alias = aliasBody.node.alias;
-    return aliasBody.node.alias;
+    channel.remote_alias = aliasBody.node.alias && aliasBody.node.alias !== '' ? aliasBody.node.alias : aliasBody.node.pub_key.slice(0, 20);
+    return channel;
   }).catch((err) => {
-    channel.remote_alias = pubkey.slice(0, 10) + '...' + pubkey.slice(-10);
-    return pubkey;
+    channel.remote_alias = pubkey.slice(0, 20);
+    return channel;
   });
 };
 
@@ -40,7 +40,6 @@ export const getAllChannels = (req, res, next) => {
           return getAliasForChannel(req.session.selectedNode, channel);
         })
       ).then((values) => {
-        body.channels = common.sortDescByKey(body.channels, 'balancedness');
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Sorted Channels List Received', data: body });
         return res.status(200).json(body);
       }).catch((errRes) => {
@@ -72,11 +71,11 @@ export const getPendingChannels = (req, res, next) => {
     if (body.pending_open_channels && body.pending_open_channels.length > 0) {
       body.pending_open_channels?.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
     }
-    if (body.pending_closing_channels && body.pending_closing_channels.length > 0) {
-      body.pending_closing_channels?.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
-    }
     if (body.pending_force_closing_channels && body.pending_force_closing_channels.length > 0) {
       body.pending_force_closing_channels?.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
+    }
+    if (body.pending_closing_channels && body.pending_closing_channels.length > 0) {
+      body.pending_closing_channels?.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
     }
     if (body.waiting_close_channels && body.waiting_close_channels.length > 0) {
       body.waiting_close_channels?.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
@@ -109,7 +108,6 @@ export const getClosedChannels = (req, res, next) => {
           return getAliasForChannel(req.session.selectedNode, channel);
         })
       ).then((values) => {
-        body.channels = common.sortDescByKey(body.channels, 'close_height');
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Closed Channels List Received', data: body });
         return res.status(200).json(body);
       }).catch((errRes) => {
@@ -156,7 +154,7 @@ export const postTransactions = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Sending Payment..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.ln_server_url + '/v1/channels/transactions';
+  options.url = req.session.selectedNode.ln_server_url + '/v1/channels/transaction-stream';
   options.form = { payment_request: req.body.paymentReq };
   if (req.body.paymentAmount) {
     options.form.amt = req.body.paymentAmount;

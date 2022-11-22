@@ -19,7 +19,7 @@ export const updateSelectedNode = (req, res, next) => {
     if (req.headers && req.headers.authorization && req.headers.authorization !== '') {
         wsServer.updateLNWSClientDetails(req.session.id, +req.session.selectedNode.index, +req.params.prevNodeIndex);
         if (req.params.prevNodeIndex !== -1) {
-            databaseService.unloadDatabase(req.params.prevNodeIndex);
+            databaseService.unloadDatabase(req.params.prevNodeIndex, req.session.id);
         }
     }
     const responseVal = !req.session.selectedNode.ln_node ? '' : req.session.selectedNode.ln_node;
@@ -49,10 +49,11 @@ export const getRTLConfigInitial = (req, res, next) => {
             const nodesArr = [];
             if (common.nodes && common.nodes.length > 0) {
                 common.nodes.forEach((node, i) => {
-                    const settings = {};
+                    const settings = { unannouncedChannels: false };
                     settings.userPersona = node.user_persona ? node.user_persona : 'MERCHANT';
                     settings.themeMode = (node.theme_mode) ? node.theme_mode : 'DAY';
                     settings.themeColor = (node.theme_color) ? node.theme_color : 'PURPLE';
+                    settings.unannouncedChannels = !!node.unannounced_channels || false;
                     settings.fiatConversion = (node.fiat_conversion) ? !!node.fiat_conversion : false;
                     settings.currencyUnit = node.currency_unit;
                     nodesArr.push({
@@ -97,10 +98,11 @@ export const getRTLConfig = (req, res, next) => {
                     authentication.configPath = (node.config_path) ? node.config_path : '';
                     authentication.swapMacaroonPath = (node.swap_macaroon_path) ? node.swap_macaroon_path : '';
                     authentication.boltzMacaroonPath = (node.boltz_macaroon_path) ? node.boltz_macaroon_path : '';
-                    const settings = {};
+                    const settings = { unannouncedChannels: false };
                     settings.userPersona = node.user_persona ? node.user_persona : 'MERCHANT';
                     settings.themeMode = (node.theme_mode) ? node.theme_mode : 'DAY';
                     settings.themeColor = (node.theme_color) ? node.theme_color : 'PURPLE';
+                    settings.unannouncedChannels = !!node.unannounced_channels || false;
                     settings.fiatConversion = (node.fiat_conversion) ? !!node.fiat_conversion : false;
                     settings.bitcoindConfigPath = node.bitcoind_config_path;
                     settings.logLevel = node.log_level ? node.log_level : 'ERROR';
@@ -108,6 +110,7 @@ export const getRTLConfig = (req, res, next) => {
                     settings.swapServerUrl = node.swap_server_url;
                     settings.boltzServerUrl = node.boltz_server_url;
                     settings.enableOffers = node.enable_offers;
+                    settings.enablePeerswap = node.enable_peerswap;
                     settings.channelBackupPath = node.channel_backup_path;
                     settings.currencyUnit = node.currency_unit;
                     nodesArr.push({
@@ -134,6 +137,7 @@ export const updateUISettings = (req, res, next) => {
         node.Settings.userPersona = req.body.updatedSettings.userPersona;
         node.Settings.themeMode = req.body.updatedSettings.themeMode;
         node.Settings.themeColor = req.body.updatedSettings.themeColor;
+        node.Settings.unannouncedChannels = req.body.updatedSettings.unannouncedChannels;
         node.Settings.fiatConversion = req.body.updatedSettings.fiatConversion;
         if (req.body.updatedSettings.fiatConversion) {
             node.Settings.currencyUnit = req.body.updatedSettings.currencyUnit ? req.body.updatedSettings.currencyUnit : 'USD';
@@ -145,6 +149,7 @@ export const updateUISettings = (req, res, next) => {
         selectedNode.user_persona = req.body.updatedSettings.userPersona;
         selectedNode.theme_mode = req.body.updatedSettings.themeMode;
         selectedNode.theme_color = req.body.updatedSettings.themeColor;
+        selectedNode.unannounced_channels = req.body.updatedSettings.unannouncedChannels;
         selectedNode.fiat_conversion = req.body.updatedSettings.fiatConversion;
         if (req.body.updatedSettings.fiatConversion) {
             selectedNode.currency_unit = req.body.updatedSettings.currencyUnit ? req.body.updatedSettings.currencyUnit : 'USD';
@@ -244,7 +249,7 @@ export const getConfig = (req, res, next) => {
                 if (jsonConfig['Application Options'] && jsonConfig['Application Options'].color) {
                     jsonConfig['Application Options'].color = '#' + jsonConfig['Application Options'].color;
                 }
-                if (req.session.selectedNode.ln_implementation === 'ECL' && !jsonConfig['eclair.api.password']) {
+                if (req.params.nodeType === 'ln' && req.session.selectedNode.ln_implementation === 'ECL' && !jsonConfig['eclair.api.password']) {
                     fileFormat = 'HOCON';
                     jsonConfig = parseHocon(data);
                 }
@@ -311,7 +316,7 @@ export const updateServiceSettings = (req, res, next) => {
     const RTLConfFile = common.rtl_conf_file_path + sep + 'RTL-Config.json';
     const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
     const selectedNode = common.findNode(req.session.selectedNode.index);
-    config.nodes.find((node) => {
+    config.nodes.forEach((node) => {
         if (node.index === req.session.selectedNode.index) {
             switch (req.body.service) {
                 case 'LOOP':
@@ -346,6 +351,10 @@ export const updateServiceSettings = (req, res, next) => {
                     node.Settings.enableOffers = req.body.settings.enableOffers;
                     selectedNode.enable_offers = req.body.settings.enableOffers;
                     break;
+                case 'PEERSWAP':
+                    node.Settings.enablePeerswap = req.body.settings.enablePeerswap;
+                    selectedNode.enable_peerswap = req.body.settings.enablePeerswap;
+                    break;
                 default:
                     break;
             }
@@ -374,7 +383,8 @@ export const maskPasswords = (obj) => {
             }
             if (typeof keys[i] === 'string' &&
                 (keys[i].toLowerCase().includes('password') || keys[i].toLowerCase().includes('multipass') ||
-                    keys[i].toLowerCase().includes('rpcpass') || keys[i].toLowerCase().includes('rpcpassword'))) {
+                    keys[i].toLowerCase().includes('rpcpass') || keys[i].toLowerCase().includes('rpcpassword') ||
+                    keys[i].toLowerCase().includes('rpcuser'))) {
                 obj[keys[i]] = '********************';
             }
         }

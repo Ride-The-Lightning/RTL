@@ -142,6 +142,7 @@ export class RTLEffects implements OnDestroy {
         if (this.dialogRef) {
           this.dialogRef.close();
         }
+        this.logger.info(action.payload);
         return action.payload;
       })),
     { dispatch: false }
@@ -447,21 +448,22 @@ export class RTLEffects implements OnDestroy {
   logOut = createEffect(
     () => this.actions.pipe(
       ofType(RTLActions.LOGOUT),
-      withLatestFrom(this.store.select(rootAppConfig)),
-      mergeMap(([action, appConfig]) => {
+      mergeMap((appConfig: RTLConfiguration) => {
         this.store.dispatch(openSpinner({ payload: UI_MESSAGES.LOG_OUT }));
+        if (appConfig.sso && +appConfig.sso.rtlSSO) {
+          window.location.href = appConfig.sso.logoutRedirectLink;
+        } else {
+          this.router.navigate(['./login']);
+        }
+        this.sessionService.clearAll();
+        this.store.dispatch(setNodeData({ payload: {} }));
+        this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.LOG_OUT }));
+        this.logger.info('Logged out from browser');
         return this.httpClient.get(environment.AUTHENTICATE_API + '/logout').
           pipe(map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.LOG_OUT }));
-            if (+appConfig.sso.rtlSSO) {
-              window.location.href = appConfig.sso.logoutRedirectLink;
-            } else {
-              this.router.navigate(['./login']);
-            }
-            this.sessionService.clearAll();
-            this.store.dispatch(setNodeData({ payload: {} }));
-            this.logger.warn('LOGGED OUT');
+            this.logger.info('Logged out from server');
           }));
       })),
     { dispatch: false }
@@ -499,12 +501,12 @@ export class RTLEffects implements OnDestroy {
       mergeMap((action: { type: string, payload: SetSelectedNode }) => {
         this.store.dispatch(openSpinner({ payload: action.payload.uiMessage }));
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.INITIATED } }));
-        return this.httpClient.get(environment.CONF_API + '/updateSelNode/' + action.payload.currentLnNode.index + '/' + action.payload.prevLnNodeIndex).pipe(
+        return this.httpClient.get(environment.CONF_API + '/updateSelNode/' + action.payload.currentLnNode?.index + '/' + action.payload.prevLnNodeIndex).pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.COMPLETED } }));
             this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
-            this.initializeNode(action.payload.currentLnNode, action.payload.isInitialSetup);
+            this.initializeNode(action.payload.currentLnNode!, action.payload.isInitialSetup);
             return { type: RTLActions.VOID };
           }),
           catchError((err: any) => {
@@ -549,11 +551,11 @@ export class RTLEffects implements OnDestroy {
   initializeNode(node: ConfigSettingsNode, isInitialSetup: boolean) {
     this.logger.info('Initializing node from RTL Effects.');
     const landingPage = isInitialSetup ? '' : 'HOME';
-    let selNode = {};
+    const selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, unannouncedChannels: !!node.settings.unannouncedChannels,
+      selCurrencyUnit: node.settings.currencyUnit, currencyUnits: CURRENCY_UNITS, fiatConversion: node.settings.fiatConversion, lnImplementation: node.lnImplementation,
+      swapServerUrl: node.settings.swapServerUrl, boltzServerUrl: node.settings.boltzServerUrl, enableOffers: node.settings.enableOffers, enablePeerswap: node.settings.enablePeerswap };
     if (node.settings.fiatConversion && node.settings.currencyUnit) {
-      selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: [...CURRENCY_UNITS, node.settings.currencyUnit], fiatConversion: node.settings.fiatConversion, lnImplementation: node.lnImplementation, swapServerUrl: node.settings.swapServerUrl, boltzServerUrl: node.settings.boltzServerUrl, enableOffers: node.settings.enableOffers };
-    } else {
-      selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: CURRENCY_UNITS, fiatConversion: node.settings.fiatConversion, lnImplementation: node.lnImplementation, swapServerUrl: node.settings.swapServerUrl, boltzServerUrl: node.settings.boltzServerUrl, enableOffers: node.settings.enableOffers };
+      selNode['currencyUnits'] = [...CURRENCY_UNITS, node.settings.currencyUnit];
     }
     this.sessionService.removeItem('lndUnlocked');
     this.sessionService.removeItem('clUnlocked');

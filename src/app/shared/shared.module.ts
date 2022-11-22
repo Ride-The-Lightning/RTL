@@ -62,9 +62,11 @@ import { AppSettingsComponent } from './components/settings/app-settings/app-set
 import { NodeConfigComponent } from './components/node-config/node-config.component';
 import { LNPConfigComponent } from './components/node-config/lnp-config/lnp-config.component';
 import { NodeSettingsComponent } from './components/node-config/node-settings/node-settings.component';
+import { PageSettingsComponent } from './components/node-config/page-settings/page-settings.component';
 import { ServicesSettingsComponent } from './components/node-config/services-settings/services-settings.component';
 import { LoopServiceSettingsComponent } from './components/node-config/services-settings/loop-service-settings/loop-service-settings.component';
 import { BoltzServiceSettingsComponent } from './components/node-config/services-settings/boltz-service-settings/boltz-service-settings.component';
+import { PeerswapServiceSettingsComponent } from './components/node-config/services-settings/peerswap-service-settings/peerswap-service-settings.component';
 import { ExperimentalSettingsComponent } from './components/node-config/experimental-settings/experimental-settings.component';
 import { ErrorComponent } from './components/error/error.component';
 import { CurrencyUnitConverterComponent } from './components/currency-unit-converter/currency-unit-converter.component';
@@ -76,6 +78,7 @@ import { SpinnerDialogComponent } from './components/data-modal/spinner-dialog/s
 import { AlertMessageComponent } from './components/data-modal/alert-message/alert-message.component';
 import { ConfirmationMessageComponent } from './components/data-modal/confirmation-message/confirmation-message.component';
 import { ErrorMessageComponent } from './components/data-modal/error-message/error-message.component';
+import { IsAuthorizedComponent } from './components/data-modal/is-authorized/is-authorized.component';
 import { TwoFactorAuthComponent } from './components/data-modal/two-factor-auth/two-factor-auth.component';
 import { LoginTokenComponent } from './components/data-modal/login-2fa-token/login-2fa-token.component';
 
@@ -100,7 +103,7 @@ import { AutoFocusDirective } from './directive/auto-focus.directive';
 import { MonthlyDateDirective, YearlyDateDirective } from './directive/date-formats.directive';
 import { MaxValidator } from './directive/max-amount.directive';
 import { MinValidator } from './directive/min-amount.directive';
-import { RemoveLeadingZerosPipe, CamelCasePipe } from './pipes/app.pipe';
+import { RemoveLeadingZerosPipe, CamelCasePipe, CamelCaseWithReplacePipe, CamelCaseWithSpacesPipe } from './pipes/app.pipe';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: false,
@@ -225,6 +228,8 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     YearlyDateDirective,
     RemoveLeadingZerosPipe,
     CamelCasePipe,
+    CamelCaseWithReplacePipe,
+    CamelCaseWithSpacesPipe,
     MaxValidator,
     MinValidator,
     AppSettingsComponent,
@@ -241,9 +246,11 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     NodeConfigComponent,
     LNPConfigComponent,
     NodeSettingsComponent,
+    PageSettingsComponent,
     ServicesSettingsComponent,
     LoopServiceSettingsComponent,
     BoltzServiceSettingsComponent,
+    PeerswapServiceSettingsComponent,
     ExperimentalSettingsComponent,
     CurrencyUnitConverterComponent,
     HorizontalScrollerComponent,
@@ -279,9 +286,11 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     NodeConfigComponent,
     LNPConfigComponent,
     NodeSettingsComponent,
+    PageSettingsComponent,
     ServicesSettingsComponent,
     LoopServiceSettingsComponent,
     BoltzServiceSettingsComponent,
+    PeerswapServiceSettingsComponent,
     ExperimentalSettingsComponent,
     CurrencyUnitConverterComponent,
     HorizontalScrollerComponent,
@@ -294,6 +303,8 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     MinValidator,
     RemoveLeadingZerosPipe,
     CamelCasePipe,
+    CamelCaseWithReplacePipe,
+    CamelCaseWithSpacesPipe,
     AuthSettingsComponent,
     TransactionsReportTableComponent,
     OnChainGeneratedAddressComponent,
@@ -302,6 +313,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     AlertMessageComponent,
     ConfirmationMessageComponent,
     ErrorMessageComponent,
+    IsAuthorizedComponent,
     TwoFactorAuthComponent,
     LoginTokenComponent,
     TransactionsReportTableComponent,
@@ -329,7 +341,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     { provide: DateAdapter, useClass: DefaultDateAdapter },
     { provide: MAT_DATE_FORMATS, useValue: DEFAULT_DATE_FORMAT },
     { provide: OverlayContainer, useClass: ThemeOverlay },
-    DecimalPipe, TitleCasePipe, DatePipe
+    DecimalPipe, TitleCasePipe, DatePipe, RemoveLeadingZerosPipe, CamelCasePipe, CamelCaseWithReplacePipe, CamelCaseWithSpacesPipe
   ]
 })
 export class SharedModule { }

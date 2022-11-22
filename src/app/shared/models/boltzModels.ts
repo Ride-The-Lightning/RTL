@@ -20,6 +20,7 @@ export interface Swap {
 export interface ChannelCreationInfo {
   swapId?: string;
   status?: string;
+  error?: string;
   inboundLiquidity?: number;
   private?: boolean;
   fundingTransactionId?: string;
@@ -34,6 +35,7 @@ export interface ChannelCreation {
 export interface ReverseSwap {
   id?: string;
   status?: string;
+  error?: string;
   privateKey?: string;
   preimage?: string;
   redeemScript?: string;

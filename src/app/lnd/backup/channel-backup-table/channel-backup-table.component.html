@@ -19,21 +19,30 @@
       <fa-icon [icon]="faArchive" class="page-title-img mr-1"></fa-icon>
       <span class="page-title">Backups</span>
     </div>
-    <mat-form-field fxFlex="30">
-      <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" placeholder="Filter">
-    </mat-form-field>
+    <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
+      <div fxFlex="49"></div>
+      <mat-form-field fxFlex="49">
+        <input matInput [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()" name="filter" placeholder="Filter">
+      </mat-form-field>
+    </div>
   </div>
-  <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+  <div [perfectScrollbar] fxLayout="column" fxFlex="100" class="table-container">
     <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-    <table mat-table #table fxFlex="100" [dataSource]="channels" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
+    <table mat-table #table fxFlex="100" [dataSource]="channels" matSort [ngClass]="{'error-border': errorMessage !== ''}">
       <ng-container matColumnDef="channel_point">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel Point </th>
-        <td mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '28rem'}">{{channel?.channel_point}}</td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel Point</th>
+        <td mat-cell *matCellDef="let channel">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '25rem' : '60rem'}">
+            <span class="ellipsis-child">{{channel?.channel_point}}</span>
+          </div>
+        </td>
       </ng-container>
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="pr-3"><span fxLayoutAlign="end center">Actions</span></th>        
+        <th mat-header-cell *matHeaderCellDef>
+          <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>
+       </th>
         <td mat-cell *matCellDef="let channel" fxLayoutAlign="end center">
-          <div class="bordered-box table-actions-select">
+          <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="1" class="mr-0">
               <mat-select-trigger></mat-select-trigger>
               <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
@@ -52,7 +61,7 @@
         </td>
       </ng-container>
       <tr mat-footer-row *matFooterRowDef="['no_channel']" [ngClass]="{'display-none': channels?.data && channels?.data?.length>0}"></tr>
-      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
   </div>

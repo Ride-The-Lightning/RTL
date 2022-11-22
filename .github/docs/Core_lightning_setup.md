@@ -82,6 +82,7 @@ Ensure that the follow values are correct per your config:
         "bitcoindConfigPath": "",
         "logLevel": "INFO",
         "fiatConversion": false,
+        "unannouncedChannels": false,
         "lnServerUrl": "https://<cl-rest api server ip address>:3001"
       }
     }

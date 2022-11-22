@@ -2,6 +2,8 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { StoreModule } from '@ngrx/store';
 
+import { RTLEffects } from '../../../store/rtl.effects';
+import { mockRTLEffects } from '../../../shared/test-helpers/mock-services';
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../../lnd/store/lnd.reducers';
 import { CLNReducer } from '../../../cln/store/cln.reducers';
@@ -20,6 +22,9 @@ describe('NodeConfigComponent', () => {
         SharedModule,
         RouterTestingModule,
         StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer })
+      ],
+      providers: [
+        { provide: RTLEffects, useClass: mockRTLEffects }
       ]
     }).
       compileComponents();

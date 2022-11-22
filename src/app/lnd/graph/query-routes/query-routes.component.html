@@ -27,38 +27,64 @@
     <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
     <table mat-table #table [dataSource]="qrHops" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
       <ng-container matColumnDef="hop_sequence">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Hop </th>
-        <td mat-cell *matCellDef="let hop"> {{hop?.hop_sequence}} </td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Hop</th>
+        <td mat-cell *matCellDef="let hop">{{hop?.hop_sequence}}</td>
       </ng-container>
       <ng-container matColumnDef="pubkey_alias">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Peer </th>
-        <td mat-cell *matCellDef="let hop" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '28rem'}"> {{hop?.pubkey_alias}} </td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer</th>
+        <td mat-cell *matCellDef="let hop">
+          <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <span class="ellipsis-child">{{hop?.pubkey_alias}}</span>
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="pub_key">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer Pubkey</th>
+        <td mat-cell *matCellDef="let hop">
+          <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <span class="ellipsis-child">{{hop?.pub_key}}</span>
+          </div>
+        </td>
       </ng-container>
       <ng-container matColumnDef="chan_id">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel </th>
-        <td mat-cell *matCellDef="let hop"> {{hop?.chan_id}} </td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel ID</th>
+        <td mat-cell *matCellDef="let hop">
+          <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <span class="ellipsis-child">{{hop?.chan_id}}</span>
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="tlv_payload">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>TLV Payload</th>
+        <td mat-cell *matCellDef="let hop">{{hop?.tlv_payload ? 'Yes' : 'No'}}</td>
+      </ng-container>
+      <ng-container matColumnDef="expiry">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Expiry</th>
+        <td mat-cell *matCellDef="let hop"><span fxLayoutAlign="end center">{{hop?.expiry | number}}</span></td>
       </ng-container>
       <ng-container matColumnDef="chan_capacity">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Capacity (Sats) </th>
-        <td mat-cell *matCellDef="let hop"><span fxLayoutAlign="end center"> {{hop?.chan_capacity | number}}</span></td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Capacity (Sats)</th>
+        <td mat-cell *matCellDef="let hop"><span fxLayoutAlign="end center">{{hop?.chan_capacity | number}}</span></td>
       </ng-container>
       <ng-container matColumnDef="amt_to_forward_msat">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Amount To Fwd (Sats) </th>
-        <td mat-cell *matCellDef="let hop"><span fxLayoutAlign="end center"> {{hop?.amt_to_forward | number}}
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Amount To Fwd (Sats)</th>
+        <td mat-cell *matCellDef="let hop"><span fxLayoutAlign="end center">{{hop?.amt_to_forward | number}}
           </span></td>
       </ng-container>
       <ng-container matColumnDef="fee_msat">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Fee (mSats) </th>
-        <td mat-cell *matCellDef="let hop"><span fxLayoutAlign="end center"> {{hop?.fee_msat | number}} </span>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Fee (mSats)</th>
+        <td mat-cell *matCellDef="let hop"><span fxLayoutAlign="end center">{{hop?.fee_msat | number}} </span>
         </td>
       </ng-container>
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="pl-4 pr-3"><span fxLayoutAlign="end center">Actions</span></th>
-        <td mat-cell *matCellDef="let hop" class="pl-4">
-          <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onHopClick(hop, $event)">View Info</button>          
+        <th mat-header-cell *matHeaderCellDef>
+          <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>          
+       </th>
+        <td mat-cell *matCellDef="let hop" fxLayoutAlign="end center">
+          <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onHopClick(hop, $event)" class="table-actions-button">View Info</button>          
         </td>
       </ng-container>
-      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
   </div>

@@ -14,7 +14,7 @@ import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 
 import { RTLState } from '../../store/rtl.state';
-import { allChannelsInfo, eclnNodeSettings, fees, nodeInfoStatus, onchainBalance } from '../store/ecl.selector';
+import { allChannelsInfo, eclNodeSettings, fees, nodeInfoStatus, onchainBalance } from '../store/ecl.selector';
 
 export interface Tile {
   id: string;
@@ -117,7 +117,7 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select(eclnNodeSettings).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
       subscribe((nodeSettings) => {
         this.selNode = nodeSettings;
       });
@@ -142,7 +142,8 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
       });
     this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[3]),
       withLatestFrom(this.store.select(onchainBalance))).
-      subscribe(([allChannelsSelector, oCBalanceSelector]: [({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload }), ({ onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload })]) => {
+      subscribe(([allChannelsSelector, oCBalanceSelector]: [({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload }),
+        ({ onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload })]) => {
         this.errorMessages[2] = '';
         this.errorMessages[3] = '';
         this.apiCallStatusAllChannels = allChannelsSelector.apiCallStatus;

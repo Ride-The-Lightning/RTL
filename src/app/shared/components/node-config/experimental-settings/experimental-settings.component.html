@@ -67,12 +67,12 @@
               </div>
               <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch">
                 <mat-form-field fxFlex="49">
-                  <input matInput [(ngModel)]="leaseFeeBaseSat" placeholder="Lease Base Fee (Sats)" type="number" step="100" min="0" tabindex="3" required name="leaseFeeBaseSat">
-                  <mat-error *ngIf="!leaseFeeBaseSat">Lease base fee is required.</mat-error>
+                  <input matInput [(ngModel)]="lease_fee_base_sat" placeholder="Lease Base Fee (Sats)" type="number" step="100" min="0" tabindex="3" required name="lease_fee_base_sat">
+                  <mat-error *ngIf="!lease_fee_base_sat">Lease base fee is required.</mat-error>
                 </mat-form-field>
                 <mat-form-field fxFlex="49">
-                  <input matInput [(ngModel)]="leaseFeeBasis" placeholder="Lease Base Basis (bps)" type="number" step="1" min="0" tabindex="4" required name="leaseFeeBasis">
-                  <mat-error *ngIf="!leaseFeeBasis">Lease base basis is required.</mat-error>
+                  <input matInput [(ngModel)]="lease_fee_basis" placeholder="Lease Base Basis (bps)" type="number" step="1" min="0" tabindex="4" required name="lease_fee_basis">
+                  <mat-error *ngIf="!lease_fee_basis">Lease base basis is required.</mat-error>
                 </mat-form-field>
               </div>
               <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch">

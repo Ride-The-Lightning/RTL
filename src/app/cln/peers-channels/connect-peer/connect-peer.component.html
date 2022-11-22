@@ -11,7 +11,7 @@
         <mat-vertical-stepper [linear]="true" #stepper (selectionChange)="stepSelectionChanged($event)">
           <mat-step [stepControl]="peerFormGroup" [editable]="flgEditable">
             <form [formGroup]="peerFormGroup" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
-              <ng-template matStepLabel>{{peerFormLabel}}</ng-template>              
+              <ng-template matStepLabel>{{peerFormLabel}}</ng-template>  
               <mat-form-field fxFlex="100">
                 <input autoFocus matInput placeholder="Lightning Address (pubkey OR pubkey@ip:port)" formControlName="peerAddress" tabindex="1" required>
                 <mat-error *ngIf="peerFormGroup.controls.peerAddress.errors?.required">Address is required.</mat-error>

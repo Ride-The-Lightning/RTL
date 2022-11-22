@@ -1,12 +1,19 @@
-.mat-column-amount, .mat-column-expiration_height {
-  flex: 0 0 30%;
-  width: 30%;
+.mat-column-amount, .mat-column-expiration_height, .mat-column-htlc_index, .mat-column-forwarding_htlc_index {
+  flex: 0 0 10%;
+  width: 10%;
 }
 
-.mat-column-incoming, .mat-column-hash_lock {
-  flex: 0 0 25%;
-  width: 25%;
+.mat-column-incoming, .mat-column-hash_lock, .mat-column-forwarding_channel {
+  flex: 0 0 15%;
+  width: 15%;
   text-overflow: ellipsis;
+}
+
+.mat-column-amount {
+  .htlc-row-span:not(:first-of-type) {
+    padding-left: 3rem;
+    padding-right: 2rem;
+  }
 }
 
 .htlc-row-span {
@@ -16,14 +23,14 @@
 }
 
 .mat-column-actions {
-  min-height: 4.8rem;
-
   & .btn-htlc-expand {
-    width: 9rem; 
+    min-width: 10rem;
+    width: 10rem;
   }
 
   & .btn-htlc-info {
-    margin-top: 0.5rem; 
+    margin-top: 0.5rem;
+    min-width: 9rem;
     width: 9rem; 
   }
 }

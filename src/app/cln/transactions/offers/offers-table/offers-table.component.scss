@@ -1,11 +1,4 @@
-.mat-column-offer_id {
-  flex: 0 0 65%;
-  width: 65%;
-  & .ellipsis-parent {
-    display: flex;
-  }
-}
-
-.mat-column-actions {
-  min-height: 4.8rem;
+.mat-column-active {
+  max-width: 1.2rem;
+  width:1.2rem;
 }

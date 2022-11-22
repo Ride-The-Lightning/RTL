@@ -5,6 +5,7 @@ export const environment = {
   isDebugMode: false,
   AUTHENTICATE_API: API_URL + '/authenticate',
   CONF_API: API_URL + '/conf',
+  PAGE_SETTINGS_API: API_URL + '/pagesettings',
   BALANCE_API: '/balance',
   FEES_API: '/fees',
   PEERS_API: '/peers',
@@ -27,4 +28,4 @@ export const environment = {
   Web_SOCKET_API: '/ws'
 };
 
-export const VERSION = '0.13.1-beta';
+export const VERSION = '0.13.2-beta';

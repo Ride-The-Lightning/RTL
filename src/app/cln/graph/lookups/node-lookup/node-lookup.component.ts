@@ -17,7 +17,7 @@ export class CLNNodeLookupComponent implements OnInit {
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @Input() lookupResult: LookupNode;
   public featureDescriptions: string[] = [];
-  public addresses: any;
+  public addresses: any = new MatTableDataSource([]);
   public displayedColumns = ['type', 'address', 'port', 'actions'];
 
   constructor(private logger: LoggerService, private snackBar: MatSnackBar) { }

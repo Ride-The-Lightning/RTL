@@ -44,6 +44,9 @@ export const RootReducer = createReducer(initRootState,
       case ServicesEnum.OFFERS:
         updatedSelNode.settings.enableOffers = payload.settings.enableOffers;
         break;
+      case ServicesEnum.PEERSWAP:
+        updatedSelNode.settings.enablePeerswap = payload.settings.enablePeerswap;
+        break;
 
       default:
         break;

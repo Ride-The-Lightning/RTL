@@ -108,7 +108,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
       this.tokenFormGroup.controls.token.setValue('');
     }
     this.flgValidated = true;
-    if(this.appConfig) {
+    if (this.appConfig) {
       this.appConfig.enable2FA = !this.appConfig?.enable2FA;
     }
   }

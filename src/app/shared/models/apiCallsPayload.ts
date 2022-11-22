@@ -30,6 +30,7 @@ export interface ApiCallsListLND {
   FetchAllChannels: ApiCallStatusPayload;
   FetchBalanceBlockchain: ApiCallStatusPayload;
   // Non-initial calls
+  FetchPageSettings: ApiCallStatusPayload;
   FetchPeers: ApiCallStatusPayload;
   FetchClosedChannels: ApiCallStatusPayload;
   FetchInvoices: ApiCallStatusPayload;
@@ -48,6 +49,7 @@ export interface ApiCallsListCL {
   FetchBalance: ApiCallStatusPayload;
   FetchLocalRemoteBalance: ApiCallStatusPayload;
   // Non-initial calls
+  FetchPageSettings: ApiCallStatusPayload;
   FetchInvoices: ApiCallStatusPayload;
   FetchFeeRatesperkb: ApiCallStatusPayload;
   FetchFeeRatesperkw: ApiCallStatusPayload;
@@ -66,6 +68,7 @@ export interface ApiCallsListECL {
   FetchFees: ApiCallStatusPayload;
   FetchChannels: ApiCallStatusPayload;
   // Non-initial calls
+  FetchPageSettings: ApiCallStatusPayload;
   FetchOnchainBalance: ApiCallStatusPayload;
   FetchPeers: ApiCallStatusPayload;
   FetchPayments: ApiCallStatusPayload;

@@ -21,11 +21,13 @@ export class CommonSelectedNode {
     public user_persona?: string,
     public theme_mode?: string,
     public theme_color?: string,
+    public unannounced_channels?: boolean,
     public fiat_conversion?: boolean,
     public currency_unit?: string,
     public ln_version?: string,
     public api_version?: string,
-    public enable_offers?: boolean
+    public enable_offers?: boolean,
+    public enable_peerswap?: boolean
   ) { }
 
 }
@@ -46,6 +48,7 @@ export class NodeSettingsConfiguration {
     public userPersona?: string,
     public themeMode?: string,
     public themeColor?: string,
+    public unannouncedChannels?: boolean,
     public fiatConversion?: boolean,
     public currencyUnit?: string,
     public bitcoindConfigPath?: string,
@@ -54,7 +57,8 @@ export class NodeSettingsConfiguration {
     public swapServerUrl?: string,
     public boltzServerUrl?: string,
     public channelBackupPath?: string,
-    public enableOffers?: boolean
+    public enableOffers?: boolean,
+    public enablePeerswap?: boolean
   ) { }
 
 }

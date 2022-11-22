@@ -100,9 +100,9 @@
                     </button>
                     <mat-menu #menuTransactions="matMenu" class="dashboard-vert-menu" xPosition="before">
                       <button mat-menu-item *ngFor="let goToOption of card.goToOptions; index as i" (click)="onNavigateTo(card.links[i])">{{goToOption}}</button>
-                    </mat-menu>            
+                    </mat-menu>
                   </ng-template>
-                </mat-tab>                
+                </mat-tab>    
               </mat-tab-group>
             </span>
             <h3 *ngSwitchDefault>Error! Unable to find information!</h3>

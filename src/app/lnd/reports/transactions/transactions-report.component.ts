@@ -6,13 +6,15 @@ import { Store } from '@ngrx/store';
 import { Payment, Invoice, ListInvoices, ListPayments } from '../../../shared/models/lndModels';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
-import { APICallStatusEnum, MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, LND_DEFAULT_PAGE_SETTINGS, MONTHS, PAGE_SIZE, ScreenSizeEnum, SCROLL_RANGES, SortOrderEnum } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
 import { RTLState } from '../../../store/rtl.state';
 import { allLightningTransactions } from '../../store/lnd.selector';
 import { getAllLightningTransactions } from '../../store/lnd.actions';
+import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { clnPageSettings } from '../../../cln/store/cln.selector';
 
 @Component({
   selector: 'rtl-transactions-report',
@@ -27,6 +29,10 @@ export class TransactionsReportComponent implements OnInit, OnDestroy {
   public secondsInADay = 24 * 60 * 60;
   public payments: Payment[] = [];
   public invoices: Invoice[] = [];
+  public colWidth = '20rem';
+  public PAGE_ID = 'reports';
+  public tableSetting: TableSetting = { tableId: 'transactions', recordsPerPage: PAGE_SIZE, sortBy: 'date', sortOrder: SortOrderEnum.DESCENDING };
+  public displayedColumns: any[] = ['date', 'amount_paid', 'num_payments', 'amount_received', 'num_invoices'];
   public transactionsReportSummary = { paymentsSelectedPeriod: 0, invoicesSelectedPeriod: 0, amountPaidSelectedPeriod: 0, amountReceivedSelectedPeriod: 0 };
   public transactionFilterValue = '';
   public today = new Date(Date.now());
@@ -45,14 +51,27 @@ export class TransactionsReportComponent implements OnInit, OnDestroy {
   public errorMessage = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select(allLightningTransactions).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[0])).
+      subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
+        } else {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
+        }
+        this.displayedColumns.push('actions');
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.logger.info(this.displayedColumns);
+      });
+
+    this.store.select(allLightningTransactions).pipe(takeUntil(this.unSubs[1])).
       subscribe((allLTSelector: { allLightningTransactions: { listPaymentsAll: ListPayments, listInvoicesAll: ListInvoices }, apiCallStatus: ApiCallStatusPayload }) => {
         if (allLTSelector.apiCallStatus.status === APICallStatusEnum.UN_INITIATED) {
           this.store.dispatch(getAllLightningTransactions());
@@ -70,7 +89,7 @@ export class TransactionsReportComponent implements OnInit, OnDestroy {
         }
         this.logger.info(allLTSelector);
       });
-    this.commonService.containerSizeUpdated.pipe(takeUntil(this.unSubs[1])).subscribe((CONTAINER_SIZE) => {
+    this.commonService.containerSizeUpdated.pipe(takeUntil(this.unSubs[2])).subscribe((CONTAINER_SIZE) => {
       switch (this.screenSize) {
         case ScreenSizeEnum.MD:
           this.screenPaddingX = CONTAINER_SIZE.width / 10;

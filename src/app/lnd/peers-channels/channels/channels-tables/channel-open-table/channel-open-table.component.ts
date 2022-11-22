@@ -12,7 +12,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { ChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { BlockchainBalance, Channel, ChannelsSummary, GetInfo, LightningBalance, Peer } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum, LoopTypeEnum, APICallStatusEnum, UI_MESSAGES } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum, LoopTypeEnum, APICallStatusEnum, UI_MESSAGES, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS } from '../../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { LoopService } from '../../../../../shared/services/loop.service';
@@ -26,7 +26,9 @@ import { RTLEffects } from '../../../../../store/rtl.effects';
 import { RTLState } from '../../../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
 import { channelLookup, fetchChannels, updateChannel } from '../../../../store/lnd.actions';
-import { blockchainBalance, channels, lndNodeInformation, lndNodeSettings, peers } from '../../../../store/lnd.selector';
+import { blockchainBalance, channels, lndNodeInformation, lndNodeSettings, lndPageSettings, peers } from '../../../../store/lnd.selector';
+import { ColumnDefinition, PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
+import { CamelCaseWithReplacePipe } from '../../../../../shared/pipes/app.pipe';
 
 @Component({
   selector: 'rtl-channel-open-table',
@@ -40,18 +42,22 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public nodePageDefs = LND_PAGE_DEFS;
+  public selFilterBy = 'all';
+  public colWidth = '20rem';
+  public PAGE_ID = 'peers_channels';
+  public tableSetting: TableSetting = { tableId: 'open', recordsPerPage: PAGE_SIZE, sortBy: 'balancedness', sortOrder: SortOrderEnum.DESCENDING };
   public timeUnit = 'mins:secs';
   public userPersonaEnum = UserPersonaEnum;
   public selNode: SelNodeChild | null = {};
   public totalBalance = 0;
   public displayedColumns: any[] = [];
   public channelsData: Channel[] = [];
-  public channels: any;
+  public channels: any = new MatTableDataSource([]);
   public myChanPolicy: any = {};
   public information: GetInfo = {};
   public numPeers = -1;
   public selFilter = '';
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -65,21 +71,17 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<RTLState>, private lndEffects: LNDEffects, private commonService: CommonService, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private loopService: LoopService, private router: Router) {
+  constructor(
+    private logger: LoggerService,
+    private store: Store<RTLState>,
+    private lndEffects: LNDEffects,
+    private commonService: CommonService,
+    private rtlEffects: RTLEffects,
+    private decimalPipe: DecimalPipe,
+    private loopService: LoopService,
+    private router: Router,
+    private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
-    if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
-      this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
-      this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'balancedness', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
-      this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'balancedness', 'actions'];
-    } else {
-      this.flgSticky = true;
-      this.displayedColumns = ['remote_alias', 'uptime', 'total_satoshis_sent', 'total_satoshis_received', 'local_balance', 'remote_balance', 'balancedness', 'actions'];
-    }
     this.selFilter = this.router.getCurrentNavigation()?.extras?.state?.filter ? this.router.getCurrentNavigation()?.extras?.state?.filter : '';
   }
 
@@ -95,15 +97,35 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
           this.versionsArr = this.information.version.split('.');
         }
       });
-    this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
+    this.store.select(lndPageSettings).pipe(takeUntil(this.unSubs[2])).
+      subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessage = '';
+        this.apiCallStatus = settings.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = this.apiCallStatus.message || '';
+        }
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
+        } else {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
+        }
+        this.displayedColumns.unshift('private');
+        this.displayedColumns.unshift('active');
+        this.displayedColumns.push('actions');
+        this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.logger.info(this.displayedColumns);
+      });
+    this.store.select(peers).pipe(takeUntil(this.unSubs[3])).
       subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
         this.numPeers = (peersSelector.peers && peersSelector.peers.length) ? peersSelector.peers.length : 0;
       });
-    this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[3])).
+    this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[4])).
       subscribe((bcBalanceSelector: { blockchainBalance: BlockchainBalance, apiCallStatus: ApiCallStatusPayload }) => {
         this.totalBalance = bcBalanceSelector.blockchainBalance?.total_balance ? +bcBalanceSelector.blockchainBalance?.total_balance : 0;
       });
-    this.store.select(channels).pipe(takeUntil(this.unSubs[4])).
+    this.store.select(channels).pipe(takeUntil(this.unSubs[5])).
       subscribe((channelsSelector: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = channelsSelector.apiCallStatus;
@@ -189,7 +211,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
         }
       }));
       this.rtlEffects.closeConfirm.
-        pipe(takeUntil(this.unSubs[5])).
+        pipe(takeUntil(this.unSubs[6])).
         subscribe((confirmRes) => {
           if (confirmRes) {
             const base_fee = confirmRes[0].inputValue;
@@ -210,7 +232,9 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
           this.myChanPolicy = { fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0 };
         }
         this.logger.info(this.myChanPolicy);
-        const titleMsg = 'Update fee policy for Channel: ' + ((!channelToUpdate.remote_alias && !channelToUpdate.chan_id) ? channelToUpdate.channel_point : (channelToUpdate.remote_alias && channelToUpdate.chan_id) ? channelToUpdate.remote_alias + ' (' + channelToUpdate.chan_id + ')' : channelToUpdate.remote_alias ? channelToUpdate.remote_alias : channelToUpdate.chan_id);
+        const titleMsg = 'Update fee policy for Channel: ' + ((!channelToUpdate.remote_alias && !channelToUpdate.chan_id) ?
+          channelToUpdate.channel_point : (channelToUpdate.remote_alias && channelToUpdate.chan_id) ? channelToUpdate.remote_alias +
+          ' (' + channelToUpdate.chan_id + ')' : channelToUpdate.remote_alias ? channelToUpdate.remote_alias : channelToUpdate.chan_id);
         const confirmationMsg = [];
         setTimeout(() => {
           this.store.dispatch(openConfirmation({
@@ -237,7 +261,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
         }, 0);
       });
       this.rtlEffects.closeConfirm.
-        pipe(takeUntil(this.unSubs[6])).
+        pipe(takeUntil(this.unSubs[7])).
         subscribe((confirmRes: boolean | any[]) => {
           if (confirmRes) {
             const updateChanPayload = {
@@ -271,10 +295,6 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     }));
   }
 
-  applyFilter() {
-    this.channels.filter = this.selFilter.trim().toLowerCase();
-  }
-
   onChannelClick(selChannel: Channel, event: any) {
     this.store.dispatch(openAlert({
       payload: {
@@ -287,21 +307,51 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     }));
   }
 
-  loadChannelsTable(mychannels: Channel[]) {
-    mychannels.sort((a, b) => ((a.active === b.active) ? 0 : ((b.active) ? 1 : -1)));
-    this.channels = new MatTableDataSource<Channel>([...mychannels]);
-    this.channels.filterPredicate = (channel: Channel, fltr: string) => {
-      const newChannel = ((channel.active) ? 'active' : 'inactive') + (channel.chan_id ? channel.chan_id.toLowerCase() : '') +
-        (channel.remote_pubkey ? channel.remote_pubkey.toLowerCase() : '') + (channel.remote_alias ? channel.remote_alias.toLowerCase() : '') +
-        (channel.capacity ? channel.capacity : '') + (channel.local_balance ? channel.local_balance : '') +
-        (channel.remote_balance ? channel.remote_balance : '') + (channel.total_satoshis_sent ? channel.total_satoshis_sent : '') +
-        (channel.total_satoshis_received ? channel.total_satoshis_received : '') + (channel.commit_fee ? channel.commit_fee : '') +
-        (channel.private ? 'private' : 'public');
-      return newChannel.includes(fltr);
+  applyFilter() {
+    this.channels.filter = this.selFilter.trim().toLowerCase();
+  }
+
+  getLabel(column: string) {
+    const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : this.commonService.titleCase(column);
+  }
+
+  setFilterPredicate() {
+    this.channels.filterPredicate = (rowData: Channel, fltr: string) => {
+      let rowToFilter = '';
+      switch (this.selFilterBy) {
+        case 'all':
+          rowToFilter = ((rowData.active) ? 'active' : 'inactive') + (rowData.chan_id ? rowData.chan_id.toLowerCase() : '') +
+          (rowData.remote_pubkey ? rowData.remote_pubkey.toLowerCase() : '') + (rowData.remote_alias ? rowData.remote_alias.toLowerCase() : '') +
+          (rowData.capacity ? rowData.capacity : '') + (rowData.local_balance ? rowData.local_balance : '') +
+          (rowData.remote_balance ? rowData.remote_balance : '') + (rowData.total_satoshis_sent ? rowData.total_satoshis_sent : '') +
+          (rowData.total_satoshis_received ? rowData.total_satoshis_received : '') + (rowData.commit_fee ? rowData.commit_fee : '') +
+          (rowData.private ? 'private' : 'public');
+          break;
+
+        case 'active':
+          rowToFilter = rowData?.active ? 'active' : 'inactive';
+          break;
+
+        case 'private':
+          rowToFilter = rowData?.private ? 'private' : 'public';
+          break;
+
+        default:
+          rowToFilter = typeof rowData[this.selFilterBy] === 'undefined' ? '' : typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          break;
+      }
+      return this.selFilterBy === 'active' ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);
     };
+  }
+
+  loadChannelsTable(mychannels: Channel[]) {
+    this.channels = new MatTableDataSource<Channel>([...mychannels]);
     this.channels.sort = this.sort;
     this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+    this.channels.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.channels.paginator = this.paginator;
+    this.setFilterPredicate();
     this.applyFilter();
     this.logger.info(this.channels);
   }
@@ -352,13 +402,14 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     }
     channels.forEach((channel) => {
       channel.uptime_str = channel.uptime ? (this.decimalPipe.transform(Math.floor(+channel.uptime / maxDivider), '2.0-0') + ':' + this.decimalPipe.transform(Math.round((+channel.uptime % maxDivider) / minDivider), '2.0-0')) : '---';
+      channel.lifetime_str = channel.lifetime ? (this.decimalPipe.transform(Math.floor(+channel.lifetime / maxDivider), '2.0-0') + ':' + this.decimalPipe.transform(Math.round((+channel.lifetime % maxDivider) / minDivider), '2.0-0')) : '---';
     });
     return channels;
   }
 
   onLoopOut(selChannel: Channel) {
     this.loopService.getLoopOutTermsAndQuotes(this.targetConf).
-      pipe(takeUntil(this.unSubs[7])).
+      pipe(takeUntil(this.unSubs[8])).
       subscribe((response) => {
         this.store.dispatch(openAlert({
           payload: {

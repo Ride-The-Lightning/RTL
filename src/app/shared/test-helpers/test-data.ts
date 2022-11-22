@@ -697,7 +697,7 @@ export const mockResponseData = {
         channel_fee_max_proportional_thousandths: 1,
         compact_lease: '029a0032000100004e20'
       },
-      channelOpeningFee: 22165
+      channel_opening_fee: 22165
     },
     {
       nodeid: '023b485342839753dea66ff280df74e73570abc8160ad9a3456267dc5249e7a749',
@@ -720,7 +720,7 @@ export const mockResponseData = {
         channel_fee_max_proportional_thousandths: 1,
         compact_lease: '029a003200010000271003e8'
       },
-      channelOpeningFee: 12165
+      channel_opening_fee: 12165
     }
   ],
   setSelectedNodeSuccess: {
@@ -746,12 +746,13 @@ export const mockActionsData = {
       userPersona: 'MERCHANT',
       themeMode: 'NIGHT',
       themeColor: 'TEAL',
+      unannouncedChannels: false,
+      fiatConversion: true,
       currencyUnits: [
         'BTC',
         'SATS',
         'USD'
       ],
-      fiatConversion: true,
       bitcoindConfigPath: '',
       enableLogging: true,
       lnServerUrl: '',
@@ -759,7 +760,8 @@ export const mockActionsData = {
       boltzServerUrl: '',
       channelBackupPath: '',
       currencyUnit: '',
-      enableOffers: false
+      enableOffers: false,
+      enablePeerswap: false
     },
     authentication: {
       swapMacaroonPath: '',
@@ -773,28 +775,31 @@ export const mockActionsData = {
   resetChildrenStores: {
     userPersona: 'MERCHANT',
     channelBackupPath: '',
+    unannouncedChannels: false,
+    fiatConversion: true,
     selCurrencyUnit: '',
     currencyUnits: [
       'Sats',
       'BTC'
     ],
-    fiatConversion: true,
     lnImplementation: 'LND',
     swapServerUrl: '',
     boltzServerUrl: '',
-    enableOffers: false
+    enableOffers: false,
+    enablePeerswap: false
   },
   setSelectedNode: {
     settings: {
       userPersona: 'MERCHANT',
       themeMode: 'NIGHT',
       themeColor: 'TEAL',
+      unannouncedChannels: false,
+      fiatConversion: true,
       currencyUnits: [
         'BTC',
         'SATS',
         'USD'
       ],
-      fiatConversion: true,
       bitcoindConfigPath: '',
       enableLogging: true,
       lnServerUrl: '',
@@ -802,7 +807,8 @@ export const mockActionsData = {
       boltzServerUrl: '',
       channelBackupPath: '',
       currencyUnit: '',
-      enableOffers: false
+      enableOffers: false,
+      enablePeerswap: false
     },
     authentication: {
       swapMacaroonPath: '',
@@ -860,6 +866,7 @@ export const mockRTLStoreState = {
         userPersona: 'OPERATOR',
         themeMode: 'DAY',
         themeColor: 'TEAL',
+        unannouncedChannels: false,
         fiatConversion: true,
         bitcoindConfigPath: '../bitcoin.conf',
         enableLogging: true,
@@ -898,6 +905,7 @@ export const mockRTLStoreState = {
             themeMode: 'DAY',
             themeColor: 'TEAL',
             fiatConversion: true,
+            unannouncedChannels: false,
             bitcoindConfigPath: '../bitcoin.conf',
             enableLogging: true,
             lnServerUrl: 'https://localhost:8080',
@@ -925,6 +933,7 @@ export const mockRTLStoreState = {
             userPersona: 'MERCHANT',
             themeMode: 'DAY',
             themeColor: 'INDIGO',
+            unannouncedChannels: false,
             fiatConversion: true,
             bitcoindConfigPath: '',
             enableLogging: true,
@@ -953,6 +962,7 @@ export const mockRTLStoreState = {
             userPersona: 'OPERATOR',
             themeMode: 'NIGHT',
             themeColor: 'PURPLE',
+            unannouncedChannels: false,
             fiatConversion: true,
             bitcoindConfigPath: '',
             enableLogging: false,
@@ -995,13 +1005,14 @@ export const mockRTLStoreState = {
     nodeSettings: {
       userPersona: 'OPERATOR',
       channelBackupPath: '..\\\\RTL\\\\backup\\\\node-1',
+      unannouncedChannels: false,
+      fiatConversion: true,
       selCurrencyUnit: 'USD',
       currencyUnits: [
         'Sats',
         'BTC',
         'USD'
       ],
-      fiatConversion: true,
       lnImplementation: 'LND',
       swapServerUrl: 'https://localhost:8081',
       boltzServerUrl: 'https://localhost:9003'
@@ -48632,13 +48643,14 @@ export const mockRTLStoreState = {
     nodeSettings: {
       userPersona: 'OPERATOR',
       channelBackupPath: '..\\\\RTL\\\\backup\\\\node-1',
+      unannouncedChannels: false,
+      fiatConversion: true,
       selCurrencyUnit: 'USD',
       currencyUnits: [
         'Sats',
         'BTC',
         'USD'
       ],
-      fiatConversion: true,
       lnImplementation: 'LND',
       swapServerUrl: 'https://localhost:8081',
       boltzServerUrl: 'https://localhost:9003'
@@ -48665,13 +48677,14 @@ export const mockRTLStoreState = {
     nodeSettings: {
       userPersona: 'OPERATOR',
       channelBackupPath: '..\\\\RTL\\\\backup\\\\node-1',
+      unannouncedChannels: false,
+      fiatConversion: true,
       selCurrencyUnit: 'USD',
       currencyUnits: [
         'Sats',
         'BTC',
         'USD'
       ],
-      fiatConversion: true,
       lnImplementation: 'LND',
       swapServerUrl: 'https://localhost:8081',
       boltzServerUrl: 'https://localhost:9003'

@@ -73,19 +73,19 @@ export class BoltzServiceSettingsComponent implements OnInit, OnDestroy {
     this.store.dispatch(setChildNodeSettingsLND({
       payload: {
         userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
-        lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl, enableOffers: this.selNode.settings.enableOffers
+        unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl, enableOffers: this.selNode.settings.enableOffers
       }
     }));
     this.store.dispatch(setChildNodeSettingsCL({
       payload: {
         userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
-        lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl, enableOffers: this.selNode.settings.enableOffers
+        unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl, enableOffers: this.selNode.settings.enableOffers
       }
     }));
     this.store.dispatch(setChildNodeSettingsECL({
       payload: {
         userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
-        lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl, enableOffers: this.selNode.settings.enableOffers
+        unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl, enableOffers: this.selNode.settings.enableOffers
       }
     }));
   }

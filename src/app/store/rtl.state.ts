@@ -9,12 +9,12 @@ import { ECLState } from '../eclair/store/ecl.state';
 export interface RootState {
   apiURL: string;
   apisCallStatus: ApiCallsListRoot;
-  selNode: ConfigSettingsNode | null;
+  selNode: ConfigSettingsNode | any;
   appConfig: RTLConfiguration;
   nodeData: GetInfoRoot;
 }
 
-const initNodeSettings = { userPersona: 'OPERATOR', themeMode: 'DAY', themeColor: 'PURPLE', channelBackupPath: '', selCurrencyUnit: 'USD', fiatConversion: false, currencyUnits: ['Sats', 'BTC', 'USD'], bitcoindConfigPath: '', enableOffers: false };
+const initNodeSettings = { userPersona: 'OPERATOR', themeMode: 'DAY', themeColor: 'PURPLE', channelBackupPath: '', selCurrencyUnit: 'USD', unannouncedChannels: false, fiatConversion: false, currencyUnits: ['Sats', 'BTC', 'USD'], bitcoindConfigPath: '', enableOffers: false, enablePeerswap: false };
 const initNodeAuthentication = { configPath: '', swapMacaroonPath: '', boltzMacaroonPath: '' };
 
 export const initRootState: RootState = {

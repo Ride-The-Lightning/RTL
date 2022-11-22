@@ -73,10 +73,6 @@ export const listPayments = (req, res, next) => {
     options.url = req.session.selectedNode.ln_server_url + '/v1/pay/listPayments';
     request(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body.payments });
-        if (body && body.payments && body.payments.length > 0) {
-            body.payments = common.sortDescByKey(body.payments, 'created_at');
-        }
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Sorted Payments List Received', data: body.payments });
         res.status(200).json(groupBy(body.payments));
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Payments', 'List Payments Error', req.session.selectedNode);
@@ -108,19 +104,25 @@ export const postPayment = (req, res, next) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent', data: body });
         if (req.body.paymentType === 'OFFER') {
             if (req.body.saveToDB && req.body.bolt12) {
-                const offerToUpdate = { bolt12: req.body.bolt12, amountmSat: (req.body.zeroAmtOffer ? 0 : req.body.amount), title: req.body.title, lastUpdatedAt: new Date(Date.now()).getTime() };
+                const offerToUpdate = { bolt12: req.body.bolt12, amountMSat: (req.body.zeroAmtOffer ? 0 : req.body.amount), title: req.body.title, lastUpdatedAt: new Date(Date.now()).getTime() };
                 if (req.body.vendor) {
                     offerToUpdate['vendor'] = req.body.vendor;
                 }
                 if (req.body.description) {
                     offerToUpdate['description'] = req.body.description;
                 }
-                return databaseService.update(req.session.selectedNode, CollectionsEnum.OFFERS, offerToUpdate, CollectionFieldsEnum.BOLT12, req.body.bolt12).then((updatedOffer) => {
-                    logger.log({ level: 'DEBUG', fileName: 'Offer', msg: 'Offer Updated', data: updatedOffer });
-                    return res.status(201).json({ paymentResponse: body, saveToDBResponse: updatedOffer });
-                }).catch((errDB) => {
-                    logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Payments', msg: 'Offer DB update error', error: errDB });
-                    return res.status(201).json({ paymentResponse: body, saveToDBError: errDB });
+                // eslint-disable-next-line arrow-body-style
+                return databaseService.validateDocument(CollectionsEnum.OFFERS, offerToUpdate).then((validated) => {
+                    return databaseService.update(req.session.selectedNode, CollectionsEnum.OFFERS, offerToUpdate, CollectionFieldsEnum.BOLT12, req.body.bolt12).then((updatedOffer) => {
+                        logger.log({ level: 'DEBUG', fileName: 'Payments', msg: 'Offer Updated', data: updatedOffer });
+                        return res.status(201).json({ paymentResponse: body, saveToDBResponse: updatedOffer });
+                    }).catch((errDB) => {
+                        logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Payments', msg: 'Offer DB update error', error: errDB });
+                        return res.status(201).json({ paymentResponse: body, saveToDBError: errDB });
+                    });
+                }).catch((errValidation) => {
+                    logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Payments', msg: 'Offer DB validation error', error: errValidation });
+                    return res.status(201).json({ paymentResponse: body, saveToDBError: errValidation });
                 });
             }
             else {

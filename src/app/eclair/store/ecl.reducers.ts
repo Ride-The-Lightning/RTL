@@ -1,8 +1,12 @@
 import { createReducer, on } from '@ngrx/store';
 
 import { initECLState } from './ecl.state';
-import { addInvoice, removeChannel, removePeer, resetECLStore, setActiveChannels, setChannelsStatus, setChildNodeSettingsECL, setFees, setInactiveChannels, setInfo, setInvoices, setLightningBalance, setOnchainBalance, setPayments, setPeers, setPendingChannels, setTransactions, updateECLAPICallStatus, updateChannelState, updateInvoice, updateRelayedPayment } from './ecl.actions';
+import { addInvoice, removeChannel, removePeer, resetECLStore, setActiveChannels, setChannelsStatus, setChildNodeSettingsECL,
+  setFees, setInactiveChannels, setInfo, setInvoices, setLightningBalance, setOnchainBalance, setPayments, setPeers, setPendingChannels,
+  setTransactions, updateECLAPICallStatus, updateChannelState, updateInvoice, updateRelayedPayment, setPageSettings } from './ecl.actions';
 import { Channel, PaymentReceived, PaymentRelayed } from '../../shared/models/eclModels';
+import { PageSettings } from '../../shared/models/pageSettings';
+import { ECL_DEFAULT_PAGE_SETTINGS } from '../../shared/services/consts-enums-functions';
 
 export const ECLReducer = createReducer(initECLState,
   on(updateECLAPICallStatus, (state, { payload }) => {
@@ -171,7 +175,7 @@ export const ECLReducer = createReducer(initECLState,
     updatedPayload.amountIn = Math.round((payload.amountIn || 0) / 1000);
     updatedPayload.amountOut = Math.round((payload.amountOut || 0) / 1000);
     modifiedPayments.relayed?.unshift(updatedPayload);
-    const feeSats = (payload.amountIn ||0) - (payload.amountOut || 0);
+    const feeSats = (payload.amountIn || 0) - (payload.amountOut || 0);
     const modifiedLightningBalance = { localBalance: (state.lightningBalance.localBalance + feeSats), remoteBalance: (state.lightningBalance.remoteBalance - feeSats) };
     const modifiedChannelStatus = state.channelsStatus;
     if (modifiedChannelStatus.active) {
@@ -211,6 +215,31 @@ export const ECLReducer = createReducer(initECLState,
       channelStatus: modifiedChannelStatus,
       fees: modifiedFees,
       activeChannels: modifiedActiveChannels
+    };
+  }),
+  on(setPageSettings, (state, { payload }) => {
+    const newPageSettings: PageSettings[] = [];
+    ECL_DEFAULT_PAGE_SETTINGS.forEach((defaultPage) => {
+      const pageSetting = payload && payload.length && payload.length > 0 ? payload.find((p) => p.pageId === defaultPage.pageId) : null;
+      if (pageSetting) {
+        const tablesSettings = JSON.parse(JSON.stringify(pageSetting.tables));
+        pageSetting.tables = []; // To maintain settings order
+        defaultPage.tables.forEach((defaultTable) => {
+          const tableSetting = tablesSettings.find((t) => t.tableId === defaultTable.tableId) || null;
+          if (tableSetting) {
+            pageSetting.tables.push(tableSetting);
+          } else {
+            pageSetting.tables.push(JSON.parse(JSON.stringify(defaultTable)));
+          }
+        });
+        newPageSettings.push(pageSetting);
+      } else {
+        newPageSettings.push(JSON.parse(JSON.stringify(defaultPage)));
+      }
+    });
+    return {
+      ...state,
+      pageSettings: newPageSettings
     };
   })
 );

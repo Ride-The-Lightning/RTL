@@ -66,12 +66,13 @@ export class ConfigService {
                             channelBackupPath: channelBackupPath,
                             logLevel: 'ERROR',
                             lnServerUrl: 'https://localhost:8080',
-                            fiatConversion: false
+                            fiatConversion: false,
+                            unannouncedChannels: false
                         }
                     }
                 ]
             };
-            if (+process.env.RTL_SSO === 0) {
+            if (+process.env.RTL_SSO === 0 || configData.SSO.rtlSSO === 0) {
                 configData['multiPass'] = 'password';
             }
             return configData;
@@ -211,6 +212,7 @@ export class ConfigService {
                     this.common.nodes[idx].user_persona = node.Settings.userPersona ? node.Settings.userPersona : 'MERCHANT';
                     this.common.nodes[idx].theme_mode = node.Settings.themeMode ? node.Settings.themeMode : 'DAY';
                     this.common.nodes[idx].theme_color = node.Settings.themeColor ? node.Settings.themeColor : 'PURPLE';
+                    this.common.nodes[idx].unannounced_channels = node.Settings.unannouncedChannels ? !!node.Settings.unannouncedChannels : false;
                     this.common.nodes[idx].log_level = node.Settings.logLevel ? node.Settings.logLevel : 'ERROR';
                     this.common.nodes[idx].fiat_conversion = node.Settings.fiatConversion ? !!node.Settings.fiatConversion : false;
                     if (this.common.nodes[idx].fiat_conversion) {
@@ -241,6 +243,7 @@ export class ConfigService {
                         this.common.nodes[idx].boltz_macaroon_path = '';
                     }
                     this.common.nodes[idx].enable_offers = process.env.ENABLE_OFFERS ? process.env.ENABLE_OFFERS : (node.Settings.enableOffers) ? node.Settings.enableOffers : false;
+                    this.common.nodes[idx].enable_peerswap = process.env.ENABLE_PEERSWAP ? process.env.ENABLE_PEERSWAP : (node.Settings.enablePeerswap) ? node.Settings.enablePeerswap : false;
                     this.common.nodes[idx].bitcoind_config_path = process.env.BITCOIND_CONFIG_PATH ? process.env.BITCOIND_CONFIG_PATH : (node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
                     this.common.nodes[idx].channel_backup_path = process.env.CHANNEL_BACKUP_PATH ? process.env.CHANNEL_BACKUP_PATH : (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : this.common.rtl_conf_file_path + sep + 'channels-backup' + sep + 'node-' + node.index;
                     try {

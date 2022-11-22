@@ -48,7 +48,7 @@ export class OnChainComponent implements OnInit, OnDestroy {
       });
     this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[2])).
       subscribe((bcBalanceSelector: { blockchainBalance: BlockchainBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.balances = [{ title: 'Total Balance', dataValue: bcBalanceSelector.blockchainBalance.total_balance || 0 }, { title: 'Confirmed', dataValue: (bcBalanceSelector.blockchainBalance.confirmed_balance || 0) }, { title: 'Unconfirmed', dataValue: (bcBalanceSelector.blockchainBalance.unconfirmed_balance || 0)}];
+        this.balances = [{ title: 'Total Balance', dataValue: bcBalanceSelector.blockchainBalance.total_balance || 0 }, { title: 'Confirmed', dataValue: (bcBalanceSelector.blockchainBalance.confirmed_balance || 0) }, { title: 'Unconfirmed', dataValue: (bcBalanceSelector.blockchainBalance.unconfirmed_balance || 0) }];
       });
   }
 

@@ -8,6 +8,7 @@ import { BitcoinConfigComponent } from './shared/components/settings/bitcoin-con
 import { NodeConfigComponent } from './shared/components/node-config/node-config.component';
 import { LNPConfigComponent } from './shared/components/node-config/lnp-config/lnp-config.component';
 import { NodeSettingsComponent } from './shared/components/node-config/node-settings/node-settings.component';
+import { PageSettingsComponent } from './shared/components/node-config/page-settings/page-settings.component';
 import { ServicesSettingsComponent } from './shared/components/node-config/services-settings/services-settings.component';
 import { LoopServiceSettingsComponent } from './shared/components/node-config/services-settings/loop-service-settings/loop-service-settings.component';
 import { BoltzServiceSettingsComponent } from './shared/components/node-config/services-settings/boltz-service-settings/boltz-service-settings.component';
@@ -36,8 +37,9 @@ export const routes: Routes = [
   },
   {
     path: 'config', component: NodeConfigComponent, canActivate: [AuthGuard], children: [
-      { path: '', pathMatch: 'full', redirectTo: 'layout' },
-      { path: 'layout', component: NodeSettingsComponent, canActivate: [AuthGuard] },
+      { path: '', pathMatch: 'full', redirectTo: 'nodesettings' },
+      { path: 'nodesettings', component: NodeSettingsComponent, canActivate: [AuthGuard] },
+      { path: 'pglayout', component: PageSettingsComponent, canActivate: [AuthGuard] },
       {
         path: 'services', component: ServicesSettingsComponent, canActivate: [AuthGuard], children: [
           { path: '', pathMatch: 'full', redirectTo: 'loop' },
@@ -65,4 +67,4 @@ export const routes: Routes = [
 ];
 
 // Export const routing: ModuleWithProviders<RouterModule> = RouterModule.forRoot(routes, { enableTracing: true });
-export const routing: ModuleWithProviders<RouterModule> = RouterModule.forRoot(routes);
+export const routing: ModuleWithProviders<RouterModule> = RouterModule.forRoot(routes, { scrollPositionRestoration: 'enabled' });

@@ -107,15 +107,14 @@ export interface Channel {
   nodeId?: string;
   channelId?: string;
   state?: string;
-  channelFlags?: number;
   toLocal?: number;
   toRemote?: number;
   shortChannelId?: string;
+  announceChannel?: boolean;
   isFunder?: boolean;
   buried?: boolean;
   feeBaseMsat?: number;
-  feeRatePerKwLocal?: number;
-  feeRatePerKwRemote?: number;
+  feeRatePerKw?: number;
   feeProportionalMillionths?: number;
   balancedness?: number;
 }

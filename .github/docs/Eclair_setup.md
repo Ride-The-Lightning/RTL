@@ -77,6 +77,7 @@ Ensure that the follow values are correct per your config:
         "bitcoindConfigPath": "",
         "logLevel": "INFO",
         "fiatConversion": false,
+        "unannouncedChannels": false,
         "lnServerUrl": "http://<eclair api server ip address>:port"
       }
     }

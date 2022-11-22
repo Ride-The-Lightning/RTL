@@ -15,8 +15,9 @@ export class Settings {
     public userPersona: string,
     public themeMode: string,
     public themeColor: string,
-    public currencyUnits: Array<string>,
+    public unannouncedChannels: boolean,
     public fiatConversion: boolean,
+    public currencyUnits: Array<string>,
     public bitcoindConfigPath?: string,
     public logLevel?: string,
     public lnServerUrl?: string,
@@ -24,7 +25,8 @@ export class Settings {
     public boltzServerUrl?: string,
     public channelBackupPath?: string,
     public currencyUnit?: string,
-    public enableOffers?: boolean
+    public enableOffers?: boolean,
+    public enablePeerswap?: boolean
   ) { }
 
 }
@@ -80,10 +82,12 @@ export interface SelNodeChild {
   selCurrencyUnit?: string;
   currencyUnits?: string[];
   fiatConversion?: boolean;
+  unannouncedChannels?: boolean;
   lnImplementation?: string;
   swapServerUrl?: string;
   boltzServerUrl?: string;
   enableOffers?: boolean;
+  enablePeerswap?: boolean;
 }
 
 export class HelpTopic {

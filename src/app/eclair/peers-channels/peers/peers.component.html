@@ -8,54 +8,64 @@
         <fa-icon [icon]="faUsers" class="page-title-img mr-1"></fa-icon>
         <span class="page-title">Peers</span>
       </div>
-      <mat-form-field fxFlex="30">
-        <div fxLayout="row" fxLayoutAlign="start start">
-          <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" placeholder="Filter">
-        </div>
-      </mat-form-field>
+      <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
+        <mat-form-field fxFlex="49">
+          <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()" name="filterBy">
+            <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field fxFlex="49">
+          <input matInput [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()" name="filter" placeholder="Filter">
+        </mat-form-field>
+      </div>
     </div>
-    <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+    <div [perfectScrollbar] fxLayout="column" fxFlex="100" class="table-container">
       <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-      <table mat-table #table fxFlex="100" [dataSource]="peers" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
-        <ng-container matColumnDef="nodeId">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-          <td mat-cell *matCellDef="let peer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">
-            {{peer?.nodeId}}
+      <table mat-table #table fxFlex="100" [dataSource]="peers" matSort [ngClass]="{'error-border': errorMessage !== ''}">
+        <ng-container matColumnDef="state">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" matTooltip="State"></th>
+          <td mat-cell *matCellDef="let peer">
+            <span *ngIf="peer.state === 'CONNECTED'" class="dot green" matTooltip="Connected" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+            <span *ngIf="peer.state === 'DISCONNECTED'" class="dot red" matTooltip="Disconnected" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
           </td>
         </ng-container>
         <ng-container matColumnDef="alias">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-3"> Alias </th>
-          <td mat-cell *matCellDef="let peer" class="px-3" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '25rem'}">
-            <span *ngIf="peer.state === 'CONNECTED'" class="dot green" matTooltip="Connected" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-            <span *ngIf="peer.state === 'DISCONNECTED'" class="dot red" matTooltip="Disconnected" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-            {{peer?.alias}}
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Alias</th>
+          <td mat-cell *matCellDef="let peer">
+            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <span class="ellipsis-child">{{peer?.alias}}</span>
+            </div>
           </td>
         </ng-container>
-        <ng-container matColumnDef="state">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> State </th>
-          <td mat-cell *matCellDef="let peer"> {{peer?.state}} </td>
+        <ng-container matColumnDef="nodeId">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Node ID</th>
+          <td mat-cell *matCellDef="let peer">
+            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <span class="ellipsis-child">{{peer?.nodeId}}</span>
+            </div>
+          </td>
         </ng-container>
         <ng-container matColumnDef="address">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Network Address </th>
-          <td mat-cell *matCellDef="let peer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Network Address</th>
+          <td mat-cell *matCellDef="let peer">
             {{peer?.address}}
           </td>
         </ng-container>
         <ng-container matColumnDef="channels">
-          <th mat-header-cell class="px-2" *matHeaderCellDef mat-sort-header> Channels </th>
-          <td mat-cell class="px-2" *matCellDef="let peer"> {{peer?.channels}} </td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Channels</th>
+          <td mat-cell *matCellDef="let peer">{{peer?.channels}}</td>
         </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="px-3">
-            <div class="bordered-box table-actions-select">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="1" class="mr-0">
                 <mat-select-trigger></mat-select-trigger>
                 <mat-option (click)="onDownloadCSV()">Download CSV</mat-option>
               </mat-select>
             </div>
-          </th>
-          <td mat-cell *matCellDef="let peer" fxLayoutAlign="end center" class="px-3">
-            <div class="bordered-box table-actions-select">
+         </th>
+          <td mat-cell *matCellDef="let peer" fxLayoutAlign="end center">
+            <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="1" class="mr-0">
                 <mat-select-trigger></mat-select-trigger>
                 <mat-option (click)="onPeerClick(peer, $event)">View Info</mat-option>
@@ -74,7 +84,7 @@
           </td>
         </ng-container>
         <tr mat-footer-row *matFooterRowDef="['no_peer']" [ngClass]="{'display-none': peers?.data && peers?.data?.length>0}"></tr>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
     </div>

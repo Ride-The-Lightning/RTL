@@ -13,6 +13,8 @@ import { APICallStatusEnum, LNDActions, TRANS_TYPES } from '../../../../shared/s
 
 import { RTLState } from '../../../../store/rtl.state';
 import { saveNewChannel } from '../../../store/lnd.actions';
+import { SelNodeChild } from '../../../../shared/models/RTLconfig';
+import { lndNodeSettings } from '../../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-open-channel',
@@ -23,6 +25,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
 
   @ViewChild('form', { static: true }) form: any;
   public selectedPeer = new FormControl();
+  public selNode: SelNodeChild | null = {};
   public amount = new FormControl();
   public faExclamationTriangle = faExclamationTriangle;
   public alertTitle: string;
@@ -41,7 +44,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   public spendUnconfirmed = false;
   public transTypeValue = '';
   public transTypes = TRANS_TYPES;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<OpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<RTLState>, private actions: Actions) { }
 
@@ -50,16 +53,21 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
       this.information = this.data.message.information;
       this.totalBalance = this.data.message.balance;
       this.peer = this.data.message.peer || null;
-      this.peers = this.data.message.peers || [];  
+      this.peers = this.data.message.peers || [];
     } else {
       this.information = {};
       this.totalBalance = 0;
       this.peer = null;
-      this.peers = [];  
+      this.peers = [];
     }
     this.alertTitle = this.data.alertTitle || 'Alert';
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeSettings: SelNodeChild | null) => {
+        this.selNode = nodeSettings;
+        this.isPrivate = !!nodeSettings?.unannouncedChannels;
+      });
     this.actions.pipe(
-      takeUntil(this.unSubs[0]),
+      takeUntil(this.unSubs[1]),
       filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.FETCH_CHANNELS_LND)).
       subscribe((action: any) => {
         if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewChannel') {
@@ -77,7 +85,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
       return ((x < y) ? -1 : ((x > y) ? 1 : 0));
     });
     this.filteredPeers = this.selectedPeer.valueChanges.pipe(
-      takeUntil(this.unSubs[1]), startWith(''),
+      takeUntil(this.unSubs[2]), startWith(''),
       map((peer) => (typeof peer === 'string' ? peer : peer.alias ? peer.alias : peer.pub_key)),
       map((alias) => (alias ? this.filterPeers(alias) : this.sortedPeers.slice()))
     );
@@ -114,7 +122,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   resetData() {
     this.selectedPeer.setValue('');
     this.fundingAmount = null;
-    this.isPrivate = false;
+    this.isPrivate = !!this.selNode?.unannouncedChannels;
     this.spendUnconfirmed = false;
     this.selTransType = '0';
     this.transTypeValue = '';
@@ -137,7 +145,9 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
 
   onAdvancedPanelToggle(isClosed: boolean) {
     if (isClosed) {
-      this.advancedTitle = 'Advanced Options | ' + (this.selTransType === '1' ? 'Target Confirmation Blocks: ' : this.selTransType === '2' ? 'Fee (Sats/vByte): ' : 'Default') + ((this.selTransType === '1' || this.selTransType === '2') ? this.transTypeValue : '') + ' | Spend Unconfirmed Output: ' + (this.spendUnconfirmed ? 'Yes' : 'No');
+      this.advancedTitle = 'Advanced Options | ' + (this.selTransType === '1' ? 'Target Confirmation Blocks: ' : this.selTransType === '2' ?
+        'Fee (Sats/vByte): ' : 'Default') + ((this.selTransType === '1' || this.selTransType === '2') ? this.transTypeValue : '') +
+        ' | Spend Unconfirmed Output: ' + (this.spendUnconfirmed ? 'Yes' : 'No');
     } else {
       this.advancedTitle = 'Advanced Options';
     }

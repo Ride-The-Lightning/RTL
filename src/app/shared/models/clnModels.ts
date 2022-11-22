@@ -103,7 +103,7 @@ export interface Offer {
 export interface OfferBookmark {
   lastUpdatedAt?: string;
   bolt12?: string;
-  amountmSat?: number;
+  amountMSat?: number;
   title?: string;
   vendor?: string;
   description?: string;
@@ -277,8 +277,11 @@ export interface LocalFailedEvent {
   in_channel_alias?: string;
   in_msatoshi?: number;
   in_msat?: string;
+  out_channel?: string;
+  out_channel_alias?: string;
   status?: string;
   received_time?: number;
+  resolved_time?: number;
   failcode?: number;
   failreason?: string;
 }
@@ -318,7 +321,8 @@ export interface Channel {
   their_channel_reserve_satoshis?: string;
   our_channel_reserve_satoshis?: string;
   spendable_msatoshi?: string;
-  balancedness?: number; // Between -1 to +1
+  direction?: number;
+  balancedness?: number; // Between 0-1-0
 }
 
 export interface ChannelEdge {
@@ -346,9 +350,9 @@ export interface LookupNode {
   last_timestamp?: number;
   address_types?: string[];
   features?: string;
-  channelCount?: number;
-  nodeCapacity?: number;
-  channelOpeningFee?: number;
+  channel_count?: number;
+  node_capacity?: number;
+  channel_opening_fee?: number;
   addresses?: Address[];
   option_will_fund?: {
     lease_fee_base_msat?: number;
@@ -391,8 +395,9 @@ export interface UTXO {
   value?: number;
   status?: string;
   blockheight?: string;
+  scriptpubkey?: string;
   address?: string;
-  amount_msat?: string;
+  reserved?: boolean;
 }
 
 export interface RoutingPeer {

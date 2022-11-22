@@ -46,9 +46,6 @@ export const getAllForwardingEvents = (req, start, end, offset, caller, callback
         }
         if (!body.last_offset_index || body.last_offset_index < offset + num_max_events) {
             responseData[caller].last_offset_index = body.last_offset_index ? body.last_offset_index : 0;
-            if (responseData[caller].forwarding_events) {
-                responseData[caller].forwarding_events = common.sortDescByKey(responseData[caller].forwarding_events, 'timestamp');
-            }
             return callback(responseData[caller]);
         }
         else {

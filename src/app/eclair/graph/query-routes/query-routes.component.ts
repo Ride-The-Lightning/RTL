@@ -26,8 +26,7 @@ export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
   public nodeId = '';
   public amount = 0;
   public qrHops: Array<any> = [];
-  public flgSticky = false;
-  public displayedColumns: any;
+  public displayedColumns = ['alias', 'nodeId', 'actions'];
   public flgLoading: Array<Boolean | 'error'> = [false]; // 0: peers
   public faRoute = faRoute;
   public faExclamationTriangle = faExclamationTriangle;
@@ -37,19 +36,6 @@ export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
 
   constructor(private store: Store<RTLState>, private eclEffects: ECLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
-    if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
-      this.displayedColumns = ['alias', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
-      this.displayedColumns = ['alias', 'nodeId', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
-      this.displayedColumns = ['alias', 'nodeId', 'actions'];
-    } else {
-      this.flgSticky = true;
-      this.displayedColumns = ['alias', 'nodeId', 'actions'];
-    }
   }
 
   ngOnInit() {

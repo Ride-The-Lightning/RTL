@@ -175,12 +175,14 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
                 this.selectedChannelCtrl.disable();
               }
               this.zeroAmtInvoice = false;
-              if (this.selNode.fiatConversion) {
+              if (this.selNode && this.selNode.fiatConversion) {
                 this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : 'BTC'), this.selNode.fiatConversion).
                   pipe(takeUntil(this.unSubs[4])).
                   subscribe({
                     next: (data) => {
-                      this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats (' + data.symbol + ' ' + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
+                      this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) +
+                       ' Sats (' + data.symbol + ' ' + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' +
+                       (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
                     }, error: (error) => {
                       this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None') + '. Unable to convert currency.';
                     }

@@ -13,6 +13,8 @@ import { ECLOpenChannelAlert } from '../../../../shared/models/alertData';
 
 import { RTLState } from '../../../../store/rtl.state';
 import { saveNewChannel } from '../../../store/ecl.actions';
+import { SelNodeChild } from '../../../../shared/models/RTLconfig';
+import { eclNodeSettings } from '../../../store/ecl.selector';
 
 @Component({
   selector: 'rtl-ecl-open-channel',
@@ -22,6 +24,7 @@ import { saveNewChannel } from '../../../store/ecl.actions';
 export class ECLOpenChannelComponent implements OnInit, OnDestroy {
 
   @ViewChild('form', { static: true }) form: any;
+  public selNode: SelNodeChild | null = {};
   public selectedPeer = new FormControl();
   public faExclamationTriangle = faExclamationTriangle;
   public alertTitle: string;
@@ -36,8 +39,8 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
   public fundingAmount: number | null;
   public selectedPubkey = '';
   public isPrivate = false;
-  public feeRate : number | null = null;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  public feeRate: number | null = null;
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<ECLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLOpenChannelAlert, private store: Store<RTLState>, private actions: Actions) { }
 
@@ -46,16 +49,21 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
       this.information = this.data.message.information;
       this.totalBalance = this.data.message.balance;
       this.peer = this.data.message.peer || null;
-      this.peers = this.data.message.peers || [];  
+      this.peers = this.data.message.peers || [];
     } else {
       this.information = {};
       this.totalBalance = 0;
       this.peer = null;
-      this.peers = [];  
+      this.peers = [];
     }
     this.alertTitle = this.data.alertTitle || 'Alert';
+    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeSettings: SelNodeChild | null) => {
+        this.selNode = nodeSettings;
+        this.isPrivate = !!nodeSettings?.unannouncedChannels;
+      });
     this.actions.pipe(
-      takeUntil(this.unSubs[0]),
+      takeUntil(this.unSubs[1]),
       filter((action) => action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL || action.type === ECLActions.FETCH_CHANNELS_ECL)).
       subscribe((action: any) => {
         if (action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewChannel') {
@@ -73,7 +81,7 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
       return ((x < y) ? -1 : ((x > y) ? 1 : 0));
     });
     this.filteredPeers = this.selectedPeer.valueChanges.pipe(
-      takeUntil(this.unSubs[1]), startWith(''),
+      takeUntil(this.unSubs[2]), startWith(''),
       map((peer) => (typeof peer === 'string' ? peer : peer.alias ? peer.alias : peer.nodeId)),
       map((alias) => (alias ? this.filterPeers(alias) : this.sortedPeers.slice()))
     );
@@ -111,17 +119,18 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
     this.feeRate = null;
     this.selectedPeer.setValue('');
     this.fundingAmount = null;
-    this.isPrivate = false;
+    this.isPrivate = !!this.selNode?.unannouncedChannels;
     this.channelConnectionError = '';
     this.advancedTitle = 'Advanced Options';
     this.form.resetForm();
   }
 
   onAdvancedPanelToggle(isClosed: boolean) {
+    this.advancedTitle = 'Advanced Options';
     if (isClosed) {
-      this.advancedTitle = (this.feeRate && this.feeRate > 0) ? 'Advanced Options | Fee (Sats/vByte): ' + this.feeRate : 'Advanced Options';
-    } else {
-      this.advancedTitle = 'Advanced Options';
+      if (this.feeRate && this.feeRate > 0) {
+        this.advancedTitle = this.advancedTitle + ' | Fee (Sats/vByte): ' + this.feeRate;
+      }
     }
   }
 

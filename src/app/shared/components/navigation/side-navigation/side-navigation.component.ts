@@ -35,8 +35,8 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   faEye = faEye;
   public appConfig: RTLConfiguration;
   public selConfigNodeIndex: Number;
-  public selNode: ConfigSettingsNode;
-  public settings: Settings;
+  public selNode: ConfigSettingsNode | any;
+  public settings: Settings | null;
   public version = '';
   public information: GetInfoRoot = {};
   public informationChain: GetInfoChain = {};
@@ -74,7 +74,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
       this.appConfig = appConfig;
     });
     this.store.select(rootSelNodeAndNodeData).pipe(takeUntil(this.unSubs[1])).
-      subscribe((rootData: { nodeDate: GetInfoRoot, selNode: ConfigSettingsNode }) => {
+      subscribe((rootData: { nodeDate: GetInfoRoot, selNode: ConfigSettingsNode | null }) => {
         this.information = rootData.nodeDate;
         if (this.information.identity_pubkey) {
           if (this.information.chains && typeof this.information.chains[0] === 'string') {
@@ -94,8 +94,8 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
           this.smallScreen = true;
         }
         this.selNode = rootData.selNode;
-        this.settings = this.selNode.settings;
-        this.selConfigNodeIndex = +(rootData.selNode.index || 0);
+        this.settings = this.selNode?.settings || null;
+        this.selConfigNodeIndex = +(rootData.selNode?.index || 0);
         if (this.selNode && this.selNode.lnImplementation) {
           this.filterSideMenuNodes();
         }
@@ -143,7 +143,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   }
 
   filterSideMenuNodes() {
-    switch (this.selNode.lnImplementation?.toUpperCase()) {
+    switch (this.selNode?.lnImplementation?.toUpperCase()) {
       case 'CLN':
         this.loadCLNMenu();
         break;
@@ -163,12 +163,12 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.LNDChildren));
     this.navMenus.data = clonedMenu?.filter((navMenuData: any) => {
       if (navMenuData.children && navMenuData.children.length) {
-        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona) && navMenuChild.link !== '/services/loop' && navMenuChild.link !== '/services/boltz') ||
-          (navMenuChild.link === '/services/loop' && this.settings.swapServerUrl && this.settings.swapServerUrl.trim() !== '') ||
-          (navMenuChild.link === '/services/boltz' && this.settings.boltzServerUrl && this.settings.boltzServerUrl.trim() !== ''));
+        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings?.userPersona) && navMenuChild.link !== '/services/loop' && navMenuChild.link !== '/services/boltz') ||
+          (navMenuChild.link === '/services/loop' && this.settings?.swapServerUrl && this.settings.swapServerUrl.trim() !== '') ||
+          (navMenuChild.link === '/services/boltz' && this.settings?.boltzServerUrl && this.settings.boltzServerUrl.trim() !== ''));
         return navMenuData.children.length > 0;
       }
-      return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings.userPersona;
+      return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings?.userPersona;
     });
   }
 
@@ -177,10 +177,11 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.CLNChildren));
     this.navMenus.data = clonedMenu?.filter((navMenuData: any) => {
       if (navMenuData.children && navMenuData.children.length) {
-        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona) && navMenuChild.link !== '/cln/messages') ||
-          (navMenuChild.link === '/cln/messages' && this.information.api_version && this.commonService.isVersionCompatible(this.information.api_version, '0.2.2')));
+        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings?.userPersona) && navMenuChild.link !== '/services/peerswap') ||
+        (navMenuChild.link === '/services/peerswap' && this.settings?.enablePeerswap));
+        return navMenuData.children.length > 0;
       }
-      return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings.userPersona;
+      return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings?.userPersona;
     });
   }
 

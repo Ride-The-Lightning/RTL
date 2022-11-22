@@ -9,7 +9,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { GetInfo, PayRequest, PaymentSent, PaymentSentPart, Payments } from '../../../shared/models/eclModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, SortOrderEnum, ECL_DEFAULT_PAGE_SETTINGS, ECL_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -23,7 +23,9 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 import { sendPayment } from '../../store/ecl.actions';
-import { eclNodeInformation, eclnNodeSettings, payments } from '../../store/ecl.selector';
+import { eclNodeInformation, eclNodeSettings, eclPageSettings, payments } from '../../store/ecl.selector';
+import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { CamelCaseWithSpacesPipe } from '../../../shared/pipes/app.pipe';
 
 @Component({
   selector: 'rtl-ecl-lightning-payments',
@@ -39,18 +41,22 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   @ViewChild('sendPaymentForm', { static: false }) form;
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public nodePageDefs = ECL_PAGE_DEFS;
+  public selFilterBy = 'all';
+  public colWidth = '20rem';
+  public PAGE_ID = 'transactions';
+  public tableSetting: TableSetting = { tableId: 'payments', recordsPerPage: PAGE_SIZE, sortBy: 'firstPartTimestamp', sortOrder: SortOrderEnum.DESCENDING };
   public faHistory = faHistory;
   public newlyAddedPayment = '';
   public selNode: SelNodeChild | null = {};
   public information: GetInfo = {};
-  public payments: any;
+  public payments: any = new MatTableDataSource<PaymentSent>([]);
   public paymentJSONArr: PaymentSent[] = [];
   public paymentDecoded: PayRequest = {};
   public displayedColumns: any[] = [];
   public partColumns: string[] = [];
   public paymentRequest = '';
   public paymentDecodedHint = '';
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -59,31 +65,14 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private dataService: DataService, private datePipe: DatePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private dataService: DataService, private datePipe: DatePipe, private camelCaseWithSpaces: CamelCaseWithSpacesPipe) {
     this.screenSize = this.commonService.getScreenSize();
-    if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
-      this.displayedColumns = ['firstPartTimestamp', 'actions'];
-      this.partColumns = ['groupTotal', 'groupAction'];
-    } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
-      this.displayedColumns = ['firstPartTimestamp', 'recipientAmount', 'actions'];
-      this.partColumns = ['groupTotal', 'groupAmount', 'groupAction'];
-    } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
-      this.displayedColumns = ['firstPartTimestamp', 'id', 'recipientAmount', 'actions'];
-      this.partColumns = ['groupTotal', 'groupId', 'groupAmount', 'groupAction'];
-    } else {
-      this.flgSticky = true;
-      this.displayedColumns = ['firstPartTimestamp', 'id', 'recipientNodeAlias', 'recipientAmount', 'actions'];
-      this.partColumns = ['groupTotal', 'groupId', 'groupChannelAlias', 'groupAmount', 'groupAction'];
-    }
   }
 
   ngOnInit() {
-    this.store.select(eclnNodeSettings).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
       subscribe((nodeSettings: SelNodeChild | null) => {
         this.selNode = nodeSettings;
       });
@@ -91,7 +80,27 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       subscribe((nodeInfo: GetInfo) => {
         this.information = nodeInfo;
       });
-    this.store.select(payments).pipe(takeUntil(this.unSubs[2])).
+    this.store.select(eclPageSettings).pipe(takeUntil(this.unSubs[2])).
+      subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessage = '';
+        this.apiCallStatus = settings.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = this.apiCallStatus.message || '';
+        }
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || ECL_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
+        } else {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
+        }
+        this.displayedColumns.push('actions');
+        this.partColumns = [];
+        this.displayedColumns.map((col) => this.partColumns.push('group_' + col));
+        this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.logger.info(this.displayedColumns);
+      });
+    this.store.select(payments).pipe(takeUntil(this.unSubs[3])).
       subscribe((paymentsSeletor: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = paymentsSeletor.apiCallStatus;
@@ -99,27 +108,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.paymentJSONArr = (paymentsSeletor.payments && paymentsSeletor.payments.sent && paymentsSeletor.payments.sent.length > 0) ? paymentsSeletor.payments.sent : [];
-        // FOR MPP TESTING START
-        // If (this.paymentJSONArr.length > 0) {
-        //   This.paymentJSONArr[3].parts.push({
-        //     Id: '34b609a5-f0f1-474e-9e5d-d7783b48702d', amount: 26000, feesPaid: 22, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c87', toChannelAlias: 'ion.radar.tech1', timestamp: 1596389827075
-        //   });
-        //   This.paymentJSONArr[3].parts.push({
-        //     Id: '35b609a5-f0f1-474e-9e5d-d7783b48702e', amount: 27000, feesPaid: 20, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c86', toChannelAlias: 'ion.radar.tech2', timestamp: 1596389817075
-        //   });
-        //   This.paymentJSONArr[5].parts.push({
-        //     Id: '38b609a5-f0f1-474e-9e5d-d7783b48702h', amount: 31000, feesPaid: 18, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c85', toChannelAlias: 'ion.radar.tech3', timestamp: 1596389887075
-        //   });
-        //   This.paymentJSONArr[5].parts.push({
-        //     Id: '36b609a5-f0f1-474e-9e5d-d7783b48702f', amount: 28000, feesPaid: 13, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c84', toChannelAlias: 'ion.radar.tech4', timestamp: 1596389687075
-        //   });
-        //   This.paymentJSONArr[5].parts.push({
-        //     Id: '37b609a5-f0f1-474e-9e5d-d7783b48702g', amount: 25000, feesPaid: 19, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c83', toChannelAlias: 'ion.radar.tech5', timestamp: 1596389707075
-        //   });
-        // }
-        // This.paymentJSONArr = this.paymentJSONArr.splice(2, 5);
-        // FOR MPP TESTING END
-        if(this.paymentJSONArr.length > 0 && this.sort && this.paginator) {
+        if (this.paymentJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadPaymentsTable(this.paymentJSONArr);
         }
         this.logger.info(paymentsSeletor);
@@ -127,9 +116,38 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngAfterViewInit() {
-    if(this.paymentJSONArr.length > 0) {
+    if (this.paymentJSONArr.length > 0) {
       this.loadPaymentsTable(this.paymentJSONArr);
     }
+  }
+
+  applyFilter() {
+    this.payments.filter = this.selFilter.trim().toLowerCase();
+  }
+
+  getLabel(column: string) {
+    const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithSpaces.transform(returnColumn.column, '_') : this.commonService.titleCase(column);
+  }
+
+  setFilterPredicate() {
+    this.payments.filterPredicate = (rowData: PaymentSent, fltr: string) => {
+      let rowToFilter = '';
+      switch (this.selFilterBy) {
+        case 'all':
+          rowToFilter = ((rowData.firstPartTimestamp) ? this.datePipe.transform(new Date(rowData.firstPartTimestamp), 'dd/MMM/y HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+          break;
+
+        case 'firstPartTimestamp':
+          rowToFilter = this.datePipe.transform(new Date(rowData.firstPartTimestamp || 0), 'dd/MMM/y HH:mm')?.toLowerCase() || '';
+          break;
+
+        default:
+          rowToFilter = typeof rowData[this.selFilterBy] === 'undefined' ? '' : typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          break;
+      }
+      return rowToFilter.includes(fltr);
+    };
   }
 
   loadPaymentsTable(payms: PaymentSent[]) {
@@ -157,11 +175,9 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     };
-    this.payments.filterPredicate = (rowData: PaymentSent, fltr: string) => {
-      const newRowData = ((rowData.firstPartTimestamp) ? this.datePipe.transform(new Date(rowData.firstPartTimestamp), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
-      return newRowData.includes(fltr);
-    };
+    this.payments.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.payments.paginator = this.paginator;
+    this.setFilterPredicate();
     this.applyFilter();
   }
 
@@ -266,7 +282,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           if (this.paymentDecoded.amount) {
             if (this.selNode && this.selNode.fiatConversion) {
               this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
-                pipe(takeUntil(this.unSubs[3])).
+                pipe(takeUntil(this.unSubs[4])).
                 subscribe({
                   next: (data) => {
                     this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
@@ -376,10 +392,6 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
     }));
   }
 
-  applyFilter() {
-    this.payments.filter = this.selFilter.trim().toLowerCase();
-  }
-
   onDownloadCSV() {
     if (this.payments.data && this.payments.data.length > 0) {
       const paymentsDataCopy: PaymentSent[] = JSON.parse(JSON.stringify(this.payments.data));
@@ -390,7 +402,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         return paymentReqs;
       }, '');
       this.dataService.decodePayments(paymentRequests).
-        pipe(takeUntil(this.unSubs[4])).
+        pipe(takeUntil(this.unSubs[5])).
         subscribe((decodedPayments: any[][]) => {
           decodedPayments.forEach((decodedPayment, idx) => {
             if (decodedPayment.length > 0 && decodedPayment[0].paymentRequest && decodedPayment[0].paymentRequest.description && decodedPayment[0].paymentRequest.description !== '') {

@@ -4,10 +4,11 @@ import {
   addInvoice, addPeer, removeChannel, removePeer, resetCLStore, setBalance, setChannels,
   setChildNodeSettingsCL, setFeeRates, setFees, setForwardingHistory,
   setInfo, setInvoices, setLocalRemoteBalance, setOffers, addOffer, setPayments, setPeers, setUTXOs,
-  updateCLAPICallStatus, updateInvoice, updateOffer, setOfferBookmarks, addUpdateOfferBookmark, removeOfferBookmark
+  updateCLAPICallStatus, updateInvoice, updateOffer, setOfferBookmarks, addUpdateOfferBookmark, removeOfferBookmark, setPageSettings
 } from './cln.actions';
 import { Channel, OfferBookmark } from '../../shared/models/clnModels';
-import { CLNForwardingEventsStatusEnum } from '../../shared/services/consts-enums-functions';
+import { CLNForwardingEventsStatusEnum, CLN_DEFAULT_PAGE_SETTINGS } from '../../shared/services/consts-enums-functions';
+import { PageSettings } from '../../shared/models/pageSettings';
 
 export const CLNReducer = createReducer(initCLNState,
   on(updateCLAPICallStatus, (state, { payload }) => {
@@ -19,7 +20,7 @@ export const CLNReducer = createReducer(initCLNState,
         message: payload.message,
         URL: payload.URL,
         filePath: payload.filePath
-      };  
+      };
     }
     return {
       ...state,
@@ -195,7 +196,7 @@ export const CLNReducer = createReducer(initCLNState,
     } else {
       const updatedOffer = { ...newOfferBMs[offerBMExistsIdx] };
       updatedOffer.title = payload.title;
-      updatedOffer.amountmSat = payload.amountmSat;
+      updatedOffer.amountMSat = payload.amountMSat;
       updatedOffer.lastUpdatedAt = payload.lastUpdatedAt;
       updatedOffer.description = payload.description;
       updatedOffer.vendor = payload.vendor;
@@ -215,6 +216,31 @@ export const CLNReducer = createReducer(initCLNState,
     return {
       ...state,
       offersBookmarks: modifiedOfferBookmarks
+    };
+  }),
+  on(setPageSettings, (state, { payload }) => {
+    const newPageSettings: PageSettings[] = [];
+    CLN_DEFAULT_PAGE_SETTINGS.forEach((defaultPage) => {
+      const pageSetting = payload && payload.length && payload.length > 0 ? payload.find((p) => p.pageId === defaultPage.pageId) : null;
+      if (pageSetting) {
+        const tablesSettings = JSON.parse(JSON.stringify(pageSetting.tables));
+        pageSetting.tables = []; // To maintain settings order
+        defaultPage.tables.forEach((defaultTable) => {
+          const tableSetting = tablesSettings.find((t) => t.tableId === defaultTable.tableId) || null;
+          if (tableSetting) {
+            pageSetting.tables.push(tableSetting);
+          } else {
+            pageSetting.tables.push(JSON.parse(JSON.stringify(defaultTable)));
+          }
+        });
+        newPageSettings.push(pageSetting);
+      } else {
+        newPageSettings.push(JSON.parse(JSON.stringify(defaultPage)));
+      }
+    });
+    return {
+      ...state,
+      pageSettings: newPageSettings
     };
   })
 );
