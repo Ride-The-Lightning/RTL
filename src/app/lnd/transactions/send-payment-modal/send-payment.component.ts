@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { FormControl, NgModel } from '@angular/forms';
+import { UntypedFormControl, NgModel } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { take, takeUntil, filter } from 'rxjs/operators';
@@ -38,7 +38,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   public showAdvanced = false;
   public activeChannels: Channel[] = [];
   public filteredMinAmtActvChannels: Channel[] = [];
-  public selectedChannelCtrl = new FormControl();
+  public selectedChannelCtrl = new UntypedFormControl();
   public feeLimit: number | null = null;
   public selFeeLimitType = FEE_LIMIT_TYPES[0];
   public feeLimitTypes = FEE_LIMIT_TYPES;

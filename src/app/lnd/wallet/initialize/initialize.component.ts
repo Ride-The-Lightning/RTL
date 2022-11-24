@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { FormBuilder, FormGroup, Validators, ValidatorFn, ValidationErrors } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, ValidatorFn, ValidationErrors } from '@angular/forms';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { MatStepper } from '@angular/material/stepper';
 
@@ -12,13 +12,13 @@ import { RTLState } from '../../../store/rtl.state';
 import { updateSelectedNodeOptions } from '../../../store/rtl.actions';
 import { fetchInfoLND, genSeed, initWallet } from '../../store/lnd.actions';
 
-export function matchedPasswords(control: FormGroup): ValidationErrors | null {
+export function matchedPasswords(control: UntypedFormGroup): ValidationErrors | null {
   const initWalletPassword = control.get('initWalletPassword');
   const initWalletConfirmPassword = control.get('initWalletConfirmPassword');
   return initWalletPassword && initWalletConfirmPassword && initWalletPassword.value !== initWalletConfirmPassword.value ? { unmatchedPasswords: true } : null;
 }
 
-export function cipherSeedLength(control: FormGroup): ValidationErrors | null {
+export function cipherSeedLength(control: UntypedFormGroup): ValidationErrors | null {
   const cipherArr = control.value.toString().trim().split(',') || [];
   return cipherArr && cipherArr.length !== 24 ? { invalidCipher: true } : null;
 }
@@ -37,14 +37,14 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
   public insecureLND = false;
   public genSeedResponse: string[] = [];
   public initWalletResponse = '';
-  passwordFormGroup: FormGroup;
-  cipherFormGroup: FormGroup;
-  passphraseFormGroup: FormGroup;
+  passwordFormGroup: UntypedFormGroup;
+  cipherFormGroup: UntypedFormGroup;
+  passphraseFormGroup: UntypedFormGroup;
   proceed = true;
   warnRes = false;
   private unsubs = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<RTLState>, private formBuilder: FormBuilder, private lndEffects: LNDEffects) { }
+  constructor(private store: Store<RTLState>, private formBuilder: UntypedFormBuilder, private lndEffects: LNDEffects) { }
 
   ngOnInit() {
     this.passwordFormGroup = this.formBuilder.group({

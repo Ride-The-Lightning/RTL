@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { filter, takeUntil, take } from 'rxjs/operators';
@@ -62,9 +62,9 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   public sendFundFormLabel = 'Sweep funds';
   public confirmFormLabel = 'Confirm sweep';
   public amountError = 'Amount is Required.';
-  passwordFormGroup: FormGroup;
-  sendFundFormGroup: FormGroup;
-  confirmFormGroup: FormGroup;
+  passwordFormGroup: UntypedFormGroup;
+  sendFundFormGroup: UntypedFormGroup;
+  confirmFormGroup: UntypedFormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(
@@ -77,7 +77,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
     private decimalPipe: DecimalPipe,
     private snackBar: MatSnackBar,
     private actions: Actions,
-    private formBuilder: FormBuilder) { }
+    private formBuilder: UntypedFormBuilder) { }
 
   ngOnInit() {
     this.sweepAll = this.data.sweepAll;

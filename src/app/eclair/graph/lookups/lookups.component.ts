@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -22,7 +22,7 @@ import { peerLookup } from '../../store/ecl.actions';
 export class ECLLookupsComponent implements OnInit, OnDestroy {
 
   @ViewChild('form', { static: true }) form: any;
-  public lookupKeyCtrl = new FormControl();
+  public lookupKeyCtrl = new UntypedFormControl();
   // Public lookupKey = '';
   public nodeLookupValue: LookupNode = {};
   public channelLookupValue = [];

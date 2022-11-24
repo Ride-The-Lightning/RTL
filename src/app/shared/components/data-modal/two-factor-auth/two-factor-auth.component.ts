@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, Inject, ViewChild } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -38,20 +38,20 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
   public secretFormLabel = 'Scan or copy the secret';
   public tokenFormLabel = 'Verify your authentication is working';
   public disableFormLabel = 'Disable two factor authentication';
-  passwordFormGroup: FormGroup = this.formBuilder.group({
+  passwordFormGroup: UntypedFormGroup = this.formBuilder.group({
     hiddenPassword: ['', [Validators.required]],
     password: ['', [Validators.required]]
   });
-  secretFormGroup: FormGroup = this.formBuilder.group({
+  secretFormGroup: UntypedFormGroup = this.formBuilder.group({
     secret: [{ value: '', disabled: true }, Validators.required]
   });
-  tokenFormGroup: FormGroup = this.formBuilder.group({
+  tokenFormGroup: UntypedFormGroup = this.formBuilder.group({
     token: ['', Validators.required]
   });
-  disableFormGroup: FormGroup = this.formBuilder.group({});
+  disableFormGroup: UntypedFormGroup = this.formBuilder.group({});
   unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<TwoFactorAuthComponent>, @Inject(MAT_DIALOG_DATA) public data: AuthConfig, private store: Store<RTLState>, private formBuilder: FormBuilder, private rtlEffects: RTLEffects, private snackBar: MatSnackBar) { }
+  constructor(public dialogRef: MatDialogRef<TwoFactorAuthComponent>, @Inject(MAT_DIALOG_DATA) public data: AuthConfig, private store: Store<RTLState>, private formBuilder: UntypedFormBuilder, private rtlEffects: RTLEffects, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.appConfig = this.data.appConfig || null;

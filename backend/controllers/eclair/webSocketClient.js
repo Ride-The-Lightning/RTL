@@ -45,9 +45,8 @@ export class ECLWebSocketClient {
             }
         };
         this.connectWithClient = (eclWsClt) => {
-            var _a;
             this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'INFO', fileName: 'ECLWebSocket', msg: 'Connecting to the Eclair\'s Websocket Server..' });
-            const UpdatedLNServerURL = (_a = (eclWsClt.selectedNode.ln_server_url)) === null || _a === void 0 ? void 0 : _a.replace(/^http/, 'ws');
+            const UpdatedLNServerURL = (eclWsClt.selectedNode.ln_server_url)?.replace(/^http/, 'ws');
             const firstSubStrIndex = (UpdatedLNServerURL.indexOf('//') + 2);
             const WS_LINK = UpdatedLNServerURL.slice(0, firstSubStrIndex) + ':' + eclWsClt.selectedNode.ln_api_password + '@' + UpdatedLNServerURL.slice(firstSubStrIndex) + '/ws';
             eclWsClt.webSocketClient = new WebSocket(WS_LINK);

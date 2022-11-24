@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
@@ -51,10 +51,10 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   public animationDirection = 'forward';
   public flgEditable = true;
   public localBalanceToCompare: number | null = null;
-  inputFormGroup: FormGroup;
-  quoteFormGroup: FormGroup;
-  addressFormGroup: FormGroup;
-  statusFormGroup: FormGroup;
+  inputFormGroup: UntypedFormGroup;
+  quoteFormGroup: UntypedFormGroup;
+  addressFormGroup: UntypedFormGroup;
+  statusFormGroup: UntypedFormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(
@@ -62,7 +62,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: LoopAlert,
     private store: Store<RTLState>,
     private loopService: LoopService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private decimalPipe: DecimalPipe,
     private logger: LoggerService,
     private router: Router,

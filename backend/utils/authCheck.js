@@ -18,16 +18,14 @@ export const isAuthenticated = (req, res, next) => {
     }
 };
 export const verifyWSUser = (info, next) => {
-    var _a;
     const headers = JSON.parse(JSON.stringify(info.req.headers));
-    const protocols = !info.req.headers['sec-websocket-protocol'] ? [] : (_a = info.req.headers['sec-websocket-protocol'].split(',')) === null || _a === void 0 ? void 0 : _a.map((s) => s.trim());
+    const protocols = !info.req.headers['sec-websocket-protocol'] ? [] : info.req.headers['sec-websocket-protocol'].split(',')?.map((s) => s.trim());
     const jwToken = (protocols && protocols.length > 0) ? protocols[0] : '';
     if (!jwToken || jwToken === '') {
         next(false, 401, 'Authentication Failed! Please Login First!');
     }
     else {
         jwt.verify(jwToken, common.secret_key, (verificationErr) => {
-            var _a, _b, _c;
             if (verificationErr) {
                 next(false, 401, 'Authentication Failed! Please Login First!');
             }
@@ -42,7 +40,7 @@ export const verifyWSUser = (info, next) => {
                     }
                     let cookies = null;
                     try {
-                        cookies = '{"' + ((_c = (_b = (_a = headers.cookie) === null || _a === void 0 ? void 0 : _a.replace(/ /g, '')) === null || _b === void 0 ? void 0 : _b.replace(/;/g, '","').trim()) === null || _c === void 0 ? void 0 : _c.replace(/[=]/g, '":"')) + '"}';
+                        cookies = '{"' + headers.cookie?.replace(/ /g, '')?.replace(/;/g, '","').trim()?.replace(/[=]/g, '":"') + '"}';
                         updatedReq['cookies'] = JSON.parse(cookies);
                     }
                     catch (err) {

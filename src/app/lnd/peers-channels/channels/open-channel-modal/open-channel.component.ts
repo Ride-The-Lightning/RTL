@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, Inject, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Subject, Observable } from 'rxjs';
 import { takeUntil, filter, startWith, map } from 'rxjs/operators';
@@ -24,9 +24,9 @@ import { lndNodeSettings } from '../../../store/lnd.selector';
 export class OpenChannelComponent implements OnInit, OnDestroy {
 
   @ViewChild('form', { static: true }) form: any;
-  public selectedPeer = new FormControl();
+  public selectedPeer = new UntypedFormControl();
   public selNode: SelNodeChild | null = {};
-  public amount = new FormControl();
+  public amount = new UntypedFormControl();
   public faExclamationTriangle = faExclamationTriangle;
   public alertTitle: string;
   public peer: Peer | null;

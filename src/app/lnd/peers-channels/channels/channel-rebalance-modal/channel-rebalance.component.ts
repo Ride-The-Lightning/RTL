@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject, OnDestroy, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatStepper } from '@angular/material/stepper';
@@ -50,9 +50,9 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public animationDirection = 'forward';
-  inputFormGroup: FormGroup;
-  feeFormGroup: FormGroup;
-  statusFormGroup: FormGroup;
+  inputFormGroup: UntypedFormGroup;
+  feeFormGroup: UntypedFormGroup;
+  statusFormGroup: UntypedFormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(
@@ -61,7 +61,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     private logger: LoggerService,
     private store: Store<RTLState>,
     private actions: Actions,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private decimalPipe: DecimalPipe,
     private commonService: CommonService) { }
 
