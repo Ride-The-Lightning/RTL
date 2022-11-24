@@ -7,19 +7,28 @@
 @import 'typography';
 
 .rtl-container{
-  @include mat.core(); //CHECK IF MATERIAL STYLES BEHAVE STRANGELY
+  // TODO(v15): As of v15 mat.legacy-core no longer includes default typography styles.
+//  The following line adds:
+//    1. Default typography styles for all components
+//    2. Styles for typography hierarchy classes (e.g. .mat-headline-1)
+//  If you specify typography styles for the components you use elsewhere, you should delete this line.
+//  If you don't need the default component typographies but still want the hierarchy styles,
+//  you can delete this line and instead use:
+//    `@include mat.legacy-typography-hierarchy(mat.define-legacy-typography-config());`
+@include mat.all-legacy-component-typographies();
+@include mat.legacy-core(); //CHECK IF MATERIAL STYLES BEHAVE STRANGELY
   &.purple {
     @import "../skins/purple";
     &.small {@include theme-font($small-typography);}
     &.medium {@include theme-font($medium-typography);}
     &.large {@include theme-font($large-typography);}
     &.day {
-      @include mat.all-component-themes($purple-day-theme);
+      @include mat.all-legacy-component-themes($purple-day-theme);
       @include theme-mode-light($purple-day-theme);
       @include theme-color($purple-day-theme);
     }
     &.night {
-      @include mat.all-component-themes($purple-night-theme);
+      @include mat.all-legacy-component-themes($purple-night-theme);
       @include theme-mode-dark($purple-night-theme);
       @include theme-color($purple-night-theme);
     }
@@ -30,12 +39,12 @@
     &.medium {@include theme-font($medium-typography);}
     &.large {@include theme-font($large-typography);}
     &.day {
-      @include mat.all-component-themes($blue-day-theme);
+      @include mat.all-legacy-component-themes($blue-day-theme);
       @include theme-mode-light($blue-day-theme);
       @include theme-color($blue-day-theme);
     }
     &.night {
-      @include mat.all-component-themes($blue-night-theme);
+      @include mat.all-legacy-component-themes($blue-night-theme);
       @include theme-mode-dark($blue-night-theme);
       @include theme-color($blue-night-theme);
     }
@@ -46,12 +55,12 @@
     &.medium {@include theme-font($medium-typography);}
     &.large {@include theme-font($large-typography);}
     &.day {
-      @include mat.all-component-themes($indigo-day-theme);
+      @include mat.all-legacy-component-themes($indigo-day-theme);
       @include theme-mode-light($indigo-day-theme);
       @include theme-color($indigo-day-theme);
     }
     &.night {
-      @include mat.all-component-themes($indigo-night-theme);
+      @include mat.all-legacy-component-themes($indigo-night-theme);
       @include theme-mode-dark($indigo-night-theme);
       @include theme-color($indigo-night-theme);
     }
@@ -62,12 +71,12 @@
     &.medium {@include theme-font($medium-typography);}
     &.large {@include theme-font($large-typography);}
     &.day {
-      @include mat.all-component-themes($green-day-theme);
+      @include mat.all-legacy-component-themes($green-day-theme);
       @include theme-mode-light($green-day-theme);
       @include theme-color($green-day-theme);
     }
     &.night {
-      @include mat.all-component-themes($green-night-theme);
+      @include mat.all-legacy-component-themes($green-night-theme);
       @include theme-mode-dark($green-night-theme);
       @include theme-color($green-night-theme);
     }
@@ -78,12 +87,12 @@
     &.medium {@include theme-font($medium-typography);}
     &.large {@include theme-font($large-typography);}
     &.day {
-      @include mat.all-component-themes($teal-day-theme);
+      @include mat.all-legacy-component-themes($teal-day-theme);
       @include theme-mode-light($teal-day-theme);
       @include theme-color($teal-day-theme);
     }
     &.night {
-      @include mat.all-component-themes($teal-night-theme);
+      @include mat.all-legacy-component-themes($teal-night-theme);
       @include theme-mode-dark($teal-night-theme);
       @include theme-color($teal-night-theme);
     }
@@ -94,12 +103,12 @@
     &.medium {@include theme-font($medium-typography);}
     &.large {@include theme-font($large-typography);}
     &.day {
-      @include mat.all-component-themes($pink-day-theme);
+      @include mat.all-legacy-component-themes($pink-day-theme);
       @include theme-mode-light($pink-day-theme);
       @include theme-color($pink-day-theme);
     }
     &.night {
-      @include mat.all-component-themes($pink-night-theme);
+      @include mat.all-legacy-component-themes($pink-night-theme);
       @include theme-mode-dark($pink-night-theme);
       @include theme-color($pink-night-theme);
     }
@@ -110,12 +119,12 @@
     &.medium {@include theme-font($medium-typography);}
     &.large {@include theme-font($large-typography);}
     &.day {
-      @include mat.all-component-themes($yellow-day-theme);
+      @include mat.all-legacy-component-themes($yellow-day-theme);
       @include theme-mode-light($yellow-day-theme);
       @include theme-color($yellow-day-theme);
     }
     &.night {
-      @include mat.all-component-themes($yellow-night-theme);
+      @include mat.all-legacy-component-themes($yellow-night-theme);
       @include theme-mode-dark($yellow-night-theme);
       @include theme-color($yellow-night-theme);
     }
