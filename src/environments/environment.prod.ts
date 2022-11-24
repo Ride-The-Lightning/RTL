@@ -28,4 +28,4 @@ export const environment = {
   Web_SOCKET_API: '/ws'
 };
 
-export const VERSION = '0.13.2-beta';
+export const VERSION = '0.13.3-beta';
