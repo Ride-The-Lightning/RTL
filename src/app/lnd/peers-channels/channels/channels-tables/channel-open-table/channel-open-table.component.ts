@@ -203,7 +203,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
             titleMessage: 'Update fee policy for all channels',
             flgShowInput: true,
             getInputs: [
-              { placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER, inputValue: 1000, width: 32 },
+              { placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER, inputValue: 1000, step: 100, width: 32 },
               { placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER, inputValue: 1, min: 1, width: 32, hintFunction: this.percentHintFunction },
               { placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER, inputValue: 40, width: 32 }
             ]
@@ -249,7 +249,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
                 flgShowInput: true,
                 hasAdvanced: true,
                 getInputs: [
-                  { placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER, inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, width: 32 },
+                  { placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER, inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, step: 100, width: 32 },
                   { placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER, inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 32, hintFunction: this.percentHintFunction },
                   { placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER, inputValue: this.myChanPolicy.time_lock_delta, width: 32 },
                   { placeholder: 'Minimum HTLC (mSat)', inputType: DataTypeEnum.NUMBER, inputValue: (this.myChanPolicy.min_htlc === '') ? 0 : this.myChanPolicy.min_htlc, width: 49, advancedField: true },

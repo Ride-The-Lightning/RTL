@@ -165,8 +165,8 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
             titleMessage: 'Update fee policy for all channels',
             flgShowInput: true,
             getInputs: [
-              { placeholder: 'Base Fee (mSats)', inputType: 'number', inputValue: 1000, width: 48 },
-              { placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: 1, min: 1, width: 48, hintFunction: this.percentHintFunction }
+              { placeholder: 'Base Fee (mSats)', inputType: DataTypeEnum.NUMBER, inputValue: 1000, step: 100, width: 48 },
+              { placeholder: 'Fee Rate (mili mSats)', inputType: DataTypeEnum.NUMBER, inputValue: 1, min: 1, width: 48, hintFunction: this.percentHintFunction }
             ]
           }
         }
@@ -206,8 +206,8 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
                 titleMessage: titleMsg,
                 flgShowInput: true,
                 getInputs: [
-                  { placeholder: 'Base Fee (mSats)', inputType: 'number', inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, width: 48 },
-                  { placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 48, hintFunction: this.percentHintFunction }
+                  { placeholder: 'Base Fee (mSats)', inputType: DataTypeEnum.NUMBER, inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, step: 100, width: 48 },
+                  { placeholder: 'Fee Rate (mili mSats)', inputType: DataTypeEnum.NUMBER, inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 48, hintFunction: this.percentHintFunction }
                 ]
               }
             }

@@ -9,7 +9,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Channel, ChannelsStatus, GetInfo, LightningBalance, OnChainBalance, Peer } from '../../../../../shared/models/eclModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum, APICallStatusEnum, SortOrderEnum, ECL_DEFAULT_PAGE_SETTINGS, ECL_PAGE_DEFS } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum, APICallStatusEnum, SortOrderEnum, ECL_DEFAULT_PAGE_SETTINGS, ECL_PAGE_DEFS, DataTypeEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 
@@ -138,8 +138,8 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
           titleMessage: titleMsg,
           flgShowInput: true,
           getInputs: [
-            { placeholder: 'Base Fee (mSats)', inputType: 'number', inputValue: channelToUpdate && typeof channelToUpdate.feeBaseMsat !== 'undefined' ? channelToUpdate.feeBaseMsat : 1000, width: 48 },
-            { placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: channelToUpdate && typeof channelToUpdate.feeProportionalMillionths !== 'undefined' ? channelToUpdate.feeProportionalMillionths : 100, min: 1, width: 48, hintFunction: this.percentHintFunction }
+            { placeholder: 'Base Fee (mSats)', inputType: DataTypeEnum.NUMBER, inputValue: channelToUpdate && typeof channelToUpdate.feeBaseMsat !== 'undefined' ? channelToUpdate.feeBaseMsat : 1000, step: 100, width: 48 },
+            { placeholder: 'Fee Rate (mili mSats)', inputType: DataTypeEnum.NUMBER, inputValue: channelToUpdate && typeof channelToUpdate.feeProportionalMillionths !== 'undefined' ? channelToUpdate.feeProportionalMillionths : 100, min: 1, width: 48, hintFunction: this.percentHintFunction }
           ]
         }
       }
