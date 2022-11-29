@@ -112,6 +112,10 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
 
 @Injectable() class DefaultDateAdapter extends NativeDateAdapter {
 
+  constructor() {
+    super('');
+  }
+
   format(date: Date, displayFormat: Object): string {
     if (displayFormat === 'input') {
       let day: string = date.getDate().toString();

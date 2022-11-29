@@ -1,9 +1,8 @@
 @use '@angular/material' as mat;
-@import './color-swatches/light-dull-theme.scss';
-@import './color-swatches/dark-bright-theme.scss';
+@import '@angular/material/theming';
 @import './color-swatches/red-warn.swatch.scss';
 @import './color-swatches/white.swatch.scss';
-@import '@angular/material/theming';
+@import '../styles/typography.scss';
 
 $teal-primary: mat.define-palette(mat.$teal-palette, 800, 300, A200);
 $teal-accent:  mat.define-palette(mat.$gray-palette, 800, 600, 900);
@@ -11,6 +10,20 @@ $teal-accent-night:  mat.define-palette($mat-white, 300, 600, 900);
 $teal-warn: mat.define-palette($red-warn, 500);
 $teal-warn-night: mat.define-palette($red-warn, A700);
 
-$teal-night-theme: create-dark-bright-theme($teal-primary, $teal-accent-night, $teal-warn-night);
+$teal-night-theme: mat.define-dark-theme((
+    color: (
+        primary: $teal-primary,
+        accent: $teal-accent-night,
+        warn: $teal-warn-night
+    ),
+    typography: $medium-typography
+));
 
-$teal-day-theme: mat.define-light-theme($teal-primary, $teal-accent, $teal-warn);
+$teal-day-theme: mat.define-light-theme((
+    color: (
+        primary: $teal-primary,
+        accent: $teal-accent,
+        warn: $teal-warn
+    ),
+    typography: $medium-typography
+));

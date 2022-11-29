@@ -4,6 +4,10 @@ import { MONTHS } from '../services/consts-enums-functions';
 
 @Injectable() class CustomDateAdapter extends NativeDateAdapter {
 
+  constructor() {
+    super('');
+  }
+
   format(date: Date, displayFormat: Object): string {
     if (displayFormat === 'MMM YYYY') {
       return MONTHS[date.getMonth()].name + ', ' + date.getFullYear();
