@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
@@ -28,7 +28,7 @@ import { ApiCallStatusPayload } from '../../../../models/apiCallsPayload';
   styleUrls: ['./loop-modal.component.scss'],
   animations: [opacityAnimation]
 })
-export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
+export class LoopModalComponent implements OnInit, OnDestroy {
 
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faInfoCircle = faInfoCircle;
@@ -82,24 +82,21 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
       routingFeePercent: [2, [Validators.required, Validators.min(0)]],
       fast: [false, [Validators.required]]
     });
+    this.inputFormGroup.setErrors({ Invalid: true });
     this.quoteFormGroup = this.formBuilder.group({});
     this.addressFormGroup = this.formBuilder.group({
       addressType: ['local', [Validators.required]],
       address: [{ value: '', disabled: true }]
     });
+    if (this.direction === LoopTypeEnum.LOOP_OUT) {
+      this.addressFormGroup.setErrors({ Invalid: true });
+    }
     this.statusFormGroup = this.formBuilder.group({});
     this.onFormValueChanges();
     this.store.select(channels).pipe(takeUntil(this.unSubs[6])).
       subscribe((channelsSelector: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
         this.localBalanceToCompare = (this.channel && this.channel.local_balance) ? +this.channel.local_balance : (channelsSelector.lightningBalance && channelsSelector.lightningBalance.local) ? +channelsSelector.lightningBalance.local : null;
       });
-  }
-
-  ngAfterViewInit() {
-    this.inputFormGroup.setErrors({ Invalid: true });
-    if (this.direction === LoopTypeEnum.LOOP_OUT) {
-      this.addressFormGroup.setErrors({ Invalid: true });
-    }
   }
 
   onFormValueChanges() {

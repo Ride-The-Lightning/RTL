@@ -176,7 +176,7 @@ export class RTLWebSocketServer {
     }
   };
 
-  public generateAcceptValue = (acceptKey) => crypto.createHash('sha1').update(acceptKey + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', 'binary' as crypto.Utf8AsciiLatin1Encoding).digest('base64');
+  public generateAcceptValue = (acceptKey) => crypto.createHash('sha1').update(acceptKey + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', 'binary').digest('base64');
 
   public getClients = () => this.webSocketServer.clients;
 

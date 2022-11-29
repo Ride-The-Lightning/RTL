@@ -63,7 +63,7 @@
           </div>
         </div>
         <div [perfectScrollbar] fxLayout="column" fxFlex="100" class="table-container">
-          <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+          <mat-progress-bar *ngIf="listNodesCallStatus === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
           <table mat-table #table [dataSource]="liquidityNodes" matSort [ngClass]="{'error-border': errorMessage !== ''}">
             <ng-container matColumnDef="alias">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>Alias</th>
@@ -153,9 +153,9 @@
             </ng-container>
             <ng-container matColumnDef="no_lqNode">
               <td mat-footer-cell *matFooterCellDef colspan="4">
-                <p *ngIf="(!liquidityNodes?.data || liquidityNodes?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No node with liquidity.</p>
-                <p *ngIf="(!liquidityNodes?.data || liquidityNodes?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting nodes with liquidity...</p>
-                <p *ngIf="(!liquidityNodes?.data || liquidityNodes?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+                <p *ngIf="(!liquidityNodes?.data || liquidityNodes?.data?.length<1) && listNodesCallStatus === apiCallStatusEnum.COMPLETED">No node with liquidity.</p>
+                <p *ngIf="(!liquidityNodes?.data || liquidityNodes?.data?.length<1) && listNodesCallStatus === apiCallStatusEnum.INITIATED">Getting nodes with liquidity...</p>
+                <p *ngIf="(!liquidityNodes?.data || liquidityNodes?.data?.length<1) && listNodesCallStatus === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
               </td>
             </ng-container>
             <tr mat-footer-row *matFooterRowDef="['no_lqNode']" [ngClass]="{'display-none': liquidityNodes?.data && liquidityNodes?.data?.length>0}"></tr>

@@ -16,9 +16,13 @@
 <div fxLayout="column" class="padding-gap-x">
   <mat-card>
     <mat-card-content fxLayout="column">
-      <nav mat-tab-nav-bar>
+      <nav mat-tab-nav-bar [tabPanel]="tabPanel">
         <div role="tab" mat-tab-link *ngFor="let link of links" class="mat-tab-label" [active]="activeLink === link?.link" (click)="activeLink = link?.link" [routerLink]="[link?.link, selectedTable?.name]">{{link?.name}}</div>
       </nav>
+      <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
+      <!-- <nav mat-tab-nav-bar>
+        <div role="tab" mat-tab-link *ngFor="let link of links" class="mat-tab-label" [active]="activeLink === link?.link" (click)="activeLink = link?.link" [routerLink]="[link?.link, selectedTable?.name]">{{link?.name}}</div>
+      </nav> -->
       <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="mat-tab-body-wrapper">
         <router-outlet></router-outlet>
       </div>

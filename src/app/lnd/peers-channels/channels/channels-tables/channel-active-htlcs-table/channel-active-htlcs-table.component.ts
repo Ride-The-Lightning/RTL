@@ -81,13 +81,17 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.channelsJSONArr = channelsSelector.channels?.filter((channel) => channel.pending_htlcs && channel.pending_htlcs.length > 0) || [];
-        this.loadHTLCsTable(this.channelsJSONArr);
+        if (this.channelsJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+          this.loadHTLCsTable(this.channelsJSONArr);
+        }
         this.logger.info(channelsSelector);
       });
   }
 
   ngAfterViewInit() {
-    this.loadHTLCsTable(this.channelsJSONArr);
+    if (this.channelsJSONArr.length > 0) {
+      this.loadHTLCsTable(this.channelsJSONArr);
+    }
   }
 
   onHTLCClick(selHtlc: ChannelHTLC, selChannel: Channel) {

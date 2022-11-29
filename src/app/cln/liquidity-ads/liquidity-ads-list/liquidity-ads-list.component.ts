@@ -60,7 +60,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public selFilter = '';
-  public apiCallStatus: ApiCallStatusPayload = { status: APICallStatusEnum.INITIATED };
+  public listNodesCallStatus = APICallStatusEnum.INITIATED;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -77,9 +77,8 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
     this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[0])).
       subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apiCallStatus = settings.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = this.apiCallStatus.message || '';
+        if (settings.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = settings.apiCallStatus.message || '';
         }
         this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
         if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
@@ -100,7 +99,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
           this.logger.info(infoSettingsBalSelector);
           if (nodeListRes && !(<any[]>nodeListRes).length) { nodeListRes = []; }
           this.logger.info('Received Liquidity Ads Enabled Nodes: ' + JSON.stringify(nodeListRes));
-          this.apiCallStatus.status = APICallStatusEnum.COMPLETED;
+          this.listNodesCallStatus = APICallStatusEnum.COMPLETED;
           (<any[]>nodeListRes).forEach((lqNode) => {
             const a: string[] = [];
             lqNode.address_types = Array.from(new Set(lqNode.addresses?.reduce((acc, addr) => {
@@ -115,7 +114,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
           this.loadLiqNodesTable(this.liquidityNodesData);
         }, error: (err) => {
           this.logger.error('Liquidity Ads Nodes Error: ' + JSON.stringify(err));
-          this.apiCallStatus.status = APICallStatusEnum.ERROR;
+          this.listNodesCallStatus = APICallStatusEnum.ERROR;
           this.errorMessage = JSON.stringify(err);
         }
       });
