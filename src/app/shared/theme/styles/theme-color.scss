@@ -475,7 +475,7 @@
     color: $foreground-text;
   }
 
-  & .mat-chip-list-wrapper input.mat-input-element, .mat-chip-list-wrapper .mat-standard-chip {
+  .mat-chip-list-wrapper input.mat-input-element, .mat-chip-list-wrapper .mat-standard-chip {
     margin: $gap math.div($gap, 4);
     font-size: 80%;
     min-height: 2.4rem;

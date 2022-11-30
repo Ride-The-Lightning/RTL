@@ -245,11 +245,11 @@
               </div>
             </td>
           </ng-container>
-          <tr mat-row *matRowDef="let row; columns: mppColumns; when: is_group;"></tr>
+          <tr *matRowDef="let row; columns: mppColumns; when: is_group;" mat-row></tr>
           <!-- Payment Group Row End -->
           <tr *matFooterRowDef="['no_payment']" mat-footer-row [ngClass]="{'display-none': payments?.data && payments?.data?.length && payments?.data?.length>0}"></tr>
           <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns; when: !is_group;"></tr>
+          <tr *matRowDef="let row; columns: displayedColumns; when: !is_group;" mat-row></tr>
         </table>
       </div>
     </div>

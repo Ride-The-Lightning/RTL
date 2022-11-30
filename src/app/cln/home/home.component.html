@@ -17,7 +17,7 @@
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #menuOperator="matMenu" class="dashboard-vert-menu" xPosition="before">
-                <button mat-menu-item *ngFor="let goToOption of card.goToOptions; index as i" (click)="onNavigateTo(card.links[i])">{{goToOption}}</button>
+                <button *ngFor="let goToOption of card.goToOptions; index as i" mat-menu-item (click)="onNavigateTo(card.links[i])">{{goToOption}}</button>
                 <button *ngIf="card.id === 'capacity'" mat-menu-item (click)="onsortChannelsBy()">Sort By {{sortField === 'Balance Score' ? 'Capacity' : 'Balance Score'}}</button>
               </mat-menu>
             </div>
@@ -69,7 +69,7 @@
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #menuMerchant="matMenu" class="dashboard-vert-menu" xPosition="before">
-                <button mat-menu-item *ngFor="let goToOption of card.goToOptions; index as i" (click)="onNavigateTo(card.links[i])">{{goToOption}}</button>
+                <button *ngFor="let goToOption of card.goToOptions; index as i" mat-menu-item (click)="onNavigateTo(card.links[i])">{{goToOption}}</button>
               </mat-menu>
             </div>
           </mat-card-title>
@@ -99,7 +99,7 @@
                       <mat-icon>more_vert</mat-icon>
                     </button>
                     <mat-menu #menuTransactions="matMenu" class="dashboard-vert-menu" xPosition="before">
-                      <button mat-menu-item *ngFor="let goToOption of card.goToOptions; index as i" (click)="onNavigateTo(card.links[i])">{{goToOption}}</button>
+                      <button *ngFor="let goToOption of card.goToOptions; index as i" mat-menu-item (click)="onNavigateTo(card.links[i])">{{goToOption}}</button>
                     </mat-menu>
                   </ng-template>
                 </mat-tab>    

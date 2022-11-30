@@ -1,10 +1,7 @@
 {
   "root": true,
   "ignorePatterns": [
-    "projects/**/*",
-    "rtl.js",
-    "/backend/**/*.js",
-    "/src/prebuild.js"
+    "src/**/*.js"
   ],
   "overrides": [
     {
@@ -26,13 +23,10 @@
       ],
       "rules": {
         "deprecation/deprecation": "error",
-        "@angular-eslint/use-injectable-provided-in": "off",
         "@angular-eslint/prefer-on-push-component-change-detection": "off",
-        "@angular-eslint/use-component-view-encapsulation": "off",
         "@angular-eslint/sort-ngmodule-metadata-arrays": "off",
-        "@angular-eslint/arrow-body-style": "off",
-        "@angular-eslint/component-selector": ["error", { "prefix": "rtl", "style": "kebab-case", "type": "element" }],
-        "@angular-eslint/directive-selector": ["error", { "style": "camelCase", "type": "attribute" }],
+        "@angular-eslint/use-component-view-encapsulation": "off",
+        "@angular-eslint/use-injectable-provided-in": "off",
         "@typescript-eslint/member-delimiter-style": ["error", { "multiline": { "delimiter": "semi", "requireLast": true}, "singleline": { "delimiter": "comma", "requireLast": false }}],
         "@typescript-eslint/no-non-null-assertion": "off",        
         "@typescript-eslint/type-annotation-spacing": "error",
@@ -185,20 +179,26 @@
       "files": [
         "*.html"
       ],
+      "parser": "@angular-eslint/template-parser",
       "extends": [
         "plugin:@angular-eslint/template/all",
         "plugin:@angular-eslint/template/recommended",
         "plugin:@angular-eslint/template/process-inline-templates"
       ],
       "rules": {
+        "@angular-eslint/arrow-body-style": "off",
+        "@angular-eslint/component-selector": ["error", { "prefix": "rtl", "style": "kebab-case", "type": "element" }],
+        "@angular-eslint/directive-selector": ["error", { "style": "camelCase", "type": "attribute" }],
         "@angular-eslint/template/accessibility-elements-content": "off",
-        "@angular-eslint/template/button-has-type": ["off"],
+        "@angular-eslint/template/accessibility-interactive-supports-focus": "off",
+        "@angular-eslint/template/button-has-type": "off",
         "@angular-eslint/template/click-events-have-key-events": "off",
         "@angular-eslint/template/conditional-complexity": "off",
         "@angular-eslint/template/cyclomatic-complexity": "off",
         "@angular-eslint/template/i18n": "off",
         "@angular-eslint/template/no-autofocus": "off",
         "@angular-eslint/template/no-call-expression": "off",
+        "@angular-eslint/template/no-inline-styles": "off",
         "@angular-eslint/template/no-positive-tabindex": "off",
         "@angular-eslint/template/use-track-by-function": "off"
       }

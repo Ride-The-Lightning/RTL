@@ -230,7 +230,7 @@
             </div>
           </td>
         </ng-container>
-        <tr mat-row *matRowDef="let row; columns: partColumns; when: is_group;"></tr>
+        <tr *matRowDef="let row; columns: partColumns; when: is_group;" mat-row></tr>
         <!-- Payment Group Row End -->
 
           <tr *matFooterRowDef="['no_payment']" mat-footer-row [ngClass]="{'display-none': payments?.data?.length>0}"></tr>
