@@ -4,16 +4,16 @@
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">Label UTXO</span>
       </div>
-      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" [mat-dialog-close]="false" default mat-button>X</button>
+      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" default mat-button [mat-dialog-close]="false">X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
-      <form fxLayout="row wrap" fxLayoutAlign="space-between start" fxFlex="100" class="overflow-x-hidden" (submit)="onLabelUTXO()" (reset)="resetData()" #form="ngForm">
+      <form #form="ngForm" fxLayout="row wrap" fxLayoutAlign="space-between start" fxFlex="100" class="overflow-x-hidden" (submit)="onLabelUTXO()" (reset)="resetData()">
         <mat-form-field fxFlex.gt-sm="100">
-          <input autoFocus matInput [(ngModel)]="label" placeholder="UTXO Label" name="label" tabindex="1" required>
+          <input autoFocus matInput placeholder="UTXO Label" name="label" tabindex="1" required [(ngModel)]="label">
           <mat-error *ngIf="!label">UTXO Label is required.</mat-error>
         </mat-form-field>
-        <div fxFlex="100" class="alert alert-danger mt-1" *ngIf="labelError !== ''">
-          <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+        <div *ngIf="labelError !== ''" fxFlex="100" class="alert alert-danger mt-1">
+          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
           <span *ngIf="labelError !== ''">{{labelError}}</span>
         </div>
         <div fxLayout="row" fxFlex="100" class="mt-2" fxLayoutAlign="end center">

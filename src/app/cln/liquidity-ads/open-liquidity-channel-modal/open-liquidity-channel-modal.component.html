@@ -4,24 +4,24 @@
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">{{alertTitle}}</span>
       </div>
-      <button tabindex="6" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+      <button tabindex="6" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
-      <form fxLayout="column" #form="ngForm">
+      <form #form="ngForm" fxLayout="column">
         <ng-container *ngTemplateOutlet="nodeDetailsExpansionBlock"></ng-container>
         <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-sm="space-between center" fxLayout.gt-sm="row wrap">
           <mat-form-field fxFlex="30" fxLayoutAlign="start end">
-            <input autoFocus matInput [(ngModel)]="requestedAmount" (keyup)="calculateFee()" placeholder="Requested Amount" type="number" [step]="10000" [min]="0" tabindex="1" required name="ramount" #ramount="ngModel">
+            <input #ramount="ngModel" autoFocus matInput placeholder="Requested Amount" type="number" tabindex="1" required name="ramount" [step]="10000" [min]="0" [(ngModel)]="requestedAmount" (keyup)="calculateFee()">
             <span matSuffix> Sats </span>
             <mat-error *ngIf="ramount.errors?.required">Requested amount is required.</mat-error>
           </mat-form-field>
           <mat-form-field fxFlex="30" fxLayoutAlign="start end">
-            <input matInput [(ngModel)]="feeRate" placeholder="Fee Rate" (keyup)="calculateFee()" type="number" [step]="10" [min]="0" tabindex="2" required name="feerate" #feeRt="ngModel">
+            <input #feeRt="ngModel" matInput placeholder="Fee Rate" type="number" tabindex="2" required name="feerate" [step]="10" [min]="0" [(ngModel)]="feeRate" (keyup)="calculateFee()">
             <span matSuffix> Sats/vByte </span>
             <mat-error *ngIf="feeRt.errors?.required">Fee rate is required.</mat-error>
           </mat-form-field>
           <mat-form-field fxFlex="30" fxLayoutAlign="start end">
-            <input matInput [(ngModel)]="localAmount" placeholder="Local Amount" type="number" [step]="10000" [min]="20000" [max]="totalBalance" tabindex="3" required name="lamount" #lamount="ngModel">
+            <input #lamount="ngModel" matInput placeholder="Local Amount" type="number" tabindex="3" required name="lamount" [step]="10000" [min]="20000" [max]="totalBalance" [(ngModel)]="localAmount">
             <mat-hint>Remaining Bal: {{totalBalance - ((localAmount) ? localAmount : 0) | number}}</mat-hint>
             <span matSuffix> Sats </span>
             <mat-error *ngIf="lamount.errors?.required">Local amount is required.</mat-error>
@@ -32,8 +32,8 @@
         <div fxFlex="100" class="alert alert-info mt-4">
           <span>Total cost to lease {{node.channel_opening_fee | number}} (Sats)</span>
         </div>
-        <div fxFlex="100" class="alert alert-danger mt-2" *ngIf="channelConnectionError !== ''">
-          <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+        <div *ngIf="channelConnectionError !== ''" fxFlex="100" class="alert alert-danger mt-2">
+          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
           <span *ngIf="channelConnectionError !== ''">{{channelConnectionError}}</span>
         </div>
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
@@ -46,7 +46,7 @@
 </div>
 
 <ng-template #nodeDetailsExpansionBlock>
-  <mat-expansion-panel class="flat-expansion-panel mt-1 mb-2" *ngIf="node" expanded="false">
+  <mat-expansion-panel *ngIf="node" class="flat-expansion-panel mt-1 mb-2" expanded="false">
     <mat-expansion-panel-header>
       <mat-panel-title>
         <span>Node: &nbsp;</span><strong class="font-weight-900">{{node?.alias || node?.nodeid}}</strong>
@@ -70,21 +70,21 @@
       <div fxLayout="column" fxLayoutAlign="start stretch">
         <h4 fxFlex="100" class="font-bold-500 mb-1">Addresses</h4>
         <div class="table-container">
-          <table mat-table #table [dataSource]="node.addresses" matSort class="overflow-auto">
+          <table #table mat-table matSort class="overflow-auto" [dataSource]="node.addresses">
             <ng-container matColumnDef="type">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
-              <td mat-cell *matCellDef="let address">{{address?.type}}</td>
+              <th *matHeaderCellDef mat-header-cell mat-sort-header>Type</th>
+              <td *matCellDef="let address" mat-cell>{{address?.type}}</td>
             </ng-container>
             <ng-container matColumnDef="address">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Address</th>
-              <td mat-cell *matCellDef="let address">{{address?.address }}</td>
+              <th *matHeaderCellDef mat-header-cell mat-sort-header>Address</th>
+              <td *matCellDef="let address" mat-cell>{{address?.address }}</td>
             </ng-container>
             <ng-container matColumnDef="port">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Port</th>
-              <td mat-cell *matCellDef="let address">{{address?.port}}</td>
+              <th *matHeaderCellDef mat-header-cell mat-sort-header>Port</th>
+              <td *matCellDef="let address" mat-cell>{{address?.port}}</td>
             </ng-container>
-            <tr mat-header-row *matHeaderRowDef="displayedColumns;"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>        
+            <tr *matHeaderRowDef="displayedColumns;" mat-header-row></tr>
+            <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>        
           </table>
         </div>
       </div>

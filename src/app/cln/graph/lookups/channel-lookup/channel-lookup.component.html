@@ -1,10 +1,10 @@
-<div fxLayout="column" *ngIf="lookupResult" class="mt-1">
+<div *ngIf="lookupResult" fxLayout="column" class="mt-1">
   <mat-divider></mat-divider>
   <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row">
     <div fxLayout="column" fxFlex="49" fxLayoutAlign="start start" class="mt-1 bordered-box padding-gap-large">
       <div fxLayout="column">
-        <h3 class="page-title font-bold-500" *ngIf="!node1_match">Node 1</h3>
-        <h3 class="page-title font-bold-500" *ngIf="node1_match">Node 1 (Your Node)</h3>
+        <h3 *ngIf="!node1_match" class="page-title font-bold-500">Node 1</h3>
+        <h3 *ngIf="node1_match" class="page-title font-bold-500">Node 1 (Your Node)</h3>
       </div>
       <mat-divider [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="20" class="my-1">
@@ -84,8 +84,8 @@
     </div>
     <div fxLayout="column" fxFlex="49" fxLayoutAlign="start start" class="mt-1 bordered-box padding-gap-large">
       <div>
-        <h3 class="page-title font-bold-500" *ngIf="!node2_match">Node 2</h3>
-        <h3 class="page-title font-bold-500" *ngIf="node2_match">Node 2 (Your Node)</h3>
+        <h3 *ngIf="!node2_match" class="page-title font-bold-500">Node 2</h3>
+        <h3 *ngIf="node2_match" class="page-title font-bold-500">Node 2 (Your Node)</h3>
       </div>
       <mat-divider [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="20" class="my-1">

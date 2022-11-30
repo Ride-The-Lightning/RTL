@@ -17,7 +17,7 @@ $green-night-theme: mat.define-dark-theme((
         accent: $green-accent-night,
         warn: $green-warn-night
     ),
-    typography: $medium-typography
+    // typography: $medium-typography
 ));
 
 $green-day-theme: mat.define-light-theme((
@@ -26,5 +26,5 @@ $green-day-theme: mat.define-light-theme((
         accent: $green-accent,
         warn: $green-warn
     ),
-    typography: $medium-typography
+    // typography: $medium-typography
 ));

@@ -17,7 +17,7 @@ $purple-night-theme: mat.define-dark-theme((
         accent: $purple-accent-night,
         warn: $purple-warn-night
     ),
-    typography: $medium-typography
+    // typography: $medium-typography
 ));
 
 $purple-day-theme: mat.define-light-theme((
@@ -26,5 +26,5 @@ $purple-day-theme: mat.define-light-theme((
         accent: $purple-accent,
         warn: $purple-warn
     ),
-    typography: $medium-typography
+    // typography: $medium-typography
 ));

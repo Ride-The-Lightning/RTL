@@ -16,7 +16,7 @@ $teal-night-theme: mat.define-dark-theme((
         accent: $teal-accent-night,
         warn: $teal-warn-night
     ),
-    typography: $medium-typography
+    // typography: $medium-typography
 ));
 
 $teal-day-theme: mat.define-light-theme((
@@ -25,5 +25,5 @@ $teal-day-theme: mat.define-light-theme((
         accent: $teal-accent,
         warn: $teal-warn
     ),
-    typography: $medium-typography
+    // typography: $medium-typography
 ));

@@ -2,8 +2,8 @@
   *ngTemplateOutlet="stepNumber === 1 ? loopStepBlock1: stepNumber === 2 ? loopStepBlock2 : stepNumber === 3 ? loopStepBlock3 : stepNumber === 4 ? loopStepBlock4 : loopStepBlock5">
 </ng-container>
 <ng-template #loopStepBlock1>
-  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)" [@sliderAnimation]="animationDirection">
-    <svg fxFlex="30" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}" viewBox="0 0 108 118" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" [@sliderAnimation]="animationDirection" (swipe)="onSwipe($event)">
+    <svg fxFlex="30" viewBox="0 0 108 118" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">
       <desc>Created with Sketch.</desc>
       <g id="Loopv0.2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="LoopOut_Step01" transform="translate(-594.000000, -215.000000)" fill-rule="nonzero">
@@ -60,8 +60,8 @@
   </div>
 </ng-template>
 <ng-template #loopStepBlock2>
-  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)" [@sliderAnimation]="animationDirection">
-    <svg fxFlex="30" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}" viewBox="0 0 205 121" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" [@sliderAnimation]="animationDirection" (swipe)="onSwipe($event)">
+    <svg fxFlex="30" viewBox="0 0 205 121" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">
       <desc>Created with Sketch.</desc>
       <defs>
         <linearGradient x1="50%" y1="100%" x2="50%" y2="0%" id="linearGradient-1">
@@ -156,8 +156,8 @@
   </div>
 </ng-template>
 <ng-template #loopStepBlock3>
-  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)" [@sliderAnimation]="animationDirection">
-    <svg fxFlex="30" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}" viewBox="0 0 373 121" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" [@sliderAnimation]="animationDirection" (swipe)="onSwipe($event)">
+    <svg fxFlex="30" viewBox="0 0 373 121" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">
       <desc>Created with Sketch.</desc>
       <defs>
         <linearGradient x1="50%" y1="100%" x2="50%" y2="8.86848147e-15%" id="linearGradient-1">
@@ -309,8 +309,8 @@
   </div>
 </ng-template>
 <ng-template #loopStepBlock4>
-  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)" [@sliderAnimation]="animationDirection">
-    <svg fxFlex="30" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}" viewBox="0 0 278 118" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" [@sliderAnimation]="animationDirection" (swipe)="onSwipe($event)">
+    <svg fxFlex="30" viewBox="0 0 278 118" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">
       <desc>Created with Sketch.</desc>
       <g id="Loopv0.2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="LoopOut_Step04" transform="translate(-503.000000, -212.000000)">
@@ -418,8 +418,8 @@
   </div>
 </ng-template>
 <ng-template #loopStepBlock5>
-  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)" [@sliderAnimation]="animationDirection">
-    <svg fxFlex="30" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}" viewBox="0 0 200 120" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" [@sliderAnimation]="animationDirection" (swipe)="onSwipe($event)">
+    <svg fxFlex="30" viewBox="0 0 200 120" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">
       <desc>Created with Sketch.</desc>
       <defs>
         <linearGradient x1="50%" y1="100%" x2="50%" y2="0%" id="linearGradient-1">

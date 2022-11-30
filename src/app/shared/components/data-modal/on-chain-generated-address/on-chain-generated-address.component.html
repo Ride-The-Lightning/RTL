@@ -1,27 +1,27 @@
 <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
-  <div fxFlex="35" *ngIf="address" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
+  <div *ngIf="address" fxFlex="35" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
     <qr-code [value]="address" [size]="qrWidth" [errorCorrectionLevel]="'L'"></qr-code>
   </div>
   <div fxFlex="65">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
-        <fa-icon [icon]="faReceipt" class="page-title-img mr-1"></fa-icon>
+        <fa-icon class="page-title-img mr-1" [icon]="faReceipt"></fa-icon>
         <span class="page-title">{{screenSize === screenSizeEnum.XS ? 'Address' : 'Generated Address'}}</span>
       </div>
-      <button tabindex="2" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+      <button tabindex="2" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <div fxLayout="column">
-        <div fxFlex="50" *ngIf="address" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
+        <div *ngIf="address" fxFlex="50" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
           <qr-code [value]="address" [size]="qrWidth" [errorCorrectionLevel]="'L'"></qr-code>
         </div>
-        <div fxLayout="row" *ngIf="addressType!==''">
+        <div *ngIf="addressType!==''" fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Address Type</h4>
             <span class="foreground-secondary-text">{{addressType}}</span>
           </div>
         </div>
-        <mat-divider class="w-100 my-1" *ngIf="addressType!==''"></mat-divider>
+        <mat-divider *ngIf="addressType!==''" class="w-100 my-1"></mat-divider>
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Address</h4>

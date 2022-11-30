@@ -1,24 +1,24 @@
 <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between stretch">
-  <div fxFlex="35" [fxLayoutAlign]="invoice?.payment_request && invoice?.payment_request !== '' ? 'center start' : 'center center'" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
+  <div fxFlex="35" class="modal-qr-code-container padding-gap-large" [fxLayoutAlign]="invoice?.payment_request && invoice?.payment_request !== '' ? 'center start' : 'center center'" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
     <qr-code *ngIf="invoice?.payment_request && invoice?.payment_request !== ''" [value]="invoice?.payment_request" [size]="qrWidth" [errorCorrectionLevel]="'L'"></qr-code>
     <span *ngIf="!invoice?.payment_request || invoice?.payment_request === ''" class="font-size-300">N/A</span>
   </div>
   <div fxLayout="column" fxFlex="65">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
-        <fa-icon [icon]="faReceipt" class="page-title-img mr-1"></fa-icon>
+        <fa-icon class="page-title-img mr-1" [icon]="faReceipt"></fa-icon>
         <span class="page-title">{{screenSize === screenSizeEnum.XS ?  (newlyAdded ? 'Created' : 'Invoice') : (newlyAdded ? 'Invoice Created' : 'Invoice Information')}}</span>
       </div>
-      <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+      <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large" [ngClass]="{'xs-scroll-y': screenSize === screenSizeEnum.XS}">
       <div fxLayout="column">
-        <div fxFlex="30" [fxLayoutAlign]="invoice?.payment_request && invoice?.payment_request !== '' ? 'center start' : 'center center'" class="modal-qr-code-container padding-gap" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
+        <div fxFlex="30" class="modal-qr-code-container padding-gap" [fxLayoutAlign]="invoice?.payment_request && invoice?.payment_request !== '' ? 'center start' : 'center center'" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
           <qr-code *ngIf="invoice?.payment_request && invoice?.payment_request !== ''" [value]="invoice?.payment_request" [size]="qrWidth" [errorCorrectionLevel]="'L'"></qr-code>
           <span *ngIf="!invoice?.payment_request || invoice?.payment_request === ''" class="font-size-120">QR Code Not Applicable</span>
         </div>
-        <mat-divider *ngIf="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM" [inset]="true" class="my-1"></mat-divider>
-        <div [ngClass]="{'h-50': invoice?.htlcs && invoice?.htlcs.length > 0 && showAdvanced}" #scrollContainer>
+        <mat-divider *ngIf="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM" class="my-1" [inset]="true"></mat-divider>
+        <div #scrollContainer [ngClass]="{'h-50': invoice?.htlcs && invoice?.htlcs.length > 0 && showAdvanced}">
           <div fxLayout="row">
             <div fxFlex="50">
               <h4 fxLayoutAlign="start" class="font-bold-500">{{screenSize === screenSizeEnum.XS ? 'Amount' : 'Amount Requested'}}</h4>
@@ -38,12 +38,12 @@
                 </ng-container>
                 <ng-container *ngIf="(!invoice?.amt_paid_sat || invoice?.amt_paid_sat === '0')">
                   <span *ngIf="invoice?.state !== 'OPEN' || !flgVersionCompatible">-</span>
-                  <mat-spinner [diameter]="20" *ngIf="invoice?.state === 'OPEN' && flgVersionCompatible"></mat-spinner>
+                  <mat-spinner *ngIf="invoice?.state === 'OPEN' && flgVersionCompatible" [diameter]="20"></mat-spinner>
                 </ng-container>
               </span>
             </div>
           </div>
-          <mat-divider [inset]="true" class="my-1"></mat-divider>
+          <mat-divider class="my-1" [inset]="true"></mat-divider>
           <div fxLayout="row">
             <div fxFlex="50">
               <h4 fxLayoutAlign="start" class="font-bold-500">Date Created</h4>
@@ -54,21 +54,21 @@
               <span class="foreground-secondary-text">{{(+invoice?.settle_date !== 0 ? ((+invoice?.settle_date * 1000) | date:'dd/MMM/y HH:mm') : '-')}}</span>
             </div>
           </div>
-          <mat-divider [inset]="true" class="my-1"></mat-divider>
+          <mat-divider class="my-1" [inset]="true"></mat-divider>
           <div fxLayout="row">
             <div fxFlex="100">
               <h4 fxLayoutAlign="start" class="font-bold-500">Memo</h4>
               <span class="foreground-secondary-text">{{invoice?.memo}}</span>
             </div>
           </div>
-          <mat-divider [inset]="true" class="my-1"></mat-divider>
+          <mat-divider class="my-1" [inset]="true"></mat-divider>
           <div fxLayout="row">
             <div fxFlex="100">
               <h4 fxLayoutAlign="start" class="font-bold-500">Payment Request</h4>
               <span class="overflow-wrap foreground-secondary-text">{{invoice?.payment_request || 'N/A'}}</span>
             </div>
           </div>
-          <mat-divider [inset]="true" class="my-1"></mat-divider>
+          <mat-divider class="my-1" [inset]="true"></mat-divider>
           <div fxLayout="row">
             <div fxFlex="100">
               <h4 fxLayoutAlign="start" class="font-bold-500">Payment Hash</h4>
@@ -87,7 +87,7 @@
       </button>
     </div>
     <div class="padding-gap-x-large padding-gap-bottom-large" fxLayout="row" fxLayoutAlign="end center" fxFlex="100">
-      <button mat-button color="primary" type="reset" (click)="onShowAdvanced()" tabindex="1" class="mr-1">
+      <button mat-button color="primary" type="reset" tabindex="1" class="mr-1" (click)="onShowAdvanced()">
         <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
         <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
       </button>
@@ -97,14 +97,14 @@
   </div>
 </div>
 <ng-template #advancedBlock>
-  <mat-divider [inset]="true" class="my-1"></mat-divider>
+  <mat-divider class="my-1" [inset]="true"></mat-divider>
   <div fxLayout="row">
     <div fxFlex="100">
       <h4 fxLayoutAlign="start" class="font-bold-500">Preimage</h4>
       <span class="overflow-wrap foreground-secondary-text">{{invoice?.r_preimage || '-'}}</span>
     </div>
   </div>
-  <mat-divider [inset]="true" class="my-1"></mat-divider>
+  <mat-divider class="my-1" [inset]="true"></mat-divider>
   <div fxLayout="row">
     <div fxFlex="50">
       <h4 fxLayoutAlign="start" class="font-bold-500">State</h4>
@@ -115,7 +115,7 @@
       <span class="overflow-wrap foreground-secondary-text">{{(+invoice?.creation_date + +invoice?.expiry) * 1000 | date:'dd/MMM/y HH:mm'}}</span>
     </div>
   </div>
-  <mat-divider [inset]="true" class="my-1"></mat-divider>
+  <mat-divider class="my-1" [inset]="true"></mat-divider>
   <div fxLayout="row">
     <div fxFlex="50">
       <h4 fxLayoutAlign="start" class="font-bold-500">Private Routing Hints</h4>
@@ -126,9 +126,9 @@
       <span class="overflow-wrap foreground-secondary-text">{{invoice?.is_amp ? 'Yes' : 'No'}}</span>
     </div>
   </div>  
-  <mat-divider [inset]="true" class="my-1"></mat-divider>
-  <div fxLayout="row" *ngIf="invoice?.htlcs && invoice?.htlcs.length > 0">
-    <mat-expansion-panel (opened)="flgOpened = true" (closed)="onExpansionClosed()" class="flat-expansion-panel" fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100">
+  <mat-divider class="my-1" [inset]="true"></mat-divider>
+  <div *ngIf="invoice?.htlcs && invoice?.htlcs.length > 0" fxLayout="row">
+    <mat-expansion-panel class="flat-expansion-panel" fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" (opened)="flgOpened = true" (closed)="onExpansionClosed()">
       <mat-expansion-panel-header>
         <mat-panel-title>
           <h4 fxLayoutAlign="start center" fxFlex="100" class="font-bold-500">HTLCs</h4>
@@ -139,8 +139,8 @@
           <span fxFlex="60" class="foreground-secondary-text font-bold-500">Channel ID</span>
           <span fxFlex="40" class="foreground-secondary-text font-bold-500">Amount (Sats)</span>
         </div>
-        <mat-divider [inset]="true" class="my-1"></mat-divider>
-        <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" *ngFor="let htlc of invoice?.htlcs">
+        <mat-divider class="my-1" [inset]="true"></mat-divider>
+        <div *ngFor="let htlc of invoice?.htlcs" fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100">
           <div fxLayout="row" fxLayoutAlign="start start" fxFlex="100">
             <span fxFlex="60" class="foreground-secondary-text">
               <span *ngIf="htlc.state === 'SETTLED'" class="dot green" matTooltip="Settled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
@@ -150,10 +150,10 @@
             </span>
             <span fxFlex="40" class="foreground-secondary-text">{{((+htlc.amt_msat/1000) || 0) | number:getDecimalFormat(htlc)}}</span>
           </div>
-          <mat-divider [inset]="true" class="my-1"></mat-divider>
+          <mat-divider class="my-1" [inset]="true"></mat-divider>
         </div>
       </div>
     </mat-expansion-panel>
   </div>
-  <mat-divider [inset]="true" class="my-1" *ngIf="invoice?.htlcs && invoice?.htlcs.length > 0"></mat-divider>
+  <mat-divider *ngIf="invoice?.htlcs && invoice?.htlcs.length > 0" class="my-1" [inset]="true"></mat-divider>
 </ng-template>

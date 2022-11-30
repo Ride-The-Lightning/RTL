@@ -3,131 +3,131 @@
     <div fxFlex="70"></div>
     <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
       <mat-form-field fxFlex="49">
-        <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()" name="filterBy">
+        <mat-select placeholder="Filter By" tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
           <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
         </mat-select>
       </mat-form-field>
       <mat-form-field fxFlex="49">
-        <input matInput [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()" name="filter" placeholder="Filter">
+        <input matInput name="filter" placeholder="Filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
       </mat-form-field>
     </div>
   </div>
-  <div [perfectScrollbar] fxLayout="column" fxFlex="100" class="table-container">
+  <div fxLayout="column" fxFlex="100" class="table-container" [perfectScrollbar]>
     <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-    <table mat-table #table fxFlex="100" [dataSource]="channels" matSort [ngClass]="{'error-border': errorMessage !== ''}">
+    <table #table mat-table fxFlex="100" matSort [dataSource]="channels" [ngClass]="{'error-border': errorMessage !== ''}">
       <ng-container matColumnDef="active">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" matTooltip="Active"></th>
-        <td mat-cell *matCellDef="let channel">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="Active"></th>
+        <td *matCellDef="let channel" mat-cell>
           <span *ngIf="channel.active" class="dot green" matTooltip="Active" matTooltipPosition="right"></span>
           <span *ngIf="!channel.active" class="dot yellow" matTooltip="Inactive" matTooltipPosition="right"></span>
         </td>
       </ng-container>
       <ng-container matColumnDef="private">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" matTooltip="Private"></th>
-        <td mat-cell *matCellDef="let channel">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="Private"></th>
+        <td *matCellDef="let channel" mat-cell>
           <span *ngIf="channel.private" class="mr-1" matTooltip="Private" matTooltipPosition="right"><fa-icon [icon]="faEyeSlash"></fa-icon></span>
           <span *ngIf="!channel.private" class="mr-1" matTooltip="Public" matTooltipPosition="right"><fa-icon [icon]="faEye"></fa-icon></span>
         </td>
       </ng-container>
       <ng-container matColumnDef="remote_alias">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer</th>
-        <td mat-cell *matCellDef="let channel">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>Peer</th>
+        <td *matCellDef="let channel" mat-cell>
           <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{channel.remote_alias}}</span>
           </div>
         </td>
       </ng-container>
       <ng-container matColumnDef="remote_pubkey">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Pubkey</th>
-        <td mat-cell *matCellDef="let channel">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>Pubkey</th>
+        <td *matCellDef="let channel" mat-cell>
           <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{channel.remote_pubkey}}</span>
           </div>
         </td>
       </ng-container>
       <ng-container matColumnDef="channel_point">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel Point</th>
-        <td mat-cell *matCellDef="let channel">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>Channel Point</th>
+        <td *matCellDef="let channel" mat-cell>
           <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{channel.channel_point}}</span>
           </div>
         </td>
       </ng-container>
       <ng-container matColumnDef="chan_id">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel ID</th>
-        <td mat-cell *matCellDef="let channel">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>Channel ID</th>
+        <td *matCellDef="let channel" mat-cell>
           <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{channel.chan_id}}</span>
           </div>
         </td>
       </ng-container>
       <ng-container matColumnDef="initiator">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Initiator</th>
-        <td mat-cell *matCellDef="let channel">{{channel.initiator ? 'Yes' : 'No'}}</td>
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>Initiator</th>
+        <td *matCellDef="let channel" mat-cell>{{channel.initiator ? 'Yes' : 'No'}}</td>
       </ng-container>
       <ng-container matColumnDef="static_remote_key">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Static Remote Key</th>
-        <td mat-cell *matCellDef="let channel">{{channel.static_remote_key ? 'Yes' : 'No'}}</td>
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>Static Remote Key</th>
+        <td *matCellDef="let channel" mat-cell>{{channel.static_remote_key ? 'Yes' : 'No'}}</td>
       </ng-container>
       <ng-container matColumnDef="uptime_str">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Uptime ({{timeUnit}})</th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.uptime_str}} </span></td>
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Uptime ({{timeUnit}})</th>
+        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">{{channel.uptime_str}} </span></td>
       </ng-container>
       <ng-container matColumnDef="lifetime_str">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Lifetime ({{timeUnit}})</th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.lifetime_str}} </span></td>
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Lifetime ({{timeUnit}})</th>
+        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">{{channel.lifetime_str}} </span></td>
       </ng-container>
       <ng-container matColumnDef="commit_fee">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Commit Fee (Sats)</th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.commit_fee | number}} </span></td>
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Commit Fee (Sats)</th>
+        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">{{channel.commit_fee | number}} </span></td>
       </ng-container>
       <ng-container matColumnDef="commit_weight">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Commit Weight</th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.commit_weight | number}} </span></td>
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Commit Weight</th>
+        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">{{channel.commit_weight | number}} </span></td>
       </ng-container>
       <ng-container matColumnDef="fee_per_kw">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Fee/KW</th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.fee_per_kw | number}} </span></td>
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Fee/KW</th>
+        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">{{channel.fee_per_kw | number}} </span></td>
       </ng-container>
       <ng-container matColumnDef="num_updates">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Updates</th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.num_updates | number}} </span></td>
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Updates</th>
+        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">{{channel.num_updates | number}} </span></td>
       </ng-container>
       <ng-container matColumnDef="unsettled_balance">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Unsettled Balance (Sats)</th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.unsettled_balance | number}} </span></td>
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Unsettled Balance (Sats)</th>
+        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">{{channel.unsettled_balance | number}} </span></td>
       </ng-container>
       <ng-container matColumnDef="capacity">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Capacity (Sats)</th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.capacity | number}} </span></td>
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Capacity (Sats)</th>
+        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">{{channel.capacity | number}} </span></td>
       </ng-container>
       <ng-container matColumnDef="local_chan_reserve_sat">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Local Reserve (Sats)</th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.local_chan_reserve_sat | number}} </span></td>
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Local Reserve (Sats)</th>
+        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">{{channel.local_chan_reserve_sat | number}} </span></td>
       </ng-container>
       <ng-container matColumnDef="remote_chan_reserve_sat">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Remote Reserve (Sats)</th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.remote_chan_reserve_sat | number}} </span></td>
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Remote Reserve (Sats)</th>
+        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">{{channel.remote_chan_reserve_sat | number}} </span></td>
       </ng-container>
       <ng-container matColumnDef="total_satoshis_sent">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Sent</th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.total_satoshis_sent | number}} </span></td>
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Sats Sent</th>
+        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">{{channel.total_satoshis_sent | number}} </span></td>
       </ng-container>
       <ng-container matColumnDef="total_satoshis_received">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Received</th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.total_satoshis_received | number}} </span></td>
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Sats Received</th>
+        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">{{channel.total_satoshis_received | number}} </span></td>
       </ng-container>
       <ng-container matColumnDef="local_balance">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Local Balance (Sats)</th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.local_balance | number}} </span></td>
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Local Balance (Sats)</th>
+        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">{{channel.local_balance | number}} </span></td>
       </ng-container>
       <ng-container matColumnDef="remote_balance">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Remote Balance (Sats)</th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.remote_balance | number}} </span></td>
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Remote Balance (Sats)</th>
+        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">{{channel.remote_balance | number}} </span></td>
       </ng-container>
       <ng-container matColumnDef="balancedness">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Balance Score</th>
-        <td mat-cell *matCellDef="let channel">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>Balance Score</th>
+        <td *matCellDef="let channel" mat-cell>
           <div fxLayout="row">
             <mat-hint fxFlex="100" fxLayoutAlign="center center" class="font-size-80">{{channel.balancedness || 0 | number}}</mat-hint>
           </div>
@@ -135,7 +135,7 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>
+        <th *matHeaderCellDef mat-header-cell>
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="1" class="mr-0">
               <mat-select-trigger></mat-select-trigger>
@@ -144,32 +144,32 @@
             </mat-select>
           </div>
        </th>        
-        <td mat-cell *matCellDef="let channel" fxLayoutAlign="end center">
+        <td *matCellDef="let channel" mat-cell fxLayoutAlign="end center">
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="2" class="mr-0">
               <mat-select-trigger></mat-select-trigger>
               <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
               <mat-option (click)="onViewRemotePolicy(channel)">View Remote Fee </mat-option>
               <mat-option (click)="onChannelUpdate(channel)">Update Fee Policy</mat-option>
-              <mat-option (click)="onCircularRebalance(channel)" *ngIf="+versionsArr[0] > 0 || +versionsArr[1] >= 9">Circular Rebalance</mat-option>
-              <mat-option (click)="onLoopOut(channel)" *ngIf="selNode.swapServerUrl">Loop Out</mat-option>
+              <mat-option *ngIf="+versionsArr[0] > 0 || +versionsArr[1] >= 9" (click)="onCircularRebalance(channel)">Circular Rebalance</mat-option>
+              <mat-option *ngIf="selNode.swapServerUrl" (click)="onLoopOut(channel)">Loop Out</mat-option>
               <mat-option (click)="onChannelClose(channel)">Close Channel</mat-option>
             </mat-select>
           </div>
         </td>
       </ng-container>
       <ng-container matColumnDef="no_channel">
-        <td mat-footer-cell *matFooterCellDef colspan="4">
+        <td *matFooterCellDef  mat-footer-cellcolspan="4">
           <p *ngIf="numPeers<1 && (!channels?.data || channels?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.COMPLETED">No peers connected. Add a peer in order to open a channel.</p>
           <p *ngIf="numPeers>0 && (!channels?.data || channels?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.COMPLETED">No channel available.</p>
           <p *ngIf="(!channels?.data || channels?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.INITIATED">Getting channels...</p>
           <p *ngIf="(!channels?.data || channels?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
         </td>
       </ng-container>
-      <tr mat-footer-row *matFooterRowDef="['no_channel']" [ngClass]="{'display-none': channels?.data && channels?.data?.length>0}"></tr>
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr *matFooterRowDef="['no_channel']" mat-footer-row [ngClass]="{'display-none': channels?.data && channels?.data?.length>0}"></tr>
+      <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+      <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
     </table>
   </div>
-  <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
+  <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true"></mat-paginator>
 </div>

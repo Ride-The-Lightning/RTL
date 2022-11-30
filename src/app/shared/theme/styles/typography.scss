@@ -1,12 +1,12 @@
 @use '@angular/material' as mat;
 
-$medium-typography: mat.define-typography-config(
-    $headline-5: (font-size: 112px, line-height: 112px, font-weight: 300),
-    $headline-6: (font-size: 20px, line-height: 20px, font-weight: 400), 
-    $subtitle-1: (font-size: 45px, line-height: 48px, font-weight: 400), 
-    $subtitle-2: (font-size: 34px, line-height: 40px, font-weight: 400), 
-    $body-2: (font-size: 14px, line-height: 24px, font-weight: 500), 
-    $body-1: (font-size: 14px, line-height: 20px, font-weight: 400), 
-    $caption: (font-size: 12px, line-height: 20px, font-weight: 400), 
-    $button: (font-size: 13px, line-height: 14px, font-weight: 500)
-);
+// $medium-typography: mat.define-typography-config(
+//     $headline-5: (font-size: 112px, line-height: 112px, font-weight: 300),
+//     $headline-6: (font-size: 20px, line-height: 20px, font-weight: 400), 
+//     $subtitle-1: (font-size: 45px, line-height: 48px, font-weight: 400), 
+//     $subtitle-2: (font-size: 34px, line-height: 40px, font-weight: 400), 
+//     $body-2: (font-size: 14px, line-height: 24px, font-weight: 500), 
+//     $body-1: (font-size: 14px, line-height: 20px, font-weight: 400), 
+//     $caption: (font-size: 12px, line-height: 20px, font-weight: 400), 
+//     $button: (font-size: 13px, line-height: 14px, font-weight: 500)
+// );

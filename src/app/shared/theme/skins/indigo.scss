@@ -16,7 +16,7 @@ $indigo-night-theme: mat.define-dark-theme((
         accent: $indigo-accent-night,
         warn: $indigo-warn-night
     ),
-    typography: $medium-typography
+    // typography: $medium-typography
 ));
 
 $indigo-day-theme: mat.define-light-theme((
@@ -25,5 +25,5 @@ $indigo-day-theme: mat.define-light-theme((
         accent: $indigo-accent,
         warn: $indigo-warn
     ),
-    typography: $medium-typography
+    // typography: $medium-typography
 ));

@@ -1,5 +1,5 @@
-<div fxLayout="column" *ngIf="lookupResult" class="mt-1">
-  <mat-divider [inset]="true" class="mb-1"></mat-divider>
+<div *ngIf="lookupResult" fxLayout="column" class="mt-1">
+  <mat-divider class="mb-1" [inset]="true"></mat-divider>
   <div fxLayout="row">
     <div fxLayout="column" fxFlex="30" fxLayoutAlign="end start">
       <h4 class="font-bold-500">Channel ID</h4>
@@ -10,7 +10,7 @@
       <span class="foreground-secondary-text">{{lookupResult.chan_point}}</span>
     </div>
   </div>
-  <mat-divider [inset]="true" class="my-1"></mat-divider>
+  <mat-divider class="my-1" [inset]="true"></mat-divider>
   <div fxLayout="row">
     <div fxLayout="column" fxFlex="30" fxLayoutAlign="end start">
       <h4 class="font-bold-500">Last Update</h4>
@@ -21,44 +21,44 @@
       <span class="foreground-secondary-text">{{lookupResult.capacity | number}}</span>
     </div>
   </div>
-  <mat-divider [inset]="true" class="my-1"></mat-divider>
+  <mat-divider class="my-1" [inset]="true"></mat-divider>
   <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row">
     <div fxLayout="column" fxFlex="49" fxLayoutAlign="start start" class="mt-1 bordered-box padding-gap-large">
       <div fxLayout="column">
-        <h3 class="page-title font-bold-500" *ngIf="!node1_match">Node 1</h3>
-        <h3 class="page-title font-bold-500" *ngIf="node1_match">Node 1 (Your Node)</h3>
+        <h3 *ngIf="!node1_match" class="page-title font-bold-500">Node 1</h3>
+        <h3 *ngIf="node1_match" class="page-title font-bold-500">Node 1 (Your Node)</h3>
       </div>
-      <mat-divider [inset]="true" class="my-1"></mat-divider>
+      <mat-divider class="my-1" [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="20">
         <h4 class="font-bold-500">Pubkey</h4>
         <span class="foreground-secondary-text">{{lookupResult.node1_pub}}</span>
       </div>
-      <mat-divider [inset]="true" class="my-1"></mat-divider>
+      <mat-divider class="my-1" [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="10">
         <h4 class="font-bold-500">Time Lock Delta</h4>
         <span class="foreground-secondary-text">{{lookupResult.node1_policy?.time_lock_delta}}</span>
       </div>
-      <mat-divider [inset]="true" class="my-1"></mat-divider>
+      <mat-divider class="my-1" [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="10">
         <h4 class="font-bold-500">Min HTLC</h4>
         <span class="foreground-secondary-text">{{lookupResult.node1_policy?.min_htlc}}</span>
       </div>
-      <mat-divider [inset]="true" class="my-1"></mat-divider>
+      <mat-divider class="my-1" [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="10">
         <h4 class="font-bold-500">Max HTLC</h4>
         <span class="foreground-secondary-text">{{lookupResult.node1_policy?.max_htlc_msat}}</span>
       </div>
-      <mat-divider [inset]="true" class="my-1"></mat-divider>
+      <mat-divider class="my-1" [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="10">
         <h4 class="font-bold-500">Fee Base Msat</h4>
         <span class="foreground-secondary-text">{{lookupResult.node1_policy?.fee_base_msat}}</span>
       </div>
-      <mat-divider [inset]="true" class="my-1"></mat-divider>
+      <mat-divider class="my-1" [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="10">
         <h4 class="font-bold-500">Fee Rate Milli Msat</h4>
         <span class="foreground-secondary-text">{{lookupResult.node1_policy?.fee_rate_milli_msat}}</span>
       </div>
-      <mat-divider [inset]="true" class="my-1"></mat-divider>
+      <mat-divider class="my-1" [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="10">
         <h4 class="font-bold-500">Disabled</h4>
         <span class="foreground-secondary-text">{{lookupResult.node1_policy?.disabled ? 'Yes' : 'No'}}</span>
@@ -66,40 +66,40 @@
     </div>
     <div fxLayout="column" fxFlex="49" fxLayoutAlign="start start" class="mt-1 bordered-box padding-gap-large">
       <div>
-        <h3 class="page-title font-bold-500" *ngIf="!node2_match">Node 2</h3>
-        <h3 class="page-title font-bold-500" *ngIf="node2_match">Node 2 (Your Node)</h3>
+        <h3 *ngIf="!node2_match" class="page-title font-bold-500">Node 2</h3>
+        <h3 *ngIf="node2_match" class="page-title font-bold-500">Node 2 (Your Node)</h3>
       </div>
-      <mat-divider [inset]="true" class="my-1"></mat-divider>
+      <mat-divider class="my-1" [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="20">
         <h4 class="font-bold-500">Pubkey</h4>
         <span class="foreground-secondary-text">{{lookupResult.node2_pub}}</span>
       </div>
-      <mat-divider [inset]="true" class="my-1"></mat-divider>
+      <mat-divider class="my-1" [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="10">
         <h4 class="font-bold-500">Time Lock Delta</h4>
         <span class="foreground-secondary-text">{{lookupResult.node2_policy?.time_lock_delta}}</span>
       </div>
-      <mat-divider [inset]="true" class="my-1"></mat-divider>
+      <mat-divider class="my-1" [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="10">
         <h4 class="font-bold-500">Min HTLC</h4>
         <span class="foreground-secondary-text">{{lookupResult.node2_policy?.min_htlc}}</span>
       </div>
-      <mat-divider [inset]="true" class="my-1"></mat-divider>
+      <mat-divider class="my-1" [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="10">
         <h4 class="font-bold-500">Max HTLC</h4>
         <span class="foreground-secondary-text">{{lookupResult.node2_policy?.max_htlc_msat}}</span>
       </div>
-      <mat-divider [inset]="true" class="my-1"></mat-divider>
+      <mat-divider class="my-1" [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="10">
         <h4 class="font-bold-500">Fee Base Msat</h4>
         <span class="foreground-secondary-text">{{lookupResult.node2_policy?.fee_base_msat}}</span>
       </div>
-      <mat-divider [inset]="true" class="my-1"></mat-divider>
+      <mat-divider class="my-1" [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="10">
         <h4 class="font-bold-500">Fee Rate Milli Msat</h4>
         <span class="foreground-secondary-text">{{lookupResult.node2_policy?.fee_rate_milli_msat}}</span>
       </div>
-      <mat-divider [inset]="true" class="my-1"></mat-divider>
+      <mat-divider class="my-1" [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="10">
         <h4 class="font-bold-500">Disabled</h4>
         <span class="foreground-secondary-text">{{lookupResult.node2_policy?.disabled ? 'Yes' : 'No'}}</span>

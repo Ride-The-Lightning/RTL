@@ -4,37 +4,37 @@
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">Create Invoice</span>
       </div>
-      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" [mat-dialog-close]="false" default mat-button>X</button>
+      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" default mat-button [mat-dialog-close]="false">X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
-      <form fxLayout="row wrap" fxLayoutAlign="start space-between" fxFlex="100" #addInvoiceForm="ngForm">
+      <form #addInvoiceForm="ngForm" fxLayout="row wrap" fxLayoutAlign="start space-between" fxFlex="100">
         <mat-form-field fxFlex="100" fxLayoutAlign="start end">
-          <input matInput autoFocus [(ngModel)]="description" placeholder="Description" tabindex="2" name="description" required>
+          <input matInput autoFocus placeholder="Description" tabindex="2" name="description" required [(ngModel)]="description">
           <mat-error *ngIf="!description">Description is required.</mat-error>
         </mat-form-field>
         <div fxLayout="row" fxLayoutAlign="space-between start" fxFlex="100">
           <mat-form-field fxFlex="40">
-            <input matInput [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()" placeholder="Amount" type="number" [step]="100" [min]="1" tabindex="3" name="invValue">
+            <input matInput placeholder="Amount" type="number" tabindex="3" name="invValue" [step]="100" [min]="1" [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()">
             <span matSuffix>  Sats </span>
             <mat-hint>{{invoiceValueHint}}</mat-hint>
           </mat-form-field>
           <mat-form-field fxFlex="30">
-            <input matInput [(ngModel)]="expiry" placeholder="Expiry" type="number" [step]="selTimeUnit === timeUnitEnum.SECS ? 300 : selTimeUnit === timeUnitEnum.MINS ? 10 : selTimeUnit === timeUnitEnum.HOURS ? 2 : 1" [min]="1" name="exp" tabindex="4">
+            <input matInput placeholder="Expiry" type="number" name="exp" tabindex="4" [step]="selTimeUnit === timeUnitEnum.SECS ? 300 : selTimeUnit === timeUnitEnum.MINS ? 10 : selTimeUnit === timeUnitEnum.HOURS ? 2 : 1" [min]="1" [(ngModel)]="expiry">
             <span matSuffix>{{selTimeUnit | titlecase}} </span>
           </mat-form-field>
           <mat-form-field fxFlex="26">
-            <mat-select [value]="selTimeUnit" tabindex="5" name="timeUnit" (selectionChange)="onTimeUnitChange($event)">
+            <mat-select tabindex="5" name="timeUnit" [value]="selTimeUnit" (selectionChange)="onTimeUnitChange($event)">
               <mat-option *ngFor="let timeUnit of timeUnits" [value]="timeUnit">{{timeUnit | titlecase}}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
-        <div fxFlex="100" class="alert alert-danger mt-1" *ngIf="invoiceError !== ''">
-          <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+        <div *ngIf="invoiceError !== ''" fxFlex="100" class="alert alert-danger mt-1">
+          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
           <span *ngIf="invoiceError !== ''">{{invoiceError}}</span>
         </div>
         <div fxLayout="row" fxFlex="100" class="mt-2" fxLayoutAlign="end center">
           <button class="mr-1" mat-button color="primary" tabindex="7" type="reset" (click)="resetData()">Clear Field</button>
-          <button mat-button color="primary" (click)="onAddInvoice(addInvoiceForm)" tabindex="8">Create Invoice</button>
+          <button mat-button color="primary" tabindex="8" (click)="onAddInvoice(addInvoiceForm)">Create Invoice</button>
         </div>
       </form>
     </mat-card-content>

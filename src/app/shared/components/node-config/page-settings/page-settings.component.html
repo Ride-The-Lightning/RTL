@@ -1,54 +1,54 @@
-<div [perfectScrollbar] fxLayout="column" fxFlex="100" id="head">
-  <form fxLayout="column" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1" #form="ngForm">
+<div fxLayout="column" fxFlex="100" id="head" [perfectScrollbar]>
+  <form #form="ngForm" fxLayout="column" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1">
     <div fxLayout="row">
-      <fa-icon [icon]="faPenRuler" class="page-title-img mr-1"></fa-icon>
+      <fa-icon class="page-title-img mr-1" [icon]="faPenRuler"></fa-icon>
       <span class="page-title">Grid Settings</span>
     </div>
     <ng-container *ngIf="errorMessage && errorMessage.page === 'unknown'" [ngTemplateOutlet]="errorObjectBlock" [ngTemplateOutletContext]="{error: errorMessage}"></ng-container>
     <mat-accordion displayMode="flat" multi="false">
-      <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1" [ngClass]="{'error-border': errorMessage?.page === page.pageId}" expanded="false" *ngFor="let page of pageSettings">
+      <mat-expansion-panel *ngFor="let page of pageSettings" fxLayout="column" class="flat-expansion-panel mt-1" expanded="false" [ngClass]="{'error-border': errorMessage?.page === page.pageId}">
         <mat-expansion-panel-header>
           <mat-panel-title>{{page.pageId | camelcaseWithReplace:'_'}}</mat-panel-title>
         </mat-expansion-panel-header>
-        <div fxLayout="column" fxLayoutAlign="start stretch" *ngFor="let table of page.tables" class="padding-gap-x-large table-setting-row">
+        <div *ngFor="let table of page.tables" fxLayout="column" fxLayoutAlign="start stretch" class="padding-gap-x-large table-setting-row">
           <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center">
             <span fxFlex="10">{{table.tableId | camelcaseWithReplace:'_'}}:</span>
             <mat-form-field fxFlex="10">
-              <mat-select [disabled]="nodePageDefs[page.pageId][table.tableId].disablePageSize" [(ngModel)]="table.recordsPerPage" placeholder="Records/Page" name="{{page.pageId}}{{table.tableId}}-page-size-options" tabindex="2" required>
+              <mat-select placeholder="Records/Page" tabindex="2" required [disabled]="nodePageDefs[page.pageId][table.tableId].disablePageSize" name="{{page.pageId}}{{table.tableId}}-page-size-options" [(ngModel)]="table.recordsPerPage">
                 <mat-option *ngFor="let pageSizeOption of pageSizeOptions" [value]="pageSizeOption">
                   {{pageSizeOption}}
                 </mat-option>
               </mat-select>
             </mat-form-field>
             <mat-form-field fxFlex="10">
-              <mat-select [(ngModel)]="table.sortBy" placeholder="Sort By" name="{{page.pageId}}{{table.tableId}}-sort-by" tabindex="3" required>
+              <mat-select placeholder="Sort By" tabindex="3" required name="{{page.pageId}}{{table.tableId}}-sort-by" [(ngModel)]="table.sortBy">
                 <mat-option *ngFor="let field of table.columnSelection" [value]="field">
                   {{selNode.lnImplementation === 'ECL' ? (field | camelCaseWithSpaces) : (field | camelcaseWithReplace:'_')}}
                 </mat-option>
               </mat-select>
             </mat-form-field>
             <mat-form-field fxFlex="10">
-              <mat-select [(ngModel)]="table.sortOrder" placeholder="Sort Order" name="{{page.pageId}}{{table.tableId}}-sort-order" tabindex="4" required>
+              <mat-select placeholder="Sort Order" tabindex="4" required name="{{page.pageId}}{{table.tableId}}-sort-order" [(ngModel)]="table.sortOrder">
                 <mat-option *ngFor="let so of sortOrders" [value]="so">
                   {{so === 'desc' ? 'Descending' : 'Ascending'}}
                 </mat-option>
               </mat-select>
             </mat-form-field>
-            <mat-form-field fxFlex="35" *ngIf="screenSize !== screenSizeEnum.XS" matTooltip="Select a minimum of 2 columns">
-              <mat-select [(ngModel)]="table.columnSelection" (selectionChange)="oncolumnSelectionChange(table)" placeholder="Column selection (Desktop Resolution)" name="{{page.pageId}}{{table.tableId}}-columns-selection" tabindex="6" multiple required>
+            <mat-form-field *ngIf="screenSize !== screenSizeEnum.XS" fxFlex="35" matTooltip="Select a minimum of 2 columns">
+              <mat-select placeholder="Column selection (Desktop Resolution)" tabindex="6" multiple required name="{{page.pageId}}{{table.tableId}}-columns-selection" [(ngModel)]="table.columnSelection" (selectionChange)="oncolumnSelectionChange(table)">
                 <mat-option *ngFor="let field of nodePageDefs[page.pageId][table.tableId].allowedColumns" [value]="field.column" [disabled]="(table.columnSelection.length <= 2 && table.columnSelection.includes(field.column))">
                   {{field.label ? field.label : (selNode.lnImplementation === 'ECL' ? (field.column | camelCaseWithSpaces) : (field.column | camelcaseWithReplace:'_'))}}
                 </mat-option>
               </mat-select>
             </mat-form-field>
             <mat-form-field fxFlex="15" matTooltip="Select between 1 and 3 columns">
-              <mat-select [(ngModel)]="table.columnSelectionSM" placeholder="Column Selection (Mobile Resolution)" name="{{page.pageId}}{{table.tableId}}-columns-selection-sm" tabindex="5" multiple required>
+              <mat-select placeholder="Column Selection (Mobile Resolution)" tabindex="5" multiple required name="{{page.pageId}}{{table.tableId}}-columns-selection-sm" [(ngModel)]="table.columnSelectionSM">
                 <mat-option *ngFor="let field of nodePageDefs[page.pageId][table.tableId].allowedColumns" [value]="field.column" [disabled]="(table.columnSelectionSM.length <= 1 && table.columnSelectionSM.includes(field.column)) || (table.columnSelectionSM.length >= 3 && !table.columnSelectionSM.includes(field.column))">
                   {{field.label ? field.label : (selNode.lnImplementation === 'ECL' ? (field.column | camelCaseWithSpaces) : (field.column | camelcaseWithReplace:'_'))}}
                 </mat-option>
               </mat-select>
             </mat-form-field>
-            <button mat-icon-button color="primary" type="button" tabindex="7" (click)="onTableReset(page.pageId, table)" matTooltip="Reset to Default"><mat-icon [ngClass]="{'ml-minus-1': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">restore</mat-icon></button>
+            <button mat-icon-button color="primary" type="button" tabindex="7" matTooltip="Reset to Default" (click)="onTableReset(page.pageId, table)"><mat-icon [ngClass]="{'ml-minus-1': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">restore</mat-icon></button>
           </div>
         </div>
         <ng-container *ngIf="errorMessage && errorMessage?.page === page.pageId" [ngTemplateOutlet]="errorObjectBlock" [ngTemplateOutletContext]="{error: errorMessage}"></ng-container>
@@ -56,9 +56,9 @@
     </mat-accordion>
   </form>
   <div fxLayout="row" class="mt-1">
-    <button class="mr-1" mat-stroked-button color="primary" (click)="onResetPageSettings('current')" tabindex="8">Reset</button>
-    <button class="mr-1" mat-stroked-button color="primary" (click)="onResetPageSettings('default')" tabindex="9">Reset to Default</button>
-    <button mat-flat-button color="primary" (click)="onUpdatePageSettings()" tabindex="10">Save</button>
+    <button class="mr-1" mat-stroked-button color="primary" tabindex="8" (click)="onResetPageSettings('current')">Reset</button>
+    <button class="mr-1" mat-stroked-button color="primary" tabindex="9" (click)="onResetPageSettings('default')">Reset to Default</button>
+    <button mat-flat-button color="primary" tabindex="10" (click)="onUpdatePageSettings()">Save</button>
   </div>
 </div>
 <ng-template #errorObjectBlock let-error="error">

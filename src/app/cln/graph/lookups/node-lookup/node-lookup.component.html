@@ -1,5 +1,5 @@
-<div fxLayout="column" *ngIf="lookupResult" class="mt-1">
-  <mat-divider [inset]="true" class="mb-1"></mat-divider>
+<div *ngIf="lookupResult" fxLayout="column" class="mt-1">
+  <mat-divider class="mb-1" [inset]="true"></mat-divider>
   <div fxLayout="row">
     <div fxFlex="30">
       <h4 fxLayoutAlign="start" class="font-bold-500">Alias</h4>
@@ -10,7 +10,7 @@
       <span class="foreground-secondary-text w-100">{{lookupResult?.nodeid}}</span>
     </div>
   </div>
-  <mat-divider [inset]="true" class="my-1"></mat-divider>
+  <mat-divider class="my-1" [inset]="true"></mat-divider>
   <div fxLayout="row">
     <div fxFlex="30">
       <h4 fxLayoutAlign="start" class="font-bold-500">Last Update</h4>
@@ -18,38 +18,38 @@
     </div>
     <div fxFlex="70">
       <h4 fxLayoutAlign="start" class="font-bold-500">Features</h4>
-      <span class="foreground-secondary-text" *ngFor="let featureDescription of featureDescriptions">{{featureDescription}}</span>
+      <span *ngFor="let featureDescription of featureDescriptions" class="foreground-secondary-text">{{featureDescription}}</span>
     </div>
   </div>
-  <mat-divider [inset]="true" class="my-1"></mat-divider>
+  <mat-divider class="my-1" [inset]="true"></mat-divider>
   <div fxLayout="column">
     <h4 fxFlex="100" fxLayoutAlign="start" class="font-bold-500 mb-1">Addresses</h4>
-    <div [perfectScrollbar] fxLayout="row" fxFlex="100" class="table-container">
-      <table mat-table #table [dataSource]="addresses" matSort>
+    <div fxLayout="row" fxFlex="100" class="table-container" [perfectScrollbar]>
+      <table #table mat-table matSort [dataSource]="addresses">
         <ng-container matColumnDef="type">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
-          <td mat-cell *matCellDef="let address">{{address?.type}}</td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Type</th>
+          <td *matCellDef="let address" mat-cell>{{address?.type}}</td>
         </ng-container>
         <ng-container matColumnDef="address">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Address</th>
-          <td mat-cell *matCellDef="let address">{{address?.address}}</td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Address</th>
+          <td *matCellDef="let address" mat-cell>{{address?.address}}</td>
         </ng-container>
         <ng-container matColumnDef="port">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Port</th>
-          <td mat-cell *matCellDef="let address">{{address?.port}}</td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Port</th>
+          <td *matCellDef="let address" mat-cell>{{address?.port}}</td>
         </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>
+          <th *matHeaderCellDef mat-header-cell>
             <div class="bordered-box table-actions-select btn-action" fxLayoutAlign="center center">Actions</div>
          </th>
-          <td mat-cell *matCellDef="let address">
+          <td *matCellDef="let address" mat-cell>
             <span fxLayoutAlign="end center">
               <button mat-stroked-button class="btn-action-copy" color="primary" type="button" tabindex="1" rtlClipboard [payload]="lookupResult?.nodeid + '@' + address.address + ':' + address.port" (copied)="onCopyNodeURI($event)">Copy Node URI</button>          
             </span>
           </td>
         </ng-container>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns;"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>        
+        <tr *matHeaderRowDef="displayedColumns;" mat-header-row></tr>
+        <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>        
       </table>
     </div>
   </div>

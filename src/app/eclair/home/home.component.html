@@ -1,25 +1,25 @@
-<div fxLayout="column" *ngIf="selNode?.userPersona === userPersonaEnum.OPERATOR; else merchantDashboard">
+<div *ngIf="selNode?.userPersona === userPersonaEnum.OPERATOR;  else merchantDashboard"fxLayout="column">
   <div fxLayout="row" fxLayoutAlign="start start" class="page-title-container mb-2">
-    <fa-icon [icon]="apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR ? faFrown : faSmile" class="page-title-img mr-1"></fa-icon>
+    <fa-icon class="page-title-img mr-1" [icon]="apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR ? faFrown : faSmile"></fa-icon>
     <span class="page-title">{{apiCallStatusNodeInfo.status === apiCallStatusEnum.COMPLETED ? 'Welcome ' + information.alias + '! Your node is up and running.' : apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED ? 'Wait! Getting your node information...' : 'Error! Please check the server connection.'}}</span>
   </div>
   <mat-grid-list cols="10" gutterSize="20px" [rowHeight]="operatorCardHeight">
-    <mat-grid-tile *ngFor="let card of operatorCards" [colspan]="card.cols" [rowspan]="card.rows" fxFlex="100" fxLayout="column" fxLayoutAlign="start stretch">
+    <mat-grid-tile *ngFor="let card of operatorCards" fxFlex="100" fxLayout="column" fxLayoutAlign="start stretch" [colspan]="card.cols" [rowspan]="card.rows">
       <mat-card fxFlex="100" fxLayout="column" fxLayoutAlign="start stretch" class="h-100 dashboard-card">
         <mat-card-header>
           <mat-card-title fxLayoutAlign="space-between center">
             <div>
-              <fa-icon [icon]="card.icon" class="mr-1"></fa-icon>
+              <fa-icon class="mr-1" [icon]="card.icon"></fa-icon>
               <span>{{card.title}}</span>
             </div>
             <div>
-              <button *ngIf="card.links[0]" mat-icon-button class="more-button" [matMenuTriggerFor]="menuOperator"
-                aria-label="Toggle menu">
+              <button *ngIf="card.links[0]" mat-icon-button class="more-button" aria-label="Toggle menu"
+                [matMenuTriggerFor]="menuOperator">
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #menuOperator="matMenu" class="dashboard-vert-menu" xPosition="before">
                 <button mat-menu-item *ngFor="let goToOption of card.goToOptions; index as i" (click)="onNavigateTo(card.links[i])">{{goToOption}}</button>
-                <button *ngIf="card.id === 'capacity'" (click)="onsortChannelsBy()" mat-menu-item>Sort By
+                <button *ngIf="card.id === 'capacity'" mat-menu-item (click)="onsortChannelsBy()">Sort By
                   {{sortField === 'Balance Score' ? 'Capacity' : 'Balance Score'}}</button>
               </mat-menu>
             </div>
@@ -31,18 +31,18 @@
                           (card.id === 'balance' && (apiCallStatusAllChannels.status === apiCallStatusEnum.ERROR || apiCallStatusOCBal.status === apiCallStatusEnum.ERROR)) ||
                           ((card.id === 'capacity' || card.id === 'status') && apiCallStatusAllChannels.status === apiCallStatusEnum.ERROR) ||
                           (card.id === 'fee' && apiCallStatusFees.status === apiCallStatusEnum.ERROR)}">
-          <mat-progress-bar mode="indeterminate"
-            *ngIf="(card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED) ||
+          <mat-progress-bar *ngIf="(card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED) ||
             (card.id === 'balance' && (apiCallStatusAllChannels.status === apiCallStatusEnum.INITIATED || apiCallStatusOCBal.status === apiCallStatusEnum.INITIATED)) ||
             ((card.id === 'capacity' || card.id === 'status') && apiCallStatusAllChannels.status === apiCallStatusEnum.INITIATED) ||
             (card.id === 'fee' && apiCallStatusFees.status === apiCallStatusEnum.INITIATED)"
+            mode="indeterminate"
           ></mat-progress-bar>
-          <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
-            <rtl-ecl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="false"></rtl-ecl-node-info>
-            <rtl-ecl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [balances]="balances" [errorMessage]="errorMessages[2] + ' ' + errorMessages[3]"></rtl-ecl-balances-info>
-            <rtl-ecl-channel-capacity-info fxFlex="100" *ngSwitchCase="'capacity'" [sortBy]="sortField" [channelBalances]="channelBalances" [allChannels]="allChannelsCapacity" [errorMessage]="errorMessages[2]"></rtl-ecl-channel-capacity-info>
-            <rtl-ecl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees" [errorMessage]="errorMessages[1]"></rtl-ecl-fee-info>
-            <rtl-ecl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus" [errorMessage]="errorMessages[2]"></rtl-ecl-channel-status-info>
+          <div fxLayout="column" fxFlex="100" [ngSwitch]="card.id">
+            <rtl-ecl-node-info *ngSwitchCase="'node'" fxFlex="100" [information]="information" [showColorFieldSeparately]="false"></rtl-ecl-node-info>
+            <rtl-ecl-balances-info *ngSwitchCase="'balance'" fxFlex="100" [balances]="balances" [errorMessage]="errorMessages[2] + ' ' + errorMessages[3]"></rtl-ecl-balances-info>
+            <rtl-ecl-channel-capacity-info *ngSwitchCase="'capacity'" fxFlex="100" [sortBy]="sortField" [channelBalances]="channelBalances" [allChannels]="allChannelsCapacity" [errorMessage]="errorMessages[2]"></rtl-ecl-channel-capacity-info>
+            <rtl-ecl-fee-info *ngSwitchCase="'fee'" fxFlex="100" [fees]="fees" [errorMessage]="errorMessages[1]"></rtl-ecl-fee-info>
+            <rtl-ecl-channel-status-info *ngSwitchCase="'status'" fxFlex="100" [channelsStatus]="channelsStatus" [errorMessage]="errorMessages[2]"></rtl-ecl-channel-status-info>
             <h3 *ngSwitchDefault>Error! Unable to find information!</h3>
           </div>
         </mat-card-content>
@@ -52,21 +52,21 @@
 </div>
 <ng-template #merchantDashboard>
   <div fxLayout="row" fxLayoutAlign="start end" class="page-title-container mb-2">
-    <fa-icon [icon]="faSmile" class="page-title-img mr-1"></fa-icon>
+    <fa-icon class="page-title-img mr-1" [icon]="faSmile"></fa-icon>
     <span class="page-title">Welcome {{information.alias}}! Your node is up and running.</span>
   </div>
   <mat-grid-list cols="6" gutterSize="20px" [rowHeight]="merchantCardHeight">
-    <mat-grid-tile *ngFor="let card of merchantCards" [colspan]="card.cols" [rowspan]="card.rows" fxFlex="100" fxLayout="column" fxLayoutAlign="start stretch">
+    <mat-grid-tile *ngFor="let card of merchantCards" fxFlex="100" fxLayout="column" fxLayoutAlign="start stretch" [colspan]="card.cols" [rowspan]="card.rows">
       <mat-card fxFlex="100" fxLayout="column" fxLayoutAlign="start stretch" class="h-100 dashboard-card" [ngClass]="{'p-0': card.id === 'transactions'}">
         <mat-card-header *ngIf="card.id !== 'transactions'">
           <mat-card-title fxLayoutAlign="space-between center">
             <div>
-              <fa-icon [icon]="card.icon" class="mr-1"></fa-icon>
+              <fa-icon class="mr-1" [icon]="card.icon"></fa-icon>
               <span>{{card.title}}</span>
             </div>
             <div>
-              <button *ngIf="card.links[0]" mat-icon-button class="more-button" [matMenuTriggerFor]="menuMerchant"
-                aria-label="Toggle menu">
+              <button *ngIf="card.links[0]" mat-icon-button class="more-button" aria-label="Toggle menu"
+                [matMenuTriggerFor]="menuMerchant">
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #menuMerchant="matMenu" class="dashboard-vert-menu" xPosition="before">
@@ -80,17 +80,17 @@
           'error-border': (card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR) ||
                           (card.id === 'balance' && (apiCallStatusAllChannels.status === apiCallStatusEnum.ERROR || apiCallStatusOCBal.status === apiCallStatusEnum.ERROR)) ||
                           ((card.id === 'inboundLiq' || card.id === 'outboundLiq') && apiCallStatusAllChannels.status === apiCallStatusEnum.ERROR)}">
-          <mat-progress-bar mode="indeterminate"
-            *ngIf="(card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED) ||
+          <mat-progress-bar *ngIf="(card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED) ||
             (card.id === 'balance' && (apiCallStatusAllChannels.status === apiCallStatusEnum.INITIATED || apiCallStatusOCBal.status === apiCallStatusEnum.INITIATED)) ||
             ((card.id === 'inboundLiq' || card.id === 'outboundLiq') && apiCallStatusAllChannels.status === apiCallStatusEnum.INITIATED)"
+            mode="indeterminate"
           ></mat-progress-bar>
-          <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
-            <rtl-ecl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information"></rtl-ecl-node-info>
-            <rtl-ecl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [balances]="balances" [errorMessage]="errorMessages[2] + ' ' + errorMessages[3]"></rtl-ecl-balances-info>
-            <rtl-ecl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'inboundLiq'" [direction]="'In'" [totalLiquidity]="totalInboundLiquidity" [allChannels]="allInboundChannels" [errorMessage]="errorMessages[2]"></rtl-ecl-channel-liquidity-info>
-            <rtl-ecl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'outboundLiq'" [direction]="'Out'" [totalLiquidity]="totalOutboundLiquidity" [allChannels]="allOutboundChannels" [errorMessage]="errorMessages[2]"></rtl-ecl-channel-liquidity-info>
-            <span fxLayout="column" fxFlex="100" fxLayoutAlign="space-between start" *ngSwitchCase="'transactions'">
+          <div fxLayout="column" fxFlex="100" [ngSwitch]="card.id">
+            <rtl-ecl-node-info *ngSwitchCase="'node'" fxFlex="100" [information]="information"></rtl-ecl-node-info>
+            <rtl-ecl-balances-info *ngSwitchCase="'balance'" fxFlex="100" [balances]="balances" [errorMessage]="errorMessages[2] + ' ' + errorMessages[3]"></rtl-ecl-balances-info>
+            <rtl-ecl-channel-liquidity-info *ngSwitchCase="'inboundLiq'" fxFlex="100" [direction]="'In'" [totalLiquidity]="totalInboundLiquidity" [allChannels]="allInboundChannels" [errorMessage]="errorMessages[2]"></rtl-ecl-channel-liquidity-info>
+            <rtl-ecl-channel-liquidity-info *ngSwitchCase="'outboundLiq'" fxFlex="100" [direction]="'Out'" [totalLiquidity]="totalOutboundLiquidity" [allChannels]="allOutboundChannels" [errorMessage]="errorMessages[2]"></rtl-ecl-channel-liquidity-info>
+            <span *ngSwitchCase="'transactions'" fxLayout="column" fxFlex="100" fxLayoutAlign="space-between start">
               <mat-tab-group fxLayout="column" class="w-100 dashboard-tabs-group">
                 <mat-tab label="Receive">
                   <rtl-ecl-lightning-invoices class="h-100" [calledFrom]="'home'"></rtl-ecl-lightning-invoices>
@@ -100,7 +100,7 @@
                 </mat-tab>
                 <mat-tab [disabled]="true">
                   <ng-template mat-tab-label>
-                    <button mat-icon-button class="more-button" [matMenuTriggerFor]="menuTransactions" aria-label="Toggle menu">
+                    <button mat-icon-button class="more-button" aria-label="Toggle menu" [matMenuTriggerFor]="menuTransactions">
                       <mat-icon>more_vert</mat-icon>
                     </button>
                     <mat-menu #menuTransactions="matMenu" class="dashboard-vert-menu" xPosition="before">

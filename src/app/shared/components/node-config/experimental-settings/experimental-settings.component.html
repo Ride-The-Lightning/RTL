@@ -1,15 +1,15 @@
-<div [perfectScrollbar] fxLayout="column" fxFlex="100">
+<div fxLayout="column" fxFlex="100" [perfectScrollbar]>
   <div fxFlex="100" class="alert alert-info mt-1">
-    <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
+    <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle"></fa-icon>
     <span>Experimental features should be enabled with caution. Many such features may be implementation specific and not ratified for the BOLT spec. Enabling these may still result in a broken experience. Referencing relevant feature documentation is highly advised before enabling.</span>
   </div>
-  <form fxLayout="column" fxLayoutAlign="start stretch" class="page-sub-title-container mt-1" #form="ngForm">
+  <form #form="ngForm" fxLayout="column" fxLayoutAlign="start stretch" class="page-sub-title-container mt-1">
     <div fxLayout="row">
-      <fa-icon [icon]="faCode" class="page-title-img mr-1"></fa-icon>
+      <fa-icon class="page-title-img mr-1" [icon]="faCode"></fa-icon>
       <span class="page-title">Features</span>
     </div>
     <mat-accordion>
-      <mat-expansion-panel [expanded]="false" class="flat-expansion-panel my-1" *ngFor="let feature of features; index as i" (opened)="onPanelExpanded(i)">
+      <mat-expansion-panel *ngFor="let feature of features; index as i" class="flat-expansion-panel my-1" [expanded]="false" (opened)="onPanelExpanded(i)">
         <mat-expansion-panel-header>
           <mat-panel-title fxFlex="100" fxLayoutAlign="space-between center">
             <h4 class="font-bold-500">{{feature.name}}</h4>
@@ -21,44 +21,44 @@
           </mat-panel-title>
         </mat-expansion-panel-header>
         <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
-          <form *ngIf="i === 0" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="page-sub-title-container" #form="ngForm">
+          <form *ngIf="i === 0" #form="ngForm" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="page-sub-title-container">
             <div fxFlex="100" class="alert alert-info">
-              <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
+              <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle"></fa-icon>
               <span>Please ensure that <strong>experimental-offers</strong> flag is set to true in the Core Lightning config before enabling it in RTL. Click <strong><a href="http://bolt12.org" target="_blank">here</a></strong> to learn more about Core Lightning offers.</span>
             </div>
             <h4 class="mt-2">Description</h4>
             <span>Offers is a draft specification (also referred as BOLT12) for Lightning nodes and wallets, with experimental support in Core Lightning.</span>
             <h4 class="mt-2">Links</h4>
             <span><a href="https://github.com/lightningnetwork/lightning-rfc/pull/798 " target="blank">Core lightning Bolt12</a></span>
-            <mat-divider [inset]="true" class="my-2"></mat-divider>
+            <mat-divider class="my-2" [inset]="true"></mat-divider>
             <div class="alert alert-warn">
-              <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+              <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
               <span>Do not get an Offer tattoo until spec is fully ratified!</span>
             </div>
             <mat-slide-toggle autoFocus class="my-1" tabindex="1" color="primary" name="enableOfr" [(ngModel)]="enableOffers" (change)="onUpdateFeature()">Enable Offers {{enableOffers ? '(You can find Offers under Lightning -> Transactions -> Offers)' : ''}}</mat-slide-toggle>
           </form>
-          <form *ngIf="i === 1" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="page-sub-title-container" #form="ngForm">
+          <form *ngIf="i === 1" #form="ngForm" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="page-sub-title-container">
             <div *ngIf="!features[1].enabled">
               <div fxFlex="100" fxLayout="row" class="alert alert-warn">
-                <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+                <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
                 <span>Please ensure that <strong>experimental-dual-fund</strong> flag is set to true in the Core Lightning config before enabling it in RTL. Click <strong><a href="https://medium.com/blockstream/setting-up-liquidity-ads-in-c-lightning-54e4c59c091d" target="_blank">here</a></strong> to learn more about Core Lightning Liquidity Ads.</span>
               </div>
             </div>
             <div *ngIf="features[1].enabled" fxLayout="column">
               <div fxFlex="100" fxLayout="row" class="alert alert-warn mb-2">
-                <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+                <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
                 <span>These config changes should be configured permanently via the config file on your CLN node otherwise the policy would need to be configured again, if your node restarts.</span>
               </div>
               <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch">
                 <mat-form-field fxFlex="49" fxLayoutAlign="start end">
-                  <mat-select autofocus tabindex="1" [(ngModel)]="selPolicyType" (selectionChange)="policyMod=null" placeholder="Policy" name="policy">
+                  <mat-select autofocus tabindex="1" placeholder="Policy" name="policy" [(ngModel)]="selPolicyType" (selectionChange)="policyMod=null">
                     <mat-option *ngFor="let policyType of policyTypes" [value]="policyType">
                       {{policyType.id | titlecase}}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
                 <mat-form-field fxFlex="49">
-                  <input matInput [(ngModel)]="policyMod" [placeholder]="selPolicyType.placeholder" type="number" [step]="selPolicyType.id === 'fixed' ? 1000 : 10" [min]="selPolicyType.min" [max]="selPolicyType.max" tabindex="2" required name="plcMod" #plcMod="ngModel">
+                  <input #plcMod="ngModel" matInput type="number" tabindex="2" required name="plcMod" [placeholder]="selPolicyType.placeholder" [step]="selPolicyType.id === 'fixed' ? 1000 : 10" [min]="selPolicyType.min" [max]="selPolicyType.max" [(ngModel)]="policyMod">
                   <mat-hint>{{selPolicyType.placeholder}} should be between {{selPolicyType.min}} and {{selPolicyType.max}}</mat-hint>
                   <mat-error *ngIf="!policyMod">{{selPolicyType.placeholder}} is required.</mat-error>
                   <mat-error *ngIf="policyMod < selPolicyType.min">{{selPolicyType.placeholder}} must be greater than or equal to {{selPolicyType.min}}.</mat-error>
@@ -67,21 +67,21 @@
               </div>
               <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch">
                 <mat-form-field fxFlex="49">
-                  <input matInput [(ngModel)]="lease_fee_base_sat" placeholder="Lease Base Fee (Sats)" type="number" step="100" min="0" tabindex="3" required name="lease_fee_base_sat">
+                  <input matInput placeholder="Lease Base Fee (Sats)" type="number" step="100" min="0" tabindex="3" required name="lease_fee_base_sat" [(ngModel)]="lease_fee_base_sat">
                   <mat-error *ngIf="!lease_fee_base_sat">Lease base fee is required.</mat-error>
                 </mat-form-field>
                 <mat-form-field fxFlex="49">
-                  <input matInput [(ngModel)]="lease_fee_basis" placeholder="Lease Base Basis (bps)" type="number" step="1" min="0" tabindex="4" required name="lease_fee_basis">
+                  <input matInput placeholder="Lease Base Basis (bps)" type="number" step="1" min="0" tabindex="4" required name="lease_fee_basis" [(ngModel)]="lease_fee_basis">
                   <mat-error *ngIf="!lease_fee_basis">Lease base basis is required.</mat-error>
                 </mat-form-field>
               </div>
               <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch">
                 <mat-form-field fxFlex="49">
-                  <input matInput [(ngModel)]="channelFeeMaxBaseSat" placeholder="Max Channel Routing Base Fee (Sats)" type="number" step="100" min="0" tabindex="5" required name="channelFeeMaxBaseSat">
+                  <input matInput placeholder="Max Channel Routing Base Fee (Sats)" type="number" step="100" min="0" tabindex="5" required name="channelFeeMaxBaseSat" [(ngModel)]="channelFeeMaxBaseSat">
                   <mat-error *ngIf="!channelFeeMaxBaseSat">Max channel routing base fee is required.</mat-error>
                 </mat-form-field>
                 <mat-form-field fxFlex="49">
-                  <input matInput [(ngModel)]="channelFeeMaxProportional" placeholder="Max Channel Routing Fee Rate (ppm)" type="number" step="1000" min="0" tabindex="6" required name="channelFeeMaxProportional">
+                  <input matInput placeholder="Max Channel Routing Fee Rate (ppm)" type="number" step="1000" min="0" tabindex="6" required name="channelFeeMaxProportional" [(ngModel)]="channelFeeMaxProportional">
                   <mat-error *ngIf="!channelFeeMaxProportional">Max channel routing fee rate is required.</mat-error>
                 </mat-form-field>
               </div>
@@ -91,8 +91,8 @@
                 </span>
               </h4>
               <div fxLayout="row" class="my-1">
-                <button class="mr-1" mat-stroked-button color="primary" (click)="onResetPolicy()" tabindex="7">Reset</button>
-                <button mat-flat-button color="primary" (click)="onUpdateFundingPolicy()" tabindex="8">Update</button>
+                <button class="mr-1" mat-stroked-button color="primary" tabindex="7" (click)="onResetPolicy()">Reset</button>
+                <button mat-flat-button color="primary" tabindex="8" (click)="onUpdateFundingPolicy()">Update</button>
               </div>  
             </div>
           </form>

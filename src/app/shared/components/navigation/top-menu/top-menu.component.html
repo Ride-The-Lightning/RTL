@@ -1,27 +1,27 @@
-<mat-menu #topMenu="matMenu" [overlapTrigger]="false" class="top-menu">
+<mat-menu #topMenu="matMenu" class="top-menu" [overlapTrigger]="false">
   <p mat-menu-item>
-    <fa-icon [icon]="faCodeBranch" class="fa-icon-small mr-1"></fa-icon>
+    <fa-icon class="fa-icon-small mr-1" [icon]="faCodeBranch"></fa-icon>
     <span>Version: {{version}}</span>
   </p>
-  <p mat-menu-item *ngIf="information?.api_version">
-    <fa-icon [icon]="faCode" class="fa-icon-small mr-1"></fa-icon>
+  <p *ngIf="information?.api_version" mat-menu-item>
+    <fa-icon class="fa-icon-small mr-1" [icon]="faCode"></fa-icon>
     <span>API Version: {{information?.api_version}}</span>
   </p>
   <a *ngIf="showLogout" mat-menu-item routerLink="/settings">
-    <fa-icon [icon]="faUserCog" class="fa-icon-small mr-1"></fa-icon>
+    <fa-icon class="fa-icon-small mr-1" [icon]="faUserCog"></fa-icon>
     <span routerLink="/settings">Settings</span>
   </a>
   <a *ngIf="showLogout" mat-menu-item routerLink="/help">
-    <fa-icon [icon]="faQuestion" class="fa-icon-small mr-1"></fa-icon>
+    <fa-icon class="fa-icon-small mr-1" [icon]="faQuestion"></fa-icon>
     <span routerLink="/help">Help</span>
   </a>
   <a *ngIf="showLogout" mat-menu-item (click)="onClick()">
-    <fa-icon [icon]="faEject" class="fa-icon-small mr-1"></fa-icon>
+    <fa-icon class="fa-icon-small mr-1" [icon]="faEject"></fa-icon>
     <span>Logout</span>
   </a>
 </mat-menu>
 
-<button mat-icon-button [matMenuTriggerFor]="topMenu" class="top-toolbar-icon">
+<button mat-icon-button class="top-toolbar-icon" [matMenuTriggerFor]="topMenu">
   <img src="assets/images/RTL-Horse-BY.svg" alt="RTL Logo">
   <mat-icon class="logo-icon">arrow_drop_down</mat-icon>
 </button>

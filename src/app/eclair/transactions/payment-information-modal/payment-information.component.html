@@ -4,9 +4,9 @@
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">Payment Information</span>
       </div>
-      <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+      <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
     </mat-card-header>
-    <mat-card-content [perfectScrollbar] class="h-40 padding-gap-x-large" #scrollContainer>
+    <mat-card-content #scrollContainer class="h-40 padding-gap-x-large" [perfectScrollbar]>
       <div fxLayout="column">
         <div fxLayout="row">
           <div fxFlex="30">
@@ -47,17 +47,17 @@
           </div>
         </div>
         <mat-divider class="w-100 my-1"></mat-divider>   
-        <div fxLayout="row" *ngIf="description">
+        <div *ngIf="description" fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Description</h4>
             <span class="foreground-secondary-text">{{description}}</span>
           </div>
         </div>
-        <mat-divider class="w-100 my-1" *ngIf="description"></mat-divider>   
+        <mat-divider *ngIf="description" class="w-100 my-1"></mat-divider>   
         <div fxLayout="row">
           <div fxFlex="100">
             <mat-accordion>
-              <mat-expansion-panel [expanded]="expansionOpen" (opened)="onExpansionOpen(true)" (closed)="onExpansionOpen(false)" class="flat-expansion-panel my-1" *ngFor="let part of payment.parts; index as i">
+              <mat-expansion-panel *ngFor="let part of payment.parts; index as i" class="flat-expansion-panel my-1" [expanded]="expansionOpen" (opened)="onExpansionOpen(true)" (closed)="onExpansionOpen(false)">
                 <mat-expansion-panel-header>
                   <mat-panel-title>
                     <h4 fxFlex="30" fxLayoutAlign="start" class="font-bold-500">Part {{i + 1}}</h4>
@@ -102,7 +102,7 @@
       </button>
     </div>
     <div fxLayout="row" fxLayoutAlign="end center" class="padding-gap-x-large padding-gap-bottom-large">
-      <button class="mr-1" fxLayoutAlign="center center" tabindex="1" mat-button color="primary" type="button" [mat-dialog-close]="false" default>OK</button>
+      <button class="mr-1" fxLayoutAlign="center center" tabindex="1" mat-button color="primary" type="button" default [mat-dialog-close]="false">OK</button>
     </div>
   </div>
 </div>

@@ -26,7 +26,7 @@
         </h4>
         <span class="foreground-secondary-text">{{(quote?.htlc_sweep_fee_sat ? quote.htlc_sweep_fee_sat : quote?.htlc_publish_fee_sat ? quote.htlc_publish_fee_sat : 0) | number}}</span>
       </div>
-      <div fxFlex="35" *ngIf="quote?.prepay_amt_sat">
+      <div *ngIf="quote?.prepay_amt_sat" fxFlex="35">
         <h4 fxLayoutAlign="start center" class="font-bold-500">
           Prepay Amount (Sats)
           <mat-icon matTooltip="The part of the swap fee that is requested as a prepayment" matTooltipPosition="before" class="info-icon info-icon-text">info_outline</mat-icon>
@@ -51,8 +51,8 @@
         <span class="foreground-secondary-text">36</span>
       </div>
     </div>
-    <mat-divider class="w-100 my-1" *ngIf="quote?.swap_payment_dest !== ''"></mat-divider>
-    <div fxLayout="row" *ngIf="quote?.swap_payment_dest !== ''">
+    <mat-divider *ngIf="quote?.swap_payment_dest !== ''" class="w-100 my-1"></mat-divider>
+    <div *ngIf="quote?.swap_payment_dest !== ''" fxLayout="row">
       <div fxFlex="100">
         <h4 fxLayoutAlign="start center" class="font-bold-500">
           Swap Server Node Pubkey

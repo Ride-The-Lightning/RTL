@@ -16,7 +16,7 @@ $pink-night-theme: mat.define-dark-theme((
         accent: $pink-accent-night,
         warn: $pink-warn-night
     ),
-    typography: $medium-typography
+    // typography: $medium-typography
 ));
 
 $pink-day-theme: mat.define-light-theme((
@@ -25,5 +25,5 @@ $pink-day-theme: mat.define-light-theme((
         accent: $pink-accent,
         warn: $pink-warn
     ),
-    typography: $medium-typography
+    // typography: $medium-typography
 ));

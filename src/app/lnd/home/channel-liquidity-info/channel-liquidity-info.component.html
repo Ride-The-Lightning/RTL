@@ -5,9 +5,9 @@
     <mat-progress-bar class="dashboard-progress-bar this-channel-bar" mode="determinate" color="accent" value="100"></mat-progress-bar>
   </div>
   <div fxLayout="column" fxFlex="3" fxLayoutAlign="end stretch"><mat-divider class="dashboard-divider"></mat-divider></div>
-  <div [perfectScrollbar] *ngIf="allChannels && allChannels.length > 0; else noChannelBlock">
+  <div *ngIf="allChannels && allChannels.length > 0;  else noChannelBlock"[perfectScrollbar]>
     <div *ngFor="let channel of allChannels" fxLayout="column">
-      <a [routerLink]="['../connections/channels/open']" [state]="{filter: channel.chan_id}" class="dashboard-capacity-header mt-2" matTooltip="{{channel.remote_alias || channel.remote_pubkey}}" matTooltipDisabled="{{(channel.remote_alias || channel.remote_pubkey).length < 26}}">
+      <a class="dashboard-capacity-header mt-2" [routerLink]="['../connections/channels/open']" [state]="{filter: channel.chan_id}" matTooltip="{{channel.remote_alias || channel.remote_pubkey}}" matTooltipDisabled="{{(channel.remote_alias || channel.remote_pubkey).length < 26}}">
         {{(channel.remote_alias || channel.remote_pubkey) | slice:0:24}}{{(channel.remote_alias || channel.remote_pubkey).length > 25 ? '...' : ''}}
       </a>
       <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
@@ -25,7 +25,7 @@
 <ng-template #noChannelBlock>
   <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start" class="mt-1">
     No channels available.
-    <button *ngIf="direction === 'Out'" mat-stroked-button color="primary" (click)="goToChannels()" tabindex="1">Open Channel</button>
+    <button *ngIf="direction === 'Out'" mat-stroked-button color="primary" tabindex="1" (click)="goToChannels()">Open Channel</button>
   </div>
 </ng-template>
 <ng-template #errorBlock>

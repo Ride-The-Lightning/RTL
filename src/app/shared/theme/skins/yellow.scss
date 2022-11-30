@@ -17,7 +17,7 @@ $yellow-night-theme: mat.define-dark-theme((
         accent: $yellow-accent-night,
         warn: $yellow-warn-night
     ),
-    typography: $medium-typography
+    // typography: $medium-typography
 ));
 
 $yellow-day-theme: mat.define-light-theme((
@@ -26,5 +26,5 @@ $yellow-day-theme: mat.define-light-theme((
         accent: $yellow-accent,
         warn: $yellow-warn
     ),
-    typography: $medium-typography
+    // typography: $medium-typography
 ))

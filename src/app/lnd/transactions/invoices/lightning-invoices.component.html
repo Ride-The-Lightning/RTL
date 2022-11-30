@@ -1,153 +1,153 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="padding-gap">
-  <form *ngIf="calledFrom === 'home'" fxLayout="row wrap" fxLayoutAlign="stretch start" fxFlex="100" #addInvoiceForm="ngForm">
+  <form *ngIf="calledFrom === 'home'" #addInvoiceForm="ngForm" fxLayout="row wrap" fxLayoutAlign="stretch start" fxFlex="100">
     <mat-form-field fxFlex="100" fxLayoutAlign="end start">
-      <input matInput [(ngModel)]="memo" placeholder="Memo" tabindex="1" name="memo">
+      <input matInput placeholder="Memo" tabindex="1" name="memo" [(ngModel)]="memo">
     </mat-form-field>
     <mat-form-field fxFlex="100" fxLayoutAlign="start end">
-      <input matInput [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()" placeholder="Amount" type="number" [step]="100" [min]="1" tabindex="2" name="invValue">
+      <input matInput placeholder="Amount" type="number" tabindex="2" name="invValue" [step]="100" [min]="1" [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()">
       <span matSuffix>  Sats </span>
       <mat-hint>{{invoiceValueHint}}</mat-hint>          
     </mat-form-field>
     <div fxLayout="row" class="mt-1">
       <button class="mr-1" mat-stroked-button color="primary" tabindex="3" type="reset" (click)="resetData()">Clear Field</button>
-      <button mat-flat-button color="primary" (click)="onAddInvoice(addInvoiceForm)" tabindex="4">Create Invoice</button>
+      <button mat-flat-button color="primary" tabindex="4" (click)="onAddInvoice(addInvoiceForm)">Create Invoice</button>
     </div>
   </form>
   <div *ngIf="calledFrom === 'transactions'" fxLayout="row">
-    <button mat-flat-button color="primary" (click)="openCreateInvoiceModal()" tabindex="5">Create Invoice</button>
+    <button mat-flat-button color="primary" tabindex="5" (click)="openCreateInvoiceModal()">Create Invoice</button>
   </div>
-  <div fxLayout="column" fxLayoutAlign="start stretch" *ngIf="calledFrom === 'transactions'">
+  <div *ngIf="calledFrom === 'transactions'" fxLayout="column" fxLayoutAlign="start stretch">
     <div fxLayout="column" fxLayoutAlign="start stretch" fxLayout.gt-sm="row wrap" class="page-sub-title-container mt-1">
       <div fxFlex="70" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="start center">
-        <fa-icon [icon]="faHistory" class="page-title-img mr-1"></fa-icon>
+        <fa-icon class="page-title-img mr-1" [icon]="faHistory"></fa-icon>
         <span class="page-title">Invoices History</span>
       </div>
       <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
         <mat-form-field fxFlex="49">
-          <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()" name="filterBy">
+          <mat-select placeholder="Filter By" tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
             <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
           </mat-select>
         </mat-form-field>
         <mat-form-field fxFlex="49">
-          <input matInput [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()" name="filter" placeholder="Filter">
+          <input matInput name="filter" placeholder="Filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
         </mat-form-field>
       </div>
     </div>
-    <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container">
+    <div fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container" [perfectScrollbar]>
       <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-      <table mat-table #table fxFlex="100" [dataSource]="invoices" matSort [ngClass]="{'error-border': errorMessage !== ''}">
+      <table #table mat-table fxFlex="100" matSort [dataSource]="invoices" [ngClass]="{'error-border': errorMessage !== ''}">
         <ng-container matColumnDef="state">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" matTooltip="State"></th>
-          <td mat-cell *matCellDef="let invoice">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="State"></th>
+          <td *matCellDef="let invoice" mat-cell>
             <span *ngIf="invoice?.state === 'OPEN'" class="dot grey" matTooltip="Open" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
             <span *ngIf="invoice?.state === 'SETTLED'" class="dot green" matTooltip="Settled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
             <span *ngIf="invoice?.state === 'ACCEPTED'" class="dot yellow" matTooltip="Accepted" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
             <span *ngIf="invoice?.state === 'CANCELED'" class="dot red" matTooltip="Canceled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
         </ng-container>
         <ng-container matColumnDef="private">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" matTooltip="Private"></th>
-          <td mat-cell *matCellDef="let invoice">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="Private"></th>
+          <td *matCellDef="let invoice" mat-cell>
             <span *ngIf="invoice.private" class="mr-1" matTooltip="Private" matTooltipPosition="right"><fa-icon [icon]="faEyeSlash"></fa-icon></span>
             <span *ngIf="!invoice.private" class="mr-1" matTooltip="Public" matTooltipPosition="right"><fa-icon [icon]="faEye"></fa-icon></span>
           </td>
         </ng-container>
         <ng-container matColumnDef="is_keysend">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" matTooltip="Keysend"></th>
-          <td mat-cell *matCellDef="let invoice">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="Keysend"></th>
+          <td *matCellDef="let invoice" mat-cell>
             <span *ngIf="invoice.is_keysend" class="mr-1" matTooltip="Keysend Invoices" matTooltipPosition="right"><fa-icon [icon]="faArrowsTurnToDots"></fa-icon></span>
             <span *ngIf="!invoice.is_keysend" class="mr-1" matTooltip="Non Keysend Invoices" matTooltipPosition="right"><fa-icon [icon]="faArrowsTurnRight"></fa-icon></span>
           </td>
         </ng-container>
         <ng-container matColumnDef="is_amp">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" matTooltip="AMP"></th>
-          <td mat-cell *matCellDef="let invoice">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="AMP"></th>
+          <td *matCellDef="let invoice" mat-cell>
             <span *ngIf="!invoice.is_amp" class="mr-1" matTooltip="Non Atomic Payment" matTooltipPosition="right"><fa-icon [icon]="faMoneyBill1"></fa-icon></span>
             <span *ngIf="invoice.is_amp" class="mr-1" matTooltip="Atomic Multi Path Payment" matTooltipPosition="right"><fa-icon [icon]="faBurst"></fa-icon></span>
           </td>
         </ng-container>
         <ng-container matColumnDef="creation_date">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Date Created</th>
-          <td mat-cell *matCellDef="let invoice">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Date Created</th>
+          <td *matCellDef="let invoice" mat-cell>
             {{(invoice?.creation_date * 1000) | date:'dd/MMM/y HH:mm'}}</td>
         </ng-container>
         <ng-container matColumnDef="settle_date">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Date Settled</th>
-          <td mat-cell *matCellDef="let invoice">{{(+invoice?.settle_date !== 0 ? ((+invoice?.settle_date * 1000) | date:'dd/MMM/y HH:mm') : '-')}}</td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Date Settled</th>
+          <td *matCellDef="let invoice" mat-cell>{{(+invoice?.settle_date !== 0 ? ((+invoice?.settle_date * 1000) | date:'dd/MMM/y HH:mm') : '-')}}</td>
         </ng-container>
         <ng-container matColumnDef="memo">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Memo</th>
-          <td mat-cell *matCellDef="let invoice">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Memo</th>
+          <td *matCellDef="let invoice" mat-cell>
             <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{invoice?.memo}}</span>
             </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="r_preimage">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Preimage</th>
-          <td mat-cell *matCellDef="let invoice">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Preimage</th>
+          <td *matCellDef="let invoice" mat-cell>
             <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{invoice?.r_preimage}}</span>
             </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="r_hash">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Preimage Hash</th>
-          <td mat-cell *matCellDef="let invoice">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Preimage Hash</th>
+          <td *matCellDef="let invoice" mat-cell>
             <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{invoice?.r_hash}}</span>
             </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="payment_addr">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Address</th>
-          <td mat-cell *matCellDef="let invoice">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Payment Address</th>
+          <td *matCellDef="let invoice" mat-cell>
             <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{invoice?.payment_addr}}</span>
             </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="payment_request">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Request</th>
-          <td mat-cell *matCellDef="let invoice">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Payment Request</th>
+          <td *matCellDef="let invoice" mat-cell>
             <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{invoice?.payment_request}}</span>
             </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="description_hash">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Description Hash</th>
-          <td mat-cell *matCellDef="let invoice">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Description Hash</th>
+          <td *matCellDef="let invoice" mat-cell>
             <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">{{invoice?.description_hash}}</span>
             </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="expiry">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Expiry</th>
-          <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center">{{invoice?.expiry | number}} </span></td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Expiry</th>
+          <td *matCellDef="let invoice" mat-cell><span fxLayoutAlign="end center">{{invoice?.expiry | number}} </span></td>
         </ng-container>
         <ng-container matColumnDef="cltv_expiry">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">CLTV Expiry</th>
-          <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center">{{invoice?.cltv_expiry | number}} </span></td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">CLTV Expiry</th>
+          <td *matCellDef="let invoice" mat-cell><span fxLayoutAlign="end center">{{invoice?.cltv_expiry | number}} </span></td>
         </ng-container>
         <ng-container matColumnDef="add_index">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Add Index</th>
-          <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center">{{invoice?.add_index | number}} </span></td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Add Index</th>
+          <td *matCellDef="let invoice" mat-cell><span fxLayoutAlign="end center">{{invoice?.add_index | number}} </span></td>
         </ng-container>
         <ng-container matColumnDef="settle_index">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Settle Index</th>
-          <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center">{{invoice?.settle_index | number}} </span></td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Settle Index</th>
+          <td *matCellDef="let invoice" mat-cell><span fxLayoutAlign="end center">{{invoice?.settle_index | number}} </span></td>
         </ng-container>
         <ng-container matColumnDef="value">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Amount (Sats)</th>
-          <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center">{{invoice?.value | number}} </span></td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Amount (Sats)</th>
+          <td *matCellDef="let invoice" mat-cell><span fxLayoutAlign="end center">{{invoice?.value | number}} </span></td>
         </ng-container>
         <ng-container matColumnDef="amt_paid_sat">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Amount Settled (Sats)</th>
-          <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center">{{invoice?.amt_paid_sat | number}} </span></td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Amount Settled (Sats)</th>
+          <td *matCellDef="let invoice" mat-cell><span fxLayoutAlign="end center">{{invoice?.amt_paid_sat | number}} </span></td>
         </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>
+          <th *matHeaderCellDef mat-header-cell>
             <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="1" class="mr-0">
                 <mat-select-trigger></mat-select-trigger>
@@ -155,7 +155,7 @@
               </mat-select>
             </div>
          </th>
-          <td mat-cell *matCellDef="let invoice" fxLayoutAlign="end center">
+          <td *matCellDef="let invoice" mat-cell fxLayoutAlign="end center">
             <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="4" class="mr-0">
                 <mat-select-trigger></mat-select-trigger>
@@ -166,17 +166,17 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="no_invoice">
-          <td mat-footer-cell *matFooterCellDef colspan="6">
+          <td *matFooterCellDef  mat-footer-cellcolspan="6">
             <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No invoice available.</p>
             <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting invoices...</p>
             <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
           </td>
         </ng-container>
-        <tr mat-footer-row *matFooterRowDef="['no_invoice']" [ngClass]="{'display-none': invoices?.data && invoices?.data?.length>0}"></tr>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr *matFooterRowDef="['no_invoice']" mat-footer-row [ngClass]="{'display-none': invoices?.data && invoices?.data?.length>0}"></tr>
+        <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+        <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
       </table>
-      <mat-paginator [length]="totalInvoices" (page)="onPageChange($event)" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
+      <mat-paginator class="mb-1" [length]="totalInvoices" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" (page)="onPageChange($event)"></mat-paginator>
     </div>
   </div>
 </div>

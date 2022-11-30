@@ -4,13 +4,13 @@
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">{{alertTitle}}</span>
       </div>
-      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
-      <form fxLayout="column" (submit)="onOpenChannel()" (reset)="resetData()" #form="ngForm">
+      <form #form="ngForm" fxLayout="column" (submit)="onOpenChannel()" (reset)="resetData()">
         <div fxLayout="column">
-          <mat-form-field fxFlex="100" *ngIf="!peer && peers && peers.length > 0">
-            <input type="text" placeholder="Peer Alias" aria-label="Peers" matInput [formControl]="selectedPeer" (change)="onSelectedPeerChanged()" [matAutocomplete]="auto" tabindex="1" required>
+          <mat-form-field *ngIf="!peer && peers && peers.length > 0" fxFlex="100">
+            <input type="text" placeholder="Peer Alias" aria-label="Peers" matInput tabindex="1" required [formControl]="selectedPeer" [matAutocomplete]="auto" (change)="onSelectedPeerChanged()">
             <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectedPeerChanged()">
               <mat-option *ngFor="let peer of filteredPeers | async" [value]="peer">{{peer.alias ? peer.alias : peer.id ? peer.id : ''}}</mat-option>
             </mat-autocomplete>
@@ -22,14 +22,14 @@
         <div fxLayout="column">
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
             <mat-form-field fxFlex="70" fxLayoutAlign="start end">
-              <input matInput [(ngModel)]="fundingAmount" placeholder="Amount" type="number" [step]="1000" [min]="1" [max]="totalBalance" tabindex="1" required name="amount" #amount="ngModel" [disabled]="flgUseAllBalance">
+              <input #amount="ngModel" matInput placeholder="Amount" type="number" tabindex="1" required name="amount" [step]="1000" [min]="1" [max]="totalBalance" [disabled]="flgUseAllBalance" [(ngModel)]="fundingAmount">
               <mat-hint>Remaining Bal: {{totalBalance - ((fundingAmount) ? fundingAmount : 0) | number}}{{flgUseAllBalance ? '. Amount replaced by UTXO balance' : ''}}</mat-hint>
               <span matSuffix> Sats </span>
               <mat-error *ngIf="amount.errors?.required || !fundingAmount">Amount is required.</mat-error>
               <mat-error *ngIf="amount.errors?.max">Amount must be less than or equal to {{totalBalance}}.</mat-error>
             </mat-form-field>
             <div fxFlex="25" fxLayoutAlign="start center">
-              <mat-slide-toggle tabindex="2" color="primary" [(ngModel)]="isPrivate" name="isPrivate">Private Channel</mat-slide-toggle>
+              <mat-slide-toggle tabindex="2" color="primary" name="isPrivate" [(ngModel)]="isPrivate">Private Channel</mat-slide-toggle>
             </div>
           </div>
           <mat-expansion-panel class="flat-expansion-panel mt-2" expanded="false" (closed)="onAdvancedPanelToggle(true)" (opened)="onAdvancedPanelToggle(false)">
@@ -41,35 +41,35 @@
             <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
               <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-sm="space-between center" fxLayout.gt-sm="row wrap">
                 <div fxFlex="54" fxLayoutAlign="space-between end">
-                  <mat-form-field [fxFlex]="selFeeRate === 'customperkb' && !flgMinConf ? '48' : '100'" fxLayoutAlign="start center">
-                    <mat-select tabindex="4" placeholder="Fee Rate" [(value)]="selFeeRate" (selectionChange)="customFeeRate=null" [disabled]="flgMinConf">
+                  <mat-form-field fxLayoutAlign="start center" [fxFlex]="selFeeRate === 'customperkb' && !flgMinConf ? '48' : '100'">
+                    <mat-select tabindex="4" placeholder="Fee Rate" [disabled]="flgMinConf" [(value)]="selFeeRate" (selectionChange)="customFeeRate=null">
                       <mat-option *ngFor="let feeRateType of feeRateTypes" [value]="feeRateType.feeRateId">
                         {{feeRateType.feeRateType}}
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
                   <mat-form-field *ngIf="selFeeRate === 'customperkb' && !flgMinConf" fxFlex="48" fxLayoutAlign="end center">
-                    <input matInput [(ngModel)]="customFeeRate" placeholder="Fee Rate (Sats/vByte)" type="number" name="custFeeRate" [step]="0.1" [min]="0" tabindex="4" #custFeeRate="ngModel" [required]="selFeeRate === 'customperkb' && !flgMinConf">
+                    <input #custFeeRate="ngModel" matInput placeholder="Fee Rate (Sats/vByte)" type="number" name="custFeeRate" tabindex="4" [step]="0.1" [min]="0" [required]="selFeeRate === 'customperkb' && !flgMinConf" [(ngModel)]="customFeeRate">
                     <mat-error *ngIf="selFeeRate === 'customperkb' && !flgMinConf && !customFeeRate">Fee Rate is required.</mat-error>
                   </mat-form-field>
                 </div>
                 <div fxFlex="42" fxLayout="row" fxLayoutAlign="start center">
-                  <mat-checkbox fxFlex="2" tabindex="5" color="primary" [(ngModel)]="flgMinConf" (change)="flgMinConf ? selFeeRate=null : minConfValue=null" name="flgMinConf" fxLayoutAlign="stretch start" [ngClass]="{'mr-6': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mr-2': screenSize === screenSizeEnum.MD || screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}"></mat-checkbox>
+                  <mat-checkbox fxFlex="2" tabindex="5" color="primary" name="flgMinConf" fxLayoutAlign="stretch start" [ngClass]="{'mr-6': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mr-2': screenSize === screenSizeEnum.MD || screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}" [(ngModel)]="flgMinConf" (change)="flgMinConf ? selFeeRate=null : minConfValue=null"></mat-checkbox>
                   <mat-form-field fxFlex="98">
-                    <input matInput [(ngModel)]="minConfValue" placeholder="Min Confirmation Blocks" type="number" name="blocks" [step]="1" [min]="0" tabindex="8" #blocks="ngModel" [required]="flgMinConf" [disabled]="!flgMinConf">
+                    <input #blocks="ngModel" matInput placeholder="Min Confirmation Blocks" type="number" name="blocks" tabindex="8" [step]="1" [min]="0" [required]="flgMinConf" [disabled]="!flgMinConf" [(ngModel)]="minConfValue">
                     <mat-error *ngIf="flgMinConf && !minConfValue">Min Confirmation Blocks is required.</mat-error>
                   </mat-form-field>
                 </div>
               </div>
-              <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-sm="space-between center" fxLayout.gt-sm="row wrap" *ngIf="isCompatibleVersion">
+              <div *ngIf="isCompatibleVersion" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-sm="space-between center" fxLayout.gt-sm="row wrap">
                 <mat-form-field fxFlex="54" fxLayoutAlign="start end">
-                  <mat-select tabindex="6" placeholder="Coin Selection" (selectionChange)="onUTXOSelectionChange($event)" [(value)]="selUTXOs" multiple>
+                  <mat-select tabindex="6" placeholder="Coin Selection" multiple [(value)]="selUTXOs" (selectionChange)="onUTXOSelectionChange($event)">
                     <mat-select-trigger>{{totalSelectedUTXOAmount | number}} Sats ({{selUTXOs.length > 1 ? selUTXOs.length + ' UTXOs' : '1 UTXO'}})</mat-select-trigger>
                     <mat-option *ngFor="let utxo of utxos" [value]="utxo">{{utxo.value | number}} Sats</mat-option>
                   </mat-select>
                 </mat-form-field>
                 <div fxFlex="42" fxLayout="row" fxLayoutAlign="start center">
-                  <mat-slide-toggle tabindex="7" color="primary" [(ngModel)]="flgUseAllBalance" (change)="onUTXOAllBalanceChange()" name="flgUseAllBalance" [disabled]="selUTXOs.length < 1">
+                  <mat-slide-toggle tabindex="7" color="primary" name="flgUseAllBalance" [disabled]="selUTXOs.length < 1" [(ngModel)]="flgUseAllBalance" (change)="onUTXOAllBalanceChange()">
                     Use selected UTXOs balance
                   </mat-slide-toggle>
                   <mat-icon matTooltip="Use selected UTXOs balance as the amount to be sent. Final amount sent will be less the mining fee." matTooltipPosition="before" class="info-icon">info_outline</mat-icon>
@@ -78,8 +78,8 @@
             </div>
           </mat-expansion-panel>    
         </div>
-        <div fxFlex="100" class="alert alert-danger mt-1" *ngIf="channelConnectionError !== ''">
-          <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+        <div *ngIf="channelConnectionError !== ''" fxFlex="100" class="alert alert-danger mt-1">
+          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
           <span *ngIf="channelConnectionError !== ''">{{channelConnectionError}}</span>
         </div>
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
@@ -92,7 +92,7 @@
 </div>
 
 <ng-template #peerDetailsExpansionBlock>
-  <mat-expansion-panel class="flat-expansion-panel my-1" *ngIf="peer" expanded="false">
+  <mat-expansion-panel *ngIf="peer" class="flat-expansion-panel my-1" expanded="false">
     <mat-expansion-panel-header>
       <mat-panel-title>
         <span>Peer: &nbsp;</span><strong class="font-weight-900">{{peer?.alias || peer?.id}}</strong>

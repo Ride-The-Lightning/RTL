@@ -2,9 +2,9 @@
   *ngTemplateOutlet="stepNumber === 1 ? swapStepBlock1: stepNumber === 2 ? swapStepBlock2 : stepNumber === 3 ? swapStepBlock3 : stepNumber === 4 ? swapStepBlock4 : swapStepBlock5">
 </ng-container>
 <ng-template #swapStepBlock1>
-  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between center" (swipe)="onSwipe($event)"
-    [@sliderAnimation]="animationDirection">
-    <svg fxFlex="30" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}" width="323" height="323" viewBox="0 0 323 323" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between center" [@sliderAnimation]="animationDirection"
+    (swipe)="onSwipe($event)">
+    <svg fxFlex="30" width="323" height="323" viewBox="0 0 323 323" fill="none" xmlns="http://www.w3.org/2000/svg" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">
       <path d="M53.8333 134.583H80.75L94.2083 161.5L117.792 134.961C121.616 130.658 125.869 126.602 131.194 124.413C136.45 122.252 142.103 121.125 147.842 121.125H242.25C286.847 121.125 323 157.278 323 201.875C323 246.472 286.847 282.625 242.25 282.625H147.842C142.103 282.625 136.45 281.497 131.194 279.337C125.869 277.149 121.616 273.092 117.792 268.79L94.2083 242.25L80.75 269.167H53.8333L67.2917 228.792L53.8333 201.875L67.2917 174.958L53.8333 134.583Z" class="fill-color-0"/>
       <path d="M26.9167 107.667H53.8333L67.2917 134.583L90.8755 108.044C94.6993 103.741 98.9527 99.6849 104.277 97.4963C109.534 95.3357 115.187 94.2083 120.925 94.2083H215.333C259.93 94.2083 296.083 130.361 296.083 174.958C296.083 219.555 259.93 255.708 215.333 255.708H120.925C115.187 255.708 109.534 254.581 104.277 252.42C98.9527 250.232 94.6993 246.176 90.8755 241.873L67.2917 215.333L53.8333 242.25H26.9167L40.375 201.875L26.9167 174.958L40.375 148.042L26.9167 107.667Z" class="stroke-color-thick"/>
       <path d="M134.583 215.333C142.016 215.333 148.042 209.308 148.042 201.875C148.042 194.442 142.016 188.417 134.583 188.417C127.151 188.417 121.125 194.442 121.125 201.875C121.125 209.308 127.151 215.333 134.583 215.333Z" class="fill-color-15"/>
@@ -27,9 +27,9 @@
   </div>
 </ng-template>
 <ng-template #swapStepBlock2>
-  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between center" (swipe)="onSwipe($event)"
-    [@sliderAnimation]="animationDirection">
-    <svg fxFlex="30" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}" width="347" height="169" viewBox="0 0 347 169" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between center" [@sliderAnimation]="animationDirection"
+    (swipe)="onSwipe($event)">
+    <svg fxFlex="30" width="347" height="169" viewBox="0 0 347 169" fill="none" xmlns="http://www.w3.org/2000/svg" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">
       <path d="M89 157.417V41.5833C89 35.2125 92.75 30 97.3333 30H230.667C235.25 30 239 35.2125 239 41.5833V157.417C239 163.787 235.25 169 230.667 169H97.3333C92.75 169 89 163.787 89 157.417Z" class="fill-color-0"/>
       <path d="M6.25 134.625V18.375C6.25 11.9812 11.4812 6.75 17.875 6.75H203.875C210.269 6.75 215.5 11.9812 215.5 18.375V134.625C215.5 141.019 210.269 146.25 203.875 146.25H17.875C11.4812 146.25 6.25 141.019 6.25 134.625Z" class="stroke-color-thin"/>
       <path d="M256.188 123H238.75V76.5H256.188C259.442 76.5 262 79.0575 262 82.3125V117.188C262 120.443 259.442 123 256.188 123Z" class="fill-color-15"/>
@@ -49,9 +49,9 @@
   </div>
 </ng-template>
 <ng-template #swapStepBlock3>
-  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between center" (swipe)="onSwipe($event)"
-    [@sliderAnimation]="animationDirection">
-    <svg fxFlex="30" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}" width="454" height="243" viewBox="0 0 454 243" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between center" [@sliderAnimation]="animationDirection"
+    (swipe)="onSwipe($event)">
+    <svg fxFlex="30" width="454" height="243" viewBox="0 0 454 243" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">
       <path d="M141.75 172.125C178.098 172.125 207.562 142.66 207.562 106.312C207.562 69.9653 178.098 40.5 141.75 40.5C105.403 40.5 75.9375 69.9653 75.9375 106.312C75.9375 142.66 105.403 172.125 141.75 172.125Z" class="fill-color-0"/>
       <path d="M121.5 151.875C157.848 151.875 187.312 122.41 187.312 86.0625C187.312 49.7153 157.848 20.25 121.5 20.25C85.1528 20.25 55.6875 49.7153 55.6875 86.0625C55.6875 122.41 85.1528 151.875 121.5 151.875Z" class="stroke-color-thiner"/>
       <path d="M20.25 192.375H222.75" class="stroke-color-thiner"/>
@@ -77,9 +77,9 @@
   </div>
 </ng-template>
 <ng-template #swapStepBlock4>
-  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between center" (swipe)="onSwipe($event)"
-    [@sliderAnimation]="animationDirection">
-    <svg fxFlex="30" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}" width="295" height="295" viewBox="0 0 295 295" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between center" [@sliderAnimation]="animationDirection"
+    (swipe)="onSwipe($event)">
+    <svg fxFlex="30" width="295" height="295" viewBox="0 0 295 295" fill="none" xmlns="http://www.w3.org/2000/svg" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">
       <g clip-path="url(#clip0)">
       <path d="M182.629 183.635C213.842 170.774 228.719 135.046 215.857 103.833C202.996 72.6204 167.268 57.7435 136.055 70.6048C104.843 83.4659 89.966 119.195 102.827 150.407C115.688 181.62 151.417 196.496 182.629 183.635Z" class="fill-color-0"/>
       <path d="M154.81 93.8059C152.146 100.719 149.483 108.164 146.287 115.608C146.287 115.608 146.287 116.672 147.353 116.672H169.191C169.191 116.672 169.191 117.204 169.723 117.736L137.765 153.364C137.233 152.832 137.233 152.301 137.233 151.769L148.418 127.839V125.712H126.047V123.585L153.212 93.8059H154.81Z" class="fill-color-15"/>
@@ -104,9 +104,9 @@
   </div>
 </ng-template>
 <ng-template #swapStepBlock5>
-  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between center" (swipe)="onSwipe($event)"
-    [@sliderAnimation]="animationDirection">
-    <svg fxFlex="30" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}" width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between center" [@sliderAnimation]="animationDirection"
+    (swipe)="onSwipe($event)">
+    <svg fxFlex="30" width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">
       <path d="M50 237.5V112.5C50 105.625 55.625 100 62.5 100H262.5C269.375 100 275 105.625 275 112.5V237.5C275 244.375 269.375 250 262.5 250H62.5C55.625 250 50 244.375 50 237.5Z" class="fill-color-0"/>
       <path d="M25 212.5V87.5C25 80.625 30.625 75 37.5 75H237.5C244.375 75 250 80.625 250 87.5V212.5C250 219.375 244.375 225 237.5 225H37.5C30.625 225 25 219.375 25 212.5Z" class="stroke-color"/>
       <path d="M293.75 200H275V150H293.75C297.25 150 300 152.75 300 156.25V193.75C300 197.25 297.25 200 293.75 200Z" class="fill-color-0"/>

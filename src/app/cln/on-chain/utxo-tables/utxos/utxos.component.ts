@@ -106,9 +106,17 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   ngAfterViewInit() {
-    if (this.utxos && this.utxos.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
-      this.loadUTXOsTable(this.utxos);
-    }
+    setTimeout(() => {
+      if (this.isDustUTXO) {
+        if (this.dustUtxos && this.dustUtxos.length > 0) {
+          this.loadUTXOsTable(this.dustUtxos);
+        }
+      } else {
+        if (this.utxos && this.utxos.length > 0) {
+          this.loadUTXOsTable(this.utxos);
+        }
+      }
+    }, 0);
   }
 
   onUTXOClick(selUtxo: UTXO, event: any) {

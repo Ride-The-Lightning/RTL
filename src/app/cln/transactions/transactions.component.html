@@ -1,5 +1,5 @@
 <div fxLayout="row wrap" fxLayoutAlign="start center" class="page-title-container">
-  <fa-icon [icon]="faChartPie" class="page-title-img mr-1"></fa-icon>
+  <fa-icon class="page-title-img mr-1" [icon]="faChartPie"></fa-icon>
   <span class="page-title">Lightning Balance</span>
 </div>
 <div fxLayout="column" class="padding-gap-x mb-4">
@@ -10,14 +10,14 @@
   </mat-card>
 </div>
 <div fxLayout="row" fxLayoutAlign="start center" class="page-title-container">
-  <fa-icon [icon]="faExchangeAlt" class="page-title-img mr-1"></fa-icon>
+  <fa-icon class="page-title-img mr-1" [icon]="faExchangeAlt"></fa-icon>
   <span class="page-title">Lightning Transactions</span>
 </div>
 <div fxLayout="column" class="padding-gap-x">
   <mat-card>
     <mat-card-content fxLayout="column">
       <nav mat-tab-nav-bar [tabPanel]="tabPanel">
-        <div role="tab" mat-tab-link *ngFor="let link of links" class="mat-tab-label" [active]="activeLink === link.link" (click)="activeLink = link.link" routerLink="{{link.link}}">{{link.name}}</div>
+        <div *ngFor="let link of links" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === link.link" routerLink="{{link.link}}" (click)="activeLink = link.link">{{link.name}}</div>
       </nav>
       <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
 

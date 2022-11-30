@@ -16,7 +16,7 @@ $blue-night-theme: mat.define-dark-theme((
         accent: $blue-accent-night,
         warn: $blue-warn-night
     ),
-    typography: $medium-typography
+    // typography: $medium-typography
 ));
 
 $blue-day-theme: mat.define-light-theme((
@@ -25,5 +25,5 @@ $blue-day-theme: mat.define-light-theme((
         accent: $blue-accent,
         warn: $blue-warn
     ),
-    typography: $medium-typography
+    // typography: $medium-typography
 ));

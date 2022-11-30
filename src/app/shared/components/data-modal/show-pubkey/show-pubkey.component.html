@@ -5,17 +5,17 @@
   <div fxFlex="100" fxFlex.gt-sm="70">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
-        <fa-icon [icon]="faReceipt" class="page-title-img mr-1"></fa-icon>
+        <fa-icon class="page-title-img mr-1" [icon]="faReceipt"></fa-icon>
         <span class="page-title">{{selInfoType.infoName}}</span>
       </div>
-      <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+      <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <div fxLayout="column">
         <div fxFlex="50" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
           <qr-code value="{{selInfoType.infoID === 0 ? information.identity_pubkey : information.uris[(selInfoType.infoID - 1)]}}" [size]="qrWidth" [errorCorrectionLevel]="'L'"></qr-code>
         </div>
-        <div fxLayout="row" *ngIf="information.uris && information.uris.length > 0">
+        <div *ngIf="information.uris && information.uris.length > 0" fxLayout="row">
           <mat-form-field fxFlex="100" fxFlex.gt-sm="40" fxLayoutAlign="start end">
             <mat-select tabindex="1" [(value)]="selInfoType">
               <mat-option *ngFor="let infoType of infoTypes" [value]="infoType">

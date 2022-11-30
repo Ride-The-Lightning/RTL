@@ -1,27 +1,27 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-x">
   <div fxLayout="row">
-    <button mat-flat-button color="primary" (click)="onOpenChannel()" type="submit" tabindex="1">Open Channel</button>
+    <button mat-flat-button color="primary" type="submit" tabindex="1" (click)="onOpenChannel()">Open Channel</button>
   </div>
   <div fxLayout="column" fxFlex="100" class="my-2 bordered-box">
     <mat-tab-group [(selectedIndex)]="activeLink" (selectedTabChange)="onSelectedTabChange($event)">
       <mat-tab>
         <ng-template mat-tab-label>
-          <span matBadge="{{numOpenChannels}}" matBadgeOverlap="false" class="tab-badge">Open</span>
+          <span matBadgeOverlap="false" class="tab-badge" matBadge="{{numOpenChannels}}">Open</span>
         </ng-template>
       </mat-tab>
       <mat-tab>
         <ng-template mat-tab-label>
-          <span matBadge="{{numPendingChannels}}" matBadgeOverlap="false" class="tab-badge">Pending</span>
+          <span matBadgeOverlap="false" class="tab-badge" matBadge="{{numPendingChannels}}">Pending</span>
         </ng-template>
       </mat-tab>
       <mat-tab>
         <ng-template mat-tab-label>
-          <span matBadge="{{numClosedChannels}}" matBadgeOverlap="false" class="tab-badge">Closed</span>
+          <span matBadgeOverlap="false" class="tab-badge" matBadge="{{numClosedChannels}}">Closed</span>
         </ng-template>
       </mat-tab>
       <mat-tab>
         <ng-template mat-tab-label>
-          <span matBadge="{{numActiveHTLCs}}" matBadgeOverlap="false" class="tab-badge">Active HTLCs</span>
+          <span matBadgeOverlap="false" class="tab-badge" matBadge="{{numActiveHTLCs}}">Active HTLCs</span>
         </ng-template>
       </mat-tab>
     </mat-tab-group>

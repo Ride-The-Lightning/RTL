@@ -1,23 +1,23 @@
 <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
-  <div fxFlex="35" [fxLayoutAlign]="invoice?.serialized && invoice?.serialized !== '' ? 'center start' : 'center center'" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
+  <div fxFlex="35" class="modal-qr-code-container padding-gap-large" [fxLayoutAlign]="invoice?.serialized && invoice?.serialized !== '' ? 'center start' : 'center center'" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
     <qr-code *ngIf="invoice?.serialized && invoice?.serialized !== ''" [value]="invoice?.serialized" [size]="qrWidth" [errorCorrectionLevel]="'L'"></qr-code>
     <span *ngIf="!invoice?.serialized || invoice?.serialized === ''" class="font-size-300">N/A</span>
   </div>
   <div fxFlex="65">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
-        <fa-icon [icon]="faReceipt" class="page-title-img mr-1"></fa-icon>
+        <fa-icon class="page-title-img mr-1" [icon]="faReceipt"></fa-icon>
         <span class="page-title">{{screenSize === screenSizeEnum.XS ?  (newlyAdded ? 'Created' : 'Invoice') : (newlyAdded ? 'Invoice Created' : 'Invoice Information')}}</span>
       </div>
-      <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+      <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large" [ngClass]="{'xs-scroll-y': screenSize === screenSizeEnum.XS}">
       <div fxLayout="column">
-        <div fxFlex="30" [fxLayoutAlign]="invoice?.serialized && invoice?.serialized !== '' ? 'center start' : 'center center'" class="modal-qr-code-container padding-gap" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
+        <div fxFlex="30" class="modal-qr-code-container padding-gap" [fxLayoutAlign]="invoice?.serialized && invoice?.serialized !== '' ? 'center start' : 'center center'" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
           <qr-code *ngIf="invoice?.serialized && invoice?.serialized !== ''" [value]="invoice?.serialized" [size]="qrWidth" [errorCorrectionLevel]="'L'"></qr-code>
           <span *ngIf="!invoice?.serialized || invoice?.serialized === ''" class="font-size-120">QR Code Not Applicable</span>
         </div>
-        <mat-divider *ngIf="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM" [inset]="true" class="my-1"></mat-divider>
+        <mat-divider *ngIf="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM" class="my-1" [inset]="true"></mat-divider>
         <div fxLayout="row">
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Amount Requested</h4>
@@ -37,7 +37,7 @@
               </ng-container>
               <ng-container *ngIf="!invoice?.amountSettled">
                 <span *ngIf="invoice?.status !== 'unpaid' || !flgVersionCompatible">-</span>
-                <mat-spinner [diameter]="20" *ngIf="invoice?.status === 'unpaid' && flgVersionCompatible"></mat-spinner>
+                <mat-spinner *ngIf="invoice?.status === 'unpaid' && flgVersionCompatible" [diameter]="20"></mat-spinner>
               </ng-container>
             </span>
           </div>
@@ -95,8 +95,8 @@
           </div>
           <mat-divider class="w-100 my-1"></mat-divider>
         </div>
-        <div [ngClass]="{'mt-2': !showAdvanced, 'mt-1': showAdvanced}" fxLayout="row" fxLayoutAlign="end center">
-          <button class="mr-1" mat-button color="primary" type="reset" (click)="onShowAdvanced()" tabindex="1">
+        <div fxLayout="row" fxLayoutAlign="end center" [ngClass]="{'mt-2': !showAdvanced, 'mt-1': showAdvanced}">
+          <button class="mr-1" mat-button color="primary" type="reset" tabindex="1" (click)="onShowAdvanced()">
             <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
             <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
           </button>

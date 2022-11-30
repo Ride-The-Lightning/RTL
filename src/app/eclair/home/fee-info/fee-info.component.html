@@ -1,4 +1,4 @@
-<div fxLayout="row" fxFlex="100" fxLayoutAlign="start stretch" *ngIf="errorMessage?.trim() === ''; else errorBlock">
+<div *ngIf="errorMessage?.trim() === '';  else errorBlock" fxLayout="row" fxFlex="100"fxLayoutAlign="start stretch">
   <div fxLayout="column" fxFlex="50" fxLayoutAlign="space-between stretch">
     <div>
       <h4 fxLayoutAlign="start" class="dashboard-info-title">Daily</h4>

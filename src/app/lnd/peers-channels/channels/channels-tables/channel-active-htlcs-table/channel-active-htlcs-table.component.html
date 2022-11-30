@@ -3,22 +3,22 @@
     <div fxFlex="70"></div>
     <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
       <mat-form-field fxFlex="49">
-        <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()" name="filterBy">
+        <mat-select placeholder="Filter By" tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
           <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
         </mat-select>
       </mat-form-field>
       <mat-form-field fxFlex="49">
-        <input matInput [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()" name="filter" placeholder="Filter">
+        <input matInput name="filter" placeholder="Filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
       </mat-form-field>
     </div>
   </div>
-  <div [perfectScrollbar] fxLayout="column" fxFlex="100" class="table-container">
+  <div fxLayout="column" fxFlex="100" class="table-container" [perfectScrollbar]>
     <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-    <table mat-table #table fxFlex="100" [dataSource]="channels" matSort [ngClass]="{'error-border': errorMessage !== ''}">
+    <table #table mat-table fxFlex="100" matSort [dataSource]="channels" [ngClass]="{'error-border': errorMessage !== ''}">
       <!-- Channel Group Row Start -->
       <ng-container matColumnDef="amount">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount (Sats)</th>
-        <td mat-cell *matCellDef="let channel">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>Amount (Sats)</th>
+        <td *matCellDef="let channel" mat-cell>
           <span fxLayoutAlign="start center" class="htlc-row-span">
             Active HTLCs: {{channel?.pending_htlcs?.length}}
           </span>
@@ -30,8 +30,8 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="incoming">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Alias/Incoming</th>
-        <td mat-cell *matCellDef="let channel">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>Alias/Incoming</th>
+        <td *matCellDef="let channel" mat-cell>
           <span fxLayoutAlign="start center" class="htlc-row-span">{{channel?.remote_alias}}</span>
           <ng-container *ngIf="channel.is_expanded">
             <span *ngFor="let htlc of channel?.pending_htlcs" fxLayoutAlign="start center" class="htlc-row-span">
@@ -41,8 +41,8 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="forwarding_channel">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Forwarding Channel</th>
-        <td mat-cell *matCellDef="let channel">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>Forwarding Channel</th>
+        <td *matCellDef="let channel" mat-cell>
           <span fxLayoutAlign="start center" class="htlc-row-span">{{' '}}</span>
           <ng-container *ngIf="channel.is_expanded">
             <span *ngFor="let htlc of channel?.pending_htlcs" fxLayoutAlign="start center" class="htlc-row-span">
@@ -52,10 +52,10 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="htlc_index">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">
           <span fxLayoutAlign="end center" class="htlc-row-span">HTLC Index</span>
        </th>
-        <td mat-cell *matCellDef="let channel">
+        <td *matCellDef="let channel" mat-cell>
           <span fxLayoutAlign="end center" class="htlc-row-span">{{' '}}</span>
           <span *ngIf="channel.is_expanded">
             <span *ngFor="let htlc of channel?.pending_htlcs" fxLayoutAlign="end center" class="htlc-row-span">
@@ -65,10 +65,10 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="forwarding_htlc_index">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">
           <span fxLayoutAlign="end center" class="htlc-row-span">Forwarding HTLC Index</span>
        </th>
-        <td mat-cell *matCellDef="let channel">
+        <td *matCellDef="let channel" mat-cell>
           <span fxLayoutAlign="end center" class="htlc-row-span">{{' '}}</span>
           <span *ngIf="channel.is_expanded">
             <span *ngFor="let htlc of channel?.pending_htlcs" fxLayoutAlign="end center" class="htlc-row-span">
@@ -78,10 +78,10 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="expiration_height">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">
           <span fxLayoutAlign="end center" class="htlc-row-span">Expiration Height</span>
        </th>
-        <td mat-cell *matCellDef="let channel">
+        <td *matCellDef="let channel" mat-cell>
           <span fxLayoutAlign="end center" class="htlc-row-span">{{' '}}</span>
           <span *ngIf="channel.is_expanded">
             <span *ngFor="let htlc of channel?.pending_htlcs" fxLayoutAlign="end center" class="htlc-row-span">
@@ -91,10 +91,10 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="hash_lock">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pl-3 htlc-row-span">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" class="pl-3 htlc-row-span">
           <span fxLayoutAlign="end center" class="htlc-row-span">Hash Lock</span>
        </th>
-        <td mat-cell *matCellDef="let channel" class="pl-3">
+        <td *matCellDef="let channel" mat-cell class="pl-3">
           <span fxLayoutAlign="end center" class="htlc-row-span">{{' '}}</span>
           <span *ngIf="channel.is_expanded">
             <span *ngFor="let htlc of channel?.pending_htlcs" fxLayoutAlign="end center" class="htlc-row-span">
@@ -104,7 +104,7 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="px-2">
+        <th *matHeaderCellDef  mat-header-cellclass="px-2">
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="1" class="mr-0">
               <mat-select-trigger></mat-select-trigger>
@@ -112,7 +112,7 @@
             </mat-select>
           </div>
        </th>
-        <td mat-cell *matCellDef="let channel" class="px-2">
+        <td *matCellDef="let channel" mat-cell class="px-2">
           <span fxLayoutAlign="end center">
             <button mat-flat-button class="btn-htlc-expand" color="primary" type="button" tabindex="5" (click)="channel.is_expanded = !channel.is_expanded">{{channel.is_expanded ? 'Hide' : 'Show'}}</button>
           </span>
@@ -124,17 +124,17 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="no_channel">
-        <td mat-footer-cell *matFooterCellDef colspan="4">
+        <td *matFooterCellDef  mat-footer-cellcolspan="4">
           <p *ngIf="(!channels?.data || channels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No active htlc available.</p>
           <p *ngIf="(!channels?.data || channels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting active htlcs...</p>
           <p *ngIf="(!channels?.data || channels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
         </td>
       </ng-container>
       <!-- channel Group Row End -->
-      <tr mat-footer-row *matFooterRowDef="['no_channel']" [ngClass]="{'display-none': channels?.data && channels?.data?.length>0}"></tr>
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr *matFooterRowDef="['no_channel']" mat-footer-row [ngClass]="{'display-none': channels?.data && channels?.data?.length>0}"></tr>
+      <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+      <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
     </table>
   </div>
-  <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
+  <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true"></mat-paginator>
 </div>

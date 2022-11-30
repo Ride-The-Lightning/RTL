@@ -14,7 +14,7 @@
           <mat-card-content class="mt-5px mb-0 px-2">
             <form #loginForm="ngForm" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between">
               <mat-form-field fxFlex="100" fxLayoutAlign="start">
-                <input autoFocus matInput placeholder="Password" [type]="flgShow ? 'text' : 'password'" id="password" name="password" [(ngModel)]="password" tabindex="1" required>
+                <input autoFocus matInput placeholder="Password" id="password" name="password" tabindex="1" required [type]="flgShow ? 'text' : 'password'" [(ngModel)]="password">
                 <mat-icon tabindex="2" matSuffix (click)="flgShow = !flgShow">{{flgShow ? 'visibility_off' : 'visibility'}}</mat-icon>
                 <mat-error *ngIf="!password">Password is required.</mat-error>
               </mat-form-field>

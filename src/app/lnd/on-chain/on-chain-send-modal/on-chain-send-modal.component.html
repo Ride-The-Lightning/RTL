@@ -4,44 +4,44 @@
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">{{sweepAll ? 'Sweep All Funds' : 'Send Funds'}}</span>
       </div>
-      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" [mat-dialog-close]="false" default mat-button>X</button>
+      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" default mat-button [mat-dialog-close]="false">X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
-      <form fxLayout="row wrap" fxLayoutAlign="space-between start" fxFlex="100" *ngIf="!sweepAll; else sweepAllBlock;" class="overflow-x-hidden" (submit)="onSendFunds()" (reset)="resetData()" #form="ngForm">
+      <form *ngIf="!sweepAll;  else sweepAllBlock;" #form="ngForm" fxLayout="row wrap"fxLayoutAlign="space-between start" fxFlex="100" class="overflow-x-hidden" (submit)="onSendFunds()" (reset)="resetData()">
         <mat-form-field fxFlex.gt-sm="55">
-          <input autoFocus matInput [(ngModel)]="transactionAddress" placeholder="Bitcoin Address" tabindex="1" name="address" required #address="ngModel">
+          <input #address="ngModel" autoFocus matInput placeholder="Bitcoin Address" tabindex="1" name="address" required [(ngModel)]="transactionAddress">
           <mat-error *ngIf="!transactionAddress">Bitcoin address is required.</mat-error>
         </mat-form-field>
         <mat-form-field fxFlex.gt-sm="30">
-          <input matInput [(ngModel)]="transactionAmount" placeholder="Amount" name="amt" type="number" [step]="100" [min]="0" tabindex="2" required #amnt="ngModel">
+          <input #amnt="ngModel" matInput placeholder="Amount" name="amt" type="number" tabindex="2" required [step]="100" [min]="0" [(ngModel)]="transactionAmount">
           <span matSuffix>{{selAmountUnit}} </span>
           <mat-error *ngIf="!transactionAmount">{{amountError}}</mat-error>
         </mat-form-field>
         <mat-form-field fxFlex.gt-sm="10" fxLayoutAlign="start end">
-          <mat-select [value]="selAmountUnit" tabindex="3" required name="amountUnit" (selectionChange)="onAmountUnitChange($event)">
+          <mat-select tabindex="3" required name="amountUnit" [value]="selAmountUnit" (selectionChange)="onAmountUnitChange($event)">
             <mat-option *ngFor="let amountUnit of amountUnits" [value]="amountUnit">{{amountUnit}}</mat-option>
           </mat-select>
         </mat-form-field>
         <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="60" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start">  
           <mat-form-field fxFlex="48">
-            <mat-select [(value)]="selTransType" tabindex="4">
+            <mat-select tabindex="4" [(value)]="selTransType">
               <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
                 {{transType.name}}
               </mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-form-field fxFlex="48" *ngIf="selTransType === '1'">
-            <input matInput [(ngModel)]="transactionBlocks" placeholder="Number of Blocks" type="number" name="blcks" [step]="1" [min]="0" required tabindex="5" #blocks="ngModel">
+          <mat-form-field *ngIf="selTransType === '1'" fxFlex="48">
+            <input #blocks="ngModel" matInput placeholder="Number of Blocks" type="number" name="blcks" required tabindex="5" [step]="1" [min]="0" [(ngModel)]="transactionBlocks">
             <mat-error *ngIf="!transactionBlocks">Number of blocks is required.</mat-error>
           </mat-form-field>
-          <mat-form-field fxFlex="48" *ngIf="selTransType === '2'">
-            <input matInput [(ngModel)]="transactionFees" placeholder="Fees (Sats/vByte)" type="number" name="chainFees" [step]="1" [min]="0" required tabindex="6" #fees="ngModel">
+          <mat-form-field *ngIf="selTransType === '2'" fxFlex="48">
+            <input #fees="ngModel" matInput placeholder="Fees (Sats/vByte)" type="number" name="chainFees" required tabindex="6" [step]="1" [min]="0" [(ngModel)]="transactionFees">
             <mat-error *ngIf="!transactionFees">Fees is required.</mat-error>
           </mat-form-field>
         </div>
         <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="40" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start"></div>
-        <div fxFlex="100" class="alert alert-danger mt-1" *ngIf="sendFundError !== ''">
-          <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+        <div *ngIf="sendFundError !== ''" fxFlex="100" class="alert alert-danger mt-1">
+          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
           <span *ngIf="sendFundError !== ''">{{sendFundError}}</span>
         </div>
         <div fxLayout="row" fxFlex="100" class="mt-2" fxLayoutAlign="end center">
@@ -55,9 +55,9 @@
 
 <ng-template #sweepAllBlock>
   <div fxLayout="column">
-    <mat-vertical-stepper [linear]="true" #stepper (selectionChange)="stepSelectionChanged($event)">
+    <mat-vertical-stepper #stepper [linear]="true" (selectionChange)="stepSelectionChanged($event)">
       <mat-step *ngIf="!appConfig.sso.rtlSSO" [stepControl]="passwordFormGroup" [editable]="flgEditable">
-        <form [formGroup]="passwordFormGroup" fxLayout="column" fxLayoutAlign="space-between" class="my-1 pr-1">
+        <form fxLayout="column" fxLayoutAlign="space-between" class="my-1 pr-1" [formGroup]="passwordFormGroup">
           <ng-template matStepLabel>{{passwordFormLabel}}</ng-template>
           <div fxLayout="row">
             <mat-form-field fxFlex="100">
@@ -71,7 +71,7 @@
         </form>
       </mat-step>
       <mat-step [stepControl]="sendFundFormGroup" [editable]="flgEditable">
-        <form [formGroup]="sendFundFormGroup" fxLayout="column" class="my-1 pr-1">
+        <form fxLayout="column" class="my-1 pr-1" [formGroup]="sendFundFormGroup">
           <ng-template matStepLabel disabled="true">{{sendFundFormLabel}}</ng-template>
           <div fxLayout="column" fxFlex="98" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start">
             <mat-form-field fxFlex.gt-sm="45">
@@ -85,12 +85,12 @@
                 </mat-option>
               </mat-select>
             </mat-form-field>
-            <mat-form-field fxFlex.gt-sm="25" fxLayoutAlign="start end" *ngIf="sendFundFormGroup.controls.selTransType.value === '1'">
-              <input matInput formControlName="transactionBlocks" placeholder="Number of Blocks" type="number" name="blcks" [step]="1" [min]="0" required tabindex="6">
+            <mat-form-field *ngIf="sendFundFormGroup.controls.selTransType.value === '1'" fxFlex.gt-sm="25" fxLayoutAlign="start end">
+              <input matInput formControlName="transactionBlocks" placeholder="Number of Blocks" type="number" name="blcks" required tabindex="6" [step]="1" [min]="0">
               <mat-error *ngIf="sendFundFormGroup.controls.transactionBlocks.errors?.required">Number of blocks is required.</mat-error>
             </mat-form-field>
-            <mat-form-field fxFlex.gt-sm="25" fxLayoutAlign="start end" *ngIf="sendFundFormGroup.controls.selTransType.value === '2'">
-              <input matInput formControlName="transactionFees" placeholder="Fees (Sats/vByte)" type="number" name="chainFees" [step]="1" [min]="0" required tabindex="7">
+            <mat-form-field *ngIf="sendFundFormGroup.controls.selTransType.value === '2'" fxFlex.gt-sm="25" fxLayoutAlign="start end">
+              <input matInput formControlName="transactionFees" placeholder="Fees (Sats/vByte)" type="number" name="chainFees" required tabindex="7" [step]="1" [min]="0">
               <mat-error *ngIf="sendFundFormGroup.controls.transactionFees.errors?.required">Fees is required.</mat-error>
             </mat-form-field>
           </div>
@@ -100,15 +100,15 @@
         </form>
       </mat-step>
       <mat-step [stepControl]="confirmFormGroup">
-        <form [formGroup]="confirmFormGroup" fxLayout="column" fxLayoutAlign="start" class="my-1 pr-1">
+        <form fxLayout="column" fxLayoutAlign="start" class="my-1 pr-1" [formGroup]="confirmFormGroup">
           <ng-template matStepLabel>{{confirmFormLabel}}</ng-template>
           <div fxLayout="column">
             <div fxFlex="100" class="w-100 alert alert-warn">
-              <fa-icon [icon]="faExclamationTriangle" class="mt-1 mr-1 alert-icon"></fa-icon>
+              <fa-icon class="mt-1 mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
               <span>You are about to sweep all funds from RTL. Are you sure?</span>
             </div>
-            <div fxFlex="100" class="alert alert-danger mt-1" *ngIf="sendFundError !== ''">
-              <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+            <div *ngIf="sendFundError !== ''" fxFlex="100" class="alert alert-danger mt-1">
+              <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
               <span *ngIf="sendFundError !== ''">{{sendFundError}}</span>
             </div>
             <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
@@ -119,7 +119,7 @@
       </mat-step>
     </mat-vertical-stepper>
     <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">        
-      <button mat-button color="primary" tabindex="12" type="button" [mat-dialog-close]="false" default>{{flgValidated ? 'Close' : 'Cancel'}}</button>
+      <button mat-button color="primary" tabindex="12" type="button" default [mat-dialog-close]="false">{{flgValidated ? 'Close' : 'Cancel'}}</button>
     </div>
   </div>
 </ng-template>

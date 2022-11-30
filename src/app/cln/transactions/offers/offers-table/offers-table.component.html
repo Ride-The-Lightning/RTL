@@ -1,37 +1,37 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="padding-gap">
   <div fxLayout="row">
-    <button mat-flat-button color="primary" (click)="openCreateOfferModal()" tabindex="1">Create Offer</button>
+    <button mat-flat-button color="primary" tabindex="1" (click)="openCreateOfferModal()">Create Offer</button>
   </div>
   <div fxLayout="column" fxLayoutAlign="start stretch">
     <div fxLayout="column" fxLayoutAlign="start stretch" fxLayout.gt-sm="row wrap" class="page-sub-title-container mt-1">
       <div fxFlex="70" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="start center">
-        <fa-icon [icon]="faHistory" class="page-title-img mr-1"></fa-icon>
+        <fa-icon class="page-title-img mr-1" [icon]="faHistory"></fa-icon>
         <span class="page-title">Offers History</span>
       </div>
       <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
         <mat-form-field fxFlex="49">
-          <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()" name="filterBy">
+          <mat-select placeholder="Filter By" tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
             <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
           </mat-select>
         </mat-form-field>
         <mat-form-field fxFlex="49">
-          <input matInput [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()" name="filter" placeholder="Filter">
+          <input matInput name="filter" placeholder="Filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
         </mat-form-field>
       </div>
     </div>
-    <div [perfectScrollbar] fxLayout="column" fxFlex="100" class="table-container">
+    <div fxLayout="column" fxFlex="100" class="table-container" [perfectScrollbar]>
       <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>      
-      <table mat-table #table fxFlex="100" [dataSource]="offers" matSort [ngClass]="{'error-border': errorMessage !== ''}">
+      <table #table mat-table fxFlex="100" matSort [dataSource]="offers" [ngClass]="{'error-border': errorMessage !== ''}">
         <ng-container matColumnDef="active">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" matTooltip="Active"></th>
-          <td mat-cell *matCellDef="let offer">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="Active"></th>
+          <td *matCellDef="let offer" mat-cell>
             <span *ngIf="offer.active" class="dot green" matTooltip="Active" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
             <span *ngIf="!offer.active" class="dot red" matTooltip="Inactive" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
           </td>
         </ng-container>
         <ng-container matColumnDef="offer_id">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Offer ID</th>
-          <td mat-cell *matCellDef="let offer">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Offer ID</th>
+          <td *matCellDef="let offer" mat-cell>
             <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">
                 {{offer.offer_id}}
@@ -40,18 +40,18 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="single_use">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Single Use</th>
-          <td mat-cell *matCellDef="let offer">{{offer.single_use ? 'Yes' : 'No'}}</td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Single Use</th>
+          <td *matCellDef="let offer" mat-cell>{{offer.single_use ? 'Yes' : 'No'}}</td>
         </ng-container>
         <ng-container matColumnDef="used">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Used</th>
-          <td mat-cell *matCellDef="let offer">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Used</th>
+          <td *matCellDef="let offer" mat-cell>
             {{offer.used ? 'Yes' : 'No'}}
           </td>
         </ng-container>
         <ng-container matColumnDef="bolt12">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Invoice</th>
-          <td mat-cell *matCellDef="let offer">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Invoice</th>
+          <td *matCellDef="let offer" mat-cell>
             <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
               <span class="ellipsis-child">
                 {{offer.bolt12}}
@@ -60,7 +60,7 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>
+          <th *matHeaderCellDef mat-header-cell>
             <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="1" class="mr-0">
                 <mat-select-trigger></mat-select-trigger>
@@ -68,7 +68,7 @@
               </mat-select>
             </div>
          </th>
-          <td mat-cell *matCellDef="let offer" fxLayoutAlign="end center">
+          <td *matCellDef="let offer" mat-cell fxLayoutAlign="end center">
             <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="4" class="mr-0">
                 <mat-select-trigger></mat-select-trigger>
@@ -80,17 +80,17 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="no_offer">
-          <td mat-footer-cell *matFooterCellDef colspan="4">
+          <td *matFooterCellDef  mat-footer-cellcolspan="4">
             <p *ngIf="(!offers?.data || offers?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.COMPLETED">No offer available.</p>
             <p *ngIf="(!offers?.data || offers?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.INITIATED">Getting offers...</p>
             <p *ngIf="(!offers?.data || offers?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
           </td>
         </ng-container>
-        <tr mat-footer-row *matFooterRowDef="['no_offer']" [ngClass]="{'display-none': offers?.data && offers?.data?.length>0}"></tr>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr *matFooterRowDef="['no_offer']" mat-footer-row [ngClass]="{'display-none': offers?.data && offers?.data?.length>0}"></tr>
+        <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+        <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
       </table>
     </div>
-    <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
+    <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true"></mat-paginator>
   </div>
 </div>

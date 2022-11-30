@@ -3,97 +3,97 @@
     <div fxFlex="70"></div>
     <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
       <mat-form-field fxFlex="49">
-        <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()" name="filterBy">
+        <mat-select placeholder="Filter By" tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
           <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
         </mat-select>
       </mat-form-field>
       <mat-form-field fxFlex="49">
-        <input matInput [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()" name="filter" placeholder="Filter">
+        <input matInput name="filter" placeholder="Filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
       </mat-form-field>
     </div>
   </div>
   <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-  <div [perfectScrollbar] fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100">
-    <table mat-table #table [dataSource]="channels" matSort [ngClass]="{'error-border': errorMessage !== ''}">
+  <div fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100" [perfectScrollbar]>
+    <table #table mat-table matSort [dataSource]="channels" [ngClass]="{'error-border': errorMessage !== ''}">
       <ng-container matColumnDef="private">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header matTooltip="Private"></th>
-        <td mat-cell *matCellDef="let channel">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header matTooltip="Private"></th>
+        <td *matCellDef="let channel" mat-cell>
           <span *ngIf="channel.private" class="mr-1" matTooltip="Private" matTooltipPosition="right"><fa-icon [icon]="faEyeSlash"></fa-icon></span>
           <span *ngIf="!channel.private" class="mr-1" matTooltip="Public" matTooltipPosition="right"><fa-icon [icon]="faEye"></fa-icon></span>
         </td>
       </ng-container>
       <ng-container matColumnDef="alias">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Alias</th>
-        <td mat-cell *matCellDef="let channel">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>Alias</th>
+        <td *matCellDef="let channel" mat-cell>
           <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{channel?.alias}}</span>
           </div>
         </td>
       </ng-container>
       <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
-        <td mat-cell *matCellDef="let channel">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>ID</th>
+        <td *matCellDef="let channel" mat-cell>
           <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{channel?.id}}</span>
           </div>
         </td>
       </ng-container>
       <ng-container matColumnDef="channel_id">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel ID</th>
-        <td mat-cell *matCellDef="let channel">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>Channel ID</th>
+        <td *matCellDef="let channel" mat-cell>
           <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{channel?.channel_id}}</span>
           </div>
         </td>
       </ng-container>
       <ng-container matColumnDef="funding_txid">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Funding Transaction ID</th>
-        <td mat-cell *matCellDef="let channel">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>Funding Transaction ID</th>
+        <td *matCellDef="let channel" mat-cell>
           <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
             <span class="ellipsis-child">{{channel?.funding_txid}}</span>
           </div>
         </td>
       </ng-container>
       <ng-container matColumnDef="connected">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Connected</th>
-        <td mat-cell *matCellDef="let channel">{{(channel?.connected) ? 'Connected' : 'Disconnected'}}</td>
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>Connected</th>
+        <td *matCellDef="let channel" mat-cell>{{(channel?.connected) ? 'Connected' : 'Disconnected'}}</td>
       </ng-container>
       <ng-container matColumnDef="state">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>State</th>
-        <td mat-cell *matCellDef="let channel" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">{{CLNChannelPendingState[channel?.state]}}</td>
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>State</th>
+        <td *matCellDef="let channel" mat-cell [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">{{CLNChannelPendingState[channel?.state]}}</td>
       </ng-container>
       <ng-container matColumnDef="our_channel_reserve_satoshis">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Local Reserve (Sats)</th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Local Reserve (Sats)</th>
+        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
             {{channel?.our_channel_reserve_satoshis | number:'1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="their_channel_reserve_satoshis">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Remote Reserve (Sats)</th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Remote Reserve (Sats)</th>
+        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
             {{channel?.their_channel_reserve_satoshis | number:'1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="msatoshi_total">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Total (Sats)</th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Total (Sats)</th>
+        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
             {{channel?.msatoshi_total/1000 | number:channel?.msatoshi_to_us < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="spendable_msatoshi">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Spendable (Sats)</th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Spendable (Sats)</th>
+        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
             {{channel?.spendable_msatoshi/1000 | number:channel?.msatoshi_to_us < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="msatoshi_to_us">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Local Balance (Sats)</th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Local Balance (Sats)</th>
+        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
             {{channel?.msatoshi_to_us/1000 | number:channel?.msatoshi_to_us < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="msatoshi_to_them">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Remote Balance (Sats)</th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Remote Balance (Sats)</th>
+        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
             {{channel?.msatoshi_to_them/1000 | number:channel?.msatoshi_to_them < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>
+        <th *matHeaderCellDef mat-header-cell>
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="1" class="mr-0">
               <mat-select-trigger></mat-select-trigger>
@@ -101,29 +101,29 @@
             </mat-select>
           </div>
        </th>
-        <td mat-cell *matCellDef="let channel" fxLayoutAlign="end center">
+        <td *matCellDef="let channel" mat-cell fxLayoutAlign="end center">
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="4" class="mr-0">
               <mat-select-trigger></mat-select-trigger>
               <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
-              <mat-option (click)="onChannelClose(channel)" *ngIf="isCompatibleVersion && (channel.state === 'CHANNELD_SHUTTING_DOWN' || channel.state === 'CLOSINGD_SIGEXCHANGE' || (!channel.connected && channel.state === 'CHANNELD_NORMAL'))">Close Channel</mat-option>
-              <mat-option (click)="onBumpFee(channel)" *ngIf="channel.state === 'CHANNELD_AWAITING_LOCKIN'">Bump Fee</mat-option>
+              <mat-option *ngIf="isCompatibleVersion && (channel.state === 'CHANNELD_SHUTTING_DOWN' || channel.state === 'CLOSINGD_SIGEXCHANGE' || (!channel.connected && channel.state === 'CHANNELD_NORMAL'))" (click)="onChannelClose(channel)">Close Channel</mat-option>
+              <mat-option *ngIf="channel.state === 'CHANNELD_AWAITING_LOCKIN'" (click)="onBumpFee(channel)">Bump Fee</mat-option>
             </mat-select>
           </div>
         </td>
       </ng-container>
       <ng-container matColumnDef="no_peer">
-        <td mat-footer-cell *matFooterCellDef colspan="4">
+        <td *matFooterCellDef  mat-footer-cellcolspan="4">
           <p *ngIf="numPeers<1 && (!channels?.data || channels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No peers connected. Add a peer in order to open a channel.</p>
           <p *ngIf="numPeers>0 && (!channels?.data || channels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No pending/inactive channel available.</p>
           <p *ngIf="(!channels?.data || channels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting pending/inactive channels...</p>
           <p *ngIf="(!channels?.data || channels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
         </td>
       </ng-container>
-      <tr mat-footer-row *matFooterRowDef="['no_peer']" [ngClass]="{'display-none': numPeers>0 && channels?.data && channels?.data?.length>0}"></tr>
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr *matFooterRowDef="['no_peer']" mat-footer-row [ngClass]="{'display-none': numPeers>0 && channels?.data && channels?.data?.length>0}"></tr>
+      <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+      <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
     </table>
   </div>
-  <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
+  <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true"></mat-paginator>
 </div>
