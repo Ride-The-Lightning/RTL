@@ -1,0 +1,54 @@
+h4 {
+  margin: 1.2rem 0 0.6rem 0;
+}
+
+.theme-name {
+  min-width: 15rem;
+}
+
+.skin {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-right: 1rem;
+
+  &.selected-color {
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 0.25rem solid;
+  }
+
+  &.purple {
+    background-color: #5e4ea5;
+  }
+
+  &.indigo {
+    background-color: #3F51B5;
+  }
+
+  &.teal {
+    background-color: #00695C;
+  }
+
+  &.pink {
+    background-color: #D81B60;
+  }
+
+  &.yellow {
+    background-color: #a1842c;
+  }
+}
+
+.radio-group.mat-radio-group  .mat-radio-button {
+  min-width: 11rem;
+}
+
+.mat-slide-toggle {
+  padding: 0 1.4rem 0 0.4rem;
+}
+
+.mat-flat-button {
+  width: 100%;
+  max-height: 3.6rem;
+}

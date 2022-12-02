@@ -3,7 +3,6 @@
 @import './color-swatches/purple-primary.swatch.scss';
 @import './color-swatches/red-warn.swatch.scss';
 @import './color-swatches/white.swatch.scss';
-@import '../styles/typography.scss';
 
 $purple-primary: mat.define-palette($purple-primary, 500, 300, A200);
 $purple-accent: mat.define-palette(mat.$gray-palette, 800, 600, 900);
@@ -16,8 +15,7 @@ $purple-night-theme: mat.define-dark-theme((
         primary: $purple-primary,
         accent: $purple-accent-night,
         warn: $purple-warn-night
-    ),
-    // typography: $medium-typography
+    )
 ));
 
 $purple-day-theme: mat.define-light-theme((
@@ -25,6 +23,5 @@ $purple-day-theme: mat.define-light-theme((
         primary: $purple-primary,
         accent: $purple-accent,
         warn: $purple-warn
-    ),
-    // typography: $medium-typography
+    )
 ));

@@ -3,7 +3,6 @@
 @import './color-swatches/red-warn.swatch.scss';
 @import './color-swatches/green-primary.swatch.scss';
 @import './color-swatches/white.swatch.scss';
-@import '../styles/typography.scss';
 
 $green-primary: mat.define-palette($green-primary, 500, 300, A200);
 $green-accent:  mat.define-palette(mat.$gray-palette, 800, 600, 900);
@@ -16,8 +15,7 @@ $green-night-theme: mat.define-dark-theme((
         primary: $green-primary,
         accent: $green-accent-night,
         warn: $green-warn-night
-    ),
-    // typography: $medium-typography
+    )
 ));
 
 $green-day-theme: mat.define-light-theme((
@@ -25,6 +23,5 @@ $green-day-theme: mat.define-light-theme((
         primary: $green-primary,
         accent: $green-accent,
         warn: $green-warn
-    ),
-    // typography: $medium-typography
+    )
 ));

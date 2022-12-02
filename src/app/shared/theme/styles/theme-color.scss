@@ -187,13 +187,13 @@
     border: 1px solid $foreground-divider;
     border-radius: 2px;
     background: none;
-    thead tr th {
+    & thead tr th {
       color: $foreground-base;
     }
-    thead tr th:not(:first-of-type), tbody tr td:not(:first-of-type) {
+    & thead tr th:not(:first-of-type), tbody tr td:not(:first-of-type) {
       padding-left: 1rem;
     }
-    tbody tr td.mat-cell {
+    & tbody tr td.mat-cell {
       @include for_screensize(tab-land) {
         white-space: unset;
       }
@@ -202,6 +202,11 @@
       }
       @include for_screensize(phone) {
         white-space: unset;
+      }
+    }
+    & tfoot tr td {
+      & p {
+        padding-left: $gap*3;
       }
     }
     &.error-border {
@@ -255,7 +260,21 @@
 
   .modal-info-header {
     color: $foreground-text;
+    font-size: 180%;
     font-weight: 500;
+    padding: $gap 0 $gap $gap*2;
+    @include for_screensize(tab-land) {
+      padding: $gap 0 $gap $gap;
+    }
+    @include for_screensize(tab-port) {
+      padding: $gap 0 $gap math.div($gap, 2);
+    }
+    @include for_screensize(phone) {
+      padding: $gap 0 $gap math.div($gap, 4);
+    }
+    & .btn-close-x {
+      font-size: 120%;
+    }
     & .page-title-img svg {
       color: $foreground-text;
     }

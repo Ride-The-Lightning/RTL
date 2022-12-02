@@ -3,101 +3,99 @@
 @import 'theme-mode-light';
 @import 'theme-color';
 @import "../skins/purple";
+
+// Default Theme Light & Purple
 @include mat.all-component-themes($purple-day-theme);
-@include theme-mode-light($purple-day-theme);
-@include theme-color($purple-day-theme);
 
 .rtl-container{
   @include mat.core();
   &.purple {
-    // @import "../skins/purple";
-    // &.day {
-    //   @include mat.all-component-themes($purple-day-theme);
-    //   // @include theme-mode-light($purple-day-theme);
-    //   // @include theme-color($purple-day-theme);
-    // }
+    &.day {
+      @include theme-mode-light($purple-day-theme);
+      @include theme-color($purple-day-theme);
+    }
     &.night {
       @include mat.all-component-colors($purple-night-theme);
-      // @include theme-mode-dark($purple-night-theme);
-      // @include theme-color($purple-night-theme);
+      @include theme-mode-dark($purple-night-theme);
+      @include theme-color($purple-night-theme);
     }
   }
   &.blue{
     @import "../skins/blue";
     &.day {
       @include mat.all-component-colors($blue-day-theme);
-      // @include theme-mode-light($blue-day-theme);
-      // @include theme-color($blue-day-theme);
+      @include theme-mode-light($blue-day-theme);
+      @include theme-color($blue-day-theme);
     }
     &.night {
       @include mat.all-component-colors($blue-night-theme);
-      // @include theme-mode-dark($blue-night-theme);
-      // @include theme-color($blue-night-theme);
+      @include theme-mode-dark($blue-night-theme);
+      @include theme-color($blue-night-theme);
     }
   }
   &.indigo{
     @import "../skins/indigo";
     &.day {
       @include mat.all-component-colors($indigo-day-theme);
-      // @include theme-mode-light($indigo-day-theme);
-      // @include theme-color($indigo-day-theme);
+      @include theme-mode-light($indigo-day-theme);
+      @include theme-color($indigo-day-theme);
     }
     &.night {
       @include mat.all-component-colors($indigo-night-theme);
-      // @include theme-mode-dark($indigo-night-theme);
-      // @include theme-color($indigo-night-theme);
+      @include theme-mode-dark($indigo-night-theme);
+      @include theme-color($indigo-night-theme);
     }
   }
   &.green{
     @import "../skins/green";
     &.day {
       @include mat.all-component-colors($green-day-theme);
-      // @include theme-mode-light($green-day-theme);
-      // @include theme-color($green-day-theme);
+      @include theme-mode-light($green-day-theme);
+      @include theme-color($green-day-theme);
     }
     &.night {
       @include mat.all-component-colors($green-night-theme);
-      // @include theme-mode-dark($green-night-theme);
-      // @include theme-color($green-night-theme);
+      @include theme-mode-dark($green-night-theme);
+      @include theme-color($green-night-theme);
     }
   }
   &.teal{
     @import "../skins/teal";
     &.day {
       @include mat.all-component-colors($teal-day-theme);
-      // @include theme-mode-light($teal-day-theme);
-      // @include theme-color($teal-day-theme);
+      @include theme-mode-light($teal-day-theme);
+      @include theme-color($teal-day-theme);
     }
     &.night {
       @include mat.all-component-colors($teal-night-theme);
-      // @include theme-mode-dark($teal-night-theme);
-      // @include theme-color($teal-night-theme);
+      @include theme-mode-dark($teal-night-theme);
+      @include theme-color($teal-night-theme);
     }
   }
   &.pink{
     @import "../skins/pink";
     &.day {
       @include mat.all-component-colors($pink-day-theme);
-      // @include theme-mode-light($pink-day-theme);
-      // @include theme-color($pink-day-theme);
+      @include theme-mode-light($pink-day-theme);
+      @include theme-color($pink-day-theme);
     }
     &.night {
       @include mat.all-component-colors($pink-night-theme);
-      // @include theme-mode-dark($pink-night-theme);
-      // @include theme-color($pink-night-theme);
+      @include theme-mode-dark($pink-night-theme);
+      @include theme-color($pink-night-theme);
     }
   }
   &.yellow{
     @import "../skins/yellow";
     &.day {
       @include mat.all-component-colors($yellow-day-theme);
-      // @include theme-mode-light($yellow-day-theme);
-      // @include theme-color($yellow-day-theme);
+      @include theme-mode-light($yellow-day-theme);
+      @include theme-color($yellow-day-theme);
     }
     &.night {
       @include mat.all-component-colors($yellow-night-theme);
-      // @include theme-mode-dark($yellow-night-theme);
-      // @include theme-color($yellow-night-theme);
+      @include theme-mode-dark($yellow-night-theme);
+      @include theme-color($yellow-night-theme);
     }
   }
 }

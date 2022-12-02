@@ -4,6 +4,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "../frontend",
+    "skipLibCheck": true,
     "types": ["node"],
     "paths": {
       "crypto": ["../node_modules/crypto-browserify"],
@@ -15,6 +16,6 @@
     "./polyfills.ts"
   ],
   "include": [
-    "./**/*.d.ts"
+    "src/**/*.d.ts"
   ]
 }

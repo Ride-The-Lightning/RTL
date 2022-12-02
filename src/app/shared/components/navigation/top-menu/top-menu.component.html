@@ -1,24 +1,24 @@
 <mat-menu #topMenu="matMenu" class="top-menu" [overlapTrigger]="false">
-  <p mat-menu-item>
+  <p mat-menu-item class="cursor-default">
     <fa-icon class="fa-icon-small mr-1" [icon]="faCodeBranch"></fa-icon>
     <span>Version: {{version}}</span>
   </p>
-  <p *ngIf="information?.api_version" mat-menu-item>
+  <p *ngIf="information?.api_version" mat-menu-item class="cursor-default">
     <fa-icon class="fa-icon-small mr-1" [icon]="faCode"></fa-icon>
     <span>API Version: {{information?.api_version}}</span>
   </p>
-  <a *ngIf="showLogout" mat-menu-item routerLink="/settings">
+  <p *ngIf="showLogout" mat-menu-item routerLink="/settings">
     <fa-icon class="fa-icon-small mr-1" [icon]="faUserCog"></fa-icon>
     <span routerLink="/settings">Settings</span>
-  </a>
-  <a *ngIf="showLogout" mat-menu-item routerLink="/help">
+  </p>
+  <p *ngIf="showLogout" mat-menu-item routerLink="/help">
     <fa-icon class="fa-icon-small mr-1" [icon]="faQuestion"></fa-icon>
     <span routerLink="/help">Help</span>
-  </a>
-  <a *ngIf="showLogout" mat-menu-item (click)="onClick()">
+  </p>
+  <p *ngIf="showLogout" mat-menu-item (click)="onClick()">
     <fa-icon class="fa-icon-small mr-1" [icon]="faEject"></fa-icon>
     <span>Logout</span>
-  </a>
+  </p>
 </mat-menu>
 
 <button mat-icon-button class="top-toolbar-icon" [matMenuTriggerFor]="topMenu">

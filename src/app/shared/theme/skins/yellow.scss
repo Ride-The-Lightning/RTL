@@ -3,7 +3,6 @@
 @import './color-swatches/red-warn.swatch.scss';
 @import './color-swatches/yellow-primary.swatch.scss';
 @import './color-swatches/white.swatch.scss';
-@import '../styles/typography.scss';
 
 $yellow-primary: mat.define-palette($yellow-primary, 500, 300, A200);
 $yellow-accent:  mat.define-palette(mat.$gray-palette, 800, 600, 900);
@@ -16,8 +15,7 @@ $yellow-night-theme: mat.define-dark-theme((
         primary: $yellow-primary,
         accent: $yellow-accent-night,
         warn: $yellow-warn-night
-    ),
-    // typography: $medium-typography
+    )
 ));
 
 $yellow-day-theme: mat.define-light-theme((
@@ -25,6 +23,5 @@ $yellow-day-theme: mat.define-light-theme((
         primary: $yellow-primary,
         accent: $yellow-accent,
         warn: $yellow-warn
-    ),
-    // typography: $medium-typography
+    )
 ))

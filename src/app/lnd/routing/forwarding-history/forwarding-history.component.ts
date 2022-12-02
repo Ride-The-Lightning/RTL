@@ -92,9 +92,11 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   }
 
   ngAfterViewInit() {
-    if (this.forwardingHistoryData.length > 0) {
-      this.loadForwardingEventsTable(this.forwardingHistoryData);
-    }
+    setTimeout(() => {
+      if (this.forwardingHistoryData.length > 0) {
+        this.loadForwardingEventsTable(this.forwardingHistoryData);
+      }
+    }, 0);
   }
 
   ngOnChanges(changes: SimpleChanges) {

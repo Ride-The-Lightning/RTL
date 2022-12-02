@@ -1,4 +1,4 @@
-import { NgModule, Injectable } from '@angular/core';
+import { NgModule, Injectable, Inject, Optional } from '@angular/core';
 import { CommonModule, DecimalPipe, TitleCasePipe, DatePipe } from '@angular/common';
 
 import { RouterModule } from '@angular/router';
@@ -7,8 +7,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { LayoutModule } from '@angular/cdk/layout';
+import { Platform } from '@angular/cdk/platform';
 
-import { MatNativeDateModule, DateAdapter, MAT_DATE_FORMATS, NativeDateAdapter, MatDateFormats } from '@angular/material/core';
+import { MatNativeDateModule, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, NativeDateAdapter, MatDateFormats } from '@angular/material/core';
 import { MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatBadgeModule } from '@angular/material/badge';
@@ -112,8 +113,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
 
 @Injectable() class DefaultDateAdapter extends NativeDateAdapter {
 
-  constructor() {
-    super('');
+  constructor(@Optional() @Inject(MAT_DATE_LOCALE) matDateLocale: string, platform: Platform) {
+    super(matDateLocale, platform);
   }
 
   format(date: Date, displayFormat: Object): string {

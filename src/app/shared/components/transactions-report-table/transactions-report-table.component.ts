@@ -59,7 +59,9 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
   }
 
   ngAfterViewInit() {
-    this.setTableWidgets();
+    setTimeout(() => {
+      this.setTableWidgets();
+    }, 0);
   }
 
   ngOnChanges(changes: SimpleChanges) {

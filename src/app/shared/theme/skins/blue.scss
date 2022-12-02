@@ -2,7 +2,6 @@
 @import '@angular/material/theming';
 @import './color-swatches/red-warn.swatch.scss';
 @import './color-swatches/white.swatch.scss';
-@import '../styles/typography.scss';
 
 $blue-primary: mat.define-palette(mat.$blue-palette, 700, 200, A200);
 $blue-accent:  mat.define-palette(mat.$gray-palette, 800, 600, 900);
@@ -15,8 +14,7 @@ $blue-night-theme: mat.define-dark-theme((
         primary: $blue-primary,
         accent: $blue-accent-night,
         warn: $blue-warn-night
-    ),
-    // typography: $medium-typography
+    )
 ));
 
 $blue-day-theme: mat.define-light-theme((
@@ -24,6 +22,5 @@ $blue-day-theme: mat.define-light-theme((
         primary: $blue-primary,
         accent: $blue-accent,
         warn: $blue-warn
-    ),
-    // typography: $medium-typography
+    )
 ));

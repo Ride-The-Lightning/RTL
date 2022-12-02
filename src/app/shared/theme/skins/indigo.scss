@@ -2,7 +2,6 @@
 @import '@angular/material/theming';
 @import './color-swatches/red-warn.swatch.scss';
 @import './color-swatches/white.swatch.scss';
-@import '../styles/typography.scss';
 
 $indigo-primary: mat.define-palette(mat.$indigo-palette, 500, 200, A200);
 $indigo-accent:  mat.define-palette(mat.$gray-palette, 800, 600, 900);
@@ -15,8 +14,7 @@ $indigo-night-theme: mat.define-dark-theme((
         primary: $indigo-primary,
         accent: $indigo-accent-night,
         warn: $indigo-warn-night
-    ),
-    // typography: $medium-typography
+    )
 ));
 
 $indigo-day-theme: mat.define-light-theme((
@@ -24,6 +22,5 @@ $indigo-day-theme: mat.define-light-theme((
         primary: $indigo-primary,
         accent: $indigo-accent,
         warn: $indigo-warn
-    ),
-    // typography: $medium-typography
+    )
 ));

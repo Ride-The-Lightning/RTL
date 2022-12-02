@@ -104,9 +104,11 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   }
 
   ngAfterViewInit() {
-    if (this.successfulEvents.length > 0) {
-      this.loadForwardingEventsTable(this.successfulEvents);
-    }
+    setTimeout(() => {
+      if (this.successfulEvents.length > 0) {
+        this.loadForwardingEventsTable(this.successfulEvents);
+      }
+    }, 0);
   }
 
   ngOnChanges(changes: SimpleChanges) {

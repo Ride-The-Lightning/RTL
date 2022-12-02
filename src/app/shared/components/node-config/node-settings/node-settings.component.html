@@ -1,5 +1,5 @@
-<div fxLayout="column" fxFlex="100" [perfectScrollbar]>
-  <form #form="ngForm" fxLayout="column" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1">
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" [perfectScrollbar]>
+  <form #form="ngForm" fxLayout="column" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container">
     <mat-accordion displayMode="flat" multi="false">
       <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1">
         <mat-expansion-panel-header>
@@ -51,31 +51,27 @@
           </mat-panel-title>
         </mat-expansion-panel-header>
         <div fxLayout="column" fxLayoutAlign="start stretch">
-          <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100">
-            <div fxLayout="row" fxFlex="100" class="alert alert-info mb-0">
-              <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle"></fa-icon>
-              <span>Dashboard layout will be tailored based on the role selected to better serve its needs.</span>
-            </div>
-            <div fxLayout="column" fxLayoutAlign="start start" fxFlex="100">
-              <h4>Dashboard Layout</h4>
-              <mat-radio-group color="primary" tabindex="1" name="userPersona" [(ngModel)]="selNode.settings.userPersona">
-                <mat-radio-button *ngFor="let userPersona of userPersonas" class="mr-4" [value]="userPersona" [checked]="selNode.settings.userPersona === userPersona">
-                  {{userPersona | titlecase}}
-                </mat-radio-button>
-              </mat-radio-group>
-            </div>
+          <div fxLayout="row" fxFlex="100" class="alert alert-info mb-0">
+            <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle"></fa-icon>
+            <span>Dashboard layout will be tailored based on the role selected to better serve its needs.</span>
           </div>
-          <mat-divider class="mt-1" [inset]="true"></mat-divider>
-          <div fxLayout="column" fxLayout.gt-xs="row" fxFlex="100" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-xs="start stretch">
-            <div fxFlex.gt-xs="20" fxFlex.gt-md="15" fxLayout="column" fxLayoutAlign="space-between stretch">
-              <h4>Mode</h4>
-              <mat-radio-group color="primary" name="themeMode" [(ngModel)]="selectedThemeMode" (change)="chooseThemeMode()">
-                <mat-radio-button *ngFor="let themeMode of themeModes" tabindex="5" [value]="themeMode" [ngClass]="{'mr-4': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">{{themeMode.name}}
-                </mat-radio-button>
-              </mat-radio-group>
-            </div>
+          <div fxLayout="column" fxLayoutAlign="start start" fxFlex="100">
+            <h4>Dashboard Layout</h4>
+            <mat-radio-group class="radio-group" color="primary" tabindex="1" name="userPersona" [(ngModel)]="selNode.settings.userPersona">
+              <mat-radio-button *ngFor="let userPersona of userPersonas" class="mr-4" [value]="userPersona" [checked]="selNode.settings.userPersona === userPersona">
+                {{userPersona | titlecase}}
+              </mat-radio-button>
+            </mat-radio-group>
           </div>
-          <mat-divider class="mt-1" [inset]="true"></mat-divider>
+          <mat-divider class="mt-1"></mat-divider>
+          <div fxLayout="column" fxFlex="100" fxLayoutAlign="start start">
+            <h4>Mode</h4>
+            <mat-radio-group class="radio-group" color="primary" name="themeMode" [(ngModel)]="selectedThemeMode" (change)="chooseThemeMode()">
+              <mat-radio-button *ngFor="let themeMode of themeModes" tabindex="5" class="mr-4" [value]="themeMode">{{themeMode.name}}
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <mat-divider class="mt-1"></mat-divider>
           <div fxLayout="column" fxLayout.gt-xs="row" fxFlex="100" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-xs="start stretch">
             <div fxLayout="column" fxFlex.gt-xs="50" fxFlex.gt-md="40" fxLayoutAlign="space-between stretch">
               <h4>Themes</h4>
@@ -91,8 +87,10 @@
       </mat-expansion-panel>
     </mat-accordion>
   </form>
-  <div fxLayout="row" class="mt-1">
-    <button class="mr-1" mat-stroked-button color="primary" tabindex="10" (click)="onResetSettings()">Reset</button>
-    <button mat-flat-button color="primary" tabindex="11" (click)="onUpdateSettings()">Update</button>
+  <div fxLayout="column" fxLayoutAlign="start start" class="mt-1">
+    <div fxLayout="row">
+      <button class="mr-1" mat-stroked-button color="primary" tabindex="10" (click)="onResetSettings()">Reset</button>
+      <button mat-flat-button color="primary" tabindex="11" (click)="onUpdateSettings()">Update</button>
+    </div>
   </div>
 </div>

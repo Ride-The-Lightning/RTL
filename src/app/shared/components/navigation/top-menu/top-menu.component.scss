@@ -1,16 +1,3 @@
-.mat-menu-content {
-  cursor: default;
-  p.mat-menu-item {
-    cursor: default;
-    fa-icon, span, div {
-      cursor: default;
-    }
-  }
-  p.mat-menu-item:hover {
-    cursor: default !important;
-  }
-}
-
 .top-toolbar-icon {
   & .mat-button-wrapper img {
     width:3.2rem;

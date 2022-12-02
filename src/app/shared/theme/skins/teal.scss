@@ -2,7 +2,6 @@
 @import '@angular/material/theming';
 @import './color-swatches/red-warn.swatch.scss';
 @import './color-swatches/white.swatch.scss';
-@import '../styles/typography.scss';
 
 $teal-primary: mat.define-palette(mat.$teal-palette, 800, 300, A200);
 $teal-accent:  mat.define-palette(mat.$gray-palette, 800, 600, 900);
@@ -15,8 +14,7 @@ $teal-night-theme: mat.define-dark-theme((
         primary: $teal-primary,
         accent: $teal-accent-night,
         warn: $teal-warn-night
-    ),
-    // typography: $medium-typography
+    )
 ));
 
 $teal-day-theme: mat.define-light-theme((
@@ -24,6 +22,5 @@ $teal-day-theme: mat.define-light-theme((
         primary: $teal-primary,
         accent: $teal-accent,
         warn: $teal-warn
-    ),
-    // typography: $medium-typography
+    )
 ));

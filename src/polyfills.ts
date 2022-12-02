@@ -56,7 +56,12 @@
  * Zone JS is required by default for Angular itself.
  */
 import 'zone.js';
-
+import 'sha256';
+import 'qrcode';
+import 'otplib';
+import 'pdfmake/build/pdfmake';
+import 'pdfmake/build/vfs_fonts';
+import 'clone-deep';
 
 /** *************************************************************************************************
  * APPLICATION IMPORTS

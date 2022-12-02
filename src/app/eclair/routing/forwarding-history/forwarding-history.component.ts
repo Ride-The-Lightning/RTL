@@ -93,9 +93,11 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   }
 
   ngAfterViewInit() {
-    if (this.eventsData.length > 0) {
-      this.loadForwardingEventsTable(this.eventsData);
-    }
+    setTimeout(() => {
+      if (this.eventsData.length > 0) {
+        this.loadForwardingEventsTable(this.eventsData);
+      }
+    }, 0);
   }
 
   ngOnChanges(changes: SimpleChanges) {
