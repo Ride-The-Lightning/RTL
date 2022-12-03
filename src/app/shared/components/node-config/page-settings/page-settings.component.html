@@ -48,7 +48,7 @@
                 </mat-option>
               </mat-select>
             </mat-form-field>
-            <button mat-icon-button color="primary" type="button" tabindex="7" matTooltip="Reset to Default" (click)="onTableReset(page.pageId, table)"><mat-icon [ngClass]="{'ml-minus-1': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">restore</mat-icon></button>
+            <button mat-icon-button color="primary" type="button" tabindex="7" matTooltip="Reset to Default" (click)="onTableReset(page.pageId, table)"><mat-icon color="primary" [ngClass]="{'ml-minus-1': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">restore</mat-icon></button>
           </div>
         </div>
         <ng-container *ngIf="errorMessage && errorMessage?.page === page.pageId" [ngTemplateOutlet]="errorObjectBlock" [ngTemplateOutletContext]="{error: errorMessage}"></ng-container>

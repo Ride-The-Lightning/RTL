@@ -91,7 +91,7 @@
             <rtl-ecl-channel-liquidity-info *ngSwitchCase="'inboundLiq'" fxFlex="100" [direction]="'In'" [totalLiquidity]="totalInboundLiquidity" [allChannels]="allInboundChannels" [errorMessage]="errorMessages[2]"></rtl-ecl-channel-liquidity-info>
             <rtl-ecl-channel-liquidity-info *ngSwitchCase="'outboundLiq'" fxFlex="100" [direction]="'Out'" [totalLiquidity]="totalOutboundLiquidity" [allChannels]="allOutboundChannels" [errorMessage]="errorMessages[2]"></rtl-ecl-channel-liquidity-info>
             <span *ngSwitchCase="'transactions'" fxLayout="column" fxFlex="100" fxLayoutAlign="space-between start">
-              <mat-tab-group fxLayout="column" class="w-100 dashboard-tabs-group">
+              <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" fxLayout="column" class="w-100 dashboard-tabs-group">
                 <mat-tab label="Receive">
                   <rtl-ecl-lightning-invoices class="h-100" [calledFrom]="'home'"></rtl-ecl-lightning-invoices>
                 </mat-tab>

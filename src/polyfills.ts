@@ -1,4 +1,4 @@
-/**
+ /**
  * This file includes polyfills needed by Angular and is loaded before the app.
  * You can add your own extra polyfills to this file.
  *
@@ -13,6 +13,12 @@
  *
  * Learn more in https://angular.io/guide/browser-support
  */
+
+/** *************************************************************************************************
+ * APPLICATION IMPORTS
+ */
+window.global = <any>window;
+window.global.Buffer = window.global.Buffer || require('buffer').Buffer;
 
 /** *************************************************************************************************
  * BROWSER POLYFILLS
@@ -62,10 +68,3 @@ import 'otplib';
 import 'pdfmake/build/pdfmake';
 import 'pdfmake/build/vfs_fonts';
 import 'clone-deep';
-
-/** *************************************************************************************************
- * APPLICATION IMPORTS
- */
-window.global = <any>window;
-window.global.Buffer = window.global.Buffer || require('buffer').Buffer;
-

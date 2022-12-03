@@ -1,4 +1,4 @@
-<mat-tab-group>
+<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
   <mat-tab *ngFor="let currencyUnit of currencyUnits" label="{{ currencyUnit }}">
     <div fxLayout="row" fxFlex="100" fxLayoutAlign="start start">
       <div *ngFor="let value of values" fxLayout="column" fxLayoutAlign="center start" class="cc-data-block">

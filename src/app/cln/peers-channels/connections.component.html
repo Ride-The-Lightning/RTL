@@ -16,7 +16,7 @@
 <div fxLayout="column" class="padding-gap-x">
   <mat-card>
     <mat-card-content fxLayout="column">
-      <mat-tab-group [(selectedIndex)]="activeLink" (selectedTabChange)="onSelectedTabChange($event)">
+      <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" [(selectedIndex)]="activeLink" (selectedTabChange)="onSelectedTabChange($event)">
         <mat-tab>
           <ng-template mat-tab-label>
             <span matBadgeOverlap="false" class="tab-badge" matBadge="{{activeChannels}}">Channels</span>

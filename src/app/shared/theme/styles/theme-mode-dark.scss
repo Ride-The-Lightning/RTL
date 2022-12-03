@@ -30,6 +30,7 @@
   }
   .rtl-top-toolbar {
     border-bottom: 1px solid $background-color;
+    padding: 0 ($gap*5) 0 ($gap*2);
   }
   .bg-primary {
     background-color: $primary-color;
@@ -61,12 +62,12 @@
     font-weight: 700;
     color: $accent-color;
   }
-  .mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar {
+  .mat-mdc-tab-group.mat-primary .mat-ink-bar, .mat-mdc-tab-nav-bar.mat-primary .mat-ink-bar {
     background-color: $primary-darker;
   }
   .cc-data-block .cc-data-title {
     color: $primary-darker;
-  }    
+  }
   .mat-stroked-button.mat-primary {
     border-color: $primary-darker;
     color: $primary-darker;
@@ -142,10 +143,10 @@
   .mat-tree {
     background: mat.get-color-from-palette($background, dialog);
   }
-  .mat-tab-label, .mat-tab-link {
+  .mat-tab-label, .mat-mdc-tab-link {
     color:  $foreground-secondary-text;
   }
-  .dashboard-card .mat-card-header .mat-card-title {
+  .dashboard-card .mat-mdc-card-header .mat-mdc-card-title {
     color:  $foreground-text;
     & .ng-fa-icon {
       color:  $foreground-text;
@@ -244,7 +245,7 @@
   .mat-tooltip {
     background-color: $tooltip-background;
     color: $background-color;
-    font-size: 120%;
+    // font-size: 120%;
   }
 
   .mat-slide-toggle-bar, .mat-step-header .mat-step-icon:not(.mat-step-icon-selected) {

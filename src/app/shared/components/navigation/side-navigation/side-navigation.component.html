@@ -19,14 +19,14 @@
       </mat-tree-node>
       <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild" fxLayout="column" matTreeNodeToggle>
         <div fxLayout="row" fxLayoutAlign="start center" class="mat-nested-tree-node-parent">
-          <div fxFlex="89" fxLayoutAlign="start center">
+          <div fxFlex="80" fxLayoutAlign="start center">
             <span *ngIf="node.iconType === 'SVG'" class="mr-2"><ng-container [ngTemplateOutlet]="node.icon"></ng-container></span>
             <fa-icon *ngIf="node.iconType === 'FA'" class="fa-icon-small mr-2" [icon]="node.icon"></fa-icon>
             <mat-icon *ngIf="!node.iconType" class="mat-icon-36">{{node.icon}}</mat-icon>
             <span>{{node.name}}</span>
           </div>
-          <button fxFlex="11" mat-icon-button fxLayoutAlign="end center" [attr.aria-label]="'toggle ' + node.name">
-            <mat-icon class="mat-icon-rtl-mirror">{{treeControlNested.isExpanded(node) ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
+          <button fxFlex="20" class="btn-icon-small" mat-icon-button fxLayoutAlign="end center" [attr.aria-label]="'toggle ' + node.name">
+            <mat-icon>{{treeControlNested.isExpanded(node) ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
           </button>
         </div>
         <div class="mat-nested-tree-node-child" [class.tree-children-invisible]="!treeControlNested.isExpanded(node)">

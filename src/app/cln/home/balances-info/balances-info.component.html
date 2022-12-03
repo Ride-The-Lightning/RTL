@@ -1,4 +1,4 @@
-<div *ngIf="errorMessage?.trim() === '';  else errorBlock" fxLayout="column" fxFlex="100"fxLayoutAlign="space-between stretch">
+<div *ngIf="errorMessage?.trim() === '';  else errorBlock" class="mt-1" fxLayout="column" fxFlex="100"fxLayoutAlign="space-between stretch">
   <div>
     <h4 fxLayoutAlign="start" class="dashboard-info-title">Lightning</h4>
     <div class="overflow-wrap dashboard-info-value">{{balances.lightning | number}} Sats</div>

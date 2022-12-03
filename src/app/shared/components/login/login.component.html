@@ -1,21 +1,23 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="center stretch" class="login-container">
-  <div fxLayout="row" fxFlex="50" fxLayoutAlign="center stretch">
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="login-container">
+  <div fxLayout="row" fxFlex="35" fxLayoutAlign="center center">
     <mat-card fxLayout="row" fxFlex="45" fxLayoutAlign="center stretch">
       <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign="stretch stretch">
         <div fxFlex="35" fxLayoutAlign="center center" class="bg-primary">
           <img src="assets/images/RTL-Horse-BY.svg" alt="RTL Logo" class="rtl-logo-svg">
         </div>
         <div fxFlex="65" fxLayout="column" fxLayoutAlign="center stretch" [ngClass]="{'padding-gap-large': screenSize === screenSizeEnum.XS}">
-          <mat-card-header fxLayout="row" fxLayoutAlign="center center" class="page-title-container p-0">
+          <mat-card-header fxLayout="row" fxLayoutAlign="center center" class="page-title-container mt-2 p-0">
             <mat-card-title class="font-bold-500" [ngClass]="{'font-size-200': screenSize === screenSizeEnum.XS, 'font-size-300': screenSize !== screenSizeEnum.XS}">
               <span class="page-title">Welcome</span>
             </mat-card-title>
           </mat-card-header>
-          <mat-card-content class="mt-5px mb-0 px-2">
-            <form #loginForm="ngForm" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between">
-              <mat-form-field fxFlex="100" fxLayoutAlign="start">
+          <mat-card-content class="pb-2">
+            <form #loginForm="ngForm" fxLayout="column" fxLayoutAlign="start space-between">
+              <mat-form-field>
                 <input autoFocus matInput placeholder="Password" id="password" name="password" tabindex="1" required [type]="flgShow ? 'text' : 'password'" [(ngModel)]="password">
-                <mat-icon tabindex="2" matSuffix (click)="flgShow = !flgShow">{{flgShow ? 'visibility_off' : 'visibility'}}</mat-icon>
+                <button mat-icon-button matSuffix tabindex="2" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="flgShow" (click)="flgShow = !flgShow">
+                  <mat-icon>{{flgShow ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
                 <mat-error *ngIf="!password">Password is required.</mat-error>
               </mat-form-field>
               <p *ngIf="loginErrorMessage !== ''" fxFlex="100" class="color-warn pre-wrap" fxLayoutAlign="start start">

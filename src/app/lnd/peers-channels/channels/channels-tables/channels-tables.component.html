@@ -3,7 +3,7 @@
     <button mat-flat-button color="primary" type="submit" tabindex="1" (click)="onOpenChannel()">Open Channel</button>
   </div>
   <div fxLayout="column" fxFlex="100" class="my-2 bordered-box">
-    <mat-tab-group [(selectedIndex)]="activeLink" (selectedTabChange)="onSelectedTabChange($event)">
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" [(selectedIndex)]="activeLink" (selectedTabChange)="onSelectedTabChange($event)">
       <mat-tab>
         <ng-template mat-tab-label>
           <span matBadgeOverlap="false" class="tab-badge" matBadge="{{numOpenChannels}}">Open</span>

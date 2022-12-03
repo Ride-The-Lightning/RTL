@@ -7,6 +7,9 @@
 // Default Theme Light & Purple
 @include mat.all-component-themes($purple-day-theme);
 
+// Adjust Single Component Style
+// @include mat.button-color($pink-day-theme);
+
 .rtl-container{
   @include mat.core();
   &.purple {

@@ -40,6 +40,7 @@
   }
   .rtl-top-toolbar {
     border-bottom: 1px solid white;
+    padding: 0 ($gap*5) 0 ($gap*2);
   }
   .bg-primary {
     background-color: $primary-color;
@@ -66,6 +67,15 @@
     opacity: 0.9 !important;
     color: $accent-color;
   }
+  button.mdc-button.mat-mdc-button-base.mat-mdc-outlined-button{
+    border-color: $primary-color;
+  }
+  .spinner-container {
+    h2 {
+      color: $foreground-text;
+    }
+  }
+
   .mat-tab-label {
     &.mat-tab-label-active {
       color: $primary-color;
@@ -94,7 +104,7 @@
   }
   .mat-stroked-button.mat-primary:hover .mat-button-focus-overlay {
     opacity: 0.06;
-  }    
+  }
   .page-title-container, .page-sub-title-container {
     & .page-title-img {
       color: $foreground-disabled;  
@@ -134,14 +144,14 @@
   .modal-qr-code-container {
     background: $foreground-divider;
   }
-  .mat-tab-label, .mat-tab-link {
+  .mat-tab-label, .mat-mdc-tab-link {
     color: $foreground-secondary-text;
   }
-  .mat-card, .mat-card:not([class*='mat-elevation-z']){
+  .mat-mdc-card, .mat-mdc-card:not([class*='mat-elevation-z']){
     box-shadow: none;
     border: 1px solid $foreground-divider;
   }
-  .dashboard-card .mat-card-header .mat-card-title {
+  .dashboard-card .mat-mdc-card-header .mat-mdc-card-title {
     color:  $foreground-disabled;
     & .ng-fa-icon {
       color:  $foreground-disabled;
@@ -166,7 +176,7 @@
     border: 1px solid $foreground-divider;
   }
   .mat-tooltip {
-    font-size: 120%;
+    // font-size: 120%;
   }
   svg {
     & .boltz-icon { stroke:$foreground-secondary-text; stroke-width:4; }
@@ -238,8 +248,9 @@
       cursor: not-allowed !important;
     }
   }
+
   .material-icons {
-    &.info-icon {
+    &.mat-icon-no-color, &.info-icon {
       color: $foreground-secondary-text;
       &.info-icon-primary {
         color: $primary-color;
@@ -249,6 +260,8 @@
       }
     }
   }
+
+ 
   ngx-charts-bar-vertical, ngx-charts-bar-vertical-2d {
     & text {
       fill: $foreground-text;

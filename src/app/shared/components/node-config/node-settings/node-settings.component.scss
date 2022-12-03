@@ -1,22 +1,25 @@
+@use 'sass:math' as math;
+@import '../../../theme/styles/constants.scss';
+
 h4 {
-  margin: 1.2rem 0 0.6rem 0;
+  margin: ($gap*1.5) 0 $gap 0;
 }
 
 .theme-name {
-  min-width: 15rem;
+  min-width: 10rem;
 }
 
 .skin {
-  width: 2rem;
-  height: 2rem;
+  width: ($gap*2.5);
+  height: ($gap*2.5);
   border-radius: 50%;
   cursor: pointer;
-  margin-right: 1rem;
+  margin-right: $gap;
 
   &.selected-color {
-    width: 1.75rem;
-    height: 1.75rem;
-    border: 0.25rem solid;
+    width: ($gap*2);
+    height: ($gap*2);
+    border: 2px solid;
   }
 
   &.purple {
@@ -40,15 +43,15 @@ h4 {
   }
 }
 
-.radio-group.mat-radio-group  .mat-radio-button {
-  min-width: 11rem;
+.mdc-form-field>label{
+  min-width: 110px;
 }
 
 .mat-slide-toggle {
-  padding: 0 1.4rem 0 0.4rem;
+  padding: 0 ($gap*2) 0 math.div($gap, 2);
 }
 
 .mat-flat-button {
   width: 100%;
-  max-height: 3.6rem;
+  max-height: 36px;
 }

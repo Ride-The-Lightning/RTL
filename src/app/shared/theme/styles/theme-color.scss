@@ -46,7 +46,7 @@
     white-space: pre-line;
     overflow-wrap: break-word;
     word-break: break-all;
-    min-height: 2rem;    
+    min-height: ($gap*3);    
   }
 
   .foreground.mat-progress-spinner circle, .foreground.mat-spinner circle {
@@ -87,7 +87,7 @@
   .validation-error-icon {
     position: relative;
     top: 2px;
-    left: 0.4rem;
+    left: 4px;
   }
 
   .genseed-message {
@@ -113,13 +113,13 @@
 
   .validation-error-message {
     position: relative;
-    margin-top: 0.5rem;
+    margin-top: 0.4px;
     width:100%;
     color: $warn-color;
   }
 
   .mat-vertical-content {
-    padding: 0 0.4rem 0 1.2rem;
+    padding: 0  0 ($gap*1.5);
   }
 
   .row-disabled {
@@ -130,7 +130,7 @@
   }
 
   .mat-menu-panel {
-    min-width: 6.4rem;
+    min-width: ($gap*8);
   }
   
   .horizontal-button {
@@ -143,8 +143,8 @@
   }
 
   .mat-stroked-button.mat-primary.horizontal-button-show {
-    line-height: 2.4rem;
-    border-radius: 12rem;
+    line-height: ($gap*3);
+    border-radius: 1($gap*2.5);
     background-color: white;
     color: $primary-color;
     &:hover {
@@ -167,12 +167,10 @@
   
   .cc-data-block {
     & .cc-data-title {
-      font-size: 80%;
       font-weight: 500;
-      min-width: 14rem;
+      min-width: 140px;
     }
     & .cc-data-value {
-      font-size: 120%;
       color: $foreground-secondary-text;
     }
   }
@@ -183,7 +181,7 @@
     border-bottom-color: $foreground-divider;
   }
 
-  table.mat-table {
+  table.mat-mdc-table {
     border: 1px solid $foreground-divider;
     border-radius: 2px;
     background: none;
@@ -191,7 +189,7 @@
       color: $foreground-base;
     }
     & thead tr th:not(:first-of-type), tbody tr td:not(:first-of-type) {
-      padding-left: 1rem;
+      padding-left: ($gap*1.25);
     }
     & tbody tr td.mat-cell {
       @include for_screensize(tab-land) {
@@ -236,13 +234,10 @@
   }
 
   .mat-icon-button.more-button-short {
-    height: 1.6rem;
-    line-height: 1.6rem;
-    & .material-icons {
-      font-size: 1.6rem;
-    }
+    height: ($gap*2);
+    line-height: ($gap*2);
     & .mat-icon {
-      line-height: 1.6rem;
+      line-height: ($gap*2);
     }
   }
 
@@ -251,16 +246,15 @@
       padding-right: 0;
       & .more-button {
         position: absolute;
-        right: 0.4rem;
-        top: 0.4rem;
-        max-width: 2rem;
+        right: math.div($gap, 2);
+        top: math.div($gap, 2);
+        max-width: ($gap*3);
       }
     }
   }
 
   .modal-info-header {
     color: $foreground-text;
-    font-size: 180%;
     font-weight: 500;
     padding: $gap 0 $gap $gap*2;
     @include for_screensize(tab-land) {
@@ -271,9 +265,6 @@
     }
     @include for_screensize(phone) {
       padding: $gap 0 $gap math.div($gap, 4);
-    }
-    & .btn-close-x {
-      font-size: 120%;
     }
     & .page-title-img svg {
       color: $foreground-text;
@@ -292,8 +283,7 @@
       line-height: $badge-size;
       border-radius: $badge-size * 1.2;
       margin: auto;
-      padding: 0.5rem;
-      font-size: 80%;
+      padding: math.div($gap, 2);
       font-weight: 500;
       overflow: visible;
       text-overflow: inherit;
@@ -302,18 +292,18 @@
 
   .mat-badge-medium.mat-badge-after .mat-badge-content {
     right: unset;
-    margin-left: 1rem !important;
+    margin-left: ($gap*1.25) !important;
     @include for_screensize(phone) {
       margin-left: 0 !important;
     }
   }
 
   .table-actions-select {
-    padding: 0.5rem 1rem;
-    margin: 0.9rem 0;
-    min-height: 3.6rem;
-    min-width: 9rem;
-    width: 9rem;
+    padding: math.div($gap, 2) $gap;
+    margin: $gap 0;
+    min-height: ($gap*4.5);
+    min-width: ($gap*11);
+    width: ($gap*11);
     float: right;
     & .mat-select-placeholder {
       color: $foreground-text;
@@ -321,8 +311,8 @@
   }
 
   .table-actions-button {
-    min-width: 9rem;
-    width: 9rem;
+    min-width: ($gap*11);;
+    width: ($gap*11);
   }
 
   .mat-select-panel .mat-option.mat-active {
@@ -332,7 +322,7 @@
   .mat-tab-label {
     opacity: 1;
     padding: 0;
-    min-width: 18rem;
+    min-width: 180px;
   }
 
   .mat-drawer-inner-container {
@@ -340,9 +330,9 @@
   }
 
   .mat-fa-icon-button {
-    width: 2rem;
-    height: 2rem;
-    line-height: 2rem;
+    width: ($gap*2.5);
+    height: ($gap*2.5);
+    line-height: ($gap*2.5);
   }
 
   .balances-info-pie-chart {
@@ -359,10 +349,9 @@
     & .dashboard-divider {
       border-top-width: 2px;
     }
-    & .mat-card-header .mat-card-title {
-      min-height: 4rem;
-      font-size: 180%;
-      margin-bottom: 0 0 0.8rem 0;
+    & .mat-mdc-card-header .mat-mdc-card-title {
+      min-height: ($gap*5);
+      margin-bottom: 0 0 $gap 0;
     }
     & .dashboard-info-value {
       font-weight: 700;
@@ -371,26 +360,22 @@
       font-weight: 500;
     }
     & .dashboard-node-dot {
-      margin: 0 0 -2px 1rem;
+      margin: 0 0 -2px ($gap*1.25);
       border: 1px solid $foreground-secondary-text;
     }    
     & .dashboard-node-square {
       display: inline-flex;
       width: $dot-size;
       height: $dot-size;
-      margin-right: 1rem;
+      margin-right: ($gap*1.25);
     }    
     & .dashboard-capacity-header {
-      font-size: 130%;
       font-weight: 700;
       color: $foreground-secondary-text;
-      &.this-channel-capacity {
-        font-size: 120%;
-      }
     }
     & .mat-icon-button.more-button {
-      width: 2rem;
-      max-width: 2rem;
+      width: ($gap*2.5);
+      max-width: ($gap*2.5);
     }
   }
 
@@ -462,7 +447,7 @@
 
   .mat-form-field-appearance-legacy .mat-form-field-prefix .mat-datepicker-toggle-default-icon,
   .mat-form-field-appearance-legacy .mat-form-field-suffix .mat-datepicker-toggle-default-icon {
-    width: 1.8rem; 
+    width: ($gap*2); 
   }
 
   .button-link-dashboard {
@@ -477,9 +462,8 @@
   }
 
   .material-icons.icon-failed-status {
-    font-size: 1.8rem;
     fill: $warn-color;
-    height: 2rem;
+    height: ($gap*2.5);
   }
 
   .svg-fill-primary {
@@ -496,8 +480,7 @@
 
   .mat-chip-list-wrapper input.mat-input-element, .mat-chip-list-wrapper .mat-standard-chip {
     margin: $gap math.div($gap, 4);
-    font-size: 80%;
-    min-height: 2.4rem;
+    min-height: ($gap*3);
   }
 
   ngx-charts-bar-vertical, ngx-charts-bar-vertical-2d {
