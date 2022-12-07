@@ -119,7 +119,7 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="no_invoice">
-          <td *matFooterCellDef  mat-footer-cellcolspan="4">
+          <td *matFooterCellDef  mat-footer-cell colspan="4">
             <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.COMPLETED">No invoice available.</p>
             <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.INITIATED">Getting invoices...</p>
             <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>

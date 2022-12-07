@@ -104,7 +104,7 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="no_payment">
-            <td *matFooterCellDef  mat-footer-cellcolspan="4">
+            <td *matFooterCellDef  mat-footer-cell colspan="4">
               <p *ngIf="(!payments?.data || payments?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No payment available.</p>
               <p *ngIf="(!payments?.data || payments?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting payments...</p>
               <p *ngIf="(!payments?.data || payments?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>

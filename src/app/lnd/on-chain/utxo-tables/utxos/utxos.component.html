@@ -92,7 +92,7 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="no_utxo">
-          <td *matFooterCellDef  mat-footer-cellcolspan="4">
+          <td *matFooterCellDef  mat-footer-cell colspan="4">
             <p *ngIf="(!listUTXOs?.data || listUTXOs?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No UTXO available.</p>
             <p *ngIf="(!listUTXOs?.data || listUTXOs?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting UTXOs...</p>
             <p *ngIf="(!listUTXOs?.data || listUTXOs?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>

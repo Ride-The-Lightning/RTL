@@ -1171,7 +1171,7 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
 }
 
 .h-4 {
-  height: ($gap*5) !important;
+  height: ($gap*24) !important;
 }
 
 .h-35px {
@@ -1266,6 +1266,7 @@ a {
 }
 
 .page-title-container {
+  font-size: 110%;
   padding: 0 $gap*1.5;
   margin-bottom: $gap;
   @include for_screensize(tab-port) {
@@ -1352,6 +1353,10 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
   font-size: 300% !important;
 }
 
+.font-weight-500 {
+  font-weight: 500 !important;
+}
+
 .font-weight-900 {
   font-weight: 900 !important;
 }
@@ -1399,12 +1404,29 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
   min-height: ($gap*6);
 }
 
-.mat-mdc-tab-body-content {
+.mat-mdc-tab .mdc-tab__content {
   overflow: hidden !important;
 }
 
-.dashboard-tabs-group .mat-tab-label {
-  min-width: 32% !important;
+.dashboard-card .mat-mdc-card-header {
+  padding: 16px 0 0 16px
+}
+
+.dashboard-tabs-group.mat-mdc-tab-group {
+  max-width: 91%;
+}
+
+.dashboard-tabs-group .mat-mdc-tab-list {
+  width: 100%;  
+}
+
+.dashboard-tabs-group .mdc-tab {
+  max-width: 33.3% !important;
+  margin: 0;
+  padding: 0 ($gap*3);
+  display: flex;
+  flex: 1 0 auto;
+  justify-content: center;
 }
 
 .node-grid-tile.mat-grid-tile .mat-figure {
@@ -1508,7 +1530,7 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
 }
 
 .mat-column-actions {
-  min-height: ($gap*6);
+  min-height: ($gap*6.5);
 }
 
 .mat-expansion-panel.flat-expansion-panel {

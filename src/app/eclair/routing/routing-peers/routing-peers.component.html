@@ -48,7 +48,7 @@
             <td *matCellDef="let rPeer" mat-cell><span fxLayoutAlign="end center">{{rPeer.totalFee | number}}</span></td>
           </ng-container>
           <ng-container matColumnDef="no_incoming_event">
-            <td *matFooterCellDef  mat-footer-cellcolspan="4">
+            <td *matFooterCellDef  mat-footer-cell colspan="4">
               <p *ngIf="(!routingPeersIncoming?.data || routingPeersIncoming?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No incoming routing peer available.</p>
               <p *ngIf="(!routingPeersIncoming?.data || routingPeersIncoming?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting incoming routing peers...</p>
               <p *ngIf="(!routingPeersIncoming?.data || routingPeersIncoming?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
@@ -108,7 +108,7 @@
             <td *matCellDef="let rPeer" mat-cell><span fxLayoutAlign="end center">{{rPeer.totalFee | number}}</span></td>
           </ng-container>
           <ng-container matColumnDef="no_outgoing_event">
-            <td *matFooterCellDef  mat-footer-cellcolspan="4">
+            <td *matFooterCellDef  mat-footer-cell colspan="4">
               <p *ngIf="(!routingPeersOutgoing?.data || routingPeersOutgoing?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No outgoing routing peer available.</p>
               <p *ngIf="(!routingPeersOutgoing?.data || routingPeersOutgoing?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting outgoing routing peers...</p>
               <p *ngIf="(!routingPeersOutgoing?.data || routingPeersOutgoing?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>

@@ -43,7 +43,7 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="no_channel">
-        <td *matFooterCellDef  mat-footer-cellcolspan="4">
+        <td *matFooterCellDef  mat-footer-cell colspan="4">
           <p *ngIf="!channels || !channels.data || channels?.data?.length<1">No singular channel backups available.</p>
         </td>
       </ng-container>

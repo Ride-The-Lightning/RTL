@@ -4,7 +4,7 @@
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">Send Payment</span>
       </div>
-      <button tabindex="12" fxLayoutAlign="center" class="btn-close-x p-0" default mat-button [mat-dialog-close]="false">X</button>
+      <button tabindex="12" fxLayoutAlign="center center" class="btn-close-x p-0" default mat-button [mat-dialog-close]="false">X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large" fxLayout="column" fxLayoutAlign="start stretch">
       <mat-radio-group *ngIf="isCompatibleVersion" class="my-1" color="primary" name="paymentType" fxFlex="100" fxLayoutAlign="start start" [(ngModel)]="paymentType" (change)="onPaymentTypeChange()">

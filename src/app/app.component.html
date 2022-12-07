@@ -12,8 +12,8 @@
       </button>
     </div>
     <div>
-      <span *ngIf="smallScreen">{{information.alias ? 'RTL - ' + information.alias : 'RTL'}}</span>
-      <span *ngIf="!smallScreen">{{information.alias ? 'Ride The Lightning - ' + information.alias : 'Ride The Lightning'}}</span>
+      <span *ngIf="smallScreen" class="font-weight-500">{{information.alias ? 'RTL - ' + information.alias : 'RTL'}}</span>
+      <span *ngIf="!smallScreen" class="font-size-120 font-weight-500">{{information.alias ? 'Ride The Lightning - ' + information.alias : 'Ride The Lightning'}}</span>
     </div>
     <div>
       <rtl-top-menu></rtl-top-menu>

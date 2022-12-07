@@ -50,7 +50,7 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="no_transaction">
-            <td *matFooterCellDef  mat-footer-cellcolspan="4">
+            <td *matFooterCellDef  mat-footer-cell colspan="4">
               <p *ngIf="!transactions?.data || transactions?.data?.length<1">No transaction available.</p>
             </td>
           </ng-container>

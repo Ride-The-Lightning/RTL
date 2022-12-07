@@ -7,7 +7,7 @@
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">{{data.alertTitle || alertTypeEnum[data.type]}}</span>
       </div>
-      <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
+      <button tabindex="3" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
     </mat-card-header>
     <ng-container *ngIf="data.scrollable">
       <mat-card-content #scrollContainer class="padding-gap-x-large" [perfectScrollbar] [ngClass]="{'h-40': data.scrollable}">

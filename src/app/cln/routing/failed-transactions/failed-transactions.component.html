@@ -80,7 +80,7 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="no_event">
-        <td *matFooterCellDef  mat-footer-cellcolspan="4">
+        <td *matFooterCellDef  mat-footer-cell colspan="4">
           <p *ngIf="(!failedForwardingEvents?.data || failedForwardingEvents?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.COMPLETED">No failed transaction available.</p>
           <p *ngIf="(!failedForwardingEvents?.data || failedForwardingEvents?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.INITIATED">Getting failed transactions...</p>
           <p *ngIf="(!failedForwardingEvents?.data || failedForwardingEvents?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>

@@ -80,7 +80,7 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="no_offer">
-          <td *matFooterCellDef  mat-footer-cellcolspan="4">
+          <td *matFooterCellDef  mat-footer-cell colspan="4">
             <p *ngIf="(!offers?.data || offers?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.COMPLETED">No offer available.</p>
             <p *ngIf="(!offers?.data || offers?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.INITIATED">Getting offers...</p>
             <p *ngIf="(!offers?.data || offers?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>

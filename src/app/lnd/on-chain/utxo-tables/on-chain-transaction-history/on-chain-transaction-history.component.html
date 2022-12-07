@@ -77,7 +77,7 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="no_transaction">
-          <td *matFooterCellDef  mat-footer-cellcolspan="4">
+          <td *matFooterCellDef  mat-footer-cell colspan="4">
             <p *ngIf="(!listTransactions?.data || listTransactions?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No transaction available.</p>
             <p *ngIf="(!listTransactions?.data || listTransactions?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting transactions...</p>
             <p *ngIf="(!listTransactions?.data || listTransactions?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>

@@ -76,8 +76,8 @@
     }
   }
 
-  .mat-tab-label {
-    &.mat-tab-label-active {
+  .mdc-tab__text-label {
+    &.mdc-tab__text-label-active {
       color: $primary-color;
       & .tab-badge .mat-badge-content {
         background: $primary-color;
@@ -144,7 +144,7 @@
   .modal-qr-code-container {
     background: $foreground-divider;
   }
-  .mat-tab-label, .mat-mdc-tab-link {
+  .mdc-tab__text-label, .mat-mdc-tab-link {
     color: $foreground-secondary-text;
   }
   .mat-mdc-card, .mat-mdc-card:not([class*='mat-elevation-z']){

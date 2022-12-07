@@ -2,7 +2,7 @@
   <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" [selectedIndex]="selectedTableIndex" (selectedIndexChange)="onSelectedIndexChanged($event)">
     <mat-tab>
       <ng-template mat-tab-label>
-        <span matBadgeOverlap="false" class="tab-badge" matBadge="{{numUtxos}}">UTXOs</span>
+        <span matBadgeOverlap="false" class="tab-badge" matBadgeColor="primary" matBadge="{{numUtxos}}">UTXOs</span>
       </ng-template>
       <rtl-cln-on-chain-utxos fxLayout="row" fxFlex="100" [numDustUTXOs]="numDustUtxos" [isDustUTXO]="false" [dustAmount]="DUST_AMOUNT"></rtl-cln-on-chain-utxos>
     </mat-tab>

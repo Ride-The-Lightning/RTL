@@ -13,6 +13,7 @@
         <div *ngIf="selNode?.lnImplementation?.toUpperCase() === 'CLN'" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[2].link" routerLink="{{links[2].link}}" (click)="activeLink = links[2].link">{{links[2].name}}</div>
       </nav>
       <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
+      
       <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="mat-tab-body-wrapper">
         <router-outlet></router-outlet>
       </div>

@@ -159,7 +159,7 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="no_channel">
-        <td *matFooterCellDef  mat-footer-cellcolspan="4">
+        <td *matFooterCellDef  mat-footer-cell colspan="4">
           <p *ngIf="numPeers<1 && (!channels?.data || channels?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.COMPLETED">No peers connected. Add a peer in order to open a channel.</p>
           <p *ngIf="numPeers>0 && (!channels?.data || channels?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.COMPLETED">No channel available.</p>
           <p *ngIf="(!channels?.data || channels?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.INITIATED">Getting channels...</p>

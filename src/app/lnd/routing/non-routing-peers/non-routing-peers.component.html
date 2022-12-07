@@ -116,7 +116,7 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="no_non_routing_event">
-          <td *matFooterCellDef  mat-footer-cellcolspan="4">
+          <td *matFooterCellDef  mat-footer-cell colspan="4">
             <p *ngIf="(!nonRoutingPeers?.data || nonRoutingPeers?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">All peers are routing.</p>
             <p *ngIf="(!nonRoutingPeers?.data || nonRoutingPeers?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting non routing peers...</p>
             <p *ngIf="(!nonRoutingPeers?.data || nonRoutingPeers?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>

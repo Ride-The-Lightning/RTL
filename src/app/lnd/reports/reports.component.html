@@ -9,6 +9,7 @@
         <div *ngFor="let link of links" mat-tab-link class="mat-tab-label" [active]="activeLink === link.link" routerLink="{{link.link}}" (click)="activeLink = link.link">{{link.name}}</div>
       </nav>
       <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
+      
       <router-outlet></router-outlet>      
     </mat-card-content>
   </mat-card>

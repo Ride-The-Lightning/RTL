@@ -161,7 +161,7 @@
     border-radius: 2px;
   }
   
-  .mat-button, .mat-icon-button, .mat-stroked-button, .mat-flat-button {
+  .mat-button, .mat-icon-button, .mat-stroked-button, .mat-mdc-unelevated-button {
     border-radius: 2px;
   }
   
@@ -171,7 +171,7 @@
       min-width: 140px;
     }
     & .cc-data-value {
-      color: $foreground-secondary-text;
+      color: $foreground-base;
     }
   }
   
@@ -230,7 +230,7 @@
   }
 
   .more-button {
-    color: $foreground-disabled;
+    color: $foreground-base;
   }
 
   .mat-icon-button.more-button-short {
@@ -242,7 +242,7 @@
   }
 
   .dashboard-tabs-group {
-    & .mat-tab-label:last-child {
+    & .mdc-tab__text-label:last-child {
       padding-right: 0;
       & .more-button {
         position: absolute;
@@ -272,7 +272,7 @@
   }
 
   .mat-badge-medium.mat-badge-above .mat-badge-content {
-    top: 1px;
+    top: -1px;
   }
 
   .tab-badge {
@@ -280,19 +280,16 @@
       width: auto;
       min-width: $badge-size;
       height: $badge-size;
-      line-height: $badge-size;
+      line-height: $badge-size * 1.1;
       border-radius: $badge-size * 1.2;
-      margin: auto;
       padding: math.div($gap, 2);
-      font-weight: 500;
       overflow: visible;
-      text-overflow: inherit;
     }
   }
 
   .mat-badge-medium.mat-badge-after .mat-badge-content {
     right: unset;
-    margin-left: ($gap*1.25) !important;
+    margin-left: $gap !important;
     @include for_screensize(phone) {
       margin-left: 0 !important;
     }
@@ -302,8 +299,8 @@
     padding: math.div($gap, 2) $gap;
     margin: $gap 0;
     min-height: ($gap*4.5);
-    min-width: ($gap*11);
-    width: ($gap*11);
+    min-width: ($gap*14);
+    width: ($gap*25);
     float: right;
     & .mat-select-placeholder {
       color: $foreground-text;
@@ -311,15 +308,15 @@
   }
 
   .table-actions-button {
-    min-width: ($gap*11);;
-    width: ($gap*11);
+    min-width: ($gap*14);;
+    width: ($gap*25);
   }
 
   .mat-select-panel .mat-option.mat-active {
     background: none;
   }
 
-  .mat-tab-label {
+  .mdc-tab__text-label {
     opacity: 1;
     padding: 0;
     min-width: 180px;
@@ -361,7 +358,7 @@
     }
     & .dashboard-node-dot {
       margin: 0 0 -2px ($gap*1.25);
-      border: 1px solid $foreground-secondary-text;
+      border: 1px solid $foreground-base;
     }    
     & .dashboard-node-square {
       display: inline-flex;
@@ -371,7 +368,7 @@
     }    
     & .dashboard-capacity-header {
       font-weight: 700;
-      color: $foreground-secondary-text;
+      color: $foreground-base;
     }
     & .mat-icon-button.more-button {
       width: ($gap*2.5);
@@ -389,7 +386,7 @@
 
   .alert {
     border: 1px solid $foreground-secondary-text;
-    color: $foreground-secondary-text;
+    color: $foreground-base;
     background-color: $hover-background;
 
     &.alert-info {
@@ -438,10 +435,10 @@
   .help-expansion {
     & .mat-expansion-panel-header, & .mat-expansion-panel-header-title {
       font-weight: 500;
-      color: $foreground-secondary-text;
+      color: $foreground-base;
     }
     & .mat-expansion-indicator::after, & .mat-expansion-panel-content, & .mat-expansion-panel-header-description {
-      color: $foreground-secondary-text;
+      color: $foreground-base;
     }
   }  
 
@@ -483,6 +480,12 @@
     min-height: ($gap*3);
   }
 
+  .dashboard-card-content .underline, 
+  .mat-mdc-tab-header .mat-mdc-tab-label-container, .mat-mdc-tab-nav-bar.mat-mdc-tab-header .mat-mdc-tab-link-container {
+    border-bottom: 1px solid $foreground-divider;
+    margin-bottom: $gap;
+  }
+  
   ngx-charts-bar-vertical, ngx-charts-bar-vertical-2d {
     & text {
       fill: $foreground-text;

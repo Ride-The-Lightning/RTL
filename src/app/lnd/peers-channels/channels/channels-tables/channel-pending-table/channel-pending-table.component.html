@@ -84,7 +84,7 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="no_pending_open">
-            <td *matFooterCellDef  mat-footer-cellcolspan="4">
+            <td *matFooterCellDef  mat-footer-cell colspan="4">
               <p *ngIf="(!pendingOpenChannels || !pendingOpenChannels?.data || pendingOpenChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No pending channel.</p>
               <p *ngIf="(!pendingOpenChannels || !pendingOpenChannels?.data || pendingOpenChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting pending channels...</p>
               <p *ngIf="(!pendingOpenChannels || !pendingOpenChannels?.data || pendingOpenChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
@@ -180,7 +180,7 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="no_pending_force_closing">
-            <td *matFooterCellDef  mat-footer-cellcolspan="4">
+            <td *matFooterCellDef  mat-footer-cell colspan="4">
               <p *ngIf="(!pendingForceClosingChannels || !pendingForceClosingChannels?.data || pendingForceClosingChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No pending channel.</p>
               <p *ngIf="(!pendingForceClosingChannels || !pendingForceClosingChannels?.data || pendingForceClosingChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting pending channels...</p>
               <p *ngIf="(!pendingForceClosingChannels || !pendingForceClosingChannels?.data || pendingForceClosingChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
@@ -260,7 +260,7 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="no_pending_closing">
-            <td *matFooterCellDef  mat-footer-cellcolspan="4">
+            <td *matFooterCellDef  mat-footer-cell colspan="4">
               <p *ngIf="(!pendingClosingChannels || !pendingClosingChannels?.data || pendingClosingChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No pending channel.</p>
               <p *ngIf="(!pendingClosingChannels || !pendingClosingChannels?.data || pendingClosingChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting pending channels...</p>
               <p *ngIf="(!pendingClosingChannels || !pendingClosingChannels?.data || pendingClosingChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
@@ -344,7 +344,7 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="no_pending_wait_closing">
-            <td *matFooterCellDef  mat-footer-cellcolspan="4">
+            <td *matFooterCellDef  mat-footer-cell colspan="4">
               <p *ngIf="(!pendingWaitClosingChannels || !pendingWaitClosingChannels?.data || pendingWaitClosingChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No pending channel.</p>
               <p *ngIf="(!pendingWaitClosingChannels || !pendingWaitClosingChannels?.data || pendingWaitClosingChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting pending channels...</p>
               <p *ngIf="(!pendingWaitClosingChannels || !pendingWaitClosingChannels?.data || pendingWaitClosingChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>

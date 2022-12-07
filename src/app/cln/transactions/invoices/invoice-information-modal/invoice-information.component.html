@@ -14,7 +14,7 @@
           <span *ngIf="invoice?.status === 'expired'" class="dot red ml-1" matTooltip="Expired" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
         </span>
       </div>
-      <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
+      <button tabindex="3" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large" [ngClass]="{'xs-scroll-y': screenSize === screenSizeEnum.XS}">
       <div fxLayout="column">

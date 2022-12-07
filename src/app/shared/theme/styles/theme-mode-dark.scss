@@ -25,8 +25,14 @@
   .mat-primary {
     color: $primary-darker;
   }
-  .mat-button-base.mat-flat-button.mat-primary {
+  .mat-mdc-button-base.mat-mdc-unelevated-button.mat-primary {
     color: $foreground-text;
+  }
+  
+  .mat-mdc-option:hover:not(.mdc-list-item--disabled), .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-list-item--disabled) {
+    & .mdc-list-item__primary-text {
+      color: $primary-darker;
+    }
   }
   .rtl-top-toolbar {
     border-bottom: 1px solid $background-color;
@@ -36,8 +42,8 @@
     background-color: $primary-color;
     color: $foreground-text;
   }
-  .mat-tab-label {
-    &.mat-tab-label-active {
+  .mdc-tab__text-label {
+    &.mdc-tab__text-label-active {
       color: $primary-darker;
       & .tab-badge .mat-badge-content {
         background: $primary-darker;
@@ -88,8 +94,23 @@
     cursor: pointer;
     fill: $primary-darker; 
   }
-
-  .mat-autocomplete-panel .mat-option.mat-selected:not(.mat-active):not(:hover):not(.mat-option-disabled),
+  .mdc-tab__text-label .tab-badge .mat-badge-content {
+    color: $foreground-base;
+    background: $primary-color;
+  }
+  .mat-mdc-select-arrow svg {
+    fill: $foreground-base;
+  }
+  .mdc-text-field:not(.mdc-text-field--disabled) .mdc-text-field__input,
+  .mat-mdc-select-placeholder,
+  .mat-mdc-select-value, .mat-mdc-tab:not(.mat-mdc-tab-disabled) .mdc-tab__text-label, .mat-mdc-tab-link:not(.mat-mdc-tab-disabled) .mdc-tab__text-label {
+    color: $foreground-base;
+  }
+  .mat-mdc-tab:not(.mat-mdc-tab-disabled) .mdc-tab-indicator__content--underline, .mat-mdc-tab-link:not(.mat-mdc-tab-disabled) .mdc-tab-indicator__content--underline {
+    border-color: $primary-darker;
+  }
+  .mdc-list-item--selected .mdc-list-item__primary-text, .mdc-list-item--activated .mdc-list-item__primary-text,  
+  .mat-mdc-tab:not(.mat-mdc-tab-disabled).mdc-tab--active .mdc-tab__text-label, .mat-mdc-tab-link:not(.mat-mdc-tab-disabled).mdc-tab--active .mdc-tab__text-label,  .mat-autocomplete-panel .mat-option.mat-selected:not(.mat-active):not(:hover):not(.mat-option-disabled),
   .mat-autocomplete-panel .mat-option.mat-selected:not(.mat-active):not(:hover),
   .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
     color: $primary-darker; 
@@ -143,8 +164,8 @@
   .mat-tree {
     background: mat.get-color-from-palette($background, dialog);
   }
-  .mat-tab-label, .mat-mdc-tab-link {
-    color:  $foreground-secondary-text;
+  h4 {
+    color: $primary-darker;
   }
   .dashboard-card .mat-mdc-card-header .mat-mdc-card-title {
     color:  $foreground-text;
