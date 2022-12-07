@@ -1,7 +1,8 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
   <form *ngIf="calledFrom === 'home'" #sendPaymentForm="ngForm" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
-    <mat-form-field fxFlex="100">
-      <textarea #paymentReq="ngModel" matInput placeholder="Payment Request" name="paymentRequest" tabindex="1" required [perfectScrollbar] [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" (matTextareaAutosize)="true"></textarea>
+    <mat-form-field fxLayout="column" fxFlex="100">
+      <mat-label>Payment Request</mat-label>
+      <textarea #paymentReq="ngModel" matInput name="paymentRequest" tabindex="1" required [perfectScrollbar] [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" (matTextareaAutosize)="true"></textarea>
       <mat-hint *ngIf="paymentRequest && paymentDecodedHint !== ''">{{paymentDecodedHint}}</mat-hint>
       <mat-error *ngIf="!paymentRequest">Payment request is required.</mat-error>
     </mat-form-field>
@@ -20,13 +21,15 @@
         <span class="page-title">Payments History</span>
       </div>
       <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
-        <mat-form-field fxFlex="49">
-          <mat-select placeholder="Filter By" tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
+        <mat-form-field fxLayout="column" fxFlex="49">
+          <mat-label>Filter By</mat-label>
+        <mat-select tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
             <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
           </mat-select>
         </mat-form-field>
-        <mat-form-field fxFlex="49">
-          <input matInput name="filter" placeholder="Filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
+        <mat-form-field fxLayout="column" fxFlex="49">
+          <mat-label>Filter</mat-label>
+        <input matInput name="filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
         </mat-form-field>
       </div>
     </div>
@@ -54,7 +57,7 @@
           <ng-container matColumnDef="payment_hash">
             <th *matHeaderCellDef mat-header-cell mat-sort-header>Payment Hash</th>
             <td *matCellDef="let payment" mat-cell>
-              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
                 <span class="ellipsis-child">{{payment?.payment_hash}}</span>
               </span>
             </td>
@@ -62,7 +65,7 @@
           <ng-container matColumnDef="bolt11">
             <th *matHeaderCellDef mat-header-cell mat-sort-header>Invoice</th>
             <td *matCellDef="let payment" mat-cell>
-              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
                 <span class="ellipsis-child">{{payment?.bolt11}}</span>
               </span>
             </td>
@@ -70,7 +73,7 @@
           <ng-container matColumnDef="label">
             <th *matHeaderCellDef mat-header-cell mat-sort-header>Label</th>
             <td *matCellDef="let payment" mat-cell>
-              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
                 <span class="ellipsis-child">{{payment?.label}}</span>
               </span>
             </td>
@@ -78,7 +81,7 @@
           <ng-container matColumnDef="destination">
             <th *matHeaderCellDef mat-header-cell mat-sort-header>Destination</th>
             <td *matCellDef="let payment" mat-cell>
-              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
                 <span class="ellipsis-child">{{payment?.destination}}</span>
               </span>
             </td>
@@ -86,7 +89,7 @@
           <ng-container matColumnDef="memo">
             <th *matHeaderCellDef mat-header-cell mat-sort-header>Memo</th>
             <td *matCellDef="let payment" mat-cell>
-              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
                 <span class="ellipsis-child">{{payment?.memo}}</span>
               </span>
             </td>
@@ -155,7 +158,7 @@
           </ng-container>
           <ng-container matColumnDef="group_payment_hash">
             <td *matCellDef="let payment" mat-cell>
-              <span fxLayout="row" class="ellipsis-parent mpp-row-span" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <span fxLayout="row" class="ellipsis-parent mpp-row-span" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
                 <span class="ellipsis-child">{{payment?.payment_hash}}</span>
               </span>
               <span *ngIf="payment.is_expanded">
@@ -167,11 +170,11 @@
           </ng-container>
           <ng-container matColumnDef="group_bolt11">
             <td *matCellDef="let payment" mat-cell>
-              <span fxLayout="row" class="ellipsis-parent mpp-row-span" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <span fxLayout="row" class="ellipsis-parent mpp-row-span" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
                 <span class="ellipsis-child">{{payment?.bolt11}}</span>
               </span>
               <span *ngIf="payment.is_expanded">
-                <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="ellipsis-parent mpp-row-span" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+                <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="ellipsis-parent mpp-row-span" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
                   <span class="ellipsis-child"></span>
                 </span>
               </span>
@@ -179,11 +182,11 @@
           </ng-container>
           <ng-container matColumnDef="group_label">
             <td *matCellDef="let payment" mat-cell>
-              <span fxLayout="row" class="ellipsis-parent mpp-row-span" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <span fxLayout="row" class="ellipsis-parent mpp-row-span" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
                 <span class="ellipsis-child">{{payment?.label}}</span>
               </span>
               <span *ngIf="payment.is_expanded">
-                <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="ellipsis-parent mpp-row-span" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+                <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="ellipsis-parent mpp-row-span" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
                   <span class="ellipsis-child"></span>
                 </span>
               </span>
@@ -191,11 +194,11 @@
           </ng-container>
           <ng-container matColumnDef="group_destination">
             <td *matCellDef="let payment" mat-cell>
-              <span fxLayout="row" class="ellipsis-parent mpp-row-span" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <span fxLayout="row" class="ellipsis-parent mpp-row-span" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
                 <span class="ellipsis-child">{{payment?.destination}}</span>
               </span>
               <span *ngIf="payment.is_expanded">
-                <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="ellipsis-parent mpp-row-span" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+                <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="ellipsis-parent mpp-row-span" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
                   <span class="ellipsis-child"></span>
                 </span>
               </span>
@@ -203,11 +206,11 @@
           </ng-container>
           <ng-container matColumnDef="group_memo">
             <td *matCellDef="let payment" mat-cell>
-              <span fxLayout="row" class="ellipsis-parent mpp-row-span" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <span fxLayout="row" class="ellipsis-parent mpp-row-span" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
                 <span class="ellipsis-child">{{payment?.memo}}</span>
               </span>
               <span *ngIf="payment.is_expanded">
-                <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="ellipsis-parent mpp-row-span" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+                <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="ellipsis-parent mpp-row-span" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
                   <span class="ellipsis-child"></span>
                 </span>
               </span>

@@ -16,7 +16,7 @@
           <qr-code value="{{selInfoType.infoID === 0 ? information.identity_pubkey : information.uris[(selInfoType.infoID - 1)]}}" [size]="qrWidth" [errorCorrectionLevel]="'L'"></qr-code>
         </div>
         <div *ngIf="information.uris && information.uris.length > 0" fxLayout="row">
-          <mat-form-field fxFlex="100" fxFlex.gt-sm="40" fxLayoutAlign="start end">
+          <mat-form-field fxLayout="column" fxFlex="100" fxFlex.gt-sm="40" fxLayoutAlign="start end">
             <mat-select tabindex="1" [(value)]="selInfoType">
               <mat-option *ngFor="let infoType of infoTypes" [value]="infoType">
                 {{infoType.infoName}}

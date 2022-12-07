@@ -70,9 +70,23 @@
   button.mdc-button.mat-mdc-button-base.mat-mdc-outlined-button{
     border-color: $primary-color;
   }
+  .mat-tree-node:hover, .mat-nested-tree-node-parent:hover, .mat-select-panel .mat-option:hover, .mat-menu-panel .mat-menu-content .mat-menu-item:hover,
+    .mat-autocomplete-panel .mat-option.mat-active,
+    .mat-autocomplete-panel .mat-option.mat-selected.mat-active,
+    .mat-autocomplete-panel .mat-option:hover:not(.mat-option-disabled),
+    .mat-autocomplete-panel .mat-option:focus:not(.mat-option-disabled) {
+    color: $primary-color; 
+    cursor: pointer;
+    & .ng-fa-icon, & .mat-icon {
+      color: $primary-color;
+    }
+    & .sidenav-img svg {
+      fill: $primary-color;
+    }
+  }
   .spinner-container {
     h2 {
-      color: $foreground-text;
+      color: $primary-color;
     }
   }
 

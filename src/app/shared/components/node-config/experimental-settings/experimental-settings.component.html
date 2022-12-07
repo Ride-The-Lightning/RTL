@@ -1,5 +1,5 @@
 <div fxLayout="column" fxFlex="100" [perfectScrollbar]>
-  <div fxFlex="100" class="alert alert-info mt-1">
+  <div class="alert alert-info mt-1">
     <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle"></fa-icon>
     <span>Experimental features should be enabled with caution. Many such features may be implementation specific and not ratified for the BOLT spec. Enabling these may still result in a broken experience. Referencing relevant feature documentation is highly advised before enabling.</span>
   </div>
@@ -50,15 +50,16 @@
                 <span>These config changes should be configured permanently via the config file on your CLN node otherwise the policy would need to be configured again, if your node restarts.</span>
               </div>
               <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch">
-                <mat-form-field fxFlex="49" fxLayoutAlign="start end">
+                <mat-form-field fxLayout="column" fxFlex="49" fxLayoutAlign="start end">
                   <mat-select autofocus tabindex="1" placeholder="Policy" name="policy" [(ngModel)]="selPolicyType" (selectionChange)="policyMod=null">
                     <mat-option *ngFor="let policyType of policyTypes" [value]="policyType">
                       {{policyType.id | titlecase}}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
-                <mat-form-field fxFlex="49">
-                  <input #plcMod="ngModel" matInput type="number" tabindex="2" required name="plcMod" [placeholder]="selPolicyType.placeholder" [step]="selPolicyType.id === 'fixed' ? 1000 : 10" [min]="selPolicyType.min" [max]="selPolicyType.max" [(ngModel)]="policyMod">
+                <mat-form-field fxLayout="column" fxFlex="49">
+                  <mat-label>{{selPolicyType.placeholder}}</mat-label>
+                  <input #plcMod="ngModel" matInput type="number" tabindex="2" required name="plcMod" [step]="selPolicyType.id === 'fixed' ? 1000 : 10" [min]="selPolicyType.min" [max]="selPolicyType.max" [(ngModel)]="policyMod">
                   <mat-hint>{{selPolicyType.placeholder}} should be between {{selPolicyType.min}} and {{selPolicyType.max}}</mat-hint>
                   <mat-error *ngIf="!policyMod">{{selPolicyType.placeholder}} is required.</mat-error>
                   <mat-error *ngIf="policyMod < selPolicyType.min">{{selPolicyType.placeholder}} must be greater than or equal to {{selPolicyType.min}}.</mat-error>
@@ -66,21 +67,21 @@
                 </mat-form-field>
               </div>
               <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch">
-                <mat-form-field fxFlex="49">
+                <mat-form-field fxLayout="column" fxFlex="49">
                   <input matInput placeholder="Lease Base Fee (Sats)" type="number" step="100" min="0" tabindex="3" required name="lease_fee_base_sat" [(ngModel)]="lease_fee_base_sat">
                   <mat-error *ngIf="!lease_fee_base_sat">Lease base fee is required.</mat-error>
                 </mat-form-field>
-                <mat-form-field fxFlex="49">
+                <mat-form-field fxLayout="column" fxFlex="49">
                   <input matInput placeholder="Lease Base Basis (bps)" type="number" step="1" min="0" tabindex="4" required name="lease_fee_basis" [(ngModel)]="lease_fee_basis">
                   <mat-error *ngIf="!lease_fee_basis">Lease base basis is required.</mat-error>
                 </mat-form-field>
               </div>
               <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch">
-                <mat-form-field fxFlex="49">
+                <mat-form-field fxLayout="column" fxFlex="49">
                   <input matInput placeholder="Max Channel Routing Base Fee (Sats)" type="number" step="100" min="0" tabindex="5" required name="channelFeeMaxBaseSat" [(ngModel)]="channelFeeMaxBaseSat">
                   <mat-error *ngIf="!channelFeeMaxBaseSat">Max channel routing base fee is required.</mat-error>
                 </mat-form-field>
-                <mat-form-field fxFlex="49">
+                <mat-form-field fxLayout="column" fxFlex="49">
                   <input matInput placeholder="Max Channel Routing Fee Rate (ppm)" type="number" step="1000" min="0" tabindex="6" required name="channelFeeMaxProportional" [(ngModel)]="channelFeeMaxProportional">
                   <mat-error *ngIf="!channelFeeMaxProportional">Max channel routing fee rate is required.</mat-error>
                 </mat-form-field>

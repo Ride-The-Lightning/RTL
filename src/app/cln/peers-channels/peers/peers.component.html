@@ -9,19 +9,21 @@
         <span class="page-title">Connected Peers</span>
       </div>
       <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
-        <mat-form-field fxFlex="49">
-          <mat-select placeholder="Filter By" tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
+        <mat-form-field fxLayout="column" fxFlex="49">
+          <mat-label>Filter By</mat-label>
+        <mat-select tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
             <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
           </mat-select>
         </mat-form-field>
-        <mat-form-field fxFlex="49">
-          <input matInput name="filter" placeholder="Filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
+        <mat-form-field fxLayout="column" fxFlex="49">
+          <mat-label>Filter</mat-label>
+        <input matInput name="filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
         </mat-form-field>
       </div>
     </div>
     <div fxLayout="column" fxFlex="100" class="table-container" [perfectScrollbar]>
       <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-      <table #table mat-table matSort [dataSource]="peers" [ngClass]="{'error-border': errorMessage !== ''}">
+      <table #table mat-table matSort class="overflow-x-hidden overflow-y-hidden" [dataSource]="peers" [ngClass]="{'error-border': errorMessage !== ''}">
         <ng-container matColumnDef="connected">
           <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="Connected"></th>
           <td *matCellDef="let peer" mat-cell> 
@@ -32,7 +34,7 @@
         <ng-container matColumnDef="alias">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Alias</th>
           <td *matCellDef="let peer" mat-cell> 
-            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{peer?.alias}}</span>
             </div>
           </td>
@@ -40,7 +42,7 @@
         <ng-container matColumnDef="id">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>ID</th>
           <td *matCellDef="let peer" mat-cell>
-            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{peer?.id}}</span>
             </div>
           </td>
@@ -48,7 +50,7 @@
         <ng-container matColumnDef="netaddr">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Network Address</th>
           <td *matCellDef="let peer" mat-cell>
-            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span *ngFor="let addr of peer?.netaddr; last as isLast" class="ellipsis-child">{{addr}}<span *ngIf="!isLast">,<br></span></span>
             </div>
           </td>

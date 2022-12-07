@@ -1,13 +1,15 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="padding-gap-x-large">
   <div fxLayout="column" fxLayout.gt-xs="row wrap" fxLayoutAlign.gt-xs="end stretch" fxLayoutAlign="start stretch" class="page-sub-title-container">
     <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
-      <mat-form-field fxFlex="49">
-        <mat-select placeholder="Filter By" tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
+      <mat-form-field fxLayout="column" fxFlex="49">
+        <mat-label>Filter By</mat-label>
+        <mat-select tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
           <mat-option *ngFor="let column of (utxos && utxos.length > 0 && dustUtxos && dustUtxos.length > 0 && !isDustUTXO ? ['all'].concat(displayedColumns.slice(0, -1)) : ['all'].concat(displayedColumns.slice(0, -1)))" [value]="column">{{getLabel(column)}}</mat-option>
         </mat-select>
       </mat-form-field>
-      <mat-form-field fxFlex="49">
-        <input matInput name="filter" placeholder="Filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
+      <mat-form-field fxLayout="column" fxFlex="49">
+        <mat-label>Filter</mat-label>
+        <input matInput name="filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
       </mat-form-field>
     </div>
   </div>
@@ -26,7 +28,7 @@
         <ng-container matColumnDef="tx_id">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Transaction ID</th>
           <td *matCellDef="let utxo" mat-cell>
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{utxo.outpoint.txid_str}}</span>
             </span>
           </td>
@@ -40,7 +42,7 @@
         <ng-container matColumnDef="label">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Label</th>
           <td *matCellDef="let utxo" mat-cell>
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{utxo.label}}</span>
             </span>
           </td>
@@ -56,7 +58,7 @@
         <ng-container matColumnDef="address">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Address</th>
           <td *matCellDef="let utxo" mat-cell>
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{utxo?.address}}</span>
             </span>
           </td>

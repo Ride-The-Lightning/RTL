@@ -1,6 +1,6 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
   <form #form="ngForm" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
-    <mat-form-field fxLayout="row" fxFlex="100" fxLayoutAlign="start end">
+    <mat-form-field fxLayout="column" fxFlex="100" fxLayoutAlign="start end">
       <textarea autoFocus matInput rows="1" placeholder="Message to sign" required tabindex="1" name="message" [(ngModel)]="message" (keyup)="onMessageChange()"></textarea>
       <mat-error *ngIf="!message">Message is required.</mat-error>
     </mat-form-field>
@@ -10,7 +10,7 @@
     </div>
     <mat-divider class="my-2" [inset]="true"></mat-divider>
     <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center"><p>Generated Signature</p></div>
-    <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center" class="bordered-box read-only h-4 padding-gap">{{signature}}</div>
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center" class="signature-box bordered-box read-only">{{signature}}</div>
     <div fxLayout="row" class="mt-2">
       <button mat-stroked-button color="primary" tabindex="4" rtlClipboard type="button" [payload]="signature" (copied)="onCopyField($event)">Copy Signature</button>
     </div>

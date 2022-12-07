@@ -22,7 +22,7 @@
           <qr-code *ngIf="((invoice?.bolt11 && invoice?.bolt11 !== '') || (invoice?.bolt12 && invoice?.bolt12 !== ''))" [value]="invoice?.bolt11 || invoice?.bolt12" [size]="qrWidth" [errorCorrectionLevel]="'L'"></qr-code>
           <span *ngIf="!invoice?.bolt11 && !invoice?.bolt12" class="font-size-120">QR Code Not Applicable</span>
         </div>
-        <mat-divider *ngIf="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM" class="my-1" [inset]="true"></mat-divider>
+        <mat-divider *ngIf="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM" class="my-1"></mat-divider>
         <div *ngIf="invoice?.warning_capacity" fxLayout="row">
           <div fxFlex="100" class="alert alert-warn">
             <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>

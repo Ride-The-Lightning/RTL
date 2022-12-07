@@ -17,13 +17,13 @@
 <mat-vertical-stepper *ngIf="(!insecureLND || (warnRes && proceed)) && genSeedResponse.length <= 0 && initWalletResponse === ''" #stepper [linear]="true">
   <mat-step label="Wallet Password" state="password" [stepControl]="passwordFormGroup">
     <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="mt-1" [formGroup]="passwordFormGroup">
-      <mat-form-field fxFlex="49" fxLayoutAlign="start">
+      <mat-form-field fxLayout="column" fxFlex="49" fxLayoutAlign="start">
         <input matInput type="password" placeholder="Password" name="initWalletPassword" formControlName="initWalletPassword" tabindex="5" required>
         <mat-hint>Enter Wallet Password</mat-hint>
         <mat-error *ngIf="passwordFormGroup.controls.initWalletPassword.errors?.required">Password is required.</mat-error>
         <mat-error *ngIf="passwordFormGroup.controls.initWalletPassword.errors?.minlength">Password must be at least 8 characters in length.</mat-error>
       </mat-form-field>
-      <mat-form-field fxFlex="49" fxLayoutAlign="start">
+      <mat-form-field fxLayout="column" fxFlex="49" fxLayoutAlign="start">
         <input matInput type="password" placeholder="Confirm Password" name="initWalletConfirmPassword" formControlName="initWalletConfirmPassword" tabindex="6" required>
         <mat-hint>Confirm Wallet Password</mat-hint>
         <mat-error *ngIf="passwordFormGroup.controls.initWalletConfirmPassword.errors?.required">Confirm password is required.</mat-error>
@@ -41,7 +41,7 @@
     <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start" class="mt-1" [formGroup]="cipherFormGroup">
       <div fxFlex="100" fxLayout="column" fxLayoutAlign="start stretch">
         <mat-slide-toggle fxFlex="20" tabindex="8" color="primary" class="chkbox-wallet" formControlName="existingCipher" name="existingCipher" [labelPosition]="'before'">Existing Cipher</mat-slide-toggle>
-        <mat-form-field fxFlex="75" fxLayoutAlign="start" class="my-1">
+        <mat-form-field fxLayout="column" fxFlex="75" fxLayoutAlign="start" class="my-1">
           <input autofocus matInput type="input" placeholder="Comma separated array of 24 words cipher seed" name="cipherSeed" formControlName="cipherSeed" tabindex="9" required>
           <mat-hint>Cipher Seed</mat-hint>
           <mat-error *ngIf="cipherFormGroup.controls.cipherSeed.errors?.required">Cipher seed is required.</mat-error>
@@ -58,7 +58,7 @@
     <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start" class="mt-1" [formGroup]="passphraseFormGroup">
       <div fxFlex="100" fxLayout="column" fxLayoutAlign="start stretch">
         <mat-slide-toggle fxFlex="20" tabindex="10" color="primary" class="chkbox-wallet" formControlName="enterPassphrase" name="enterPassphrase" [labelPosition]="'before'">Existing Passphrase</mat-slide-toggle>
-        <mat-form-field fxFlex="75" fxLayoutAlign="start">
+        <mat-form-field fxLayout="column" fxFlex="75" fxLayoutAlign="start">
           <input matInput type="password" placeholder="Passphrase" name="passphrase" formControlName="passphrase" tabindex="12" required>
           <mat-hint>Enter Passphrase</mat-hint>
           <mat-error *ngIf="passphraseFormGroup.controls.passphrase.errors?.required">Passphrase is required.</mat-error>

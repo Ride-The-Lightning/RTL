@@ -23,7 +23,7 @@
               <span>Priority/Fee for force closing inactive channels cannot be modified.</span>
             </div>
             <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
-              <mat-form-field fxFlex.gt-sm="48">
+              <mat-form-field fxLayout="column" fxFlex.gt-sm="48">
                 <mat-select tabindex="1" [disabled]="!channelToClose.active" [(value)]="selTransType">
                   <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
                     {{transType.name}}

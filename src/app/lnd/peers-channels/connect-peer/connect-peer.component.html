@@ -12,7 +12,7 @@
           <mat-step [stepControl]="peerFormGroup" [editable]="flgEditable">
             <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="peerFormGroup">
               <ng-template matStepLabel>{{peerFormLabel}}</ng-template>  
-              <mat-form-field fxFlex="100">
+              <mat-form-field fxLayout="column" fxFlex="100">
                 <input autoFocus matInput placeholder="Lightning Address (pubkey OR pubkey@ip:port)" formControlName="peerAddress" tabindex="1" required>
                 <mat-error *ngIf="peerFormGroup.controls.peerAddress.errors?.required">Address is required.</mat-error>
               </mat-form-field>
@@ -30,7 +30,7 @@
               <ng-template matStepLabel disabled="true">{{channelFormLabel}}</ng-template>
               <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
                 <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
-                  <mat-form-field fxFlex="60" fxLayoutAlign="start end">
+                  <mat-form-field fxLayout="column" fxFlex="60" fxLayoutAlign="start end">
                     <input matInput formControlName="fundingAmount" placeholder="Amount" type="number" tabindex="1" required [step]="1000">
                     <mat-hint>Remaining Bal: {{totalBalance - ((channelFormGroup.controls.fundingAmount.value) ? channelFormGroup.controls.fundingAmount.value : 0)}}</mat-hint>
                     <span matSuffix> Sats </span>
@@ -43,15 +43,16 @@
                   </div>
                 </div>
                 <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
-                  <mat-form-field fxFlex="30" fxLayoutAlign="start end">
+                  <mat-form-field fxLayout="column" fxFlex="30" fxLayoutAlign="start end">
                     <mat-select tabindex="3" formControlName="selTransType" placeholder="Transaction Type">
                       <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
                         {{transType.name}}
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
-                  <mat-form-field fxFlex="30">
-                    <input matInput formControlName="transTypeValue" type="number" name="transTypeValue" tabindex="4" [placeholder]="channelFormGroup.controls.selTransType.value === '0' ? 'Default' : channelFormGroup.controls.selTransType.value === '1' ? 'Target Confirmation Blocks' : 'Fee (Sats/vByte)'" [step]="1" [required]="channelFormGroup.controls.selTransType.value !== '0'">
+                  <mat-form-field fxLayout="column" fxFlex="30">
+                    <mat-label>{{channelFormGroup.controls.selTransType.value === '0' ? 'Default' : channelFormGroup.controls.selTransType.value === '1' ? 'Target Confirmation Blocks' : 'Fee (Sats/vByte)'}}</mat-label>
+                    <input matInput formControlName="transTypeValue" type="number" name="transTypeValue" tabindex="4" [step]="1" [required]="channelFormGroup.controls.selTransType.value !== '0'">
                     <mat-error *ngIf="channelFormGroup.controls.transTypeValue.errors?.required">{{channelFormGroup.controls.selTransType.value === '0' ? 'Default' : channelFormGroup.controls.selTransType.value === '1' ? 'Target Confirmation Blocks' : 'Fee (Sats/vByte)'}} is required.</mat-error>
                   </mat-form-field>
                   <div fxFlex="35" fxLayoutAlign="start center">

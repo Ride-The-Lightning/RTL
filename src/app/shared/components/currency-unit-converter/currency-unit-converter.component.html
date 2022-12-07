@@ -2,7 +2,7 @@
   <mat-tab *ngFor="let currencyUnit of currencyUnits" label="{{ currencyUnit }}">
     <div fxLayout="row" fxFlex="100" fxLayoutAlign="start start">
       <div *ngFor="let value of values" fxLayout="column" fxLayoutAlign="center start" class="cc-data-block">
-        <div class="cc-data-title" fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+        <div class="cc-data-title" fxLayout="row" fxFlex="100" fxLayoutAlign="start start">
           {{value.title}}
           <mat-icon *ngIf="value.tooltip" matTooltipPosition="below" class="info-icon" [matTooltip]="value.tooltip">info_outline</mat-icon>
         </div>

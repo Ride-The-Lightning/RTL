@@ -25,13 +25,15 @@
                 </span>
               </div>
               <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
-                <mat-form-field fxFlex="49">
-                  <input #outputIdx="ngModel" autoFocus matInput placeholder="Output Index" type="number" tabindex="1" required name="outputIdx" [step]="1" [min]="0" [(ngModel)]="outputIndex">
+                <mat-form-field fxLayout="column" fxFlex="49">
+                  <mat-label>Output Index</mat-label>
+                  <input #outputIdx="ngModel" autoFocus matInput type="number" tabindex="1" required name="outputIdx" [step]="1" [min]="0" [(ngModel)]="outputIndex">
                   <mat-error *ngIf="outputIdx.errors?.required">Output Index required.</mat-error>
                   <mat-error *ngIf="outputIdx.errors?.pendingChannelOutputIndex">Invalid index value.</mat-error>
                 </mat-form-field>
-                <mat-form-field fxFlex="49">
-                  <input #fee="ngModel" matInput placeholder="Fees (Sats/vByte)"
+                <mat-form-field fxLayout="column" fxFlex="49">
+                  <mat-label>Fees (Sats/vByte)</mat-label>
+                  <input #fee="ngModel" matInput
                     type="number" name="fees" required tabindex="4" [step]="1" [min]="0" [(ngModel)]="fees">
                   <mat-error *ngIf="!fees">Fees is required.</mat-error>
                 </mat-form-field>

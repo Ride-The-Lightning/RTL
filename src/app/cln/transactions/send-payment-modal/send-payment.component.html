@@ -27,37 +27,43 @@
   </div>
 </div>
 <ng-template #invoiceBlock>
-  <mat-form-field fxFlex="100">
-    <textarea #paymentReq="ngModel" autoFocus matInput placeholder="Payment Request" rows="4" name="paymentRequest" tabindex="4" required [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" (matTextareaAutosize)="true"></textarea>
+  <mat-form-field fxLayout="column" fxFlex="100">
+    <mat-label>Payment Request</mat-label>
+    <textarea #paymentReq="ngModel" autoFocus matInput rows="4" name="paymentRequest" tabindex="4" required [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" (matTextareaAutosize)="true"></textarea>
     <mat-hint *ngIf="paymentRequest && paymentDecodedHint !== ''">{{paymentDecodedHint}}</mat-hint>
     <mat-error *ngIf="!paymentRequest">Payment request is required.</mat-error>
     <mat-error *ngIf="paymentReq.errors?.decodeError">{{paymentDecodedHint}}</mat-error>
   </mat-form-field>
   <mat-form-field *ngIf="zeroAmtInvoice" fxFlex="100">
-    <input #paymentAmt="ngModel" matInput placeholder="Amount (Sats)" name="amount" tabindex="5" required [(ngModel)]="paymentAmount" (change)="onAmountChange($event)">
+    <mat-label>Amount (Sats)</mat-label>
+    <input #paymentAmt="ngModel" matInput name="amount" tabindex="5" required [(ngModel)]="paymentAmount" (change)="onAmountChange($event)">
     <mat-hint>It is a zero amount invoice, enter amount to be paid.</mat-hint>
     <mat-error *ngIf="!paymentAmount">Payment amount is required.</mat-error>
   </mat-form-field>
 </ng-template>
 <ng-template #keysendBlock>
-  <mat-form-field fxFlex="100">
-    <input autoFocus matInput placeholder="Pubkey" name="pubkey" tabindex="4" required [(ngModel)]="pubkey">
+  <mat-form-field fxLayout="column" fxFlex="100">
+    <mat-label>Pubkey</mat-label>
+    <input autoFocus matInput name="pubkey" tabindex="4" required [(ngModel)]="pubkey">
     <mat-error *ngIf="!pubkey">Pubkey is required.</mat-error>
   </mat-form-field>
-  <mat-form-field fxFlex="100">
-    <input #keysendAmt="ngModel" matInput placeholder="Amount (Sats)" name="keysendAmount" tabindex="5" required [(ngModel)]="keysendAmount">
+  <mat-form-field fxLayout="column" fxFlex="100">
+    <mat-label>Amount (Sats)</mat-label>
+    <input #keysendAmt="ngModel" matInput name="keysendAmount" tabindex="5" required [(ngModel)]="keysendAmount">
     <mat-error *ngIf="!keysendAmount">Keysend amount is required.</mat-error>
   </mat-form-field>
 </ng-template>
 <ng-template #offerBlock>
-  <mat-form-field fxFlex="100">
-    <textarea #offerReq="ngModel" autoFocus matInput placeholder="Offer Request" rows="4" name="offerRequest" tabindex="4" required [ngModel]="offerRequest" (ngModelChange)="onPaymentRequestEntry($event)" (matTextareaAutosize)="true"></textarea>
+  <mat-form-field fxLayout="column" fxFlex="100">
+    <mat-label>Offer Request</mat-label>
+    <textarea #offerReq="ngModel" autoFocus matInput rows="4" name="offerRequest" tabindex="4" required [ngModel]="offerRequest" (ngModelChange)="onPaymentRequestEntry($event)" (matTextareaAutosize)="true"></textarea>
     <mat-hint *ngIf="offerRequest && offerDecodedHint !== ''">{{offerDecodedHint}}</mat-hint>
     <mat-error *ngIf="!offerRequest">Offer request is required.</mat-error>
     <mat-error *ngIf="offerReq.errors?.decodeError">{{offerDecodedHint}}</mat-error>
   </mat-form-field>
   <mat-form-field *ngIf="zeroAmtOffer" fxFlex="100">
-    <input #offerAmt="ngModel" matInput placeholder="Amount (Sats)" name="amountoffer" tabindex="5" required [(ngModel)]="offerAmount" (change)="onAmountChange($event)">
+    <mat-label>Amount (Sats)</mat-label>
+    <input #offerAmt="ngModel" matInput name="amountoffer" tabindex="5" required [(ngModel)]="offerAmount" (change)="onAmountChange($event)">
     <mat-hint>It is a zero amount offer, enter amount to be paid.</mat-hint>
     <mat-error *ngIf="!offerAmount">Offer amount is required.</mat-error>
   </mat-form-field>
@@ -66,6 +72,7 @@
     <mat-icon matTooltip="Save offer in database for future payments" matTooltipPosition="below" fxFlex="none" class="info-icon">info_outline</mat-icon>
   </div>    
   <mat-form-field *ngIf="flgSaveToDB || offerTitle !== ''" fxFlex="100" class="mt-1">
-    <input matInput placeholder="Title to Save" tabindex="7" [(ngModel)]="offerTitle">
+    <mat-label>Title to Save</mat-label>
+    <input matInput tabindex="7" [(ngModel)]="offerTitle">
   </mat-form-field>
 </ng-template>

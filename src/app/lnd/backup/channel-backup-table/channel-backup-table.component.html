@@ -21,8 +21,9 @@
     </div>
     <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
       <div fxFlex="49"></div>
-      <mat-form-field fxFlex="49">
-        <input matInput name="filter" placeholder="Filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
+      <mat-form-field fxLayout="column" fxFlex="49">
+        <mat-label>Filter</mat-label>
+        <input matInput name="filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
       </mat-form-field>
     </div>
   </div>

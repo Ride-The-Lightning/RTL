@@ -4,11 +4,11 @@
       <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
       <span>The actual routing fee on a payment can be different from the fee shown on query routes.</span>
     </div>
-    <mat-form-field fxFlex="69" fxLayoutAlign="start end">
+    <mat-form-field fxLayout="column" fxFlex="69" fxLayoutAlign="start end">
       <input #destPubkey="ngModel" matInput placeholder="Destination Node ID" name="nodeId" tabindex="1" required [(ngModel)]="nodeId">
       <mat-error *ngIf="!nodeId">Destination Node ID is required.</mat-error>
     </mat-form-field>
-    <mat-form-field fxFlex="29" fxLayoutAlign="start end">
+    <mat-form-field fxLayout="column" fxFlex="29" fxLayoutAlign="start end">
       <input matInput placeholder="Amount (Sats)" name="amount" tabindex="2" type="number" required [step]="1000" [min]="0" [(ngModel)]="amount">
       <mat-error *ngIf="!amount">Amount is required.</mat-error>
     </mat-form-field>
@@ -40,7 +40,7 @@
                 <ng-container matColumnDef="alias">
                   <th *matHeaderCellDef mat-header-cell> Alias</th>
                   <td *matCellDef="let hop" mat-cell>
-                    <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">
+                    <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '6rem' : '30rem'}">
                       <span class="ellipsis-child">{{hop?.alias}}</span>
                     </span>
                   </td>
@@ -48,7 +48,7 @@
                 <ng-container matColumnDef="nodeId">
                   <th *matHeaderCellDef mat-header-cell> ID</th>
                   <td *matCellDef="let hop" mat-cell>
-                    <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">
+                    <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '6rem' : '30rem'}">
                       <span class="ellipsis-child">{{hop?.nodeId}}</span>
                     </span>
                   </td>

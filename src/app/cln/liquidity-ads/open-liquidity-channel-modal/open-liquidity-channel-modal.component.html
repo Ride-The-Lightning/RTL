@@ -10,18 +10,21 @@
       <form #form="ngForm" fxLayout="column">
         <ng-container *ngTemplateOutlet="nodeDetailsExpansionBlock"></ng-container>
         <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-sm="space-between center" fxLayout.gt-sm="row wrap">
-          <mat-form-field fxFlex="30" fxLayoutAlign="start end">
-            <input #ramount="ngModel" autoFocus matInput placeholder="Requested Amount" type="number" tabindex="1" required name="ramount" [step]="10000" [min]="0" [(ngModel)]="requestedAmount" (keyup)="calculateFee()">
+          <mat-form-field fxLayout="column" fxFlex="30" fxLayoutAlign="start end">
+            <mat-label>Requested Amount</mat-label>
+            <input #ramount="ngModel" autoFocus matInput type="number" tabindex="1" required name="ramount" [step]="10000" [min]="0" [(ngModel)]="requestedAmount" (keyup)="calculateFee()">
             <span matSuffix> Sats </span>
             <mat-error *ngIf="ramount.errors?.required">Requested amount is required.</mat-error>
           </mat-form-field>
-          <mat-form-field fxFlex="30" fxLayoutAlign="start end">
-            <input #feeRt="ngModel" matInput placeholder="Fee Rate" type="number" tabindex="2" required name="feerate" [step]="10" [min]="0" [(ngModel)]="feeRate" (keyup)="calculateFee()">
+          <mat-form-field fxLayout="column" fxFlex="30" fxLayoutAlign="start end">
+            <mat-label>Fee Rate</mat-label>
+            <input #feeRt="ngModel" matInput type="number" tabindex="2" required name="feerate" [step]="10" [min]="0" [(ngModel)]="feeRate" (keyup)="calculateFee()">
             <span matSuffix> Sats/vByte </span>
             <mat-error *ngIf="feeRt.errors?.required">Fee rate is required.</mat-error>
           </mat-form-field>
-          <mat-form-field fxFlex="30" fxLayoutAlign="start end">
-            <input #lamount="ngModel" matInput placeholder="Local Amount" type="number" tabindex="3" required name="lamount" [step]="10000" [min]="20000" [max]="totalBalance" [(ngModel)]="localAmount">
+          <mat-form-field fxLayout="column" fxFlex="30" fxLayoutAlign="start end">
+            <mat-label>Local Amount</mat-label>
+            <input #lamount="ngModel" matInput type="number" tabindex="3" required name="lamount" [step]="10000" [min]="20000" [max]="totalBalance" [(ngModel)]="localAmount">
             <mat-hint>Remaining Bal: {{totalBalance - ((localAmount) ? localAmount : 0) | number}}</mat-hint>
             <span matSuffix> Sats </span>
             <mat-error *ngIf="lamount.errors?.required">Local amount is required.</mat-error>

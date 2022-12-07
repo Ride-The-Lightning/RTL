@@ -45,8 +45,9 @@
           <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="pb-1">{{data.titleMessage}}</p>
           <div fxLayout="row wrap" fxLayoutAlign="space-between center">
             <ng-container *ngFor="let getInput of getInputs; index as i">
-              <mat-form-field *ngIf="!getInput.advancedField || showAdvanced" [fxFlex]="getInput.width">                  
-                <input matInput required [autoFocus]="i === 0" [placeholder]="getInput.placeholder" name="input{{i}}" [min]="getInput.min" [step]="getInput.step" [type]="getInput.inputType | lowercase" [tabindex]="i+1" [(ngModel)]="getInput.inputValue">
+              <mat-form-field *ngIf="!getInput.advancedField || showAdvanced" [fxFlex]="getInput.width">   
+                <mat-label>{{getInput.placeholder}}</mat-label>
+                <input matInput required [autoFocus]="i === 0" name="input{{i}}" [min]="getInput.min" [step]="getInput.step" [type]="getInput.inputType | lowercase" [tabindex]="i+1" [(ngModel)]="getInput.inputValue">
                 <mat-error *ngIf="!getInput.inputValue">{{getInput.placeholder}} is required.</mat-error>
                 <mat-hint>{{getInput.hintFunction ? getInput.hintFunction(getInput.inputValue) : getInput.hintText}}</mat-hint>
               </mat-form-field>

@@ -8,19 +8,19 @@
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <form #addInvoiceForm="ngForm" fxLayout="row wrap" fxLayoutAlign="space-between start" fxFlex="100">
-        <mat-form-field fxFlex="100" fxLayoutAlign="end start">
+        <mat-form-field fxLayout="column" fxFlex="100" fxLayoutAlign="end start">
           <input matInput autoFocus placeholder="Memo" tabindex="1" name="memo" [(ngModel)]="memo">
         </mat-form-field>
-        <mat-form-field fxFlex="50" fxLayoutAlign="start end">
+        <mat-form-field fxLayout="column" fxFlex="50" fxLayoutAlign="start end">
           <input matInput placeholder="Amount" type="number" tabindex="2" name="invoiceValue" [step]="100" [min]="1" [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()">
           <span matSuffix>  Sats </span>
           <mat-hint>{{invoiceValueHint}}</mat-hint>          
         </mat-form-field>
-        <mat-form-field fxFlex="24" fxLayoutAlign="start end">
+        <mat-form-field fxLayout="column" fxFlex="24" fxLayoutAlign="start end">
           <input matInput placeholder="Expiry" type="number" tabindex="3" name="expiry" [step]="selTimeUnit === timeUnitEnum.SECS ? 300 : selTimeUnit === timeUnitEnum.MINS ? 10 : selTimeUnit === timeUnitEnum.HOURS ? 2 : 1" [min]="1" [(ngModel)]="expiry">
           <span matSuffix>{{selTimeUnit | titlecase}} </span>
         </mat-form-field>
-        <mat-form-field fxFlex="24" fxLayoutAlign="start end">
+        <mat-form-field fxLayout="column" fxFlex="24" fxLayoutAlign="start end">
           <mat-select tabindex="4" name="timeUnit" [value]="selTimeUnit" (selectionChange)="onTimeUnitChange($event)">
             <mat-option *ngFor="let timeUnit of timeUnits" [value]="timeUnit">{{timeUnit | titlecase}}</mat-option>
           </mat-select>

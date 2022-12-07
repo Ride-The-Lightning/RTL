@@ -42,16 +42,3 @@ h4 {
     background-color: #a1842c;
   }
 }
-
-.mdc-form-field>label{
-  min-width: 110px;
-}
-
-.mat-slide-toggle {
-  padding: 0 ($gap*2) 0 math.div($gap, 2);
-}
-
-.mat-mdc-unelevated-button {
-  width: 100%;
-  max-height: 36px;
-}

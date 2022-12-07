@@ -5,13 +5,15 @@
       <span class="page-title">{{swapCaption}} History</span>
     </div>
     <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
-      <mat-form-field fxFlex="49">
-        <mat-select placeholder="Filter By" tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
+      <mat-form-field fxLayout="column" fxFlex="49">
+        <mat-label>Filter By</mat-label>
+        <mat-select tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
           <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
         </mat-select>
       </mat-form-field>
-      <mat-form-field fxFlex="49">
-        <input matInput name="filter" placeholder="Filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
+      <mat-form-field fxLayout="column" fxFlex="49">
+        <mat-label>Filter</mat-label>
+        <input matInput name="filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
       </mat-form-field>
     </div>
   </div>
@@ -53,7 +55,7 @@
         <ng-container matColumnDef="htlc_address">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>HTLC Address</th>
           <td *matCellDef="let swap" mat-cell>
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{swap?.htlc_address}}</span>
             </span>
           </td>
@@ -61,7 +63,7 @@
         <ng-container matColumnDef="id">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>ID</th>
           <td *matCellDef="let swap" mat-cell>
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{swap?.id}}</span>
             </span>
           </td>
@@ -69,7 +71,7 @@
         <ng-container matColumnDef="id_bytes">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>ID (Bytes)</th>
           <td *matCellDef="let swap" mat-cell>
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{swap?.id_bytes}}</span>
             </span>
           </td>

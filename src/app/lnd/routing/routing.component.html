@@ -8,14 +8,14 @@
       <mat-card-content fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="card-content-gap mt-1">
         <form #routingForm="ngForm" fxFlex="100" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="w-100 mb-1" (ngSubmit)="onEventsFetch()">
           <div fxFlex="100" fxLayoutAlign="space-between stretch">
-            <mat-form-field fxFlex="49" fxLayoutAlign="start">
+            <mat-form-field fxLayout="column" fxFlex="49" fxLayoutAlign="start">
               <input #strtDate="ngModel" matInput placeholder="Start Date" name="startDate"
                 tabindex="1" [matDatepicker]="startDatepicker" [max]="today" [(ngModel)]="startDate">
               <mat-datepicker-toggle matSuffix [for]="startDatepicker"></mat-datepicker-toggle>
               <mat-datepicker #startDatepicker [startAt]="startDate"></mat-datepicker>
               <mat-error *ngIf="strtDate.errors">Invalid date format.</mat-error>
             </mat-form-field>
-            <mat-form-field fxFlex="49" fxLayoutAlign="start">
+            <mat-form-field fxLayout="column" fxFlex="49" fxLayoutAlign="start">
               <input #enDate="ngModel" matInput placeholder="End Date" name="endDate" tabindex="2" [matDatepicker]="endDatepicker"
                 [min]="startDate" [max]="today" [(ngModel)]="endDate">
               <mat-datepicker-toggle matSuffix [for]="endDatepicker"></mat-datepicker-toggle>
@@ -32,8 +32,7 @@
           <nav mat-tab-nav-bar mat-stretch-tabs="false" mat-align-tabs="start" fxFlex="100" [tabPanel]="tabPanel">
             <div *ngFor="let link of links" mat-tab-link class="mat-tab-label" [active]="activeLink === link.link" routerLink="{{link.link}}" (click)="activeLink = link.link">{{link.name}}</div>
           </nav>
-          <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
-          
+          <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>    
         </div>
         <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
           <router-outlet></router-outlet>

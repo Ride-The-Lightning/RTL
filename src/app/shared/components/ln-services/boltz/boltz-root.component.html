@@ -17,7 +17,6 @@
         <div *ngFor="let link of links" mat-tab-link class="mat-tab-label" [active]="activeTab.link === link.link" [routerLink]="['../', link.link]" (click)="onSelectedIndexChange(link)">{{link.name}}</div>
       </nav>
       <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
-      
       <div fxLayout="row" fxLayoutAlign="start start" class="padding-gap-x-large mt-1">
         <button mat-flat-button color="primary" type="button" tabindex="1" (click)="onSwap(selectedSwapType)">Start {{activeTab.name}}</button>
       </div>

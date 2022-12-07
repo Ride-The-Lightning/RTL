@@ -21,7 +21,7 @@
         <ng-container *ngTemplateOutlet="peerDetailsExpansionBlock"></ng-container>
         <div fxLayout="column">
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
-            <mat-form-field fxFlex="70" fxLayoutAlign="start end">
+            <mat-form-field fxLayout="column" fxFlex="70" fxLayoutAlign="start end">
               <input #amount="ngModel" matInput placeholder="Amount" type="number" tabindex="1" required name="amount" [step]="1000" [min]="1" [max]="totalBalance" [(ngModel)]="fundingAmount">
               <mat-hint>Remaining Bal: {{totalBalance - ((fundingAmount) ? fundingAmount : 0) | number}}</mat-hint>
               <span matSuffix>  Sats </span>
@@ -41,7 +41,7 @@
             <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
               <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
                 <div fxFlex="100" fxLayout="row" fxLayoutAlign="space-between center">
-                  <mat-form-field fxFlex="49">
+                  <mat-form-field fxLayout="column" fxFlex="49">
                     <input #fee="ngModel" matInput placeholder="Fee (Sats/vByte)" type="number" name="fee" tabindex="7" [step]="1" [min]="0" [(ngModel)]="feeRate">
                   </mat-form-field>
                 </div>

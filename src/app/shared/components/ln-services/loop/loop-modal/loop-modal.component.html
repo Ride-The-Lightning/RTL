@@ -70,7 +70,7 @@
                   <mat-radio-button fxFlex="48" tabindex="8" value="local">Node Local Address</mat-radio-button>
                   <mat-radio-button fxFlex="48" tabindex="9" value="external">External Address</mat-radio-button>
                 </mat-radio-group>
-                <mat-form-field fxFlex="100" class="mt-1">
+                <mat-form-field fxLayout="column" fxFlex="100" class="mt-1">
                   <input matInput placeholder="Address" tabindex="10" formControlName="address" [required]="addressFormGroup.controls.addressType.value === 'external'">
                   <mat-error *ngIf="addressFormGroup.controls.address.errors?.required">Address is required.</mat-error>
                 </mat-form-field>

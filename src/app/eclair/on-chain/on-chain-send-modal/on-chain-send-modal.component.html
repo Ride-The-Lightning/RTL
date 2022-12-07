@@ -8,22 +8,22 @@
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <form #form="ngForm" fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between start" class="overflow-x-hidden" (submit)="onSendFunds()" (reset)="resetData()">
-        <mat-form-field fxFlex="55">
+        <mat-form-field fxLayout="column" fxFlex="55">
           <input #addrs="ngModel" matInput autoFocus placeholder="Bitcoin Address" tabindex="1" name="addr" required [(ngModel)]="transaction.address">
           <mat-error *ngIf="!transaction.address">Bitcoin address is required.</mat-error>
         </mat-form-field>
-        <mat-form-field fxFlex="30">
+        <mat-form-field fxLayout="column" fxFlex="30">
           <input #amnt="ngModel" matInput placeholder="Amount" name="amt" type="number" tabindex="2" required [step]="100" [min]="0" [(ngModel)]="transaction.amount">
           <span matSuffix>{{selAmountUnit}} </span>
           <mat-error *ngIf="!transaction.amount">{{amountError}}</mat-error>
         </mat-form-field>
-        <mat-form-field fxFlex="10" fxLayoutAlign="start end">
+        <mat-form-field fxLayout="column" fxFlex="10" fxLayoutAlign="start end">
           <mat-select tabindex="3" required name="amountUnit" [value]="selAmountUnit" (selectionChange)="onAmountUnitChange($event)">
             <mat-option *ngFor="let amountUnit of amountUnits" [value]="amountUnit">{{amountUnit}}</mat-option>
           </mat-select>
         </mat-form-field>
         <div fxFlex="60" fxLayoutAlign="space-between stretch" fxLayout="row wrap">
-          <mat-form-field fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
+          <mat-form-field fxLayout="column" fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
             <input #blocks="ngModel" matInput placeholder="Target Confirmation Blocks" type="number" name="blocks" tabindex="8" required="true" [step]="1" [min]="0" [(ngModel)]="transaction.blocks">
             <mat-error *ngIf="!transaction.blocks">Target Confirmation Blocks is required.</mat-error>
           </mat-form-field>

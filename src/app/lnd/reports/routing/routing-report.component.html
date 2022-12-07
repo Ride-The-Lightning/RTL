@@ -1,7 +1,7 @@
 <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x-large">
   <rtl-horizontal-scroller (stepChanged)="onSelectionChange($event)"></rtl-horizontal-scroller>
   <div fxLayout="column" fxLayoutAlign="center center" class="padding-gap-x">
-    <mat-radio-group class="my-1" color="primary" name="selReportBy" fxFlex="100" fxLayoutAlign="start start" [(ngModel)]="selReportBy" (change)="onSelReportByChange()">
+    <mat-radio-group class="my-1" color="primary" name="selReportBy" fxFlex="100" fxLayoutAlign="start center" [(ngModel)]="selReportBy" (change)="onSelReportByChange()">
       <span class="mr-2">Report By: </span>
       <mat-radio-button class="mr-2" tabindex="1" value="{{reportBy.FEES}}">Fees</mat-radio-button>
       <mat-radio-button tabindex="2" value="{{reportBy.EVENTS}}">Events</mat-radio-button>

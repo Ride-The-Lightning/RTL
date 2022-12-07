@@ -58,7 +58,7 @@
           <div fxLayout="column" fxLayoutAlign="start start" fxFlex="100">
             <h4>Dashboard Layout</h4>
             <mat-radio-group class="radio-group" color="primary" tabindex="1" name="userPersona" [(ngModel)]="selNode.settings.userPersona">
-              <mat-radio-button *ngFor="let userPersona of userPersonas" class="mr-4" [value]="userPersona" [checked]="selNode.settings.userPersona === userPersona">
+              <mat-radio-button *ngFor="let userPersona of userPersonas" class="radio-text mr-4" [value]="userPersona" [checked]="selNode.settings.userPersona === userPersona">
                 {{userPersona | titlecase}}
               </mat-radio-button>
             </mat-radio-group>
@@ -67,7 +67,7 @@
           <div fxLayout="column" fxFlex="100" fxLayoutAlign="start start">
             <h4>Mode</h4>
             <mat-radio-group class="radio-group" color="primary" name="themeMode" [(ngModel)]="selectedThemeMode" (change)="chooseThemeMode()">
-              <mat-radio-button *ngFor="let themeMode of themeModes" tabindex="5" class="mr-4" [value]="themeMode">{{themeMode.name}}
+              <mat-radio-button *ngFor="let themeMode of themeModes" tabindex="5" class="radio-text mr-4" [value]="themeMode">{{themeMode.name}}
               </mat-radio-button>
             </mat-radio-group>
           </div>

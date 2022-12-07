@@ -8,22 +8,22 @@
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <form *ngIf="!sweepAll;  else sweepAllBlock;" #form="ngForm" fxLayout="row wrap"fxLayoutAlign="space-between start" fxFlex="100" class="overflow-x-hidden" (submit)="onSendFunds()" (reset)="resetData()">
-        <mat-form-field fxFlex.gt-sm="55">
+        <mat-form-field fxLayout="column" fxFlex.gt-sm="55">
           <input #address="ngModel" autoFocus matInput placeholder="Bitcoin Address" tabindex="1" name="address" required [(ngModel)]="transactionAddress">
           <mat-error *ngIf="!transactionAddress">Bitcoin address is required.</mat-error>
         </mat-form-field>
-        <mat-form-field fxFlex.gt-sm="30">
+        <mat-form-field fxLayout="column" fxFlex.gt-sm="30">
           <input #amnt="ngModel" matInput placeholder="Amount" name="amt" type="number" tabindex="2" required [step]="100" [min]="0" [(ngModel)]="transactionAmount">
           <span matSuffix>{{selAmountUnit}} </span>
           <mat-error *ngIf="!transactionAmount">{{amountError}}</mat-error>
         </mat-form-field>
-        <mat-form-field fxFlex.gt-sm="10" fxLayoutAlign="start end">
+        <mat-form-field fxLayout="column" fxFlex.gt-sm="10" fxLayoutAlign="start end">
           <mat-select tabindex="3" required name="amountUnit" [value]="selAmountUnit" (selectionChange)="onAmountUnitChange($event)">
             <mat-option *ngFor="let amountUnit of amountUnits" [value]="amountUnit">{{amountUnit}}</mat-option>
           </mat-select>
         </mat-form-field>
         <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="60" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start">  
-          <mat-form-field fxFlex="48">
+          <mat-form-field fxLayout="column" fxFlex="48">
             <mat-select tabindex="4" [(value)]="selTransType">
               <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
                 {{transType.name}}
@@ -60,7 +60,7 @@
         <form fxLayout="column" fxLayoutAlign="space-between" class="my-1 pr-1" [formGroup]="passwordFormGroup">
           <ng-template matStepLabel>{{passwordFormLabel}}</ng-template>
           <div fxLayout="row">
-            <mat-form-field fxFlex="100">
+            <mat-form-field fxLayout="column" fxFlex="100">
               <input autoFocus matInput placeholder="Password" type="password" tabindex="1" formControlName="password" required>
               <mat-error *ngIf="passwordFormGroup.controls.password.errors?.required">Password is required.</mat-error>
             </mat-form-field>
@@ -74,11 +74,11 @@
         <form fxLayout="column" class="my-1 pr-1" [formGroup]="sendFundFormGroup">
           <ng-template matStepLabel disabled="true">{{sendFundFormLabel}}</ng-template>
           <div fxLayout="column" fxFlex="98" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start">
-            <mat-form-field fxFlex.gt-sm="45">
+            <mat-form-field fxLayout="column" fxFlex.gt-sm="45">
               <input matInput formControlName="transactionAddress" placeholder="Bitcoin Address" tabindex="4" name="address" required>
               <mat-error *ngIf="sendFundFormGroup.controls.transactionAddress.errors?.required">Bitcoin address is required.</mat-error>
             </mat-form-field>
-            <mat-form-field fxFlex.gt-sm="25">
+            <mat-form-field fxLayout="column" fxFlex.gt-sm="25">
               <mat-select formControlName="selTransType" tabindex="5">
                 <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
                   {{transType.name}}

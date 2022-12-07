@@ -25,12 +25,12 @@
               </span>
             </div>
             <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
-              <mat-form-field fxFlex.gt-sm="32" fxLayoutAlign="start end">
+              <mat-form-field fxLayout="column" fxFlex.gt-sm="32" fxLayoutAlign="start end">
                 <input #outputIdx="ngModel" matInput placeholder="Index for Change Output" type="number" tabindex="1" required name="outputIdx" [step]="1" [min]="0" [(ngModel)]="outputIndex">
                 <mat-error *ngIf="outputIdx.errors?.required">Index for change output is required.</mat-error>
                 <mat-error *ngIf="outputIdx.errors?.pendingChannelOutputIndex">Invalid index value.</mat-error>
               </mat-form-field>
-              <mat-form-field fxFlex.gt-sm="32">
+              <mat-form-field fxLayout="column" fxFlex.gt-sm="32">
                 <mat-select tabindex="2" [(value)]="selTransType" (selectionChange)="blocks = null;fees = null;">
                   <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
                     {{transType.name}}

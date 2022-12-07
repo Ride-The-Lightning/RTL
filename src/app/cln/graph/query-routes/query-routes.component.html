@@ -4,12 +4,14 @@
       <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
       <span>The actual routing fee on a payment can be different from the fee shown on query routes.</span>
     </div>
-    <mat-form-field fxFlex="69" fxLayoutAlign="start end">
-      <input #destPubkey="ngModel" matInput placeholder="Destination Pubkey" name="destinationPubkey" tabindex="1" required [(ngModel)]="destinationPubkey">
+    <mat-form-field fxLayout="column" fxFlex="69" fxLayoutAlign="start end">
+      <mat-label>Destination Pubkey</mat-label>
+      <input #destPubkey="ngModel" matInput name="destinationPubkey" tabindex="1" required [(ngModel)]="destinationPubkey">
       <mat-error *ngIf="!destinationPubkey">Destination pubkey is required.</mat-error>
     </mat-form-field>
-    <mat-form-field fxFlex="29" fxLayoutAlign="start end">
-      <input matInput placeholder="Amount (Sats)" name="amount" tabindex="2" type="number" required [step]="1000" [min]="0" [(ngModel)]="amount">
+    <mat-form-field fxLayout="column" fxFlex="29" fxLayoutAlign="start end">
+      <mat-label>Amount (Sats)</mat-label>
+      <input matInput name="amount" tabindex="2" type="number" required [step]="1000" [min]="0" [(ngModel)]="amount">
       <mat-error *ngIf="!amount">Amount is required.</mat-error>
     </mat-form-field>
     <div fxLayout="row" class="mt-1">
@@ -29,7 +31,7 @@
       <ng-container matColumnDef="id">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>ID</th>
         <td *matCellDef="let hop" mat-cell>
-          <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+          <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
             <span class="ellipsis-child">{{hop?.id}}</span>
           </div>
         </td>
@@ -37,7 +39,7 @@
       <ng-container matColumnDef="alias">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Alias</th>
         <td *matCellDef="let hop" mat-cell> 
-          <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+          <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
             <span class="ellipsis-child">{{hop?.alias}}</span>
           </div>
         </td>

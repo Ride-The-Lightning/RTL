@@ -5,12 +5,12 @@
       <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="page-sub-title-container w-100" [ngClass]="{'mt-2': screenSize === screenSizeEnum.XS, 'mt-1': screenSize === screenSizeEnum.SM}">
         <div fxFlex="70">Incoming</div>
         <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
-          <!-- <mat-form-field fxFlex="49">
+          <!-- <mat-form-field fxLayout="column" fxFlex="49">
             <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterByIn" (selectionChange)="selFilterIn=''; applyFilterIncoming()" name="filterByIn">
               <mat-option *ngFor="let column of ['all'].concat(displayedColumns)" [value]="column">{{getLabel(column)}}</mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-form-field fxFlex="49">
+          <mat-form-field fxLayout="column" fxFlex="49">
             <input matInput [(ngModel)]="selFilterIn" (input)="applyFilterIncoming()" (keyup)="applyFilterIncoming()" name="filterin" placeholder="Filter">
           </mat-form-field> -->
         </div>
@@ -21,7 +21,7 @@
           <ng-container matColumnDef="channelId">
             <th *matHeaderCellDef mat-header-cell mat-sort-header>Channel ID</th>
             <td *matCellDef="let rPeer" mat-cell>
-              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
                 <span class="ellipsis-child">{{rPeer?.channelId}}</span>
               </div>
             </td>
@@ -29,7 +29,7 @@
           <ng-container matColumnDef="alias">
             <th *matHeaderCellDef mat-header-cell mat-sort-header>Peer Alias</th>
             <td *matCellDef="let rPeer" mat-cell>
-              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
                 <span class="ellipsis-child">{{rPeer?.alias}}</span>
               </div>
             </td>
@@ -65,12 +65,12 @@
       <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="page-sub-title-container w-100" [ngClass]="{'mt-2': screenSize !== screenSizeEnum.LG}">
         <div fxFlex="70">Outgoing</div>
         <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
-          <!-- <mat-form-field fxFlex="49">
+          <!-- <mat-form-field fxLayout="column" fxFlex="49">
             <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterByOut" (selectionChange)="selFilterOut=''; applyFilterOutgoing()" name="filterByOut">
               <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-form-field fxFlex="49">
+          <mat-form-field fxLayout="column" fxFlex="49">
             <input matInput [(ngModel)]="selFilterOut" (input)="applyFilterOutgoing()" (keyup)="applyFilterOutgoing()" name="filterout" placeholder="Filter">
           </mat-form-field> -->
         </div>
@@ -81,7 +81,7 @@
           <ng-container matColumnDef="channelId">
             <th *matHeaderCellDef mat-header-cell mat-sort-header>Channel ID</th>
             <td *matCellDef="let rPeer" mat-cell>
-              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
                 <span class="ellipsis-child">{{rPeer?.channelId}}</span>
               </div>
             </td>
@@ -89,7 +89,7 @@
           <ng-container matColumnDef="alias">
             <th *matHeaderCellDef mat-header-cell mat-sort-header>Peer Alias</th>
             <td *matCellDef="let rPeer" mat-cell>
-              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+              <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
                 <span class="ellipsis-child">{{rPeer?.alias}}</span>
               </div>
             </td>

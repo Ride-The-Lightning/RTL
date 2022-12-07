@@ -23,7 +23,7 @@
   </div>
   <mat-divider class="my-1" [inset]="true"></mat-divider>
   <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row">
-    <div fxLayout="column" fxFlex="49" fxLayoutAlign="start start" class="mt-1 bordered-box padding-gap-large">
+    <div fxLayout="column" fxFlex="49" fxLayoutAlign="start stretch" class="mt-1 bordered-box padding-gap-large">
       <div fxLayout="column">
         <h3 *ngIf="!node1_match" class="page-title font-bold-500">Node 1</h3>
         <h3 *ngIf="node1_match" class="page-title font-bold-500">Node 1 (Your Node)</h3>
@@ -64,7 +64,7 @@
         <span class="foreground-secondary-text">{{lookupResult.node1_policy?.disabled ? 'Yes' : 'No'}}</span>
       </div>
     </div>
-    <div fxLayout="column" fxFlex="49" fxLayoutAlign="start start" class="mt-1 bordered-box padding-gap-large">
+    <div fxLayout="column" fxFlex="49" fxLayoutAlign="start stretch" class="mt-1 bordered-box padding-gap-large">
       <div>
         <h3 *ngIf="!node2_match" class="page-title font-bold-500">Node 2</h3>
         <h3 *ngIf="node2_match" class="page-title font-bold-500">Node 2 (Your Node)</h3>

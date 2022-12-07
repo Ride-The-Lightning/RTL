@@ -10,7 +10,7 @@
         <span>The setting will apply after RTL server restarts.</span>
       </div>
       <div fxLayout="row" fxLayoutAlign="start start">
-        <mat-form-field fxLayout="row" fxLayoutAlign="start start">
+        <mat-form-field fxLayout="column" fxLayout="row" fxLayoutAlign="start start">
           <mat-select autoFocus tabindex="1" name="defaultNode" [(ngModel)]="appConfig.defaultNodeIndex">
             <mat-option *ngFor="let node of appConfig.nodes" [value]="node.index">
               {{node.lnNode}} ({{node.lnImplementation}})

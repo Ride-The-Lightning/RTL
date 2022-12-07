@@ -4,13 +4,15 @@
     <div *ngIf="errorMessage === ''" fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container">
       <div fxFlex="70">Non Routing Peers</div>
       <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
-        <mat-form-field fxFlex="49">
-          <mat-select placeholder="Filter By" tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
+        <mat-form-field fxLayout="column" fxFlex="49">
+          <mat-label>Filter By</mat-label>
+        <mat-select tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
             <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
           </mat-select>
         </mat-form-field>
-        <mat-form-field fxFlex="49">
-          <input matInput name="filter" placeholder="Filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
+        <mat-form-field fxLayout="column" fxFlex="49">
+          <mat-label>Filter</mat-label>
+        <input matInput name="filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
         </mat-form-field>
       </div>
     </div>
@@ -20,7 +22,7 @@
         <ng-container matColumnDef="chan_id">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Channel ID</th>
           <td *matCellDef="let nonRPeer" mat-cell>
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{nonRPeer?.chan_id}}</span>
             </div>
           </td>
@@ -28,7 +30,7 @@
         <ng-container matColumnDef="remote_alias">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Peer Alias</th>
           <td *matCellDef="let nonRPeer" mat-cell>
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{nonRPeer?.remote_alias}}</span>
             </div>
           </td>
@@ -36,7 +38,7 @@
         <ng-container matColumnDef="remote_pubkey">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Peer Pubkey</th>
           <td *matCellDef="let nonRPeer" mat-cell>
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{nonRPeer?.remote_pubkey}}</span>
             </div>
           </td>
@@ -44,7 +46,7 @@
         <ng-container matColumnDef="channel_point">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Channel Point</th>
           <td *matCellDef="let nonRPeer" mat-cell>
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{nonRPeer?.channel_point}}</span>
             </div>
           </td>

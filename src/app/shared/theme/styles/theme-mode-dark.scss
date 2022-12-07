@@ -54,6 +54,7 @@
       background: $foreground-secondary-text;
     }  
   }
+  
   .rtl-snack-bar {
     max-width: 90vw !important;
     font-weight: 700;
@@ -61,12 +62,16 @@
   .rtl-warn-snack-bar {
     max-width: 90vw !important;
     font-weight: 700;
-    color: $warn-color;
+    & .mat-mdc-snack-bar-label.mdc-snackbar__label {
+      color: $warn-color;
+    }
   }
   .rtl-accent-snack-bar {
     max-width: 90vw !important;
     font-weight: 700;
-    color: $accent-color;
+    & .mat-mdc-snack-bar-label.mdc-snackbar__label {
+      color: $accent-color;
+    }
   }
   .mat-mdc-tab-group.mat-primary .mat-ink-bar, .mat-mdc-tab-nav-bar.mat-primary .mat-ink-bar {
     background-color: $primary-darker;
@@ -94,9 +99,18 @@
     cursor: pointer;
     fill: $primary-darker; 
   }
+  .mdc-text-field:not(.mdc-text-field--disabled) .mdc-floating-label {
+    color: $primary-darker;
+  }
+  .mdc-text-field--filled .mdc-line-ripple::after {
+    border-bottom-color: $primary-darker;
+  }
   .mdc-tab__text-label .tab-badge .mat-badge-content {
     color: $foreground-base;
     background: $primary-color;
+  }
+  button.mdc-button.mat-mdc-button-base.mat-mdc-outlined-button{
+    border-color: $foreground-disabled;
   }
   .mat-mdc-select-arrow svg {
     fill: $foreground-base;
@@ -199,6 +213,9 @@
   }
   .mat-stepper-vertical {
     background-color: mat.get-color-from-palette($background, dialog);
+  }
+  .spinner-container h2 {
+    color: $primary-color;
   }
   svg {
     & .boltz-icon { stroke:#FFFFFF; stroke-width:4; }

@@ -1,9 +1,9 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="padding-gap">
   <form *ngIf="calledFrom === 'home'" #addInvoiceForm="ngForm" fxLayout="row wrap" fxLayoutAlign="stretch start" fxFlex="100">
-    <mat-form-field fxFlex="100" fxLayoutAlign="end start">
+    <mat-form-field fxLayout="column" fxFlex="100" fxLayoutAlign="end start">
       <input matInput placeholder="Memo" tabindex="1" name="memo" [(ngModel)]="memo">
     </mat-form-field>
-    <mat-form-field fxFlex="100" fxLayoutAlign="start end">
+    <mat-form-field fxLayout="column" fxFlex="100" fxLayoutAlign="start end">
       <input matInput placeholder="Amount" type="number" tabindex="2" name="invValue" [step]="100" [min]="1" [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()">
       <span matSuffix>  Sats </span>
       <mat-hint>{{invoiceValueHint}}</mat-hint>          
@@ -23,13 +23,15 @@
         <span class="page-title">Invoices History</span>
       </div>
       <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
-        <mat-form-field fxFlex="49">
-          <mat-select placeholder="Filter By" tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
+        <mat-form-field fxLayout="column" fxFlex="49">
+          <mat-label>Filter By</mat-label>
+        <mat-select tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
             <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
           </mat-select>
         </mat-form-field>
-        <mat-form-field fxFlex="49">
-          <input matInput name="filter" placeholder="Filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
+        <mat-form-field fxLayout="column" fxFlex="49">
+          <mat-label>Filter</mat-label>
+        <input matInput name="filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
         </mat-form-field>
       </div>
     </div>
@@ -77,7 +79,7 @@
         <ng-container matColumnDef="memo">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Memo</th>
           <td *matCellDef="let invoice" mat-cell>
-            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{invoice?.memo}}</span>
             </div>
           </td>
@@ -85,7 +87,7 @@
         <ng-container matColumnDef="r_preimage">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Preimage</th>
           <td *matCellDef="let invoice" mat-cell>
-            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{invoice?.r_preimage}}</span>
             </div>
           </td>
@@ -93,7 +95,7 @@
         <ng-container matColumnDef="r_hash">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Preimage Hash</th>
           <td *matCellDef="let invoice" mat-cell>
-            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{invoice?.r_hash}}</span>
             </div>
           </td>
@@ -101,7 +103,7 @@
         <ng-container matColumnDef="payment_addr">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Payment Address</th>
           <td *matCellDef="let invoice" mat-cell>
-            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{invoice?.payment_addr}}</span>
             </div>
           </td>
@@ -109,7 +111,7 @@
         <ng-container matColumnDef="payment_request">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Payment Request</th>
           <td *matCellDef="let invoice" mat-cell>
-            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{invoice?.payment_request}}</span>
             </div>
           </td>
@@ -117,7 +119,7 @@
         <ng-container matColumnDef="description_hash">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Description Hash</th>
           <td *matCellDef="let invoice" mat-cell>
-            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{invoice?.description_hash}}</span>
             </div>
           </td>

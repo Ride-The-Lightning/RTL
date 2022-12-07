@@ -21,7 +21,7 @@
         <ng-container *ngTemplateOutlet="peerDetailsExpansionBlock"></ng-container>
         <div fxLayout="column">
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
-            <mat-form-field fxFlex="60" fxLayoutAlign="start end">
+            <mat-form-field fxLayout="column" fxFlex="60" fxLayoutAlign="start end">
               <input #amt="ngModel" matInput placeholder="Amount" type="number" tabindex="1" required name="amnt" [step]="1000" [min]="1" [max]="totalBalance" [(ngModel)]="fundingAmount">
               <mat-hint>(Remaining Bal: {{totalBalance - ((fundingAmount) ? fundingAmount : 0) | number}})</mat-hint>
               <span matSuffix> Sats </span>
@@ -40,15 +40,16 @@
             </mat-expansion-panel-header>
             <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
               <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
-                <mat-form-field fxFlex="49">
+                <mat-form-field fxLayout="column" fxFlex="49">
                   <mat-select tabindex="3" [(value)]="selTransType">
                     <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
                       {{transType.name}}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
-                <mat-form-field fxFlex="49">
-                  <input #transTypeVal="ngModel" matInput type="number" tabindex="4" name="transTpValue" [required]="selTransType!=='0'" [disabled]="selTransType==='0'" [placeholder]="selTransType==='0' ? 'Default' : selTransType==='1' ? 'Target Confirmation Blocks' : 'Fee (Sats/vByte)'" [step]="1" [min]="0" [(ngModel)]="transTypeValue">
+                <mat-form-field fxLayout="column" fxFlex="49">
+                  <mat-label>{{selTransType==='0' ? 'Default' : selTransType==='1' ? 'Target Confirmation Blocks' : 'Fee (Sats/vByte)'}}</mat-label>
+                  <input #transTypeVal="ngModel" matInput type="number" tabindex="4" name="transTpValue" [required]="selTransType!=='0'" [disabled]="selTransType==='0'" [step]="1" [min]="0" [(ngModel)]="transTypeValue">
                   <mat-error *ngIf="selTransType!=='0' && !transTypeValue">{{selTransType === '1' ? 'Target Confirmation Blocks' : 'Fee'}} is required.</mat-error>
                 </mat-form-field>
               </div>

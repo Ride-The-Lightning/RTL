@@ -9,8 +9,9 @@
             </mat-radio-button>
           </mat-radio-group>
         </div>
-        <mat-form-field fxFlex="100" fxLayoutAlign="start end" [ngClass]="{'mt-1': true, 'mt-2': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
-          <input #key matInput name="lookupKey" tabindex="2" required [placeholder]="lookupFields[selectedFieldId]?.placeholder || 'Lookup Key'" [(ngModel)]="lookupKey" (change)="clearLookupValue()">
+        <mat-form-field fxLayout="column" fxFlex="100" fxLayoutAlign="start end" [ngClass]="{'mt-1': true, 'mt-2': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
+          <mat-label>{{lookupFields[selectedFieldId]?.placeholder || 'Lookup Key'}}</mat-label>
+          <input #key matInput name="lookupKey" tabindex="2" required [(ngModel)]="lookupKey" (change)="clearLookupValue()">
           <mat-error *ngIf="!lookupKey">{{lookupFields[selectedFieldId]?.placeholder}} is required.</mat-error>
         </mat-form-field>
         <div fxLayout="row" fxFlex="100" class="mt-1">

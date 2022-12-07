@@ -12,18 +12,18 @@
             <span>Ads should be supplemented with additional research of the node, before buying liquidity.</span>
           </div>
           <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="page-sub-title-container mt-1">
-            <div fxFlex="30">
-              <span class="page-title">
-                Liquidity Ask
-                <mat-icon matTooltipPosition="above" matTooltipClass="pre-wrap" class="info-icon info-icon-primary" [matTooltip]="askTooltipMsg">info_outline</mat-icon>
-              </span>
+            <div fxLayout="row" fxLayoutAlign="start center" fxFlex="30">
+              <span class="page-text">Liquidity Ask</span>
+              <mat-icon matTooltipPosition="above" matTooltipClass="pre-wrap" class="info-icon info-icon-primary" [matTooltip]="askTooltipMsg">info_outline</mat-icon>
             </div>
-            <mat-form-field fxFlex="34">
-              <input autoFocus matInput placeholder="Channel Amount (Sats)" name="channelAmount" tabindex="1" type="number" step="10000" required [(ngModel)]="channelAmount" (keyup)="onCalculateOpeningFee()">
+            <mat-form-field fxLayout="column" fxFlex="34">
+              <mat-label>Channel Amount (Sats)</mat-label>
+              <input autoFocus matInput name="channelAmount" tabindex="1" type="number" step="10000" required [(ngModel)]="channelAmount" (keyup)="onCalculateOpeningFee()">
               <mat-error *ngIf="!channelAmount">Channel amount is required.</mat-error>
             </mat-form-field>
-            <mat-form-field fxFlex="34">
-              <input matInput placeholder="Channel Opening Fee Rate (Sats/vByte)" name="channel_opening_feeRate" type="number" step="10" tabindex="2" required [(ngModel)]="channel_opening_feeRate" (keyup)="onCalculateOpeningFee()">
+            <mat-form-field fxLayout="column" fxFlex="34">
+              <mat-label>Channel Opening Fee Rate (Sats/vByte)</mat-label>
+              <input matInput name="channel_opening_feeRate" type="number" step="10" tabindex="2" required [(ngModel)]="channel_opening_feeRate" (keyup)="onCalculateOpeningFee()">
               <mat-error *ngIf="!channel_opening_feeRate">Channel opening fee rate is required.</mat-error>
             </mat-form-field>
           </div>
@@ -37,12 +37,14 @@
                 <mat-icon [matTooltip]="nodesTooltipMsg" matTooltipPosition="above" matTooltipClass="pre-wrap" class="info-icon info-icon-primary">info_outline</mat-icon>
               </span>
             </div>
-            <mat-form-field fxFlex="34">
-              <input matInput placeholder="Node Capacity (Sats)" name="node_capacity" [(ngModel)]="node_capacity" (keyup)="onFilter()" tabindex="5" type="number" min="0" step="1000">
+            <mat-form-field fxLayout="column" fxFlex="34">
+              <mat-label>Node Capacity (Sats)</mat-label>
+              <input matInput name="node_capacity" [(ngModel)]="node_capacity" (keyup)="onFilter()" tabindex="5" type="number" min="0" step="1000">
               <mat-error *ngIf="!node_capacity">Node capacity is required.</mat-error>
             </mat-form-field>
-            <mat-form-field fxFlex="34">
-              <input matInput placeholder="Channel Count" name="channel_count" [(ngModel)]="channel_count" (keyup)="onFilter()" type="number" step="1" min="0" tabindex="6">
+            <mat-form-field fxLayout="column" fxFlex="34">
+              <mat-label>Channel Count</mat-label>
+              <input matInput name="channel_count" [(ngModel)]="channel_count" (keyup)="onFilter()" type="number" step="1" min="0" tabindex="6">
             </mat-form-field>
           </div>
         </form> -->
@@ -52,13 +54,15 @@
             <span class="page-title">Liquidity Providing Peers</span>
           </div>
           <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
-            <mat-form-field fxFlex="49">
-              <mat-select placeholder="Filter By" tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
+            <mat-form-field fxLayout="column" fxFlex="49">
+              <mat-label>Filter By</mat-label>
+        <mat-select tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
                 <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
               </mat-select>
             </mat-form-field>
-            <mat-form-field fxFlex="49">
-              <input matInput name="filter" placeholder="Filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
+            <mat-form-field fxLayout="column" fxFlex="49">
+              <mat-label>Filter</mat-label>
+        <input matInput name="filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
             </mat-form-field>
           </div>
         </div>
@@ -68,7 +72,7 @@
             <ng-container matColumnDef="alias">
               <th *matHeaderCellDef mat-header-cell mat-sort-header>Alias</th>
               <td *matCellDef="let lqNode" mat-cell>
-                <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+                <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
                   <span fxLayout="row" fxLayoutAlign="start center" class="ellipsis-child">
                     {{lqNode?.alias}}
                     <mat-chip-list class="ml-half" aria-label="Address Types">
@@ -83,7 +87,7 @@
             <ng-container matColumnDef="nodeid">
               <th *matHeaderCellDef mat-header-cell mat-sort-header>Node ID</th>
               <td *matCellDef="let lqNode" mat-cell>
-                <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+                <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
                   <span class="ellipsis-child">{{lqNode?.nodeid}}</span>
                 </div>
               </td>

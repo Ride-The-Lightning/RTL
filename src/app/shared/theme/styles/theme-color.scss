@@ -128,7 +128,9 @@
       cursor: not-allowed;
     }
   }
-
+  .mat-mdc-card-content, .mat-mdc-card-subtitle, .mat-mdc-card-title {
+    color: $foreground-secondary-text;
+  }
   .mat-menu-panel {
     min-width: ($gap*8);
   }
@@ -168,7 +170,10 @@
   .cc-data-block {
     & .cc-data-title {
       font-weight: 500;
-      min-width: 140px;
+      min-width: 180px;
+      @include for_screensize(phone) {
+        min-width: 110px;
+      }
     }
     & .cc-data-value {
       color: $foreground-base;
@@ -191,7 +196,7 @@
     & thead tr th:not(:first-of-type), tbody tr td:not(:first-of-type) {
       padding-left: ($gap*1.25);
     }
-    & tbody tr td.mat-cell {
+    & tbody tr td.mat-mdc-cell {
       @include for_screensize(tab-land) {
         white-space: unset;
       }
@@ -256,15 +261,15 @@
   .modal-info-header {
     color: $foreground-text;
     font-weight: 500;
-    padding: $gap 0 $gap $gap*2;
+    padding: $gap $gap $gap $gap*2;
     @include for_screensize(tab-land) {
-      padding: $gap 0 $gap $gap;
+      padding: $gap $gap $gap $gap;
     }
     @include for_screensize(tab-port) {
-      padding: $gap 0 $gap math.div($gap, 2);
+      padding: $gap $gap $gap math.div($gap, 2);
     }
     @include for_screensize(phone) {
-      padding: $gap 0 $gap math.div($gap, 4);
+      padding: $gap $gap $gap math.div($gap, 4);
     }
     & .page-title-img svg {
       color: $foreground-text;
@@ -296,6 +301,7 @@
   }
 
   .table-actions-select {
+    border-color: $foreground-disabled;
     padding: math.div($gap, 2) $gap;
     margin: $gap 0;
     min-height: ($gap*4.5);
@@ -305,11 +311,27 @@
     & .mat-select-placeholder {
       color: $foreground-text;
     }
+    @include for_screensize(tab-port) {
+      min-width: ($gap*12);
+      width: ($gap*20);
+    }
+    @include for_screensize(phone) {
+      min-width: ($gap*10);
+      width: ($gap*14);
+    }
   }
 
   .table-actions-button {
     min-width: ($gap*14);;
     width: ($gap*25);
+    @include for_screensize(tab-port) {
+      min-width: ($gap*12);
+      width: ($gap*20);
+    }
+    @include for_screensize(phone) {
+      min-width: ($gap*10);
+      width: ($gap*14);
+    }
   }
 
   .mat-select-panel .mat-option.mat-active {
@@ -320,6 +342,12 @@
     opacity: 1;
     padding: 0;
     min-width: 180px;
+    @include for_screensize(tab-port) {
+      min-width: auto;
+    }
+    @include for_screensize(phone) {
+      min-width: auto;
+    }
   }
 
   .mat-drawer-inner-container {
