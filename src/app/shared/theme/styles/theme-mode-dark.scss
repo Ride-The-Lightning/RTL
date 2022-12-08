@@ -99,6 +99,15 @@
     cursor: pointer;
     fill: $primary-darker; 
   }
+  .help-expansion {
+    & .mat-expansion-panel-header, & .mat-expansion-panel-header-title {
+      font-weight: 500;
+      color: $foreground-base;
+    }
+    & .mat-expansion-indicator::after, & .mat-expansion-panel-content, & .mat-expansion-panel-header-description {
+      color: $foreground-base;
+    }
+  }  
   .mdc-text-field:not(.mdc-text-field--disabled) .mdc-floating-label {
     color: $primary-darker;
   }
@@ -216,6 +225,11 @@
   }
   .spinner-container h2 {
     color: $primary-color;
+  }
+  table.mat-mdc-table {
+    & thead tr th {
+      color: $foreground-base;
+    }
   }
   svg {
     & .boltz-icon { stroke:#FFFFFF; stroke-width:4; }

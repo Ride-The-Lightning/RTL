@@ -1,5 +1,5 @@
 <div  *ngIf="errorMessage?.trim() === ''; else errorBlock" fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" [ngClass]="{'mb-4': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mb-2': screenSize === screenSizeEnum.MD, 'mb-1': screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}">
-  <div fxLayout="column" fxFlex="9" fxLayoutAlign="end start">
+  <div fxLayout="column" fxFlex="8" fxLayoutAlign="end start">
     <span class="dashboard-capacity-header this-channel-capacity">Total Capacity</span>
     <mat-hint class="font-size-90">{{totalLiquidity | number}} Sats</mat-hint>
     <mat-progress-bar class="dashboard-progress-bar this-channel-bar" mode="determinate" color="accent" value="100"></mat-progress-bar>
@@ -13,8 +13,8 @@
       <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
         <mat-hint *ngIf="direction === 'In'" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.remote_balance || 0 | number}} Sats</mat-hint>
         <div *ngIf="direction === 'Out'" fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
-          <mat-hint fxFlex="85" fxLayoutAlign="start start" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.local_balance || 0 | number}} Sats</mat-hint>
-          <button *ngIf="showLoop" fxFlex="15" fxLayoutAlign="end start" class="button-link-dashboard" color="primary" mat-button aria-label="Loop Out" (click)="onLoopOut(channel)">Loop Out</button>
+          <mat-hint fxFlex="80" fxLayoutAlign="start start" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.local_balance || 0 | number}} Sats</mat-hint>
+          <button *ngIf="showLoop" fxFlex="20" fxLayoutAlign="end center" class="button-link-dashboard" color="primary" mat-button aria-label="Loop Out" (click)="onLoopOut(channel)">Loop Out</button>
         </div>
       </div>
       <mat-progress-bar *ngIf="direction === 'In'" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((+channel.remote_balance || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar>

@@ -169,6 +169,9 @@
   
   .cc-data-block {
     & .cc-data-title {
+      & .material-icons.mat-icon.mat-mdc-tooltip-trigger {
+        min-height: unset;
+      }
       font-weight: 500;
       min-width: 180px;
       @include for_screensize(phone) {
@@ -185,14 +188,17 @@
     border-bottom-style: solid; 
     border-bottom-color: $foreground-divider;
   }
-
+  .mat-mdc-option:hover:not(.mdc-list-item--disabled), .mat-mdc-option:focus:not(.mdc-list-item--disabled), .mat-mdc-option.mat-mdc-option-active, .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-list-item--disabled), 
+  .mat-mdc-menu-item:hover:not([disabled]), .mat-mdc-menu-item.cdk-program-focused:not([disabled]), .mat-mdc-menu-item.cdk-keyboard-focused:not([disabled]), .mat-mdc-menu-item-highlighted:not([disabled]) {
+    color: $primary-color;
+    & .mdc-list-item__primary-text, & .fa-icon, & .fa-icon-small {
+      color: $primary-color;
+    }
+  }
   table.mat-mdc-table {
     border: 1px solid $foreground-divider;
     border-radius: 2px;
     background: none;
-    & thead tr th {
-      color: $foreground-base;
-    }
     & thead tr th:not(:first-of-type), tbody tr td:not(:first-of-type) {
       padding-left: ($gap*1.25);
     }
@@ -399,7 +405,6 @@
     }    
     & .dashboard-capacity-header {
       font-weight: 700;
-      color: $foreground-base;
     }
     & .mat-icon-button.more-button {
       width: ($gap*2.5);
@@ -463,16 +468,6 @@
       }
     }
   }
-  .help-expansion {
-    & .mat-expansion-panel-header, & .mat-expansion-panel-header-title {
-      font-weight: 500;
-      color: $foreground-base;
-    }
-    & .mat-expansion-indicator::after, & .mat-expansion-panel-content, & .mat-expansion-panel-header-description {
-      color: $foreground-base;
-    }
-  }  
-
   .mat-form-field-appearance-legacy .mat-form-field-prefix .mat-datepicker-toggle-default-icon,
   .mat-form-field-appearance-legacy .mat-form-field-suffix .mat-datepicker-toggle-default-icon {
     width: ($gap*2); 

@@ -10,7 +10,7 @@
         </div>
         <div fxLayout="column" fxLayoutAlign="stretch center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="center stretch" class="w-100 h-93">
           <mat-card fxLayout="row" fxFlex="95" fxLayoutAlign="start stretch" class="dashboard-card w-96 h-93">
-            <mat-card-content fxLayout="column" fxFlex="100"
+            <mat-card-content fxLayout="column" fxFlex="100" class="mt-2"
               [ngClass]="{'dashboard-card-content': true, 
               'error-border': (card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR) ||
                             (card.id === 'status' && (apiCallStatusChannels.status === apiCallStatusEnum.ERROR || apiCallStatusPendingChannels.status === apiCallStatusEnum.ERROR)) ||
@@ -56,7 +56,7 @@
   </div>
 </ng-template>
 <ng-template #generalBlock>
-  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between" class="mt-2">
     <div>
       <h4 class="dashboard-info-title">Network Capacity</h4>
       <div class="overflow-wrap dashboard-info-value">{{networkInfo.total_network_capacity | number}} Sats</div>
@@ -72,7 +72,7 @@
   </div>
 </ng-template>
 <ng-template #channelsBlock>
-  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between" class="mt-2">
     <div>
       <h4 class="dashboard-info-title">Max Channel Size</h4>
       <div class="overflow-wrap dashboard-info-value">{{networkInfo.max_channel_size | number}}</div>
@@ -88,7 +88,7 @@
   </div>
 </ng-template>
 <ng-template #degreesBlock>
-  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between" class="mt-2">
     <div>
       <h4 class="dashboard-info-title">Max Out Degree</h4>
       <div class="overflow-wrap dashboard-info-value">{{networkInfo.max_out_degree | number}}</div>

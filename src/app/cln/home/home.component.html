@@ -90,7 +90,7 @@
             <rtl-cln-channel-liquidity-info *ngSwitchCase="'inboundLiq'" fxFlex="100" [direction]="'In'" [totalLiquidity]="totalInboundLiquidity" [activeChannels]="allInboundChannels" [errorMessage]="errorMessages[4]"></rtl-cln-channel-liquidity-info>
             <rtl-cln-channel-liquidity-info *ngSwitchCase="'outboundLiq'" fxFlex="100" [direction]="'Out'" [totalLiquidity]="totalOutboundLiquidity" [activeChannels]="allOutboundChannels" [errorMessage]="errorMessages[4]"></rtl-cln-channel-liquidity-info>
             <span *ngSwitchCase="'transactions'" fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
-              <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" fxLayout="column" class="dashboard-tabs-group" [disablePagination]="true">
+              <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" fxLayout="column" class="dashboard-tabs-group">
                 <mat-tab label="Receive"><rtl-cln-lightning-invoices-table class="h-100" [calledFrom]="'home'"></rtl-cln-lightning-invoices-table></mat-tab>
                 <mat-tab label="Pay"><rtl-cln-lightning-payments [calledFrom]="'home'"></rtl-cln-lightning-payments></mat-tab>
               </mat-tab-group>

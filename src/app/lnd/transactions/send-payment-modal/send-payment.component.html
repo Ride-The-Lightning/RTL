@@ -28,7 +28,7 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div fxFlex="100" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
-            <mat-form-field fxLayout="column" fxFlex="30" fxLayoutAlign="start end">
+            <mat-form-field fxLayout="column" fxFlex="27" fxLayoutAlign="start end">
               <mat-label>Fee Limits</mat-label>
               <mat-select tabindex="5" [(value)]="selFeeLimitType">
                 <mat-option *ngFor="let feeLimitType of feeLimitTypes" [value]="feeLimitType">
@@ -36,12 +36,12 @@
                 </mat-option>
               </mat-select>
             </mat-form-field>
-            <mat-form-field fxLayout="column" fxFlex="26">
+            <mat-form-field fxLayout="column" fxFlex="33">
               <mat-label>{{selFeeLimitType?.placeholder}}</mat-label>
               <input #fLmt="ngModel" matInput type="number" name="feeLmt" required tabindex="6" [step]="1" [min]="0" [disabled]="selFeeLimitType === feeLimitTypes[0]" [(ngModel)]="feeLimit">
               <mat-error *ngIf="selFeeLimitType !== feeLimitTypes[0] && !feeLimit">{{selFeeLimitType?.placeholder}} is required.</mat-error>
             </mat-form-field>
-            <mat-form-field fxLayout="column" fxFlex="40" fxLayoutAlign="start end">
+            <mat-form-field fxLayout="column" fxFlex="37" fxLayoutAlign="start end">
               <mat-label>First Outgoing Channel</mat-label>
               <input type="text" aria-label="First Outgoing Channel" matInput tabindex="7" [formControl]="selectedChannelCtrl" [matAutocomplete]="auto">
               <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectedChannelChanged()">

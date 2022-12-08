@@ -28,12 +28,12 @@
             <mat-option *ngFor="let timeUnit of timeUnits" [value]="timeUnit">{{timeUnit | titlecase}}</mat-option>
           </mat-select>
         </mat-form-field>
-        <div fxLayout="row" fxFlex="100" class="mt-1" fxLayoutAlign="start center">
-          <div fxFlex="49">
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center" class="ml-2">
+          <div fxFlex="49" fxLayoutAlign="start start">
             <mat-slide-toggle tabindex="4" color="primary" name="private" [(ngModel)]="private">Private Routing Hints</mat-slide-toggle>
             <mat-icon matTooltip="Include routing hints for private channels" matTooltipPosition="above" class="info-icon">info_outline</mat-icon>
           </div>
-          <div fxFlex="49">
+          <div fxFlex="49" fxLayoutAlign="start start">
             <mat-slide-toggle tabindex="5" color="primary" name="amp" [(ngModel)]="isAmp">AMP Invoice</mat-slide-toggle>
             <mat-icon matTooltip="Atomic multipath payment invoice" matTooltipPosition="above" class="info-icon">info_outline</mat-icon>
           </div>
@@ -42,7 +42,7 @@
           <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
           <span *ngIf="invoiceError !== ''">{{invoiceError}}</span>
         </div>
-        <div fxLayout="row" fxFlex="100" class="mt-1" fxLayoutAlign="end center">
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">
           <button class="mr-1" mat-button color="primary" tabindex="6" type="reset" (click)="resetData()">Clear Field</button>
           <button mat-button color="primary" tabindex="7" (click)="onAddInvoice(addInvoiceForm)">Create Invoice</button>
         </div>

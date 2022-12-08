@@ -89,21 +89,19 @@
             <rtl-balances-info *ngSwitchCase="'balance'" fxFlex="100" [balances]="balances" [errorMessage]="errorMessages[3] + ' ' + errorMessages[2]"></rtl-balances-info>
             <rtl-channel-liquidity-info *ngSwitchCase="'inboundLiq'" fxFlex="100" [direction]="'In'" [totalLiquidity]="totalInboundLiquidity" [allChannels]="allInboundChannels" [errorMessage]="errorMessages[3]"></rtl-channel-liquidity-info>
             <rtl-channel-liquidity-info *ngSwitchCase="'outboundLiq'" fxFlex="100" [direction]="'Out'" [totalLiquidity]="totalOutboundLiquidity" [allChannels]="allOutboundChannels" [errorMessage]="errorMessages[3]"></rtl-channel-liquidity-info>
-            <span *ngSwitchCase="'transactions'" fxLayout="column" fxFlex="100" fxLayoutAlign="start start" [perfectScrollbar]>
-              <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" fxLayout="column" fxFlex="100" class="w-100 dashboard-tabs-group">
+            <span *ngSwitchCase="'transactions'" fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+              <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" fxLayout="column" class="dashboard-tabs-group">
                 <mat-tab label="Receive"><rtl-lightning-invoices [calledFrom]="'home'"></rtl-lightning-invoices></mat-tab>
                 <mat-tab label="Pay"><rtl-lightning-payments [calledFrom]="'home'"></rtl-lightning-payments></mat-tab>
-                <mat-tab [disabled]="true">
-                  <ng-template mat-tab-label>
-                    <button mat-icon-button class="more-button" aria-label="Toggle menu" [matMenuTriggerFor]="menuTransactions">
-                      <mat-icon>more_vert</mat-icon>
-                    </button>
-                    <mat-menu #menuTransactions="matMenu" class="dashboard-vert-menu" xPosition="before">
-                      <button *ngFor="let goToOption of card.goToOptions; index as i" mat-menu-item (click)="onNavigateTo(card.links[i])">{{goToOption}}</button>
-                    </mat-menu>
-                  </ng-template>
-                </mat-tab>
               </mat-tab-group>
+              <div class="underline">
+                <button mat-icon-button class="more-button" aria-label="Toggle menu" [matMenuTriggerFor]="menuTransactions">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menuTransactions="matMenu" class="dashboard-vert-menu" xPosition="before">
+                  <button *ngFor="let goToOption of card.goToOptions; index as i" mat-menu-item (click)="onNavigateTo(card.links[i])">{{goToOption}}</button>
+                </mat-menu>
+              </div>
             </span>
             <h3 *ngSwitchDefault>Error! Unable to find information!</h3>
           </div>

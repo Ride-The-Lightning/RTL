@@ -1,11 +1,11 @@
 <div fxLayout="column" fxFlex="100" [perfectScrollbar]>
-  <div fxFlex="100" class="alert alert-info mt-1">
+  <div class="alert alert-info mt-1">
     <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle"></fa-icon>
     <span>Please ensure that <strong>boltzd</strong> is running and accessible to RTL before enabling this service. Click <strong><a href="https://lnd.docs.boltz.exchange/en/latest/" target="_blank">here</a></strong> to learn more about the installation.</span>
   </div>
   <form #form="ngForm" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1">
     <div fxLayout="column" fxFlex="50" fxLayoutAlign="start stretch">
-      <mat-slide-toggle autoFocus class="mb-1" tabindex="1" color="primary" name="boltz" [(ngModel)]="enableBoltz" (change)="onEnableServiceChanged($event)">Enable Boltz Service</mat-slide-toggle>
+      <mat-slide-toggle autoFocus class="ml-2" tabindex="1" color="primary" name="boltz" [(ngModel)]="enableBoltz" (change)="onEnableServiceChanged($event)">Enable Boltz Service</mat-slide-toggle>
       <mat-form-field class="mb-2">
         <mat-label>Boltz Server URL</mat-label>
         <input #srvrUrl="ngModel" matInput type="text" id="boltzServerUrl" name="srvrUrl" tabindex="2" [required]="enableBoltz" [disabled]="!enableBoltz" [(ngModel)]="serverUrl">

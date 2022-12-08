@@ -31,7 +31,7 @@
             <span>Fiat conversion calls <strong><a href="https://www.blockchain.com/api/exchange_rates_api" target="blank">Blockchain.com</a></strong> API to get conversion rates.</span>
           </div>
           <div fxLayout="row wrap" fxLayoutAlign="start center">
-            <mat-slide-toggle tabindex="2" color="primary" name="fiatConversion" [(ngModel)]="selNode.settings.fiatConversion" (change)="selNode.settings.currencyUnit = !$event.checked ? null : selNode.settings.currencyUnit">Enable Fiat Conversion</mat-slide-toggle>
+            <mat-slide-toggle tabindex="2" color="primary" name="fiatConversion" class="mr-2" [(ngModel)]="selNode.settings.fiatConversion" (change)="selNode.settings.currencyUnit = !$event.checked ? null : selNode.settings.currencyUnit">Enable Fiat Conversion</mat-slide-toggle>
             <mat-form-field>
               <mat-label>Fiat Currency</mat-label>
               <mat-select #currencyUnit="ngModel" autoFocus tabindex="3" name="currencyUnit" [disabled]="!selNode.settings.fiatConversion" [required]="selNode.settings.fiatConversion" [(ngModel)]="selNode.settings.currencyUnit" (selectionChange)="onCurrencyChange($event)">

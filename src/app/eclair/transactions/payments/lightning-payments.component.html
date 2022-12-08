@@ -1,6 +1,6 @@
 <div fxLayout="column" fxFlex="colWidth" fxLayoutAlign="space-between stretch">
   <form *ngIf="calledFrom === 'home'" #sendPaymentForm="ngForm" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
-    <mat-form-field fxLayout="column" fxFlex="colWidth">
+    <mat-form-field fxLayout="column" fxFlex="100">
       <mat-label>Payment Request</mat-label>
       <textarea #paymentReq="ngModel" matInput name="paymentRequest" tabindex="1" required [perfectScrollbar] [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" (matTextareaAutosize)="true"></textarea>
       <mat-hint *ngIf="paymentRequest && paymentDecodedHint !== ''">{{paymentDecodedHint}}</mat-hint>

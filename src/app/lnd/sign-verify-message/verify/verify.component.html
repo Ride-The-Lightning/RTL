@@ -20,7 +20,7 @@
       <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
         <p *ngIf="verifyRes.valid">Pubkey Used</p>
       </div>
-      <div *ngIf="verifyRes.valid" fxLayout="column" fxFlex="100" fxLayoutAlign="start start" class="bordered-box read-only h-4 padding-gap">
+      <div *ngIf="verifyRes.valid" fxLayout="column" fxFlex="100" fxLayoutAlign="start start" class="bordered-box read-only padding-gap">
         <p>{{verifyRes?.pubkey}}</p> 
       </div>
       <div *ngIf="verifyRes.valid" fxLayout="row" class="mt-2">

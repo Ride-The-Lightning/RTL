@@ -1,5 +1,5 @@
 <div *ngIf="errorMessage?.trim() === ''; else errorBlock" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex="100" [ngClass]="{'mb-4': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mb-2': screenSize === screenSizeEnum.MD, 'mb-1': screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}">
-  <div fxLayout="column" fxFlex="9" fxLayoutAlign="end start">
+  <div fxLayout="column" fxFlex="8" fxLayoutAlign="end start">
     <span class="dashboard-capacity-header this-channel-capacity">Total Capacity</span>
     <mat-hint class="font-size-90">{{totalLiquidity | number:'1.0-0'}} Sats</mat-hint>
     <mat-progress-bar class="dashboard-progress-bar this-channel-bar" mode="determinate" color="accent" value="100"></mat-progress-bar>

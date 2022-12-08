@@ -46,30 +46,61 @@
     background-color: $primary-color;
     color: white;
   }
-  .rtl-snack-bar {
-    max-width: 90vw !important;
-    font-weight: 600;
-    background-color: $background-color;
-    opacity: 0.9 !important;
-    color: $primary-color;
+  .mat-mdc-select.multi-node-select .mat-mdc-select-value {
+    color: $foreground-text;
   }
-  .rtl-warn-snack-bar {
-    max-width: 90vw !important;
-    font-weight: 600;
-    background-color: $background-color;
-    opacity: 0.9 !important;
-    color: $warn-color;
+  .page-title, .mat-mdc-select-value {
+    color: $foreground-secondary-text;
   }
-  .rtl-accent-snack-bar {
+  .mat-expansion-panel-header .mat-expansion-panel-header-title, .mat-expansion-panel-header-title {
+    color: $foreground-secondary-text;
+  }
+  .help-expansion {
+    & .mat-expansion-panel-header, & .mat-expansion-panel-header-title {
+      font-weight: 500;
+      color: $foreground-secondary-text;
+    }
+    & .mat-expansion-indicator::after, & .mat-expansion-panel-content, & .mat-expansion-panel-header-description {
+      color: $foreground-secondary-text;
+    }
+  }  
+  .mat-mdc-snack-bar-container.rtl-snack-bar {
     max-width: 90vw !important;
     font-weight: 600;
-    background-color: $background-color;
-    opacity: 0.9 !important;
-    color: $accent-color;
+    & .mdc-snackbar__surface,
+    & .mat-mdc-snack-bar-label.mdc-snackbar__label {
+      background-color: $background-color;
+      opacity: 0.9 !important;
+      border-radius: 4px;
+      color: $primary-color;
+    }
+  }
+  .mat-mdc-snack-bar-container.rtl-warn-snack-bar {
+    max-width: 90vw !important;
+    font-weight: 600;
+    & .mdc-snackbar__surface,
+    & .mat-mdc-snack-bar-label.mdc-snackbar__label {
+      background-color: $background-color;
+      opacity: 0.9 !important;
+      border-radius: 4px;
+      color: $warn-color;
+    }
+  }
+  .mat-mdc-snack-bar-container.rtl-accent-snack-bar {
+    max-width: 90vw !important;
+    font-weight: 600;
+    & .mdc-snackbar__surface,
+    & .mat-mdc-snack-bar-label.mdc-snackbar__label {
+      background-color: $background-color;
+      opacity: 0.9 !important;
+      border-radius: 4px;
+      color: $accent-color;
+    }
   }
   button.mdc-button.mat-mdc-button-base.mat-mdc-outlined-button{
     border-color: $primary-color;
   }
+
   .mat-tree-node:hover, .mat-nested-tree-node-parent:hover, .mat-select-panel .mat-option:hover, .mat-menu-panel .mat-menu-content .mat-menu-item:hover,
     .mat-autocomplete-panel .mat-option.mat-active,
     .mat-autocomplete-panel .mat-option.mat-selected.mat-active,
@@ -84,10 +115,13 @@
       fill: $primary-color;
     }
   }
-  .spinner-container {
-    h2 {
-      color: $primary-color;
-    }
+
+  .mat-mdc-progress-spinner .mdc-circular-progress__determinate-circle, .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic {
+    stroke: $background-color;
+  }
+
+  .spinner-container h2 {
+    color: $background-color;
   }
 
   .mdc-tab__text-label {
@@ -119,6 +153,13 @@
   .mat-stroked-button.mat-primary:hover .mat-button-focus-overlay {
     opacity: 0.06;
   }
+
+  table.mat-mdc-table {
+    & thead tr th {
+      color: $foreground-secondary-text;
+    }
+  }
+
   .page-title-container, .page-sub-title-container {
     & .page-title-img {
       color: $foreground-disabled;  
@@ -174,7 +215,7 @@
   .dashboard-info-title {
     color: $primary-color;
   }
-  .dashboard-info-value {
+  .dashboard-capacity-header, .dashboard-info-value {
     color: $foreground-secondary-text;
   }
   .color-primary {
@@ -188,9 +229,6 @@
   }
   .mat-expansion-panel.flat-expansion-panel {
     border: 1px solid $foreground-divider;
-  }
-  .mat-tooltip {
-    // font-size: 120%;
   }
   svg {
     & .boltz-icon { stroke:$foreground-secondary-text; stroke-width:4; }
@@ -251,6 +289,10 @@
       background-color: $hover-background;
     }
   }  
+
+  .mdc-text-field:not(.mdc-text-field--disabled) .mdc-floating-label {
+    color: $primary-color;
+  }
 
   .mat-slide-toggle.mat-disabled {
     opacity: 1;
