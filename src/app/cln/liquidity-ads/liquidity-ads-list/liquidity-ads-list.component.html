@@ -5,9 +5,9 @@
 <div fxLayout="column" class="padding-gap-x">
   <mat-card>
     <mat-card-content class="padding-gap-large">
-      <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
-        <form #formAsk="ngForm" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
-          <div fxFlex="100" fxLayout="row" class="alert alert-warn">
+      <div fxLayout="column" fxLayoutAlign="space-between stretch">
+        <form #formAsk="ngForm" fxFlex="100" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between stretch" fxLayout.gt-sm="row wrap">
+          <div fxFlex.gt-xs="100" fxLayout="row" class="alert alert-warn">
             <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
             <span>Ads should be supplemented with additional research of the node, before buying liquidity.</span>
           </div>
@@ -73,7 +73,7 @@
               <th *matHeaderCellDef mat-header-cell mat-sort-header>Alias</th>
               <td *matCellDef="let lqNode" mat-cell>
                 <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
-                  <span fxLayout="row" fxLayoutAlign="start center" class="ellipsis-child">
+                  <span fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" class="ellipsis-child">
                     {{lqNode?.alias}}
                     <mat-chip-list class="ml-half" aria-label="Address Types">
                       <mat-chip *ngFor="let addrType of lqNode.address_types" color="primary" selected>

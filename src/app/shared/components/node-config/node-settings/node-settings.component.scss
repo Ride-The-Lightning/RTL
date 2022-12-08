@@ -1,4 +1,5 @@
 @use 'sass:math' as math;
+@import "../../../theme/styles/mixins";
 @import '../../../theme/styles/constants.scss';
 
 h4 {
@@ -7,6 +8,9 @@ h4 {
 
 .theme-name {
   min-width: 10rem;
+  @include for_screensize(phone) {
+    min-width: unset;
+  }
 }
 
 .skin {

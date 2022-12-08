@@ -1,8 +1,9 @@
 @import "../../../shared/theme/styles/constants.scss";
 
 .mat-column-status, .mat-column-group_status {
-  max-width: 1.2rem;
-  width: 1.2rem;
+  max-width: 2.1rem;
+  width: 2.1rem;
+  text-overflow: unset;
 }
 
 .mat-column-group_actions {

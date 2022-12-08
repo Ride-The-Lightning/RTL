@@ -36,7 +36,7 @@
         <ng-container matColumnDef="txid">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Transaction ID</th>
           <td *matCellDef="let utxo" mat-cell>
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
+            <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{utxo.txid}}</span>
             </span>
           </td>
@@ -44,7 +44,7 @@
         <ng-container matColumnDef="address">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Address</th>
           <td *matCellDef="let utxo" mat-cell>
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
+            <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{utxo.address}}</span>
             </span>
           </td>
@@ -52,7 +52,7 @@
         <ng-container matColumnDef="scriptpubkey">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Script Pubkey</th>
           <td *matCellDef="let utxo" mat-cell>
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
+            <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{utxo.scriptpubkey}}</span>
             </span>
           </td>

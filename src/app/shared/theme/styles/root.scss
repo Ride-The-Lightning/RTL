@@ -141,6 +141,18 @@ span.page-text, .mat-mdc-slide-toggle, .material-icons.mat-icon.mat-mdc-tooltip-
   }
 }
 
+button.mdc-button {
+  @include for_screensize(tab-land) {
+    min-width: 50px;
+  }
+  @include for_screensize(tab-port) {
+    min-width: 40px;
+  }
+  @include for_screensize(phone) {
+    min-width: 20px;
+  }
+}
+
 button.mdc-button.mat-mdc-button-base {
   font-size: 103%;
   font-weight: 500;

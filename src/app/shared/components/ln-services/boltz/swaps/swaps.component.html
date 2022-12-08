@@ -32,7 +32,7 @@
         <ng-container matColumnDef="claimAddress">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Claim Address</th>
           <td *matCellDef="let swap" mat-cell>
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
+            <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{swap?.claimAddress}}</span>
             </span>
           </td>
@@ -40,7 +40,7 @@
         <ng-container matColumnDef="lockupAddress">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Lockup Address</th>
           <td *matCellDef="let swap" mat-cell>
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
+            <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{swap?.lockupAddress}}</span>
             </span>
           </td>
@@ -60,7 +60,7 @@
         <ng-container matColumnDef="error">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Error</th>
           <td *matCellDef="let swap" mat-cell>
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
+            <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{swap?.error}}</span>
             </span>
           </td>
@@ -68,7 +68,7 @@
         <ng-container matColumnDef="privateKey">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Private Key</th>
           <td *matCellDef="let swap" mat-cell>
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
+            <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{swap?.privateKey}}</span>
             </span>
           </td>
@@ -76,7 +76,7 @@
         <ng-container matColumnDef="preimage">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Preimage</th>
           <td *matCellDef="let swap" mat-cell>
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
+            <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{swap?.preimage}}</span>
             </span>
           </td>
@@ -84,7 +84,7 @@
         <ng-container matColumnDef="redeemScript">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Redeem Script</th>
           <td *matCellDef="let swap" mat-cell>
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
+            <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{swap?.redeemScript}}</span>
             </span>
           </td>
@@ -92,7 +92,7 @@
         <ng-container matColumnDef="invoice">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Invoice</th>
           <td *matCellDef="let swap" mat-cell>
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
+            <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{swap?.invoice}}</span>
             </span>
           </td>

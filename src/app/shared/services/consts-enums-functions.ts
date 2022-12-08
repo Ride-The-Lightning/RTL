@@ -858,13 +858,13 @@ export const CLN_PAGE_DEFS: CLNPageDefinitions = {
 export const LND_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
   { pageId: 'on_chain', tables: [
     { tableId: 'utxos', recordsPerPage: PAGE_SIZE, sortBy: 'tx_id', sortOrder: SortOrderEnum.DESCENDING,
-      columnSelectionSM: ['output', 'amount_sat', 'confirmations'],
+      columnSelectionSM: ['output', 'amount_sat'],
       columnSelection: ['tx_id', 'output', 'label', 'amount_sat', 'confirmations'] },
     { tableId: 'transactions', recordsPerPage: PAGE_SIZE, sortBy: 'time_stamp', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['time_stamp', 'amount', 'num_confirmations'],
       columnSelection: ['time_stamp', 'label', 'amount', 'total_fees', 'block_height', 'num_confirmations'] },
     { tableId: 'dust_utxos', recordsPerPage: PAGE_SIZE, sortBy: 'tx_id', sortOrder: SortOrderEnum.DESCENDING,
-      columnSelectionSM: ['output', 'amount_sat', 'confirmations'],
+      columnSelectionSM: ['output', 'amount_sat'],
       columnSelection: ['tx_id', 'output', 'label', 'amount_sat', 'confirmations'] }
   ] },
   { pageId: 'peers_channels', tables: [

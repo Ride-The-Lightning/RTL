@@ -175,7 +175,7 @@
       font-weight: 500;
       min-width: 180px;
       @include for_screensize(phone) {
-        min-width: 110px;
+        min-width: 100px;
       }
     }
     & .cc-data-value {

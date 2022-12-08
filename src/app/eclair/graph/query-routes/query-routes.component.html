@@ -42,7 +42,7 @@
                 <ng-container matColumnDef="alias">
                   <th *matHeaderCellDef mat-header-cell> Alias</th>
                   <td *matCellDef="let hop" mat-cell>
-                    <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '6rem' : '30rem'}">
+                    <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '6rem' : '30rem'}">
                       <span class="ellipsis-child">{{hop?.alias}}</span>
                     </span>
                   </td>
@@ -50,7 +50,7 @@
                 <ng-container matColumnDef="nodeId">
                   <th *matHeaderCellDef mat-header-cell> ID</th>
                   <td *matCellDef="let hop" mat-cell>
-                    <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '6rem' : '30rem'}">
+                    <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '6rem' : '30rem'}">
                       <span class="ellipsis-child">{{hop?.nodeId}}</span>
                     </span>
                   </td>

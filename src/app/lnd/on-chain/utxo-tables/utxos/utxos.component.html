@@ -28,7 +28,7 @@
         <ng-container matColumnDef="tx_id">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Transaction ID</th>
           <td *matCellDef="let utxo" mat-cell>
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
+            <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{utxo.outpoint.txid_str}}</span>
             </span>
           </td>
@@ -42,7 +42,7 @@
         <ng-container matColumnDef="label">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Label</th>
           <td *matCellDef="let utxo" mat-cell>
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
+            <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{utxo.label}}</span>
             </span>
           </td>
@@ -58,7 +58,7 @@
         <ng-container matColumnDef="address">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Address</th>
           <td *matCellDef="let utxo" mat-cell>
-            <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
+            <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{utxo?.address}}</span>
             </span>
           </td>

@@ -1,6 +1,6 @@
 <div fxLayout="column" fxLayoutAlign="start stretch" class="padding-gap-x">
   <div *ngIf="errorMessage !== ''" class="p-2 error-border my-2">{{errorMessage}}</div>
-  <div *ngIf="errorMessage === ''" fxLayout.gt-xs="column" fxLayout="row" fxLayoutAlign="start center" fxLayoutAlign.gt-xs="start stretch" class="page-sub-title-container">
+  <div *ngIf="errorMessage === ''" fxLayout="column" fxLayoutAlign="start stretch" class="page-sub-title-container">
     <div fxFlex="100" class="alert alert-warn mt-1">
       <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
       <span>Maximum 1,000 failed transactions only.</span>
@@ -39,7 +39,7 @@
       <ng-container matColumnDef="in_channel_alias">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>In Channel</th>
         <td *matCellDef="let fhEvent" mat-cell>
-          <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
+          <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
             <span class="ellipsis-child">{{fhEvent?.in_channel_alias}}</span>
           </span>
         </td>
@@ -51,7 +51,7 @@
       <ng-container matColumnDef="out_channel_alias">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Out Channel</th>
         <td *matCellDef="let fhEvent" mat-cell>
-          <span fxLayout="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
+          <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
             <span class="ellipsis-child">{{fhEvent?.out_channel_alias}}</span>
           </span>          
         </td>
