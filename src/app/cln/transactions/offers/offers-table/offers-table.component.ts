@@ -29,12 +29,14 @@ import { disableOffer } from '../../../store/cln.actions';
 import { clnNodeInformation, clnNodeSettings, clnPageSettings, offers } from '../../../store/cln.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-cln-offers-table',
   templateUrl: './offers-table.component.html',
   styleUrls: ['./offers-table.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Offers') }
   ]
 })

@@ -18,12 +18,14 @@ import { RTLState } from '../../../../../store/rtl.state';
 import { channels, lndPageSettings } from '../../../../store/lnd.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-channel-active-htlcs-table',
   templateUrl: './channel-active-htlcs-table.component.html',
   styleUrls: ['./channel-active-htlcs-table.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('HTLCs') }
   ]
 })

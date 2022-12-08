@@ -21,12 +21,14 @@ import { clnPageSettings, failedForwardingHistory } from '../../store/cln.select
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-cln-failed-history',
   templateUrl: './failed-transactions.component.html',
   styleUrls: ['./failed-transactions.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Failed events') }
   ]
 })

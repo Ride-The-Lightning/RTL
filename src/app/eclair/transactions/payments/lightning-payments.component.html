@@ -24,7 +24,7 @@
         <mat-form-field fxLayout="column" fxFlex="49">
           <mat-label>Filter By</mat-label>
         <mat-select tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
-            <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
+            <perfect-scrollbar><mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option></perfect-scrollbar>
           </mat-select>
         </mat-form-field>
         <mat-form-field fxLayout="column" fxFlex="49">
@@ -223,11 +223,11 @@
         </ng-container>
         <ng-container matColumnDef="group_actions">
           <td *matCellDef="let payment" mat-cell>
-            <span fxLayoutAlign="end start">
+            <span fxLayoutAlign="end center" class="part-group-head">
               <button mat-flat-button class="btn-part-expand" color="primary" type="button" tabindex="5" (click)="payment.is_expanded = !payment.is_expanded">{{payment?.is_expanded ? 'Hide' : 'Show'}}</button>
             </span>
             <div *ngIf="payment?.is_expanded">
-              <div *ngFor="let part of payment?.parts; index as i" fxLayoutAlign="end start">
+              <div *ngFor="let part of payment?.parts; index as i" class="part-group-details" fxLayoutAlign="end center">
                 <button mat-stroked-button class="btn-part-info" color="primary" type="button" tabindex="6" (click)="onPartClick(part, payment)">View {{i + 1}}</button>
               </div>
             </div>

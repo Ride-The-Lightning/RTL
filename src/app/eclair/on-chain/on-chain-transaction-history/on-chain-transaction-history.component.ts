@@ -20,12 +20,14 @@ import { fetchTransactions } from '../../store/ecl.actions';
 import { eclPageSettings, transactions } from '../../store/ecl.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithSpacesPipe } from '../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-ecl-on-chain-transaction-history',
   templateUrl: './on-chain-transaction-history.component.html',
   styleUrls: ['./on-chain-transaction-history.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Transactions') }
   ]
 })

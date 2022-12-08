@@ -1,30 +1,33 @@
+@import "../../../shared/theme/styles/constants.scss";
+
 .mat-column-group_actions {
-  min-height: 4.8rem;
+  & .part-group-head, .part-group-details {
+    min-height: 3rem;
+  }
 
   & .btn-part-expand {
-    min-width: 10rem;
-    width: 10rem;
+    min-width: $table-actions-min-width;
+    width: $table-actions-min-width;
+    margin: 0;
   }
 
   & .btn-part-info {
-    margin-top: 0.5rem;
-    min-width: 9rem;
-    width: 9rem;
+    min-width: $table-actions-min-width - 1rem;
+    min-width: $table-actions-min-width - 1rem;
+    margin: 0;
   }
 }
 
 .mat-column-group_firstPartTimestamp {
   .part-row-span:not(:first-of-type) {
-    padding-left: 3rem;
+    padding-left: 2rem;
   }
 }
 
 .part-row-span {
-  min-height: 4.2rem;
-  place-content: center flex-start;
-  align-items: center;
+  min-height: 3rem;
 }
 
 .mat-column-group_firstPartTimestamp {
-  min-width: 17rem;
+  min-width: 11rem;
 }

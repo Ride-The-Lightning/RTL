@@ -23,12 +23,14 @@ import { deleteOfferBookmark, sendPayment } from '../../../store/cln.actions';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../shared/pipes/app.pipe';
 import { DatePipe } from '@angular/common';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-cln-offer-bookmarks-table',
   templateUrl: './offer-bookmarks-table.component.html',
   styleUrls: ['./offer-bookmarks-table.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Offer Bookmarks') }
   ]
 })

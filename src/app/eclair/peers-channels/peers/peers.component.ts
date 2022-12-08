@@ -24,12 +24,14 @@ import { disconnectPeer } from '../../store/ecl.actions';
 import { eclNodeInformation, eclPageSettings, onchainBalance, peers } from '../../store/ecl.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithSpacesPipe } from '../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-ecl-peers',
   templateUrl: './peers.component.html',
   styleUrls: ['./peers.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') }
   ]
 })

@@ -22,12 +22,14 @@ import { clnPageSettings, nodeInfoAndNodeSettingsAndBalance } from '../../store/
 import { DatePipe } from '@angular/common';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-cln-liquidity-ads-list',
   templateUrl: './liquidity-ads-list.component.html',
   styleUrls: ['./liquidity-ads-list.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Liquidity Ads') }
   ]
 })

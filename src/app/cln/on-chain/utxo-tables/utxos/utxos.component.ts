@@ -18,12 +18,14 @@ import { openAlert } from '../../../../store/rtl.actions';
 import { clnPageSettings, utxos } from '../../../store/cln.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-cln-on-chain-utxos',
   templateUrl: './utxos.component.html',
   styleUrls: ['./utxos.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('UTXOs') }
   ]
 })

@@ -24,12 +24,14 @@ import { detachPeer } from '../../store/cln.actions';
 import { clnPageSettings, nodeInfoAndBalance, peers } from '../../store/cln.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-cln-peers',
   templateUrl: './peers.component.html',
   styleUrls: ['./peers.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') }
   ]
 })

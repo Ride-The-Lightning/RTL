@@ -5,7 +5,7 @@
       <mat-form-field fxLayout="column" fxFlex="49">
         <mat-label>Filter By</mat-label>
         <mat-select tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
-          <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
+          <perfect-scrollbar><mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option></perfect-scrollbar>
         </mat-select>
       </mat-form-field>
       <mat-form-field fxLayout="column" fxFlex="49">
@@ -150,12 +150,14 @@
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="2" class="mr-0">
               <mat-select-trigger></mat-select-trigger>
-              <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
-              <mat-option (click)="onViewRemotePolicy(channel)">View Remote Fee </mat-option>
-              <mat-option (click)="onChannelUpdate(channel)">Update Fee Policy</mat-option>
-              <mat-option *ngIf="+versionsArr[0] > 0 || +versionsArr[1] >= 9" (click)="onCircularRebalance(channel)">Circular Rebalance</mat-option>
-              <mat-option *ngIf="selNode.swapServerUrl" (click)="onLoopOut(channel)">Loop Out</mat-option>
-              <mat-option (click)="onChannelClose(channel)">Close Channel</mat-option>
+              <perfect-scrollbar>
+                <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
+                <mat-option (click)="onViewRemotePolicy(channel)">View Remote Fee </mat-option>
+                <mat-option (click)="onChannelUpdate(channel)">Update Fee Policy</mat-option>
+                <mat-option *ngIf="+versionsArr[0] > 0 || +versionsArr[1] >= 9" (click)="onCircularRebalance(channel)">Circular Rebalance</mat-option>
+                <mat-option *ngIf="selNode.swapServerUrl" (click)="onLoopOut(channel)">Loop Out</mat-option>
+                <mat-option (click)="onChannelClose(channel)">Close Channel</mat-option>
+              </perfect-scrollbar>
             </mat-select>
           </div>
         </td>

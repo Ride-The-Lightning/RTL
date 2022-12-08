@@ -14,12 +14,14 @@ import { ColumnDefinition, TableSetting } from '../../models/pageSettings';
 import { Subject, takeUntil } from 'rxjs';
 import { rootSelectedNode } from '../../../store/rtl.selector';
 import { CamelCaseWithReplacePipe } from '../../pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-transactions-report-table',
   templateUrl: './transactions-report-table.component.html',
   styleUrls: ['./transactions-report-table.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Transactions') }
   ]
 })

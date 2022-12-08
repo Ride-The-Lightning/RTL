@@ -886,7 +886,7 @@ export const LND_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
     { tableId: 'closed', recordsPerPage: PAGE_SIZE, sortBy: 'close_type', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['remote_alias', 'settled_balance'],
       columnSelection: ['close_type', 'remote_alias', 'capacity', 'close_height', 'settled_balance'] },
-    { tableId: 'active_HTLCs', recordsPerPage: PAGE_SIZE, sortBy: 'expiration_height', sortOrder: SortOrderEnum.DESCENDING,
+    { tableId: 'active_HTLCs', recordsPerPage: PAGE_SIZE, sortBy: 'incoming', sortOrder: SortOrderEnum.ASCENDING,
       columnSelectionSM: ['amount', 'incoming', 'expiration_height'],
       columnSelection: ['amount', 'incoming', 'expiration_height', 'hash_lock'] },
     { tableId: 'peers', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING,

@@ -306,38 +306,30 @@
     }
   }
 
+  .rtl-select-overlay {
+    min-width: ($gap*22) !important;
+    @include for_screensize(tab-port) {
+      min-width: ($gap*20);
+    }
+    @include for_screensize(phone) {
+      min-width: ($gap*14);
+    }
+  }
+
   .table-actions-select {
     border-color: $foreground-disabled;
     padding: math.div($gap, 2) $gap;
     margin: $gap 0;
     min-height: ($gap*4.5);
-    min-width: ($gap*14);
-    width: ($gap*25);
     float: right;
+    min-width: $table-actions-min-width;
     & .mat-select-placeholder {
       color: $foreground-text;
-    }
-    @include for_screensize(tab-port) {
-      min-width: ($gap*12);
-      width: ($gap*20);
-    }
-    @include for_screensize(phone) {
-      min-width: ($gap*10);
-      width: ($gap*14);
     }
   }
 
   .table-actions-button {
-    min-width: ($gap*14);;
-    width: ($gap*25);
-    @include for_screensize(tab-port) {
-      min-width: ($gap*12);
-      width: ($gap*20);
-    }
-    @include for_screensize(phone) {
-      min-width: ($gap*10);
-      width: ($gap*14);
-    }
+    min-width: $table-actions-min-width;
   }
 
   .mat-select-panel .mat-option.mat-active {

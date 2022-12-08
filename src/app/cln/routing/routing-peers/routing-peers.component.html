@@ -8,7 +8,7 @@
           <!-- <mat-form-field fxLayout="column" fxFlex="49">
             <mat-label>Filter By</mat-label>
             <mat-select tabindex="1" [(ngModel)]="selFilterByIn" (selectionChange)="selFilterIn=''; applyIncomingFilter()" name="filterByIn">
-              <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
+              <perfect-scrollbar><mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option></perfect-scrollbar>
             </mat-select>
           </mat-form-field>
           <mat-form-field fxLayout="column" fxFlex="49">
@@ -70,7 +70,7 @@
           <!-- <mat-form-field fxLayout="column" fxFlex="49">
             <mat-label>Filter By</mat-label>
             <mat-select tabindex="1" [(ngModel)]="selFilterByOut" (selectionChange)="selFilterOut=''; applyOutgoingFilter()" name="filterByOut">
-              <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
+              <perfect-scrollbar><mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option></perfect-scrollbar>
             </mat-select>
           </mat-form-field>
           <mat-form-field fxLayout="column" fxFlex="49">
