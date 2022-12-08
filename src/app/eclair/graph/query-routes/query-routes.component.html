@@ -5,11 +5,13 @@
       <span>The actual routing fee on a payment can be different from the fee shown on query routes.</span>
     </div>
     <mat-form-field fxLayout="column" fxFlex="69" fxLayoutAlign="start end">
-      <input #destPubkey="ngModel" matInput placeholder="Destination Node ID" name="nodeId" tabindex="1" required [(ngModel)]="nodeId">
+      <mat-label>Destination Node ID</mat-label>
+      <input #destPubkey="ngModel" matInput name="nodeId" tabindex="1" required [(ngModel)]="nodeId">
       <mat-error *ngIf="!nodeId">Destination Node ID is required.</mat-error>
     </mat-form-field>
     <mat-form-field fxLayout="column" fxFlex="29" fxLayoutAlign="start end">
-      <input matInput placeholder="Amount (Sats)" name="amount" tabindex="2" type="number" required [step]="1000" [min]="0" [(ngModel)]="amount">
+      <mat-label>Amount (Sats)</mat-label>
+      <input matInput name="amount" tabindex="2" type="number" required [step]="1000" [min]="0" [(ngModel)]="amount">
       <mat-error *ngIf="!amount">Amount is required.</mat-error>
     </mat-form-field>
     <div fxLayout="row" class="mt-1">

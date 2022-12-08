@@ -51,7 +51,8 @@
               </div>
               <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch">
                 <mat-form-field fxLayout="column" fxFlex="49" fxLayoutAlign="start end">
-                  <mat-select autofocus tabindex="1" placeholder="Policy" name="policy" [(ngModel)]="selPolicyType" (selectionChange)="policyMod=null">
+                  <mat-label>Policy</mat-label>
+                  <mat-select autofocus tabindex="1" name="policy" [(ngModel)]="selPolicyType" (selectionChange)="policyMod=null">
                     <mat-option *ngFor="let policyType of policyTypes" [value]="policyType">
                       {{policyType.id | titlecase}}
                     </mat-option>
@@ -68,21 +69,25 @@
               </div>
               <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch">
                 <mat-form-field fxLayout="column" fxFlex="49">
-                  <input matInput placeholder="Lease Base Fee (Sats)" type="number" step="100" min="0" tabindex="3" required name="lease_fee_base_sat" [(ngModel)]="lease_fee_base_sat">
+                  <mat-label>Lease Base Fee (Sats)</mat-label>
+                  <input matInput type="number" step="100" min="0" tabindex="3" required name="lease_fee_base_sat" [(ngModel)]="lease_fee_base_sat">
                   <mat-error *ngIf="!lease_fee_base_sat">Lease base fee is required.</mat-error>
                 </mat-form-field>
                 <mat-form-field fxLayout="column" fxFlex="49">
-                  <input matInput placeholder="Lease Base Basis (bps)" type="number" step="1" min="0" tabindex="4" required name="lease_fee_basis" [(ngModel)]="lease_fee_basis">
+                  <mat-label>Lease Base Basis (bps)</mat-label>
+                  <input matInput type="number" step="1" min="0" tabindex="4" required name="lease_fee_basis" [(ngModel)]="lease_fee_basis">
                   <mat-error *ngIf="!lease_fee_basis">Lease base basis is required.</mat-error>
                 </mat-form-field>
               </div>
               <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch">
                 <mat-form-field fxLayout="column" fxFlex="49">
-                  <input matInput placeholder="Max Channel Routing Base Fee (Sats)" type="number" step="100" min="0" tabindex="5" required name="channelFeeMaxBaseSat" [(ngModel)]="channelFeeMaxBaseSat">
+                  <mat-label>Max Channel Routing Base Fee (Sats)</mat-label>
+                  <input matInput type="number" step="100" min="0" tabindex="5" required name="channelFeeMaxBaseSat" [(ngModel)]="channelFeeMaxBaseSat">
                   <mat-error *ngIf="!channelFeeMaxBaseSat">Max channel routing base fee is required.</mat-error>
                 </mat-form-field>
                 <mat-form-field fxLayout="column" fxFlex="49">
-                  <input matInput placeholder="Max Channel Routing Fee Rate (ppm)" type="number" step="1000" min="0" tabindex="6" required name="channelFeeMaxProportional" [(ngModel)]="channelFeeMaxProportional">
+                  <mat-label>Max Channel Routing Fee Rate (ppm)</mat-label>
+                  <input matInput type="number" step="1000" min="0" tabindex="6" required name="channelFeeMaxProportional" [(ngModel)]="channelFeeMaxProportional">
                   <mat-error *ngIf="!channelFeeMaxProportional">Max channel routing fee rate is required.</mat-error>
                 </mat-form-field>
               </div>

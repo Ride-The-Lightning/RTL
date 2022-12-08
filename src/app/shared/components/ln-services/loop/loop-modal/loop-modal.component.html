@@ -24,7 +24,8 @@
               </div>
               <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">  
                 <mat-form-field [fxFlex]="direction === LoopTypeEnum.LOOP_OUT ? '35' : '48'">
-                  <input autoFocus matInput placeholder="Amount" type="number" tabindex="1" formControlName="amount" required [step]="1000">
+                  <mat-label>Amount</mat-label>
+                  <input autoFocus matInput type="number" tabindex="1" formControlName="amount" required [step]="1000">
                   <mat-hint>Range: {{minQuote.amount | number}}-{{maxQuote.amount | number}}</mat-hint>
                   <span matSuffix>Sats</span>
                   <mat-error *ngIf="inputFormGroup.controls.amount.errors?.required">Amount is required.</mat-error>
@@ -32,12 +33,14 @@
                   <mat-error *ngIf="inputFormGroup.controls.amount.errors?.max">Amount must be less than or equal to {{maxQuote.amount | number}}.</mat-error>
                 </mat-form-field>
                 <mat-form-field [fxFlex]="direction === LoopTypeEnum.LOOP_OUT ? '30' : '48'">
-                  <input matInput placeholder="Sweep Confirmation Target" type="number" tabindex="2" formControlName="sweepConfTarget" required [step]="1">
+                  <mat-label>Sweep Confirmation Target</mat-label>
+                  <input matInput type="number" tabindex="2" formControlName="sweepConfTarget" required [step]="1">
                   <mat-error *ngIf="inputFormGroup.controls.sweepConfTarget.errors?.required">Confirmation target is required.</mat-error>
                   <mat-error *ngIf="inputFormGroup.controls.sweepConfTarget.errors?.min">Confirmation target must be a positive number.</mat-error>
                 </mat-form-field>
                 <mat-form-field *ngIf="direction === LoopTypeEnum.LOOP_OUT" fxFlex="30">
-                  <input matInput placeholder="Max Off-chain Routing Fee (%)" type="number" tabindex="3" formControlName="routingFeePercent" required [step]="1">
+                  <mat-label>Max Off-chain Routing Fee (%)</mat-label>
+                  <input matInput type="number" tabindex="3" formControlName="routingFeePercent" required [step]="1">
                   <mat-error *ngIf="inputFormGroup.controls.routingFeePercent.errors?.required">Percentage is required.</mat-error>
                   <mat-error *ngIf="inputFormGroup.controls.routingFeePercent.errors?.min">Percentage must be a positive number.</mat-error>
                 </mat-form-field>
@@ -71,7 +74,8 @@
                   <mat-radio-button fxFlex="48" tabindex="9" value="external">External Address</mat-radio-button>
                 </mat-radio-group>
                 <mat-form-field fxLayout="column" fxFlex="100" class="mt-1">
-                  <input matInput placeholder="Address" tabindex="10" formControlName="address" [required]="addressFormGroup.controls.addressType.value === 'external'">
+                  <mat-label>Address</mat-label>
+                  <input matInput tabindex="10" formControlName="address" [required]="addressFormGroup.controls.addressType.value === 'external'">
                   <mat-error *ngIf="addressFormGroup.controls.address.errors?.required">Address is required.</mat-error>
                 </mat-form-field>
               </div>

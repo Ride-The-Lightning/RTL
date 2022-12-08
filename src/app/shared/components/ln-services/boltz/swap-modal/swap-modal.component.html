@@ -18,7 +18,8 @@
               </div>
               <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">  
                 <mat-form-field fxLayout="column" fxFlex="48">
-                  <input autoFocus matInput placeholder="Amount" type="number" tabindex="1" formControlName="amount" required [step]="1000">
+                  <mat-label>Amount</mat-label>
+                  <input autoFocus matInput type="number" tabindex="1" formControlName="amount" required [step]="1000">
                   <mat-hint>Range: {{serviceInfo?.limits?.minimal | number}}-{{serviceInfo?.limits?.maximal | number}}</mat-hint>
                   <span matSuffix>Sats</span>
                   <mat-error *ngIf="inputFormGroup?.controls?.amount?.errors?.required">Amount is required.</mat-error>
@@ -41,7 +42,8 @@
                   <mat-radio-button fxFlex="48" tabindex="9" value="external">External Address</mat-radio-button>
                 </mat-radio-group>
                 <mat-form-field fxLayout="column" fxFlex="100" class="mt-1">
-                  <input matInput placeholder="Address" tabindex="10" formControlName="address" [required]="addressFormGroup.controls.addressType.value === 'external'">
+                  <mat-label>Address</mat-label>
+                  <input matInput tabindex="10" formControlName="address" [required]="addressFormGroup.controls.addressType.value === 'external'">
                   <mat-error *ngIf="addressFormGroup.controls.address.errors?.required">Address is required.</mat-error>
                 </mat-form-field>
               </div>

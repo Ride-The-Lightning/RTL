@@ -1230,10 +1230,14 @@ a {
 }
 
 .mat-tree-node, .mat-nested-tree-node-parent {
-  min-height: ($gap*8);
-  height: ($gap*8);
+  min-height: ($gap*6);
+  height: ($gap*6);
   padding: 0 ($gap*1.5) 0 ($gap*1.5); 
   cursor: pointer;
+  @include for_screensize(phone) {
+    min-height: ($gap*8);
+    height: ($gap*8);
+  }
 }
 
 .mat-tree-node:focus, .mat-tree-node:active, .mat-nested-tree-node:focus, .mat-nested-tree-node:active, .mat-nested-tree-node-parent:focus, .mat-nested-tree-node-parent:active,

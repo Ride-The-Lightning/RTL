@@ -6,12 +6,14 @@
         <div fxFlex="70">Incoming</div>
         <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
           <!-- <mat-form-field fxLayout="column" fxFlex="49">
-            <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterByIn" (selectionChange)="selFilterIn=''; applyFilterIncoming()" name="filterByIn">
+            <mat-label>Filter By</mat-label>
+            <mat-select tabindex="1" [(ngModel)]="selFilterByIn" (selectionChange)="selFilterIn=''; applyFilterIncoming()" name="filterByIn">
               <mat-option *ngFor="let column of ['all'].concat(displayedColumns)" [value]="column">{{getLabel(column)}}</mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field fxLayout="column" fxFlex="49">
-            <input matInput [(ngModel)]="selFilterIn" (input)="applyFilterIncoming()" (keyup)="applyFilterIncoming()" name="filterin" placeholder="Filter">
+            <mat-label>Filter</mat-label>
+            <input matInput [(ngModel)]="selFilterIn" (input)="applyFilterIncoming()" (keyup)="applyFilterIncoming()" name="filterin">
           </mat-form-field> -->
         </div>
       </div>
@@ -70,12 +72,14 @@
         <div fxFlex="70">Outgoing</div>
         <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
           <!-- <mat-form-field fxLayout="column" fxFlex="49">
-            <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterByOut" (selectionChange)="selFilterOut=''; applyFilterOutgoing()" name="filterByOut">
+            <mat-label>Filter By</mat-label>
+            <mat-select tabindex="1" [(ngModel)]="selFilterByOut" (selectionChange)="selFilterOut=''; applyFilterOutgoing()" name="filterByOut">
               <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field fxLayout="column" fxFlex="49">
-            <input matInput [(ngModel)]="selFilterOut" (input)="applyFilterOutgoing()" (keyup)="applyFilterOutgoing()" name="filterout" placeholder="Filter">
+            <mat-label>Filter</mat-label>
+            <input matInput [(ngModel)]="selFilterOut" (input)="applyFilterOutgoing()" (keyup)="applyFilterOutgoing()" name="filterout">
           </mat-form-field> -->
         </div>
       </div>

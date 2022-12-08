@@ -13,7 +13,8 @@
             <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="peerFormGroup">
               <ng-template matStepLabel>{{peerFormLabel}}</ng-template>  
               <mat-form-field fxLayout="column" fxFlex="100">
-                <input autoFocus matInput placeholder="Lightning Address (pubkey OR pubkey@ip:port)" formControlName="peerAddress" tabindex="1" required>
+                <mat-label>Lightning Address (pubkey OR pubkey@ip:port)</mat-label>
+                <input autoFocus matInput formControlName="peerAddress" tabindex="1" required>
                 <mat-error *ngIf="peerFormGroup.controls.peerAddress.errors?.required">Address is required.</mat-error>
               </mat-form-field>
               <div *ngIf="peerConnectionError !== ''" fxFlex="100" class="alert alert-danger mt-1">
@@ -31,7 +32,8 @@
               <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
                 <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
                   <mat-form-field fxLayout="column" fxFlex="30" fxLayoutAlign="start end">
-                    <input matInput autoFocus formControlName="fundingAmount" placeholder="Amount" type="number" tabindex="1" required [step]="1000">
+                    <mat-label>Amount</mat-label>
+                    <input matInput autoFocus formControlName="fundingAmount" type="number" tabindex="1" required [step]="1000">
                     <mat-hint>Remaining Bal: {{totalBalance - ((channelFormGroup.controls.fundingAmount.value) ? channelFormGroup.controls.fundingAmount.value : 0)}}</mat-hint>
                     <span matSuffix> Sats </span>
                     <mat-error *ngIf="channelFormGroup.controls.fundingAmount.errors?.required">Amount is required.</mat-error>
@@ -39,7 +41,8 @@
                     <mat-error *ngIf="channelFormGroup.controls.fundingAmount.errors?.max">Amount must be less than or equal to {{totalBalance}}.</mat-error>
                   </mat-form-field>
                   <mat-form-field fxLayout="column" fxFlex="30">
-                    <input matInput formControlName="feeRate" placeholder="Fee (Sats/vByte)" type="number" name="feeRate" tabindex="7" [step]="1" [min]="0">
+                    <mat-label>Fee (Sats/vByte)</mat-label>
+                    <input matInput formControlName="feeRate" type="number" name="feeRate" tabindex="7" [step]="1" [min]="0">
                   </mat-form-field>
                   <div fxFlex="35" fxLayoutAlign="start center">
                     <mat-slide-toggle tabindex="2" color="primary" formControlName="isPrivate" name="isPrivate">Private Channel</mat-slide-toggle>

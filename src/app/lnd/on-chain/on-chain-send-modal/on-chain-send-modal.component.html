@@ -9,11 +9,13 @@
     <mat-card-content class="padding-gap-x-large">
       <form *ngIf="!sweepAll;  else sweepAllBlock;" #form="ngForm" fxLayout="row wrap"fxLayoutAlign="space-between start" fxFlex="100" class="overflow-x-hidden" (submit)="onSendFunds()" (reset)="resetData()">
         <mat-form-field fxLayout="column" fxFlex.gt-sm="55">
-          <input #address="ngModel" autoFocus matInput placeholder="Bitcoin Address" tabindex="1" name="address" required [(ngModel)]="transactionAddress">
+          <mat-label>Bitcoin Address</mat-label>
+          <input #address="ngModel" autoFocus matInput tabindex="1" name="address" required [(ngModel)]="transactionAddress">
           <mat-error *ngIf="!transactionAddress">Bitcoin address is required.</mat-error>
         </mat-form-field>
         <mat-form-field fxLayout="column" fxFlex.gt-sm="30">
-          <input #amnt="ngModel" matInput placeholder="Amount" name="amt" type="number" tabindex="2" required [step]="100" [min]="0" [(ngModel)]="transactionAmount">
+          <mat-label>Amount</mat-label>
+          <input #amnt="ngModel" matInput name="amt" type="number" tabindex="2" required [step]="100" [min]="0" [(ngModel)]="transactionAmount">
           <span matSuffix>{{selAmountUnit}} </span>
           <mat-error *ngIf="!transactionAmount">{{amountError}}</mat-error>
         </mat-form-field>
@@ -31,11 +33,13 @@
             </mat-select>
           </mat-form-field>
           <mat-form-field *ngIf="selTransType === '1'" fxFlex="48">
-            <input #blocks="ngModel" matInput placeholder="Number of Blocks" type="number" name="blcks" required tabindex="5" [step]="1" [min]="0" [(ngModel)]="transactionBlocks">
+            <mat-label>Number of Blocks</mat-label>
+            <input #blocks="ngModel" matInput type="number" name="blcks" required tabindex="5" [step]="1" [min]="0" [(ngModel)]="transactionBlocks">
             <mat-error *ngIf="!transactionBlocks">Number of blocks is required.</mat-error>
           </mat-form-field>
           <mat-form-field *ngIf="selTransType === '2'" fxFlex="48">
-            <input #fees="ngModel" matInput placeholder="Fees (Sats/vByte)" type="number" name="chainFees" required tabindex="6" [step]="1" [min]="0" [(ngModel)]="transactionFees">
+            <mat-label>Fees (Sats/vByte)</mat-label>
+            <input #fees="ngModel" matInput type="number" name="chainFees" required tabindex="6" [step]="1" [min]="0" [(ngModel)]="transactionFees">
             <mat-error *ngIf="!transactionFees">Fees is required.</mat-error>
           </mat-form-field>
         </div>
@@ -61,7 +65,8 @@
           <ng-template matStepLabel>{{passwordFormLabel}}</ng-template>
           <div fxLayout="row">
             <mat-form-field fxLayout="column" fxFlex="100">
-              <input autoFocus matInput placeholder="Password" type="password" tabindex="1" formControlName="password" required>
+              <mat-label>Password</mat-label>
+              <input autoFocus matInput type="password" tabindex="1" formControlName="password" required>
               <mat-error *ngIf="passwordFormGroup.controls.password.errors?.required">Password is required.</mat-error>
             </mat-form-field>
           </div>
@@ -75,7 +80,8 @@
           <ng-template matStepLabel disabled="true">{{sendFundFormLabel}}</ng-template>
           <div fxLayout="column" fxFlex="98" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start">
             <mat-form-field fxLayout="column" fxFlex.gt-sm="45">
-              <input matInput formControlName="transactionAddress" placeholder="Bitcoin Address" tabindex="4" name="address" required>
+              <mat-label>Bitcoin Address</mat-label>
+              <input matInput formControlName="transactionAddress" tabindex="4" name="address" required>
               <mat-error *ngIf="sendFundFormGroup.controls.transactionAddress.errors?.required">Bitcoin address is required.</mat-error>
             </mat-form-field>
             <mat-form-field fxLayout="column" fxFlex.gt-sm="25">
@@ -86,11 +92,13 @@
               </mat-select>
             </mat-form-field>
             <mat-form-field *ngIf="sendFundFormGroup.controls.selTransType.value === '1'" fxFlex.gt-sm="25" fxLayoutAlign="start end">
-              <input matInput formControlName="transactionBlocks" placeholder="Number of Blocks" type="number" name="blcks" required tabindex="6" [step]="1" [min]="0">
+              <mat-label>Number of Blocks</mat-label>
+              <input matInput formControlName="transactionBlocks" type="number" name="blcks" required tabindex="6" [step]="1" [min]="0">
               <mat-error *ngIf="sendFundFormGroup.controls.transactionBlocks.errors?.required">Number of blocks is required.</mat-error>
             </mat-form-field>
             <mat-form-field *ngIf="sendFundFormGroup.controls.selTransType.value === '2'" fxFlex.gt-sm="25" fxLayoutAlign="start end">
-              <input matInput formControlName="transactionFees" placeholder="Fees (Sats/vByte)" type="number" name="chainFees" required tabindex="7" [step]="1" [min]="0">
+              <mat-label>Fees (Sats/vByte)</mat-label>
+              <input matInput formControlName="transactionFees" type="number" name="chainFees" required tabindex="7" [step]="1" [min]="0">
               <mat-error *ngIf="sendFundFormGroup.controls.transactionFees.errors?.required">Fees is required.</mat-error>
             </mat-form-field>
           </div>

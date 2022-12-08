@@ -10,7 +10,8 @@
       <form #form="ngForm" fxLayout="column" (submit)="onOpenChannel()" (reset)="resetData()">
         <div fxLayout="column">
           <mat-form-field *ngIf="!peer && peers && peers.length > 0" fxFlex="100">
-            <input type="text" placeholder="Peer Alias" aria-label="Peers" matInput tabindex="1" required [formControl]="selectedPeer" [matAutocomplete]="auto">
+            <mat-label>Peer Alias</mat-label>
+            <input type="text" aria-label="Peers" matInput tabindex="1" required [formControl]="selectedPeer" [matAutocomplete]="auto">
             <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectedPeerChanged()">
               <mat-option *ngFor="let peer of filteredPeers | async" [value]="peer">{{peer.alias ? peer.alias : peer.pub_key ? peer.pub_key : ''}}</mat-option>
             </mat-autocomplete>
@@ -22,7 +23,8 @@
         <div fxLayout="column">
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
             <mat-form-field fxLayout="column" fxFlex="60" fxLayoutAlign="start end">
-              <input #amt="ngModel" matInput placeholder="Amount" type="number" tabindex="1" required name="amnt" [step]="1000" [min]="1" [max]="totalBalance" [(ngModel)]="fundingAmount">
+              <mat-label>Amount</mat-label>
+              <input #amt="ngModel" matInput type="number" tabindex="1" required name="amnt" [step]="1000" [min]="1" [max]="totalBalance" [(ngModel)]="fundingAmount">
               <mat-hint>(Remaining Bal: {{totalBalance - ((fundingAmount) ? fundingAmount : 0) | number}})</mat-hint>
               <span matSuffix> Sats </span>
               <mat-error *ngIf="amount.errors?.required">Amount is required.</mat-error>

@@ -14,7 +14,8 @@
           <mat-card-content class="pb-2">
             <form #loginForm="ngForm" fxLayout="column" fxLayoutAlign="start space-between">
               <mat-form-field>
-                <input autoFocus matInput placeholder="Password" id="password" name="password" tabindex="1" required [type]="flgShow ? 'text' : 'password'" [(ngModel)]="password">
+                <mat-label>Password</mat-label>
+                <input autoFocus matInput id="password" name="password" tabindex="1" required [type]="flgShow ? 'text' : 'password'" [(ngModel)]="password">
                 <button mat-icon-button matSuffix tabindex="2" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="flgShow" (click)="flgShow = !flgShow">
                   <mat-icon>{{flgShow ? 'visibility_off' : 'visibility'}}</mat-icon>
                 </button>

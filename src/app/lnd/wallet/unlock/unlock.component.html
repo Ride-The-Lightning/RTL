@@ -1,7 +1,8 @@
 <div fxLayout="column" class="padding-gap mb-2">
   <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between">
     <mat-form-field fxLayout="column" fxFlex="100" fxLayoutAlign="start">
-      <input autoFocus matInput type="password" placeholder="Password" name="walletPassword" tabindex="1" required [(ngModel)]="walletPassword">
+      <mat-label>Password</mat-label>
+      <input autoFocus matInput type="password" name="walletPassword" tabindex="1" required [(ngModel)]="walletPassword">
       <mat-hint>Enter Wallet Password</mat-hint>
       <mat-error *ngIf="!walletPassword">Wallet password is required.</mat-error>
     </mat-form-field>

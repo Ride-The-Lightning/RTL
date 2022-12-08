@@ -1,11 +1,13 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
   <form *ngIf="calledFrom === 'home'" #addInvoiceForm="ngForm" fxLayout="row wrap" fxLayoutAlign="stretch start" fxFlex="100">
     <mat-form-field fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
-      <input matInput placeholder="Description" tabindex="2" name="description" required="true" [(ngModel)]="description">
+      <mat-label>Description</mat-label>
+      <input matInput tabindex="2" name="description" required="true" [(ngModel)]="description">
       <mat-error *ngIf="!description">Description is required.</mat-error>
     </mat-form-field>
     <mat-form-field fxLayout="column" fxFlex="100" fxLayoutAlign="start end">
-      <input #invcVal="ngModel" matInput placeholder="Amount" type="number" tabindex="3" name="invValue" [step]="100" [min]="1" [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()">
+      <mat-label>Amount</mat-label>
+      <input #invcVal="ngModel" matInput type="number" tabindex="3" name="invValue" [step]="100" [min]="1" [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()">
       <span matSuffix>  Sats </span>
       <mat-hint>{{invoiceValueHint}}</mat-hint>
     </mat-form-field>

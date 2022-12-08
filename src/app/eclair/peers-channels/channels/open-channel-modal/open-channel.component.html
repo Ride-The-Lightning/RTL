@@ -10,7 +10,8 @@
       <form #form="ngForm" fxLayout="column" (submit)="onOpenChannel()" (reset)="resetData()">
         <div fxLayout="column">
           <mat-form-field *ngIf="!peer && peers && peers.length > 0" fxFlex="100">
-            <input type="text" placeholder="Peer Alias" aria-label="Peers" matInput tabindex="1" required [formControl]="selectedPeer" [matAutocomplete]="auto" (change)="onSelectedPeerChanged()">
+            <mat-label>Peer Alias</mat-label>
+            <input type="text" aria-label="Peers" matInput tabindex="1" required [formControl]="selectedPeer" [matAutocomplete]="auto" (change)="onSelectedPeerChanged()">
             <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectedPeerChanged()">
               <mat-option *ngFor="let peer of filteredPeers | async" [value]="peer">{{peer.alias ? peer.alias : peer.nodeId ? peer.nodeId : ''}}</mat-option>
             </mat-autocomplete>
@@ -22,7 +23,8 @@
         <div fxLayout="column">
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
             <mat-form-field fxLayout="column" fxFlex="70" fxLayoutAlign="start end">
-              <input #amount="ngModel" matInput placeholder="Amount" type="number" tabindex="1" required name="amount" [step]="1000" [min]="1" [max]="totalBalance" [(ngModel)]="fundingAmount">
+              <mat-label>Amount</mat-label>
+              <input #amount="ngModel" matInput type="number" tabindex="1" required name="amount" [step]="1000" [min]="1" [max]="totalBalance" [(ngModel)]="fundingAmount">
               <mat-hint>Remaining Bal: {{totalBalance - ((fundingAmount) ? fundingAmount : 0) | number}}</mat-hint>
               <span matSuffix>  Sats </span>
               <mat-error *ngIf="amount.errors?.required">Amount is required.</mat-error>
@@ -42,7 +44,8 @@
               <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
                 <div fxFlex="100" fxLayout="row" fxLayoutAlign="space-between center">
                   <mat-form-field fxLayout="column" fxFlex="49">
-                    <input #fee="ngModel" matInput placeholder="Fee (Sats/vByte)" type="number" name="fee" tabindex="7" [step]="1" [min]="0" [(ngModel)]="feeRate">
+                    <mat-label>Fee (Sats/vByte)</mat-label>
+                    <input #fee="ngModel" matInput type="number" name="fee" tabindex="7" [step]="1" [min]="0" [(ngModel)]="feeRate">
                   </mat-form-field>
                 </div>
               </div>

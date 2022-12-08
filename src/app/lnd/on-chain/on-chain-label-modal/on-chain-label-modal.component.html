@@ -9,7 +9,8 @@
     <mat-card-content class="padding-gap-x-large">
       <form #form="ngForm" fxLayout="row wrap" fxLayoutAlign="space-between start" fxFlex="100" class="overflow-x-hidden" (submit)="onLabelUTXO()" (reset)="resetData()">
         <mat-form-field fxLayout="column" fxFlex.gt-sm="100">
-          <input autoFocus matInput placeholder="UTXO Label" name="label" tabindex="1" required [(ngModel)]="label">
+          <mat-label>UTXO Label</mat-label>
+          <input autoFocus matInput name="label" tabindex="1" required [(ngModel)]="label">
           <mat-error *ngIf="!label">UTXO Label is required.</mat-error>
         </mat-form-field>
         <div *ngIf="labelError !== ''" fxFlex="100" class="alert alert-danger mt-1">

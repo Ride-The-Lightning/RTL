@@ -31,15 +31,18 @@
                 </mat-select>
               </mat-form-field>
               <mat-form-field *ngIf="selTransType === '0'" fxFlex="48">
-                <input matInput placeholder="Default" disabled>
+                <mat-label>Default</mat-label>
+                <input matInput disabled>
               </mat-form-field>
               <mat-form-field *ngIf="selTransType === '1'" fxFlex.gt-sm="48" fxLayoutAlign="start end">
-                <input #blcks="ngModel" matInput placeholder="Number of Blocks" type="number" name="blocks" required
+                <mat-label>Number of Blocks</mat-label>
+                <input #blcks="ngModel" matInput type="number" name="blocks" required
                   tabindex="2" [step]="1" [min]="0" [(ngModel)]="blocks">
                 <mat-error *ngIf="!blocks">Number of blocks is required.</mat-error>
               </mat-form-field>
               <mat-form-field *ngIf="selTransType === '2'" fxFlex.gt-sm="48" fxLayoutAlign="start end">
-                <input #clchfee="ngModel" matInput placeholder="Fees (Sats/vByte)"
+                <mat-label>Fees (Sats/vByte)</mat-label>
+                <input #clchfee="ngModel" matInput
                   type="number" name="ccfees" required tabindex="3" [step]="1" [min]="0" [(ngModel)]="fees">
                 <mat-error *ngIf="!fees">Fees is required.</mat-error>
               </mat-form-field>

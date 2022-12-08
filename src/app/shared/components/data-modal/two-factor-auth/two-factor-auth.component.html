@@ -12,7 +12,8 @@
               <ng-template matStepLabel>{{passwordFormLabel}}</ng-template>
               <div fxLayout="row">
                 <mat-form-field fxLayout="column" fxFlex="100">
-                  <input autoFocus matInput placeholder="Password" type="password" tabindex="1" formControlName="password" required>
+                  <mat-label>Password</mat-label>
+                  <input autoFocus matInput type="password" tabindex="1" formControlName="password" required>
                   <mat-error *ngIf="passwordFormGroup?.controls?.password?.errors?.required">Password is required.</mat-error>
                 </mat-form-field>
               </div>
@@ -33,7 +34,8 @@
               </div>
               <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch">  
                 <mat-form-field fxLayout="column" fxFlex="100">
-                  <input autoFocus matInput placeholder="Secret Code" type="text" tabindex="4" formControlName="secret" required>
+                  <mat-label>Secret Code</mat-label>
+                  <input autoFocus matInput type="text" tabindex="4" formControlName="secret" required>
                   <fa-icon matSuffix rtlClipboard [icon]="faCopy" [payload]="secretFormGroup?.controls?.secret?.value" (copied)="onCopySecret($event)"></fa-icon>
                   <mat-error *ngIf="secretFormGroup?.controls?.secret?.errors?.required">Secret Code is required.</mat-error>
                 </mat-form-field>
@@ -49,7 +51,8 @@
               <div *ngIf="!flgValidated || !isTokenValid" fxLayout="column">
                 <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch">  
                   <mat-form-field fxLayout="column" fxFlex="100">
-                    <input autoFocus matInput placeholder="Token" type="text" tabindex="7" formControlName="token" required>
+                    <mat-label>Token</mat-label>
+                    <input autoFocus matInput type="text" tabindex="7" formControlName="token" required>
                     <mat-error *ngIf="tokenFormGroup?.controls?.token?.errors?.required">Token is required.</mat-error>
                     <mat-error *ngIf="tokenFormGroup?.controls?.token?.errors?.notValid">Token is invalid.</mat-error>
                   </mat-form-field>

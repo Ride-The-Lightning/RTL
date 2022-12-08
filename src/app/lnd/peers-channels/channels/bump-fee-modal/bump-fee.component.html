@@ -26,7 +26,8 @@
             </div>
             <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
               <mat-form-field fxLayout="column" fxFlex.gt-sm="32" fxLayoutAlign="start end">
-                <input #outputIdx="ngModel" matInput placeholder="Index for Change Output" type="number" tabindex="1" required name="outputIdx" [step]="1" [min]="0" [(ngModel)]="outputIndex">
+                <mat-label>Index for Change Output</mat-label>
+                <input #outputIdx="ngModel" matInput type="number" tabindex="1" required name="outputIdx" [step]="1" [min]="0" [(ngModel)]="outputIndex">
                 <mat-error *ngIf="outputIdx.errors?.required">Index for change output is required.</mat-error>
                 <mat-error *ngIf="outputIdx.errors?.pendingChannelOutputIndex">Invalid index value.</mat-error>
               </mat-form-field>
@@ -38,12 +39,14 @@
                 </mat-select>
               </mat-form-field>
               <mat-form-field *ngIf="selTransType === '1'" fxFlex.gt-sm="32" fxLayoutAlign="start end">
-                <input #blcks="ngModel" matInput placeholder="Number of Blocks" type="number" name="blocks" required
+                <mat-label>Number of Blocks</mat-label>
+                <input #blcks="ngModel" matInput type="number" name="blocks" required
                   tabindex="3" [step]="1" [min]="0" [(ngModel)]="blocks">
                 <mat-error *ngIf="!blocks">Number of blocks is required.</mat-error>
               </mat-form-field>
               <mat-form-field *ngIf="selTransType === '2'" fxFlex.gt-sm="32" fxLayoutAlign="start end">
-                <input #fee="ngModel" matInput placeholder="Fees (Sats/vByte)"
+                <mat-label>Fees (Sats/vByte)</mat-label>
+                <input #fee="ngModel" matInput
                   type="number" name="fees" required tabindex="4" [step]="1" [min]="0" [(ngModel)]="fees">
                 <mat-error *ngIf="!fees">Fees is required.</mat-error>
               </mat-form-field>

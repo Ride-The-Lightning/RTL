@@ -27,7 +27,8 @@
               <ng-template matStepLabel>{{inputFormLabel}}</ng-template>
               <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">  
                 <mat-form-field fxLayout="column" fxFlex="48">
-                  <input autoFocus matInput placeholder="Amount" type="number" tabindex="1" formControlName="rebalanceAmount" required [step]="100">
+                  <mat-label>Amount</mat-label>
+                  <input autoFocus matInput type="number" tabindex="1" formControlName="rebalanceAmount" required [step]="100">
                   <mat-hint>(Local Bal: {{selChannel?.local_balance}}, Remaining: {{selChannel?.local_balance - ((inputFormGroup.controls.rebalanceAmount.value) ? inputFormGroup.controls.rebalanceAmount.value : 0)}})</mat-hint>
                   <span matSuffix>Sats</span>
                   <mat-error *ngIf="inputFormGroup.controls.rebalanceAmount.errors?.required">Amount is required.</mat-error>
@@ -35,7 +36,8 @@
                   <mat-error *ngIf="inputFormGroup.controls.rebalanceAmount.errors?.max">Amount must be less than or equal to {{selChannel?.local_balance}}.</mat-error>
                 </mat-form-field>
                 <mat-form-field fxLayout="column" fxFlex="48" fxLayoutAlign="start end">
-                  <input type="text" placeholder="Receive from Peer" aria-label="Receive from Peer" matInput formControlName="selRebalancePeer" tabindex="2" required [matAutocomplete]="auto" (change)="onSelectedPeerChanged()">
+                  <mat-label>Receive from Peer</mat-label>
+                  <input type="text" aria-label="Receive from Peer" matInput formControlName="selRebalancePeer" tabindex="2" required [matAutocomplete]="auto" (change)="onSelectedPeerChanged()">
                   <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectedPeerChanged()">
                     <mat-option *ngFor="let activeChannel of filteredActiveChannels | async" [value]="activeChannel">{{activeChannel.remote_alias}} - {{activeChannel.chan_id}}</mat-option>
                   </mat-autocomplete>
@@ -54,14 +56,16 @@
               <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
                 <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
                   <mat-form-field fxLayout="column" fxFlex="48" fxLayoutAlign="start end">
-                    <mat-select tabindex="6" formControlName="selFeeLimitType" Placeholder="Fee Limits" required>
+                    <mat-label>Fee Limits</mat-label>
+                    <mat-select tabindex="6" formControlName="selFeeLimitType" required>
                       <mat-option *ngFor="let feeLimitType of feeLimitTypes" [value]="feeLimitType">
                         {{feeLimitType.name}}
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
                   <mat-form-field fxLayout="column" fxFlex="48">
-                    <input matInput formControlName="feeLimit" type="number" tabindex="7" required placeholder="{{feeFormGroup.controls.selFeeLimitType.value ? feeFormGroup.controls.selFeeLimitType.value.placeholder : feeLimitTypes[0].placeholder}}" [step]="1">
+                    <mat-label>{{feeFormGroup.controls.selFeeLimitType.value ? feeFormGroup.controls.selFeeLimitType.value.placeholder : feeLimitTypes[0].placeholder}}</mat-label>
+                    <input matInput formControlName="feeLimit" type="number" tabindex="7" required [step]="1">
                     <mat-error *ngIf="feeFormGroup.controls.feeLimit.errors?.required">{{feeFormGroup.controls.selFeeLimitType.value ? feeFormGroup.controls.selFeeLimitType.value.placeholder : feeLimitTypes[0].placeholder}} is required.</mat-error>
                     <mat-error *ngIf="feeFormGroup.controls.feeLimit.errors?.min">{{feeFormGroup.controls.selFeeLimitType.value ? feeFormGroup.controls.selFeeLimitType.value.placeholder : feeLimitTypes[0].placeholder}} must be a positive number.</mat-error>
                   </mat-form-field>

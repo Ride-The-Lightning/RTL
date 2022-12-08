@@ -383,6 +383,9 @@
     }
     & .dashboard-info-title {
       font-weight: 500;
+      .material-icons.mat-icon.mat-mdc-tooltip-trigger {
+        min-height: math.div($min-form-ctrl-height, 3);
+      }
     }
     & .dashboard-node-dot {
       margin: 0 0 -2px ($gap*1.25);

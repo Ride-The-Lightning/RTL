@@ -9,7 +9,8 @@
     <mat-card-content fxLayout="row" class="padding-gap-x-large">
       <form fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
         <mat-form-field>
-          <input autoFocus matInput placeholder="Password" type="password" id="password" name="password" tabindex="1" required [(ngModel)]="password">
+          <mat-label>Password</mat-label>
+          <input autoFocus matInput type="password" id="password" name="password" tabindex="1" required [(ngModel)]="password">
           <mat-error *ngIf="!password">Password is required.</mat-error>
         </mat-form-field>
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center" class="mt-1">

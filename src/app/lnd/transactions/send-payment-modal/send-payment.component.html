@@ -9,13 +9,15 @@
     <mat-card-content class="padding-gap-x-large">
       <form #sendPaymentForm="ngForm" fxLayoutAlign="space-between stretch" fxLayout="column">
         <mat-form-field fxLayout="column" fxFlex="100">
-          <textarea #paymentReq="ngModel" autoFocus matInput placeholder="Payment Request" name="paymentRequest" rows="4" tabindex="1" required [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" (matTextareaAutosize)="true"></textarea>
+          <mat-label>Payment Request</mat-label>
+          <textarea #paymentReq="ngModel" autoFocus matInput name="paymentRequest" rows="4" tabindex="1" required [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" (matTextareaAutosize)="true"></textarea>
           <mat-hint *ngIf="paymentRequest && paymentDecodedHint !== ''">{{paymentDecodedHint}}</mat-hint>
           <mat-error *ngIf="!paymentRequest">Payment request is required.</mat-error>
           <mat-error *ngIf="paymentReq.errors?.decodeError">{{paymentDecodedHint}}</mat-error>
         </mat-form-field>
         <mat-form-field *ngIf="zeroAmtInvoice" fxFlex="100">
-          <input #paymentAmt="ngModel" matInput placeholder="Amount (Sats)" name="amount" tabindex="2" required [(ngModel)]="paymentAmount" (change)="onAmountChange($event)">
+          <mat-label>Amount (Sats)</mat-label>
+          <input #paymentAmt="ngModel" matInput name="amount" tabindex="2" required [(ngModel)]="paymentAmount" (change)="onAmountChange($event)">
           <mat-hint>It is a zero amount invoice, enter amount to be paid.</mat-hint>
           <mat-error *ngIf="!paymentAmount">Payment amount is required.</mat-error>
         </mat-form-field>
@@ -27,7 +29,8 @@
           </mat-expansion-panel-header>
           <div fxFlex="100" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
             <mat-form-field fxLayout="column" fxFlex="30" fxLayoutAlign="start end">
-              <mat-select tabindex="5" Placeholder="Fee Limits" [(value)]="selFeeLimitType">
+              <mat-label>Fee Limits</mat-label>
+              <mat-select tabindex="5" [(value)]="selFeeLimitType">
                 <mat-option *ngFor="let feeLimitType of feeLimitTypes" [value]="feeLimitType">
                   {{feeLimitType?.name}}
                 </mat-option>
@@ -39,7 +42,8 @@
               <mat-error *ngIf="selFeeLimitType !== feeLimitTypes[0] && !feeLimit">{{selFeeLimitType?.placeholder}} is required.</mat-error>
             </mat-form-field>
             <mat-form-field fxLayout="column" fxFlex="40" fxLayoutAlign="start end">
-              <input type="text" placeholder="First Outgoing Channel" aria-label="First Outgoing Channel" matInput tabindex="7" [formControl]="selectedChannelCtrl" [matAutocomplete]="auto">
+              <mat-label>First Outgoing Channel</mat-label>
+              <input type="text" aria-label="First Outgoing Channel" matInput tabindex="7" [formControl]="selectedChannelCtrl" [matAutocomplete]="auto">
               <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectedChannelChanged()">
                 <mat-option *ngFor="let activeChannel of filteredMinAmtActvChannels" [value]="activeChannel">{{activeChannel?.remote_alias || activeChannel?.chan_id}}</mat-option>
               </mat-autocomplete>
