@@ -36,7 +36,7 @@
     <div fxLayout="row" fxLayoutAlign="start start">
       <div fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container" [perfectScrollbar]>
         <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-        <table #table mat-table fxFlex="100" matSort [dataSource]="payments" [ngClass]="{'error-border': errorMessage !== ''}">
+        <table #table mat-table fxFlex="100" matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="payments" [ngClass]="{'error-border': errorMessage !== ''}">
           <ng-container matColumnDef="status">
             <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="Status"></th>
             <td *matCellDef="let payment" mat-cell>

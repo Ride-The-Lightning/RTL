@@ -23,7 +23,7 @@
     </div>
     <div fxLayout="column" fxFlex="100" class="table-container" [perfectScrollbar]>
       <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-      <table #table mat-table matSort class="overflow-x-hidden overflow-y-hidden" [dataSource]="peers" [ngClass]="{'error-border': errorMessage !== ''}">
+      <table #table mat-table matSort class="overflow-x-hidden overflow-y-hidden" [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="peers" [ngClass]="{'error-border': errorMessage !== ''}">
         <ng-container matColumnDef="connected">
           <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="Connected"></th>
           <td *matCellDef="let peer" mat-cell> 

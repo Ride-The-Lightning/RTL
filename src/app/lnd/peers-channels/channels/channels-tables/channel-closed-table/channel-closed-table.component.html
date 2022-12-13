@@ -16,7 +16,7 @@
   </div>
   <div fxLayout="column" fxFlex="100" class="table-container" [perfectScrollbar]>
     <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-    <table #table mat-table fxFlex="100" matSort [dataSource]="closedChannels" [ngClass]="{'error-border': errorMessage !== '', 'overflow-auto': true}">
+    <table #table mat-table fxFlex="100" matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="closedChannels" [ngClass]="{'error-border': errorMessage !== '', 'overflow-auto': true}">
       <ng-container matColumnDef="close_type">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Close Type</th>
         <td *matCellDef="let channel" mat-cell>

@@ -27,7 +27,7 @@
   </div>
   <div class="table-container mb-6" [perfectScrollbar]>
     <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
-    <table #table mat-table matSort [dataSource]="qrHops" [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
+    <table #table mat-table matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="qrHops" [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
       <ng-container matColumnDef="hop_sequence">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Hop</th>
         <td *matCellDef="let hop" mat-cell>{{hop?.hop_sequence}}</td>

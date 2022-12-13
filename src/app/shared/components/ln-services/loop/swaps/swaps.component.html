@@ -20,7 +20,7 @@
   <div fxLayout="row" fxLayoutAlign="start center" class="w-100">
     <div class="table-container" fxFlex="100" [perfectScrollbar]>
       <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
-      <table #table mat-table matSort [dataSource]="listSwaps" [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
+      <table #table mat-table matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="listSwaps" [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
         <ng-container matColumnDef="state">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>State</th>
           <td *matCellDef="let swap" mat-cell>{{LoopStateEnum[swap?.state]}}</td>

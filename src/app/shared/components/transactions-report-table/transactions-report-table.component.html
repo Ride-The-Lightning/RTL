@@ -17,7 +17,7 @@
     </div>
     <div fxLayout="row" fxLayoutAlign="start start">
       <div fxLayout="column" class="table-container" fxFlex="100" [perfectScrollbar]>
-        <table #table mat-table fxFlex="100" matSort class="overflow-auto" [dataSource]="transactions">
+        <table #table mat-table fxFlex="100" matSort class="overflow-auto" [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="transactions">
           <ng-container matColumnDef="date">
             <th *matHeaderCellDef mat-header-cell mat-sort-header>Date</th>
             <td *matCellDef="let transaction" mat-cell>{{transaction?.date | date:(dataRange === scrollRanges[1] ? 'MMM/yyyy' : 'dd/MMM/yyyy')}}</td>

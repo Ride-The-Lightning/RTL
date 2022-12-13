@@ -45,6 +45,7 @@ export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, On
   public tableSettingSwapOut: TableSetting = { tableId: 'swap_out', recordsPerPage: PAGE_SIZE, sortBy: 'status', sortOrder: SortOrderEnum.DESCENDING };
   public tableSettingSwapIn: TableSetting = { tableId: 'swap_in', recordsPerPage: PAGE_SIZE, sortBy: 'status', sortOrder: SortOrderEnum.DESCENDING };
   public swapStateEnum = SwapStateEnum;
+  public swapTypeEnum = SwapTypeEnum;
   public faHistory = faHistory;
   public swapCaption = 'Swap Out';
   public displayedColumns: any[] = [];
@@ -179,11 +180,6 @@ export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, On
     this.listSwaps = swaps ? new MatTableDataSource<Swap>([...swaps]) : new MatTableDataSource<Swap>([]);
     this.listSwaps.sort = this.sort;
     this.listSwaps.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    if (this.selectedSwapType === SwapTypeEnum.SWAP_IN) {
-      this.listSwaps.sort?.sort({ id: this.tableSettingSwapIn.sortBy, start: this.tableSettingSwapIn.sortOrder, disableClear: true });
-    } else {
-      this.listSwaps.sort?.sort({ id: this.tableSettingSwapOut.sortBy, start: this.tableSettingSwapOut.sortOrder, disableClear: true });
-    }
     if (this.paginator) {
       this.paginator.firstPage();
     }

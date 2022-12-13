@@ -17,7 +17,7 @@
   <div fxLayout="row" fxLayoutAlign="start start">
     <div class="table-container" fxFlex="100" [perfectScrollbar]>
       <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-      <table #table mat-table matSort [dataSource]="listUTXOs" [ngClass]="{'error-border': errorMessage !== ''}">
+      <table #table mat-table matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="listUTXOs" [ngClass]="{'error-border': errorMessage !== ''}">
         <ng-container matColumnDef="is_dust">
           <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="Dust/Nondust"></th>
           <td *matCellDef="let utxo" mat-cell>

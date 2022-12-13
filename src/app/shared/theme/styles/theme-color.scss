@@ -336,18 +336,6 @@
     background: none;
   }
 
-  .mdc-tab__text-label {
-    opacity: 1;
-    padding: 0;
-    min-width: 180px;
-    @include for_screensize(tab-port) {
-      min-width: auto;
-    }
-    @include for_screensize(phone) {
-      min-width: auto;
-    }
-  }
-
   .mat-drawer-inner-container {
     overflow: hidden;
   }

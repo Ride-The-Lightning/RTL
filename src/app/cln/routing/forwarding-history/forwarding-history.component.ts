@@ -198,7 +198,6 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
     this.forwardingHistoryEvents = new MatTableDataSource<ForwardingEvent>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
     this.forwardingHistoryEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    this.forwardingHistoryEvents.sort?.sort({ active: this.tableSetting.sortBy, direction: this.tableSetting.sortOrder, disableClear: true });
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

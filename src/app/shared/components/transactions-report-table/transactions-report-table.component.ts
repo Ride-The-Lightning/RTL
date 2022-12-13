@@ -134,9 +134,8 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
 
   setTableWidgets() {
     if (this.transactions && this.transactions.data && this.transactions.data.length > 0) {
-      this.transactions.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
       this.transactions.sort = this.sort;
-      this.transactions.sort?.sort({ active: this.tableSetting.sortBy, direction: this.tableSetting.sortOrder, disableClear: true });
+      this.transactions.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
       this.transactions.paginator = this.paginator;
       this.setFilterPredicate();
       this.applyFilter();

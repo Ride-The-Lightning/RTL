@@ -1462,6 +1462,18 @@ mat-cell:last-of-type, .mdc-data-table__header-cell:last-of-type, mat-footer-cel
   overflow: hidden !important;
 }
 
+.mdc-tab__text-label {
+  opacity: 1;
+  padding: 0;
+  min-width: 11rem;
+  @include for_screensize(tab-port) {
+    min-width: auto;
+  }
+  @include for_screensize(phone) {
+    min-width: auto;
+  }
+}
+
 .dashboard-card .mat-mdc-card-header {
   padding: 16px 0 0 16px
 }
@@ -1481,6 +1493,10 @@ mat-cell:last-of-type, .mdc-data-table__header-cell:last-of-type, mat-footer-cel
   display: flex;
   flex: 1 0 auto;
   justify-content: center;
+}
+
+.dashboard-tabs-group.mat-mdc-tab-group .mat-mdc-tab .mdc-tab__content .mdc-tab__text-label {
+  min-width: 5.5rem;
 }
 
 .node-grid-tile.mat-grid-tile .mat-figure {

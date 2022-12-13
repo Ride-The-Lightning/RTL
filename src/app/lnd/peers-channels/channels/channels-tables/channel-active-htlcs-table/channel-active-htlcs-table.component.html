@@ -16,7 +16,7 @@
   </div>
   <div fxLayout="column" fxFlex="100" class="table-container" [perfectScrollbar]>
     <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-    <table #table mat-table fxFlex="100" matSort [dataSource]="channels" [ngClass]="{'error-border': errorMessage !== ''}">
+    <table #table mat-table fxFlex="100" matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="channels" [ngClass]="{'error-border': errorMessage !== ''}">
       <!-- Channel Group Row Start -->
       <ng-container matColumnDef="amount">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Amount (Sats)</th>

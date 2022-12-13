@@ -21,7 +21,7 @@
     </div>
     <div fxLayout="column" fxFlex="100" class="table-container" [perfectScrollbar]>
       <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>      
-      <table #table mat-table fxFlex="100" matSort [dataSource]="offersBookmarks" [ngClass]="{'error-border': errorMessage !== ''}">
+      <table #table mat-table fxFlex="100" matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="offersBookmarks" [ngClass]="{'error-border': errorMessage !== ''}">
         <ng-container matColumnDef="lastUpdatedAt">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Updated At</th>
           <td *matCellDef="let offersbookmark" mat-cell>{{offersbookmark.lastUpdatedAt | date:'dd/MMM/y HH:mm'}}</td>

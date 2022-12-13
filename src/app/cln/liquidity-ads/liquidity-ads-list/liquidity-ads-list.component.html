@@ -68,7 +68,7 @@
         </div>
         <div fxLayout="column" fxFlex="100" class="table-container" [perfectScrollbar]>
           <mat-progress-bar *ngIf="listNodesCallStatus === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-          <table #table mat-table matSort [dataSource]="liquidityNodes" [ngClass]="{'error-border': errorMessage !== ''}">
+          <table #table mat-table matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="liquidityNodes" [ngClass]="{'error-border': errorMessage !== ''}">
             <ng-container matColumnDef="alias">
               <th *matHeaderCellDef mat-header-cell mat-sort-header>Alias</th>
               <td *matCellDef="let lqNode" mat-cell>

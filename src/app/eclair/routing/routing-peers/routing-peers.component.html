@@ -19,7 +19,7 @@
       </div>
       <div fxLayout="column" fxLayoutAlign="start start" fxFlex="100" class="table-container" [perfectScrollbar]>
         <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-        <table #tableIn mat-table matSort class="overflow-auto incoming-table" [dataSource]="routingPeersIncoming">
+        <table #tableIn mat-table matSort class="overflow-auto incoming-table" [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="routingPeersIncoming">
           <ng-container matColumnDef="channelId">
             <th *matHeaderCellDef mat-header-cell mat-sort-header>Channel ID</th>
             <td *matCellDef="let rPeer" mat-cell>
@@ -81,7 +81,7 @@
       </div>
       <div fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container" [perfectScrollbar]>
         <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-        <table #tableOut mat-table matSort class="overflow-auto outgoing-table" [dataSource]="routingPeersOutgoing">
+        <table #tableOut mat-table matSort class="overflow-auto outgoing-table" [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="routingPeersOutgoing">
           <ng-container matColumnDef="channelId">
             <th *matHeaderCellDef mat-header-cell mat-sort-header>Channel ID</th>
             <td *matCellDef="let rPeer" mat-cell>

@@ -8,7 +8,7 @@
       </mat-expansion-panel-header>
       <div fxLayout="column" fxFlex="100" class="table-container" [perfectScrollbar]>
         <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-        <table #table mat-table fxFlex="100" matSort [dataSource]="pendingOpenChannels" [ngClass]="{'error-border bordered-box': errorMessage !== '','bordered-box': true}">
+        <table #table mat-table fxFlex="100" matSort [matSortActive]="openTableSetting.sortBy" [matSortDirection]="openTableSetting.sortOrder" [dataSource]="pendingOpenChannels" [ngClass]="{'error-border bordered-box': errorMessage !== '','bordered-box': true}">
           <ng-container matColumnDef="remote_alias">
             <th *matHeaderCellDef mat-header-cell mat-sort-header>Peer</th>
             <td *matCellDef="let channel" mat-cell>
@@ -102,7 +102,7 @@
         <mat-panel-title>Pending Force Closing ({{pendingForceClosingChannelsLength}})</mat-panel-title>
       </mat-expansion-panel-header>
       <div fxLayout="column" fxFlex="100" class="table-container" [perfectScrollbar]>
-        <table #table mat-table matSort [dataSource]="pendingForceClosingChannels" [ngClass]="{'error-border bordered-box': errorMessage !== '','bordered-box': true}">
+        <table #table mat-table matSort [matSortActive]="forceClosingTableSetting.sortBy" [matSortDirection]="forceClosingTableSetting.sortOrder" [dataSource]="pendingForceClosingChannels" [ngClass]="{'error-border bordered-box': errorMessage !== '','bordered-box': true}">
           <ng-container matColumnDef="closing_txid">
             <th *matHeaderCellDef mat-header-cell mat-sort-header>Closing Tx ID</th>
             <td *matCellDef="let channel" mat-cell>
@@ -198,7 +198,7 @@
         <mat-panel-title>Pending Closing ({{pendingClosingChannelsLength}})</mat-panel-title>
       </mat-expansion-panel-header>
       <div fxLayout="column" fxFlex="100" class="table-container" [perfectScrollbar]>
-        <table #table mat-table matSort [dataSource]="pendingClosingChannels" [ngClass]="{'error-border bordered-box': errorMessage !== '','bordered-box': true}">
+        <table #table mat-table matSort [matSortActive]="closingTableSetting.sortBy" [matSortDirection]="closingTableSetting.sortOrder" [dataSource]="pendingClosingChannels" [ngClass]="{'error-border bordered-box': errorMessage !== '','bordered-box': true}">
           <ng-container matColumnDef="closing_txid">
             <th *matHeaderCellDef mat-header-cell mat-sort-header>Closing Tx ID</th>
             <td *matCellDef="let channel" mat-cell>
@@ -278,7 +278,7 @@
         <mat-panel-title>Waiting Close ({{pendingWaitClosingChannelsLength}})</mat-panel-title>
       </mat-expansion-panel-header>
       <div fxLayout="column" fxFlex="100" class="table-container" [perfectScrollbar]>
-        <table #table mat-table matSort [dataSource]="pendingWaitClosingChannels" [ngClass]="{'error-border bordered-box': errorMessage !== '','bordered-box': true}">
+        <table #table mat-table matSort [matSortActive]="waitingCloseTableSetting.sortBy" [matSortDirection]="waitingCloseTableSetting.sortOrder" [dataSource]="pendingWaitClosingChannels" [ngClass]="{'error-border bordered-box': errorMessage !== '','bordered-box': true}">
           <ng-container matColumnDef="closing_txid">
             <th *matHeaderCellDef mat-header-cell mat-sort-header>Closing Tx ID</th>
             <td *matCellDef="let channel" mat-cell>

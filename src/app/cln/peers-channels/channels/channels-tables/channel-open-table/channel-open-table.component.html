@@ -16,7 +16,7 @@
   </div>
   <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
   <div fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100" [perfectScrollbar]>
-    <table #table mat-table matSort [dataSource]="channels" [ngClass]="{'error-border': errorMessage !== ''}">
+    <table #table mat-table matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="channels" [ngClass]="{'error-border': errorMessage !== ''}">
       <ng-container matColumnDef="private">
         <th *matHeaderCellDef mat-header-cell mat-sort-header matTooltip="Private"></th>
         <td *matCellDef="let channel" mat-cell>

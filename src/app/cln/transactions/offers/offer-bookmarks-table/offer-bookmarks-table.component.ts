@@ -180,9 +180,8 @@ export class CLNOfferBookmarksTableComponent implements OnInit, AfterViewInit, O
 
   loadOffersTable(OffrBMs: OfferBookmark[]) {
     this.offersBookmarks = (OffrBMs) ? new MatTableDataSource<OfferBookmark>([...OffrBMs]) : new MatTableDataSource([]);
-    this.offersBookmarks.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.offersBookmarks.sort = this.sort;
-    this.offersBookmarks.sort?.sort({ active: this.tableSetting.sortBy, direction: this.tableSetting.sortOrder, disableClear: true });
+    this.offersBookmarks.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.offersBookmarks.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

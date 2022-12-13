@@ -23,7 +23,7 @@
   </div>
   <div *ngIf="errorMessage === ''" fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container" [perfectScrollbar]>
     <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-    <table #table mat-table fxFlex="100" matSort class="overflow-auto" [dataSource]="failedForwardingEvents">
+    <table #table mat-table fxFlex="100" matSort class="overflow-auto" [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="failedForwardingEvents">
       <ng-container matColumnDef="received_time">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Received Time</th>
         <td *matCellDef="let fhEvent" mat-cell>{{(fhEvent?.received_time * 1000) | date:'dd/MMM/y HH:mm'}}</td>

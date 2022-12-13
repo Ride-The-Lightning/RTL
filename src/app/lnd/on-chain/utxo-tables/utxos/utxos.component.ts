@@ -180,6 +180,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
 
   loadUTXOsTable(UTXOs: UTXO[]) {
     this.listUTXOs = new MatTableDataSource<UTXO>([...UTXOs]);
+    this.listUTXOs.sort = this.sort;
     this.listUTXOs.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
         case 'is_dust': return +(data.amount_sat || 0) < this.dustAmount;
@@ -188,8 +189,6 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
         default: return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     };
-    this.listUTXOs.sort = this.sort;
-    this.listUTXOs.sort?.sort({ active: this.tableSetting.sortBy, direction: this.tableSetting.sortOrder, disableClear: true });
     this.listUTXOs.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

@@ -69,7 +69,6 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
       }
       this.qrHops.sort = this.sort;
       this.qrHops.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-      this.qrHops.sort?.sort({ active: this.tableSetting.sortBy, direction: this.tableSetting.sortOrder, disableClear: true });
     });
   }
 

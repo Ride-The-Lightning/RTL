@@ -225,6 +225,7 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   loadPeersTable(peersArr: Peer[]) {
     this.peers = new MatTableDataSource<Peer>([...peersArr]);
+    this.peers.sort = this.sort;
     this.peers.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
         case 'netaddr':
@@ -238,8 +239,6 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
         default: return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     };
-    this.peers.sort = this.sort;
-    this.peers.sort?.sort({ active: this.tableSetting.sortBy, direction: this.tableSetting.sortOrder, disableClear: true });
     this.peers.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

@@ -477,6 +477,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
 
   loadPaymentsTable(payms) {
     this.payments = payms ? new MatTableDataSource<Payment>([...payms]) : new MatTableDataSource([]);
+    this.payments.sort = this.sort;
     this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
         case 'hops':
@@ -486,8 +487,6 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
           return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     };
-    this.payments.sort = this.sort;
-    this.payments.sort?.sort({ active: this.tableSetting.sortBy, direction: this.tableSetting.sortOrder, disableClear: true });
     this.setFilterPredicate();
     this.applyFilter();
   }
