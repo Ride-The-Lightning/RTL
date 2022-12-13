@@ -223,7 +223,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
     this.invoices = invs ? new MatTableDataSource<Invoice>([...invs]) : new MatTableDataSource<Invoice>([]);
     this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.invoices.sort = this.sort;
-    this.invoices.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+    this.invoices.sort?.sort({ active: this.tableSetting.sortBy, direction: this.tableSetting.sortOrder, disableClear: true });
     this.invoices.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

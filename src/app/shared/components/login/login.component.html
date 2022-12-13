@@ -16,7 +16,7 @@
               <mat-form-field>
                 <mat-label>Password</mat-label>
                 <input autoFocus matInput id="password" name="password" tabindex="1" required [type]="flgShow ? 'text' : 'password'" [(ngModel)]="password">
-                <button mat-icon-button matSuffix tabindex="2" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="flgShow" (click)="flgShow = !flgShow">
+                <button mat-icon-button matSuffix tabindex="2" type="button" [attr.aria-label]="'Hide password'" (click)="flgShow = !flgShow">
                   <mat-icon>{{flgShow ? 'visibility_off' : 'visibility'}}</mat-icon>
                 </button>
                 <mat-error *ngIf="!password">Password is required.</mat-error>

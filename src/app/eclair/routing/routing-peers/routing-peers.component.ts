@@ -148,12 +148,12 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
       const results = this.groupRoutingPeers(forwardingEvents);
       this.routingPeersIncoming = new MatTableDataSource<RoutingPeers>(results[0]);
       this.routingPeersIncoming.sort = this.sortIn;
-      this.routingPeersIncoming.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+      this.routingPeersIncoming.sort?.sort({ active: this.tableSetting.sortBy, direction: this.tableSetting.sortOrder, disableClear: true });
       this.routingPeersIncoming.paginator = this.paginatorIn;
       this.logger.info(this.routingPeersIncoming);
       this.routingPeersOutgoing = new MatTableDataSource<RoutingPeers>(results[1]);
       this.routingPeersOutgoing.sort = this.sortOut;
-      this.routingPeersOutgoing.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+      this.routingPeersOutgoing.sort?.sort({ active: this.tableSetting.sortBy, direction: this.tableSetting.sortOrder, disableClear: true });
       this.routingPeersOutgoing.paginator = this.paginatorOut;
       this.logger.info(this.routingPeersOutgoing);
     } else {

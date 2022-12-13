@@ -220,7 +220,7 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
       const filteredNonRoutingChannels = this.calculateUptime(this.activeChannels?.filter((actvChnl) => forwardingEvents.findIndex((evnt) => (evnt.chan_id_in === actvChnl.chan_id || evnt.chan_id_out === actvChnl.chan_id)) < 0));
       this.nonRoutingPeers = new MatTableDataSource<Channel>(filteredNonRoutingChannels);
       this.nonRoutingPeers.sort = this.sort;
-      this.nonRoutingPeers.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+      this.nonRoutingPeers.sort?.sort({ active: this.tableSetting.sortBy, direction: this.tableSetting.sortOrder, disableClear: true });
       this.nonRoutingPeers.paginator = this.paginator;
       this.setFilterPredicate();
       this.applyFilter();

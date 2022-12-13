@@ -162,12 +162,12 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
       const results = this.groupRoutingPeers(events);
       this.routingPeersIncoming = new MatTableDataSource<RoutingPeer[]>(results[0]);
       this.routingPeersIncoming.sort = this.sortIn;
-      this.routingPeersIncoming.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+      this.routingPeersIncoming.sort?.sort({ active: this.tableSetting.sortBy, direction: this.tableSetting.sortOrder, disableClear: true });
       this.routingPeersIncoming.paginator = this.paginatorIn;
       this.logger.info(this.routingPeersIncoming);
       this.routingPeersOutgoing = new MatTableDataSource<RoutingPeer[]>(results[1]);
       this.routingPeersOutgoing.sort = this.sortOut;
-      this.routingPeersOutgoing.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+      this.routingPeersOutgoing.sort?.sort({ active: this.tableSetting.sortBy, direction: this.tableSetting.sortOrder, disableClear: true });
       this.routingPeersOutgoing.paginator = this.paginatorOut;
       this.logger.info(this.routingPeersOutgoing);
     } else {

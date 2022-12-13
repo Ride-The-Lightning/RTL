@@ -20,8 +20,7 @@
   <div fxLayout="row" fxLayoutAlign="start start">
     <div fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container" [perfectScrollbar]>
       <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-      <table #table mat-table fxFlex="100" matSort [dataSource]="listTransactions"
-        [ngClass]="{'error-border': errorMessage !== ''}">
+      <table #table mat-table fxFlex="100" matSort [dataSource]="listTransactions" [ngClass]="{'error-border': errorMessage !== ''}">
         <ng-container matColumnDef="timestamp">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Date/Time</th>
           <td *matCellDef="let transaction" mat-cell>{{(transaction?.timestamp * 1000) | date:'dd/MMM/y HH:mm'}}</td>

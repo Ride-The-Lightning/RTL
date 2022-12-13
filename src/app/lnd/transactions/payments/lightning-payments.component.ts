@@ -487,7 +487,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       }
     };
     this.payments.sort = this.sort;
-    this.payments.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+    this.payments.sort?.sort({ active: this.tableSetting.sortBy, direction: this.tableSetting.sortOrder, disableClear: true });
     this.setFilterPredicate();
     this.applyFilter();
   }

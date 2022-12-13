@@ -239,7 +239,7 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     };
     this.peers.sort = this.sort;
-    this.peers.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+    this.peers.sort?.sort({ active: this.tableSetting.sortBy, direction: this.tableSetting.sortOrder, disableClear: true });
     this.peers.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

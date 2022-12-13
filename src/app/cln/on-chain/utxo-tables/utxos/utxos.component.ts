@@ -183,7 +183,7 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
       }
     };
     this.listUTXOs.sort = this.sort;
-    this.listUTXOs.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+    this.listUTXOs.sort?.sort({ active: this.tableSetting.sortBy, direction: this.tableSetting.sortOrder, disableClear: true });
     this.listUTXOs.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

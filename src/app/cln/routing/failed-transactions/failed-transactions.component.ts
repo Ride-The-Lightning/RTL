@@ -172,7 +172,7 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
     this.failedForwardingEvents = new MatTableDataSource<ForwardingEvent>([...forwardingEvents]);
     this.failedForwardingEvents.sort = this.sort;
     this.failedForwardingEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    this.failedForwardingEvents.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+    this.failedForwardingEvents.sort?.sort({ active: this.tableSetting.sortBy, direction: this.tableSetting.sortOrder, disableClear: true });
     this.failedForwardingEvents.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

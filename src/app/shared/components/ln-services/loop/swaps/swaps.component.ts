@@ -155,7 +155,7 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     this.listSwaps = new MatTableDataSource<LoopSwapStatus>([...swaps]);
     this.listSwaps.sort = this.sort;
     this.listSwaps.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    this.listSwaps.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+    this.listSwaps.sort?.sort({ active: this.tableSetting.sortBy, direction: this.tableSetting.sortOrder, disableClear: true });
     this.listSwaps.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

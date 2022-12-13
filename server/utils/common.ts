@@ -292,7 +292,7 @@ export class CommonService {
         )
       };
     }
-    if (selectedNode.ln_implementation === 'ECL' && err.message.indexOf('Authentication Error') < 0 && err.name === 'StatusCodeError') { newErrorObj.statusCode = 500; }
+    if (selectedNode.ln_implementation === 'ECL' && err.message && err.message.indexOf('Authentication Error') < 0 && err.name && err.name === 'StatusCodeError') { newErrorObj.statusCode = 500; }
     return newErrorObj;
   };
 

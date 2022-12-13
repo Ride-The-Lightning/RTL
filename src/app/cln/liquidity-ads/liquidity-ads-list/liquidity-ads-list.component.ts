@@ -187,7 +187,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
     this.liquidityNodes = new MatTableDataSource<LookupNode>([...liqNodes]);
     this.liquidityNodes.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.liquidityNodes.sort = this.sort;
-    this.liquidityNodes.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+    this.liquidityNodes.sort?.sort({ active: this.tableSetting.sortBy, direction: this.tableSetting.sortOrder, disableClear: true });
     this.setFilterPredicate();
     this.applyFilter();
     this.liquidityNodes.paginator = this.paginator;

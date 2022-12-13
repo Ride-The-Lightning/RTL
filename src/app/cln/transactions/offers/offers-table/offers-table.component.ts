@@ -263,7 +263,7 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
     this.offers = (offrs) ? new MatTableDataSource<Offer>([...offrs]) : new MatTableDataSource([]);
     this.offers.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.offers.sort = this.sort;
-    this.offers.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+    this.offers.sort?.sort({ active: this.tableSetting.sortBy, direction: this.tableSetting.sortOrder, disableClear: true });
     this.offers.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

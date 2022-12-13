@@ -175,7 +175,7 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
           return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     };
-    this.failedLocalForwardingEvents.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+    this.failedLocalForwardingEvents.sort?.sort({ active: this.tableSetting.sortBy, direction: this.tableSetting.sortOrder, disableClear: true });
     this.failedLocalForwardingEvents.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

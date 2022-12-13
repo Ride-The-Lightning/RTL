@@ -17,9 +17,9 @@
 /** *************************************************************************************************
  * APPLICATION IMPORTS
  */
-window.global = window;
-// window.global.Buffer = window.global.Buffer || require('buffer').Buffer;
-window.Buffer = window.Buffer || require('buffer').Buffer;
+(window as any).global = window;
+window.global.Buffer = window.global.Buffer || require('buffer').Buffer;
+global = (window as any).global || window;
 
 /** *************************************************************************************************
  * BROWSER POLYFILLS
