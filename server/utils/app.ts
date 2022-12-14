@@ -63,8 +63,8 @@ export class ExpressApplication {
     this.app.use(this.common.baseHref + '/api/ecl', eclRoutes);
     this.app.use(this.common.baseHref, express.static(join(this.directoryName, '../..', 'frontend')));
     this.app.use((req: any, res, next) => {
-      res.cookie('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : ''); // RTL Angular Frontend
-      res.setHeader('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : ''); // RTL Quickpay JQuery
+      res.cookie('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : (req.cookies && req.cookies._csrf) ? req.cookies._csrf : ''); // RTL Angular Frontend
+      res.setHeader('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : (req.cookies && req.cookies._csrf) ? req.cookies._csrf : ''); // RTL Quickpay JQuery
       res.sendFile(join(this.directoryName, '../..', 'frontend', 'index.html'));
     });
     this.app.use((err, req, res, next) => {

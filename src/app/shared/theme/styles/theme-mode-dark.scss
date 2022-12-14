@@ -55,21 +55,35 @@
     }  
   }
   
-  .rtl-snack-bar {
+  .rtl-snack-bar.mat-mdc-snack-bar-container {
     max-width: 90vw !important;
     font-weight: 700;
-  }
-  .rtl-warn-snack-bar {
-    max-width: 90vw !important;
-    font-weight: 700;
+    & .mdc-snackbar__surface {
+      max-width: 40vw;
+    }
     & .mat-mdc-snack-bar-label.mdc-snackbar__label {
+      max-width: 40vw;
+    }
+  }
+  .rtl-warn-snack-bar.mat-mdc-snack-bar-container {
+    max-width: 90vw !important;
+    font-weight: 700;
+    & .mdc-snackbar__surface {
+      max-width: 40vw;
+    }
+    & .mat-mdc-snack-bar-label.mdc-snackbar__label {
+      max-width: 40vw;
       color: $warn-color;
     }
   }
-  .rtl-accent-snack-bar {
+  .rtl-accent-snack-bar.mat-mdc-snack-bar-container {
     max-width: 90vw !important;
     font-weight: 700;
+    & .mdc-snackbar__surface {
+      max-width: 40vw;
+    }
     & .mat-mdc-snack-bar-label.mdc-snackbar__label {
+      max-width: 40vw;
       color: $accent-color;
     }
   }

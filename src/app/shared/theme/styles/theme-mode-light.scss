@@ -65,10 +65,10 @@
     }
   }  
   .mat-mdc-snack-bar-container.rtl-snack-bar {
-    max-width: 90vw !important;
     font-weight: 600;
     & .mdc-snackbar__surface,
     & .mat-mdc-snack-bar-label.mdc-snackbar__label {
+      max-width: 40vw;
       background-color: $background-color;
       opacity: 0.9 !important;
       border-radius: 4px;
@@ -80,6 +80,7 @@
     font-weight: 600;
     & .mdc-snackbar__surface,
     & .mat-mdc-snack-bar-label.mdc-snackbar__label {
+      max-width: 40vw;
       background-color: $background-color;
       opacity: 0.9 !important;
       border-radius: 4px;
@@ -91,6 +92,7 @@
     font-weight: 600;
     & .mdc-snackbar__surface,
     & .mat-mdc-snack-bar-label.mdc-snackbar__label {
+      max-width: 40vw;
       background-color: $background-color;
       opacity: 0.9 !important;
       border-radius: 4px;

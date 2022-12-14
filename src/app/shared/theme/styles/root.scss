@@ -1423,6 +1423,10 @@ mat-cell:last-of-type, .mdc-data-table__header-cell:last-of-type, mat-footer-cel
   display: none !important;
 }
 
+.mat-divider.mat-divider-horizontal.mat-divider-inset {
+  margin-left: $gap*2;
+}
+
 .mat-vertical-stepper-header {
   padding: ($gap*1.25)  ($gap*1.25)  ($gap*1.25) $gap !important;
 }

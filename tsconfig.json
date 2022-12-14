@@ -13,7 +13,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "downlevelIteration": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "declaration": false,
     "experimentalDecorators": true,
     "moduleResolution": "node",
