@@ -30,7 +30,9 @@
               "src/assets"
             ],
             "styles": [
-              "src/app/shared/theme/styles/styles.scss"
+              "src/app/shared/theme/styles/styles.scss",
+              "node_modules/material-icons/iconfont/material-icons.css",
+              "node_modules/roboto-fontface/css/roboto/roboto-fontface.css"
             ],
             "allowedCommonJsDependencies": [
               "buffer",
@@ -102,7 +104,9 @@
               "src/assets"
             ],
             "styles": [
-              "src/app/shared/theme/styles/styles.scss"
+              "src/app/shared/theme/styles/styles.scss",
+              "node_modules/material-icons/iconfont/material-icons.css",
+              "node_modules/roboto-fontface/css/roboto/roboto-fontface.css"
             ],
             "scripts": []
           }

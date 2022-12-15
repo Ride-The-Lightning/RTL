@@ -85,7 +85,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
-    "material-design-icons": "^3.0.1",
+    "material-icons": "^1.13.1",
     "nodemon": "^2.0.20",
     "protractor": "^7.0.0",
     "roboto-fontface": "^0.10.0",
