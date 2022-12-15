@@ -26,8 +26,8 @@ This step is only required to configure the nodes, which will be remotely connec
 8. `swapMacaroonPath` should be set to the local path of the folder containing `loop.macaroon` file for loop.
 9. `boltzMacaroonPath` should be set to the local path of the folder containing `admin.macaroon` file for boltz swaps.
 10. `lnServerUrl` must be set to the service url for LND/Core Lightining REST APIs for each node, with the unique ip address of the node hosting LND/Core Lightning e.g. https://192.168.0.1:8080 OR https://192.168.0.1:3001. In this case the ip address of the node hosting LND/Core Lightning is '192.168.0.1'
-11. `swapServerUrl` must be set to the swap service url. e.g. https://localhost:8081.
-12. `boltzServerUrl` must be set to the boltz service url. e.g. https://localhost:9003.
+11. `swapServerUrl` must be set to the swap service url. e.g. https://127.0.0.1:8081.
+12. `boltzServerUrl` must be set to the boltz service url. e.g. https://127.0.0.1:9003.
 13. `configPath` and `bitcoindConfigPath` are optional parameters which can be set only if the RTL is running locally on the same node. Else it can be set to "" or removed from the conf file all together.
 14. `lnApiPassword` is mandatory in the ln implementation is ECL and configPath is missing. It is used to provide password for API authentication. It will be ignored in other ln implementations.
 

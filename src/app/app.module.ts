@@ -32,7 +32,7 @@ import { CLNReducer } from './cln/store/cln.reducers';
 import { ECLReducer } from './eclair/store/ecl.reducers';
 
 let isDevEnvironemt = false;
-if (isDevMode()) { isDevEnvironemt = true; } 
+if (isDevMode()) { isDevEnvironemt = true; }
 
 @NgModule({
   imports: [

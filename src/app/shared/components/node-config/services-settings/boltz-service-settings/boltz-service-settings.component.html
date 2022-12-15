@@ -9,7 +9,7 @@
       <mat-form-field class="mb-2">
         <mat-label>Boltz Server URL</mat-label>
         <input #srvrUrl="ngModel" matInput type="text" id="boltzServerUrl" name="srvrUrl" tabindex="2" [required]="enableBoltz" [disabled]="!enableBoltz" [(ngModel)]="serverUrl">
-        <mat-hint>Service url for boltz server REST APIs, eg. https://localhost:9003</mat-hint>
+        <mat-hint>Service url for boltz server REST APIs, eg. https://127.0.0.1:9003</mat-hint>
         <mat-error *ngIf="(!serverUrl || serverUrl.trim() === '') && enableBoltz">Boltz server URL is required.</mat-error>
         <mat-error *ngIf="srvrUrl?.errors?.invalid && enableBoltz">Specify the boltz server url with 'https://'.</mat-error>
       </mat-form-field>

@@ -41,8 +41,8 @@ export class NodeConfigComponent implements OnInit, OnDestroy {
         }
       });
     this.store.select(rootAppConfig).pipe(takeUntil(this.unSubs[1])).subscribe((appConfig) => {
-        this.appConfig = appConfig;
-      });
+      this.appConfig = appConfig;
+    });
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[2])).subscribe((selNode) => {
       this.showLnConfig = false;
       this.selNode = selNode;

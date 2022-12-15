@@ -36,9 +36,9 @@ parameters have `default` values for initial setup and can be updated after RTL 
         "fiatConversion": <parameter to turn fiat conversion off/on. Allowed values - true, false, default false, Required>,
         "currencyUnit": "<Optional: Fiat current Unit for currency conversion, default 'USD' If fiatConversion is true, Required if fiatConversion is true>",
         "unannouncedChannels": <parameter to turn off/on setting for opening announced Channels, default false, Optional>
-        "lnServerUrl": "<Service url for LND/Core Lightning REST APIs for the node, e.g. https://192.168.0.1:8080 OR https://192.168.0.1:3001 OR http://192.168.0.1:8080. Default 'https://localhost:8080', Required",
-        "swapServerUrl": "<Service url for swap server REST APIs for the node, e.g. https://localhost:8081, Optional>",
-        "boltzServerUrl": "<Service url for boltz server REST APIs for the node, e.g. https://localhost:9003, Optional>"
+        "lnServerUrl": "<Service url for LND/Core Lightning REST APIs for the node, e.g. https://192.168.0.1:8080 OR https://192.168.0.1:3001 OR http://192.168.0.1:8080. Default 'https://127.0.0.1:8080', Required",
+        "swapServerUrl": "<Service url for swap server REST APIs for the node, e.g. https://127.0.0.1:8081, Optional>",
+        "boltzServerUrl": "<Service url for boltz server REST APIs for the node, e.g. https://127.0.0.1:9003, Optional>"
       }
     }
   ]
@@ -53,9 +53,9 @@ PORT (port number for the rtl node server, default 3000, Required)<br />
 HOST (host for the rtl node server, default localhost, Optional)<br />
 APP_PASSWORD (Plaintext password to be provided by the parent container, NOT suggested for standalone RTL applications, to be used by Umbrel) (Optional)<br />
 LN_IMPLEMENTATION (LND/CLN/ECL. Default 'LND', Required)<br />
-LN_SERVER_URL (LN server URL for LNP REST APIs, default https://localhost:8080) (Required)<br />
-SWAP_SERVER_URL (Swap server URL for REST APIs, default http://localhost:8081) (Optional)<br />
-BOLTZ_SERVER_URL (Boltz server URL for REST APIs, default http://localhost:9003) (Optional)<br />
+LN_SERVER_URL (LN server URL for LNP REST APIs, default https://127.0.0.1:8080) (Required)<br />
+SWAP_SERVER_URL (Swap server URL for REST APIs, default http://127.0.0.1:8081) (Optional)<br />
+BOLTZ_SERVER_URL (Boltz server URL for REST APIs, default http://127.0.0.1:9003) (Optional)<br />
 CONFIG_PATH (Full path of the LNP .conf file including the file name) (Optional for LND & CLN, Mandatory for ECL if LN_API_PASSWORD is undefined)<br />
 MACAROON_PATH (Path for the folder containing 'admin.macaroon' (LND)/'access.macaroon' (CLN) file, Required for LND & CLN)<br />
 SWAP_MACAROON_PATH (Path for the folder containing Loop's 'loop.macaroon', optional)<br />

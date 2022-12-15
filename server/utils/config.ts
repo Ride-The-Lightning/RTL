@@ -69,7 +69,7 @@ export class ConfigService {
             themeColor: 'PURPLE',
             channelBackupPath: channelBackupPath,
             logLevel: 'ERROR',
-            lnServerUrl: 'https://localhost:8080',
+            lnServerUrl: 'https://127.0.0.1:8080',
             fiatConversion: false,
             unannouncedChannels: false
           }

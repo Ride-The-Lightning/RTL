@@ -15,9 +15,6 @@
         "project": "./tsconfig.json",
         "createDefaultProgram": true
       },
-      "env": {
-        "es13": true
-      },
       "plugins": ["deprecation"],
       "extends": [
         "plugin:@angular-eslint/all",

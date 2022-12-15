@@ -1575,6 +1575,13 @@ mat-cell:last-of-type, .mdc-data-table__header-cell:last-of-type, mat-footer-cel
   }
 }
 
+.mat-mdc-tooltip-panel {
+  & .mdc-tooltip__surface {
+    min-width: 15rem;
+    text-align: start;
+  }
+}
+
 .mat-mdc-card.dashboard-card {
   padding: 0 ($gap*1.5) !important;
   @include for_screensize(tab-port) {

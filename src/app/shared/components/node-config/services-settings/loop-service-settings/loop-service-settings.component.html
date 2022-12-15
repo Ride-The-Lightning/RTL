@@ -9,7 +9,7 @@
       <mat-form-field class="mb-2">
         <mat-label>Loop Server URL</mat-label>
         <input #srvrUrl="ngModel" matInput type="text" id="swapServerUrl" name="srvrUrl" tabindex="2" [required]="enableLoop" [disabled]="!enableLoop" [(ngModel)]="selNode.settings.swapServerUrl">
-        <mat-hint>Service url for loop server REST APIs, eg. https://localhost:8081</mat-hint>
+        <mat-hint>Service url for loop server REST APIs, eg. https://127.0.0.1:8081</mat-hint>
         <mat-error *ngIf="!selNode.settings.swapServerUrl && enableLoop">Loop server URL is required.</mat-error>
         <mat-error *ngIf="srvrUrl?.errors?.invalid && enableLoop">Specify the loop server url with 'https://'.</mat-error>
       </mat-form-field>

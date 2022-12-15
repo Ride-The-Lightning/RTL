@@ -870,9 +870,9 @@ export const mockRTLStoreState = {
         fiatConversion: true,
         bitcoindConfigPath: '../bitcoin.conf',
         enableLogging: true,
-        lnServerUrl: 'https://localhost:8080',
-        swapServerUrl: 'https://localhost:8081',
-        boltzServerUrl: 'https://localhost:9003',
+        lnServerUrl: 'https://127.0.0.1:8080',
+        swapServerUrl: 'https://127.0.0.1:8081',
+        boltzServerUrl: 'https://127.0.0.1:9003',
         channelBackupPath: '..\\\\RTL\\\\backup\\\\node-1',
         currencyUnit: 'USD',
         currencyUnits: [
@@ -908,9 +908,9 @@ export const mockRTLStoreState = {
             unannouncedChannels: false,
             bitcoindConfigPath: '../bitcoin.conf',
             enableLogging: true,
-            lnServerUrl: 'https://localhost:8080',
-            swapServerUrl: 'https://localhost:8081',
-            boltzServerUrl: 'https://localhost:9003',
+            lnServerUrl: 'https://127.0.0.1:8080',
+            swapServerUrl: 'https://127.0.0.1:8081',
+            boltzServerUrl: 'https://127.0.0.1:9003',
             channelBackupPath: '..\\\\RTL\\\\backup\\\\node-1',
             currencyUnit: 'USD',
             currencyUnits: [
@@ -937,7 +937,7 @@ export const mockRTLStoreState = {
             fiatConversion: true,
             bitcoindConfigPath: '',
             enableLogging: true,
-            lnServerUrl: 'https://localhost:3001',
+            lnServerUrl: 'https://127.0.0.1:3001',
             swapServerUrl: '',
             boltzServerUrl: '',
             channelBackupPath: '..\\\\RTL\\\\backup\\\\node-2',
@@ -966,7 +966,7 @@ export const mockRTLStoreState = {
             fiatConversion: true,
             bitcoindConfigPath: '',
             enableLogging: false,
-            lnServerUrl: 'http://localhost:9090',
+            lnServerUrl: 'http://127.0.0.1:9090',
             swapServerUrl: '',
             boltzServerUrl: '',
             channelBackupPath: '..\\\\RTL\\\\backup\\\\node-3',
@@ -1014,8 +1014,8 @@ export const mockRTLStoreState = {
         'USD'
       ],
       lnImplementation: 'LND',
-      swapServerUrl: 'https://localhost:8081',
-      boltzServerUrl: 'https://localhost:9003'
+      swapServerUrl: 'https://127.0.0.1:8081',
+      boltzServerUrl: 'https://127.0.0.1:9003'
     },
     information: {
       version: '0.12.1-beta commit=v0.12.1-beta',
@@ -48652,8 +48652,8 @@ export const mockRTLStoreState = {
         'USD'
       ],
       lnImplementation: 'LND',
-      swapServerUrl: 'https://localhost:8081',
-      boltzServerUrl: 'https://localhost:9003'
+      swapServerUrl: 'https://127.0.0.1:8081',
+      boltzServerUrl: 'https://127.0.0.1:9003'
     },
     information: {},
     fees: {},
@@ -48686,8 +48686,8 @@ export const mockRTLStoreState = {
         'USD'
       ],
       lnImplementation: 'LND',
-      swapServerUrl: 'https://localhost:8081',
-      boltzServerUrl: 'https://localhost:9003'
+      swapServerUrl: 'https://127.0.0.1:8081',
+      boltzServerUrl: 'https://127.0.0.1:9003'
     },
     information: {},
     fees: {},

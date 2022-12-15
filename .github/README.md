@@ -110,8 +110,8 @@ Example RTL-Config.json:
         "fiatConversion": false,
         "unannouncedChannels": false,
         "lnServerUrl": "<url for LND REST APIs for node #1 e.g. https://192.168.0.1:8080>",
-        "swapServerUrl": "<url for swap server REST APIs for the node. e.g. https://localhost:8081>",
-        "boltzServerUrl": "<url for boltz server REST APIs for the node. e.g. https://localhost:9003>"
+        "swapServerUrl": "<url for swap server REST APIs for the node. e.g. https://127.0.0.1:8081>",
+        "boltzServerUrl": "<url for boltz server REST APIs for the node. e.g. https://127.0.0.1:9003>"
       }
     }
   ]
