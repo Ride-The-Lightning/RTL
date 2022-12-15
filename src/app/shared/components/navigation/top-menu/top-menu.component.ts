@@ -9,8 +9,7 @@ import { GetInfoRoot } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { SessionService } from '../../../services/session.service';
 import { GetInfoChain } from '../../../models/lndModels';
-import { VERSION } from '../../../../../environments/environment';
-import { AlertTypeEnum, RTLActions } from '../../../services/consts-enums-functions';
+import { VERSION, AlertTypeEnum, RTLActions } from '../../../services/consts-enums-functions';
 import { RTLEffects } from '../../../../store/rtl.effects';
 
 import { RTLState } from '../../../../store/rtl.state';

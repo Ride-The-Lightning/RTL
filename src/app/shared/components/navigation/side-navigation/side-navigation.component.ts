@@ -3,7 +3,6 @@ import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { VERSION } from '../../../../../environments/environment';
 
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatTreeNestedDataSource, MatTree } from '@angular/material/tree';
@@ -17,7 +16,7 @@ import { MenuChildNode, MENU_DATA } from '../../../models/navMenu';
 
 import { RTLEffects } from '../../../../store/rtl.effects';
 import { RTLState } from '../../../../store/rtl.state';
-import { AlertTypeEnum, RTLActions, UI_MESSAGES, UserPersonaEnum } from '../../../services/consts-enums-functions';
+import { VERSION, AlertTypeEnum, RTLActions, UI_MESSAGES, UserPersonaEnum } from '../../../services/consts-enums-functions';
 import { CommonService } from '../../../services/common.service';
 import { logout, openConfirmation, setSelectedNode, showPubkey } from '../../../../store/rtl.actions';
 import { rootAppConfig, rootSelNodeAndNodeData } from '../../../../store/rtl.selector';

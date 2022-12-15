@@ -1,3 +1,4 @@
+import { isDevMode } from '@angular/core';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { CLNPageDefinitions, ECLPageDefinitions, LNDPageDefinitions, PageSettings } from '../models/pageSettings';
 
@@ -6,6 +7,36 @@ export function getPaginatorLabel(field: string) {
   appPaginator.itemsPerPageLabel = field + ' per page:';
   return appPaginator;
 }
+
+export const VERSION = '0.13.3-beta';
+
+export const API_URL = isDevMode() ? 'http://localhost:3000/rtl/api' : './api';
+
+export const API_END_POINTS = {
+  AUTHENTICATE_API: API_URL + '/authenticate',
+  CONF_API: API_URL + '/conf',
+  PAGE_SETTINGS_API: API_URL + '/pagesettings',
+  BALANCE_API: '/balance',
+  FEES_API: '/fees',
+  PEERS_API: '/peers',
+  CHANNELS_API: '/channels',
+  CHANNELS_BACKUP_API: '/channels/backup',
+  GETINFO_API: '/getinfo',
+  WALLET_API: '/wallet',
+  NETWORK_API: '/network',
+  NEW_ADDRESS_API: '/newaddress',
+  TRANSACTIONS_API: '/transactions',
+  PAYMENTS_API: '/payments',
+  INVOICES_API: '/invoices',
+  SWITCH_API: '/switch',
+  ON_CHAIN_API: '/onchain',
+  MESSAGE_API: '/message',
+  OFFERS_API: '/offers',
+  UTILITY_API: '/utility',
+  LOOP_API: '/loop',
+  BOLTZ_API: '/boltz',
+  Web_SOCKET_API: '/ws'
+};
 
 export const CURRENCY_UNITS = ['Sats', 'BTC'];
 export const CURRENCY_UNIT_FORMATS = { Sats: '1.0-0', BTC: '1.6-6', OTHER: '1.2-2' };

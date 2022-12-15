@@ -4,11 +4,10 @@ import { BehaviorSubject, Subject, throwError, of } from 'rxjs';
 import { catchError, takeUntil, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { environment, API_URL } from '../../../environments/environment';
 import { ErrorMessageComponent } from '../components/data-modal/error-message/error-message.component';
 import { CommonService } from './common.service';
 import { LoggerService } from './logger.service';
-import { AlertTypeEnum, UI_MESSAGES } from './consts-enums-functions';
+import { API_URL, API_END_POINTS, AlertTypeEnum, UI_MESSAGES } from './consts-enums-functions';
 import { ListSwaps } from '../models/boltzModels';
 import { closeSpinner, logout, openAlert, openSpinner } from '../../store/rtl.actions';
 
@@ -30,7 +29,7 @@ export class BoltzService implements OnDestroy {
 
   listSwaps() {
     this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_BOLTZ_SWAPS }));
-    this.swapUrl = API_URL + environment.BOLTZ_API + '/listSwaps';
+    this.swapUrl = API_URL + API_END_POINTS.BOLTZ_API + '/listSwaps';
     this.httpClient.get(this.swapUrl).
       pipe(takeUntil(this.unSubs[0])).
       subscribe({
@@ -43,13 +42,13 @@ export class BoltzService implements OnDestroy {
   }
 
   swapInfo(id: string) {
-    this.swapUrl = API_URL + environment.BOLTZ_API + '/swapInfo/' + id;
+    this.swapUrl = API_URL + API_END_POINTS.BOLTZ_API + '/swapInfo/' + id;
     return this.httpClient.get(this.swapUrl).pipe(catchError((err) => of(this.handleErrorWithAlert(UI_MESSAGES.NO_SPINNER, this.swapUrl, err))));
   }
 
   serviceInfo() {
     this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_SERVICE_INFO }));
-    this.swapUrl = API_URL + environment.BOLTZ_API + '/serviceInfo';
+    this.swapUrl = API_URL + API_END_POINTS.BOLTZ_API + '/serviceInfo';
     return this.httpClient.get(this.swapUrl).pipe(
       takeUntil(this.unSubs[1]),
       map((res) => {
@@ -62,13 +61,13 @@ export class BoltzService implements OnDestroy {
 
   swapOut(amount: number, address: string) {
     const requestBody = { amount: amount, address: address };
-    this.swapUrl = API_URL + environment.BOLTZ_API + '/createreverseswap';
+    this.swapUrl = API_URL + API_END_POINTS.BOLTZ_API + '/createreverseswap';
     return this.httpClient.post(this.swapUrl, requestBody).pipe(catchError((err) => this.handleErrorWithoutAlert('Swap Out for Address: ' + address, UI_MESSAGES.NO_SPINNER, err)));
   }
 
   swapIn(amount: number) {
     const requestBody = { amount: amount };
-    this.swapUrl = API_URL + environment.BOLTZ_API + '/createswap';
+    this.swapUrl = API_URL + API_END_POINTS.BOLTZ_API + '/createswap';
     return this.httpClient.post(this.swapUrl, requestBody).pipe(catchError((err) => this.handleErrorWithoutAlert('Swap In for Amount: ' + amount, UI_MESSAGES.NO_SPINNER, err)));
   }
 

@@ -1,8 +1,7 @@
 import { HttpResponse } from '@angular/common/http';
 import { BehaviorSubject, of, throwError } from 'rxjs';
 
-import { API_URL } from '../../../environments/environment';
-import { CLNActions } from '../services/consts-enums-functions';
+import { API_URL, CLNActions } from '../services/consts-enums-functions';
 import { mockResponseData } from './test-data';
 
 export class mockMatDialogRef {
