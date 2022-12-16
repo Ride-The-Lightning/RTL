@@ -15,6 +15,7 @@
         "project": "./tsconfig.json",
         "createDefaultProgram": true
       },
+      "env": { "es2022": true },
       "plugins": ["deprecation"],
       "extends": [
         "plugin:@angular-eslint/all",
