@@ -342,7 +342,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     { provide: LoggerService, useClass: ConsoleLoggerService },
     { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG },
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2000, verticalPosition: 'bottom', panelClass: 'rtl-snack-bar' } },
-    { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '45%' } },
+    { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog' } },
     { provide: DateAdapter, useClass: DefaultDateAdapter },
     { provide: MAT_DATE_FORMATS, useValue: DEFAULT_DATE_FORMAT },
     { provide: OverlayContainer, useClass: ThemeOverlay },

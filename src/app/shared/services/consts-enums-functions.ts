@@ -52,6 +52,7 @@ export const FIAT_CURRENCY_UNITS = [
 ];
 
 export const TIME_UNITS = ['SECS', 'MINS', 'HOURS', 'DAYS'];
+export const DATA_FILTER_RANGE_UNITS = ['HOURS', 'DAYS', 'MONTHS', 'YEARS'];
 
 export const PAGE_SIZE = 10;
 export const PAGE_SIZE_OPTIONS = [5, 10, 25, 100];
@@ -137,6 +138,13 @@ export enum TimeUnitEnum {
   MINS = 'MINS',
   HOURS = 'HOURS',
   DAYS = 'DAYS'
+}
+
+export enum DataFilterRangeEnum {
+  HOURS = 'HOURS',
+  DAYS = 'DAYS',
+  MONTHS = 'MONTHS',
+  YEARS = 'YEARS'
 }
 
 export enum CurrencyUnitEnum {

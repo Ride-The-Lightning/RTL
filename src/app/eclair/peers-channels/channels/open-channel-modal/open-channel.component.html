@@ -25,7 +25,7 @@
             <mat-form-field fxLayout="column" fxFlex="70" fxLayoutAlign="start end">
               <mat-label>Amount</mat-label>
               <input #amount="ngModel" matInput type="number" tabindex="1" required name="amount" [step]="1000" [min]="1" [max]="totalBalance" [(ngModel)]="fundingAmount">
-              <mat-hint>Remaining Bal: {{totalBalance - ((fundingAmount) ? fundingAmount : 0) | number}}</mat-hint>
+              <mat-hint>Remaining: {{totalBalance - ((fundingAmount) ? fundingAmount : 0) | number}}</mat-hint>
               <span matSuffix>  Sats </span>
               <mat-error *ngIf="amount.errors?.required">Amount is required.</mat-error>
               <mat-error *ngIf="amount.errors?.max">Amount must be less than or equal to {{totalBalance}}.</mat-error>

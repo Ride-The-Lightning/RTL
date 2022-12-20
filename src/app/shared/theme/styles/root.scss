@@ -1578,6 +1578,7 @@ mat-cell:last-of-type, .mdc-data-table__header-cell:last-of-type, mat-footer-cel
 .mat-mdc-tooltip-panel {
   & .mdc-tooltip__surface {
     min-width: 15rem;
+    max-width: unset;
     text-align: start;
   }
 }

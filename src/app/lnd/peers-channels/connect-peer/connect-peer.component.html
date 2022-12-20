@@ -34,7 +34,7 @@
                   <mat-form-field fxLayout="column" fxFlex="60" fxLayoutAlign="start end">
                     <mat-label>Amount</mat-label>
                     <input matInput formControlName="fundingAmount" type="number" tabindex="1" required [step]="1000">
-                    <mat-hint>Remaining Bal: {{totalBalance - ((channelFormGroup.controls.fundingAmount.value) ? channelFormGroup.controls.fundingAmount.value : 0)}}</mat-hint>
+                    <mat-hint>Remaining: {{totalBalance - ((channelFormGroup.controls.fundingAmount.value) ? channelFormGroup.controls.fundingAmount.value : 0) | number}}</mat-hint>
                     <span matSuffix> Sats </span>
                     <mat-error *ngIf="channelFormGroup.controls.fundingAmount.errors?.required">Amount is required.</mat-error>
                     <mat-error *ngIf="channelFormGroup.controls.fundingAmount.errors?.min">Amount must be a positive number.</mat-error>

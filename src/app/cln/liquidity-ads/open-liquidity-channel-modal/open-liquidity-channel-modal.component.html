@@ -25,7 +25,7 @@
           <mat-form-field fxLayout="column" fxFlex="30" fxLayoutAlign="start end">
             <mat-label>Local Amount</mat-label>
             <input #lamount="ngModel" matInput type="number" tabindex="3" required name="lamount" [step]="10000" [min]="20000" [max]="totalBalance" [(ngModel)]="localAmount">
-            <mat-hint>Remaining Bal: {{totalBalance - ((localAmount) ? localAmount : 0) | number}}</mat-hint>
+            <mat-hint>Remaining: {{totalBalance - ((localAmount) ? localAmount : 0) | number}}</mat-hint>
             <span matSuffix> Sats </span>
             <mat-error *ngIf="lamount.errors?.required">Local amount is required.</mat-error>
             <mat-error *ngIf="lamount.errors?.min">Local amount must be greater than or equal to 20,000 Sats. It's required to cover the channel force close fee, if needed.</mat-error>

@@ -31,21 +31,21 @@
               <ng-template matStepLabel disabled="true">{{channelFormLabel}}</ng-template>
               <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
                 <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign.gt-sm="space-between center">
-                  <mat-form-field fxLayout="column" fxFlex="60" fxLayoutAlign="start end">
+                  <mat-form-field fxLayout="column" fxFlex="53" fxLayoutAlign="start end">
                     <mat-label>Amount</mat-label>
                     <input matInput autoFocus formControlName="fundingAmount" type="number" tabindex="1" required [step]="1000">
-                    <mat-hint>Remaining Bal: {{totalBalance - ((channelFormGroup.controls.fundingAmount.value) ? channelFormGroup.controls.fundingAmount.value : 0)}}</mat-hint>
+                    <mat-hint>Remaining: {{totalBalance - ((channelFormGroup.controls.fundingAmount.value) ? channelFormGroup.controls.fundingAmount.value : 0) | number}}</mat-hint>
                     <span matSuffix> Sats </span>
                     <mat-error *ngIf="channelFormGroup.controls.fundingAmount.errors?.required">Amount is required.</mat-error>
                     <mat-error *ngIf="channelFormGroup.controls.fundingAmount.errors?.min">Amount must be a positive number.</mat-error>
                     <mat-error *ngIf="channelFormGroup.controls.fundingAmount.errors?.max">Amount must be less than or equal to {{totalBalance}}.</mat-error>
                   </mat-form-field>
-                  <div fxFlex="35" fxLayoutAlign="start center" class="mb-2">
+                  <div fxFlex="45" fxLayoutAlign="start center">
                     <mat-slide-toggle tabindex="2" color="primary" formControlName="isPrivate" name="isPrivate">Private Channel</mat-slide-toggle>
                   </div>
                 </div>
                 <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign.gt-sm="space-between center">
-                  <div fxFlex="60" fxLayoutAlign="space-between end">
+                  <div fxFlex="53" fxLayoutAlign="space-between end">
                     <mat-form-field fxLayout="column" fxLayoutAlign="start center" [fxFlex]="channelFormGroup.controls.selFeeRate.value === 'customperkb' && !channelFormGroup.controls.flgMinConf.value ? '48' : '100'">
                       <mat-label>Fee Rate</mat-label>
                       <mat-select tabindex="4" formControlName="selFeeRate">
@@ -54,14 +54,14 @@
                         </mat-option>
                       </mat-select>
                     </mat-form-field>
-                    <mat-form-field *ngIf="channelFormGroup.controls.selFeeRate.value === 'customperkb' && !channelFormGroup.controls.flgMinConf.value" fxFlex="48" fxLayoutAlign="end center">
+                    <mat-form-field *ngIf="channelFormGroup.controls.selFeeRate.value === 'customperkb' && !channelFormGroup.controls.flgMinConf.value" fxLayout="column" fxFlex="48" fxLayoutAlign="end center">
                       <mat-label>Fee Rate (Sats/vByte)</mat-label>
                       <input matInput formControlName="customFeeRate" type="number" name="custFeeRate" tabindex="4" [step]="0.1" [min]="0">
                       <mat-error *ngIf="channelFormGroup.controls.selFeeRate.value === 'customperkb' && !channelFormGroup.controls.flgMinConf.value && !channelFormGroup.controls.customFeeRate.value">Fee Rate is required.</mat-error>
                     </mat-form-field>
                   </div>
-                  <div fxFlex="35" fxLayout="row" fxLayoutAlign="start center">
-                    <mat-checkbox fxFlex="7" tabindex="5" color="primary" formControlName="flgMinConf" fxLayoutAlign="stretch start" class="mb-2" [ngClass]="{'mr-6': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mr-2': screenSize === screenSizeEnum.MD || screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}"></mat-checkbox>
+                  <div fxFlex="45" fxLayout="row" fxLayoutAlign="start center">
+                    <mat-checkbox fxFlex="7" tabindex="5" color="primary" formControlName="flgMinConf" fxLayoutAlign="stretch start" [ngClass]="{'mr-6': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mr-2': screenSize === screenSizeEnum.MD || screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}"></mat-checkbox>
                     <mat-form-field fxLayout="column" fxFlex="93">
                       <mat-label>Min Confirmation Blocks</mat-label>
                       <input matInput formControlName="minConfValue" type="number" name="blocks" tabindex="8" [step]="1" [min]="0" [required]="channelFormGroup.controls.flgMinConf.value">

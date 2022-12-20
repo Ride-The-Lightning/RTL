@@ -2,6 +2,7 @@ import WebSocket from 'ws';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { WSServer } from '../../utils/webSocketServer.js';
+import { ECLWSEventsEnum } from '../../models/ecl.model.js';
 export class ECLWebSocketClient {
     constructor() {
         this.logger = Logger;
@@ -66,9 +67,11 @@ export class ECLWebSocketClient {
             eclWsClt.webSocketClient.onmessage = (msg) => {
                 this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Received message from the server..', data: msg.data });
                 msg = (typeof msg.data === 'string') ? JSON.parse(msg.data) : msg.data;
-                msg['source'] = 'ECL';
-                const msgStr = JSON.stringify(msg);
-                this.wsServer.sendEventsToAllLNClients(msgStr, eclWsClt.selectedNode);
+                if (msg.type && msg.type !== ECLWSEventsEnum.PAY_RELAYED && msg.type !== ECLWSEventsEnum.PAY_SETTLING_ONCHAIN && msg.type !== ECLWSEventsEnum.ONION_MESSAGE_RECEIVED) {
+                    msg['source'] = 'ECL';
+                    const msgStr = JSON.stringify(msg);
+                    this.wsServer.sendEventsToAllLNClients(msgStr, eclWsClt.selectedNode);
+                }
             };
             eclWsClt.webSocketClient.onerror = (err) => {
                 if (eclWsClt.selectedNode.ln_version === '' || !eclWsClt.selectedNode.ln_version || this.common.isVersionCompatible(eclWsClt.selectedNode.ln, '0.5.0')) {

@@ -86,6 +86,9 @@ export class ECLEffects implements OnDestroy {
               break;
             case ECLWSEventTypeEnum.PAYMENT_RELAYED:
               delete newMessage.source;
+              newMessage.amountIn = Math.round((newMessage.amountIn || 0) / 1000);
+              newMessage.amountOut = Math.round((newMessage.amountOut || 0) / 1000);
+              if (newMessage.timestamp.unix) { newMessage.timestamp = newMessage.timestamp.unix * 1000; }
               this.store.dispatch(updateRelayedPayment({ payload: newMessage }));
               break;
             case ECLWSEventTypeEnum.CHANNEL_STATE_CHANGED:

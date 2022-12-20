@@ -172,8 +172,6 @@ export const ECLReducer = createReducer(initECLState,
   on(updateRelayedPayment, (state, { payload }) => {
     const modifiedPayments = state.payments;
     const updatedPayload = mapAliases(payload, [...state.activeChannels, ...state.pendingChannels, ...state.inactiveChannels]);
-    updatedPayload.amountIn = Math.round((payload.amountIn || 0) / 1000);
-    updatedPayload.amountOut = Math.round((payload.amountOut || 0) / 1000);
     modifiedPayments.relayed?.unshift(updatedPayload);
     const feeSats = (payload.amountIn || 0) - (payload.amountOut || 0);
     const modifiedLightningBalance = { localBalance: (state.lightningBalance.localBalance + feeSats), remoteBalance: (state.lightningBalance.remoteBalance - feeSats) };
