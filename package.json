@@ -46,6 +46,7 @@
     "ngx-perfect-scrollbar-next": "^10.1.1",
     "otplib": "^12.0.1",
     "pdfmake": "^0.2.6",
+    "request": "^2.88.2",
     "request-promise": "^4.2.6",
     "rxjs": "~7.5.0",
     "sha256": "^0.2.0",
