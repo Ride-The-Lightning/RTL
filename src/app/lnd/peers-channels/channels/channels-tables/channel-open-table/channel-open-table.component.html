@@ -21,7 +21,7 @@
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="Active"></th>
         <td *matCellDef="let channel" mat-cell>
           <span *ngIf="channel.active" class="dot green" matTooltip="Active" matTooltipPosition="right"></span>
-          <span *ngIf="!channel.active" class="dot yellow" matTooltip="Inactive" matTooltipPosition="right"></span>
+          <span *ngIf="!channel.active" class="dot grey" matTooltip="Inactive" matTooltipPosition="right"></span>
         </td>
       </ng-container>
       <ng-container matColumnDef="private">
