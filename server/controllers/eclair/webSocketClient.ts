@@ -123,7 +123,7 @@ export class ECLWebSocketClient {
     this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'INFO', fileName: 'ECLWebSocket', msg: 'Websocket Server Heartbeat..' });
     if (!eclWsClt.webSocketClient) return;
     if (eclWsClt.webSocketClient.readyState !== 1) return;
-    eclWsClt.webSocketClient.send('Pinging Server');
+    eclWsClt.webSocketClient.ping();
     setTimeout(() => {
       this.heartbeat(eclWsClt);
     }, 59 * 1000);

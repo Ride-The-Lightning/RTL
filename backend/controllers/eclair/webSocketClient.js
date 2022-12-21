@@ -114,7 +114,7 @@ export class ECLWebSocketClient {
                 return;
             if (eclWsClt.webSocketClient.readyState !== 1)
                 return;
-            eclWsClt.webSocketClient.send('Pinging Server');
+            eclWsClt.webSocketClient.ping();
             setTimeout(() => {
                 this.heartbeat(eclWsClt);
             }, 59 * 1000);
