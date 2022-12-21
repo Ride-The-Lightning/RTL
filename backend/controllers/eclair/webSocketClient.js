@@ -54,6 +54,7 @@ export class ECLWebSocketClient {
             eclWsClt.webSocketClient.onopen = () => {
                 this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'INFO', fileName: 'ECLWebSocket', msg: 'Connected to the Eclair\'s Websocket Server..' });
                 this.waitTime = 0.5;
+                this.heartbeat(eclWsClt);
             };
             eclWsClt.webSocketClient.onclose = (e) => {
                 if (eclWsClt && eclWsClt.selectedNode && eclWsClt.selectedNode.ln_implementation === 'ECL') {
@@ -106,6 +107,17 @@ export class ECLWebSocketClient {
             }
             newClient.selectedNode = JSON.parse(JSON.stringify(newSelectedNode));
             this.webSocketClients[clientIdx] = newClient;
+        };
+        this.heartbeat = (eclWsClt) => {
+            this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'INFO', fileName: 'ECLWebSocket', msg: 'Websocket Server Heartbeat..' });
+            if (!eclWsClt.webSocketClient)
+                return;
+            if (eclWsClt.webSocketClient.readyState !== 1)
+                return;
+            eclWsClt.webSocketClient.send('Pinging Server');
+            setTimeout(() => {
+                this.heartbeat(eclWsClt);
+            }, 59 * 1000);
         };
         this.wsServer.eventEmitterECL.on('CONNECT', (nodeIndex) => {
             this.connect(this.common.findNode(+nodeIndex));
