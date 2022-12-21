@@ -109,7 +109,7 @@ export class ECLWebSocketClient {
             this.webSocketClients[clientIdx] = newClient;
         };
         this.heartbeat = (eclWsClt) => {
-            this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'INFO', fileName: 'ECLWebSocket', msg: 'Websocket Server Heartbeat..' });
+            this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Websocket Server Heartbeat..' });
             if (!eclWsClt.webSocketClient)
                 return;
             if (eclWsClt.webSocketClient.readyState !== 1)
