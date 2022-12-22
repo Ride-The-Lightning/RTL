@@ -18,12 +18,14 @@ import { RTLState } from '../../../../../store/rtl.state';
 import { channels, lndPageSettings } from '../../../../store/lnd.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-channel-active-htlcs-table',
   templateUrl: './channel-active-htlcs-table.component.html',
   styleUrls: ['./channel-active-htlcs-table.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('HTLCs') }
   ]
 })
@@ -70,7 +72,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
         }
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
-        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(channels).pipe(takeUntil(this.unSubs[1])).
@@ -81,13 +83,17 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.channelsJSONArr = channelsSelector.channels?.filter((channel) => channel.pending_htlcs && channel.pending_htlcs.length > 0) || [];
-        this.loadHTLCsTable(this.channelsJSONArr);
+        if (this.channelsJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+          this.loadHTLCsTable(this.channelsJSONArr);
+        }
         this.logger.info(channelsSelector);
       });
   }
 
   ngAfterViewInit() {
-    this.loadHTLCsTable(this.channelsJSONArr);
+    if (this.channelsJSONArr.length > 0) {
+      this.loadHTLCsTable(this.channelsJSONArr);
+    }
   }
 
   onHTLCClick(selHtlc: ChannelHTLC, selChannel: Channel) {
@@ -172,7 +178,6 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
           return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     };
-    this.channels.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.channels.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

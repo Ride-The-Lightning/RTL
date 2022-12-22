@@ -14,12 +14,14 @@ import { ColumnDefinition, TableSetting } from '../../models/pageSettings';
 import { Subject, takeUntil } from 'rxjs';
 import { rootSelectedNode } from '../../../store/rtl.selector';
 import { CamelCaseWithReplacePipe } from '../../pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-transactions-report-table',
   templateUrl: './transactions-report-table.component.html',
   styleUrls: ['./transactions-report-table.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Transactions') }
   ]
 })
@@ -59,7 +61,9 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
   }
 
   ngAfterViewInit() {
-    this.setTableWidgets();
+    setTimeout(() => {
+      this.setTableWidgets();
+    }, 0);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -130,9 +134,8 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
 
   setTableWidgets() {
     if (this.transactions && this.transactions.data && this.transactions.data.length > 0) {
-      this.transactions.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
       this.transactions.sort = this.sort;
-      this.transactions.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+      this.transactions.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
       this.transactions.paginator = this.paginator;
       this.setFilterPredicate();
       this.applyFilter();

@@ -20,6 +20,7 @@ import { RTLState } from '../../../../../store/rtl.state';
 import { allChannelsInfo, eclNodeInformation, eclPageSettings, onchainBalance, peers } from '../../../../store/ecl.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
 import { CamelCaseWithSpacesPipe } from '../../../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 
 @Component({
@@ -27,6 +28,7 @@ import { CamelCaseWithSpacesPipe } from '../../../../../shared/pipes/app.pipe';
   templateUrl: './channel-pending-table.component.html',
   styleUrls: ['./channel-pending-table.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Channels') }
   ]
 })
@@ -80,7 +82,7 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
         this.displayedColumns.unshift('announceChannel');
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
-        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[1])).
@@ -159,7 +161,6 @@ export class ECLChannelPendingTableComponent implements OnInit, AfterViewInit, O
     this.channels = new MatTableDataSource<Channel>([...this.pendingChannels]);
     this.channels.sort = this.sort;
     this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    this.channels.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.channels.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

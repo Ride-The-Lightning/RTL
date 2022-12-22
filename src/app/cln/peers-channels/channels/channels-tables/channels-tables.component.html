@@ -1,17 +1,17 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
   <div fxLayout="row">
-    <button mat-flat-button color="primary" (click)="onOpenChannel()" type="submit" tabindex="1">Open Channel</button>
+    <button mat-flat-button color="primary" type="submit" tabindex="1" (click)="onOpenChannel()">Open Channel</button>
   </div>
-  <div fxLayout="column" fxFlex="100" class="my-2 bordered-box">
-    <mat-tab-group [(selectedIndex)]="activeLink" (selectedTabChange)="onSelectedTabChange($event)">
+  <div fxLayout="column" fxFlex="100" class="bordered-box">
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" [(selectedIndex)]="activeLink" (selectedTabChange)="onSelectedTabChange($event)">
       <mat-tab>
         <ng-template mat-tab-label>
-          <span matBadge="{{openChannels}}" matBadgeOverlap="false" class="tab-badge">Open</span>
+          <span matBadgeOverlap="false" class="tab-badge" matBadge="{{openChannels}}">Open</span>
         </ng-template>
       </mat-tab>
       <mat-tab>
         <ng-template mat-tab-label>
-          <span matBadge="{{pendingChannels}}" matBadgeOverlap="false" class="tab-badge">Pending/Inactive</span>
+          <span matBadgeOverlap="false" class="tab-badge" matBadge="{{pendingChannels}}">Pending/Inactive</span>
         </ng-template>
       </mat-tab>
     </mat-tab-group>

@@ -36,15 +36,17 @@ import { CLNOfferBookmarksTableComponent } from './transactions/offers/offer-boo
 import { CLNLocalFailedTransactionsComponent } from './routing/local-failed-transactions/local-failed-transactions.component';
 import { CLNLiquidityAdsListComponent } from './liquidity-ads/liquidity-ads-list/liquidity-ads-list.component';
 
+type PathMatch = 'full' | 'prefix' | undefined;
+
 export const ClnRoutes: Routes = [
   {
     path: '', component: CLNRootComponent,
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'home' },
+      { path: '', pathMatch: <PathMatch>'full', redirectTo: 'home' },
       { path: 'home', component: CLNHomeComponent, canActivate: [CLNUnlockedGuard] },
       {
         path: 'onchain', component: CLNOnChainComponent, canActivate: [CLNUnlockedGuard], children: [
-          { path: '', pathMatch: 'full', redirectTo: 'receive/utxos' },
+          { path: '', pathMatch: <PathMatch>'full', redirectTo: 'receive/utxos' },
           { path: 'receive/:selTab', component: CLNOnChainReceiveComponent, canActivate: [CLNUnlockedGuard] },
           { path: 'send/:selTab', component: CLNOnChainSendComponent, data: { sweepAll: false }, canActivate: [CLNUnlockedGuard] },
           { path: 'sweep/:selTab', component: CLNOnChainSendComponent, data: { sweepAll: true }, canActivate: [CLNUnlockedGuard] }
@@ -52,10 +54,10 @@ export const ClnRoutes: Routes = [
       },
       {
         path: 'connections', component: CLNConnectionsComponent, canActivate: [CLNUnlockedGuard], children: [
-          { path: '', pathMatch: 'full', redirectTo: 'channels' },
+          { path: '', pathMatch: <PathMatch>'full', redirectTo: 'channels' },
           {
             path: 'channels', component: CLNChannelsTablesComponent, canActivate: [CLNUnlockedGuard], children: [
-              { path: '', pathMatch: 'full', redirectTo: 'open' },
+              { path: '', pathMatch: <PathMatch>'full', redirectTo: 'open' },
               { path: 'open', component: CLNChannelOpenTableComponent, canActivate: [CLNUnlockedGuard] },
               { path: 'pending', component: CLNChannelPendingTableComponent, canActivate: [CLNUnlockedGuard] }
             ]
@@ -66,7 +68,7 @@ export const ClnRoutes: Routes = [
       { path: 'liquidityads', component: CLNLiquidityAdsListComponent, canActivate: [CLNUnlockedGuard] },
       {
         path: 'transactions', component: CLNTransactionsComponent, canActivate: [CLNUnlockedGuard], children: [
-          { path: '', pathMatch: 'full', redirectTo: 'payments' },
+          { path: '', pathMatch: <PathMatch>'full', redirectTo: 'payments' },
           { path: 'payments', component: CLNLightningPaymentsComponent, canActivate: [CLNUnlockedGuard] },
           { path: 'invoices', component: CLNLightningInvoicesTableComponent, canActivate: [CLNUnlockedGuard] },
           { path: 'offers', component: CLNOffersTableComponent, canActivate: [CLNUnlockedGuard] },
@@ -75,14 +77,14 @@ export const ClnRoutes: Routes = [
       },
       {
         path: 'messages', component: CLNSignVerifyMessageComponent, canActivate: [CLNUnlockedGuard], children: [
-          { path: '', pathMatch: 'full', redirectTo: 'sign' },
+          { path: '', pathMatch: <PathMatch>'full', redirectTo: 'sign' },
           { path: 'sign', component: CLNSignComponent, canActivate: [CLNUnlockedGuard] },
           { path: 'verify', component: CLNVerifyComponent, canActivate: [CLNUnlockedGuard] }
         ]
       },
       {
         path: 'routing', component: CLNRoutingComponent, canActivate: [CLNUnlockedGuard], children: [
-          { path: '', pathMatch: 'full', redirectTo: 'forwardinghistory' },
+          { path: '', pathMatch: <PathMatch>'full', redirectTo: 'forwardinghistory' },
           { path: 'forwardinghistory', component: CLNForwardingHistoryComponent, canActivate: [CLNUnlockedGuard] },
           { path: 'failedtransactions', component: CLNFailedTransactionsComponent, canActivate: [CLNUnlockedGuard] },
           { path: 'localfail', component: CLNLocalFailedTransactionsComponent, canActivate: [CLNUnlockedGuard] },
@@ -91,14 +93,14 @@ export const ClnRoutes: Routes = [
       },
       {
         path: 'reports', component: CLNReportsComponent, canActivate: [CLNUnlockedGuard], children: [
-          { path: '', pathMatch: 'full', redirectTo: 'routingreport' },
+          { path: '', pathMatch: <PathMatch>'full', redirectTo: 'routingreport' },
           { path: 'routingreport', component: CLNRoutingReportComponent, canActivate: [CLNUnlockedGuard] },
           { path: 'transactions', component: CLNTransactionsReportComponent, canActivate: [CLNUnlockedGuard] }
         ]
       },
       {
         path: 'graph', component: CLNGraphComponent, canActivate: [CLNUnlockedGuard], children: [
-          { path: '', pathMatch: 'full', redirectTo: 'lookups' },
+          { path: '', pathMatch: <PathMatch>'full', redirectTo: 'lookups' },
           { path: 'lookups', component: CLNLookupsComponent, canActivate: [CLNUnlockedGuard] },
           { path: 'queryroutes', component: CLNQueryRoutesComponent, canActivate: [CLNUnlockedGuard] }
         ]

@@ -26,12 +26,14 @@ import { sendPayment } from '../../store/cln.actions';
 import { clnNodeInformation, clnNodeSettings, clnPageSettings, payments } from '../../store/cln.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-cln-lightning-payments',
   templateUrl: './lightning-payments.component.html',
   styleUrls: ['./lightning-payments.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Payments') }
   ]
 })
@@ -105,7 +107,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         this.mppColumns = [];
         this.displayedColumns.map((col) => this.mppColumns.push('group_' + col));
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
-        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
         this.logger.info(this.mppColumns);
       });
@@ -353,9 +355,8 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
 
   loadPaymentsTable(payments: Payment[]) {
     this.payments = (payments) ? new MatTableDataSource<Payment>([...payments]) : new MatTableDataSource([]);
-    this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.payments.sort = this.sort;
-    this.payments.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+    this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.payments.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

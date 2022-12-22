@@ -1,132 +1,134 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="padding-gap-x-large">
-  <div class="p-2 error-border my-2" *ngIf="errorMessage !== ''">{{errorMessage}}</div>
+  <div *ngIf="errorMessage !== ''" class="p-2 error-border my-2">{{errorMessage}}</div>
   <div *ngIf="errorMessage === ''" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
     <div *ngIf="errorMessage === ''" fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container">
       <div fxFlex="70">Non Routing Peers</div>
       <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
-        <mat-form-field fxFlex="49">
-          <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()" name="filterBy">
-            <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
+        <mat-form-field fxLayout="column" fxFlex="49">
+          <mat-label>Filter By</mat-label>
+        <mat-select tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
+            <perfect-scrollbar><mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option></perfect-scrollbar>
           </mat-select>
         </mat-form-field>
-        <mat-form-field fxFlex="49">
-          <input matInput [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()" name="filter" placeholder="Filter">
+        <mat-form-field fxLayout="column" fxFlex="49">
+          <mat-label>Filter</mat-label>
+        <input matInput name="filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
         </mat-form-field>
       </div>
     </div>
-    <div *ngIf="errorMessage === ''" [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+    <div *ngIf="errorMessage === ''" fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container" [perfectScrollbar]>
       <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-      <table mat-table #table [dataSource]="nonRoutingPeers" matSort class="overflow-auto">
+      <table #table mat-table matSort class="overflow-auto" [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="nonRoutingPeers">
         <ng-container matColumnDef="chan_id">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel ID</th>
-          <td mat-cell *matCellDef="let nonRPeer">
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Channel ID</th>
+          <td *matCellDef="let nonRPeer" mat-cell>
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{nonRPeer?.chan_id}}</span>
             </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="remote_alias">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer Alias</th>
-          <td mat-cell *matCellDef="let nonRPeer">
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Peer Alias</th>
+          <td *matCellDef="let nonRPeer" mat-cell>
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{nonRPeer?.remote_alias}}</span>
             </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="remote_pubkey">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer Pubkey</th>
-          <td mat-cell *matCellDef="let nonRPeer">
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Peer Pubkey</th>
+          <td *matCellDef="let nonRPeer" mat-cell>
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{nonRPeer?.remote_pubkey}}</span>
             </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="channel_point">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel Point</th>
-          <td mat-cell *matCellDef="let nonRPeer">
-            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Channel Point</th>
+          <td *matCellDef="let nonRPeer" mat-cell>
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{nonRPeer?.channel_point}}</span>
             </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="uptime_str">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Uptime ({{timeUnit}})</th>
-          <td mat-cell *matCellDef="let nonRPeer"><span fxLayoutAlign="end center">{{nonRPeer.uptime_str}} </span></td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Uptime ({{timeUnit}})</th>
+          <td *matCellDef="let nonRPeer" mat-cell><span fxLayoutAlign="end center">{{nonRPeer.uptime_str}} </span></td>
         </ng-container>
         <ng-container matColumnDef="lifetime_str">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Lifetime ({{timeUnit}})</th>
-          <td mat-cell *matCellDef="let nonRPeer"><span fxLayoutAlign="end center">{{nonRPeer.lifetime_str}} </span></td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Lifetime ({{timeUnit}})</th>
+          <td *matCellDef="let nonRPeer" mat-cell><span fxLayoutAlign="end center">{{nonRPeer.lifetime_str}} </span></td>
         </ng-container>
         <ng-container matColumnDef="commit_fee">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Commit Fee (Sats)</th>
-          <td mat-cell *matCellDef="let nonRPeer"><span fxLayoutAlign="end center">{{nonRPeer.commit_fee | number}} </span></td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Commit Fee (Sats)</th>
+          <td *matCellDef="let nonRPeer" mat-cell><span fxLayoutAlign="end center">{{nonRPeer.commit_fee | number}} </span></td>
         </ng-container>
         <ng-container matColumnDef="commit_weight">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Commit Weight</th>
-          <td mat-cell *matCellDef="let nonRPeer"><span fxLayoutAlign="end center">{{nonRPeer.commit_weight | number}} </span></td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Commit Weight</th>
+          <td *matCellDef="let nonRPeer" mat-cell><span fxLayoutAlign="end center">{{nonRPeer.commit_weight | number}} </span></td>
         </ng-container>
         <ng-container matColumnDef="fee_per_kw">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Fee/KW</th>
-          <td mat-cell *matCellDef="let nonRPeer"><span fxLayoutAlign="end center">{{nonRPeer.fee_per_kw | number}} </span></td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Fee/KW</th>
+          <td *matCellDef="let nonRPeer" mat-cell><span fxLayoutAlign="end center">{{nonRPeer.fee_per_kw | number}} </span></td>
         </ng-container>
         <ng-container matColumnDef="num_updates">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Updates</th>
-          <td mat-cell *matCellDef="let nonRPeer"><span fxLayoutAlign="end center">{{nonRPeer.num_updates | number}} </span></td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Updates</th>
+          <td *matCellDef="let nonRPeer" mat-cell><span fxLayoutAlign="end center">{{nonRPeer.num_updates | number}} </span></td>
         </ng-container>
         <ng-container matColumnDef="unsettled_balance">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Unsettled Balance (Sats)</th>
-          <td mat-cell *matCellDef="let nonRPeer"><span fxLayoutAlign="end center">{{nonRPeer.unsettled_balance | number}} </span></td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Unsettled Balance (Sats)</th>
+          <td *matCellDef="let nonRPeer" mat-cell><span fxLayoutAlign="end center">{{nonRPeer.unsettled_balance | number}} </span></td>
         </ng-container>
         <ng-container matColumnDef="capacity">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Capacity (Sats)</th>
-          <td mat-cell *matCellDef="let nonRPeer"><span fxLayoutAlign="end center">{{nonRPeer.capacity | number}} </span></td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Capacity (Sats)</th>
+          <td *matCellDef="let nonRPeer" mat-cell><span fxLayoutAlign="end center">{{nonRPeer.capacity | number}} </span></td>
         </ng-container>
         <ng-container matColumnDef="local_chan_reserve_sat">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Local Reserve (Sats)</th>
-          <td mat-cell *matCellDef="let nonRPeer"><span fxLayoutAlign="end center">{{nonRPeer.local_chan_reserve_sat | number}} </span></td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Local Reserve (Sats)</th>
+          <td *matCellDef="let nonRPeer" mat-cell><span fxLayoutAlign="end center">{{nonRPeer.local_chan_reserve_sat | number}} </span></td>
         </ng-container>
         <ng-container matColumnDef="remote_chan_reserve_sat">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Remote Reserve (Sats)</th>
-          <td mat-cell *matCellDef="let nonRPeer"><span fxLayoutAlign="end center">{{nonRPeer.remote_chan_reserve_sat | number}} </span></td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Remote Reserve (Sats)</th>
+          <td *matCellDef="let nonRPeer" mat-cell><span fxLayoutAlign="end center">{{nonRPeer.remote_chan_reserve_sat | number}} </span></td>
         </ng-container>
         <ng-container matColumnDef="total_satoshis_sent">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Sent</th>
-          <td mat-cell *matCellDef="let nonRPeer"><span fxLayoutAlign="end center">{{nonRPeer.total_satoshis_sent | number}}</span></td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Sats Sent</th>
+          <td *matCellDef="let nonRPeer" mat-cell><span fxLayoutAlign="end center">{{nonRPeer.total_satoshis_sent | number}}</span></td>
         </ng-container>
         <ng-container matColumnDef="total_satoshis_received">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Received</th>
-          <td mat-cell *matCellDef="let nonRPeer"><span fxLayoutAlign="end center">{{nonRPeer.total_satoshis_received | number}}</span>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Sats Received</th>
+          <td *matCellDef="let nonRPeer" mat-cell><span fxLayoutAlign="end center">{{nonRPeer.total_satoshis_received | number}}</span>
           </td>
         </ng-container>
         <ng-container matColumnDef="local_balance">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Local Balance (Sats)</th>
-          <td mat-cell *matCellDef="let nonRPeer"><span fxLayoutAlign="end center">{{nonRPeer.local_balance | number}}</span>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Local Balance (Sats)</th>
+          <td *matCellDef="let nonRPeer" mat-cell><span fxLayoutAlign="end center">{{nonRPeer.local_balance | number}}</span>
           </td>
         </ng-container>
         <ng-container matColumnDef="remote_balance">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Remote Balance (Sats)</th>
-          <td mat-cell *matCellDef="let nonRPeer"><span fxLayoutAlign="end center">{{nonRPeer.remote_balance | number}}</span></td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Remote Balance (Sats)</th>
+          <td *matCellDef="let nonRPeer" mat-cell><span fxLayoutAlign="end center">{{nonRPeer.remote_balance | number}}</span></td>
         </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>
+          <th *matHeaderCellDef mat-header-cell>
             <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>
          </th>
-          <td mat-cell *matCellDef="let nonRPeer" fxLayoutAlign="end center">
-            <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onManagePeer(nonRPeer)">Manage</button>
+          <td *matCellDef="let nonRPeer" mat-cell fxLayoutAlign="end center">
+            <button mat-stroked-button color="primary" type="button" tabindex="4" class="table-actions-button" (click)="onManagePeer(nonRPeer)">Manage</button>
           </td>
         </ng-container>
         <ng-container matColumnDef="no_non_routing_event">
-          <td mat-footer-cell *matFooterCellDef colspan="4">
+          <td *matFooterCellDef  mat-footer-cell colspan="4">
             <p *ngIf="(!nonRoutingPeers?.data || nonRoutingPeers?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">All peers are routing.</p>
             <p *ngIf="(!nonRoutingPeers?.data || nonRoutingPeers?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting non routing peers...</p>
             <p *ngIf="(!nonRoutingPeers?.data || nonRoutingPeers?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
           </td>
         </ng-container>
-        <tr mat-footer-row *matFooterRowDef="['no_non_routing_event']" [ngClass]="{'display-none': nonRoutingPeers?.data?.length>0}"></tr>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr *matFooterRowDef="['no_non_routing_event']" mat-footer-row [ngClass]="{'display-none': nonRoutingPeers?.data?.length>0}"></tr>
+        <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+        <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
       </table>
     </div>
-    <mat-paginator #paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
+    <mat-paginator #paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true"></mat-paginator>
   </div>
 </div>

@@ -1,19 +1,10 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "./",
     "outDir": "../out-tsc/spec",
     "types": ["jasmine", "node"],
-    "paths": {
-      "crypto": ["../node_modules/crypto-browserify"],
-      "stream": ["../node_modules/stream-browserify"]
-    }
+    "module": "CommonJS"
   },
-  "files": [
-    "./test.ts",
-    "./polyfills.ts"
-  ],
   "include": [
     "./**/*.spec.ts",
     "./**/*.d.ts"

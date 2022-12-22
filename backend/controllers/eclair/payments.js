@@ -22,7 +22,7 @@ export const getSentInfoFromPaymentRequest = (selNode, payment) => {
 };
 export const getQueryNodes = (selNode, nodeIds) => {
     options.url = selNode.ln_server_url + '/nodes';
-    options.form = { nodeIds: nodeIds === null || nodeIds === void 0 ? void 0 : nodeIds.reduce((acc, curr) => acc + ',' + curr) };
+    options.form = { nodeIds: nodeIds?.reduce((acc, curr) => acc + ',' + curr) };
     return request.post(options).then((nodes) => {
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Payments', msg: 'Query Nodes Received', data: nodes });
         return nodes;
@@ -77,16 +77,14 @@ export const queryPaymentRoute = (req, res, next) => {
     };
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Query Payment Route Options', data: options.form });
     request.post(options).then((body) => {
-        var _a;
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Query Payment Route Received', data: body });
         if (body && body.routes && body.routes.length) {
             let allRoutesNodeIds = [];
-            allRoutesNodeIds = (_a = body.routes) === null || _a === void 0 ? void 0 : _a.reduce((accRoutes, currRoute) => [...new Set([...accRoutes, ...currRoute.nodeIds])], []);
+            allRoutesNodeIds = body.routes?.reduce((accRoutes, currRoute) => [...new Set([...accRoutes, ...currRoute.nodeIds])], []);
             return getQueryNodes(req.session.selectedNode, allRoutesNodeIds).then((nodesWithAlias) => {
                 let foundPeer = null;
                 body.routes.forEach((route, i) => {
-                    var _a;
-                    (_a = route.nodeIds) === null || _a === void 0 ? void 0 : _a.map((node, j) => {
+                    route.nodeIds?.map((node, j) => {
                         foundPeer = nodesWithAlias.find((nodeWithAlias) => node === nodeWithAlias.nodeId);
                         body.routes[i].nodeIds[j] = { nodeId: node, alias: foundPeer ? foundPeer.alias : '' };
                         return node;
@@ -113,7 +111,7 @@ export const getSentPaymentsInformation = (req, res, next) => {
     }
     if (req.body.payments) {
         const paymentsArr = req.body.payments.split(',');
-        return Promise.all(paymentsArr === null || paymentsArr === void 0 ? void 0 : paymentsArr.map((payment) => getSentInfoFromPaymentRequest(req.session.selectedNode, payment))).
+        return Promise.all(paymentsArr?.map((payment) => getSentInfoFromPaymentRequest(req.session.selectedNode, payment))).
             then((values) => {
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent Information Received', data: values });
             return res.status(200).json(values);

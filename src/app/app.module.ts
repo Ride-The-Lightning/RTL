@@ -1,5 +1,5 @@
 import { HammerModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LayoutModule } from '@angular/cdk/layout';
@@ -13,7 +13,6 @@ import { routing } from './app.routing';
 import { SharedModule } from './shared/shared.module';
 import { AppComponent } from './app.component';
 
-import { environment } from '../environments/environment';
 import { AuthGuard } from './shared/services/auth.guard';
 import { AuthInterceptor } from './shared/services/auth.interceptor';
 import { SessionService } from './shared/services/session.service';
@@ -32,6 +31,9 @@ import { LNDReducer } from './lnd/store/lnd.reducers';
 import { CLNReducer } from './cln/store/cln.reducers';
 import { ECLReducer } from './eclair/store/ecl.reducers';
 
+let isDevEnvironemt = false;
+if (isDevMode()) { isDevEnvironemt = true; }
+
 @NgModule({
   imports: [
     BrowserAnimationsModule,
@@ -49,7 +51,7 @@ import { ECLReducer } from './eclair/store/ecl.reducers';
         }
       }),
     EffectsModule.forRoot([RTLEffects, LNDEffects, CLNEffects, ECLEffects]),
-    !environment.production ? StoreDevtoolsModule.instrument() : []
+    isDevEnvironemt ? StoreDevtoolsModule.instrument() : []
   ],
   declarations: [AppComponent],
   providers: [

@@ -40,34 +40,94 @@
   }
   .rtl-top-toolbar {
     border-bottom: 1px solid white;
+    padding: 0 ($gap*5) 0 ($gap*2);
   }
   .bg-primary {
     background-color: $primary-color;
     color: white;
   }
-  .rtl-snack-bar {
+  .mat-mdc-select.multi-node-select .mat-mdc-select-value {
+    color: $foreground-text;
+  }
+  .page-title, .mat-mdc-select-value {
+    color: $foreground-secondary-text;
+  }
+  .mat-expansion-panel-header .mat-expansion-panel-header-title, .mat-expansion-panel-header-title {
+    color: $foreground-secondary-text;
+  }
+  .help-expansion {
+    & .mat-expansion-panel-header, & .mat-expansion-panel-header-title {
+      font-weight: 500;
+      color: $foreground-secondary-text;
+    }
+    & .mat-expansion-indicator::after, & .mat-expansion-panel-content, & .mat-expansion-panel-header-description {
+      color: $foreground-secondary-text;
+    }
+  }  
+  .mat-mdc-snack-bar-container.rtl-snack-bar {
+    font-weight: 600;
+    & .mdc-snackbar__surface,
+    & .mat-mdc-snack-bar-label.mdc-snackbar__label {
+      max-width: 40vw;
+      background-color: $background-color;
+      opacity: 0.9 !important;
+      border-radius: 4px;
+      color: $primary-color;
+    }
+  }
+  .mat-mdc-snack-bar-container.rtl-warn-snack-bar {
     max-width: 90vw !important;
     font-weight: 600;
-    background-color: $background-color;
-    opacity: 0.9 !important;
-    color: $primary-color;
+    & .mdc-snackbar__surface,
+    & .mat-mdc-snack-bar-label.mdc-snackbar__label {
+      max-width: 40vw;
+      background-color: $background-color;
+      opacity: 0.9 !important;
+      border-radius: 4px;
+      color: $warn-color;
+    }
   }
-  .rtl-warn-snack-bar {
+  .mat-mdc-snack-bar-container.rtl-accent-snack-bar {
     max-width: 90vw !important;
     font-weight: 600;
-    background-color: $background-color;
-    opacity: 0.9 !important;
-    color: $warn-color;
+    & .mdc-snackbar__surface,
+    & .mat-mdc-snack-bar-label.mdc-snackbar__label {
+      max-width: 40vw;
+      background-color: $background-color;
+      opacity: 0.9 !important;
+      border-radius: 4px;
+      color: $accent-color;
+    }
   }
-  .rtl-accent-snack-bar {
-    max-width: 90vw !important;
-    font-weight: 600;
-    background-color: $background-color;
-    opacity: 0.9 !important;
-    color: $accent-color;
+  button.mdc-button.mat-mdc-button-base.mat-mdc-outlined-button{
+    border-color: $primary-color;
   }
-  .mat-tab-label {
-    &.mat-tab-label-active {
+
+  .mat-tree-node:hover, .mat-nested-tree-node-parent:hover, .mat-select-panel .mat-option:hover, .mat-menu-panel .mat-menu-content .mat-menu-item:hover,
+    .mat-autocomplete-panel .mat-option.mat-active,
+    .mat-autocomplete-panel .mat-option.mat-selected.mat-active,
+    .mat-autocomplete-panel .mat-option:hover:not(.mat-option-disabled),
+    .mat-autocomplete-panel .mat-option:focus:not(.mat-option-disabled) {
+    color: $primary-color; 
+    cursor: pointer;
+    & .ng-fa-icon, & .mat-icon {
+      color: $primary-color;
+    }
+    & .sidenav-img svg {
+      fill: $primary-color;
+    }
+  }
+
+  .mat-mdc-progress-spinner .mdc-circular-progress__determinate-circle, .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic {
+    stroke: $background-color;
+  }
+
+  .spinner-container h2 {
+    color: $background-color;
+  }
+
+  .mdc-tab__text-label {
+    &.mdc-tab__text-label-active {
       color: $primary-color;
       & .tab-badge .mat-badge-content {
         background: $primary-color;
@@ -94,7 +154,14 @@
   }
   .mat-stroked-button.mat-primary:hover .mat-button-focus-overlay {
     opacity: 0.06;
-  }    
+  }
+
+  table.mat-mdc-table {
+    & thead tr th {
+      color: $foreground-secondary-text;
+    }
+  }
+
   .page-title-container, .page-sub-title-container {
     & .page-title-img {
       color: $foreground-disabled;  
@@ -134,23 +201,23 @@
   .modal-qr-code-container {
     background: $foreground-divider;
   }
-  .mat-tab-label, .mat-tab-link {
+  .mdc-tab__text-label, .mat-mdc-tab-link {
     color: $foreground-secondary-text;
   }
-  .mat-card, .mat-card:not([class*='mat-elevation-z']){
+  .mat-mdc-card, .mat-mdc-card:not([class*='mat-elevation-z']){
     box-shadow: none;
     border: 1px solid $foreground-divider;
   }
-  .dashboard-card .mat-card-header .mat-card-title {
+  .dashboard-card .mat-mdc-card-header .mat-mdc-card-title {
     color:  $foreground-disabled;
     & .ng-fa-icon {
       color:  $foreground-disabled;
     }
   }
-  & .dashboard-info-title {
+  .dashboard-info-title {
     color: $primary-color;
   }
-  & .dashboard-info-value {
+  .dashboard-capacity-header, .dashboard-info-value {
     color: $foreground-secondary-text;
   }
   .color-primary {
@@ -164,9 +231,6 @@
   }
   .mat-expansion-panel.flat-expansion-panel {
     border: 1px solid $foreground-divider;
-  }
-  .mat-tooltip {
-    font-size: 120%;
   }
   svg {
     & .boltz-icon { stroke:$foreground-secondary-text; stroke-width:4; }
@@ -216,7 +280,7 @@
     & .fill-color-primary-darker { fill: $primary-color; }
   }
   
-  & .mat-form-field-disabled {
+  .mat-form-field-disabled {
     & .mat-form-field-underline{
       background-color: transparent;
       background-image: linear-gradient(90deg,rgba(0,0,0,.42) 0,rgba(0,0,0,.42) 33%,transparent 0);
@@ -228,6 +292,10 @@
     }
   }  
 
+  .mdc-text-field:not(.mdc-text-field--disabled) .mdc-floating-label {
+    color: $primary-color;
+  }
+
   .mat-slide-toggle.mat-disabled {
     opacity: 1;
     & .mat-slide-toggle-content {
@@ -238,8 +306,9 @@
       cursor: not-allowed !important;
     }
   }
+
   .material-icons {
-    &.info-icon {
+    &.mat-icon-no-color, &.info-icon {
       color: $foreground-secondary-text;
       &.info-icon-primary {
         color: $primary-color;
@@ -249,6 +318,8 @@
       }
     }
   }
+
+ 
   ngx-charts-bar-vertical, ngx-charts-bar-vertical-2d {
     & text {
       fill: $foreground-text;

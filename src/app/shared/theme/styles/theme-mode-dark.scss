@@ -20,23 +20,29 @@
   $background-color: mat.get-color-from-palette($background, card);
   $hover-background: rgba(0, 0, 0, 0.04);
   $hover-background-dark: rgba(255, 255, 255, 0.06);
-  $tooltip-background: rgba(255, 255, 255, 0.9);
 
   .mat-primary {
     color: $primary-darker;
   }
-  .mat-button-base.mat-flat-button.mat-primary {
+  .mat-mdc-button-base.mat-mdc-unelevated-button.mat-primary {
     color: $foreground-text;
+  }
+  
+  .mat-mdc-option:hover:not(.mdc-list-item--disabled), .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-list-item--disabled) {
+    & .mdc-list-item__primary-text {
+      color: $primary-darker;
+    }
   }
   .rtl-top-toolbar {
     border-bottom: 1px solid $background-color;
+    padding: 0 ($gap*5) 0 ($gap*2);
   }
   .bg-primary {
     background-color: $primary-color;
     color: $foreground-text;
   }
-  .mat-tab-label {
-    &.mat-tab-label-active {
+  .mdc-tab__text-label {
+    &.mdc-tab__text-label-active {
       color: $primary-darker;
       & .tab-badge .mat-badge-content {
         background: $primary-darker;
@@ -47,26 +53,45 @@
       background: $foreground-secondary-text;
     }  
   }
-  .rtl-snack-bar {
+  
+  .rtl-snack-bar.mat-mdc-snack-bar-container {
     max-width: 90vw !important;
     font-weight: 700;
+    & .mdc-snackbar__surface {
+      max-width: 40vw;
+    }
+    & .mat-mdc-snack-bar-label.mdc-snackbar__label {
+      max-width: 40vw;
+    }
   }
-  .rtl-warn-snack-bar {
+  .rtl-warn-snack-bar.mat-mdc-snack-bar-container {
     max-width: 90vw !important;
     font-weight: 700;
-    color: $warn-color;
+    & .mdc-snackbar__surface {
+      max-width: 40vw;
+    }
+    & .mat-mdc-snack-bar-label.mdc-snackbar__label {
+      max-width: 40vw;
+      color: $warn-color;
+    }
   }
-  .rtl-accent-snack-bar {
+  .rtl-accent-snack-bar.mat-mdc-snack-bar-container {
     max-width: 90vw !important;
     font-weight: 700;
-    color: $accent-color;
+    & .mdc-snackbar__surface {
+      max-width: 40vw;
+    }
+    & .mat-mdc-snack-bar-label.mdc-snackbar__label {
+      max-width: 40vw;
+      color: $accent-color;
+    }
   }
-  .mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar {
+  .mat-mdc-tab-group.mat-primary .mat-ink-bar, .mat-mdc-tab-nav-bar.mat-primary .mat-ink-bar {
     background-color: $primary-darker;
   }
   .cc-data-block .cc-data-title {
     color: $primary-darker;
-  }    
+  }
   .mat-stroked-button.mat-primary {
     border-color: $primary-darker;
     color: $primary-darker;
@@ -87,8 +112,41 @@
     cursor: pointer;
     fill: $primary-darker; 
   }
-
-  .mat-autocomplete-panel .mat-option.mat-selected:not(.mat-active):not(:hover):not(.mat-option-disabled),
+  .help-expansion {
+    & .mat-expansion-panel-header, & .mat-expansion-panel-header-title {
+      font-weight: 500;
+      color: $foreground-base;
+    }
+    & .mat-expansion-indicator::after, & .mat-expansion-panel-content, & .mat-expansion-panel-header-description {
+      color: $foreground-base;
+    }
+  }  
+  .mdc-text-field:not(.mdc-text-field--disabled) .mdc-floating-label {
+    color: $primary-darker;
+  }
+  .mdc-text-field--filled .mdc-line-ripple::after {
+    border-bottom-color: $primary-darker;
+  }
+  .mdc-tab__text-label .tab-badge .mat-badge-content {
+    color: $foreground-base;
+    background: $primary-color;
+  }
+  button.mdc-button.mat-mdc-button-base.mat-mdc-outlined-button{
+    border-color: $foreground-disabled;
+  }
+  .mat-mdc-select-arrow svg {
+    fill: $foreground-base;
+  }
+  .mdc-text-field:not(.mdc-text-field--disabled) .mdc-text-field__input,
+  .mat-mdc-select-placeholder,
+  .mat-mdc-select-value, .mat-mdc-tab:not(.mat-mdc-tab-disabled) .mdc-tab__text-label, .mat-mdc-tab-link:not(.mat-mdc-tab-disabled) .mdc-tab__text-label {
+    color: $foreground-base;
+  }
+  .mat-mdc-tab:not(.mat-mdc-tab-disabled) .mdc-tab-indicator__content--underline, .mat-mdc-tab-link:not(.mat-mdc-tab-disabled) .mdc-tab-indicator__content--underline {
+    border-color: $primary-darker;
+  }
+  .mdc-list-item--selected .mdc-list-item__primary-text, .mdc-list-item--activated .mdc-list-item__primary-text,  
+  .mat-mdc-tab:not(.mat-mdc-tab-disabled).mdc-tab--active .mdc-tab__text-label, .mat-mdc-tab-link:not(.mat-mdc-tab-disabled).mdc-tab--active .mdc-tab__text-label,  .mat-autocomplete-panel .mat-option.mat-selected:not(.mat-active):not(:hover):not(.mat-option-disabled),
   .mat-autocomplete-panel .mat-option.mat-selected:not(.mat-active):not(:hover),
   .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
     color: $primary-darker; 
@@ -142,22 +200,22 @@
   .mat-tree {
     background: mat.get-color-from-palette($background, dialog);
   }
-  .mat-tab-label, .mat-tab-link {
-    color:  $foreground-secondary-text;
+  h4 {
+    color: $primary-darker;
   }
-  .dashboard-card .mat-card-header .mat-card-title {
+  .dashboard-card .mat-mdc-card-header .mat-mdc-card-title {
     color:  $foreground-text;
     & .ng-fa-icon {
       color:  $foreground-text;
     }
   }
-  & .dashboard-info-title {
+  .dashboard-info-title {
     color: $primary-darker;
   }
-  & .dashboard-info-value {
+  .dashboard-info-value {
     color: $foreground-text;
   }
-  & .dashboard-capacity-header {
+  .dashboard-capacity-header {
     color: $foreground-text;
   }
   .mat-progress-bar.this-channel-bar .mat-progress-bar-fill::after {
@@ -177,6 +235,14 @@
   }
   .mat-stepper-vertical {
     background-color: mat.get-color-from-palette($background, dialog);
+  }
+  .spinner-container h2 {
+    color: $primary-color;
+  }
+  table.mat-mdc-table {
+    & thead tr th {
+      color: $foreground-base;
+    }
   }
   svg {
     & .boltz-icon { stroke:#FFFFFF; stroke-width:4; }
@@ -225,11 +291,11 @@
     & .fill-color-primary-lighter { fill: $primary-lighter; }
     & .fill-color-primary-darker { fill: $primary-darker; }
   }
-  & .mat-select-value, & .mat-select-arrow {
+  .mat-select-value, .mat-select-arrow {
     color: $foreground-text;
   }
   
-  & .mat-form-field-disabled {
+  .mat-form-field-disabled {
     & .mat-form-field-underline{
       background-color: transparent;
       background-image: linear-gradient(90deg,rgba(0,0,0,.42) 0,rgba(0,0,0,.42) 33%,transparent 0);
@@ -240,12 +306,6 @@
       background-color: $hover-background-dark;
     }
   }  
-
-  .mat-tooltip {
-    background-color: $tooltip-background;
-    color: $background-color;
-    font-size: 120%;
-  }
 
   .mat-slide-toggle-bar, .mat-step-header .mat-step-icon:not(.mat-step-icon-selected) {
     background-color: mat.get-color-from-palette($background, lightest-background);
@@ -265,7 +325,7 @@
     color: $primary-darker;
   }
 
-  & tr.alert.alert-warn {
+  tr.alert.alert-warn {
     & .mat-cell, .mat-header-cell, .mat-footer-cell {
       color: $yellow-alert-color;
     }

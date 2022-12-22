@@ -7,7 +7,6 @@ import { Subject, of } from 'rxjs';
 import { map, mergeMap, catchError, takeUntil } from 'rxjs/operators';
 import { Location } from '@angular/common';
 
-import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
 import { SessionService } from '../../shared/services/session.service';
 import { CommonService } from '../../shared/services/common.service';
@@ -15,7 +14,7 @@ import { WebSocketClientService } from '../../shared/services/web-socket.service
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { GetInfo, OnChainBalance, Peer, Audit, Transaction, Invoice, Channel, ChannelStateUpdate, SaveChannel, UpdateChannel, CloseChannel,
   GetQueryRoutes, QueryRoutes, SendPayment, SendPaymentOnChain, CreateInvoice } from '../../shared/models/eclModels';
-import { RTLActions, ECLActions, APICallStatusEnum, UI_MESSAGES, ECLWSEventTypeEnum } from '../../shared/services/consts-enums-functions';
+import { API_URL, API_END_POINTS, RTLActions, ECLActions, APICallStatusEnum, UI_MESSAGES, ECLWSEventTypeEnum } from '../../shared/services/consts-enums-functions';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 import { ECLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 
@@ -87,6 +86,9 @@ export class ECLEffects implements OnDestroy {
               break;
             case ECLWSEventTypeEnum.PAYMENT_RELAYED:
               delete newMessage.source;
+              newMessage.amountIn = Math.round((newMessage.amountIn || 0) / 1000);
+              newMessage.amountOut = Math.round((newMessage.amountOut || 0) / 1000);
+              if (newMessage.timestamp.unix) { newMessage.timestamp = newMessage.timestamp.unix * 1000; }
               this.store.dispatch(updateRelayedPayment({ payload: newMessage }));
               break;
             case ECLWSEventTypeEnum.CHANNEL_STATE_CHANGED:
@@ -117,7 +119,7 @@ export class ECLEffects implements OnDestroy {
       this.store.dispatch(setApiUrl({ payload: this.CHILD_API_URL }));
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_NODE_INFO }));
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'FetchInfo', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API).
+      return this.httpClient.get<GetInfo>(this.CHILD_API_URL + API_END_POINTS.GETINFO_API).
         pipe(
           takeUntil(this.actions.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
           map((info) => {
@@ -145,7 +147,7 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.FETCH_FEES_ECL),
     mergeMap(() => {
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'FetchFees', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<Audit>(this.CHILD_API_URL + environment.FEES_API + '/fees').
+      return this.httpClient.get<Audit>(this.CHILD_API_URL + API_END_POINTS.FEES_API + '/fees').
         pipe(
           map((fees: any) => {
             this.logger.info(fees);
@@ -167,7 +169,7 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.FETCH_PAYMENTS_ECL),
     mergeMap(() => {
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'FetchPayments', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<Audit>(this.CHILD_API_URL + environment.FEES_API + '/payments').
+      return this.httpClient.get<Audit>(this.CHILD_API_URL + API_END_POINTS.FEES_API + '/payments').
         pipe(
           map((payments: any) => {
             this.logger.info(payments);
@@ -189,7 +191,7 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.FETCH_CHANNELS_ECL),
     mergeMap((action: { type: string, payload: { fetchPayments: boolean } }) => {
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'FetchChannels', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<Channel[]>(this.CHILD_API_URL + environment.CHANNELS_API).
+      return this.httpClient.get<Channel[]>(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API).
         pipe(
           map((channelsRes: Channel[]) => {
             this.logger.info(channelsRes);
@@ -213,7 +215,7 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.FETCH_ONCHAIN_BALANCE_ECL),
     mergeMap(() => {
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'FetchOnchainBalance', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<OnChainBalance>(this.CHILD_API_URL + environment.ON_CHAIN_API + '/balance');
+      return this.httpClient.get<OnChainBalance>(this.CHILD_API_URL + API_END_POINTS.ON_CHAIN_API + '/balance');
     }),
     map((balance) => {
       this.logger.info(balance);
@@ -233,7 +235,7 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.FETCH_PEERS_ECL),
     mergeMap(() => {
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'FetchPeers', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<Peer[]>(this.CHILD_API_URL + environment.PEERS_API).
+      return this.httpClient.get<Peer[]>(this.CHILD_API_URL + API_END_POINTS.PEERS_API).
         pipe(
           map((peers: Peer[]) => {
             this.logger.info(peers);
@@ -255,7 +257,7 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.GET_NEW_ADDRESS_ECL),
     mergeMap(() => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GENERATE_NEW_ADDRESS }));
-      return this.httpClient.get(this.CHILD_API_URL + environment.ON_CHAIN_API).
+      return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.ON_CHAIN_API).
         pipe(
           map((newAddress: any) => {
             this.logger.info(newAddress);
@@ -266,7 +268,7 @@ export class ECLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('GetNewAddress', UI_MESSAGES.GENERATE_NEW_ADDRESS, 'Generate New Address Failed', this.CHILD_API_URL + environment.ON_CHAIN_API, err);
+            this.handleErrorWithAlert('GetNewAddress', UI_MESSAGES.GENERATE_NEW_ADDRESS, 'Generate New Address Failed', this.CHILD_API_URL + API_END_POINTS.ON_CHAIN_API, err);
             return of({ type: RTLActions.VOID });
           })
         );
@@ -288,7 +290,7 @@ export class ECLEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: { id: string } }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.CONNECT_PEER }));
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'SaveNewPeer', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.post<Peer[]>(this.CHILD_API_URL + environment.PEERS_API + ((action.payload.id.includes('@') ? '?uri=' : '?nodeId=') + action.payload.id), {}).
+      return this.httpClient.post<Peer[]>(this.CHILD_API_URL + API_END_POINTS.PEERS_API + ((action.payload.id.includes('@') ? '?uri=' : '?nodeId=') + action.payload.id), {}).
         pipe(
           map((postRes: Peer[]) => {
             this.logger.info(postRes);
@@ -313,7 +315,7 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.DETACH_PEER_ECL),
     mergeMap((action: { type: string, payload: { nodeId: string } }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DISCONNECT_PEER }));
-      return this.httpClient.delete(this.CHILD_API_URL + environment.PEERS_API + '/' + action.payload.nodeId).
+      return this.httpClient.delete(this.CHILD_API_URL + API_END_POINTS.PEERS_API + '/' + action.payload.nodeId).
         pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
@@ -325,7 +327,7 @@ export class ECLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('DisconnectPeer', UI_MESSAGES.DISCONNECT_PEER, 'Unable to Detach Peer. Try again later.', this.CHILD_API_URL + environment.PEERS_API + '/' + action.payload.nodeId, err);
+            this.handleErrorWithAlert('DisconnectPeer', UI_MESSAGES.DISCONNECT_PEER, 'Unable to Detach Peer. Try again later.', this.CHILD_API_URL + API_END_POINTS.PEERS_API + '/' + action.payload.nodeId, err);
             return of({ type: RTLActions.VOID });
           })
         );
@@ -341,7 +343,7 @@ export class ECLEffects implements OnDestroy {
       if (action.payload.feeRate && action.payload.feeRate > 0) {
         reqBody['fundingFeerateSatByte'] = action.payload.feeRate;
       }
-      return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API, reqBody).
+      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API, reqBody).
         pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
@@ -377,7 +379,7 @@ export class ECLEffects implements OnDestroy {
       } else {
         queryParam = queryParam + '&channelId=' + action.payload.channelId;
       }
-      return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API + '/updateRelayFee' + queryParam, {}).
+      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/updateRelayFee' + queryParam, {}).
         pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
@@ -393,7 +395,7 @@ export class ECLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('UpdateChannels', UI_MESSAGES.UPDATE_CHAN_POLICY, 'Update Channel Failed', this.CHILD_API_URL + environment.CHANNELS_API, err);
+            this.handleErrorWithAlert('UpdateChannels', UI_MESSAGES.UPDATE_CHAN_POLICY, 'Update Channel Failed', this.CHILD_API_URL + API_END_POINTS.CHANNELS_API, err);
             return of({ type: RTLActions.VOID });
           })
         );
@@ -404,7 +406,7 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.CLOSE_CHANNEL_ECL),
     mergeMap((action: { type: string, payload: CloseChannel }) => {
       this.store.dispatch(openSpinner({ payload: ((action.payload.force) ? UI_MESSAGES.FORCE_CLOSE_CHANNEL : UI_MESSAGES.CLOSE_CHANNEL) }));
-      return this.httpClient.delete(this.CHILD_API_URL + environment.CHANNELS_API + '?channelId=' + action.payload.channelId + '&force=' + action.payload.force).
+      return this.httpClient.delete(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '?channelId=' + action.payload.channelId + '&force=' + action.payload.force).
         pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
@@ -418,7 +420,7 @@ export class ECLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('CloseChannel', ((action.payload.force) ? UI_MESSAGES.FORCE_CLOSE_CHANNEL : UI_MESSAGES.CLOSE_CHANNEL), 'Unable to Close Channel. Try again later.', this.CHILD_API_URL + environment.CHANNELS_API, err);
+            this.handleErrorWithAlert('CloseChannel', ((action.payload.force) ? UI_MESSAGES.FORCE_CLOSE_CHANNEL : UI_MESSAGES.CLOSE_CHANNEL), 'Unable to Close Channel. Try again later.', this.CHILD_API_URL + API_END_POINTS.CHANNELS_API, err);
             return of({ type: RTLActions.VOID });
           })
         );
@@ -427,7 +429,7 @@ export class ECLEffects implements OnDestroy {
 
   queryRoutesFetch = createEffect(() => this.actions.pipe(
     ofType(ECLActions.GET_QUERY_ROUTES_ECL),
-    mergeMap((action: { type: string, payload: GetQueryRoutes }) => this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/route?nodeId=' + action.payload.nodeId + '&amountMsat=' + action.payload.amount).
+    mergeMap((action: { type: string, payload: GetQueryRoutes }) => this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.PAYMENTS_API + '/route?nodeId=' + action.payload.nodeId + '&amountMsat=' + action.payload.amount).
       pipe(
         map((qrRes: any) => {
           this.logger.info(qrRes);
@@ -438,7 +440,7 @@ export class ECLEffects implements OnDestroy {
         }),
         catchError((err: any) => {
           this.store.dispatch(setQueryRoutes({ payload: [] }));
-          this.handleErrorWithAlert('GetQueryRoutes', UI_MESSAGES.NO_SPINNER, 'Get Query Routes Failed', this.CHILD_API_URL + environment.PAYMENTS_API + '/route?nodeId=' + action.payload.nodeId + '&amountMsat=' + action.payload.amount, err);
+          this.handleErrorWithAlert('GetQueryRoutes', UI_MESSAGES.NO_SPINNER, 'Get Query Routes Failed', this.CHILD_API_URL + API_END_POINTS.PAYMENTS_API + '/route?nodeId=' + action.payload.nodeId + '&amountMsat=' + action.payload.amount, err);
           return of({ type: RTLActions.VOID });
         })
       ))
@@ -458,7 +460,7 @@ export class ECLEffects implements OnDestroy {
       this.latestPaymentRes = '';
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.SEND_PAYMENT }));
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'SendPayment', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.post(this.CHILD_API_URL + environment.PAYMENTS_API, action.payload).
+      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.PAYMENTS_API, action.payload).
         pipe(
           map((sendRes: any) => {
             this.logger.info(sendRes);
@@ -475,7 +477,7 @@ export class ECLEffects implements OnDestroy {
             if (action.payload.fromDialog) {
               this.handleErrorWithoutAlert('SendPayment', UI_MESSAGES.SEND_PAYMENT, 'Send Payment Failed.', err);
             } else {
-              this.handleErrorWithAlert('SendPayment', UI_MESSAGES.SEND_PAYMENT, 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, err);
+              this.handleErrorWithAlert('SendPayment', UI_MESSAGES.SEND_PAYMENT, 'Send Payment Failed', this.CHILD_API_URL + API_END_POINTS.PAYMENTS_API, err);
             }
             return of({ type: RTLActions.VOID });
           })
@@ -487,7 +489,7 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.FETCH_TRANSACTIONS_ECL),
     mergeMap(() => {
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'FetchTransactions', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<Transaction[]>(this.CHILD_API_URL + environment.ON_CHAIN_API + '/transactions?count=1000&skip=0');
+      return this.httpClient.get<Transaction[]>(this.CHILD_API_URL + API_END_POINTS.ON_CHAIN_API + '/transactions?count=1000&skip=0');
     }),
     map((transactions) => {
       this.logger.info(transactions);
@@ -508,7 +510,7 @@ export class ECLEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: SendPaymentOnChain }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.SEND_FUNDS }));
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'SendOnchainFunds', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.post(this.CHILD_API_URL + environment.ON_CHAIN_API, action.payload).
+      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.ON_CHAIN_API, action.payload).
         pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
@@ -533,7 +535,7 @@ export class ECLEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: CreateInvoice }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.CREATE_INVOICE }));
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'CreateInvoice', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.post(this.CHILD_API_URL + environment.INVOICES_API, action.payload).
+      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.INVOICES_API, action.payload).
         pipe(
           map((postRes: Invoice) => {
             this.logger.info(postRes);
@@ -571,7 +573,7 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.FETCH_INVOICES_ECL),
     mergeMap(() => {
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'FetchInvoices', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<Invoice[]>(this.CHILD_API_URL + environment.INVOICES_API).
+      return this.httpClient.get<Invoice[]>(this.CHILD_API_URL + API_END_POINTS.INVOICES_API).
         pipe(
           map((res: Invoice[]) => {
             this.logger.info(res);
@@ -594,7 +596,7 @@ export class ECLEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: string }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.SEARCHING_NODE }));
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'Lookup', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/nodes/' + action.payload).
+      return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/nodes/' + action.payload).
         pipe(
           map((resPeer) => {
             this.logger.info(resPeer);
@@ -606,7 +608,7 @@ export class ECLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('Lookup', UI_MESSAGES.SEARCHING_NODE, 'Peer Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/nodes/' + action.payload, err);
+            this.handleErrorWithAlert('Lookup', UI_MESSAGES.SEARCHING_NODE, 'Peer Lookup Failed', this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/nodes/' + action.payload, err);
             return of({ type: RTLActions.VOID });
           })
         );
@@ -618,7 +620,7 @@ export class ECLEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: string }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.SEARCHING_INVOICE }));
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'Lookup', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get(this.CHILD_API_URL + environment.INVOICES_API + '/' + action.payload).
+      return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.INVOICES_API + '/' + action.payload).
         pipe(
           map((resInvoice) => {
             this.logger.info(resInvoice);
@@ -653,7 +655,7 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.FETCH_PAGE_SETTINGS_ECL),
     mergeMap(() => {
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'FetchPageSettings', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get(environment.PAGE_SETTINGS_API).pipe(
+      return this.httpClient.get(API_END_POINTS.PAGE_SETTINGS_API).pipe(
         map((pageSettings: any) => {
           this.logger.info(pageSettings);
           this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'FetchPageSettings', status: APICallStatusEnum.COMPLETED } }));
@@ -675,7 +677,7 @@ export class ECLEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: any }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UPDATE_PAGE_SETTINGS }));
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'SavePageSettings', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.post(environment.PAGE_SETTINGS_API, action.payload).
+      return this.httpClient.post(API_END_POINTS.PAGE_SETTINGS_API, action.payload).
         pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
@@ -688,7 +690,7 @@ export class ECLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('SavePageSettings', UI_MESSAGES.UPDATE_PAGE_SETTINGS, 'Page Settings Update Failed.', environment.PAGE_SETTINGS_API, err);
+            this.handleErrorWithAlert('SavePageSettings', UI_MESSAGES.UPDATE_PAGE_SETTINGS, 'Page Settings Update Failed.', API_END_POINTS.PAGE_SETTINGS_API, err);
             return of({ type: RTLActions.VOID });
           })
         );

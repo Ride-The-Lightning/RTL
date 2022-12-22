@@ -1,5 +1,5 @@
 <div fxLayout="row" fxLayoutAlign="start center" class="page-title-container">
-  <fa-icon [icon]="faChartPie" class="page-title-img mr-1"></fa-icon>
+  <fa-icon class="page-title-img mr-1" [icon]="faChartPie"></fa-icon>
   <span class="page-title">On-chain Balance</span>
 </div>
 <div fxLayout="column" class="padding-gap-x mb-4">
@@ -10,21 +10,21 @@
   </mat-card>
 </div>
 <div fxLayout="row" fxLayoutAlign="start center" class="page-title-container">
-  <fa-icon [icon]="faUsers" class="page-title-img mr-1"></fa-icon>
+  <fa-icon class="page-title-img mr-1" [icon]="faUsers"></fa-icon>
   <span class="page-title">Connections</span>
 </div>
 <div fxLayout="column" class="padding-gap-x">
   <mat-card>
     <mat-card-content fxLayout="column">
-      <mat-tab-group [(selectedIndex)]="activeLink" (selectedTabChange)="onSelectedTabChange($event)">
+      <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" [(selectedIndex)]="activeLink" (selectedTabChange)="onSelectedTabChange($event)">
         <mat-tab>
           <ng-template mat-tab-label>
-            <span matBadge="{{activeChannels}}" matBadgeOverlap="false" class="tab-badge">Channels</span>
+            <span matBadgeOverlap="false" class="tab-badge" matBadge="{{activeChannels}}">Channels</span>
           </ng-template>
         </mat-tab>
         <mat-tab>
           <ng-template mat-tab-label>
-            <span matBadge="{{activePeers}}" matBadgeOverlap="false" class="tab-badge">Peers</span>
+            <span matBadgeOverlap="false" class="tab-badge" matBadge="{{activePeers}}">Peers</span>
           </ng-template>
         </mat-tab>
       </mat-tab-group>

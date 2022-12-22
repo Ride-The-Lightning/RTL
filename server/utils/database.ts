@@ -213,7 +213,7 @@ export class DatabaseAdapter {
     try {
       this.common.createDirectory(this.dbFilePath);
       const oldOffers: any = JSON.parse(fs.readFileSync(oldFilePath, 'utf-8'));
-      fs.writeFileSync(oldFilePath, JSON.stringify(oldOffers.Offers, null, 2));
+      fs.writeFileSync(oldFilePath, JSON.stringify(oldOffers.Offers ? oldOffers.Offers : [], null, 2));
       fs.renameSync(oldFilePath, newFilePath);
     } catch (err) {
       this.logger.log({ selectedNode: selNode, level: 'ERROR', fileName: 'Database', msg: 'Rename Old Database Error', error: err });

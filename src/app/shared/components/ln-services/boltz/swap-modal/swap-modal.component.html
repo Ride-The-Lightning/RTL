@@ -1,24 +1,25 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" *ngIf="!flgShowInfo" [@opacityAnimation]>
+<div *ngIf="!flgShowInfo" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" [@opacityAnimation]>
   <div fxFlex="100">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
-      <div [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '83' : '91'" fxLayoutAlign="start start"><span class="page-title">{{swapDirectionCaption}}</span></div>
-      <div [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '17' : '9'" fxLayoutAlign="space-between end">
-        <button tabindex="21" class="btn-close-x p-0" (click)="showInfo()" mat-button>?</button>
-        <button tabindex="22" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+      <div fxLayoutAlign="start start" [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '83' : '91'"><span class="page-title">{{swapDirectionCaption}}</span></div>
+      <div fxLayoutAlign="space-between end" [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '17' : '9'">
+        <button tabindex="21" class="btn-close-x p-0" mat-button (click)="showInfo()">?</button>
+        <button tabindex="22" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
       </div>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <div fxLayout="column">
-        <mat-vertical-stepper [linear]="true" #stepper (selectionChange)="stepSelectionChanged($event)">
+        <mat-vertical-stepper #stepper [linear]="true" (selectionChange)="stepSelectionChanged($event)">
           <mat-step [stepControl]="inputFormGroup" [editable]="flgEditable">
-            <form [formGroup]="inputFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
+            <form fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="inputFormGroup">
               <ng-template matStepLabel>{{inputFormLabel}}</ng-template>
               <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
                 <rtl-boltz-service-info [serviceInfo]="serviceInfo" [direction]="direction"></rtl-boltz-service-info>
               </div>
               <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">  
-                <mat-form-field fxFlex="48">
-                  <input autoFocus matInput placeholder="Amount" type="number" [step]="1000" tabindex="1" formControlName="amount" required>
+                <mat-form-field fxLayout="column" fxFlex="48">
+                  <mat-label>Amount</mat-label>
+                  <input autoFocus matInput type="number" tabindex="1" formControlName="amount" required [step]="1000">
                   <mat-hint>Range: {{serviceInfo?.limits?.minimal | number}}-{{serviceInfo?.limits?.maximal | number}}</mat-hint>
                   <span matSuffix>Sats</span>
                   <mat-error *ngIf="inputFormGroup?.controls?.amount?.errors?.required">Amount is required.</mat-error>
@@ -33,15 +34,16 @@
             </form>
           </mat-step>
           <mat-step *ngIf="direction === swapTypeEnum.SWAP_OUT" [stepControl]="addressFormGroup" [editable]="flgEditable">
-            <form [formGroup]="addressFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
+            <form fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="addressFormGroup">
               <ng-template matStepLabel>{{addressFormLabel}}</ng-template>
               <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch" class="mt-1">
-                <mat-radio-group color="primary" name="addressType" (change)="onAddressTypeChange($event)" formControlName="addressType" fxFlex="100" fxLayoutAlign="space-between stretch">
+                <mat-radio-group color="primary" name="addressType" formControlName="addressType" fxFlex="100" fxLayoutAlign="space-between stretch" (change)="onAddressTypeChange($event)">
                   <mat-radio-button fxFlex="48" tabindex="8" value="local">Node Local Address</mat-radio-button>
                   <mat-radio-button fxFlex="48" tabindex="9" value="external">External Address</mat-radio-button>
                 </mat-radio-group>
-                <mat-form-field fxFlex="100" class="mt-1">
-                  <input matInput placeholder="Address" tabindex="10" formControlName="address" [required]="addressFormGroup.controls.addressType.value === 'external'">
+                <mat-form-field fxLayout="column" fxFlex="100" class="mt-1">
+                  <mat-label>Address</mat-label>
+                  <input matInput tabindex="10" formControlName="address" [required]="addressFormGroup.controls.addressType.value === 'external'">
                   <mat-error *ngIf="addressFormGroup.controls.address.errors?.required">Address is required.</mat-error>
                 </mat-form-field>
               </div>
@@ -51,7 +53,7 @@
             </form>
           </mat-step>
           <mat-step [stepControl]="statusFormGroup">
-            <form [formGroup]="statusFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
+            <form fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="statusFormGroup">
               <ng-template matStepLabel>{{swapDirectionCaption}} Status</ng-template>
               <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
                 <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="!!swapStatus">
@@ -62,7 +64,7 @@
                   </mat-expansion-panel-header>
                   <div *ngIf="!swapStatus; else swapStatusBlock"></div>
                 </mat-expansion-panel>
-                <mat-progress-bar fxFlex="100" *ngIf="!swapStatus" color="primary" mode="indeterminate"></mat-progress-bar>
+                <mat-progress-bar *ngIf="!swapStatus" fxFlex="100" color="primary" mode="indeterminate"></mat-progress-bar>
               </div>
               <h4 *ngIf="swapStatus" fxLayoutAlign="start" class="font-bold-500 mt-2">{{(swapStatus && swapStatus.error) ? (swapDirectionCaption + ' failed.') : (swapStatus && swapStatus.id) ? (swapDirectionCaption + ' request placed successfully. You can check the status of the request on the \'Boltz\' menu.') : (swapDirectionCaption + ' request placed successfully.')}}</h4>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
@@ -72,7 +74,7 @@
           </mat-step>
         </mat-vertical-stepper>
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="end end">        
-          <button mat-button color="primary" tabindex="14" type="button" [mat-dialog-close]="false" default>Close</button>
+          <button mat-button color="primary" tabindex="14" type="button" default [mat-dialog-close]="false">Close</button>
         </div>
       </div>
     </mat-card-content>
@@ -81,20 +83,20 @@
 <ng-template #swapStatusBlock>
   <rtl-boltz-swap-status fxLayout="column" [swapStatus]="swapStatus" [direction]="direction"></rtl-boltz-swap-status>
 </ng-template>
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" *ngIf="flgShowInfo" [@opacityAnimation] class="info-graphics-container">
+<div *ngIf="flgShowInfo" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="info-graphics-container" [@opacityAnimation]>
   <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
     <mat-card-header fxLayout="row" fxFlex="8" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start"><span class="page-title"></span></div>
       <div fxFlex="5" fxLayoutAlign="end center">
-        <button tabindex="19" class="btn-close-x p-0" (click)="flgShowInfo=false;stepNumber=1;" mat-button>X</button>
+        <button tabindex="19" class="btn-close-x p-0" mat-button (click)="flgShowInfo=false;stepNumber=1;">X</button>
       </div>
     </mat-card-header>
     <mat-card-content fxLayout="column" fxFlex="70" fxLayoutAlign="space-between center" class="padding-gap-x-large">
-      <rtl-boltz-swapout-info-graphics fxFlex="100" *ngIf="direction === swapTypeEnum.SWAP_OUT" [(stepNumber)]="stepNumber" [animationDirection]="animationDirection"></rtl-boltz-swapout-info-graphics>
-      <rtl-boltz-swapin-info-graphics fxFlex="100" *ngIf="direction === swapTypeEnum.SWAP_IN" [(stepNumber)]="stepNumber" [animationDirection]="animationDirection"></rtl-boltz-swapin-info-graphics>
+      <rtl-boltz-swapout-info-graphics *ngIf="direction === swapTypeEnum.SWAP_OUT" fxFlex="100" [animationDirection]="animationDirection" [(stepNumber)]="stepNumber"></rtl-boltz-swapout-info-graphics>
+      <rtl-boltz-swapin-info-graphics *ngIf="direction === swapTypeEnum.SWAP_IN" fxFlex="100" [animationDirection]="animationDirection" [(stepNumber)]="stepNumber"></rtl-boltz-swapin-info-graphics>
     </mat-card-content>
     <div fxLayout="row" fxFlex="10" fxLayoutAlign="center end" class="padding-gap-x-large padding-gap-bottom-large">
-      <span *ngFor="let i of [1, 2, 3, 4, 5];" (click) = "onStepChanged(i)" fxLayoutAlign="center center" class="dots-stepper-block">
+      <span *ngFor="let i of [1, 2, 3, 4, 5];" fxLayoutAlign="center center" class="dots-stepper-block" (click) = "onStepChanged(i)">
         <p class="dot tiny-dot mr-0" [ngClass]="{'dot-primary': stepNumber === i, 'dot-primary-lighter': stepNumber !== i}"></p>
       </span>
     </div>

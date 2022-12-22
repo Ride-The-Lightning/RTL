@@ -24,12 +24,14 @@ import { detachPeer } from '../../store/cln.actions';
 import { clnPageSettings, nodeInfoAndBalance, peers } from '../../store/cln.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-cln-peers',
   templateUrl: './peers.component.html',
   styleUrls: ['./peers.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') }
   ]
 })
@@ -86,7 +88,7 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
         this.displayedColumns.unshift('connected');
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
-        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
@@ -223,6 +225,7 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   loadPeersTable(peersArr: Peer[]) {
     this.peers = new MatTableDataSource<Peer>([...peersArr]);
+    this.peers.sort = this.sort;
     this.peers.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
         case 'netaddr':
@@ -236,8 +239,6 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
         default: return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     };
-    this.peers.sort = this.sort;
-    this.peers.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.peers.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

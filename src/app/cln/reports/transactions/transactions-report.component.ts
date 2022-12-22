@@ -62,7 +62,7 @@ export class CLNTransactionsReportComponent implements OnInit, OnDestroy {
           this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
         }
         this.displayedColumns.push('actions');
-        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(payments).pipe(takeUntil(this.unSubs[1]),

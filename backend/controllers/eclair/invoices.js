@@ -59,18 +59,19 @@ export const listInvoices = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.form = {};
+    const tillToday = (Math.round(new Date(Date.now()).getTime() / 1000)).toString();
+    options.form = { from: 0, to: tillToday };
     const options1 = JSON.parse(JSON.stringify(options));
     options1.url = req.session.selectedNode.ln_server_url + '/listinvoices';
-    options1.form = {};
+    options1.form = { from: 0, to: tillToday };
     const options2 = JSON.parse(JSON.stringify(options));
     options2.url = req.session.selectedNode.ln_server_url + '/listpendinginvoices';
-    options2.form = {};
+    options2.form = { from: 0, to: tillToday };
     if (common.read_dummy_data) {
         return common.getDummyData('Invoices', req.session.selectedNode.ln_implementation).then((body) => {
             const invoices = (!body[0] || body[0].length <= 0) ? [] : body[0];
             pendingInvoices = (!body[1] || body[1].length <= 0) ? [] : body[1];
-            return Promise.all(invoices === null || invoices === void 0 ? void 0 : invoices.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.ln_server_url, invoice))).
+            return Promise.all(invoices?.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.ln_server_url, invoice))).
                 then((values) => res.status(200).json(invoices));
         });
     }
@@ -81,7 +82,7 @@ export const listInvoices = (req, res, next) => {
             const invoices = (!body[0] || body[0].length <= 0) ? [] : body[0];
             pendingInvoices = (!body[1] || body[1].length <= 0) ? [] : body[1];
             if (invoices && invoices.length > 0) {
-                return Promise.all(invoices === null || invoices === void 0 ? void 0 : invoices.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.ln_server_url, invoice))).
+                return Promise.all(invoices?.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.ln_server_url, invoice))).
                     then((values) => {
                     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Sorted Invoices List Received', data: invoices });
                     return res.status(200).json(invoices);

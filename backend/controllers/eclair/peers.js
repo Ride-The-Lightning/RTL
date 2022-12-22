@@ -32,7 +32,7 @@ export const getPeers = (req, res, next) => {
                 peersNodeIds = peersNodeIds.substring(1);
                 return getFilteredNodes(req.session.selectedNode, peersNodeIds).then((peersWithAlias) => {
                     let foundPeer = null;
-                    body === null || body === void 0 ? void 0 : body.map((peer) => {
+                    body?.map((peer) => {
                         foundPeer = peersWithAlias.find((peerWithAlias) => peer.nodeId === peerWithAlias.nodeId);
                         peer.alias = foundPeer ? foundPeer.alias : peer.nodeId.substring(0, 20);
                         return peer;
@@ -84,7 +84,7 @@ export const connectPeer = (req, res, next) => {
                 peersNodeIds = peersNodeIds.substring(1);
                 return getFilteredNodes(req.session.selectedNode, peersNodeIds).then((peersWithAlias) => {
                     let foundPeer = null;
-                    body === null || body === void 0 ? void 0 : body.map((peer) => {
+                    body?.map((peer) => {
                         foundPeer = peersWithAlias.find((peerWithAlias) => peer.nodeId === peerWithAlias.nodeId);
                         peer.alias = foundPeer ? foundPeer.alias : peer.nodeId.substring(0, 20);
                         return peer;

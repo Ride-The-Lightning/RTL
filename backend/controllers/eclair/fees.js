@@ -126,7 +126,8 @@ export const getPayments = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/audit';
-    options.form = null;
+    const tillToday = (Math.round(new Date(Date.now()).getTime() / 1000)).toString();
+    options.form = { from: 0, to: tillToday };
     if (common.read_dummy_data) {
         common.getDummyData('Payments', req.session.selectedNode.ln_implementation).then((data) => { res.status(200).json(arrangePayments(req.session.selectedNode, data)); });
     }

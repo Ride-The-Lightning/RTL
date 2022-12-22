@@ -1,36 +1,38 @@
-.mat-column-amount, .mat-column-expiration_height, .mat-column-htlc_index, .mat-column-forwarding_htlc_index {
-  flex: 0 0 10%;
-  width: 10%;
-}
-
-.mat-column-incoming, .mat-column-hash_lock, .mat-column-forwarding_channel {
-  flex: 0 0 15%;
-  width: 15%;
-  text-overflow: ellipsis;
-}
+@import "../../../../../shared/theme/styles/constants.scss";
 
 .mat-column-amount {
   .htlc-row-span:not(:first-of-type) {
-    padding-left: 3rem;
+    padding-left: 2rem;
     padding-right: 2rem;
   }
 }
 
 .htlc-row-span {
-  min-height: 4.2rem;
-  place-content: center flex-start;
-  align-items: center;
+  min-height: 3rem;
+  &.ellipsis-parent {
+    display: flex;
+    align-items: center;
+  }
 }
 
 .mat-column-actions {
+  & .htlc-group-head, & .htlc-group-details {
+    min-height: 3rem;
+  }
+  
   & .btn-htlc-expand {
-    min-width: 10rem;
-    width: 10rem;
+    min-width: $table-actions-min-width;
+    width: $table-actions-min-width;
+    margin: 0;
   }
 
   & .btn-htlc-info {
-    margin-top: 0.5rem;
-    min-width: 9rem;
-    width: 9rem; 
+    min-width: $table-actions-min-width - 1rem;
+    min-width: $table-actions-min-width - 1rem;
+    margin: 0;
   }
+}
+
+.mat-column-group_creation_date {
+  min-width: 7rem;
 }

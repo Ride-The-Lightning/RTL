@@ -1,28 +1,28 @@
 <div fxLayout="column" fxLayoutAlign="space-between stretch" class="mb-4">
   <mat-grid-list *ngIf="selNode.userPersona !== userPersonaEnum.OPERATOR" cols="3" rowHeight="330px">
-    <mat-grid-tile class="node-grid-tile" *ngFor="let card of nodeCards" [colspan]="card.cols" [rowspan]="card.rows">
+    <mat-grid-tile *ngFor="let card of nodeCards" class="node-grid-tile" [colspan]="card.cols" [rowspan]="card.rows">
       <div fxLayout="column" fxLayoutAlign="stretch start" fxFlex="100" class="h-100">
         <div fxLayout="row" fxLayoutAlign="start start" class="w-100">
           <div fxLayout="row" fxLayoutAlign="start start" class="page-title-container">
-            <fa-icon [icon]="card.icon" class="mr-1"></fa-icon>
+            <fa-icon class="mr-1" [icon]="card.icon"></fa-icon>
             <span>{{card.title}}</span>
           </div>
         </div>
         <div fxLayout="column" fxLayoutAlign="stretch center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="center stretch" class="w-100 h-93">
           <mat-card fxLayout="row" fxFlex="95" fxLayoutAlign="start stretch" class="dashboard-card w-96 h-93">
-            <mat-card-content fxLayout="column" fxFlex="100"
+            <mat-card-content fxLayout="column" fxFlex="100" class="mt-2"
               [ngClass]="{'dashboard-card-content': true, 
               'error-border': (card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR) ||
                             (card.id === 'status' && (apiCallStatusChannels.status === apiCallStatusEnum.ERROR || apiCallStatusPendingChannels.status === apiCallStatusEnum.ERROR)) ||
                             (card.id === 'fee' && apiCallStatusFees.status === apiCallStatusEnum.ERROR)}">
-              <mat-progress-bar mode="indeterminate"
-                *ngIf="(card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED) ||
+              <mat-progress-bar *ngIf="(card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED) ||
                   (card.id === 'status' && (apiCallStatusChannels.status === apiCallStatusEnum.INITIATED || apiCallStatusPendingChannels.status === apiCallStatusEnum.INITIATED)) ||
-                  (card.id === 'fee' && apiCallStatusFees.status === apiCallStatusEnum.INITIATED)"></mat-progress-bar>
-              <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
-                <rtl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="true"></rtl-node-info>
-                <rtl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus" [errorMessage]="errorMessages[3] + ' ' + errorMessages[4]"></rtl-channel-status-info>
-                <rtl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees" [errorMessage]="errorMessages[2]"></rtl-fee-info>
+                  (card.id === 'fee' && apiCallStatusFees.status === apiCallStatusEnum.INITIATED)"
+                mode="indeterminate"></mat-progress-bar>
+              <div fxLayout="column" fxFlex="100" [ngSwitch]="card.id">
+                <rtl-node-info *ngSwitchCase="'node'" fxFlex="100" [information]="information" [showColorFieldSeparately]="true"></rtl-node-info>
+                <rtl-channel-status-info *ngSwitchCase="'status'" fxFlex="100" [channelsStatus]="channelsStatus" [errorMessage]="errorMessages[3] + ' ' + errorMessages[4]"></rtl-channel-status-info>
+                <rtl-fee-info *ngSwitchCase="'fee'" fxFlex="100" [fees]="fees" [errorMessage]="errorMessages[2]"></rtl-fee-info>
               </div>
             </mat-card-content>
           </mat-card>
@@ -31,18 +31,18 @@
     </mat-grid-tile>
   </mat-grid-list>
   <div fxLayout="row" fxLayoutAlign="start end" class="page-title-container" [ngClass]="{'mt-1': screenSize !== screenSizeEnum.XS}">
-    <fa-icon [icon]="faProjectDiagram" class="page-title-img mr-1"></fa-icon>
+    <fa-icon class="page-title-img mr-1" [icon]="faProjectDiagram"></fa-icon>
     <span class="page-title">Network</span>
   </div>
   <mat-grid-list cols="3" rowHeight="250px">
-    <mat-grid-tile fxLayout="row" *ngFor="let card of networkCards" [colspan]="card.cols" [rowspan]="card.rows">
+    <mat-grid-tile *ngFor="let card of networkCards" fxLayout="row" [colspan]="card.cols" [rowspan]="card.rows">
       <mat-card fxLayout="row" fxFlex="95" fxLayoutAlign="start stretch" class="dashboard-card h-93">
         <mat-card-content fxLayout="column" fxFlex="100" [ngClass]="{'dashboard-card-content': true, 'error-border': apiCallStatusNetwork.status === apiCallStatusEnum.ERROR}">
-          <mat-progress-bar mode="indeterminate" *ngIf="apiCallStatusNetwork.status === apiCallStatusEnum.INITIATED"></mat-progress-bar>
-          <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
-            <div fxFlex="100" *ngSwitchCase="'general'"><ng-container *ngTemplateOutlet="apiCallStatusNetwork.status === apiCallStatusEnum.ERROR ? errorBlock : generalBlock"></ng-container></div>
-            <div fxFlex="100" *ngSwitchCase="'channels'"><ng-container *ngTemplateOutlet="apiCallStatusNetwork.status === apiCallStatusEnum.ERROR ? errorBlock : channelsBlock"></ng-container></div>
-            <div fxFlex="100" *ngSwitchCase="'degrees'"><ng-container *ngTemplateOutlet="apiCallStatusNetwork.status === apiCallStatusEnum.ERROR ? errorBlock : degreesBlock"></ng-container></div>
+          <mat-progress-bar *ngIf="apiCallStatusNetwork.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+          <div fxLayout="column" fxFlex="100" [ngSwitch]="card.id">
+            <div *ngSwitchCase="'general'" fxFlex="100"><ng-container *ngTemplateOutlet="apiCallStatusNetwork.status === apiCallStatusEnum.ERROR ? errorBlock : generalBlock"></ng-container></div>
+            <div *ngSwitchCase="'channels'" fxFlex="100"><ng-container *ngTemplateOutlet="apiCallStatusNetwork.status === apiCallStatusEnum.ERROR ? errorBlock : channelsBlock"></ng-container></div>
+            <div *ngSwitchCase="'degrees'" fxFlex="100"><ng-container *ngTemplateOutlet="apiCallStatusNetwork.status === apiCallStatusEnum.ERROR ? errorBlock : degreesBlock"></ng-container></div>
           </div>
         </mat-card-content>
       </mat-card>
@@ -56,7 +56,7 @@
   </div>
 </ng-template>
 <ng-template #generalBlock>
-  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between" class="mt-2">
     <div>
       <h4 class="dashboard-info-title">Network Capacity</h4>
       <div class="overflow-wrap dashboard-info-value">{{networkInfo.total_network_capacity | number}} Sats</div>
@@ -72,7 +72,7 @@
   </div>
 </ng-template>
 <ng-template #channelsBlock>
-  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between" class="mt-2">
     <div>
       <h4 class="dashboard-info-title">Max Channel Size</h4>
       <div class="overflow-wrap dashboard-info-value">{{networkInfo.max_channel_size | number}}</div>
@@ -88,7 +88,7 @@
   </div>
 </ng-template>
 <ng-template #degreesBlock>
-  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between" class="mt-2">
     <div>
       <h4 class="dashboard-info-title">Max Out Degree</h4>
       <div class="overflow-wrap dashboard-info-value">{{networkInfo.max_out_degree | number}}</div>

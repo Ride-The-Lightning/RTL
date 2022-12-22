@@ -8,23 +8,14 @@ module.exports = function () {
 	try {
 		var versionStr = 'export const VERSION = \'' + appVersion + '\';';
 		console.log('\n========================================================================');
-		console.log('Updating application version to ' + appVersion + ' in dev environment file.');
+		console.log('Updating application version constant to ' + appVersion + '.');
 		console.log('========================================================================');
-		var versionFilePath = path.join(__dirname + '/environments/environment.ts');
+		var versionFilePath = path.join(__dirname + '/app/shared/services/consts-enums-functions.ts');
 		var envFileData = fs.readFileSync(versionFilePath, 'utf-8');
 		var envFileDataLined = envFileData.split(os.EOL);
 		var versionLineIndex = envFileDataLined.findIndex(function(lineItem) { return lineItem.includes('export const VERSION = ') || lineItem.includes('export const VERSION=') });
 		envFileDataLined[versionLineIndex] = versionStr;
 		fs.writeFileSync(versionFilePath, envFileDataLined.join(os.EOL), 'utf-8');
-		console.log('\n========================================================================');
-		console.log('Updating application version to ' + appVersion + ' in prod environment file.');
-		console.log('========================================================================');
-		var versionProdFilePath = path.join(__dirname + '/environments/environment.prod.ts');
-		var envProdFileData = fs.readFileSync(versionProdFilePath, 'utf-8');
-		var envProdFileDataLined = envProdFileData.split(os.EOL);
-		var versionProdLineIndex = envProdFileDataLined.findIndex(function(lineItem) { return lineItem.includes('export const VERSION = ') || lineItem.includes('export const VERSION=') });
-		envProdFileDataLined[versionProdLineIndex] = versionStr;
-		fs.writeFileSync(versionProdFilePath, envProdFileDataLined.join(os.EOL), 'utf-8');
 	} catch (err) {
 		console.error(err);
 	}

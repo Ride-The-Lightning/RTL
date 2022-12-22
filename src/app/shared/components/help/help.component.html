@@ -1,12 +1,12 @@
 <div fxLayout="column" fxFlex="100">
   <div fxLayout="row" fxLayoutAlign="start center" class="page-title-container">
-    <fa-icon [icon]="faQuestion" class="page-title-img mr-1"></fa-icon>
+    <fa-icon class="page-title-img mr-1" [icon]="faQuestion"></fa-icon>
     <span class="page-title">Help</span>
   </div>
   <div fxLayout="row" fxFlex="100" class="padding-gap-x" fxLayoutAlign="start start">
     <div fxLayout="column" fxFlex="100">
-      <div fxFlex="100" *ngFor="let helpTopic of helpTopics">
-        <mat-expansion-panel class="flat-expansion-panel help-expansion mb-2px" *ngIf="helpTopic.help.lnImplementation === 'ALL' || helpTopic.help.lnImplementation === selNode.lnImplementation">
+      <div *ngFor="let helpTopic of helpTopics" fxFlex="100">
+        <mat-expansion-panel *ngIf="helpTopic.help.lnImplementation === 'ALL' || helpTopic.help.lnImplementation === selNode.lnImplementation" class="flat-expansion-panel help-expansion mb-2px">
           <mat-expansion-panel-header>
               <mat-panel-title>{{helpTopic.help.question}}</mat-panel-title>
             </mat-expansion-panel-header>

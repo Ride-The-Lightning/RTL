@@ -29,12 +29,14 @@ import { disableOffer } from '../../../store/cln.actions';
 import { clnNodeInformation, clnNodeSettings, clnPageSettings, offers } from '../../../store/cln.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-cln-offers-table',
   templateUrl: './offers-table.component.html',
   styleUrls: ['./offers-table.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Offers') }
   ]
 })
@@ -99,7 +101,7 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
         this.displayedColumns.unshift('active');
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
-        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(offers).pipe(takeUntil(this.unSubs[3])).
@@ -259,9 +261,8 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
 
   loadOffersTable(offrs: Offer[]) {
     this.offers = (offrs) ? new MatTableDataSource<Offer>([...offrs]) : new MatTableDataSource([]);
-    this.offers.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.offers.sort = this.sort;
-    this.offers.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+    this.offers.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.offers.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

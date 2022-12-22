@@ -34,7 +34,7 @@ export const decodePayments = (req, res, next) => {
     }
     if (req.body.payments) {
         const paymentsArr = req.body.payments.split(',');
-        return Promise.all(paymentsArr === null || paymentsArr === void 0 ? void 0 : paymentsArr.map((payment) => decodePaymentFromPaymentRequest(req.session.selectedNode, payment))).
+        return Promise.all(paymentsArr?.map((payment) => decodePaymentFromPaymentRequest(req.session.selectedNode, payment))).
             then((values) => {
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'PayRequest', msg: 'Payment List Decoded', data: values });
             res.status(200).json(values);

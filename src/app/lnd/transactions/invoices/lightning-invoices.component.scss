@@ -1,9 +1,11 @@
 .mat-column-state {
-  max-width: 1.2rem;
-  width:1.2rem;
+  max-width: 2.2rem;
+  width: 2.2rem;
+  text-overflow: unset;
 }
 
 .mat-column-private, .mat-column-is_keysend, .mat-column-is_amp {
-  max-width: 1.6rem;
-  width:1.6rem;
+  max-width: 2.2rem;
+  width:2.2rem;
+  text-overflow: unset;
 }

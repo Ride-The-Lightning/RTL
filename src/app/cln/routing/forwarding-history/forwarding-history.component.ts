@@ -20,12 +20,14 @@ import { clnPageSettings, forwardingHistory } from '../../store/cln.selector';
 import { getForwardingHistory } from '../../store/cln.actions';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-cln-forwarding-history',
   templateUrl: './forwarding-history.component.html',
   styleUrls: ['./forwarding-history.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Events') }
   ]
 })
@@ -77,7 +79,7 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
         }
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
-        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.pipe(take(1)).subscribe((state) => {
@@ -104,9 +106,11 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   }
 
   ngAfterViewInit() {
-    if (this.successfulEvents.length > 0) {
-      this.loadForwardingEventsTable(this.successfulEvents);
-    }
+    setTimeout(() => {
+      if (this.successfulEvents.length > 0) {
+        this.loadForwardingEventsTable(this.successfulEvents);
+      }
+    }, 0);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -194,7 +198,6 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
     this.forwardingHistoryEvents = new MatTableDataSource<ForwardingEvent>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
     this.forwardingHistoryEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    this.forwardingHistoryEvents.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

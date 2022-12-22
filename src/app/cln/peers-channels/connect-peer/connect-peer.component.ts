@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, Inject } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -43,12 +43,12 @@ export class CLNConnectPeerComponent implements OnInit, OnDestroy {
   public channelFormLabel = 'Open Channel (Optional)';
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
-  peerFormGroup: FormGroup;
-  channelFormGroup: FormGroup;
-  statusFormGroup: FormGroup;
+  peerFormGroup: UntypedFormGroup;
+  channelFormGroup: UntypedFormGroup;
+  statusFormGroup: UntypedFormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLNConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNOpenChannelAlert, private store: Store<RTLState>, private formBuilder: FormBuilder, private actions: Actions, private logger: LoggerService, private commonService: CommonService) {
+  constructor(public dialogRef: MatDialogRef<CLNConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNOpenChannelAlert, private store: Store<RTLState>, private formBuilder: UntypedFormBuilder, private actions: Actions, private logger: LoggerService, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
   }
 

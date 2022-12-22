@@ -4,6 +4,7 @@ import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { WSServer } from '../../utils/webSocketServer.js';
 import { CommonSelectedNode } from '../../models/config.model.js';
+import { ECLWSEventsEnum } from '../../models/ecl.model.js';
 
 export class ECLWebSocketClient {
 
@@ -64,6 +65,7 @@ export class ECLWebSocketClient {
     eclWsClt.webSocketClient.onopen = () => {
       this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'INFO', fileName: 'ECLWebSocket', msg: 'Connected to the Eclair\'s Websocket Server..' });
       this.waitTime = 0.5;
+      this.heartbeat(eclWsClt);
     };
 
     eclWsClt.webSocketClient.onclose = (e) => {
@@ -77,9 +79,11 @@ export class ECLWebSocketClient {
     eclWsClt.webSocketClient.onmessage = (msg) => {
       this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Received message from the server..', data: msg.data });
       msg = (typeof msg.data === 'string') ? JSON.parse(msg.data) : msg.data;
-      msg['source'] = 'ECL';
-      const msgStr = JSON.stringify(msg);
-      this.wsServer.sendEventsToAllLNClients(msgStr, eclWsClt.selectedNode);
+      if (msg.type && msg.type !== ECLWSEventsEnum.PAY_RELAYED && msg.type !== ECLWSEventsEnum.PAY_SETTLING_ONCHAIN && msg.type !== ECLWSEventsEnum.ONION_MESSAGE_RECEIVED) {
+        msg['source'] = 'ECL';
+        const msgStr = JSON.stringify(msg);
+        this.wsServer.sendEventsToAllLNClients(msgStr, eclWsClt.selectedNode);
+      }
     };
 
     eclWsClt.webSocketClient.onerror = (err) => {
@@ -93,6 +97,7 @@ export class ECLWebSocketClient {
         eclWsClt.reConnect = false;
       }
     };
+
   };
 
   public disconnect = (selectedNode: CommonSelectedNode) => {
@@ -114,6 +119,15 @@ export class ECLWebSocketClient {
     this.webSocketClients[clientIdx] = newClient;
   };
 
+  public heartbeat = (eclWsClt) => {
+    this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Websocket Server Heartbeat..' });
+    if (!eclWsClt.webSocketClient) return;
+    if (eclWsClt.webSocketClient.readyState !== 1) return;
+    eclWsClt.webSocketClient.ping();
+    setTimeout(() => {
+      this.heartbeat(eclWsClt);
+    }, 59 * 1000);
+  }
 }
 
 export const ECLWSClient = new ECLWebSocketClient();

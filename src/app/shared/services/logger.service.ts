@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
-import { Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';
-export const { isDebugMode } = environment;
+import { Injectable, isDevMode } from '@angular/core';
+
+const isDebugMode = isDevMode();
 const noop = (): any => null;
 
 export abstract class Logger {

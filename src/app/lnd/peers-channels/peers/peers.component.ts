@@ -22,12 +22,14 @@ import { detachPeer } from '../../store/lnd.actions';
 import { blockchainBalance, lndNodeInformation, lndPageSettings, peers } from '../../store/lnd.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-peers',
   templateUrl: './peers.component.html',
   styleUrls: ['./peers.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') }
   ]
 })
@@ -77,7 +79,7 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
-        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[2])).
@@ -210,7 +212,6 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.peers = peers ? new MatTableDataSource<Peer>([...peers]) : new MatTableDataSource([]);
     this.peers.sort = this.sort;
     this.peers.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    this.peers.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.peers.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

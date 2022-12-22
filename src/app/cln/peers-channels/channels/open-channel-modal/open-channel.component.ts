@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject, OnDestroy, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Subject, Observable } from 'rxjs';
@@ -26,7 +26,7 @@ import { SelNodeChild } from '../../../../shared/models/RTLconfig';
 export class CLNOpenChannelComponent implements OnInit, OnDestroy {
 
   @ViewChild('form', { static: true }) form: any;
-  public selectedPeer = new FormControl();
+  public selectedPeer = new UntypedFormControl();
   public faExclamationTriangle = faExclamationTriangle;
   public alertTitle: string;
   public isCompatibleVersion = false;

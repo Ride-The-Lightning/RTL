@@ -2,10 +2,10 @@
   <div fxFlex="100">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
-        <fa-icon [icon]="faReceipt" class="page-title-img mr-1"></fa-icon>
+        <fa-icon class="page-title-img mr-1" [icon]="faReceipt"></fa-icon>
         <span class="page-title">Channel Information</span>
       </div>
-      <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+      <button tabindex="3" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large" [ngClass]="{'xs-scroll-y': screenSize === screenSizeEnum.XS}">
       <div fxLayout="column">
@@ -23,21 +23,21 @@
             <span class="overflow-wrap foreground-secondary-text">{{channel.state | titlecase}}</span>
           </div>
         </div>
-        <mat-divider [inset]="true" class="my-1"></mat-divider>
+        <mat-divider class="my-1" [inset]="true"></mat-divider>
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Channel ID</h4>
             <span class="foreground-secondary-text">{{channel.channelId}}</span>
           </div>
         </div>
-        <mat-divider [inset]="true" class="my-1"></mat-divider>
+        <mat-divider class="my-1" [inset]="true"></mat-divider>
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Peer Public Key</h4>
             <span class="foreground-secondary-text">{{channel.nodeId}}</span>
           </div>
         </div>
-        <mat-divider [inset]="true" class="my-1"></mat-divider>
+        <mat-divider class="my-1" [inset]="true"></mat-divider>
         <div fxLayout="row">
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Private</h4>
@@ -48,7 +48,7 @@
             <span class="overflow-wrap foreground-secondary-text">{{channel.isFunder ? 'Yes' : 'No'}}</span>
           </div>
         </div>
-        <mat-divider [inset]="true" class="my-1"></mat-divider>
+        <mat-divider class="my-1" [inset]="true"></mat-divider>
         <div fxLayout="row">
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">State</h4>
@@ -59,7 +59,7 @@
             <span class="overflow-wrap foreground-secondary-text">{{channel.buried ? 'Yes' : 'No'}}</span>
           </div>
         </div>
-        <mat-divider [inset]="true" class="my-1"></mat-divider>
+        <mat-divider class="my-1" [inset]="true"></mat-divider>
         <div *ngIf="showAdvanced && channelsType === 'open'">
           <div fxLayout="row">
             <div fxFlex="50">
@@ -71,7 +71,7 @@
               <span class="overflow-wrap foreground-secondary-text">{{channel.toRemote | number}}</span>
             </div>
           </div>
-          <mat-divider [inset]="true" class="my-1"></mat-divider>
+          <mat-divider class="my-1" [inset]="true"></mat-divider>
           <div fxLayout="row">
             <div fxFlex="50">
               <h4 fxLayoutAlign="start" class="font-bold-500">Base Fee (mSats)</h4>
@@ -82,10 +82,10 @@
               <span class="overflow-wrap foreground-secondary-text">{{channel.feeProportionalMillionths | number}}</span>
             </div>
           </div>
-          <mat-divider [inset]="true" class="my-1"></mat-divider>
+          <mat-divider class="my-1" [inset]="true"></mat-divider>
         </div>
-        <div [ngClass]="{'mt-2': !showAdvanced, 'mt-1': showAdvanced}" fxLayout="row" fxLayoutAlign="end center" fxFlex="100">
-          <button *ngIf="channelsType === 'open'" mat-button color="primary" type="reset" (click)="onShowAdvanced()" tabindex="1" class="mr-1">
+        <div fxLayout="row" fxLayoutAlign="end center" fxFlex="100" [ngClass]="{'mt-2': !showAdvanced, 'mt-1': showAdvanced}">
+          <button *ngIf="channelsType === 'open'" mat-button color="primary" type="reset" tabindex="1" class="mr-1" (click)="onShowAdvanced()">
             <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
             <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
           </button>

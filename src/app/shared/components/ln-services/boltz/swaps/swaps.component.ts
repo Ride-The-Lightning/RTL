@@ -19,12 +19,14 @@ import { ColumnDefinition, PageSettings, TableSetting } from '../../../../models
 import { lndPageSettings } from '../../../../../lnd/store/lnd.selector';
 import { ApiCallStatusPayload } from '../../../../models/apiCallsPayload';
 import { CamelCaseWithReplacePipe } from '../../../../pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-boltz-swaps',
   templateUrl: './swaps.component.html',
   styleUrls: ['./swaps.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Swaps') }
   ]
 })
@@ -43,6 +45,7 @@ export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, On
   public tableSettingSwapOut: TableSetting = { tableId: 'swap_out', recordsPerPage: PAGE_SIZE, sortBy: 'status', sortOrder: SortOrderEnum.DESCENDING };
   public tableSettingSwapIn: TableSetting = { tableId: 'swap_in', recordsPerPage: PAGE_SIZE, sortBy: 'status', sortOrder: SortOrderEnum.DESCENDING };
   public swapStateEnum = SwapStateEnum;
+  public swapTypeEnum = SwapTypeEnum;
   public faHistory = faHistory;
   public swapCaption = 'Swap Out';
   public displayedColumns: any[] = [];
@@ -69,7 +72,7 @@ export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, On
         if (this.swapsData && this.swapsData.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadSwapsTable(this.swapsData);
         }
-        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
   }
@@ -177,11 +180,6 @@ export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, On
     this.listSwaps = swaps ? new MatTableDataSource<Swap>([...swaps]) : new MatTableDataSource<Swap>([]);
     this.listSwaps.sort = this.sort;
     this.listSwaps.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    if (this.selectedSwapType === SwapTypeEnum.SWAP_IN) {
-      this.listSwaps.sort?.sort({ id: this.tableSettingSwapIn.sortBy, start: this.tableSettingSwapIn.sortOrder, disableClear: true });
-    } else {
-      this.listSwaps.sort?.sort({ id: this.tableSettingSwapOut.sortBy, start: this.tableSettingSwapOut.sortOrder, disableClear: true });
-    }
     if (this.paginator) {
       this.paginator.firstPage();
     }

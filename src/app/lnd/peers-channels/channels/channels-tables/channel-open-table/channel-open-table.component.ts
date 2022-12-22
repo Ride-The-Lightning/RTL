@@ -29,12 +29,14 @@ import { channelLookup, fetchChannels, updateChannel } from '../../../../store/l
 import { blockchainBalance, channels, lndNodeInformation, lndNodeSettings, lndPageSettings, peers } from '../../../../store/lnd.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-channel-open-table',
   templateUrl: './channel-open-table.component.html',
   styleUrls: ['./channel-open-table.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Channels') }
   ]
 })
@@ -114,7 +116,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
         this.displayedColumns.unshift('active');
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
-        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(peers).pipe(takeUntil(this.unSubs[3])).
@@ -203,7 +205,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
             titleMessage: 'Update fee policy for all channels',
             flgShowInput: true,
             getInputs: [
-              { placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER, inputValue: 1000, width: 32 },
+              { placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER, inputValue: 1000, step: 100, width: 32 },
               { placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER, inputValue: 1, min: 1, width: 32, hintFunction: this.percentHintFunction },
               { placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER, inputValue: 40, width: 32 }
             ]
@@ -249,7 +251,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
                 flgShowInput: true,
                 hasAdvanced: true,
                 getInputs: [
-                  { placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER, inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, width: 32 },
+                  { placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER, inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, step: 100, width: 32 },
                   { placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER, inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 32, hintFunction: this.percentHintFunction },
                   { placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER, inputValue: this.myChanPolicy.time_lock_delta, width: 32 },
                   { placeholder: 'Minimum HTLC (mSat)', inputType: DataTypeEnum.NUMBER, inputValue: (this.myChanPolicy.min_htlc === '') ? 0 : this.myChanPolicy.min_htlc, width: 49, advancedField: true },
@@ -349,7 +351,6 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     this.channels = new MatTableDataSource<Channel>([...mychannels]);
     this.channels.sort = this.sort;
     this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    this.channels.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.channels.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

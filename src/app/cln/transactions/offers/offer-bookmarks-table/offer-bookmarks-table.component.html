@@ -3,61 +3,63 @@
   <div fxLayout="column" fxLayoutAlign="start stretch">
     <div fxLayout="column" fxLayoutAlign="start stretch" fxLayout.gt-sm="row wrap" class="page-sub-title-container mt-1">
       <div fxFlex="70" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="start center">
-        <fa-icon [icon]="faHistory" class="page-title-img mr-1"></fa-icon>
+        <fa-icon class="page-title-img mr-1" [icon]="faHistory"></fa-icon>
         <span class="page-title">Offer Bookmarks</span>
       </div>
       <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
-        <mat-form-field fxFlex="49">
-          <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()" name="filterBy">
-            <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
+        <mat-form-field fxLayout="column" fxFlex="49">
+          <mat-label>Filter By</mat-label>
+        <mat-select tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
+            <perfect-scrollbar><mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option></perfect-scrollbar>
           </mat-select>
         </mat-form-field>
-        <mat-form-field fxFlex="49">
-          <input matInput [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()" name="filter" placeholder="Filter">
+        <mat-form-field fxLayout="column" fxFlex="49">
+          <mat-label>Filter</mat-label>
+        <input matInput name="filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
         </mat-form-field>
       </div>
     </div>
-    <div [perfectScrollbar] fxLayout="column" fxFlex="100" class="table-container">
+    <div fxLayout="column" fxFlex="100" class="table-container" [perfectScrollbar]>
       <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>      
-      <table mat-table #table fxFlex="100" [dataSource]="offersBookmarks" matSort [ngClass]="{'error-border': errorMessage !== ''}">
+      <table #table mat-table fxFlex="100" matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="offersBookmarks" [ngClass]="{'error-border': errorMessage !== ''}">
         <ng-container matColumnDef="lastUpdatedAt">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Updated At</th>
-          <td mat-cell *matCellDef="let offersbookmark">{{offersbookmark.lastUpdatedAt | date:'dd/MMM/y HH:mm'}}</td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Updated At</th>
+          <td *matCellDef="let offersbookmark" mat-cell>{{offersbookmark.lastUpdatedAt | date:'dd/MMM/y HH:mm'}}</td>
         </ng-container>
         <ng-container matColumnDef="title">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
-          <td mat-cell *matCellDef="let offersbookmark">
-            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Title</th>
+          <td *matCellDef="let offersbookmark" mat-cell>
+            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{offersbookmark.title}}</span>
             </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="description">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
-          <td mat-cell *matCellDef="let offersbookmark">
-            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Description</th>
+          <td *matCellDef="let offersbookmark" mat-cell>
+            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{offersbookmark.description}}</span>
             </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="vendor">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Vendor</th>
-          <td mat-cell *matCellDef="let offersbookmark">{{offersbookmark.vendor}}</td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Vendor</th>
+          <td *matCellDef="let offersbookmark" mat-cell>{{offersbookmark.vendor}}</td>
         </ng-container>
         <ng-container matColumnDef="bolt12">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Invoice</th>
-          <td mat-cell *matCellDef="let offersbookmark">
-            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Invoice</th>
+          <td *matCellDef="let offersbookmark" mat-cell>
+            <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
               <span class="ellipsis-child">{{offersbookmark.bolt12}}</span>
             </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="amountMSat">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Amount (Sats)</th>
-          <td mat-cell *matCellDef="let offersbookmark"><span fxLayoutAlign="end center">{{(offersbookmark.amountMSat === 0) ? 'Open' : (offersbookmark.amountMSat / 1000) | number}}</span></td>
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Amount (Sats)</th>
+          <td *matCellDef="let offersbookmark" mat-cell><span fxLayoutAlign="end center">{{(offersbookmark.amountMSat === 0) ? 'Open' : (offersbookmark.amountMSat / 1000) | number}}</span></td>
         </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>
+          <th *matHeaderCellDef mat-header-cell>
             <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="1" class="mr-0">
                 <mat-select-trigger></mat-select-trigger>
@@ -65,7 +67,7 @@
               </mat-select>
             </div>
          </th>
-          <td mat-cell *matCellDef="let offer" fxLayoutAlign="end center">
+          <td *matCellDef="let offer" mat-cell fxLayoutAlign="end center">
             <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="4" class="mr-0">
                 <mat-select-trigger></mat-select-trigger>
@@ -77,17 +79,17 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="no_offer">
-          <td mat-footer-cell *matFooterCellDef colspan="4">
+          <td *matFooterCellDef  mat-footer-cell colspan="4">
             <p *ngIf="(!offersBookmarks?.data || offersBookmarks?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.COMPLETED">No offer bookmarked.</p>
             <p *ngIf="(!offersBookmarks?.data || offersBookmarks?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.INITIATED">Getting offer bookmarks...</p>
             <p *ngIf="(!offersBookmarks?.data || offersBookmarks?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
           </td>
         </ng-container>
-        <tr mat-footer-row *matFooterRowDef="['no_offer']" [ngClass]="{'display-none': offersBookmarks?.data && offersBookmarks?.data?.length>0}"></tr>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr *matFooterRowDef="['no_offer']" mat-footer-row [ngClass]="{'display-none': offersBookmarks?.data && offersBookmarks?.data?.length>0}"></tr>
+        <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+        <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
       </table>
     </div>
-    <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
+    <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true"></mat-paginator>
   </div>
 </div>

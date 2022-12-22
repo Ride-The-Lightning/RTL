@@ -2,10 +2,10 @@
   *ngTemplateOutlet="stepNumber === 1 ? infoStepBlock1: stepNumber === 2 ? infoStepBlock2 : stepNumber === 3 ? infoStepBlock3 : stepNumber === 4 ? infoStepBlock4 : infoStepBlock5">
 </ng-container>
 <ng-template #infoStepBlock1>
-  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)"
-    [@sliderAnimation]="animationDirection">
-    <svg fxFlex="30" viewBox="0 0 246 154" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}" version="1.1" xmlns="http://www.w3.org/2000/svg"
-      xmlns:xlink="http://www.w3.org/2000/svg">
+  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" [@sliderAnimation]="animationDirection"
+    (swipe)="onSwipe($event)">
+    <svg fxFlex="30" viewBox="0 0 246 154" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/2000/svg"
+      [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">
       <path fill-rule="evenodd" clip-rule="evenodd" d="M187.8 136C203.043 136 215.4 133.493 215.4 130.4C215.4 127.307 203.043 124.8 187.8 124.8C172.557 124.8 160.2 127.307 160.2 130.4C160.2 133.493 172.557 136 187.8 136Z" stroke="#C4B7FF" stroke-width="0.8" stroke-dasharray="4 4"/>
       <path fill-rule="evenodd" clip-rule="evenodd" d="M128.6 148.8C143.843 148.8 156.2 146.293 156.2 143.2C156.2 140.107 143.843 137.6 128.6 137.6C113.357 137.6 101 140.107 101 143.2C101 146.293 113.357 148.8 128.6 148.8Z" stroke="#C4B7FF" stroke-width="0.8" stroke-dasharray="4 4"/>
       <path opacity="0.1" d="M100.2 117.421C100.2 117.421 99.0633 117.494 99.4998 117.722C99.9363 117.95 100.2 117.421 100.2 117.421Z" fill="black"/>
@@ -57,10 +57,10 @@
   </div>
 </ng-template>
 <ng-template #infoStepBlock2>
-  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)"
-    [@sliderAnimation]="animationDirection">
-    <svg fxFlex="30" viewBox="0 0 210 124" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}" version="1.1" xmlns="http://www.w3.org/2000/svg"
-      xmlns:xlink="http://www.w3.org/2000/svg">
+  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" [@sliderAnimation]="animationDirection"
+    (swipe)="onSwipe($event)">
+    <svg fxFlex="30" viewBox="0 0 210 124" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/2000/svg"
+      [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">
       <path d="M90.1491 0H0V100.616H90.1491V0Z" fill="#E6E6E6"/>
       <path d="M88.6575 67.1775H1.48926V98.4248H88.6575V67.1775Z" fill="white"/>
       <path d="M59.844 74.5891H8.64404V90.6009H59.844V74.5891Z" fill="#C4B7FF"/>
@@ -168,10 +168,10 @@
   </div>
 </ng-template>
 <ng-template #infoStepBlock3>
-  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)"
-    [@sliderAnimation]="animationDirection">
-    <svg fxFlex="30" viewBox="0 0 370 121" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}" version="1.1" xmlns="http://www.w3.org/2000/svg"
-      xmlns:xlink="http://www.w3.org/2000/svg">
+  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" [@sliderAnimation]="animationDirection"
+    (swipe)="onSwipe($event)">
+    <svg fxFlex="30" viewBox="0 0 370 121" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/2000/svg"
+      [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">
       <path d="M327.488 99.9755C350.953 99.9755 369.975 80.9531 369.975 57.4877C369.975 34.0224 350.953 15 327.488 15C304.022 15 285 34.0224 285 57.4877C285 80.9531 304.022 99.9755 327.488 99.9755Z" fill="#F1F1F1"/>
       <path d="M115.068 85.6077H349.8V86.5722H113L115.068 85.6077Z" fill="#4A4A4A"/>
       <path d="M236.776 84.376H226.024V91.544H236.776V84.376Z" fill="#D0CDE1"/>
@@ -248,10 +248,10 @@
   </div>
 </ng-template>
 <ng-template #infoStepBlock4>
-  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)"
-    [@sliderAnimation]="animationDirection">
-    <svg fxFlex="30" viewBox="0 0 153 200" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}" version="1.1" xmlns="http://www.w3.org/2000/svg"
-      xmlns:xlink="http://www.w3.org/2000/svg">
+  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" [@sliderAnimation]="animationDirection"
+    (swipe)="onSwipe($event)">
+    <svg fxFlex="30" viewBox="0 0 153 200" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/2000/svg"
+      [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">
       <path fill-rule="evenodd" clip-rule="evenodd" d="M76.25 191C114.91 191 146.25 158.541 146.25 118.5C146.25 78.4594 114.91 46 76.25 46C37.5901 46 6.25 78.4594 6.25 118.5C6.25 158.541 37.5901 191 76.25 191Z" stroke="#C4B7FF" stroke-width="2" stroke-linecap="round" stroke-dasharray="7 7"/>
       <path d="M76.25 191C114.91 191 146.25 158.541 146.25 118.5C146.25 78.4594 114.91 46 76.25 46" stroke="#5E4EA5" stroke-width="2" stroke-linecap="round" stroke-dasharray="7 7"/>
       <path d="M122.399 37H32.25V137.616H122.399V37Z" fill="#E6E6E6"/>
@@ -311,10 +311,10 @@
   </div>
 </ng-template>
 <ng-template #infoStepBlock5>
-  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)"
-    [@sliderAnimation]="animationDirection">
-    <svg fxFlex="30" viewBox="0 0 153 200" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}" version="1.1" xmlns="http://www.w3.org/2000/svg"
-      xmlns:xlink="http://www.w3.org/2000/svg">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" [@sliderAnimation]="animationDirection"
+    (swipe)="onSwipe($event)">
+    <svg fxFlex="30" viewBox="0 0 153 200" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/2000/svg"
+      [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">
       <path fill-rule="evenodd" clip-rule="evenodd" d="M76.25 191C114.91 191 146.25 158.541 146.25 118.5C146.25 78.4594 114.91 46 76.25 46C37.5901 46 6.25 78.4594 6.25 118.5C6.25 158.541 37.5901 191 76.25 191Z" stroke="#5E4EA5" stroke-width="2" stroke-linecap="round" stroke-dasharray="7 7"/>
       <path d="M122.399 37H32.25V137.616H122.399V37Z" fill="#E6E6E6"/>
       <path d="M120.908 104.177H33.7393V135.425H120.908V104.177Z" fill="white"/>

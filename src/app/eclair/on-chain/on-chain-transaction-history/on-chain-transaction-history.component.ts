@@ -20,12 +20,14 @@ import { fetchTransactions } from '../../store/ecl.actions';
 import { eclPageSettings, transactions } from '../../store/ecl.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithSpacesPipe } from '../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-ecl-on-chain-transaction-history',
   templateUrl: './on-chain-transaction-history.component.html',
   styleUrls: ['./on-chain-transaction-history.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Transactions') }
   ]
 })
@@ -72,7 +74,7 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
         }
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
-        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(transactions).pipe(takeUntil(this.unSubs[1])).
@@ -82,7 +84,7 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        if (transactionsSelector.transactions) {
+        if (transactionsSelector.transactions && this.sort && this.paginator) {
           this.loadTransactionsTable(transactionsSelector.transactions);
         }
         this.logger.info(transactionsSelector);
@@ -143,7 +145,6 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
     this.listTransactions = new MatTableDataSource<Transaction>([...transactions]);
     this.listTransactions.sort = this.sort;
     this.listTransactions.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    this.listTransactions.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.listTransactions.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

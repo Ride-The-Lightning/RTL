@@ -201,18 +201,17 @@ export class CommonService {
         };
         this.newestOnTop = (array, key, value) => {
             const newlyAddedRecord = array.splice(array.findIndex((item) => item[key] === value), 1);
-            array === null || array === void 0 ? void 0 : array.unshift(newlyAddedRecord[0]);
+            array?.unshift(newlyAddedRecord[0]);
             return array;
         };
-        this.camelCase = (str) => { var _a, _b; return (_b = (_a = str === null || str === void 0 ? void 0 : str.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => (word.toUpperCase()))) === null || _a === void 0 ? void 0 : _a.replace(/\s+/g, '')) === null || _b === void 0 ? void 0 : _b.replace(/-/g, ' '); };
+        this.camelCase = (str) => str?.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => (word.toUpperCase()))?.replace(/\s+/g, '')?.replace(/-/g, ' ');
         this.titleCase = (str) => {
-            var _a, _b;
             if (str.indexOf('!\n') > 0 || str.indexOf('.\n') > 0) {
-                return (_a = str.split('\n')) === null || _a === void 0 ? void 0 : _a.reduce((accumulator, currentStr) => accumulator + currentStr.charAt(0).toUpperCase() + currentStr.substring(1).toLowerCase() + '\n', '');
+                return str.split('\n')?.reduce((accumulator, currentStr) => accumulator + currentStr.charAt(0).toUpperCase() + currentStr.substring(1).toLowerCase() + '\n', '');
             }
             else {
                 if (str.indexOf(' ') > 0) {
-                    return (_b = str.split(' ')) === null || _b === void 0 ? void 0 : _b.reduce((accumulator, currentStr) => accumulator + currentStr.charAt(0).toUpperCase() + currentStr.substring(1).toLowerCase() + ' ', '');
+                    return str.split(' ')?.reduce((accumulator, currentStr) => accumulator + currentStr.charAt(0).toUpperCase() + currentStr.substring(1).toLowerCase() + ' ', '');
                 }
                 else {
                     return str.charAt(0).toUpperCase() + str.substring(1).toLowerCase();
@@ -276,7 +275,7 @@ export class CommonService {
                                         (err.message && typeof err.message === 'string') ? err.message : (typeof err === 'string') ? err : 'Unknown Error')
                 };
             }
-            if (selectedNode.ln_implementation === 'ECL' && err.message.indexOf('Authentication Error') < 0 && err.name === 'StatusCodeError') {
+            if (selectedNode.ln_implementation === 'ECL' && err.message && err.message.indexOf('Authentication Error') < 0 && err.name && err.name === 'StatusCodeError') {
                 newErrorObj.statusCode = 500;
             }
             return newErrorObj;
@@ -345,9 +344,8 @@ export class CommonService {
             }
         };
         this.createDirectory = (directoryName) => {
-            var _a;
             const initDir = isAbsolute(directoryName) ? sep : '';
-            (_a = directoryName.split(sep)) === null || _a === void 0 ? void 0 : _a.reduce((parentDir, childDir) => {
+            directoryName.split(sep)?.reduce((parentDir, childDir) => {
                 const curDir = resolve(parentDir, childDir);
                 try {
                     if (!fs.existsSync(curDir)) {
@@ -416,9 +414,8 @@ export class CommonService {
             });
         };
         this.isVersionCompatible = (currentVersion, checkVersion) => {
-            var _a;
             if (currentVersion) {
-                const versionsArr = ((_a = currentVersion.trim()) === null || _a === void 0 ? void 0 : _a.replace('v', '').split('-')[0].split('.')) || [];
+                const versionsArr = currentVersion.trim()?.replace('v', '').split('-')[0].split('.') || [];
                 const checkVersionsArr = checkVersion.split('.');
                 return (+versionsArr[0] > +checkVersionsArr[0]) ||
                     (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] > +checkVersionsArr[1]) ||

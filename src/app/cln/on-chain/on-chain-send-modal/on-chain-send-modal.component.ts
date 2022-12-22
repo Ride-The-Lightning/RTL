@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil, filter, take } from 'rxjs/operators';
@@ -70,9 +70,9 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
   public sendFundFormLabel = 'Sweep funds';
   public confirmFormLabel = 'Confirm sweep';
   public amountError = 'Amount is Required.';
-  passwordFormGroup: FormGroup;
-  sendFundFormGroup: FormGroup;
-  confirmFormGroup: FormGroup;
+  passwordFormGroup: UntypedFormGroup;
+  sendFundFormGroup: UntypedFormGroup;
+  confirmFormGroup: UntypedFormGroup;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
@@ -85,7 +85,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
     private commonService: CommonService,
     private decimalPipe: DecimalPipe,
     private actions: Actions,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private rtlEffects: RTLEffects,
     private snackBar: MatSnackBar) {
     this.screenSize = this.commonService.getScreenSize();

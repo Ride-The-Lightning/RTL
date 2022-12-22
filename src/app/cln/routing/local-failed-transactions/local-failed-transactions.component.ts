@@ -21,12 +21,14 @@ import { clnPageSettings, localFailedForwardingHistory } from '../../store/cln.s
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-cln-local-failed-history',
   templateUrl: './local-failed-transactions.component.html',
   styleUrls: ['./local-failed-transactions.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Local failed events') }
   ]
 })
@@ -78,7 +80,7 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
         }
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
-        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(localFailedForwardingHistory).pipe(takeUntil(this.unSubs[1])).
@@ -173,7 +175,6 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
           return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     };
-    this.failedLocalForwardingEvents.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.failedLocalForwardingEvents.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

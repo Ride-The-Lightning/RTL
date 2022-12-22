@@ -1,4 +1,4 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="mt-2">
   <div>
     <h4 class="dashboard-info-title">Alias</h4>
     <div class="overflow-wrap dashboard-info-value">
@@ -21,6 +21,6 @@
     <h4 class="dashboard-info-title">Chain</h4>
     <span *ngIf="information?.synced_to_chain" class="dot green mr-1" matTooltip="Synced to Chain" matTooltipPosition="right"></span>
     <span *ngIf="!information?.synced_to_chain" class="dot red mr-1" matTooltip="Not Synced to Chain" matTooltipPosition="right"></span>
-    <span class="overflow-wrap dashboard-info-value" *ngFor="let chain of chains">{{chain}}</span>
+    <span *ngFor="let chain of chains" class="overflow-wrap dashboard-info-value">{{chain}}</span>
   </div>
 </div>

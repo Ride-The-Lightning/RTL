@@ -1,3 +1,4 @@
+import { isDevMode } from '@angular/core';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { CLNPageDefinitions, ECLPageDefinitions, LNDPageDefinitions, PageSettings } from '../models/pageSettings';
 
@@ -6,6 +7,36 @@ export function getPaginatorLabel(field: string) {
   appPaginator.itemsPerPageLabel = field + ' per page:';
   return appPaginator;
 }
+
+export const VERSION = '0.13.3-beta';
+
+export const API_URL = isDevMode() ? 'http://localhost:3000/rtl/api' : './api';
+
+export const API_END_POINTS = {
+  AUTHENTICATE_API: API_URL + '/authenticate',
+  CONF_API: API_URL + '/conf',
+  PAGE_SETTINGS_API: API_URL + '/pagesettings',
+  BALANCE_API: '/balance',
+  FEES_API: '/fees',
+  PEERS_API: '/peers',
+  CHANNELS_API: '/channels',
+  CHANNELS_BACKUP_API: '/channels/backup',
+  GETINFO_API: '/getinfo',
+  WALLET_API: '/wallet',
+  NETWORK_API: '/network',
+  NEW_ADDRESS_API: '/newaddress',
+  TRANSACTIONS_API: '/transactions',
+  PAYMENTS_API: '/payments',
+  INVOICES_API: '/invoices',
+  SWITCH_API: '/switch',
+  ON_CHAIN_API: '/onchain',
+  MESSAGE_API: '/message',
+  OFFERS_API: '/offers',
+  UTILITY_API: '/utility',
+  LOOP_API: '/loop',
+  BOLTZ_API: '/boltz',
+  Web_SOCKET_API: '/ws'
+};
 
 export const CURRENCY_UNITS = ['Sats', 'BTC'];
 export const CURRENCY_UNIT_FORMATS = { Sats: '1.0-0', BTC: '1.6-6', OTHER: '1.2-2' };
@@ -21,6 +52,7 @@ export const FIAT_CURRENCY_UNITS = [
 ];
 
 export const TIME_UNITS = ['SECS', 'MINS', 'HOURS', 'DAYS'];
+export const DATA_FILTER_RANGE_UNITS = ['HOURS', 'DAYS', 'MONTHS', 'YEARS'];
 
 export const PAGE_SIZE = 10;
 export const PAGE_SIZE_OPTIONS = [5, 10, 25, 100];
@@ -106,6 +138,13 @@ export enum TimeUnitEnum {
   MINS = 'MINS',
   HOURS = 'HOURS',
   DAYS = 'DAYS'
+}
+
+export enum DataFilterRangeEnum {
+  HOURS = 'HOURS',
+  DAYS = 'DAYS',
+  MONTHS = 'MONTHS',
+  YEARS = 'YEARS'
 }
 
 export enum CurrencyUnitEnum {
@@ -858,13 +897,13 @@ export const CLN_PAGE_DEFS: CLNPageDefinitions = {
 export const LND_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
   { pageId: 'on_chain', tables: [
     { tableId: 'utxos', recordsPerPage: PAGE_SIZE, sortBy: 'tx_id', sortOrder: SortOrderEnum.DESCENDING,
-      columnSelectionSM: ['output', 'amount_sat', 'confirmations'],
+      columnSelectionSM: ['output', 'amount_sat'],
       columnSelection: ['tx_id', 'output', 'label', 'amount_sat', 'confirmations'] },
     { tableId: 'transactions', recordsPerPage: PAGE_SIZE, sortBy: 'time_stamp', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['time_stamp', 'amount', 'num_confirmations'],
       columnSelection: ['time_stamp', 'label', 'amount', 'total_fees', 'block_height', 'num_confirmations'] },
     { tableId: 'dust_utxos', recordsPerPage: PAGE_SIZE, sortBy: 'tx_id', sortOrder: SortOrderEnum.DESCENDING,
-      columnSelectionSM: ['output', 'amount_sat', 'confirmations'],
+      columnSelectionSM: ['output', 'amount_sat'],
       columnSelection: ['tx_id', 'output', 'label', 'amount_sat', 'confirmations'] }
   ] },
   { pageId: 'peers_channels', tables: [
@@ -886,7 +925,7 @@ export const LND_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
     { tableId: 'closed', recordsPerPage: PAGE_SIZE, sortBy: 'close_type', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['remote_alias', 'settled_balance'],
       columnSelection: ['close_type', 'remote_alias', 'capacity', 'close_height', 'settled_balance'] },
-    { tableId: 'active_HTLCs', recordsPerPage: PAGE_SIZE, sortBy: 'expiration_height', sortOrder: SortOrderEnum.DESCENDING,
+    { tableId: 'active_HTLCs', recordsPerPage: PAGE_SIZE, sortBy: 'incoming', sortOrder: SortOrderEnum.ASCENDING,
       columnSelectionSM: ['amount', 'incoming', 'expiration_height'],
       columnSelection: ['amount', 'incoming', 'expiration_height', 'hash_lock'] },
     { tableId: 'peers', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING,

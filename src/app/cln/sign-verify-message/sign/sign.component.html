@@ -1,18 +1,19 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
-  <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" #form="ngForm">
-    <mat-form-field fxLayout="row" fxFlex="100" fxLayoutAlign="start end">
-      <textarea autoFocus matInput [(ngModel)]="message" rows="1" placeholder="Message to sign" required tabindex="1" (keyup)="onMessageChange()" name="message"></textarea>
+  <form #form="ngForm" fxLayout="column" fxLayoutAlign="space-between stretch">
+    <mat-form-field fxLayout="column" fxFlex="100" fxLayoutAlign="start end">
+      <mat-label>Message to sign</mat-label>
+      <textarea autoFocus matInput rows="1" required tabindex="1" name="message" [(ngModel)]="message" (keyup)="onMessageChange()"></textarea>
       <mat-error *ngIf="!message">Message is required.</mat-error>
     </mat-form-field>
     <div fxLayout="row" class="my-1">
       <button class="mr-1" mat-stroked-button color="primary" tabindex="2" type="reset" (click)="resetData()">Clear Field</button>
-      <button mat-flat-button color="primary" (click)="onSign()" tabindex="3" type="submit">Sign</button>
+      <button mat-flat-button color="primary" tabindex="3" type="submit" (click)="onSign()">Sign</button>
     </div>
-    <mat-divider [inset]="true" class="my-2"></mat-divider>
+    <mat-divider class="my-2"></mat-divider>
     <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center"><p>Generated Signature</p></div>
-    <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center" class="bordered-box read-only h-4 padding-gap">{{signature}}</div>
+    <div fxLayout="row" fxLayoutAlign="start center" class="signature-box bordered-box read-only">{{signature}}</div>
     <div fxLayout="row" class="mt-2">
-      <button mat-stroked-button color="primary" tabindex="4" rtlClipboard [payload]="signature" (copied)="onCopyField($event)" type="button">Copy Signature</button>
+      <button mat-stroked-button color="primary" tabindex="4" rtlClipboard type="button" [payload]="signature" (copied)="onCopyField($event)">Copy Signature</button>
     </div>
   </form> 
 </div>

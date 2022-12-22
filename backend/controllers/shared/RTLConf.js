@@ -231,7 +231,6 @@ export const getConfig = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'RTLConf', msg: 'Node Type', data: req.params.nodeType });
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'RTLConf', msg: 'File Path', data: confFile });
     fs.readFile(confFile, 'utf8', (errRes, data) => {
-        var _a;
         if (errRes) {
             const errMsg = 'Reading Config Error';
             const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req.session.selectedNode);
@@ -244,7 +243,7 @@ export const getConfig = (req, res, next) => {
             }
             else {
                 fileFormat = 'INI';
-                data = data === null || data === void 0 ? void 0 : data.replace('color=#', 'color=');
+                data = data?.replace('color=#', 'color=');
                 jsonConfig = ini.parse(data);
                 if (jsonConfig['Application Options'] && jsonConfig['Application Options'].color) {
                     jsonConfig['Application Options'].color = '#' + jsonConfig['Application Options'].color;
@@ -255,16 +254,15 @@ export const getConfig = (req, res, next) => {
                 }
             }
             jsonConfig = maskPasswords(jsonConfig);
-            const responseJSON = (fileFormat === 'JSON') ? jsonConfig : (_a = ini.stringify(jsonConfig)) === null || _a === void 0 ? void 0 : _a.replace('color=\\#', 'color=#');
+            const responseJSON = (fileFormat === 'JSON') ? jsonConfig : ini.stringify(jsonConfig)?.replace('color=\\#', 'color=#');
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Configuration File Data Received', data: responseJSON });
             res.status(200).json({ format: fileFormat, data: responseJSON });
         }
     });
 };
 export const getFile = (req, res, next) => {
-    var _a;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Getting File..' });
-    const file = req.query.path ? req.query.path : (req.session.selectedNode.channel_backup_path + sep + 'channel-' + ((_a = req.query.channel) === null || _a === void 0 ? void 0 : _a.replace(':', '-')) + '.bak');
+    const file = req.query.path ? req.query.path : (req.session.selectedNode.channel_backup_path + sep + 'channel-' + req.query.channel?.replace(':', '-') + '.bak');
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'RTLConf', msg: 'Channel Point', data: req.query.channel });
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'RTLConf', msg: 'File Path', data: file });
     fs.readFile(file, 'utf8', (errRes, data) => {

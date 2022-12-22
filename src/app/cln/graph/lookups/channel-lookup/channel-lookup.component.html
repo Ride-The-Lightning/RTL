@@ -1,164 +1,164 @@
-<div fxLayout="column" *ngIf="lookupResult" class="mt-1">
+<div *ngIf="lookupResult" fxLayout="column" class="mt-1">
   <mat-divider></mat-divider>
   <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row">
-    <div fxLayout="column" fxFlex="49" fxLayoutAlign="start start" class="mt-1 bordered-box padding-gap-large">
+    <div fxLayout="column" fxFlex="49" fxLayoutAlign="start stretch" class="mt-1 bordered-box padding-gap-large">
       <div fxLayout="column">
-        <h3 class="page-title font-bold-500" *ngIf="!node1_match">Node 1</h3>
-        <h3 class="page-title font-bold-500" *ngIf="node1_match">Node 1 (Your Node)</h3>
+        <h3 *ngIf="!node1_match" class="page-title font-bold-500">Node 1</h3>
+        <h3 *ngIf="node1_match" class="page-title font-bold-500">Node 1 (Your Node)</h3>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="20" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Short Channel ID</h4>
         <span class="foreground-secondary-text">{{lookupResult[0]?.short_channel_id}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Active</h4>
         <span class="foreground-secondary-text">{{lookupResult[0]?.active ? 'True' : 'False'}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Last Update</h4>
         <span class="foreground-secondary-text">{{lookupResult[0]?.last_update }}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Amount (mSats)</h4>
         <span class="foreground-secondary-text">{{lookupResult[0]?.amount_msat}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Base Fee (mSats)</h4>
         <span class="foreground-secondary-text">{{lookupResult[0]?.base_fee_millisatoshi | number}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Channel Flags</h4>
         <span class="foreground-secondary-text">{{lookupResult[0]?.channel_flags | number}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Delay</h4>
         <span class="foreground-secondary-text">{{lookupResult[0]?.delay | number}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Destination</h4>
         <span class="foreground-secondary-text">{{lookupResult[0]?.destination}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Fee/Millionth</h4>
         <span class="foreground-secondary-text">{{lookupResult[0]?.fee_per_millionth | number}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Max Htlc (mSat)</h4>
         <span class="foreground-secondary-text">{{lookupResult[0]?.htlc_maximum_msat}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Min Htlc (mSat)</h4>
         <span class="foreground-secondary-text">{{lookupResult[0]?.htlc_minimum_msat}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Message Flags</h4>
         <span class="foreground-secondary-text">{{lookupResult[0]?.message_flags | number}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Public</h4>
         <span class="foreground-secondary-text">{{lookupResult[0]?.public ? 'Yes' : 'No'}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Satoshis</h4>
         <span class="foreground-secondary-text">{{lookupResult[0]?.satoshis | number}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Source</h4>
         <span class="foreground-secondary-text">{{lookupResult[0]?.source}}</span>
       </div>
     </div>
-    <div fxLayout="column" fxFlex="49" fxLayoutAlign="start start" class="mt-1 bordered-box padding-gap-large">
+    <div fxLayout="column" fxFlex="49" fxLayoutAlign="start stretch" class="mt-1 bordered-box padding-gap-large">
       <div>
-        <h3 class="page-title font-bold-500" *ngIf="!node2_match">Node 2</h3>
-        <h3 class="page-title font-bold-500" *ngIf="node2_match">Node 2 (Your Node)</h3>
+        <h3 *ngIf="!node2_match" class="page-title font-bold-500">Node 2</h3>
+        <h3 *ngIf="node2_match" class="page-title font-bold-500">Node 2 (Your Node)</h3>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="20" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Short Channel ID</h4>
         <span class="foreground-secondary-text">{{lookupResult[1]?.short_channel_id}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Active</h4>
         <span class="foreground-secondary-text">{{lookupResult[1]?.active ? 'True' : 'False'}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Last Update</h4>
         <span class="foreground-secondary-text">{{(lookupResult[1]?.last_update * 1000) | date:'dd/MMM/y HH:mm'}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Amount (mSats)</h4>
         <span class="foreground-secondary-text">{{lookupResult[1]?.amount_msat}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Base Fee (mSats)</h4>
         <span class="foreground-secondary-text">{{lookupResult[1]?.base_fee_millisatoshi | number}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Channel Flags</h4>
         <span class="foreground-secondary-text">{{lookupResult[1]?.channel_flags | number}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Delay</h4>
         <span class="foreground-secondary-text">{{lookupResult[1]?.delay | number}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Destination</h4>
         <span class="foreground-secondary-text">{{lookupResult[1]?.destination}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Fee/Millionth</h4>
         <span class="foreground-secondary-text">{{lookupResult[1]?.fee_per_millionth | number}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Max Htlc (mSat)</h4>
         <span class="foreground-secondary-text">{{lookupResult[1]?.htlc_maximum_msat}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Min Htlc (mSat)</h4>
         <span class="foreground-secondary-text">{{lookupResult[1]?.htlc_minimum_msat}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Message Flags</h4>
         <span class="foreground-secondary-text">{{lookupResult[1]?.message_flags | number}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Public</h4>
         <span class="foreground-secondary-text">{{lookupResult[1]?.public ? 'Yes' : 'No'}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Satoshis</h4>
         <span class="foreground-secondary-text">{{lookupResult[1]?.satoshis | number}}</span>
       </div>
-      <mat-divider [inset]="true"></mat-divider>
-      <div fxLayout="column" fxFlex="10" class="my-1">
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
         <h4 class="font-bold-500">Source</h4>
         <span class="foreground-secondary-text">{{lookupResult[1]?.source}}</span>
       </div>

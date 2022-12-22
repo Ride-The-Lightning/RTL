@@ -28,10 +28,9 @@ export const getAllChannels = (req, res, next) => {
     let remote = 0;
     let total = 0;
     request(options).then((body) => {
-        var _a;
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Channels List Received', data: body });
         if (body.channels) {
-            return Promise.all((_a = body.channels) === null || _a === void 0 ? void 0 : _a.map((channel) => {
+            return Promise.all(body.channels?.map((channel) => {
                 local = (channel.local_balance) ? +channel.local_balance : 0;
                 remote = (channel.remote_balance) ? +channel.remote_balance : 0;
                 total = local + remote;
@@ -64,22 +63,21 @@ export const getPendingChannels = (req, res, next) => {
     options.url = req.session.selectedNode.ln_server_url + '/v1/channels/pending';
     options.qs = req.query;
     request(options).then((body) => {
-        var _a, _b, _c, _d;
         if (!body.total_limbo_balance) {
             body.total_limbo_balance = 0;
         }
         const promises = [];
         if (body.pending_open_channels && body.pending_open_channels.length > 0) {
-            (_a = body.pending_open_channels) === null || _a === void 0 ? void 0 : _a.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
+            body.pending_open_channels?.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
         }
         if (body.pending_force_closing_channels && body.pending_force_closing_channels.length > 0) {
-            (_b = body.pending_force_closing_channels) === null || _b === void 0 ? void 0 : _b.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
+            body.pending_force_closing_channels?.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
         }
         if (body.pending_closing_channels && body.pending_closing_channels.length > 0) {
-            (_c = body.pending_closing_channels) === null || _c === void 0 ? void 0 : _c.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
+            body.pending_closing_channels?.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
         }
         if (body.waiting_close_channels && body.waiting_close_channels.length > 0) {
-            (_d = body.waiting_close_channels) === null || _d === void 0 ? void 0 : _d.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
+            body.waiting_close_channels?.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
         }
         return Promise.all(promises).then((values) => {
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Pending Channels List Received', data: body });
@@ -103,9 +101,8 @@ export const getClosedChannels = (req, res, next) => {
     options.url = req.session.selectedNode.ln_server_url + '/v1/channels/closed';
     options.qs = req.query;
     request(options).then((body) => {
-        var _a;
         if (body.channels && body.channels.length > 0) {
-            return Promise.all((_a = body.channels) === null || _a === void 0 ? void 0 : _a.map((channel) => {
+            return Promise.all(body.channels?.map((channel) => {
                 channel.close_type = (!channel.close_type) ? 'COOPERATIVE_CLOSE' : channel.close_type;
                 return getAliasForChannel(req.session.selectedNode, channel);
             })).then((values) => {
@@ -193,7 +190,6 @@ export const postTransactions = (req, res, next) => {
     });
 };
 export const closeChannel = (req, res, next) => {
-    var _a;
     try {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Closing Channel..' });
         if (!req.session.selectedNode) {
@@ -204,7 +200,7 @@ export const closeChannel = (req, res, next) => {
         if (options.error) {
             return res.status(options.statusCode).json({ message: options.message, error: options.error });
         }
-        const channelpoint = (_a = req.params.channelPoint) === null || _a === void 0 ? void 0 : _a.replace(':', '/');
+        const channelpoint = req.params.channelPoint?.replace(':', '/');
         options.url = req.session.selectedNode.ln_server_url + '/v1/channels/' + channelpoint + '?force=' + req.query.force;
         if (req.query.target_conf) {
             options.url = options.url + '&target_conf=' + req.query.target_conf;

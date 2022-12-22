@@ -26,12 +26,14 @@ import { deleteExpiredInvoice, invoiceLookup, saveNewInvoice } from '../../../st
 import { clnNodeInformation, clnNodeSettings, clnPageSettings, listInvoices } from '../../../store/cln.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-cln-lightning-invoices-table',
   templateUrl: './lightning-invoices-table.component.html',
   styleUrls: ['./lightning-invoices-table.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Invoices') }
   ]
 })
@@ -97,7 +99,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
         this.displayedColumns.unshift('status');
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
-        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(listInvoices).pipe(takeUntil(this.unSubs[3])).
@@ -272,9 +274,8 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
 
   loadInvoicesTable(invs: Invoice[]) {
     this.invoices = (invs) ? new MatTableDataSource<Invoice>([...invs]) : new MatTableDataSource([]);
-    this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.invoices.sort = this.sort;
-    this.invoices.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+    this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.invoices.paginator = this.paginator;
     this.applyFilter();
     this.setFilterPredicate();

@@ -1,8 +1,13 @@
-import { Directive, Injectable } from '@angular/core';
-import { DateAdapter, MAT_DATE_FORMATS, NativeDateAdapter, MatDateFormats } from '@angular/material/core';
+import { Platform } from '@angular/cdk/platform';
+import { Directive, Inject, Injectable, Optional } from '@angular/core';
+import { DateAdapter, MAT_DATE_FORMATS, NativeDateAdapter, MatDateFormats, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MONTHS } from '../services/consts-enums-functions';
 
 @Injectable() class CustomDateAdapter extends NativeDateAdapter {
+
+  constructor(@Optional() @Inject(MAT_DATE_LOCALE) matDateLocale: string, platform: Platform) {
+    super(matDateLocale, platform);
+  }
 
   format(date: Date, displayFormat: Object): string {
     if (displayFormat === 'MMM YYYY') {

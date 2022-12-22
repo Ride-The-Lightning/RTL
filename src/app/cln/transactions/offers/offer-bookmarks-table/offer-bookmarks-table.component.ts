@@ -23,12 +23,14 @@ import { deleteOfferBookmark, sendPayment } from '../../../store/cln.actions';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../shared/pipes/app.pipe';
 import { DatePipe } from '@angular/common';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-cln-offer-bookmarks-table',
   templateUrl: './offer-bookmarks-table.component.html',
   styleUrls: ['./offer-bookmarks-table.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Offer Bookmarks') }
   ]
 })
@@ -75,7 +77,7 @@ export class CLNOfferBookmarksTableComponent implements OnInit, AfterViewInit, O
         }
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
-        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(offerBookmarks).pipe(takeUntil(this.unSubs[1])).
@@ -178,9 +180,8 @@ export class CLNOfferBookmarksTableComponent implements OnInit, AfterViewInit, O
 
   loadOffersTable(OffrBMs: OfferBookmark[]) {
     this.offersBookmarks = (OffrBMs) ? new MatTableDataSource<OfferBookmark>([...OffrBMs]) : new MatTableDataSource([]);
-    this.offersBookmarks.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.offersBookmarks.sort = this.sort;
-    this.offersBookmarks.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+    this.offersBookmarks.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.offersBookmarks.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

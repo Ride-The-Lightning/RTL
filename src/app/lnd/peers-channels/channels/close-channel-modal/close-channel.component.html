@@ -4,7 +4,7 @@
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">{{channelToClose.active ? 'Close Channel' : 'Force Close Channel'}}</span>
       </div>
-      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+      <button tabindex="8" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
     </mat-card-header>    
     <mat-card-content class="padding-gap-x-large">
       <form fxLayout="column">
@@ -19,35 +19,38 @@
           </div>
           <div *ngIf="!flgPendingHtlcs" fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
             <div *ngIf="!channelToClose.active" fxFlex="100" class="alert alert-info">
-              <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
+              <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle"></fa-icon>
               <span>Priority/Fee for force closing inactive channels cannot be modified.</span>
             </div>
             <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
-              <mat-form-field fxFlex.gt-sm="48">
-                <mat-select [(value)]="selTransType" tabindex="1" [disabled]="!channelToClose.active">
+              <mat-form-field fxLayout="column" fxFlex.gt-sm="48">
+                <mat-select tabindex="1" [disabled]="!channelToClose.active" [(value)]="selTransType">
                   <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
                     {{transType.name}}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
-              <mat-form-field fxFlex="48" *ngIf="selTransType === '0'">
-                <input matInput placeholder="Default" disabled>
+              <mat-form-field *ngIf="selTransType === '0'" fxFlex="48">
+                <mat-label>Default</mat-label>
+                <input matInput disabled>
               </mat-form-field>
-              <mat-form-field fxFlex.gt-sm="48" fxLayoutAlign="start end" *ngIf="selTransType === '1'">
-                <input matInput [(ngModel)]="blocks" placeholder="Number of Blocks" type="number" name="blocks" [step]="1"
-                  [min]="0" required tabindex="2" #blcks="ngModel">
+              <mat-form-field *ngIf="selTransType === '1'" fxFlex.gt-sm="48" fxLayoutAlign="start end">
+                <mat-label>Number of Blocks</mat-label>
+                <input #blcks="ngModel" matInput type="number" name="blocks" required
+                  tabindex="2" [step]="1" [min]="0" [(ngModel)]="blocks">
                 <mat-error *ngIf="!blocks">Number of blocks is required.</mat-error>
               </mat-form-field>
-              <mat-form-field fxFlex.gt-sm="48" fxLayoutAlign="start end" *ngIf="selTransType === '2'">
-                <input matInput [(ngModel)]="fees" placeholder="Fees (Sats/vByte)"
-                  type="number" name="ccfees" [step]="1" [min]="0" required tabindex="3" #clchfee="ngModel">
+              <mat-form-field *ngIf="selTransType === '2'" fxFlex.gt-sm="48" fxLayoutAlign="start end">
+                <mat-label>Fees (Sats/vByte)</mat-label>
+                <input #clchfee="ngModel" matInput
+                  type="number" name="ccfees" required tabindex="3" [step]="1" [min]="0" [(ngModel)]="fees">
                 <mat-error *ngIf="!fees">Fees is required.</mat-error>
               </mat-form-field>
             </div>
           </div>        
         </div>
         <div fxLayout="row" fxLayoutAlign="end center">
-          <button *ngIf="channelToClose.active && !flgPendingHtlcs" mat-button color="primary" type="reset" class="mr-1" (click)="resetData()" tabindex="3" default>Clear</button>
+          <button *ngIf="channelToClose.active && !flgPendingHtlcs" mat-button color="primary" type="reset" class="mr-1" tabindex="3" default (click)="resetData()">Clear</button>
           <button *ngIf="!flgPendingHtlcs" mat-button color="primary" type="submit" tabindex="4" (click)="onCloseChannel()">{{channelToClose.active ? 'Close Channel' : 'Force Close'}}</button>
           <button *ngIf="flgPendingHtlcs" mat-button color="primary" type="submit" tabindex="5" (click)="onClose()">Ok</button>
         </div>

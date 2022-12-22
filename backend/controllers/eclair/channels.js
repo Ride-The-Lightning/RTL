@@ -32,7 +32,7 @@ export const simplifyAllChannels = (selNode, channels) => {
     return request.post(options).then((nodes) => {
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Channels', msg: 'Filtered Nodes Received', data: nodes });
         let foundPeer = null;
-        simplifiedChannels === null || simplifiedChannels === void 0 ? void 0 : simplifiedChannels.map((channel) => {
+        simplifiedChannels?.map((channel) => {
             foundPeer = nodes.find((channelWithAlias) => channel.nodeId === channelWithAlias.nodeId);
             channel.alias = foundPeer ? foundPeer.alias : channel.nodeId.substring(0, 20);
             return channel;
@@ -83,7 +83,13 @@ export const getChannelStats = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/channelstats';
-    options.form = {};
+    const today = new Date(Date.now());
+    const tillToday = (Math.round(today.getTime() / 1000)).toString();
+    const fromLastMonth = (Math.round(new Date(today.getFullYear(), today.getMonth() - 1, today.getDate() + 1, 0, 0, 0).getTime() / 1000)).toString();
+    options.form = {
+        from: fromLastMonth,
+        to: tillToday
+    };
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel States Received', data: body });
         res.status(201).json(body);

@@ -296,6 +296,7 @@ export class CommonService implements OnDestroy {
   }
 
   isVersionCompatible(currentVersion, checkVersion) {
+    // Check for newer CLN version style compatibility
     if (currentVersion) {
       const versionsArr = currentVersion.trim()?.replace('v', '').split('-')[0].split('.') || [];
       const checkVersionsArr = checkVersion.split('.');

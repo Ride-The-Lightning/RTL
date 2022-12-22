@@ -1,42 +1,47 @@
+@import "../../../shared/theme/styles/constants.scss";
+
 .mat-column-status, .mat-column-group_status {
-  max-width: 1.2rem;
-  width: 1.2rem;
+  max-width: 2.2rem;
+  width: 2.2rem;
+  text-overflow: unset;
 }
 
 .mat-column-group_actions {
-  min-height: 4.8rem;
-
+  & .htlc-group-head, & .htlc-group-details {
+    min-height: 3rem;
+  }
+  
   & .btn-htlc-expand {
-    min-width: 10rem;
-    width: 10rem;
+    min-width: $table-actions-min-width;
+    width: $table-actions-min-width;
+    margin: 0;
   }
 
   & .btn-htlc-info {
-    margin-top: 0.5rem;
-    min-width: 9rem;
-    width: 9rem;
+    min-width: $table-actions-min-width - 1rem;
+    min-width: $table-actions-min-width - 1rem;
+    margin: 0;
   }
 }
 
 .mat-column-group_status, .mat-column-group_creation_date {
   .htlc-row-span:not(:first-of-type) {
-    padding-left: 3rem;
+    padding-left: 2rem;
   }
 }
 
 .htlc-row-span {
-  min-height: 4.2rem;
-  place-content: center flex-start;
-  align-items: center;
+  min-height: 3rem;
   &.ellipsis-parent {
     display: flex;
+    align-items: center;
   }
   & .dot {
-    margin-top: -0.4rem;
+    margin-top: -0.3rem;
     position: absolute;
   }
 }
 
 .mat-column-group_creation_date {
-  min-width: 17rem;
+  min-width: 11rem;
 }

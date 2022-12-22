@@ -20,12 +20,14 @@ import { lndPageSettings } from '../../../../../lnd/store/lnd.selector';
 import { ApiCallStatusPayload } from '../../../../models/apiCallsPayload';
 import { CamelCaseWithReplacePipe } from '../../../../pipes/app.pipe';
 import { DatePipe } from '@angular/common';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-swaps',
   templateUrl: './swaps.component.html',
   styleUrls: ['./swaps.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Swaps') }
   ]
 })
@@ -72,7 +74,7 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         if (this.swapsData && this.swapsData.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadSwapsTable(this.swapsData);
         }
-        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
   }
@@ -153,7 +155,6 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     this.listSwaps = new MatTableDataSource<LoopSwapStatus>([...swaps]);
     this.listSwaps.sort = this.sort;
     this.listSwaps.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    this.listSwaps.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.listSwaps.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

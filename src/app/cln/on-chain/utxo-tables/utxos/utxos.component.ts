@@ -18,12 +18,14 @@ import { openAlert } from '../../../../store/rtl.actions';
 import { clnPageSettings, utxos } from '../../../store/cln.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-cln-on-chain-utxos',
   templateUrl: './utxos.component.html',
   styleUrls: ['./utxos.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('UTXOs') }
   ]
 })
@@ -77,7 +79,7 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
         this.displayedColumns.unshift('status');
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
-        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(utxos).pipe(takeUntil(this.unSubs[1])).
@@ -106,9 +108,17 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   ngAfterViewInit() {
-    if (this.utxos && this.utxos.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
-      this.loadUTXOsTable(this.utxos);
-    }
+    setTimeout(() => {
+      if (this.isDustUTXO) {
+        if (this.dustUtxos && this.dustUtxos.length > 0) {
+          this.loadUTXOsTable(this.dustUtxos);
+        }
+      } else {
+        if (this.utxos && this.utxos.length > 0) {
+          this.loadUTXOsTable(this.utxos);
+        }
+      }
+    }, 0);
   }
 
   onUTXOClick(selUtxo: UTXO, event: any) {
@@ -166,14 +176,13 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
 
   loadUTXOsTable(utxos: any[]) {
     this.listUTXOs = new MatTableDataSource<UTXO>([...utxos]);
+    this.listUTXOs.sort = this.sort;
     this.listUTXOs.sortingDataAccessor = (data: UTXO, sortHeaderId: string) => {
       switch (sortHeaderId) {
         case 'is_dust': return +(data.value || 0) < this.dustAmount;
         default: return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     };
-    this.listUTXOs.sort = this.sort;
-    this.listUTXOs.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.listUTXOs.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

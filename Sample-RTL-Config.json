@@ -24,9 +24,9 @@
         "themeColor": "PURPLE",
         "channelBackupPath": "C:\\Users\\xyz\\backup\\node-1",
         "logLevel": "ERROR",
-        "lnServerUrl": "https://localhost:8080",
-        "swapServerUrl": "https://localhost:8081",
-        "boltzServerUrl": "https://localhost:9003",
+        "lnServerUrl": "https://127.0.0.1:8080",
+        "swapServerUrl": "https://127.0.0.1:8081",
+        "boltzServerUrl": "https://127.0.0.1:9003",
         "fiatConversion": false,
         "unannouncedChannels": false
       }

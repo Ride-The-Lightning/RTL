@@ -20,12 +20,14 @@ import { RTLState } from '../../../store/rtl.state';
 import { fetchFile, openAlert } from '../../../store/rtl.actions';
 import { backupChannels, verifyChannel } from '../../store/lnd.actions';
 import { channels, lndNodeSettings } from '../../store/lnd.selector';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-channel-backup-table',
   templateUrl: './channel-backup-table.component.html',
   styleUrls: ['./channel-backup-table.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Channels') }
   ]
 })

@@ -1,9 +1,10 @@
 @import "../../theme/styles/mixins.scss";
 
 .login-container {
-  height: 90vh;
+  height: 60vh;
+  margin-top: 15%;
 
-  & .mat-card {
+  & .mat-mdc-card {
     height: 30rem;
   }
 
@@ -18,7 +19,7 @@
   }
 
   & .material-icons.mat-icon {
-    font-size: 120%;
+    font-size: 90%;
     cursor: pointer;
   }
   

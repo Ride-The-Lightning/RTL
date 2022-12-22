@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
@@ -42,12 +42,12 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   public animationDirection = 'forward';
   public flgEditable = true;
-  inputFormGroup: FormGroup;
-  addressFormGroup: FormGroup;
-  statusFormGroup: FormGroup;
+  inputFormGroup: UntypedFormGroup;
+  addressFormGroup: UntypedFormGroup;
+  statusFormGroup: UntypedFormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<SwapModalComponent>, @Inject(MAT_DIALOG_DATA) public data: SwapAlert, private boltzService: BoltzService, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe, private logger: LoggerService, private commonService: CommonService) { }
+  constructor(public dialogRef: MatDialogRef<SwapModalComponent>, @Inject(MAT_DIALOG_DATA) public data: SwapAlert, private boltzService: BoltzService, private formBuilder: UntypedFormBuilder, private decimalPipe: DecimalPipe, private logger: LoggerService, private commonService: CommonService) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();

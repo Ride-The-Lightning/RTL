@@ -18,12 +18,14 @@ import { openAlert } from '../../../store/rtl.actions';
 import { eclPageSettings, payments } from '../../store/ecl.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithSpacesPipe } from '../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-ecl-forwarding-history',
   templateUrl: './forwarding-history.component.html',
   styleUrls: ['./forwarding-history.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Events') }
   ]
 })
@@ -72,30 +74,30 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
         this.displayedColumns.unshift('type');
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
-        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(payments).pipe(takeUntil(this.unSubs[1])).
       subscribe((paymentsSelector: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
-        if (this.eventsData.length === 0) {
-          this.errorMessage = '';
-          this.apiCallStatus = paymentsSelector.apiCallStatus;
-          if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-            this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-          }
-          this.eventsData = paymentsSelector.payments && paymentsSelector.payments.relayed ? paymentsSelector.payments.relayed : [];
-          if (this.eventsData.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
-            this.loadForwardingEventsTable(this.eventsData);
-          }
-          this.logger.info(this.eventsData);
+        this.errorMessage = '';
+        this.apiCallStatus = paymentsSelector.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
+        this.eventsData = paymentsSelector.payments && paymentsSelector.payments.relayed ? paymentsSelector.payments.relayed : [];
+        if (this.eventsData.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+          this.loadForwardingEventsTable(this.eventsData);
+        }
+        this.logger.info(this.eventsData);
       });
   }
 
   ngAfterViewInit() {
-    if (this.eventsData.length > 0) {
-      this.loadForwardingEventsTable(this.eventsData);
-    }
+    setTimeout(() => {
+      if (this.eventsData.length > 0) {
+        this.loadForwardingEventsTable(this.eventsData);
+      }
+    }, 0);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -187,7 +189,6 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
           return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     };
-    this.forwardingHistoryEvents.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

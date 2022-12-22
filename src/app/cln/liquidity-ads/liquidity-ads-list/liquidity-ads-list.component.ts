@@ -22,12 +22,14 @@ import { clnPageSettings, nodeInfoAndNodeSettingsAndBalance } from '../../store/
 import { DatePipe } from '@angular/common';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-cln-liquidity-ads-list',
   templateUrl: './liquidity-ads-list.component.html',
   styleUrls: ['./liquidity-ads-list.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Liquidity Ads') }
   ]
 })
@@ -60,7 +62,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
   public selFilter = '';
-  public apiCallStatus: ApiCallStatusPayload = { status: APICallStatusEnum.INITIATED };
+  public listNodesCallStatus = APICallStatusEnum.INITIATED;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -77,9 +79,8 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
     this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[0])).
       subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apiCallStatus = settings.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = this.apiCallStatus.message || '';
+        if (settings.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = settings.apiCallStatus.message || '';
         }
         this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
         if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
@@ -89,7 +90,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
         }
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
-        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     combineLatest([this.store.select(nodeInfoAndNodeSettingsAndBalance), this.dataService.listNetworkNodes('?liquidity_ads=yes')]).pipe(takeUntil(this.unSubs[1])).
@@ -100,7 +101,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
           this.logger.info(infoSettingsBalSelector);
           if (nodeListRes && !(<any[]>nodeListRes).length) { nodeListRes = []; }
           this.logger.info('Received Liquidity Ads Enabled Nodes: ' + JSON.stringify(nodeListRes));
-          this.apiCallStatus.status = APICallStatusEnum.COMPLETED;
+          this.listNodesCallStatus = APICallStatusEnum.COMPLETED;
           (<any[]>nodeListRes).forEach((lqNode) => {
             const a: string[] = [];
             lqNode.address_types = Array.from(new Set(lqNode.addresses?.reduce((acc, addr) => {
@@ -115,7 +116,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
           this.loadLiqNodesTable(this.liquidityNodesData);
         }, error: (err) => {
           this.logger.error('Liquidity Ads Nodes Error: ' + JSON.stringify(err));
-          this.apiCallStatus.status = APICallStatusEnum.ERROR;
+          this.listNodesCallStatus = APICallStatusEnum.ERROR;
           this.errorMessage = JSON.stringify(err);
         }
       });
@@ -184,9 +185,8 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
 
   loadLiqNodesTable(liqNodes: LookupNode[]) {
     this.liquidityNodes = new MatTableDataSource<LookupNode>([...liqNodes]);
-    this.liquidityNodes.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.liquidityNodes.sort = this.sort;
-    this.liquidityNodes.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
+    this.liquidityNodes.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.setFilterPredicate();
     this.applyFilter();
     this.liquidityNodes.paginator = this.paginator;

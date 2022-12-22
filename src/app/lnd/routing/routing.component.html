@@ -1,37 +1,40 @@
 <div fxLayout="column">
   <div fxLayout="row" fxLayoutAlign="start center" class="page-title-container">
-    <fa-icon [icon]="faMapSigns" class="page-title-img mr-1"></fa-icon>
+    <fa-icon class="page-title-img mr-1" [icon]="faMapSigns"></fa-icon>
     <span class="page-title">Routing</span>
   </div>
   <div fxLayout="row" fxFlex="100" fxLayoutAlign="start start" class="padding-gap-x">
     <mat-card fxLayout="row" fxFlex="100" fxLayoutAlign="start start">
       <mat-card-content fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="card-content-gap mt-1">
-        <form fxFlex="100" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="w-100 mb-1" (ngSubmit)="onEventsFetch()" #routingForm="ngForm">
+        <form #routingForm="ngForm" fxFlex="100" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="w-100 mb-1" (ngSubmit)="onEventsFetch()">
           <div fxFlex="100" fxLayoutAlign="space-between stretch">
-            <mat-form-field fxFlex="49" fxLayoutAlign="start">
-              <input matInput [matDatepicker]="startDatepicker" placeholder="Start Date" [max]="today"
-                name="startDate" [(ngModel)]="startDate" tabindex="1" #strtDate="ngModel">
+            <mat-form-field fxLayout="column" fxFlex="49" fxLayoutAlign="start">
+              <mat-label>Start Date</mat-label>
+              <input #strtDate="ngModel" matInput name="startDate"
+                tabindex="1" [matDatepicker]="startDatepicker" [max]="today" [(ngModel)]="startDate">
               <mat-datepicker-toggle matSuffix [for]="startDatepicker"></mat-datepicker-toggle>
               <mat-datepicker #startDatepicker [startAt]="startDate"></mat-datepicker>
               <mat-error *ngIf="strtDate.errors">Invalid date format.</mat-error>
             </mat-form-field>
-            <mat-form-field fxFlex="49" fxLayoutAlign="start">
-              <input matInput [matDatepicker]="endDatepicker" [min]="startDate" [max]="today" placeholder="End Date" name="endDate"
-                [(ngModel)]="endDate" tabindex="2" #enDate="ngModel">
+            <mat-form-field fxLayout="column" fxFlex="49" fxLayoutAlign="start">
+              <mat-label>End Date</mat-label>
+              <input #enDate="ngModel" matInput name="endDate" tabindex="2" [matDatepicker]="endDatepicker"
+                [min]="startDate" [max]="today" [(ngModel)]="endDate">
               <mat-datepicker-toggle matSuffix [for]="endDatepicker"></mat-datepicker-toggle>
               <mat-datepicker #endDatepicker [startAt]="endDate"></mat-datepicker>
               <mat-error *ngIf="enDate.errors">Invalid date format.</mat-error>
             </mat-form-field>
           </div>
-          <div fxLayout="row" class="mt-2">
+          <div fxLayout="row" class="">
             <button class="mr-1" mat-stroked-button color="primary" tabindex="3" type="reset" (click)="resetData()">Clear</button>
             <button mat-flat-button color="primary" type="submit" tabindex="4">Fetch Events</button>
           </div>
         </form>
         <div fxLayout="row" fxFlex="100">
-          <nav mat-tab-nav-bar fxFlex="100">
-            <div role="tab" mat-tab-link *ngFor="let link of links" class="mat-tab-label" [active]="activeLink === link.link" (click)="activeLink = link.link" routerLink="{{link.link}}">{{link.name}}</div>
+          <nav mat-tab-nav-bar mat-stretch-tabs="false" mat-align-tabs="start" fxFlex="100" [tabPanel]="tabPanel">
+            <div *ngFor="let link of links" mat-tab-link class="mat-tab-label" [active]="activeLink === link.link" routerLink="{{link.link}}" (click)="activeLink = link.link">{{link.name}}</div>
           </nav>
+          <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>    
         </div>
         <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
           <router-outlet></router-outlet>

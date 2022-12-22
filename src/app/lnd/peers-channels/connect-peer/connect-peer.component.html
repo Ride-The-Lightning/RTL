@@ -4,20 +4,21 @@
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">Connect to a new peer</span>
       </div>
-      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+      <button tabindex="8" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
     </mat-card-header>    
     <mat-card-content class="padding-gap-x-large">
       <div fxLayout="column">
-        <mat-vertical-stepper [linear]="true" #stepper (selectionChange)="stepSelectionChanged($event)">
+        <mat-vertical-stepper #stepper [linear]="true" (selectionChange)="stepSelectionChanged($event)">
           <mat-step [stepControl]="peerFormGroup" [editable]="flgEditable">
-            <form [formGroup]="peerFormGroup" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
+            <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="peerFormGroup">
               <ng-template matStepLabel>{{peerFormLabel}}</ng-template>  
-              <mat-form-field fxFlex="100">
-                <input autoFocus matInput placeholder="Lightning Address (pubkey OR pubkey@ip:port)" formControlName="peerAddress" tabindex="1" required>
+              <mat-form-field fxLayout="column" fxFlex="100">
+                <mat-label>Lightning Address (pubkey OR pubkey@ip:port)</mat-label>
+                <input autoFocus matInput formControlName="peerAddress" tabindex="1" required>
                 <mat-error *ngIf="peerFormGroup.controls.peerAddress.errors?.required">Address is required.</mat-error>
               </mat-form-field>
-              <div fxFlex="100" class="alert alert-danger mt-1" *ngIf="peerConnectionError !== ''">
-                <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+              <div *ngIf="peerConnectionError !== ''" fxFlex="100" class="alert alert-danger mt-1">
+                <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
                 <span>{{peerConnectionError}}</span>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
@@ -26,13 +27,14 @@
             </form>
           </mat-step>
           <mat-step [stepControl]="channelFormGroup" [editable]="flgEditable">
-            <form [formGroup]="channelFormGroup" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="mb-1">
+            <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="mb-1" [formGroup]="channelFormGroup">
               <ng-template matStepLabel disabled="true">{{channelFormLabel}}</ng-template>
               <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
                 <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
-                  <mat-form-field fxFlex="60" fxLayoutAlign="start end">
-                    <input matInput formControlName="fundingAmount" placeholder="Amount" type="number" [step]="1000" tabindex="1" required>
-                    <mat-hint>Remaining Bal: {{totalBalance - ((channelFormGroup.controls.fundingAmount.value) ? channelFormGroup.controls.fundingAmount.value : 0)}}</mat-hint>
+                  <mat-form-field fxLayout="column" fxFlex="60" fxLayoutAlign="start end">
+                    <mat-label>Amount</mat-label>
+                    <input matInput formControlName="fundingAmount" type="number" tabindex="1" required [step]="1000">
+                    <mat-hint>Remaining: {{totalBalance - ((channelFormGroup.controls.fundingAmount.value) ? channelFormGroup.controls.fundingAmount.value : 0) | number}}</mat-hint>
                     <span matSuffix> Sats </span>
                     <mat-error *ngIf="channelFormGroup.controls.fundingAmount.errors?.required">Amount is required.</mat-error>
                     <mat-error *ngIf="channelFormGroup.controls.fundingAmount.errors?.min">Amount must be a positive number.</mat-error>
@@ -43,15 +45,17 @@
                   </div>
                 </div>
                 <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
-                  <mat-form-field fxFlex="30" fxLayoutAlign="start end">
-                    <mat-select tabindex="3" formControlName="selTransType" placeholder="Transaction Type">
+                  <mat-form-field fxLayout="column" fxFlex="30" fxLayoutAlign="start end">
+                    <mat-label>Transaction Type</mat-label>
+                    <mat-select tabindex="3" formControlName="selTransType">
                       <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
                         {{transType.name}}
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
-                  <mat-form-field fxFlex="30">
-                    <input matInput formControlName="transTypeValue" [placeholder]="channelFormGroup.controls.selTransType.value === '0' ? 'Default' : channelFormGroup.controls.selTransType.value === '1' ? 'Target Confirmation Blocks' : 'Fee (Sats/vByte)'" type="number" name="transTypeValue" [step]="1" tabindex="4" [required]="channelFormGroup.controls.selTransType.value !== '0'">
+                  <mat-form-field fxLayout="column" fxFlex="30">
+                    <mat-label>{{channelFormGroup.controls.selTransType.value === '0' ? 'Default' : channelFormGroup.controls.selTransType.value === '1' ? 'Target Confirmation Blocks' : 'Fee (Sats/vByte)'}}</mat-label>
+                    <input matInput formControlName="transTypeValue" type="number" name="transTypeValue" tabindex="4" [step]="1" [required]="channelFormGroup.controls.selTransType.value !== '0'">
                     <mat-error *ngIf="channelFormGroup.controls.transTypeValue.errors?.required">{{channelFormGroup.controls.selTransType.value === '0' ? 'Default' : channelFormGroup.controls.selTransType.value === '1' ? 'Target Confirmation Blocks' : 'Fee (Sats/vByte)'}} is required.</mat-error>
                   </mat-form-field>
                   <div fxFlex="35" fxLayoutAlign="start center">
@@ -59,8 +63,8 @@
                   </div>
                 </div>
               </div>
-              <div fxFlex="100" class="alert alert-danger mt-1" *ngIf="channelConnectionError !== ''">
-                <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+              <div *ngIf="channelConnectionError !== ''" fxFlex="100" class="alert alert-danger mt-1">
+                <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
                 <span>{{channelConnectionError}}</span>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
@@ -70,7 +74,7 @@
           </mat-step>
         </mat-vertical-stepper>
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">        
-          <button mat-button color="primary" tabindex="12" type="button" [mat-dialog-close]="false" default>{{newlyAddedPeer?.pub_key ? 'Do It Later' : 'Close'}}</button>
+          <button mat-button color="primary" tabindex="12" type="button" default [mat-dialog-close]="false">{{newlyAddedPeer?.pub_key ? 'Do It Later' : 'Close'}}</button>
         </div>
       </div>
     </mat-card-content>

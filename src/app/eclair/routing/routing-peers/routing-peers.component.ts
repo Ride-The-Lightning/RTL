@@ -71,7 +71,7 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
           this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
         }
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
-        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / (this.displayedColumns.length * 2)) / 10) + 'rem' : '20rem';
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / (this.displayedColumns.length * 2)) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(payments).pipe(takeUntil(this.unSubs[1])).
@@ -148,12 +148,10 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
       const results = this.groupRoutingPeers(forwardingEvents);
       this.routingPeersIncoming = new MatTableDataSource<RoutingPeers>(results[0]);
       this.routingPeersIncoming.sort = this.sortIn;
-      this.routingPeersIncoming.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
       this.routingPeersIncoming.paginator = this.paginatorIn;
       this.logger.info(this.routingPeersIncoming);
       this.routingPeersOutgoing = new MatTableDataSource<RoutingPeers>(results[1]);
       this.routingPeersOutgoing.sort = this.sortOut;
-      this.routingPeersOutgoing.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
       this.routingPeersOutgoing.paginator = this.paginatorOut;
       this.logger.info(this.routingPeersOutgoing);
     } else {

@@ -2,11 +2,11 @@
   <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x">
     <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100">
       <rtl-horizontal-scroller (stepChanged)="onSelectionChange($event)"></rtl-horizontal-scroller>
-      <div class="p-2" *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED">
+      <div *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" class="p-2">
         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
         <span>Getting transactions data...</span>
       </div>
-      <div class="p-2 error-border my-2" *ngIf="apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</div>
+      <div *ngIf="apiCallStatus.status === apiCallStatusEnum.ERROR" class="p-2 error-border my-2">{{errorMessage}}</div>
       <div *ngIf="transactionsNonZeroReportData.length > 0 && apiCallStatus.status === apiCallStatusEnum.COMPLETED" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 font-bold-700 mt-1" [@fadeIn]="transactionsReportSummary">
         <div *ngIf="transactionsReportSummary.paymentsSelectedPeriod > 0" fxLayout="row" fxLayoutAlign="start stretch" fxFlex="100">
           Paid {{(transactionsReportSummary.amountPaidSelectedPeriod / 1000 || 0) | number:'1.0-2'}} Sats/{{transactionsReportSummary.paymentsSelectedPeriod | number}} Payments
@@ -16,7 +16,7 @@
         </div>
       </div>
       <div *ngIf="transactionsNonZeroReportData.length <= 0 && apiCallStatus.status === apiCallStatusEnum.COMPLETED" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1">No transactions report for the selected period</div>
-      <div class="mt-1" *ngIf="transactionsNonZeroReportData.length > 0 && apiCallStatus.status === apiCallStatusEnum.COMPLETED">
+      <div *ngIf="transactionsNonZeroReportData.length > 0 && apiCallStatus.status === apiCallStatusEnum.COMPLETED" class="mt-1">
         <ngx-charts-bar-vertical-2d
           *ngIf="transactionsReportData.length > 0 && transactionsNonZeroReportData.length > 0"
           class="two-color"

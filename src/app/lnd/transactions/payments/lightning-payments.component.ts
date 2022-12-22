@@ -25,12 +25,14 @@ import { sendPayment } from '../../store/lnd.actions';
 import { lndNodeInformation, lndNodeSettings, lndPageSettings, payments, peers } from '../../store/lnd.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-lightning-payments',
   templateUrl: './lightning-payments.component.html',
   styleUrls: ['./lightning-payments.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Payments') }
   ]
 })
@@ -99,7 +101,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         this.htlcColumns = [];
         this.displayedColumns.map((col) => this.htlcColumns.push('group_' + col));
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
-        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 10) + 'rem' : '20rem';
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
     this.store.select(payments).pipe(takeUntil(this.unSubs[5])).
@@ -475,6 +477,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
 
   loadPaymentsTable(payms) {
     this.payments = payms ? new MatTableDataSource<Payment>([...payms]) : new MatTableDataSource([]);
+    this.payments.sort = this.sort;
     this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
         case 'hops':
@@ -484,8 +487,6 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
           return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     };
-    this.payments.sort = this.sort;
-    this.payments.sort?.sort({ id: this.tableSetting.sortBy, start: this.tableSetting.sortOrder, disableClear: true });
     this.setFilterPredicate();
     this.applyFilter();
   }

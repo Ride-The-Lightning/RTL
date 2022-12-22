@@ -1,71 +1,73 @@
 <div fxLayout="column" fxLayoutAlign="start stretch" class="padding-gap-x">
-  <div class="p-2 error-border my-2" *ngIf="errorMessage !== ''">{{errorMessage}}</div>
+  <div *ngIf="errorMessage !== ''" class="p-2 error-border my-2">{{errorMessage}}</div>
   <div *ngIf="errorMessage === ''" fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container">
     <div fxFlex="70"></div>
     <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
-      <mat-form-field fxFlex="49">
-        <mat-select placeholder="Filter By" tabindex="1" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()" name="filterBy">
-          <mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option>
+      <mat-form-field fxLayout="column" fxFlex="49">
+        <mat-label>Filter By</mat-label>
+        <mat-select tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
+          <perfect-scrollbar><mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option></perfect-scrollbar>
         </mat-select>
       </mat-form-field>
-      <mat-form-field fxFlex="49">
-        <input matInput [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()" name="filter" placeholder="Filter">
+      <mat-form-field fxLayout="column" fxFlex="49">
+        <mat-label>Filter</mat-label>
+        <input matInput name="filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
       </mat-form-field>
     </div>
   </div>
-  <div *ngIf="errorMessage === ''" [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+  <div *ngIf="errorMessage === ''" fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container" [perfectScrollbar]>
     <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-    <table mat-table #table fxFlex="100" [dataSource]="forwardingHistoryEvents" matSort class="overflow-auto">
+    <table #table mat-table fxFlex="100" matSort class="overflow-auto" [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="forwardingHistoryEvents">
     <ng-container matColumnDef="timestamp">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Timestamp</th>
-      <td mat-cell *matCellDef="let fhEvent">{{(fhEvent.timestamp * 1000) | date:'dd/MMM/y HH:mm'}}</td>
+      <th *matHeaderCellDef mat-header-cell mat-sort-header>Timestamp</th>
+      <td *matCellDef="let fhEvent" mat-cell>{{(fhEvent.timestamp * 1000) | date:'dd/MMM/y HH:mm'}}</td>
     </ng-container>
     <ng-container matColumnDef="alias_in">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Inbound Alias</th>
-      <td mat-cell *matCellDef="let fhEvent">
-        <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+      <th *matHeaderCellDef mat-header-cell mat-sort-header>Inbound Alias</th>
+      <td *matCellDef="let fhEvent" mat-cell>
+        <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
           <span class="ellipsis-child">{{fhEvent?.alias_in}}</span>
         </div>
       </td>
     </ng-container>
     <ng-container matColumnDef="chan_id_in">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Inbound Channel</th>
-      <td mat-cell *matCellDef="let fhEvent">
-        <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+      <th *matHeaderCellDef mat-header-cell mat-sort-header>Inbound Channel</th>
+      <td *matCellDef="let fhEvent" mat-cell>
+        <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
           <span class="ellipsis-child">{{fhEvent?.chan_id_in}}</span>
         </div>
       </td>
     </ng-container>
     <ng-container matColumnDef="alias_out">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Outbound Alias</th>
-      <td mat-cell *matCellDef="let fhEvent">
-        <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+      <th *matHeaderCellDef mat-header-cell mat-sort-header>Outbound Alias</th>
+      <td *matCellDef="let fhEvent" mat-cell>
+        <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
           <span class="ellipsis-child">{{fhEvent?.alias_out}}</span>
         </div>
       </td>
     </ng-container>
     <ng-container matColumnDef="chan_id_out">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Outbound Channel</th>
-      <td mat-cell *matCellDef="let fhEvent">
-        <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '10rem' : colWidth}">
+      <th *matHeaderCellDef mat-header-cell mat-sort-header>Outbound Channel</th>
+      <td *matCellDef="let fhEvent" mat-cell>
+        <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
           <span class="ellipsis-child">{{fhEvent?.chan_id_out}}</span>
         </div>
       </td>
     </ng-container>
     <ng-container matColumnDef="amt_in">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Inbound Amount (Sats)</th>
-      <td mat-cell *matCellDef="let fhEvent"><span fxLayoutAlign="end center">{{fhEvent.amt_in | number}}</span></td>
+      <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Inbound Amount (Sats)</th>
+      <td *matCellDef="let fhEvent" mat-cell><span fxLayoutAlign="end center">{{fhEvent.amt_in | number}}</span></td>
     </ng-container>
     <ng-container matColumnDef="amt_out">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Outbound Amount (Sats)</th>
-      <td mat-cell *matCellDef="let fhEvent"><span fxLayoutAlign="end center">{{fhEvent.amt_out | number}}</span></td>
+      <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Outbound Amount (Sats)</th>
+      <td *matCellDef="let fhEvent" mat-cell><span fxLayoutAlign="end center">{{fhEvent.amt_out | number}}</span></td>
     </ng-container>
     <ng-container matColumnDef="fee_msat">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Fee (mSats)</th>
-      <td mat-cell *matCellDef="let fhEvent"><span fxLayoutAlign="end center">{{fhEvent.fee_msat | number}}</span></td>
+      <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Fee (mSats)</th>
+      <td *matCellDef="let fhEvent" mat-cell><span fxLayoutAlign="end center">{{fhEvent.fee_msat | number}}</span></td>
     </ng-container>
     <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>
+        <th *matHeaderCellDef mat-header-cell>
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="1" class="mr-0">
               <mat-select-trigger></mat-select-trigger>
@@ -73,21 +75,21 @@
             </mat-select>
           </div>
        </th>
-        <td mat-cell *matCellDef="let fhEvent" fxLayoutAlign="end center">
-          <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onForwardingEventClick(fhEvent,$event)" class="table-actions-button">View Info</button>          
+        <td *matCellDef="let fhEvent" mat-cell fxLayoutAlign="end center">
+          <button mat-stroked-button color="primary" type="button" tabindex="4" class="table-actions-button" (click)="onForwardingEventClick(fhEvent,$event)">View Info</button>          
         </td>
       </ng-container>
       <ng-container matColumnDef="no_event">
-        <td mat-footer-cell *matFooterCellDef colspan="4">
+        <td *matFooterCellDef  mat-footer-cell colspan="4">
           <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No forwarding history available.</p>
           <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting forwarding history...</p>
           <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
         </td>
       </ng-container>
-      <tr mat-footer-row *matFooterRowDef="['no_event']" [ngClass]="{'display-none': forwardingHistoryEvents?.data && forwardingHistoryEvents?.data?.length>0}"></tr>
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr *matFooterRowDef="['no_event']" mat-footer-row [ngClass]="{'display-none': forwardingHistoryEvents?.data && forwardingHistoryEvents?.data?.length>0}"></tr>
+      <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+      <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
     </table>
   </div>
-  <mat-paginator *ngIf="errorMessage === ''" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
+  <mat-paginator *ngIf="errorMessage === ''" class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true"></mat-paginator>
 </div>

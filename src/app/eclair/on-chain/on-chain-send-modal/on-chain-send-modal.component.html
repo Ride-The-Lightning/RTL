@@ -4,33 +4,36 @@
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">Send Payment</span>
       </div>
-      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" [mat-dialog-close]="false" default mat-button>X</button>
+      <button tabindex="8" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" default mat-button [mat-dialog-close]="false">X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
-      <form fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between start" class="overflow-x-hidden" (submit)="onSendFunds()" (reset)="resetData()" #form="ngForm">
-        <mat-form-field fxFlex="55">
-          <input matInput autoFocus [(ngModel)]="transaction.address" placeholder="Bitcoin Address" tabindex="1" name="addr" required #addrs="ngModel">
+      <form #form="ngForm" fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between start" class="overflow-x-hidden" (submit)="onSendFunds()" (reset)="resetData()">
+        <mat-form-field fxLayout="column" fxFlex="55">
+          <mat-label>Bitcoin Address</mat-label>
+          <input #addrs="ngModel" matInput autoFocus tabindex="1" name="addr" required [(ngModel)]="transaction.address">
           <mat-error *ngIf="!transaction.address">Bitcoin address is required.</mat-error>
         </mat-form-field>
-        <mat-form-field fxFlex="30">
-          <input matInput [(ngModel)]="transaction.amount" placeholder="Amount" name="amt" type="number" [step]="100" [min]="0" tabindex="2" required #amnt="ngModel">
+        <mat-form-field fxLayout="column" fxFlex="30">
+          <mat-label>Amount</mat-label>
+          <input #amnt="ngModel" matInput name="amt" type="number" tabindex="2" required [step]="100" [min]="0" [(ngModel)]="transaction.amount">
           <span matSuffix>{{selAmountUnit}} </span>
           <mat-error *ngIf="!transaction.amount">{{amountError}}</mat-error>
         </mat-form-field>
-        <mat-form-field fxFlex="10" fxLayoutAlign="start end">
-          <mat-select [value]="selAmountUnit" tabindex="3" required name="amountUnit" (selectionChange)="onAmountUnitChange($event)">
+        <mat-form-field fxLayout="column" fxFlex="10" fxLayoutAlign="start end">
+          <mat-select tabindex="3" required name="amountUnit" [value]="selAmountUnit" (selectionChange)="onAmountUnitChange($event)">
             <mat-option *ngFor="let amountUnit of amountUnits" [value]="amountUnit">{{amountUnit}}</mat-option>
           </mat-select>
         </mat-form-field>
         <div fxFlex="60" fxLayoutAlign="space-between stretch" fxLayout="row wrap">
-          <mat-form-field fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
-            <input matInput [(ngModel)]="transaction.blocks" placeholder="Target Confirmation Blocks" type="number" name="blocks" [step]="1" [min]="0" tabindex="8" #blocks="ngModel" required="true">
+          <mat-form-field fxLayout="column" fxFlex="48" fxLayoutAlign="start center">
+            <mat-label>Target Confirmation Blocks</mat-label>
+            <input #blocks="ngModel" matInput type="number" name="blocks" tabindex="8" required="true" [step]="1" [min]="0" [(ngModel)]="transaction.blocks">
             <mat-error *ngIf="!transaction.blocks">Target Confirmation Blocks is required.</mat-error>
           </mat-form-field>
         </div>
         <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch"></div>
-        <div fxFlex="100" class="alert alert-danger mt-1" *ngIf="sendFundError !== ''">
-          <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+        <div *ngIf="sendFundError !== ''" fxFlex="100" class="alert alert-danger mt-1">
+          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
           <span *ngIf="sendFundError !== ''">{{sendFundError}}</span>
         </div>
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">
