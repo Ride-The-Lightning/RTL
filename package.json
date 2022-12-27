@@ -1,6 +1,6 @@
 {
   "name": "rtl",
-  "version": "0.13.3-beta",
+  "version": "0.13.4-beta",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -41,7 +41,7 @@
     "express-session": "^1.17.3",
     "hocon-parser": "^1.0.1",
     "ini": "^3.0.1",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "ng-qrcode": "^8.0.1",
     "ngx-perfect-scrollbar-next": "^10.1.1",
     "otplib": "^12.0.1",

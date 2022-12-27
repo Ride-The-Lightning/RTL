@@ -5,6 +5,9 @@
     "types": ["jasmine", "node"],
     "module": "CommonJS"
   },
+  "files": [
+    "./polyfills.ts"
+  ],
   "include": [
     "./**/*.spec.ts",
     "./**/*.d.ts"

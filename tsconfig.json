@@ -27,7 +27,8 @@
     ],
     "paths": {
       "crypto": ["node_modules/crypto-browserify"],
-      "stream": ["node_modules/stream-browserify"]
+      "stream": ["node_modules/stream-browserify"],
+      "buffer": ["node_modules/buffer"]
     }
   },
   "include": [

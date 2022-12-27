@@ -8,7 +8,7 @@ export function getPaginatorLabel(field: string) {
   return appPaginator;
 }
 
-export const VERSION = '0.13.3-beta';
+export const VERSION = '0.13.4-beta';
 
 export const API_URL = isDevMode() ? 'http://localhost:3000/rtl/api' : './api';
 
