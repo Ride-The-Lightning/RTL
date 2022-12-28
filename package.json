@@ -15,7 +15,7 @@
     "server": "set NODE_ENV=development&&nodemon --watch backend --watch server ./rtl.js",
     "serverUbuntu": "NODE_ENV=development nodemon --watch backend --watch server ./rtl.js",
     "testdev": "ng test --watch=true --code-coverage",
-    "test": "ng test --watch=false",
+    "test": "ng test --watch=false --browsers=ChromeHeadless",
     "lint": "ng lint",
     "lintServer": "eslint ./server/**/* --ext .ts"
   },
