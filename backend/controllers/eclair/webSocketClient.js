@@ -113,11 +113,9 @@ export class ECLWebSocketClient {
             if (!eclWsClt.webSocketClient) {
                 return;
             }
-            ;
             if (eclWsClt.webSocketClient.readyState !== 1) {
                 return;
             }
-            ;
             eclWsClt.webSocketClient.ping();
             setTimeout(() => {
                 this.heartbeat(eclWsClt);

@@ -9,4 +9,3 @@ export enum ECLWSEventsEnum {
   CHANNEL_CLOSED = 'channel-closed',
   ONION_MESSAGE_RECEIVED = 'onion-message-received'
 }
-  
