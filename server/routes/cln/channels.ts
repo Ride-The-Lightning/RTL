@@ -1,4 +1,4 @@
-import exprs from 'express';
+import * as exprs from 'express';
 const { Router } = exprs;
 import { isAuthenticated } from '../../utils/authCheck.js';
 import { listChannels, openChannel, setChannelFee, closeChannel, getLocalRemoteBalance, listForwards, funderUpdatePolicy, listForwardsPaginated } from '../../controllers/cln/channels.js';

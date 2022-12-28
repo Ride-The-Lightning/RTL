@@ -1,4 +1,4 @@
-import exprs from 'express';
+import * as exprs from 'express';
 const { Router } = exprs;
 import { isAuthenticated } from '../../utils/authCheck.js';
 import { getRTLConfigInitial, getRTLConfig, updateUISettings, update2FASettings, getConfig, getFile, updateSelectedNode, updateDefaultNode, updateServiceSettings, updateSSO, getCurrencyRates } from '../../controllers/shared/RTLConf.js';

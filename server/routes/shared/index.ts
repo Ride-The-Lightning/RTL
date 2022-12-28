@@ -1,4 +1,4 @@
-import exprs from 'express';
+import * as exprs from 'express';
 const { Router } = exprs;
 import authenticateRoutes from './authenticate.js';
 import boltzRoutes from './boltz.js';

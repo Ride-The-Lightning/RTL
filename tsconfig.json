@@ -4,17 +4,19 @@
     "baseUrl": "./",
     "outDir": "./backend",
     "forceConsistentCasingInFileNames": true,
-    "strict": false,
-    "esModuleInterop": true,
-    "allowJs": false,
-    "noImplicitAny": false,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
     "noImplicitOverride": false,
     "noPropertyAccessFromIndexSignature": false,
+    "strictPropertyInitialization":false,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "downlevelIteration": true,
+    "suppressImplicitAnyIndexErrors": true,
     "sourceMap": false,
     "declaration": false,
+    "downlevelIteration": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
@@ -27,13 +29,12 @@
     ],
     "paths": {
       "crypto": ["node_modules/crypto-browserify"],
-      "stream": ["node_modules/stream-browserify"],
-      "buffer": ["node_modules/buffer"]
+      "stream": ["node_modules/stream-browserify"]
     }
   },
   "include": [
     "./server/**/*"
-  ],  
+  ],
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,

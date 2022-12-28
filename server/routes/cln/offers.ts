@@ -1,4 +1,4 @@
-import exprs from 'express';
+import * as exprs from 'express';
 const { Router } = exprs;
 import { isAuthenticated } from '../../utils/authCheck.js';
 import { listOfferBookmarks, deleteOfferBookmark, listOffers, disableOffer, createOffer, fetchOfferInvoice } from '../../controllers/cln/offers.js';

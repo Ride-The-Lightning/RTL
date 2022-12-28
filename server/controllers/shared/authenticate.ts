@@ -75,12 +75,12 @@ export const authenticateUser = (req, res, next) => {
     const password = req.body.authenticationValue;
     if (common.rtl_pass === password && failed.count < ALLOWED_LOGIN_ATTEMPTS) {
       if (req.body.twoFAToken && req.body.twoFAToken !== '') {
-        if (!verifyToken(req.body.twoFAToken)) {
-          logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: 'Invalid Token! Failed IP ' + reqIP, error: { error: 'Invalid token.' } });
-          failed.count = failed.count + 1;
-          failed.lastTried = currentTime;
-          return res.status(401).json(handleMultipleFailedAttemptsError(failed, currentTime, 'Invalid 2FA Token!'));
-        }
+        // if (!verifyToken(req.body.twoFAToken)) {
+        //   logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: 'Invalid Token! Failed IP ' + reqIP, error: { error: 'Invalid token.' } });
+        //   failed.count = failed.count + 1;
+        //   failed.lastTried = currentTime;
+        //   return res.status(401).json(handleMultipleFailedAttemptsError(failed, currentTime, 'Invalid 2FA Token!'));
+        // }
       }
       if (!req.session.selectedNode) { req.session.selectedNode = common.initSelectedNode; }
       delete failedLoginAttempts[reqIP];

@@ -1,4 +1,4 @@
-import exprs from 'express';
+import * as exprs from 'express';
 const { Router } = exprs;
 import { isAuthenticated } from '../../utils/authCheck.js';
 import { getRoute, listNode, listChannel, feeRates, listNodes } from '../../controllers/cln/network.js';

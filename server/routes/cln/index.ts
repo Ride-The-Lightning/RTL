@@ -1,4 +1,4 @@
-import exprs from 'express';
+import * as exprs from 'express';
 const { Router } = exprs;
 import infoCLRoutes from './getInfo.js';
 import feesCLRoutes from './fees.js';

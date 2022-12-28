@@ -1,4 +1,4 @@
-import WebSocket from 'ws';
+import * as WebSocket from 'ws';
 
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
@@ -51,7 +51,7 @@ export class ECLWebSocketClient {
           this.connectWithClient(clientExists);
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       throw new Error(err);
     }
   };
