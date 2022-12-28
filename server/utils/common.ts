@@ -329,7 +329,7 @@ export class CommonService {
     if (exists) {
       try {
         this.cookie_value = fs.readFileSync(this.rtl_cookie_path, 'utf-8');
-      } catch (err: any) {
+      } catch (err) {
         this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while reading cookie: \n' + err });
         throw new Error(err);
       }
@@ -339,7 +339,7 @@ export class CommonService {
         this.createDirectory(directoryName);
         fs.writeFileSync(this.rtl_cookie_path, crypto.randomBytes(64).toString('hex'));
         this.cookie_value = fs.readFileSync(this.rtl_cookie_path, 'utf-8');
-      } catch (err: any) {
+      } catch (err) {
         this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while reading the cookie: \n' + err });
         throw new Error(err);
       }
@@ -350,7 +350,7 @@ export class CommonService {
     try {
       fs.writeFileSync(this.rtl_cookie_path, crypto.randomBytes(64).toString('hex'));
       this.cookie_value = fs.readFileSync(this.rtl_cookie_path, 'utf-8');
-    } catch (err: any) {
+    } catch (err) {
       this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Something went wrong while refreshing cookie', error: err });
       throw new Error(err);
     }
@@ -364,7 +364,7 @@ export class CommonService {
         if (!fs.existsSync(curDir)) {
           fs.mkdirSync(curDir);
         }
-      } catch (err: any) {
+      } catch (err) {
         if (err.code !== 'EEXIST') {
           if (err.code === 'ENOENT') {
             throw new Error(`ENOENT: No such file or directory, mkdir '${directoryName}'. Ensure that the path separator is '${sep}'`);
