@@ -1,9 +1,8 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { UntypedFormBuilder, UntypedFormGroup, Validators, ValidatorFn, ValidationErrors } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, ValidationErrors, AbstractControlOptions } from '@angular/forms';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { MatStepper } from '@angular/material/stepper';
 
@@ -50,7 +49,7 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
     this.passwordFormGroup = this.formBuilder.group({
       initWalletPassword: ['', [Validators.required, Validators.minLength(8)]],
       initWalletConfirmPassword: ['', [Validators.required, Validators.minLength(8)]]
-    }, { validators: matchedPasswords });
+    }, { validators: matchedPasswords } as AbstractControlOptions);
     this.cipherFormGroup = this.formBuilder.group({
       existingCipher: [false],
       cipherSeed: [{ value: '', disabled: true }, [cipherSeedLength]]

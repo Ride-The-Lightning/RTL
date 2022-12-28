@@ -1,4 +1,4 @@
-import * as exprs from 'express';
+import exprs from 'express';
 const { Router } = exprs;
 import infoRoutes from './getInfo.js';
 import channelsRoutes from './channels.js';

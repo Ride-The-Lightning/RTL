@@ -224,7 +224,7 @@ export class DatabaseAdapter {
             }
         }
         catch (err) {
-            throw new Error(err);
+            throw new Error(JSON.stringify(err));
         }
         const collectionFilePath = this.dbFilePath + sep + 'rtldb-' + this.selNode.ln_implementation + '-' + collectionName + '.json';
         try {
@@ -233,7 +233,7 @@ export class DatabaseAdapter {
             }
         }
         catch (err) {
-            throw new Error(err);
+            throw new Error(JSON.stringify(err));
         }
         try {
             const otherFiles = fs.readdirSync(this.dbFilePath);
@@ -264,7 +264,7 @@ export class DatabaseAdapter {
             return dataObj;
         }
         catch (err) {
-            throw new Error(err);
+            throw new Error(JSON.stringify(err));
         }
     }
     getSelNode() {

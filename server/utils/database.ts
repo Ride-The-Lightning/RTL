@@ -225,16 +225,16 @@ export class DatabaseAdapter {
       if (!fs.existsSync(this.dbFilePath)) {
         this.common.createDirectory(this.dbFilePath);
       }
-    } catch (err: any) {
-      throw new Error(err);
+    } catch (err) {
+      throw new Error(JSON.stringify(err));
     }
     const collectionFilePath = this.dbFilePath + sep + 'rtldb-' + this.selNode.ln_implementation + '-' + collectionName + '.json';
     try {
       if (!fs.existsSync(collectionFilePath)) {
         fs.writeFileSync(collectionFilePath, '[]');
       }
-    } catch (err: any) {
-      throw new Error(err);
+    } catch (err) {
+      throw new Error(JSON.stringify(err));
     }
     try {
       const otherFiles = fs.readdirSync(this.dbFilePath);
@@ -264,8 +264,8 @@ export class DatabaseAdapter {
       const dataFromFile = fs.readFileSync(collectionFilePath, 'utf-8');
       const dataObj = !dataFromFile ? null : (<Collections>JSON.parse(dataFromFile));
       return dataObj;
-    } catch (err: any) {
-      throw new Error(err);
+    } catch (err) {
+      throw new Error(JSON.stringify(err));
     }
   }
 

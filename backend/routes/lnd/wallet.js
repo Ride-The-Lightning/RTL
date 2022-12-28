@@ -1,4 +1,4 @@
-import * as exprs from 'express';
+import exprs from 'express';
 const { Router } = exprs;
 import { isAuthenticated } from '../../utils/authCheck.js';
 import { genSeed, updateSelNodeOptions, getUTXOs, operateWallet, bumpFee, labelTransaction, leaseUTXO, releaseUTXO } from '../../controllers/lnd/wallet.js';

@@ -1,4 +1,4 @@
-import * as exprs from 'express';
+import exprs from 'express';
 const { Router } = exprs;
 import { isAuthenticated } from '../../utils/authCheck.js';
 import { getNewAddress, onChainWithdraw, getUTXOs } from '../../controllers/cln/onchain.js';

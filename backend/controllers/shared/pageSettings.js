@@ -9,7 +9,7 @@ export const getPageSettings = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Page Settings', msg: 'Getting Page Settings..' });
     databaseService.find(req.session.selectedNode, CollectionsEnum.PAGE_SETTINGS).then((settings) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Page Settings', msg: 'Page Settings Received', data: settings });
-        return res.status(200).json(settings);
+        res.status(200).json(settings);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Page Settings', 'Page Settings Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });

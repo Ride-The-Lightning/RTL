@@ -1,4 +1,4 @@
-import * as exprs from 'express';
+import exprs from 'express';
 const { Router } = exprs;
 import { isAuthenticated } from '../../utils/authCheck.js';
 import { signMessage, verifyMessage } from '../../controllers/lnd/message.js';
