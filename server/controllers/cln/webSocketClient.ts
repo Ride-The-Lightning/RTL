@@ -52,7 +52,7 @@ export class CLWebSocketClient {
           this.connectWithClient(clientExists);
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       throw new Error(err);
     }
   };

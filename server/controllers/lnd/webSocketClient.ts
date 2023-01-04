@@ -30,7 +30,7 @@ export class LNDWebSocketClient {
         const newWebSocketClient = { selectedNode: selectedNode };
         this.webSocketClients.push(newWebSocketClient);
       }
-    } catch (err) {
+    } catch (err: any) {
       throw new Error(err);
     }
   };

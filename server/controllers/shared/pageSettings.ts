@@ -9,7 +9,7 @@ const databaseService: DatabaseService = Database;
 
 export const getPageSettings = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Page Settings', msg: 'Getting Page Settings..' });
-  databaseService.find(req.session.selectedNode, CollectionsEnum.PAGE_SETTINGS).then((settings: PageSettings) => {
+  databaseService.find(req.session.selectedNode, CollectionsEnum.PAGE_SETTINGS).then((settings: any) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Page Settings', msg: 'Page Settings Received', data: settings });
     res.status(200).json(settings);
   }).catch((errRes) => {

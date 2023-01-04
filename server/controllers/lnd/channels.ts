@@ -196,7 +196,7 @@ export const closeChannel = (req, res, next) => {
     request.delete(options);
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Close Requested' });
     res.status(202).json({ message: 'Close channel request has been submitted.' });
-  } catch (error) {
+  } catch (error: any) {
     logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Channels', msg: 'Close Channel Error', error: error.message });
     return res.status(500).json({ message: 'Close Channel Error', error: error.message });
   }

@@ -72,7 +72,7 @@ export class ConfigService {
                     }
                 ]
             };
-            if (+process.env.RTL_SSO === 0 || configData.SSO.rtlSSO === 0) {
+            if ((process?.env?.RTL_SSO && +process?.env?.RTL_SSO === 0) || configData.SSO.rtlSSO === 0) {
                 configData['multiPass'] = 'password';
             }
             return configData;
@@ -89,7 +89,7 @@ export class ConfigService {
         };
         this.updateLogByLevel = () => {
             let updateLogFlag = false;
-            this.common.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : join(this.directoryName, '../..');
+            this.common.rtl_conf_file_path = process?.env?.RTL_CONFIG_PATH ? process?.env?.RTL_CONFIG_PATH : join(this.directoryName, '../..');
             try {
                 const RTLConfFile = this.common.rtl_conf_file_path + sep + 'RTL-Config.json';
                 const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
@@ -109,9 +109,9 @@ export class ConfigService {
             }
         };
         this.validateNodeConfig = (config) => {
-            if ((+process.env.RTL_SSO === 0) || (typeof process.env.RTL_SSO === 'undefined' && +config.SSO.rtlSSO === 0)) {
-                if (process.env.APP_PASSWORD && process.env.APP_PASSWORD.trim() !== '') {
-                    this.common.rtl_pass = this.hash.update(process.env.APP_PASSWORD).digest('hex');
+            if ((process?.env?.RTL_SSO && +process?.env?.RTL_SSO === 0) || (typeof process?.env?.RTL_SSO === 'undefined' && +config.SSO.rtlSSO === 0)) {
+                if (process?.env?.APP_PASSWORD && process?.env?.APP_PASSWORD.trim() !== '') {
+                    this.common.rtl_pass = this.hash.update(process?.env?.APP_PASSWORD).digest('hex');
                     this.common.flg_allow_password_update = false;
                 }
                 else if (config.multiPassHashed && config.multiPassHashed !== '') {
@@ -126,23 +126,23 @@ export class ConfigService {
                 this.common.rtl_secret2fa = config.secret2fa;
             }
             else {
-                if (process.env.APP_PASSWORD && process.env.APP_PASSWORD.trim() !== '') {
+                if (process?.env?.APP_PASSWORD && process?.env?.APP_PASSWORD.trim() !== '') {
                     this.errMsg = this.errMsg + '\nRTL Password cannot be set with SSO. Please set SSO as 0 or remove password.';
                 }
             }
-            this.common.port = (process.env.PORT) ? this.normalizePort(process.env.PORT) : (config.port) ? this.normalizePort(config.port) : 3000;
-            this.common.host = (process.env.HOST) ? process.env.HOST : (config.host) ? config.host : null;
+            this.common.port = (process?.env?.PORT) ? this.normalizePort(process?.env?.PORT) : (config.port) ? this.normalizePort(config.port) : 3000;
+            this.common.host = (process?.env?.HOST) ? process?.env?.HOST : (config.host) ? config.host : null;
             if (config.nodes && config.nodes.length > 0) {
                 config.nodes.forEach((node, idx) => {
                     this.common.nodes[idx] = {};
                     this.common.nodes[idx].index = node.index;
                     this.common.nodes[idx].ln_node = node.lnNode;
-                    this.common.nodes[idx].ln_implementation = (process.env.LN_IMPLEMENTATION) ? process.env.LN_IMPLEMENTATION : node.lnImplementation ? node.lnImplementation : 'LND';
+                    this.common.nodes[idx].ln_implementation = (process?.env?.LN_IMPLEMENTATION) ? process?.env?.LN_IMPLEMENTATION : node.lnImplementation ? node.lnImplementation : 'LND';
                     if (this.common.nodes[idx].ln_implementation === 'CLT') {
                         this.common.nodes[idx].ln_implementation = 'CLN';
                     }
-                    if (this.common.nodes[idx].ln_implementation !== 'ECL' && process.env.MACAROON_PATH && process.env.MACAROON_PATH.trim() !== '') {
-                        this.common.nodes[idx].macaroon_path = process.env.MACAROON_PATH;
+                    if (this.common.nodes[idx].ln_implementation !== 'ECL' && process?.env?.MACAROON_PATH && process?.env?.MACAROON_PATH.trim() !== '') {
+                        this.common.nodes[idx].macaroon_path = process?.env?.MACAROON_PATH;
                     }
                     else if (this.common.nodes[idx].ln_implementation !== 'ECL' && node.Authentication && node.Authentication.macaroonPath && node.Authentication.macaroonPath.trim() !== '') {
                         this.common.nodes[idx].macaroon_path = node.Authentication.macaroonPath;
@@ -151,8 +151,8 @@ export class ConfigService {
                         this.errMsg = 'Please set macaroon path for node index ' + node.index + ' in RTL-Config.json!';
                     }
                     if (this.common.nodes[idx].ln_implementation === 'ECL') {
-                        if (process.env.LN_API_PASSWORD) {
-                            this.common.nodes[idx].ln_api_password = process.env.LN_API_PASSWORD;
+                        if (process?.env?.LN_API_PASSWORD) {
+                            this.common.nodes[idx].ln_api_password = process?.env?.LN_API_PASSWORD;
                         }
                         else if (node.Authentication && node.Authentication.lnApiPassword) {
                             this.common.nodes[idx].ln_api_password = node.Authentication.lnApiPassword;
@@ -161,8 +161,8 @@ export class ConfigService {
                             this.common.nodes[idx].ln_api_password = '';
                         }
                     }
-                    if (process.env.CONFIG_PATH) {
-                        this.common.nodes[idx].config_path = process.env.CONFIG_PATH;
+                    if (process?.env?.CONFIG_PATH) {
+                        this.common.nodes[idx].config_path = process?.env?.CONFIG_PATH;
                     }
                     else if (node.Authentication && node.Authentication.configPath) {
                         this.common.nodes[idx].config_path = node.Authentication.configPath;
@@ -172,10 +172,10 @@ export class ConfigService {
                     }
                     if (this.common.nodes[idx].ln_implementation === 'ECL' && this.common.nodes[idx].ln_api_password === '' && this.common.nodes[idx].config_path !== '') {
                         try {
-                            const exists = fs.existsSync(this.common.nodes[idx].config_path);
+                            const exists = fs.existsSync(this.common.nodes[idx].config_path || '');
                             if (exists) {
                                 try {
-                                    const configFile = fs.readFileSync(this.common.nodes[idx].config_path, 'utf-8');
+                                    const configFile = fs.readFileSync((this.common.nodes[idx].config_path || ''), 'utf-8');
                                     const iniParsed = ini.parse(configFile);
                                     this.common.nodes[idx].ln_api_password = iniParsed['eclair.api.password'] ? iniParsed['eclair.api.password'] : parseHocon(configFile).eclair.api.password;
                                 }
@@ -194,11 +194,11 @@ export class ConfigService {
                     if (this.common.nodes[idx].ln_implementation === 'ECL' && this.common.nodes[idx].ln_api_password === '') {
                         this.errMsg = this.errMsg + '\nPlease set config path Or api password for node index ' + node.index + ' in RTL-Config.json! It is mandatory for Eclair authentication!';
                     }
-                    if (process.env.LN_SERVER_URL && process.env.LN_SERVER_URL.trim() !== '') {
-                        this.common.nodes[idx].ln_server_url = process.env.LN_SERVER_URL.endsWith('/v1') ? process.env.LN_SERVER_URL.slice(0, -3) : process.env.LN_SERVER_URL;
+                    if (process?.env?.LN_SERVER_URL && process?.env?.LN_SERVER_URL.trim() !== '') {
+                        this.common.nodes[idx].ln_server_url = process?.env?.LN_SERVER_URL.endsWith('/v1') ? process?.env?.LN_SERVER_URL.slice(0, -3) : process?.env?.LN_SERVER_URL;
                     }
-                    else if (process.env.LND_SERVER_URL && process.env.LND_SERVER_URL.trim() !== '') {
-                        this.common.nodes[idx].ln_server_url = process.env.LND_SERVER_URL.endsWith('/v1') ? process.env.LND_SERVER_URL.slice(0, -3) : process.env.LND_SERVER_URL;
+                    else if (process?.env?.LND_SERVER_URL && process?.env?.LND_SERVER_URL.trim() !== '') {
+                        this.common.nodes[idx].ln_server_url = process?.env?.LND_SERVER_URL.endsWith('/v1') ? process?.env?.LND_SERVER_URL.slice(0, -3) : process?.env?.LND_SERVER_URL;
                     }
                     else if (node.Settings.lnServerUrl && node.Settings.lnServerUrl.trim() !== '') {
                         this.common.nodes[idx].ln_server_url = node.Settings.lnServerUrl.endsWith('/v1') ? node.Settings.lnServerUrl.slice(0, -3) : node.Settings.lnServerUrl;
@@ -218,9 +218,9 @@ export class ConfigService {
                     if (this.common.nodes[idx].fiat_conversion) {
                         this.common.nodes[idx].currency_unit = node.Settings.currencyUnit ? node.Settings.currencyUnit : 'USD';
                     }
-                    if (process.env.SWAP_SERVER_URL && process.env.SWAP_SERVER_URL.trim() !== '') {
-                        this.common.nodes[idx].swap_server_url = process.env.SWAP_SERVER_URL.endsWith('/v1') ? process.env.SWAP_SERVER_URL.slice(0, -3) : process.env.SWAP_SERVER_URL;
-                        this.common.nodes[idx].swap_macaroon_path = process.env.SWAP_MACAROON_PATH;
+                    if (process?.env?.SWAP_SERVER_URL && process?.env?.SWAP_SERVER_URL.trim() !== '') {
+                        this.common.nodes[idx].swap_server_url = process?.env?.SWAP_SERVER_URL.endsWith('/v1') ? process?.env?.SWAP_SERVER_URL.slice(0, -3) : process?.env?.SWAP_SERVER_URL;
+                        this.common.nodes[idx].swap_macaroon_path = process?.env?.SWAP_MACAROON_PATH;
                     }
                     else if (node.Settings.swapServerUrl && node.Settings.swapServerUrl.trim() !== '') {
                         this.common.nodes[idx].swap_server_url = node.Settings.swapServerUrl.endsWith('/v1') ? node.Settings.swapServerUrl.slice(0, -3) : node.Settings.swapServerUrl;
@@ -230,9 +230,9 @@ export class ConfigService {
                         this.common.nodes[idx].swap_server_url = '';
                         this.common.nodes[idx].swap_macaroon_path = '';
                     }
-                    if (process.env.BOLTZ_SERVER_URL && process.env.BOLTZ_SERVER_URL.trim() !== '') {
-                        this.common.nodes[idx].boltz_server_url = process.env.BOLTZ_SERVER_URL.endsWith('/v1') ? process.env.BOLTZ_SERVER_URL.slice(0, -3) : process.env.BOLTZ_SERVER_URL;
-                        this.common.nodes[idx].boltz_macaroon_path = process.env.BOLTZ_MACAROON_PATH;
+                    if (process?.env?.BOLTZ_SERVER_URL && process?.env?.BOLTZ_SERVER_URL.trim() !== '') {
+                        this.common.nodes[idx].boltz_server_url = process?.env?.BOLTZ_SERVER_URL.endsWith('/v1') ? process?.env?.BOLTZ_SERVER_URL.slice(0, -3) : process?.env?.BOLTZ_SERVER_URL;
+                        this.common.nodes[idx].boltz_macaroon_path = process?.env?.BOLTZ_MACAROON_PATH;
                     }
                     else if (node.Settings.boltzServerUrl && node.Settings.boltzServerUrl.trim() !== '') {
                         this.common.nodes[idx].boltz_server_url = node.Settings.boltzServerUrl.endsWith('/v1') ? node.Settings.boltzServerUrl.slice(0, -3) : node.Settings.boltzServerUrl;
@@ -242,10 +242,10 @@ export class ConfigService {
                         this.common.nodes[idx].boltz_server_url = '';
                         this.common.nodes[idx].boltz_macaroon_path = '';
                     }
-                    this.common.nodes[idx].enable_offers = process.env.ENABLE_OFFERS ? process.env.ENABLE_OFFERS : (node.Settings.enableOffers) ? node.Settings.enableOffers : false;
-                    this.common.nodes[idx].enable_peerswap = process.env.ENABLE_PEERSWAP ? process.env.ENABLE_PEERSWAP : (node.Settings.enablePeerswap) ? node.Settings.enablePeerswap : false;
-                    this.common.nodes[idx].bitcoind_config_path = process.env.BITCOIND_CONFIG_PATH ? process.env.BITCOIND_CONFIG_PATH : (node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
-                    this.common.nodes[idx].channel_backup_path = process.env.CHANNEL_BACKUP_PATH ? process.env.CHANNEL_BACKUP_PATH : (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : this.common.rtl_conf_file_path + sep + 'channels-backup' + sep + 'node-' + node.index;
+                    this.common.nodes[idx].enable_offers = process?.env?.ENABLE_OFFERS ? process?.env?.ENABLE_OFFERS : (node.Settings.enableOffers) ? node.Settings.enableOffers : false;
+                    this.common.nodes[idx].enable_peerswap = process?.env?.ENABLE_PEERSWAP ? process?.env?.ENABLE_PEERSWAP : (node.Settings.enablePeerswap) ? node.Settings.enablePeerswap : false;
+                    this.common.nodes[idx].bitcoind_config_path = process?.env?.BITCOIND_CONFIG_PATH ? process?.env?.BITCOIND_CONFIG_PATH : (node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
+                    this.common.nodes[idx].channel_backup_path = process?.env?.CHANNEL_BACKUP_PATH ? process?.env?.CHANNEL_BACKUP_PATH : (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : this.common.rtl_conf_file_path + sep + 'channels-backup' + sep + 'node-' + node.index;
                     try {
                         this.common.createDirectory(this.common.nodes[idx].channel_backup_path);
                         const exists = fs.existsSync(this.common.nodes[idx].channel_backup_path + sep + 'channel-all.bak');
@@ -270,14 +270,14 @@ export class ConfigService {
                     this.common.nodes[idx].log_file = this.common.rtl_conf_file_path + '/logs/RTL-Node-' + node.index + '.log';
                     this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'Config', msg: 'Node Config: ' + JSON.stringify(this.common.nodes[idx]) });
                     const log_file = this.common.nodes[idx].log_file;
-                    if (fs.existsSync(log_file)) {
-                        fs.writeFile(log_file, '', () => { });
+                    if (fs.existsSync(log_file || '')) {
+                        fs.writeFile((log_file || ''), '', () => { });
                     }
                     else {
                         try {
-                            const directoryName = dirname(log_file);
+                            const directoryName = dirname(log_file || '');
                             this.common.createDirectory(directoryName);
-                            const createStream = fs.createWriteStream(log_file);
+                            const createStream = fs.createWriteStream(log_file || '');
                             createStream.end();
                         }
                         catch (err) {
@@ -292,14 +292,14 @@ export class ConfigService {
             }
         };
         this.setSSOParams = (config) => {
-            if (process.env.RTL_SSO) {
-                this.common.rtl_sso = +process.env.RTL_SSO;
+            if (process?.env?.RTL_SSO) {
+                this.common.rtl_sso = +process?.env?.RTL_SSO;
             }
             else if (config.SSO && config.SSO.rtlSSO) {
                 this.common.rtl_sso = config.SSO.rtlSSO;
             }
-            if (process.env.RTL_COOKIE_PATH) {
-                this.common.rtl_cookie_path = process.env.RTL_COOKIE_PATH;
+            if (process?.env?.RTL_COOKIE_PATH) {
+                this.common.rtl_cookie_path = process?.env?.RTL_COOKIE_PATH;
             }
             else if (config.SSO && config.SSO.rtlCookiePath) {
                 this.common.rtl_cookie_path = config.SSO.rtlCookiePath;
@@ -307,8 +307,8 @@ export class ConfigService {
             else {
                 this.common.rtl_cookie_path = '';
             }
-            if (process.env.LOGOUT_REDIRECT_LINK) {
-                this.common.logout_redirect_link = process.env.LOGOUT_REDIRECT_LINK;
+            if (process?.env?.LOGOUT_REDIRECT_LINK) {
+                this.common.logout_redirect_link = process?.env?.LOGOUT_REDIRECT_LINK;
             }
             else if (config.SSO && config.SSO.logoutRedirectLink) {
                 this.common.logout_redirect_link = config.SSO.logoutRedirectLink;
@@ -324,15 +324,15 @@ export class ConfigService {
         };
         this.setSelectedNode = (config) => {
             if (config.defaultNodeIndex) {
-                this.common.initSelectedNode = this.common.findNode(config.defaultNodeIndex);
+                this.common.initSelectedNode = this.common.findNode(config.defaultNodeIndex) || {};
             }
             else {
-                this.common.initSelectedNode = this.common.findNode(this.common.nodes[0].index);
+                this.common.initSelectedNode = this.common.findNode(this.common.nodes[0].index) || {};
             }
         };
         this.setServerConfiguration = () => {
             try {
-                this.common.rtl_conf_file_path = (process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH : join(this.directoryName, '../..');
+                this.common.rtl_conf_file_path = (process?.env?.RTL_CONFIG_PATH) ? process?.env?.RTL_CONFIG_PATH : join(this.directoryName, '../..');
                 const confFileFullPath = this.common.rtl_conf_file_path + sep + 'RTL-Config.json';
                 if (!fs.existsSync(confFileFullPath)) {
                     fs.writeFileSync(confFileFullPath, JSON.stringify(this.setDefaultConfig()));

@@ -1,13 +1,14 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "outDir": "../frontend",
-    "types": ["node"]
+    "outDir": "../frontend"
   },
   "files": [
-    "./main.ts"
+    "./main.ts",
+    "./polyfills.ts"
   ],
   "include": [
+    "./polyfills.ts",
     "./**/*.d.ts"
   ]
 }

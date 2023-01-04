@@ -51,7 +51,7 @@ export class ECLWebSocketClient {
           this.connectWithClient(clientExists);
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       throw new Error(err);
     }
   };
@@ -97,7 +97,6 @@ export class ECLWebSocketClient {
         eclWsClt.reConnect = false;
       }
     };
-
   };
 
   public disconnect = (selectedNode: CommonSelectedNode) => {
@@ -121,13 +120,14 @@ export class ECLWebSocketClient {
 
   public heartbeat = (eclWsClt) => {
     this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Websocket Server Heartbeat..' });
-    if (!eclWsClt.webSocketClient) return;
-    if (eclWsClt.webSocketClient.readyState !== 1) return;
+    if (!eclWsClt.webSocketClient) { return; }
+    if (eclWsClt.webSocketClient.readyState !== 1) { return; }
     eclWsClt.webSocketClient.ping();
     setTimeout(() => {
       this.heartbeat(eclWsClt);
     }, 59 * 1000);
-  }
+  };
+
 }
 
 export const ECLWSClient = new ECLWebSocketClient();
