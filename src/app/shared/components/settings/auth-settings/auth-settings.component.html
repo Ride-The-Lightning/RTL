@@ -23,11 +23,9 @@
       <button class="mr-1" mat-stroked-button color="primary" type="reset" tabindex="4" (click)="onResetPassword()">Reset</button>
       <button mat-flat-button color="primary" tabindex="5" type="submit" (click)="onChangePassword()">Change Password</button>
     </div>
-    <div fxLayout="column" fxFlex="100" fxLayoutAlign="end stretch" class="my-2">
-      <mat-divider></mat-divider>
-    </div>
-    </form>
-  <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
+  </form>
+  <mat-divider class="my-2"></mat-divider>
+  <div fxLayout="column" fxLayoutAlign="start stretch">
     <div class="mb-1 settings-container page-sub-title-container mt-1">
       <fa-icon class="page-title-img mr-1" [icon]="faUserClock"></fa-icon>
       <span class="page-title">Two Factor Authentication</span>
