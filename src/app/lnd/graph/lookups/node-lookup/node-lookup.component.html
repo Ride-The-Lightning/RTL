@@ -51,7 +51,8 @@
          </th>
           <td *matCellDef="let address" mat-cell>
             <span fxLayoutAlign="end center">
-              <button mat-stroked-button class="btn-action-copy" color="primary" type="button" tabindex="1" rtlClipboard [payload]="lookupResult.node.pub_key + '@' + address.addr" (copied)="onCopyNodeURI($event)">Copy Node URI</button>          
+              <button mat-stroked-button class="btn-action-copy" color="primary" type="button" tabindex="1" rtlClipboard [payload]="lookupResult.node.pub_key + '@' + address.addr" (copied)="onCopyNodeURI($event)">Copy Node URI</button>  
+              <button mat-stroked-button class="btn-action-copy" color="primary" type="button" tabindex="1" rtlClipboard [payload]="lookupResult.node.pub_key + '@' + address.addr" (copied)="onCopyNodeURI($event)">Connect</button>        
             </span>
           </td>
         </ng-container>
