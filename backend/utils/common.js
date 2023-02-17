@@ -219,7 +219,11 @@ export class CommonService {
             }
         };
         this.handleError = (errRes, fileName, errMsg, selectedNode) => {
-            const err = JSON.parse(JSON.stringify(errRes));
+            let err = JSON.parse(JSON.stringify(errRes));
+            if (Object.keys(err.error).length === 0 && errRes.error && (errRes.error.stack || errRes.error.message)) {
+                errRes.error = errRes.error.stack || errRes.error.message;
+                err = JSON.parse(JSON.stringify(errRes));
+            }
             if (!selectedNode) {
                 selectedNode = this.initSelectedNode;
             }
@@ -254,7 +258,7 @@ export class CommonService {
                     }
                     break;
             }
-            this.logger.log({ selectedNode: selectedNode, level: 'ERROR', fileName: fileName, msg: errMsg, error: (typeof err === 'object' ? JSON.stringify(err) : (typeof err === 'string') ? err : 'Unknown Error') });
+            this.logger.log({ selectedNode: selectedNode, level: 'ERROR', fileName: fileName, msg: errMsg, error: (typeof err === 'object' ? JSON.stringify(err) : err) });
             let newErrorObj = { statusCode: 500, message: '', error: '' };
             if (err.code && err.code === 'ENOENT') {
                 newErrorObj = {
