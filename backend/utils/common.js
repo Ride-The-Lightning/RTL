@@ -11,7 +11,8 @@ export class CommonService {
         this.initSelectedNode = null;
         this.rtl_conf_file_path = '';
         this.port = 3000;
-        this.host = null;
+        this.host = '';
+        this.db_directory_path = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
         this.rtl_pass = '';
         this.flg_allow_password_update = true;
         this.rtl_secret2fa = '';
@@ -320,7 +321,7 @@ export class CommonService {
                     this.cookie_value = fs.readFileSync(this.rtl_cookie_path, 'utf-8');
                 }
                 catch (err) {
-                    this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while reading cookie: \n' + err });
+                    this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Something went wrong while reading cookie: \n' + err });
                     throw new Error(err);
                 }
             }
@@ -332,7 +333,7 @@ export class CommonService {
                     this.cookie_value = fs.readFileSync(this.rtl_cookie_path, 'utf-8');
                 }
                 catch (err) {
-                    this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while reading the cookie: \n' + err });
+                    this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Something went wrong while reading the cookie: \n' + err });
                     throw new Error(err);
                 }
             }
@@ -433,6 +434,7 @@ export class CommonService {
             if (selNode && selNode.index) {
                 this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'PORT: ' + this.port });
                 this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'HOST: ' + this.host });
+                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'DB_DIRECTORY_PATH: ' + this.db_directory_path });
                 this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'SSO: ' + this.rtl_sso });
                 this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + selNode.index });
                 this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'INDEX: ' + selNode.index });

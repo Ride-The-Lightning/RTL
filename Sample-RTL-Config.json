@@ -2,6 +2,7 @@
   "multiPass": "password",
   "port": "3000",
   "defaultNodeIndex": 1,
+  "dbDirectoryPath": "C:\\Users\\xyz\\RTL",
   "SSO": {
     "rtlSSO": 0,
     "rtlCookiePath": "",

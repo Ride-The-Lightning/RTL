@@ -12,7 +12,6 @@ import clnRoutes from '../routes/cln/index.js';
 import eclRoutes from '../routes/eclair/index.js';
 import { Common } from './common.js';
 import { Logger } from './logger.js';
-import { Config } from './config.js';
 import { CLWSClient } from '../controllers/cln/webSocketClient.js';
 import { ECLWSClient } from '../controllers/eclair/webSocketClient.js';
 import { LNDWSClient } from '../controllers/lnd/webSocketClient.js';
@@ -22,15 +21,11 @@ export class ExpressApplication {
         this.app = express();
         this.logger = Logger;
         this.common = Common;
-        this.config = Config;
         this.eclWsClient = ECLWSClient;
         this.clWsClient = CLWSClient;
         this.lndWsClient = LNDWSClient;
         this.directoryName = dirname(fileURLToPath(import.meta.url));
         this.getApp = () => this.app;
-        this.loadConfiguration = () => {
-            this.config.setServerConfiguration();
-        };
         this.setCORS = () => { CORS.mount(this.app); };
         this.setCSRF = () => { CSRF.mount(this.app); };
         this.setApplicationRoutes = () => {
@@ -81,7 +76,6 @@ export class ExpressApplication {
         this.app.use(cookieParser(this.common.secret_key));
         this.app.use(bodyParser.json({ limit: '25mb' }));
         this.app.use(bodyParser.urlencoded({ extended: false, limit: '25mb' }));
-        this.loadConfiguration();
         this.setCORS();
         this.setCSRF();
         this.setApplicationRoutes();
