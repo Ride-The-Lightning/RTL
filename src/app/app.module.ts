@@ -30,6 +30,7 @@ import { RootReducer } from './store/rtl.reducers';
 import { LNDReducer } from './lnd/store/lnd.reducers';
 import { CLNReducer } from './cln/store/cln.reducers';
 import { ECLReducer } from './eclair/store/ecl.reducers';
+import { HOUR_SECONDS } from './shared/services/consts-enums-functions';
 
 let isDevEnvironemt = false;
 if (isDevMode()) { isDevEnvironemt = true; }
@@ -41,7 +42,7 @@ if (isDevMode()) { isDevEnvironemt = true; }
     routing,
     LayoutModule,
     HammerModule,
-    UserIdleModule.forRoot({ idle: 3590, timeout: 10, ping: 12000 }), // One hour => 3590 + 10 = 3600
+    UserIdleModule.forRoot({ idle: (HOUR_SECONDS-10), timeout: 10, ping: 12000 }),
     StoreModule.forRoot(
       { root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer },
       {
