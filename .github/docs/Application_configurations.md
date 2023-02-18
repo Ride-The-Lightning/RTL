@@ -9,6 +9,7 @@ parameters have `default` values for initial setup and can be updated after RTL 
   "port": "<port number for the rtl node server, default '3000', Required>",
   "host": "<host for the rtl node server, default 'all IPs', Optional>",
   "defaultNodeIndex": <Default index to load when rtl server starts, default 1, Optional>,
+  "dbDirectoryPath": "<Complete path of the folder where rtl database file should be saved, defults to RTL root, Optional>",
   "SSO": {
     "rtlSSO": <parameter to turn SSO off/on. Allowed values - 1 (single sign on via an external cookie), 0 (stand alone RTL authentication), default 0, Required>,
     "rtlCookiePath": "<Full path of the cookie file including the file name. The application url needs to pass the value from this cookie file as query param 'access-key' for the SSO authentication to work, Required if SSO=1 else empty (Optional)>",
@@ -51,6 +52,7 @@ If the environment variables are set, it will take precedence over the parameter
 <br />
 PORT (port number for the rtl node server, default 3000, Required)<br />
 HOST (host for the rtl node server, default localhost, Optional)<br />
+DB_DIRECTORY_PATH (Path for the folder where rtl database file should be saved, default RTL root directory, Optional)
 APP_PASSWORD (Plaintext password to be provided by the parent container, NOT suggested for standalone RTL applications, to be used by Umbrel) (Optional)<br />
 LN_IMPLEMENTATION (LND/CLN/ECL. Default 'LND', Required)<br />
 LN_SERVER_URL (LN server URL for LNP REST APIs, default https://127.0.0.1:8080) (Required)<br />
