@@ -17,38 +17,46 @@ export class ConfigService {
   private common: CommonService = Common;
   private logger: LoggerService = Logger;
 
-  constructor() { }
+  constructor() {
+    this.setServerConfiguration();
+  }
 
   private setDefaultConfig = () => {
     const homeDir = os.userInfo().homedir;
     let macaroonPath = '';
     let configPath = '';
     let channelBackupPath = '';
+    let dbPath = '';
     switch (this.platform) {
       case 'win32':
         macaroonPath = homeDir + '\\AppData\\Local\\Lnd\\data\\chain\\bitcoin\\mainnet';
         configPath = homeDir + '\\AppData\\Local\\Lnd\\lnd.conf';
         channelBackupPath = homeDir + '\\backup\\node-1';
+        dbPath = homeDir + '\\database\\node-1';
         break;
       case 'darwin':
         macaroonPath = homeDir + '/Library/Application Support/Lnd/data/chain/bitcoin/mainnet';
         configPath = homeDir + '/Library/Application Support/Lnd/lnd.conf';
         channelBackupPath = homeDir + '/backup/node-1';
+        dbPath = homeDir + '/database/node-1';
         break;
       case 'linux':
         macaroonPath = homeDir + '/.lnd/data/chain/bitcoin/mainnet';
         configPath = homeDir + '/.lnd/lnd.conf';
         channelBackupPath = homeDir + '/backup/node-1';
+        dbPath = homeDir + '/database/node-1';
         break;
       default:
         macaroonPath = '';
         configPath = '';
         channelBackupPath = '';
+        dbPath = '';
         break;
     }
     const configData = {
       port: '3000',
       defaultNodeIndex: 1,
+      dbDirectoryPath: dbPath,
       SSO: {
         rtlSSO: 0,
         rtlCookiePath: '',
@@ -134,6 +142,7 @@ export class ConfigService {
     }
     this.common.port = (process?.env?.PORT) ? this.normalizePort(process?.env?.PORT) : (config.port) ? this.normalizePort(config.port) : 3000;
     this.common.host = (process?.env?.HOST) ? process?.env?.HOST : (config.host) ? config.host : null;
+    this.common.db_directory_path = (process?.env?.DB_DIRECTORY_PATH) ? process?.env?.DB_DIRECTORY_PATH : (config.dbDirectoryPath) ? config.dbDirectoryPath : join(dirname(fileURLToPath(import.meta.url)), '..', '..');
     if (config.nodes && config.nodes.length > 0) {
       config.nodes.forEach((node, idx) => {
         this.common.nodes[idx] = {};

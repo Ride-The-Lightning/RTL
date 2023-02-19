@@ -8,7 +8,11 @@ export function getPaginatorLabel(field: string) {
   return appPaginator;
 }
 
-export const VERSION = '0.13.4-beta';
+export const HOUR_SECONDS = 3600;
+
+export const DEFAULT_INVOICE_EXPIRY = HOUR_SECONDS * 24 * 7;
+
+export const VERSION = '0.13.5-beta';
 
 export const API_URL = isDevMode() ? 'http://localhost:3000/rtl/api' : './api';
 

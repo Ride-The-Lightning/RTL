@@ -8,7 +8,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { InvoiceInformation } from '../../../shared/models/alertData';
-import { LNDActions, TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
+import { LNDActions, TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, UI_MESSAGES, DEFAULT_INVOICE_EXPIRY } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo } from '../../../shared/models/lndModels';
 import { CommonService } from '../../../shared/services/common.service';
@@ -73,7 +73,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
         expiryInSecs = this.expiry;
       }
     } else {
-      expiryInSecs = 3600;
+      expiryInSecs = DEFAULT_INVOICE_EXPIRY;
     }
     this.store.dispatch(saveNewInvoice({
       payload: {

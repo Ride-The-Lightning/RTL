@@ -9,7 +9,7 @@ import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/pag
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES, LNDActions, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
+import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES, LNDActions, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS, DEFAULT_INVOICE_EXPIRY } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice, ListInvoices } from '../../../shared/models/lndModels';
@@ -141,7 +141,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
 
 
   onAddInvoice(form: any) {
-    const expiryInSecs = (this.expiry ? this.expiry : 3600);
+    const expiryInSecs = (this.expiry ? this.expiry : DEFAULT_INVOICE_EXPIRY);
     this.newlyAddedInvoiceMemo = this.memo;
     this.newlyAddedInvoiceValue = this.invoiceValue;
     this.store.dispatch(saveNewInvoice({

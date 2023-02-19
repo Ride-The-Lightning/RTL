@@ -15,6 +15,7 @@ If your running RTL and LND on different devices on your local LAN, certain conf
   "multiPass": "<password in plain text, Default 'password'>",
   "port": "3000",
   "defaultNodeIndex": 1,
+  "dbDirectoryPath": "<Complete path of the folder where rtl's database file should be saved>",
   "SSO": {
     "rtlSSO": 0,
     "rtlCookiePath": "",
