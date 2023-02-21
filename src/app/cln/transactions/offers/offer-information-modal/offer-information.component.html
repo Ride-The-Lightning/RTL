@@ -44,8 +44,8 @@
         <mat-divider class="w-100 my-1"></mat-divider>   
         <div fxLayout="row">
           <div fxFlex="100">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Offer Node ID</h4>
-            <span class="foreground-secondary-text">{{offerDecoded?.offer_node_id}}</span>
+            <h4 fxLayoutAlign="start" class="font-bold-500">Offer</h4>
+            <span class="foreground-secondary-text">{{offer?.bolt12}}</span>
           </div>
         </div>
         <div *ngIf="showAdvanced">
@@ -64,7 +64,7 @@
               </span>
             </div>
           </div>          
-          <mat-divider *ngIf="offerDecoded?.issuer" class="w-100 my-1"></mat-divider>   
+          <mat-divider *ngIf="offerDecoded?.issuer" class="w-100 my-1"></mat-divider>
           <div *ngIf="offerDecoded?.issuer" fxLayout="row">
             <div fxFlex="100">
               <h4 fxLayoutAlign="start" class="font-bold-500">Issuer</h4>
@@ -85,7 +85,14 @@
               <span class="foreground-secondary-text">{{ offerDecoded.offer_id }}</span>
             </div>
           </div>
-          <mat-divider class="w-100 my-1"></mat-divider>   
+          <mat-divider class="w-100 my-1"></mat-divider>
+          <div fxLayout="row">
+            <div fxFlex="100">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Offer Node ID</h4>
+              <span class="foreground-secondary-text">{{offerDecoded?.offer_node_id}}</span>
+            </div>
+          </div>
+          <mat-divider class="w-100 my-1"></mat-divider>  
         </div>
         <div fxLayout="row" fxLayoutAlign="end center" [ngClass]="{'mt-2': !showAdvanced, 'mt-1': showAdvanced}">
           <button class="mr-1" mat-button color="primary" type="reset" tabindex="1" (click)="onShowAdvanced()">
