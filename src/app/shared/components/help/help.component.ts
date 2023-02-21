@@ -157,7 +157,7 @@ export class HelpComponent implements OnInit, OnDestroy {
         '   1. Click on "Create Offer" button.\n' +
         '   2. Description - Description you want to provide on the offer invoice.\n' +
         '   3. Amount - Amount for the offer invoice.\n' +
-        '   4. Vendor - Vendor of the offer.\n' +
+        '   4. issuer - issuer of the offer.\n' +
         'Paid offer bookmarks shows the list of paid offers saved for future payments.\n',
       link: this.LNPLink + 'transactions/offers',
       linkCaption: 'Offers',

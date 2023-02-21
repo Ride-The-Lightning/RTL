@@ -752,11 +752,11 @@ export class CLNEffects implements OnDestroy {
 
   saveNewOfferCL = createEffect(() => this.actions.pipe(
     ofType(CLNActions.SAVE_NEW_OFFER_CLN),
-    mergeMap((action: { type: string, payload: { amount: string, description: string, vendor: string } }) => {
+    mergeMap((action: { type: string, payload: { amount: string, description: string, issuer: string } }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.CREATE_OFFER }));
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'SaveNewOffer', status: APICallStatusEnum.INITIATED } }));
       return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.OFFERS_API, {
-        amount: action.payload.amount, description: action.payload.description, vendor: action.payload.vendor
+        amount: action.payload.amount, description: action.payload.description, issuer: action.payload.issuer
       }).pipe(map((postRes: Offer) => {
         this.logger.info(postRes);
         this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'SaveNewOffer', status: APICallStatusEnum.COMPLETED } }));

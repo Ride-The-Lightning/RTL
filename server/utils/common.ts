@@ -238,7 +238,7 @@ export class CommonService {
 
   public handleError = (errRes, fileName, errMsg, selectedNode: CommonSelectedNode) => {
     let err = JSON.parse(JSON.stringify(errRes));
-    if (Object.keys(err.error).length === 0 && errRes.error && (errRes.error.stack || errRes.error.message)) {
+    if (err && err.error && Object.keys(err.error).length === 0 && errRes.error && (errRes.error.stack || errRes.error.message)) {
       errRes.error = errRes.error.stack || errRes.error.message;
       err = JSON.parse(JSON.stringify(errRes));
     }

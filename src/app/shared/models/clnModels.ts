@@ -96,8 +96,9 @@ export interface Offer {
   active?: boolean;
   single_use?: boolean;
   bolt12?: string;
-  bolt12_unsigned?: string;
   used?: boolean;
+  created?: boolean;
+  label?: string;
 }
 
 export interface OfferBookmark {
@@ -105,7 +106,7 @@ export interface OfferBookmark {
   bolt12?: string;
   amountMSat?: number;
   title?: string;
-  vendor?: string;
+  issuer?: string;
   description?: string;
 }
 
@@ -210,34 +211,24 @@ interface Recurrence {
 }
 
 export interface OfferRequest {
+  offer_id?: string;
+  offer_amount?: number | null;
+  offer_amount_msat?: string;
   type?: string;
   valid?: boolean;
-  offer_id?: string;
-  node_id?: string;
-  description?: string;
-  signature?: string;
-  chains?: string[];
-  issuer?: string;
-  currency?: string;
-  minor_unit?: number;
-  amount?: number | null;
-  amount_msat?: string;
-  send_invoice?: boolean;
-  refund_for?: string;
-  vendor?: string;
-  features?: string;
-  absolute_expiry?: string;
-  paths?: Paths[];
-  quantity_min?: number;
-  quantity_max?: number;
-  recurrence?: Recurrence;
+  offer_node_id?: string;
+  offer_description?: string;
+  offer_issuer?: string;
+  offer_chains?: string[];
+  offer_absolute_expiry?: number;
+  offer_quantity_max?: number;
 }
 
 interface Changes {
   description_appended?: string;
   description?: string;
-  vendor_removed?: string;
-  vendor?: string;
+  issuer_removed?: string;
+  issuer?: string;
   msat?: string;
 }
 
@@ -453,7 +444,7 @@ export interface SendPayment {
   fromDialog: boolean;
   paymentType: PaymentTypes;
   title?: string;
-  vendor?: string;
+  issuer?: string;
   invoice?: string;
   description?: string;
   saveToDB?: boolean;

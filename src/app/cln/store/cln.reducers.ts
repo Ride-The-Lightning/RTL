@@ -199,7 +199,7 @@ export const CLNReducer = createReducer(initCLNState,
       updatedOffer.amountMSat = payload.amountMSat;
       updatedOffer.lastUpdatedAt = payload.lastUpdatedAt;
       updatedOffer.description = payload.description;
-      updatedOffer.vendor = payload.vendor;
+      updatedOffer.issuer = payload.issuer;
       newOfferBMs.splice(offerBMExistsIdx, 1, updatedOffer);
     }
     return {

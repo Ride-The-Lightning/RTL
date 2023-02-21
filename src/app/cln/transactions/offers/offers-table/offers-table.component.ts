@@ -143,7 +143,8 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
       active: selOffer.active,
       offer_id: selOffer.offer_id,
       bolt12: selOffer.bolt12,
-      bolt12_unsigned: selOffer.bolt12_unsigned
+      created: selOffer.created,
+      label: selOffer.label
     };
     this.store.dispatch(openAlert({
       payload: {
@@ -178,11 +179,11 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
   onPrintOffer(selOffer: Offer) {
     this.dataService.decodePayment(selOffer.bolt12!, false).
       pipe(take(1)).subscribe((offerDecoded: OfferRequest) => {
-        if (offerDecoded.offer_id && !offerDecoded.amount_msat) {
-          offerDecoded.amount_msat = '0msat';
-          offerDecoded.amount = 0;
+        if (offerDecoded.offer_id && !offerDecoded.offer_amount_msat) {
+          offerDecoded.offer_amount_msat = '0msat';
+          offerDecoded.offer_amount = 0;
         } else {
-          offerDecoded.amount = offerDecoded.amount ? +offerDecoded.amount : offerDecoded.amount_msat ? +offerDecoded.amount_msat.slice(0, -4) : null;
+          offerDecoded.offer_amount = offerDecoded.offer_amount ? +offerDecoded.offer_amount : offerDecoded.offer_amount_msat ? +offerDecoded.offer_amount_msat.slice(0, -4) : null;
         }
         const documentDefinition = {
           pageSize: 'A5',
@@ -200,7 +201,7 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
             height: 333,
             absolutePosition: { x: 84, y: 160 }
           },
-          header: { text: (offerDecoded.vendor || offerDecoded.issuer || ''), alignment: 'center', fontSize: 25, color: '#272727', margin: [0, 20, 0, 0] },
+          header: { text: (offerDecoded.offer_issuer || ''), alignment: 'center', fontSize: 25, color: '#272727', margin: [0, 20, 0, 0] },
           content: [
             {
               svg: '<svg width="249" height="2" viewBox="0 0 249 2" fill="none" xmlns="http://www.w3.org/2000/svg"><rect y="0.283203" width="249" height="1" fill="#EAEAEA"/></svg>',
@@ -208,9 +209,9 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
               height: 40,
               alignment: 'center'
             },
-            { text: offerDecoded.description ? offerDecoded.description.substring(0, 160) : '', alignment: 'center', fontSize: 16, color: '#5C5C5C' },
+            { text: offerDecoded.offer_description ? offerDecoded.offer_description.substring(0, 160) : '', alignment: 'center', fontSize: 16, color: '#5C5C5C' },
             { qr: selOffer.bolt12, eccLevel: 'M', fit: '227', alignment: 'center', absolutePosition: { x: 7, y: 205 } },
-            { text: (!offerDecoded?.amount_msat || offerDecoded?.amount === 0 ? 'Open amount' : (this.decimalPipe.transform((offerDecoded.amount || 0) / 1000) + ' SATS')), fontSize: 20, bold: false, color: 'white', alignment: 'center', absolutePosition: { x: 0, y: 430 } },
+            { text: (!offerDecoded?.offer_amount_msat || offerDecoded?.offer_amount === 0 ? 'Open amount' : (this.decimalPipe.transform((offerDecoded.offer_amount || 0) / 1000) + ' SATS')), fontSize: 20, bold: false, color: 'white', alignment: 'center', absolutePosition: { x: 0, y: 430 } },
             { text: 'SCAN TO PAY', fontSize: 22, bold: true, color: 'white', alignment: 'center', absolutePosition: { x: 0, y: 455 } }
           ],
           footer: {
@@ -223,7 +224,7 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
             alignment: 'center'
           }
         };
-        pdfMake.createPdf(documentDefinition, null, null, pdfFonts.pdfMake.vfs).download('Offer-' + (offerDecoded && offerDecoded.description ? offerDecoded.description : selOffer.bolt12));
+        pdfMake.createPdf(documentDefinition, null, null, pdfFonts.pdfMake.vfs).download('Offer-' + (offerDecoded && offerDecoded.offer_description ? offerDecoded.offer_description : selOffer.bolt12));
       });
   }
 

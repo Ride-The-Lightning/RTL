@@ -104,8 +104,8 @@ export const postPayment = (req, res, next) => {
         if (req.body.paymentType === 'OFFER') {
             if (req.body.saveToDB && req.body.bolt12) {
                 const offerToUpdate = { bolt12: req.body.bolt12, amountMSat: (req.body.zeroAmtOffer ? 0 : req.body.amount), title: req.body.title, lastUpdatedAt: new Date(Date.now()).getTime() };
-                if (req.body.vendor) {
-                    offerToUpdate['vendor'] = req.body.vendor;
+                if (req.body.issuer) {
+                    offerToUpdate['issuer'] = req.body.issuer;
                 }
                 if (req.body.description) {
                     offerToUpdate['description'] = req.body.description;
