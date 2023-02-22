@@ -12,7 +12,7 @@ export const HOUR_SECONDS = 3600;
 
 export const DEFAULT_INVOICE_EXPIRY = HOUR_SECONDS * 24 * 7;
 
-export const VERSION = '0.13.5-beta';
+export const VERSION = '0.13.6-beta';
 
 export const API_URL = isDevMode() ? 'http://localhost:3000/rtl/api' : './api';
 
@@ -846,7 +846,7 @@ export const CLN_PAGE_DEFS: CLNPageDefinitions = {
     },
     offer_bookmarks: {
       maxColumns: 6,
-      allowedColumns: [{ column:'lastUpdatedAt', label: 'Updated At' }, { column:'title' }, { column:'description' }, { column:'vendor' }, { column:'bolt12', label: 'Invoice' },
+      allowedColumns: [{ column:'lastUpdatedAt', label: 'Updated At' }, { column:'title' }, { column:'description' }, { column:'issuer' }, { column:'bolt12', label: 'Invoice' },
       { column:'amountMSat', label: 'Amount' }]
     }
   },

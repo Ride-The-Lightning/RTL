@@ -3,15 +3,15 @@ export var OfferFieldsEnum;
     OfferFieldsEnum["BOLT12"] = "bolt12";
     OfferFieldsEnum["AMOUNTMSAT"] = "amountMSat";
     OfferFieldsEnum["TITLE"] = "title";
-    OfferFieldsEnum["VENDOR"] = "vendor";
+    OfferFieldsEnum["ISSUER"] = "issuer";
     OfferFieldsEnum["DESCRIPTION"] = "description";
 })(OfferFieldsEnum || (OfferFieldsEnum = {}));
 export class Offer {
-    constructor(bolt12, amountMSat, title, vendor, description, lastUpdatedAt) {
+    constructor(bolt12, amountMSat, title, issuer, description, lastUpdatedAt) {
         this.bolt12 = bolt12;
         this.amountMSat = amountMSat;
         this.title = title;
-        this.vendor = vendor;
+        this.issuer = issuer;
         this.description = description;
         this.lastUpdatedAt = lastUpdatedAt;
     }

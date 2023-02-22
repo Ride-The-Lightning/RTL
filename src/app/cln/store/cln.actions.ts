@@ -121,7 +121,7 @@ export const fetchOffers = createAction(CLNActions.FETCH_OFFERS_CLN);
 
 export const setOffers = createAction(CLNActions.SET_OFFERS_CLN, props<{ payload: Offer[] }>());
 
-export const saveNewOffer = createAction(CLNActions.SAVE_NEW_OFFER_CLN, props<{ payload: { amount: string, description: string, vendor: string } }>());
+export const saveNewOffer = createAction(CLNActions.SAVE_NEW_OFFER_CLN, props<{ payload: { amount: string, description: string, issuer: string } }>());
 
 export const addOffer = createAction(CLNActions.ADD_OFFER_CLN, props<{ payload: Offer }>());
 

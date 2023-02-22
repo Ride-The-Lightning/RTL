@@ -53,7 +53,7 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public offerRequest = '';
   public offerDecodedHint = '';
   public offerDescription = '';
-  public offerVendor = '';
+  public offerIssuer = '';
   public offerTitle = '';
   public zeroAmtOffer = false;
   public offerInvoice: OfferInvoice | null = null;
@@ -235,7 +235,7 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
         if (this.offerAmount) {
           this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.OFFER,
             invoice: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, bolt12: this.offerRequest, amount: this.offerAmount * 1000,
-            zeroAmtOffer: this.zeroAmtOffer, title: this.offerTitle, vendor: this.offerVendor, description: this.offerDescription,
+            zeroAmtOffer: this.zeroAmtOffer, title: this.offerTitle, issuer: this.offerIssuer, description: this.offerDescription,
             fromDialog: true } }));
         }
       }
@@ -296,10 +296,10 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.paymentDecoded.msatoshi = +event.target.value;
     }
     if (this.paymentType === PaymentTypes.OFFER) {
-      delete this.offerDecoded.amount;
-      delete this.offerDecoded.amount_msat;
-      this.offerDecoded.amount = +event.target.value * 1000;
-      this.offerDecoded.amount_msat = event.target.value + 'msat';
+      delete this.offerDecoded.offer_amount;
+      delete this.offerDecoded.offer_amount_msat;
+      this.offerDecoded.offer_amount = +event.target.value * 1000;
+      this.offerDecoded.offer_amount_msat = event.target.value + 'msat';
     }
   }
 
@@ -311,31 +311,31 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
   }
 
   setOfferDecodedDetails() {
-    if (this.offerDecoded.offer_id && !this.offerDecoded.amount_msat) {
-      this.offerDecoded.amount_msat = '0msat';
-      this.offerDecoded.amount = 0;
+    if (this.offerDecoded.offer_id && !this.offerDecoded.offer_amount_msat) {
+      this.offerDecoded.offer_amount_msat = '0msat';
+      this.offerDecoded.offer_amount = 0;
       this.zeroAmtOffer = true;
-      this.offerDescription = this.offerDecoded.description || '';
-      this.offerVendor = this.offerDecoded.vendor ? this.offerDecoded.vendor : this.offerDecoded.issuer ? this.offerDecoded.issuer : '';
-      this.offerDecodedHint = 'Zero Amount Offer | Description: ' + this.offerDecoded.description;
+      this.offerDescription = this.offerDecoded.offer_description || '';
+      this.offerIssuer = this.offerDecoded.offer_issuer ? this.offerDecoded.offer_issuer : '';
+      this.offerDecodedHint = 'Zero Amount Offer | Description: ' + this.offerDecoded.offer_description;
     } else {
       this.zeroAmtOffer = false;
-      this.offerDecoded.amount = this.offerDecoded.amount ? +this.offerDecoded.amount : this.offerDecoded.amount_msat ? +this.offerDecoded.amount_msat.slice(0, -4) : null;
-      this.offerAmount = this.offerDecoded.amount ? this.offerDecoded.amount / 1000 : 0;
-      this.offerDescription = this.offerDecoded.description || '';
-      this.offerVendor = this.offerDecoded.vendor ? this.offerDecoded.vendor : this.offerDecoded.issuer ? this.offerDecoded.issuer : '';
+      this.offerDecoded.offer_amount = this.offerDecoded.offer_amount ? +this.offerDecoded.offer_amount : this.offerDecoded.offer_amount_msat ? +this.offerDecoded.offer_amount_msat.slice(0, -4) : null;
+      this.offerAmount = this.offerDecoded.offer_amount ? this.offerDecoded.offer_amount / 1000 : 0;
+      this.offerDescription = this.offerDecoded.offer_description || '';
+      this.offerIssuer = this.offerDecoded.offer_issuer ? this.offerDecoded.offer_issuer : '';
       if (this.selNode && this.selNode.fiatConversion) {
         this.commonService.convertCurrency(this.offerAmount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
           pipe(takeUntil(this.unSubs[7])).
           subscribe({
             next: (data) => {
-              this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.offerAmount) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Description: ' + this.offerDecoded.description;
+              this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.offerAmount) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Description: ' + this.offerDecoded.offer_description;
             }, error: (error) => {
-              this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.offerAmount) + ' Sats | Description: ' + this.offerDecoded.description + '. Unable to convert currency.';
+              this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.offerAmount) + ' Sats | Description: ' + this.offerDecoded.offer_description + '. Unable to convert currency.';
             }
           });
       } else {
-        this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.offerAmount) + ' Sats | Description: ' + this.offerDecoded.description;
+        this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.offerAmount) + ' Sats | Description: ' + this.offerDecoded.offer_description;
       }
     }
   }
