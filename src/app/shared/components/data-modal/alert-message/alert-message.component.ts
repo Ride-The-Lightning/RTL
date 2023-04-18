@@ -1,4 +1,5 @@
 import { Component, OnInit, AfterViewChecked, Inject, ViewChild, ElementRef, OnDestroy, Renderer2 } from '@angular/core';
+import { Router } from '@angular/router';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -31,6 +32,9 @@ export class AlertMessageComponent implements OnInit, AfterViewChecked, OnDestro
   private unlistenStart: () => void;
   private unlistenEnd: () => void;
   public LoopStateEnum = LoopStateEnum;
+  public goToFieldValue = '';
+  public goToName = '';
+  public goToLink = '';
   public showQRField = '';
   public showQRName = '';
   public showCopyName = '';
@@ -44,11 +48,14 @@ export class AlertMessageComponent implements OnInit, AfterViewChecked, OnDestro
   public scrollDirection = 'DOWN';
   public shouldScroll = true;
 
-  constructor(public dialogRef: MatDialogRef<AlertMessageComponent>, @Inject(MAT_DIALOG_DATA) public data: AlertData, private logger: LoggerService, private snackBar: MatSnackBar, private commonService: CommonService, private renderer: Renderer2) { }
+  constructor(public dialogRef: MatDialogRef<AlertMessageComponent>, @Inject(MAT_DIALOG_DATA) public data: AlertData, private logger: LoggerService, private snackBar: MatSnackBar, private commonService: CommonService, private renderer: Renderer2, private router: Router) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.messageObjs = this.data.message || [];
+    this.goToFieldValue = this.data.goToFieldValue ? this.data.goToFieldValue : '';
+    this.goToName = this.data.goToName ? this.data.goToName : '';
+    this.goToLink = this.data.goToLink ? this.data.goToLink : '';
     this.showQRField = this.data.showQRField ? this.data.showQRField : '';
     this.showQRName = this.data.showQRName ? this.data.showQRName : '';
     this.showCopyName = this.data.showCopyName ? this.data.showCopyName : '';
@@ -82,6 +89,11 @@ export class AlertMessageComponent implements OnInit, AfterViewChecked, OnDestro
 
   onClose() {
     this.dialogRef.close(false);
+  }
+
+  onGoToLink() {
+    this.router.navigateByUrl(this.goToLink, { state: { lookupType: '0', lookupValue: this.goToFieldValue } }); // 0 = Node
+    this.onClose();
   }
 
   ngOnDestroy() {

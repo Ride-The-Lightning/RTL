@@ -1,4 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faReceipt } from '@fortawesome/free-solid-svg-icons';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -24,7 +25,7 @@ export class CLNChannelInformationComponent implements OnInit {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
 
-  constructor(public dialogRef: MatDialogRef<CLNChannelInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNChannelInformation, private logger: LoggerService, private commonService: CommonService, private snackBar: MatSnackBar) { }
+  constructor(public dialogRef: MatDialogRef<CLNChannelInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNChannelInformation, private logger: LoggerService, private commonService: CommonService, private snackBar: MatSnackBar, private router: Router) { }
 
   ngOnInit() {
     this.channel = this.data.channel;
@@ -43,6 +44,11 @@ export class CLNChannelInformationComponent implements OnInit {
   onCopyChanID(payload: string) {
     this.snackBar.open('Short channel ID ' + payload + ' copied.');
     this.logger.info('Copied Text: ' + payload);
+  }
+
+  onGoToLink() {
+    this.router.navigateByUrl('/cln/graph/lookups', { state: { lookupType: '1', lookupValue: this.channel.short_channel_id } }); // 0 = Node
+    this.onClose();
   }
 
 }

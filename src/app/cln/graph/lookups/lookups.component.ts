@@ -34,17 +34,20 @@ export class CLNLookupsComponent implements OnInit, OnDestroy {
   public faSearch = faSearch;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
-  private unSubs: Array<Subject<void>> = [new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private actions: Actions) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
   ngOnInit() {
-    this.actions.
-      pipe(
-        takeUntil(this.unSubs[0]),
-        filter((action) => (action.type === CLNActions.SET_LOOKUP_CLN || action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN))
+    if (window.history.state && window.history.state.lookupType) {
+      this.selectedFieldId = +window.history.state.lookupType || 0;
+      this.lookupKey = window.history.state.lookupValue || '';
+    }
+    console.warn(this.selectedFieldId);
+    console.warn(this.lookupKey);
+    this.actions.pipe(takeUntil(this.unSubs[0]),filter((action) => (action.type === CLNActions.SET_LOOKUP_CLN || action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN))
       ).subscribe((resLookup: any) => {
         if (resLookup.type === CLNActions.SET_LOOKUP_CLN) {
           this.flgLoading[0] = true;

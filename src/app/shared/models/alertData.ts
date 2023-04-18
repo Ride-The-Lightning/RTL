@@ -186,6 +186,9 @@ export interface AlertData {
   titleMessage?: string;
   message?: Array<Array<MessageDataField>>;
   scrollable?: boolean;
+  goToFieldValue?: string;
+  goToName?: string;
+  goToLink?: string;
   showQRName?: string;
   showQRField?: string;
   newlyAdded?: boolean;
