@@ -69,4 +69,4 @@ export const routes: Routes = [
 ];
 
 // Export const routing: ModuleWithProviders<RouterModule> = RouterModule.forRoot(routes, { enableTracing: true });
-export const routing: ModuleWithProviders<RouterModule> = RouterModule.forRoot(routes, { scrollPositionRestoration: 'enabled' });
+export const routing: ModuleWithProviders<RouterModule> = RouterModule.forRoot(routes, { onSameUrlNavigation: 'reload', scrollPositionRestoration: 'enabled' });

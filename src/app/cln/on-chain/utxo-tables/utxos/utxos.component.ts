@@ -1,5 +1,4 @@
 import { Component, ViewChild, Input, AfterViewInit, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -55,13 +54,11 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private router: Router, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
   ngOnInit() {
-    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-    this.router.onSameUrlNavigation = 'reload';
     this.tableSetting.tableId = this.isDustUTXO ? 'dust_utxos' : 'utxos';
     this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[0])).
       subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
