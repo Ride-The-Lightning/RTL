@@ -56,7 +56,7 @@ export class CLNNodeLookupComponent implements OnInit, OnDestroy {
     this.store.dispatch(openAlert({
       payload: {
         data: {
-          message: { peer: {id: this.lookupResult.nodeid + '@' + address.address + ':' + address.port}, information: this.information, balance: this.availableBalance },
+          message: { peer: { id: this.lookupResult.nodeid + '@' + address.address + ':' + address.port }, information: this.information, balance: this.availableBalance },
           component: CLNConnectPeerComponent
         }
       }

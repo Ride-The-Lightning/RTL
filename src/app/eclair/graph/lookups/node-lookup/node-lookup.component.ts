@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -21,7 +21,7 @@ import { openAlert } from '../../../../store/rtl.actions';
   templateUrl: './node-lookup.component.html',
   styleUrls: ['./node-lookup.component.scss']
 })
-export class ECLNodeLookupComponent implements OnInit {
+export class ECLNodeLookupComponent implements OnInit, OnDestroy {
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @Input() lookupResult: LookupNode = {};
@@ -47,7 +47,6 @@ export class ECLNodeLookupComponent implements OnInit {
       subscribe((oCBalanceSelector: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
         this.availableBalance = oCBalanceSelector.onchainBalance.total || 0;
       });
-
   }
 
   onConnectNode(address: string) {
@@ -55,7 +54,7 @@ export class ECLNodeLookupComponent implements OnInit {
       payload: {
         data: {
           message: {
-            peer: this.lookupResult.nodeId ? {nodeId: this.lookupResult.nodeId, address: address } : null,
+            peer: this.lookupResult.nodeId ? { nodeId: this.lookupResult.nodeId, address: address } : null,
             information: this.information,
             balance: this.availableBalance
           },
@@ -63,7 +62,6 @@ export class ECLNodeLookupComponent implements OnInit {
         }
       }
     }));
-
   }
 
   onCopyNodeURI(payload: string) {

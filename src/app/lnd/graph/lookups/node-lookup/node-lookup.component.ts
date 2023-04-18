@@ -43,7 +43,6 @@ export class NodeLookupComponent implements OnInit, OnDestroy {
   }
 
   onConnectNode(address: NodeAddress) {
-    console.warn(address.addr);
     this.store.dispatch(openAlert({
       payload: {
         data: {

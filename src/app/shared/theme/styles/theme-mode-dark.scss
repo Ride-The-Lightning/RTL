@@ -168,6 +168,10 @@
     color: $foreground-base;
     background: $primary-color;
   }
+  a {
+    color: $primary-darker !important;
+    cursor: pointer;
+  }
   button.mdc-button.mat-mdc-button-base.mat-mdc-outlined-button{
     border-color: $foreground-disabled;
   }
