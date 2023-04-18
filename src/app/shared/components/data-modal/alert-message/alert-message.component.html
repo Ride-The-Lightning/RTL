@@ -56,11 +56,18 @@
                   <ng-container *ngSwitchCase="dataTypeEnum.NUMBER">{{obj.value | number: obj.digitsInfo ? obj.digitsInfo : '1.0-3'}}</ng-container>
                   <ng-container *ngSwitchCase="dataTypeEnum.BOOLEAN">{{obj.value ? 'True' : 'False'}}</ng-container>
                   <ng-container *ngSwitchDefault>
-                    <p *ngIf="data.openedBy === 'SWAP' && obj.key === 'state';  else noStyleBlock"fxLayout="row" [ngClass]="{'failed-status': obj.value === LoopStateEnum.FAILED}">
+                    <p *ngIf="data.openedBy === 'SWAP' && obj.key === 'state'; else noStyleBlock" fxLayout="row" [ngClass]="{'failed-status': obj.value === LoopStateEnum.FAILED}">
                       {{obj.value}}
                       <mat-icon *ngIf="obj.value === LoopStateEnum.FAILED" fxLayoutAlign="end end" class="icon-failed-status">info</mat-icon>
                     </p>
-                    <ng-template #noStyleBlock>{{obj.value}}</ng-template>
+                    <ng-template #noStyleBlock>
+                      <p *ngIf="obj.value === goToFieldValue; else noStyleChild" fxLayout="row" class="go-to-link" matTooltip="{{'Go To ' + goToName}}" (click)="onGoToLink()" >
+                        {{obj.value}}
+                      </p>
+                      <ng-template #noStyleChild>
+                        {{obj.value}}
+                      </ng-template>
+                    </ng-template>
                   </ng-container>
                 </span>
               </span>

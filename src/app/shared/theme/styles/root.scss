@@ -1582,6 +1582,12 @@ mat-cell:last-of-type, .mdc-data-table__header-cell:last-of-type, mat-footer-cel
   }
 }
 
+.go-to-link {
+  text-decoration: underline;
+  font-weight: 500;
+  cursor: pointer;
+}
+
 .mat-mdc-card.dashboard-card {
   padding: 0 ($gap*1.5) !important;
   @include for_screensize(tab-port) {
