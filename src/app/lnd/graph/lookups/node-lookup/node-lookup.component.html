@@ -49,11 +49,15 @@
           <th *matHeaderCellDef mat-header-cell>
             <div class="bordered-box table-actions-select btn-action" fxLayoutAlign="center center">Actions</div>
          </th>
-          <td *matCellDef="let address" mat-cell>
-            <span fxLayoutAlign="end center">
-              <button mat-stroked-button class="btn-action-copy" color="primary" type="button" tabindex="1" rtlClipboard [payload]="lookupResult.node.pub_key + '@' + address.addr" (copied)="onCopyNodeURI($event)">Copy Node URI</button>          
-            </span>
-          </td>
+         <td *matCellDef="let address" mat-cell fxLayoutAlign="end center">
+          <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
+            <mat-select placeholder="Actions" tabindex="1" class="mr-0">
+              <mat-select-trigger></mat-select-trigger>
+              <mat-option (click)="onConnectNode(address)">Connect</mat-option>
+              <mat-option rtlClipboard [payload]="lookupResult.node.pub_key + '@' + address.addr" (copied)="onCopyNodeURI($event)">Copy URI</mat-option>
+            </mat-select>
+          </div>
+        </td>
         </ng-container>
         <tr *matHeaderRowDef="displayedColumns;" mat-header-row></tr>
         <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>        
