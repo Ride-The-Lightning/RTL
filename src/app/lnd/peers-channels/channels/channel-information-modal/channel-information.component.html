@@ -12,7 +12,9 @@
         <div fxLayout="row">
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Channel ID</h4>
-            <span class="foreground-secondary-text">{{channel.chan_id}}</span>
+            <span class="foreground-secondary-text go-to-link" matTooltip="Go To Graph Lookup" (click)="onGoToLink()" >
+              {{channel.chan_id}}
+            </span>            
           </div>
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Peer Alias</h4>

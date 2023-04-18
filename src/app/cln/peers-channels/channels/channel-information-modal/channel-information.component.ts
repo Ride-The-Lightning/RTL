@@ -47,7 +47,7 @@ export class CLNChannelInformationComponent implements OnInit {
   }
 
   onGoToLink() {
-    this.router.navigateByUrl('/cln/graph/lookups', { state: { lookupType: '1', lookupValue: this.channel.short_channel_id } }); // 0 = Node
+    this.router.navigateByUrl('/cln/graph/lookups', { state: { lookupType: '1', lookupValue: this.channel.short_channel_id } }); // 1 = Channel
     this.onClose();
   }
 

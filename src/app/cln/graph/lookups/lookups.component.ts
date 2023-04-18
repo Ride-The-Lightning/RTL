@@ -45,8 +45,6 @@ export class CLNLookupsComponent implements OnInit, OnDestroy {
       this.selectedFieldId = +window.history.state.lookupType || 0;
       this.lookupKey = window.history.state.lookupValue || '';
     }
-    console.warn(this.selectedFieldId);
-    console.warn(this.lookupKey);
     this.actions.pipe(takeUntil(this.unSubs[0]),filter((action) => (action.type === CLNActions.SET_LOOKUP_CLN || action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN))
       ).subscribe((resLookup: any) => {
         if (resLookup.type === CLNActions.SET_LOOKUP_CLN) {
