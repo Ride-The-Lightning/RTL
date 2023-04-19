@@ -45,28 +45,28 @@ export class CLNLookupsComponent implements OnInit, OnDestroy {
       this.selectedFieldId = +window.history.state.lookupType || 0;
       this.lookupKey = window.history.state.lookupValue || '';
     }
-    this.actions.pipe(takeUntil(this.unSubs[0]),filter((action) => (action.type === CLNActions.SET_LOOKUP_CLN || action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN))
-      ).subscribe((resLookup: any) => {
-        if (resLookup.type === CLNActions.SET_LOOKUP_CLN) {
-          this.flgLoading[0] = true;
-          switch (this.selectedFieldId) {
-            case 0:
-              this.nodeLookupValue = typeof resLookup.payload[0] !== 'object' ? { nodeid: '' } : JSON.parse(JSON.stringify(resLookup.payload[0]));
-              break;
-            case 1:
-              this.channelLookupValue = typeof resLookup.payload[0] !== 'object' ? [] : JSON.parse(JSON.stringify(resLookup.payload));
-              break;
-            default:
-              break;
-          }
-          this.flgSetLookupValue = true;
-          this.logger.info(this.nodeLookupValue);
-          this.logger.info(this.channelLookupValue);
+    this.actions.pipe(takeUntil(this.unSubs[0]), filter((action) => (action.type === CLNActions.SET_LOOKUP_CLN || action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN))
+    ).subscribe((resLookup: any) => {
+      if (resLookup.type === CLNActions.SET_LOOKUP_CLN) {
+        this.flgLoading[0] = true;
+        switch (this.selectedFieldId) {
+          case 0:
+            this.nodeLookupValue = typeof resLookup.payload[0] !== 'object' ? { nodeid: '' } : JSON.parse(JSON.stringify(resLookup.payload[0]));
+            break;
+          case 1:
+            this.channelLookupValue = typeof resLookup.payload[0] !== 'object' ? [] : JSON.parse(JSON.stringify(resLookup.payload));
+            break;
+          default:
+            break;
         }
-        if (resLookup.type === CLNActions.UPDATE_API_CALL_STATUS_CLN && resLookup.payload.status === APICallStatusEnum.ERROR && resLookup.payload.action === 'Lookup') {
-          this.flgLoading[0] = 'error';
-        }
-      });
+        this.flgSetLookupValue = true;
+        this.logger.info(this.nodeLookupValue);
+        this.logger.info(this.channelLookupValue);
+      }
+      if (resLookup.type === CLNActions.UPDATE_API_CALL_STATUS_CLN && resLookup.payload.status === APICallStatusEnum.ERROR && resLookup.payload.action === 'Lookup') {
+        this.flgLoading[0] = 'error';
+      }
+    });
   }
 
   onLookup(): boolean | void {

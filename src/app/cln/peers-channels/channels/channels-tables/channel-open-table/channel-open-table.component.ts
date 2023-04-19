@@ -66,10 +66,13 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private clnEffects: CLNEffects, private commonService: CommonService, private router: Router, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
-    this.selFilter = this.router?.getCurrentNavigation()?.extras?.state?.filter ? this.router?.getCurrentNavigation()?.extras?.state?.filter : '';
   }
 
   ngOnInit() {
+    if (window.history.state && window.history.state.filterColumn) {
+      this.selFilterBy = window.history.state.filterColumn || 'all';
+      this.selFilter = window.history.state.filterValue || '';
+    }
     this.store.select(nodeInfoAndBalanceAndNumPeers).pipe(takeUntil(this.unSubs[0])).
       subscribe((infoBalNumpeersSelector: { information: GetInfo, balance: Balance, numPeers: number }) => {
         this.information = infoBalNumpeersSelector.information;

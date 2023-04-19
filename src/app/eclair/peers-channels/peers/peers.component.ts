@@ -133,7 +133,7 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
           alertTitle: 'Peer Information',
           goToFieldValue: selPeer.nodeId,
           goToName: 'Graph lookup',
-          goToLink: '/ecl/graph/lookups',          
+          goToLink: '/ecl/graph/lookups',
           showQRName: 'Public Key',
           showQRField: selPeer.nodeId,
           message: reorderedPeer
