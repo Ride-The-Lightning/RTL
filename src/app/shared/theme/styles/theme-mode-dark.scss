@@ -295,6 +295,8 @@
     & .stroke-color-thin { stroke:#B6B6B6; stroke-width: 11.625; stroke-miterlimit: 10; stroke-linecap:"round"; stroke-linejoin:"round"; }
     & .stroke-color-thiner { stroke:#B6B6B6; stroke-width: 10.125; stroke-linecap:"round"; stroke-linejoin:"round"; }
     & .stroke-color-thinest { stroke:#B6B6B6; stroke-width: 9.40381; stroke-linecap:"round"; stroke-linejoin:"round"; }
+    & .stroke-color-primary-lighter { stroke: $primary-lighter; }
+    & .stroke-color-primary { stroke: $primary-color; }
     & .fill-color-boltz-bk { fill: #171717; }
     & .fill-color-0 { fill: #171717; }
     & .fill-color-1 { fill: #232323; }

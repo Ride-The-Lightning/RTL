@@ -299,6 +299,14 @@ mat-card-content.mat-mdc-card-content:first-child {
   }
 }
 
+.mat-mdc-card-title {
+  font-size: 180%;
+}
+
+.mat-mdc-card-subtitle {
+  font-size: 120%;
+}
+
 .mat-mdc-card-header-text {
   margin: 0 !important;
   line-height: 1;
