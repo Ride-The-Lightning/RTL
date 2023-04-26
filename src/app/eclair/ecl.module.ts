@@ -21,6 +21,8 @@ import { ECLChannelsTablesComponent } from './peers-channels/channels/channels-t
 import { ECLChannelOpenTableComponent } from './peers-channels/channels/channels-tables/channel-open-table/channel-open-table.component';
 import { ECLChannelPendingTableComponent } from './peers-channels/channels/channels-tables/channel-pending-table/channel-pending-table.component';
 import { ECLChannelInactiveTableComponent } from './peers-channels/channels/channels-tables/channel-inactive-table/channel-inactive-table.component';
+import { ECLChannelRebalanceComponent } from './peers-channels/channels/channel-rebalance-modal/channel-rebalance.component';
+import { ECLChannelRebalanceInfographicsComponent } from './peers-channels/channels/channel-rebalance-infographics/channel-rebalance-infographics.component';
 import { ECLTransactionsComponent } from './transactions/transactions.component';
 import { ECLQueryRoutesComponent } from './graph/query-routes/query-routes.component';
 import { ECLLightningPaymentsComponent } from './transactions/payments/lightning-payments.component';
@@ -87,6 +89,8 @@ import { ECLUnlockedGuard } from '../shared/services/auth.guard';
     ECLInvoiceInformationComponent,
     ECLPaymentInformationComponent,
     ECLOpenChannelComponent,
+    ECLChannelRebalanceComponent,
+    ECLChannelRebalanceInfographicsComponent,
     ECLConnectPeerComponent,
     ECLLightningSendPaymentsComponent,
     ECLCreateInvoiceComponent,

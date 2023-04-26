@@ -23,6 +23,7 @@ import { allChannelsInfo, eclNodeInformation, eclPageSettings, onchainBalance, p
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
 import { CamelCaseWithSpacesPipe } from '../../../../../shared/pipes/app.pipe';
 import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { ECLChannelRebalanceComponent } from '../../channel-rebalance-modal/channel-rebalance.component';
 
 @Component({
   selector: 'rtl-ecl-channel-open-table',
@@ -121,6 +122,22 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
     if (this.activeChannels.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
       this.loadChannelsTable();
     }
+  }
+
+  onCircularRebalance(selChannel: any) {
+    const channelsToRebalanceMessage = {
+      channels: this.activeChannels,
+      selChannel: selChannel,
+      information: this.information
+    };
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          message: channelsToRebalanceMessage,
+          component: ECLChannelRebalanceComponent
+        }
+      }
+    }));
   }
 
   onChannelUpdate(channelToUpdate: Channel | string) {

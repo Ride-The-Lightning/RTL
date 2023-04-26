@@ -72,6 +72,7 @@
     }
     & .mat-mdc-snack-bar-label.mdc-snackbar__label {
       max-width: 40vw;
+      color: $foreground-text;
     }
   }
   .rtl-warn-snack-bar.mat-mdc-snack-bar-container {

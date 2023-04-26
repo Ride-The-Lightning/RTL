@@ -1,6 +1,7 @@
 import request from 'request-promise';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
+import { CommonSelectedNode } from 'server/models/config.model.js';
 let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
@@ -18,7 +19,7 @@ export const getReceivedPaymentInfo = (lnServerUrl, invoice) => {
       invoice.status = response.status.type;
       if (response.status && response.status.type === 'received') {
         invoice.amountSettled = response.status.amount ? Math.round(response.status.amount / 1000) : 0;
-        invoice.receivedAt = response.status.receivedAt ? Math.round(response.status.receivedAt / 1000) : 0;
+        invoice.receivedAt = response.status.receivedAt.unix ? response.status.receivedAt.unix : 0;
       }
       return invoice;
     }).catch((err) => {
@@ -48,6 +49,21 @@ export const getInvoice = (req, res, next) => {
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Invoices', 'Get Invoice Error', req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
+  });
+};
+
+export const listPendingInvoicesRequestCall = (selectedNode: CommonSelectedNode) => {
+  logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'List Pending Invoices..' });
+  options = selectedNode.options;
+  options.url = selectedNode.ln_server_url + '/listpendinginvoices';
+  options.form = { from: 0, to: (Math.round(new Date(Date.now()).getTime() / 1000)).toString() };
+  return new Promise((resolve, reject) => {
+    request.post(options).then((pendingInvoicesResponse) => {
+      logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Pending Invoices List ', data: pendingInvoicesResponse });
+      resolve(pendingInvoicesResponse);
+    }).catch((errRes) => {
+      reject(common.handleError(errRes, 'Invoices', 'List Pending Invoices Error', selectedNode));
+    });
   });
 };
 
@@ -98,18 +114,29 @@ export const listInvoices = (req, res, next) => {
   }
 };
 
+export const createInvoiceRequestCall = (selectedNode: CommonSelectedNode, description: string, amount: number) => {
+  logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Creating Invoice..' });
+  options = selectedNode.options;
+  options.url = selectedNode.ln_server_url + '/createinvoice';
+  options.form = { description: description, amountMsat: amount };
+  return new Promise((resolve, reject) => {
+    request.post(options).then((invResponse) => {
+      logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Invoice Created', data: invResponse });
+      if (invResponse.amount) { invResponse.amount = Math.round(invResponse.amount / 1000); }
+      resolve(invResponse);
+    }).catch((errRes) => {
+      reject(common.handleError(errRes, 'Invoices', 'Create Invoice Error', selectedNode));
+    });
+  });
+};
+
 export const createInvoice = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Creating Invoice..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.ln_server_url + '/createinvoice';
-  options.form = req.body;
-  request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Invoice Created', data: body });
-    if (body.amount) { body.amount = Math.round(body.amount / 1000); }
-    res.status(201).json(body);
-  }).catch((errRes) => {
-    const err = common.handleError(errRes, 'Invoices', 'Create Invoice Error', req.session.selectedNode);
+  createInvoiceRequestCall(req.session.selectedNode, req.body.description, req.body.amountMsat).then(invRes => {
+    res.status(201).json(invRes);
+  }).catch((err) => {
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
   });
 };
