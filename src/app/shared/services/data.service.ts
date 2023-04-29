@@ -26,10 +26,11 @@ export class DataService implements OnDestroy {
   private lnImplementation = '';
   public lnImplementationUpdated: BehaviorSubject<any> = new BehaviorSubject(null);
   private unSubs: Array<Subject<void>> = [
-    new Subject(), new Subject(), new Subject(), 
-    new Subject(), new Subject(), new Subject(), 
-    new Subject(), new Subject(), new Subject(), 
-    new Subject(), new Subject(), new Subject(), new Subject()];
+    new Subject(), new Subject(), new Subject(),
+    new Subject(), new Subject(), new Subject(),
+    new Subject(), new Subject(), new Subject(),
+    new Subject(), new Subject(), new Subject(), new Subject()
+  ];
 
   constructor(private httpClient: HttpClient, private store: Store<RTLState>, private logger: LoggerService, private snackBar: MatSnackBar, private titleCasePipe: TitleCasePipe) { }
 
@@ -332,13 +333,11 @@ export class DataService implements OnDestroy {
   }
 
   circularRebalance(amountMSat: number, sourceShortChannelId: string = '', sourceNodeId: string = '', targetShortChannelId: string = '', targetNodeId: string = '', ignoreNodeIds: string[] = [], format: string = 'shortChannelId') {
-    let url = this.APIUrl + '/' + this.lnImplementation + API_END_POINTS.CHANNELS_API + '/circularRebalance';
-    let reqBody = { amountMsat: amountMSat, sourceShortChannelId: sourceShortChannelId, sourceNodeId: sourceNodeId, targetShortChannelId: targetShortChannelId, targetNodeId: targetNodeId, ignoreNodeIds: ignoreNodeIds, format: format };
+    const url = this.APIUrl + '/' + this.lnImplementation + API_END_POINTS.CHANNELS_API + '/circularRebalance';
+    const reqBody = { amountMsat: amountMSat, sourceShortChannelId: sourceShortChannelId, sourceNodeId: sourceNodeId, targetShortChannelId: targetShortChannelId, targetNodeId: targetNodeId, ignoreNodeIds: ignoreNodeIds, format: format };
     return this.httpClient.post(url, reqBody).pipe(
       takeUntil(this.unSubs[12]),
-      map((res: any) => {
-        return res;
-      }),
+      map((res: any) => res),
       catchError((err) => {
         this.handleErrorWithoutAlert('Rebalance Channel', UI_MESSAGES.REBALANCE_CHANNEL, err);
         return throwError(() => new Error(this.extractErrorMessage(err)));

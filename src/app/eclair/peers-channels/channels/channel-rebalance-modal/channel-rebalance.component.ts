@@ -8,7 +8,7 @@ import { takeUntil, startWith } from 'rxjs/operators';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { ECLChannelRebalanceAlert } from '../../../../shared/models/alertData';
-import { Channel, GetInfo, Invoice } from '../../../../shared/models/eclModels';
+import { Channel, GetInfo } from '../../../../shared/models/eclModels';
 
 import { opacityAnimation } from '../../../../shared/animation/opacity-animation';
 import { DataService } from '../../../../shared/services/data.service';
