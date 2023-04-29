@@ -55,6 +55,13 @@ export interface ChannelRebalanceAlert {
   component?: any;
 }
 
+export interface ECLChannelRebalanceAlert {
+  alertTitle?: string;
+  titleMessage?: string;
+  message?: { channels?: ChannelECL[], selChannel?: ChannelECL, information: GetInfoECL };
+  component?: any;
+}
+
 export interface OpenChannelAlert {
   alertTitle?: string;
   titleMessage?: string;
@@ -231,7 +238,7 @@ export interface DialogConfig {
   width?: string;
   maxWidth?: string;
   minHeight?: string;
-  data: AlertData | ConfirmationData | ErrorData | ChannelRebalanceAlert | OpenChannelAlert | CLNOpenChannelAlert | InvoiceInformation |
+  data: AlertData | ConfirmationData | ErrorData | ChannelRebalanceAlert | ECLChannelRebalanceAlert | OpenChannelAlert | CLNOpenChannelAlert | InvoiceInformation |
   CLNPaymentInformation | CLNInvoiceInformation | CLNOfferInformation | ECLInvoiceInformation | ECLPaymentInformation | ChannelInformation | CLNChannelInformation |
   PendingOpenChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | SwapAlert | AuthConfig |
   OnChainLabelUTXO | OnChainSendFunds | CLNOnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert;

@@ -110,6 +110,7 @@
               <mat-select-trigger></mat-select-trigger>
               <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
               <mat-option (click)="onChannelUpdate(channel)">Update Fee Policy</mat-option>
+              <mat-option (click)="onCircularRebalance(channel)">Circular Rebalance</mat-option>
               <mat-option (click)="onChannelClose(channel, false)">Close Channel</mat-option>
               <mat-option (click)="onChannelClose(channel, true)">Force Close</mat-option>
             </mat-select>

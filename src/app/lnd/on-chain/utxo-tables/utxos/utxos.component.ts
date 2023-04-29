@@ -231,19 +231,19 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
       pipe(takeUntil(this.unSubs[2])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.dataService.leaseUTXO((utxo.outpoint?.txid_bytes || ''), (utxo.outpoint?.output_index || 0))
-          .pipe(takeUntil(this.unSubs[0])).
-          subscribe({
-            next: (expiryDateInSeconds) => {
-              this.snackBar.open('The UTXO has been leased till ' + new Date(expiryDateInSeconds).toString().
-              substring(4, 21).
-              replace(' ', '/').
-              replace(' ', '/').
-              toUpperCase() + '.');
-            }, error: (err) => {
-              this.snackBar.open(err + ' UTXO not leased.', '', { panelClass: 'rtl-warn-snack-bar' });
-            }
-          });      
+          this.dataService.leaseUTXO((utxo.outpoint?.txid_bytes || ''), (utxo.outpoint?.output_index || 0)).
+            pipe(takeUntil(this.unSubs[0])).
+            subscribe({
+              next: (expiryDateInSeconds) => {
+                this.snackBar.open('The UTXO has been leased till ' + new Date(expiryDateInSeconds).toString().
+                  substring(4, 21).
+                  replace(' ', '/').
+                  replace(' ', '/').
+                  toUpperCase() + '.');
+              }, error: (err) => {
+                this.snackBar.open(err + ' UTXO not leased.', '', { panelClass: 'rtl-warn-snack-bar' });
+              }
+            });
         }
       });
   }

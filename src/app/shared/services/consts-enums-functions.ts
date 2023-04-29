@@ -371,6 +371,7 @@ export const UI_MESSAGES = {
   GET_PAGE_SETTINGS: 'Getting Page Settings...',
   SET_PAGE_SETTINGS: 'Setting Page Settings...',
   UPDATE_PAGE_SETTINGS: 'Updating Page Layout...',
+  REBALANCE_CHANNEL: 'Rebalancing Channel...',
   LOG_OUT: 'Logging Out...'
 };
 

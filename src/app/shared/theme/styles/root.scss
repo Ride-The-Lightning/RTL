@@ -141,6 +141,10 @@ span.page-text, .mat-mdc-slide-toggle, .material-icons.mat-icon.mat-mdc-tooltip-
   }
 }
 
+.mat-mdc-dialog-container .mat-mdc-dialog-surface {
+  overflow: hidden;
+}
+
 button.mdc-button {
   @include for_screensize(tab-land) {
     min-width: 50px;
@@ -300,7 +304,7 @@ mat-card-content.mat-mdc-card-content:first-child {
 }
 
 .mat-mdc-card-title {
-  font-size: 180%;
+  font-size: 125%;
 }
 
 .mat-mdc-card-subtitle {
