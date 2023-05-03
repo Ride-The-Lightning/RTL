@@ -134,9 +134,7 @@ export const createInvoice = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Creating Invoice..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  createInvoiceRequestCall(req.session.selectedNode, req.body.description, req.body.amountMsat).then(invRes => {
+  createInvoiceRequestCall(req.session.selectedNode, req.body.description, req.body.amountMsat).then((invRes) => {
     res.status(201).json(invRes);
-  }).catch((err) => {
-    return res.status(err.statusCode).json({ message: err.message, error: err.error });
-  });
+  }).catch((err) => res.status(err.statusCode).json({ message: err.message, error: err.error }));
 };

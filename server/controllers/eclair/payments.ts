@@ -138,9 +138,7 @@ export const sendPaymentToRoute = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Send Payment To Route..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  sendPaymentToRouteRequestCall(req.session.selectedNode, req.body.shortChannelIds, req.body.invoice, req.body.amountMsat).then(callRes => {
+  sendPaymentToRouteRequestCall(req.session.selectedNode, req.body.shortChannelIds, req.body.invoice, req.body.amountMsat).then((callRes) => {
     res.status(200).json(callRes);
-  }).catch((err) => {
-    return res.status(err.statusCode).json({ message: err.message, error: err.error });
-  });
+  }).catch((err) => res.status(err.statusCode).json({ message: err.message, error: err.error }));
 };

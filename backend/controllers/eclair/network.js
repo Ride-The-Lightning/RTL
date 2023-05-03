@@ -39,9 +39,7 @@ export const findRouteBetweenNodes = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    findRouteBetweenNodesRequestCall(req.session.selectedNode, req.body.amountMsat, req.body.sourceNodeId, req.body.targetNodeId, req.body.ignoreNodeIds, req.body.format).then(callRes => {
+    findRouteBetweenNodesRequestCall(req.session.selectedNode, req.body.amountMsat, req.body.sourceNodeId, req.body.targetNodeId, req.body.ignoreNodeIds, req.body.format).then((callRes) => {
         res.status(200).json(callRes);
-    }).catch((err) => {
-        return res.status(err.statusCode).json({ message: err.message, error: err.error });
-    });
+    }).catch((err) => res.status(err.statusCode).json({ message: err.message, error: err.error }));
 };
