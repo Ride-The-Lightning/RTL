@@ -297,6 +297,16 @@ export interface QueryRoutes {
   routes: Routes[];
 }
 
+export interface ChannelHTLC {
+  direction?: string;
+  id?: string;
+  amount_msat?: number;
+  expiry?: number;
+  payment_hash?: string;
+  state?: string;
+  local_trimmed?: boolean;
+}
+
 export interface Channel {
   id?: string;
   alias?: string;
@@ -313,6 +323,7 @@ export interface Channel {
   our_channel_reserve_satoshis?: string;
   spendable_msatoshi?: string;
   direction?: number;
+  htlcs?: ChannelHTLC[];
   balancedness?: number; // Between 0-1-0
 }
 

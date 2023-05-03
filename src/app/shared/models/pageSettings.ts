@@ -113,6 +113,7 @@ export class CLNPageDefinitions {
     open_channels: TableDefinition;
     pending_inactive_channels: TableDefinition;
     peers: TableDefinition;
+    active_HTLCs: TableDefinition;
   };
   liquidity_ads: {
     liquidity_ads: TableDefinition;

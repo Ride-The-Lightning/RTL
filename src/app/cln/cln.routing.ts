@@ -24,6 +24,7 @@ import { CLNVerifyComponent } from './sign-verify-message/verify/verify.componen
 import { CLNForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
 import { CLNFailedTransactionsComponent } from './routing/failed-transactions/failed-transactions.component';
 import { CLNRoutingPeersComponent } from './routing/routing-peers/routing-peers.component';
+import { CLNChannelActiveHTLCsTableComponent } from './peers-channels/channels/channels-tables/channel-active-htlcs-table/channel-active-htlcs-table.component';
 
 import { CLNReportsComponent } from './reports/reports.component';
 import { CLNRoutingReportComponent } from './reports/routing/routing-report.component';
@@ -59,7 +60,8 @@ export const ClnRoutes: Routes = [
             path: 'channels', component: CLNChannelsTablesComponent, canActivate: [CLNUnlockedGuard], children: [
               { path: '', pathMatch: <PathMatch>'full', redirectTo: 'open' },
               { path: 'open', component: CLNChannelOpenTableComponent, canActivate: [CLNUnlockedGuard] },
-              { path: 'pending', component: CLNChannelPendingTableComponent, canActivate: [CLNUnlockedGuard] }
+              { path: 'pending', component: CLNChannelPendingTableComponent, canActivate: [CLNUnlockedGuard] },
+              { path: 'activehtlcs', component: CLNChannelActiveHTLCsTableComponent, canActivate: [CLNUnlockedGuard] }
             ]
           },
           { path: 'peers', component: CLNPeersComponent, data: { sweepAll: false }, canActivate: [CLNUnlockedGuard] }

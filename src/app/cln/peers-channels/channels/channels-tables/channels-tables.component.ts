@@ -24,12 +24,13 @@ export class CLNChannelsTablesComponent implements OnInit, OnDestroy {
 
   public openChannels = 0;
   public pendingChannels = 0;
+  public activeHTLCs = 0;
   public selNode: SelNodeChild | null = {};
   public information: GetInfo = {};
   public peers: Peer[] = [];
   public utxos: UTXO[] = [];
   public totalBalance = 0;
-  public links = [{ link: 'open', name: 'Open' }, { link: 'pending', name: 'Pending/Inactive' }];
+  public links = [{ link: 'open', name: 'Open' }, { link: 'pending', name: 'Pending/Inactive' }, { link: 'activehtlcs', name: 'Active HTLCs' }];
   public activeLink = 0;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -51,18 +52,20 @@ export class CLNChannelsTablesComponent implements OnInit, OnDestroy {
         this.logger.info(infoSettingsBalSelector);
       });
     this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
-      subscribe((peersSeletor: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.peers = peersSeletor.peers;
+      subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.peers = peersSelector.peers;
       });
     this.store.select(utxos).pipe(takeUntil(this.unSubs[3])).
       subscribe((utxosSeletor: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
         this.utxos = this.commonService.sortAscByKey(utxosSeletor.utxos?.filter((utxo) => utxo.status === 'confirmed'), 'value');
       });
     this.store.select(channels).pipe(takeUntil(this.unSubs[4])).
-      subscribe((channelsSeletor: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.openChannels = channelsSeletor.activeChannels.length || 0;
-        this.pendingChannels = (channelsSeletor.pendingChannels.length + channelsSeletor.inactiveChannels.length) || 0;
-        this.logger.info(channelsSeletor);
+      subscribe((channelsSelector: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.openChannels = channelsSelector.activeChannels.length || 0;
+        this.pendingChannels = (channelsSelector.pendingChannels.length + channelsSelector.inactiveChannels.length) || 0;
+        const allChannels = [...channelsSelector.activeChannels, ...channelsSelector.pendingChannels, ...channelsSelector.inactiveChannels];
+        this.activeHTLCs = allChannels?.reduce((totalHTLCs, peer) => totalHTLCs + (peer.htlcs && peer.htlcs.length > 0 ? peer.htlcs.length : 0), 0);
+        this.logger.info(channelsSelector);
       });
   }
 

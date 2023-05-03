@@ -28,7 +28,7 @@ export class ECLChannelRebalanceComponent implements OnInit, OnDestroy {
   public selChannel: Channel = {};
   public activeChannels: Channel[] = [];
   public filteredActiveChannels: Observable<Channel[]>;
-  public rebalanceStatus: { flgReusingInvoice: boolean, invoice: string, paymentHash: string, paymentDetails: any, paymentStatus: any } = 
+  public rebalanceStatus: { flgReusingInvoice: boolean, invoice: string, paymentHash: string, paymentDetails: any, paymentStatus: any } =
     { flgReusingInvoice: false, invoice: '', paymentHash: '', paymentDetails: null, paymentStatus: null };
   public inputFormLabel = 'Amount to rebalance';
   public flgEditable = true;
@@ -106,26 +106,26 @@ export class ECLChannelRebalanceComponent implements OnInit, OnDestroy {
     if (!this.inputFormGroup.controls.rebalanceAmount.value || this.inputFormGroup.controls.rebalanceAmount.value <= 0 ||
       (this.selChannel.toLocal && this.inputFormGroup.controls.rebalanceAmount.value > +this.selChannel.toLocal) ||
       !this.inputFormGroup.controls.selRebalancePeer.value.nodeId) {
-        if (!this.inputFormGroup.controls.selRebalancePeer.value.nodeId) {
-          this.inputFormGroup.controls.selRebalancePeer.setErrors({required: true});
-        }
+      if (!this.inputFormGroup.controls.selRebalancePeer.value.nodeId) {
+        this.inputFormGroup.controls.selRebalancePeer.setErrors({ required: true });
+      }
       return true;
     }
     this.stepper.next();
     this.flgEditable = false;
     this.rebalanceStatus = { flgReusingInvoice: false, invoice: '', paymentHash: '', paymentDetails: null, paymentStatus: null };
-    this.dataService.circularRebalance((this.inputFormGroup.controls.rebalanceAmount.value * 1000), this.selChannel.shortChannelId, this.selChannel.nodeId,  this.inputFormGroup.controls.selRebalancePeer.value.shortChannelId, this.inputFormGroup.controls.selRebalancePeer.value.nodeId, [this.information.nodeId || '']).
-    pipe(takeUntil(this.unSubs[2])).subscribe({
-      next: (rebalanceRes) => {
-        this.logger.info(rebalanceRes);
-        this.rebalanceStatus = rebalanceRes;
-        this.flgEditable = true;
-      }, error: (error) => {
-        this.logger.error(error);
-        this.rebalanceStatus = error;
-        this.flgEditable = true;
-      }
-    });
+    this.dataService.circularRebalance((this.inputFormGroup.controls.rebalanceAmount.value * 1000), this.selChannel.shortChannelId, this.selChannel.nodeId, this.inputFormGroup.controls.selRebalancePeer.value.shortChannelId, this.inputFormGroup.controls.selRebalancePeer.value.nodeId, [this.information.nodeId || '']).
+      pipe(takeUntil(this.unSubs[2])).subscribe({
+        next: (rebalanceRes) => {
+          this.logger.info(rebalanceRes);
+          this.rebalanceStatus = rebalanceRes;
+          this.flgEditable = true;
+        }, error: (error) => {
+          this.logger.error(error);
+          this.rebalanceStatus = error;
+          this.flgEditable = true;
+        }
+      });
   }
 
   filterActiveChannels() {
