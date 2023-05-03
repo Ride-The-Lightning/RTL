@@ -737,7 +737,10 @@ export const CLN_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
       columnSelection: ['alias', 'connected', 'state', 'msatoshi_total'] },
     { tableId: 'peers', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.ASCENDING,
       columnSelectionSM: ['alias', 'id'],
-      columnSelection: ['alias', 'id', 'netaddr'] }
+      columnSelection: ['alias', 'id', 'netaddr'] },
+    { tableId: 'active_HTLCs', recordsPerPage: PAGE_SIZE, sortBy: 'expiry', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['amount_msat', 'direction', 'expiry'],
+      columnSelection: ['amount_msat', 'direction', 'expiry', 'state'] }
   ] },
   { pageId: 'liquidity_ads', tables: [
     { tableId: 'liquidity_ads', recordsPerPage: PAGE_SIZE, sortBy: 'channel_opening_fee', sortOrder: SortOrderEnum.ASCENDING,
@@ -821,6 +824,11 @@ export const CLN_PAGE_DEFS: CLNPageDefinitions = {
     peers: {
       maxColumns: 3,
       allowedColumns: [{ column:'alias' }, { column:'id' }, { column:'netaddr', label: 'Network Address' }]
+    },
+    active_HTLCs: {
+      maxColumns: 7,
+      allowedColumns: [{ column:'amount_msat', label: 'Amount (Sats)' }, { column:'direction' }, { column:'id', label: 'HTLC ID' }, { column:'state' },
+      { column:'expiry' }, { column:'payment_hash' }, { column:'local_trimmed' }]
     }
   },
   liquidity_ads: {
