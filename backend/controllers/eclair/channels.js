@@ -171,24 +171,26 @@ export const circularRebalance = (req, res, next) => {
     const tillToday = (Math.round(new Date(Date.now()).getTime() / 1000)).toString();
     // Check if unpaid Invoice exists already
     listPendingInvoicesRequestCall(req.session.selectedNode).then((callRes) => {
-        const foundExistingInvoice = callRes.find(inv => inv.description.includes(crInvDescription) && inv.amount === req.body.amountMsat && inv.expiry && inv.timestamp && ((inv.expiry + inv.timestamp) >= tillToday));
+        const foundExistingInvoice = callRes.find((inv) => inv.description.includes(crInvDescription) && inv.amount === req.body.amountMsat && inv.expiry && inv.timestamp && ((inv.expiry + inv.timestamp) >= tillToday));
         // Create new invoice if doesn't exist already
         const requestCalls = foundExistingInvoice && foundExistingInvoice.serialized ?
             [findRouteBetweenNodesRequestCall(req.session.selectedNode, req.body.amountMsat, req.body.sourceNodeId, req.body.targetNodeId, req.body.ignoreNodeIds, req.body.format)] :
             [findRouteBetweenNodesRequestCall(req.session.selectedNode, req.body.amountMsat, req.body.sourceNodeId, req.body.targetNodeId, req.body.ignoreNodeIds, req.body.format), createInvoiceRequestCall(req.session.selectedNode, crInvDescription, req.body.amountMsat)];
         Promise.all(requestCalls).then((values) => {
-            let routes = values[0]?.routes?.filter(route => {
+            // eslint-disable-next-line arrow-body-style
+            const routes = values[0]?.routes?.filter((route) => {
                 return !((route.shortChannelIds[0] === req.body.sourceShortChannelId && route.shortChannelIds[1] === req.body.targetShortChannelId) ||
                     (route.shortChannelIds[1] === req.body.sourceShortChannelId && route.shortChannelIds[0] === req.body.targetShortChannelId));
             });
-            let firstRoute = routes[0].shortChannelIds.join() || '';
-            let shortChannelIds = req.body.sourceShortChannelId + ',' + firstRoute + ',' + req.body.targetShortChannelId;
-            let invoice = (foundExistingInvoice && foundExistingInvoice.serialized ? foundExistingInvoice.serialized : (values[1] ? values[1].serialized : '')) || '';
-            let paymentHash = (foundExistingInvoice && foundExistingInvoice.paymentHash ? foundExistingInvoice.paymentHash : (values[1] ? values[1].paymentHash : '') || '');
-            return sendPaymentToRouteRequestCall(req.session.selectedNode, shortChannelIds, invoice, req.body.amountMsat).then(payToRouteCallRes => {
+            const firstRoute = routes[0].shortChannelIds.join() || '';
+            const shortChannelIds = req.body.sourceShortChannelId + ',' + firstRoute + ',' + req.body.targetShortChannelId;
+            const invoice = (foundExistingInvoice && foundExistingInvoice.serialized ? foundExistingInvoice.serialized : (values[1] ? values[1].serialized : '')) || '';
+            const paymentHash = (foundExistingInvoice && foundExistingInvoice.paymentHash ? foundExistingInvoice.paymentHash : (values[1] ? values[1].paymentHash : '') || '');
+            return sendPaymentToRouteRequestCall(req.session.selectedNode, shortChannelIds, invoice, req.body.amountMsat).then((payToRouteCallRes) => {
+                // eslint-disable-next-line arrow-body-style
                 setTimeout(() => {
-                    return getSentInfoFromPaymentRequest(req.session.selectedNode, paymentHash).then(sentInfoCallRes => {
-                        let payStatus = sentInfoCallRes.length && sentInfoCallRes.length > 0 ? sentInfoCallRes[sentInfoCallRes.length - 1].status : sentInfoCallRes;
+                    return getSentInfoFromPaymentRequest(req.session.selectedNode, paymentHash).then((sentInfoCallRes) => {
+                        const payStatus = sentInfoCallRes.length && sentInfoCallRes.length > 0 ? sentInfoCallRes[sentInfoCallRes.length - 1].status : sentInfoCallRes;
                         return res.status(201).json({ flgReusingInvoice: !!foundExistingInvoice, invoice: invoice, paymentHash: paymentHash, paymentDetails: payToRouteCallRes, paymentStatus: payStatus });
                     }).catch((errRes) => {
                         const err = common.handleError(errRes, 'Channels', 'Channel Rebalance From Sent Info Error', req.session.selectedNode);
