@@ -285,7 +285,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       let rowToFilter = '';
       switch (this.selFilterBy) {
         case 'all':
-          rowToFilter = ((rowData.connected) ? 'connected' : 'disconnected') + (rowData.channel_id ? rowData.channel_id.toLowerCase() : '') +
+          rowToFilter = ((rowData.peer_connected) ? 'connected' : 'disconnected') + (rowData.channel_id ? rowData.channel_id.toLowerCase() : '') +
           (rowData.short_channel_id ? rowData.short_channel_id.toLowerCase() : '') + (rowData.id ? rowData.id.toLowerCase() : '') + (rowData.alias ? rowData.alias.toLowerCase() : '') +
           (rowData.private ? 'private' : 'public') + (rowData.state ? rowData.state.toLowerCase() : '') +
           (rowData.funding_txid ? rowData.funding_txid.toLowerCase() : '') + (rowData.msatoshi_to_us ? rowData.msatoshi_to_us : '') +
@@ -298,7 +298,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
           break;
 
         case 'connected':
-          rowToFilter = rowData?.connected ? 'connected' : 'disconnected';
+          rowToFilter = rowData?.peer_connected ? 'connected' : 'disconnected';
           break;
 
         case 'msatoshi_total':
