@@ -310,7 +310,7 @@ export interface ChannelHTLC {
 export interface Channel {
   id?: string;
   alias?: string;
-  connected?: boolean;
+  peer_connected?: boolean;
   state?: string;
   short_channel_id?: string;
   channel_id?: string;

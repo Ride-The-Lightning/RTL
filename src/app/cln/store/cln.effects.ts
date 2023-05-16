@@ -335,7 +335,7 @@ export class CLNEffects implements OnDestroy {
       const sortedChannels = { activeChannels: <Channel[]>[], pendingChannels: <Channel[]>[], inactiveChannels: <Channel[]>[] };
       channels.forEach((channel) => {
         if (channel.state === 'CHANNELD_NORMAL') {
-          if (channel.connected) {
+          if (channel.peer_connected) {
             sortedChannels.activeChannels.push(channel);
           } else {
             sortedChannels.inactiveChannels.push(channel);
