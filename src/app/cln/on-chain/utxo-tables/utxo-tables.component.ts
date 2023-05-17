@@ -31,7 +31,7 @@ export class CLNUTXOTablesComponent implements OnInit, OnDestroy {
       subscribe((utxosSeletor: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
         if (utxosSeletor.utxos && utxosSeletor.utxos.length > 0) {
           this.numUtxos = utxosSeletor.utxos.length || 0;
-          this.numDustUtxos = utxosSeletor.utxos?.filter((utxo) => +(utxo.value || 0) < this.DUST_AMOUNT).length || 0;
+          this.numDustUtxos = utxosSeletor.utxos?.filter((utxo) => (+(utxo.amount_msat || 0) / 1000) < this.DUST_AMOUNT).length || 0;
         }
         this.logger.info(utxosSeletor);
       });

@@ -40,8 +40,10 @@ export class CLNNodeLookupComponent implements OnInit, OnDestroy {
     if (this.lookupResult.features && this.lookupResult.features.trim() !== '') {
       const featureHex = parseInt(this.lookupResult.features, 16);
       NODE_FEATURES_CLN.forEach((feature) => {
-        if (!!(featureHex & ((1 << feature.range.min) | (1 << feature.range.max)))) {
-          this.featureDescriptions.push(feature.description + '\n');
+        if (featureHex & (1 << feature.range.min)) {
+          this.featureDescriptions.push('Mandatory: ' + feature.description + '\n');
+        } else if (featureHex & (1 << feature.range.max)) {
+          this.featureDescriptions.push('Optional: ' + feature.description + '\n');
         }
       });
     }

@@ -230,8 +230,10 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
     if (lqNode.features && lqNode.features.trim() !== '') {
       const featureHex = parseInt(lqNode.features, 16);
       NODE_FEATURES_CLN.forEach((feature) => {
-        if (!!(featureHex & ((1 << feature.range.min) | (1 << feature.range.max)))) {
-          featureDescriptions.push(feature.description);
+        if (featureHex & (1 << feature.range.min)) {
+          featureDescriptions.push('Mandatory: ' + feature.description);
+        } else if (featureHex & (1 << feature.range.max)) {
+          featureDescriptions.push('Optional: ' + feature.description);
         }
       });
     }

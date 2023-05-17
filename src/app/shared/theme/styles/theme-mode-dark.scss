@@ -178,6 +178,9 @@
   }
   button.mdc-button.mat-mdc-button-base.mat-mdc-outlined-button{
     border-color: $foreground-disabled;
+    &.mat-warn {
+      border-color: $warn-color;
+    }
   }
   .mat-mdc-select-arrow svg {
     fill: $foreground-base;

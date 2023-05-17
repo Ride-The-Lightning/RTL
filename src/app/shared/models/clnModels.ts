@@ -77,12 +77,12 @@ export interface Invoice {
   bolt11?: string;
   bolt12?: string;
   payment_hash?: string;
-  msatoshi?: number;
-  amount_msat?: string;
+  msatoshi?: number; // For backward compatibility
+  amount_msat?: number;
   status?: string;
   pay_index?: number;
-  msatoshi_received?: number;
-  amount_received_msat?: string;
+  msatoshi_received?: number; // For backward compatibility
+  amount_received_msat?: number;
   paid_at?: number;
   payment_preimage?: string;
   description?: string;
@@ -138,14 +138,14 @@ export interface Hop {
 }
 
 export interface MPP {
-  amount_msat?: string;
-  amount_sent_msat?: string;
   bolt11?: string;
   created_at?: number;
   destination?: string;
   id?: number;
-  msatoshi?: number;
-  msatoshi_sent?: number;
+  msatoshi?: number; // For Backward compatibility
+  amount_msat?: number;
+  msatoshi_sent?: number; // For Backward compatibility
+  amount_sent_msat?: number;
   payment_hash?: string;
   payment_preimage?: string;
   status?: string;
@@ -153,15 +153,15 @@ export interface MPP {
 }
 
 export interface Payment {
-  amount_msat?: string;
-  amount_sent_msat?: string;
   bolt11?: string;
   bolt12?: string;
   created_at?: number;
   destination?: string;
   id?: number;
-  msatoshi?: number;
-  msatoshi_sent?: number;
+  msatoshi?: number; // For Backward compatibility
+  amount_msat?: number;
+  msatoshi_sent?: number; // For Backward compatibility
+  amount_sent_msat?: number;
   payment_hash?: string;
   payment_preimage?: string;
   status?: string;
@@ -180,7 +180,7 @@ export interface PayRequest {
   expiry?: number;
   payee?: string;
   msatoshi?: number;
-  amount_msat?: string;
+  amount_msat?: number;
   description?: string;
   min_final_cltv_expiry?: number;
   payment_hash?: string;
@@ -212,8 +212,8 @@ interface Recurrence {
 
 export interface OfferRequest {
   offer_id?: string;
-  offer_amount?: number | null;
-  offer_amount_msat?: string;
+  offer_amount?: number | null; // For Backward compatibility
+  offer_amount_msat?: number;
   type?: string;
   valid?: boolean;
   offer_node_id?: string;
@@ -308,22 +308,34 @@ export interface ChannelHTLC {
 }
 
 export interface Channel {
-  id?: string;
+  id?: string; // For Backward compatibility
+  peer_id?: string;
   alias?: string;
+  connected?: boolean; // For Backward compatibility
   peer_connected?: boolean;
   state?: string;
   short_channel_id?: string;
   channel_id?: string;
   funding_txid?: string;
   private?: boolean;
-  msatoshi_to_us?: number;
-  msatoshi_to_them?: number;
-  msatoshi_total?: number;
-  their_channel_reserve_satoshis?: string;
-  our_channel_reserve_satoshis?: string;
-  spendable_msatoshi?: string;
+  msatoshi_to_us?: number; // For Backward compatibility
+  to_us_msat?: number;
+  msatoshi_to_them?: number; // For Backward compatibility
+  to_them_msat?: number;
+  msatoshi_total?: number; // For Backward compatibility
+  total_msat?: number;
+  their_channel_reserve_satoshis?: string; // For Backward compatibility
+  their_reserve_msat?: number;
+  our_channel_reserve_satoshis?: string; // For Backward compatibility
+  our_reserve_msat?: number;
+  spendable_msatoshi?: string; // For Backward compatibility
+  spendable_msat?: number;
   direction?: number;
   htlcs?: ChannelHTLC[];
+  receivable_msat?: number;
+  fee_base_msat?: number;
+  fee_proportional_millionths?: number;
+  dust_limit_msat?: number;
   balancedness?: number; // Between 0-1-0
 }
 
@@ -394,7 +406,8 @@ export interface FeeRates {
 export interface UTXO {
   txid?: string;
   output?: number;
-  value?: number;
+  value?: number; // For Backward compatibility
+  amount_msat?: number;
   status?: string;
   blockheight?: string;
   scriptpubkey?: string;

@@ -71,32 +71,32 @@
       <ng-container matColumnDef="our_channel_reserve_satoshis">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Local Reserve (Sats)</th>
         <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
-            {{channel?.our_channel_reserve_satoshis | number:'1.0-0'}} </span></td>
+            {{channel?.our_reserve_msat | number:'1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="their_channel_reserve_satoshis">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Remote Reserve (Sats)</th>
         <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
-            {{channel?.their_channel_reserve_satoshis | number:'1.0-0'}} </span></td>
+            {{channel?.their_reserve_msat | number:'1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="msatoshi_total">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Total (Sats)</th>
         <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
-            {{channel?.msatoshi_total/1000 | number:channel?.msatoshi_to_us < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
+            {{channel?.total_msat/1000 | number:channel?.to_us_msat < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="spendable_msatoshi">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Spendable (Sats)</th>
         <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
-            {{channel?.spendable_msatoshi/1000 | number:channel?.msatoshi_to_us < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
+            {{channel?.spendable_msat/1000 | number:channel?.to_us_msat < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="msatoshi_to_us">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Local Balance (Sats)</th>
         <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
-            {{channel?.msatoshi_to_us/1000 | number:channel?.msatoshi_to_us < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
+            {{channel?.to_us_msat/1000 | number:channel?.to_us_msat < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="msatoshi_to_them">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Remote Balance (Sats)</th>
         <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
-            {{channel?.msatoshi_to_them/1000 | number:channel?.msatoshi_to_them < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
+            {{channel?.to_them_msat/1000 | number:channel?.to_them_msat < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="balancedness">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Balance Score</th>
@@ -104,7 +104,7 @@
           <div fxLayout="row">
             <mat-hint fxFlex="100" fxLayoutAlign="center center" class="font-size-80">{{channel.balancedness || 0 | number}}</mat-hint>
           </div>
-          <mat-progress-bar mode="determinate" value="{{channel.msatoshi_to_us && channel.msatoshi_to_us > 0 ? ((+channel.msatoshi_to_us/((+channel.msatoshi_to_us)+(+channel.msatoshi_to_them)))*100) : 0}}"></mat-progress-bar>
+          <mat-progress-bar mode="determinate" value="{{channel.to_us_msat && channel.to_us_msat > 0 ? ((channel.to_us_msat/((channel.to_us_msat)+(channel.to_them_msat)))*100) : 0}}"></mat-progress-bar>
         </td>
       </ng-container>
       <ng-container matColumnDef="actions">

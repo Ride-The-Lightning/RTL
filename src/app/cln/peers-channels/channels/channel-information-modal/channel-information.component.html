@@ -32,49 +32,63 @@
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Peer Public Key</h4>
-            <span class="foreground-secondary-text">{{channel.id}}</span>
+            <span class="foreground-secondary-text">{{channel.peer_id}}</span>
           </div>
         </div>
         <mat-divider class="my-1"></mat-divider>
         <div fxLayout="row">
-          <div fxFlex="25">
-            <h4 fxLayoutAlign="start" class="font-bold-500">mSatoshi to Us</h4>
-            <span class="overflow-wrap foreground-secondary-text">{{channel.msatoshi_to_us | number}}</span>
-          </div>
-          <div fxFlex="25">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Spendable (mSats)</h4>
-            <span class="overflow-wrap foreground-secondary-text">{{channel.spendable_msatoshi | number}}</span>
-          </div>
-          <div fxFlex="25">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Total (mSats)</h4>
-            <span class="overflow-wrap foreground-secondary-text">{{channel.msatoshi_total | number}}</span>
-          </div>
-          <div fxFlex="25">
+          <div fxFlex="33">
             <h4 fxLayoutAlign="start" class="font-bold-500">State</h4>
-            <span class="overflow-wrap foreground-secondary-text">{{channel.state}}</span>
+            <span class="overflow-wrap foreground-secondary-text">{{channel?.state | camelcaseWithReplace:'_'}}</span>
           </div>
-        </div>
-        <mat-divider class="my-1"></mat-divider>
-        <div fxLayout="row">
-          <div fxFlex="25">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Our Reserve (Sats)</h4>
-            <span class="overflow-wrap foreground-secondary-text">{{channel.our_channel_reserve_satoshis | number}}</span>
-          </div>
-          <div fxFlex="25">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Their Reserve (Sats)</h4>
-            <span class="overflow-wrap foreground-secondary-text">{{channel.their_channel_reserve_satoshis | number}}</span>
-          </div>
-          <div fxFlex="25">
+          <div fxFlex="33">
             <h4 fxLayoutAlign="start" class="font-bold-500">Connected</h4>
             <span class="overflow-wrap foreground-secondary-text">{{channel.peer_connected ? 'Yes' : 'No'}}</span>
           </div>
-          <div fxFlex="25">
+          <div fxFlex="34">
             <h4 fxLayoutAlign="start" class="font-bold-500">Private</h4>
             <span class="overflow-wrap foreground-secondary-text">{{channel.private ? 'Yes' : 'No'}}</span>
           </div>
         </div>
         <mat-divider class="my-1"></mat-divider>
+        <div fxLayout="row">
+          <div fxFlex="33">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Remote Balance (Sats)</h4>
+            <span class="overflow-wrap foreground-secondary-text">{{channel.to_them_msat / 1000 | number:'1.0-0'}}</span>
+          </div>
+          <div fxFlex="33">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Local Balance (Sats)</h4>
+            <span class="overflow-wrap foreground-secondary-text">{{channel.to_us_msat / 1000 | number:'1.0-0'}}</span>
+          </div>
+          <div fxFlex="34">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Total (Sats)</h4>
+            <span class="overflow-wrap foreground-secondary-text">{{channel.total_msat / 1000 | number:'1.0-0'}}</span>
+          </div>
+        </div>
+        <mat-divider class="my-1"></mat-divider>
         <div *ngIf="showAdvanced">
+          <div fxLayout="row">
+            <div fxFlex="50">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Receivable (Sats)</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{channel.receivable_msat / 1000 | number:'1.0-0'}}</span>
+            </div>
+            <div fxFlex="50">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Spendable (Sats)</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{channel.spendable_msat / 1000 | number:'1.0-0'}}</span>
+            </div>
+          </div>
+          <mat-divider class="my-1"></mat-divider>
+          <div fxLayout="row">
+            <div fxFlex="50">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Their Reserve (Sats)</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{channel.their_reserve_msat / 1000 | number:'1.0-2'}}</span>
+            </div>
+            <div fxFlex="50">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Our Reserve (Sats)</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{channel.our_reserve_msat / 1000 | number:'1.0-2'}}</span>
+            </div>
+          </div>
+          <mat-divider class="my-1"></mat-divider>
           <div fxLayout="row">
             <div fxFlex="100">
               <h4 fxLayoutAlign="start" class="font-bold-500">Funding Transaction ID</h4>

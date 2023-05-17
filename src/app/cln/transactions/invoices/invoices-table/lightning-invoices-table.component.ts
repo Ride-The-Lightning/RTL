@@ -175,7 +175,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
 
   onInvoiceClick(selInvoice: Invoice) {
     const reCreatedInvoice: Invoice = {
-      msatoshi: selInvoice.msatoshi,
+      amount_msat: selInvoice.amount_msat,
       label: selInvoice.label,
       expires_at: selInvoice.expires_at,
       paid_at: selInvoice.paid_at,
@@ -183,7 +183,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
       payment_hash: selInvoice.payment_hash,
       description: selInvoice.description,
       status: selInvoice.status,
-      msatoshi_received: selInvoice.msatoshi_received
+      amount_received_msat: selInvoice.amount_received_msat
     };
     this.store.dispatch(openAlert({
       payload: {
@@ -237,8 +237,11 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
           break;
 
         case 'msatoshi':
+          rowToFilter = ((rowData['msatoshi'] || rowData['amount_msat'] || 0) / 1000)?.toString() || '';
+          break;
+
         case 'msatoshi_received':
-          rowToFilter = ((+(rowData[this.selFilterBy] || 0)) / 1000)?.toString() || '';
+          rowToFilter = ((rowData['msatoshi_received'] || rowData['amount_received_msat'] || 0) / 1000)?.toString() || '';
           break;
 
         default:
@@ -256,7 +259,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
         pipe(takeUntil(this.unSubs[6])).
         subscribe({
           next: (data) => {
-            this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
+            this.invoiceValueHint = '= ' + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
           }, error: (err) => {
             this.invoiceValueHint = 'Conversion Error: ' + err;
           }
@@ -275,7 +278,18 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
   loadInvoicesTable(invs: Invoice[]) {
     this.invoices = (invs) ? new MatTableDataSource<Invoice>([...invs]) : new MatTableDataSource([]);
     this.invoices.sort = this.sort;
-    this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+    this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => {
+      switch (sortHeaderId) {
+        case 'msatoshi':
+          return data['msatoshi'] || data['amount_msat'];
+
+        case 'msatoshi_received':
+          return data['msatoshi_received'] || data['amount_received_msat'];
+
+        default:
+          return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+      }
+    };
     this.invoices.paginator = this.paginator;
     this.applyFilter();
     this.setFilterPredicate();

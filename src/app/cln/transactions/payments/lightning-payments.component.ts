@@ -147,8 +147,8 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         pipe(takeUntil(this.unSubs[4])).subscribe((decodedPayment: PayRequest) => {
           this.paymentDecoded = decodedPayment;
           if (this.paymentDecoded.created_at) {
-            if (!this.paymentDecoded.msatoshi) {
-              this.paymentDecoded.msatoshi = 0;
+            if (!this.paymentDecoded.amount_msat) {
+              this.paymentDecoded.amount_msat = 0;
             }
             this.sendPayment();
           } else {
@@ -160,7 +160,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
 
   sendPayment() {
     this.newlyAddedPayment = this.paymentDecoded?.payment_hash || '';
-    if (!this.paymentDecoded.msatoshi || this.paymentDecoded.msatoshi === 0) {
+    if (!this.paymentDecoded.amount_msat || this.paymentDecoded.amount_msat === 0) {
       const reorderedPaymentDecoded = [
         [{ key: 'payment_hash', value: this.paymentDecoded.payment_hash, title: 'Payment Hash', width: 100 }],
         [{ key: 'payee', value: this.paymentDecoded.payee, title: 'Payee', width: 100 }],
@@ -190,7 +190,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         pipe(take(1)).
         subscribe((confirmRes) => {
           if (confirmRes) {
-            this.paymentDecoded.msatoshi = confirmRes[0].inputValue;
+            this.paymentDecoded.amount_msat = confirmRes[0].inputValue;
             this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.INVOICE, invoice: this.paymentRequest, amount: confirmRes[0].inputValue * 1000, fromDialog: false } }));
             this.resetData();
           }
@@ -201,7 +201,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         [{ key: 'payee', value: this.paymentDecoded.payee, title: 'Payee', width: 100 }],
         [{ key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100 }],
         [{ key: 'created_at', value: this.paymentDecoded.created_at, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME },
-        { key: 'num_satoshis', value: this.paymentDecoded.msatoshi / 1000, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
+        { key: 'num_satoshis', value: this.paymentDecoded.amount_msat / 1000, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
         [{ key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.NUMBER },
         { key: 'min_finaltv_expiry', value: this.paymentDecoded.min_final_cltv_expiry, title: 'CLTV Expiry', width: 50 }]
       ];
@@ -234,22 +234,22 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       this.dataService.decodePayment(this.paymentRequest, false).
         pipe(takeUntil(this.unSubs[5])).subscribe((decodedPayment: PayRequest) => {
           this.paymentDecoded = decodedPayment;
-          if (this.paymentDecoded.msatoshi) {
+          if (this.paymentDecoded.amount_msat) {
             if (this.selNode?.fiatConversion) {
-              this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
+              this.commonService.convertCurrency(this.paymentDecoded.amount_msat ? this.paymentDecoded.amount_msat / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
                 pipe(takeUntil(this.unSubs[6])).
                 subscribe({
                   next: (data) => {
-                    this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ?
-                      this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0),
-                      CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
+                    this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount_msat ?
+                      this.paymentDecoded.amount_msat / 1000 : 0) + ' Sats (' + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0),
+                      CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit + ') | Memo: ' + this.paymentDecoded.description;
                   }, error: (error) => {
-                    this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) +
+                    this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount_msat ? this.paymentDecoded.amount_msat / 1000 : 0) +
                     ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
                   }
                 });
             } else {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) +
+              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount_msat ? this.paymentDecoded.amount_msat / 1000 : 0) +
               ' Sats | Memo: ' + this.paymentDecoded.description;
             }
           } else {
@@ -282,8 +282,8 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       { key: 'destination', value: selPayment.destination, title: 'Destination', width: 80, type: DataTypeEnum.STRING }],
       [{ key: 'created_at', value: selPayment.created_at, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME },
       { key: 'status', value: this.titleCasePipe.transform(selPayment.status), title: 'Status', width: 50, type: DataTypeEnum.STRING }],
-      [{ key: 'msatoshi', value: selPayment.msatoshi, title: 'Amount (mSats)', width: 50, type: DataTypeEnum.NUMBER },
-      { key: 'msatoshi_sent', value: selPayment.msatoshi_sent, title: 'Amount Sent (mSats)', width: 50, type: DataTypeEnum.NUMBER }]
+      [{ key: 'amount_msat', value: selPayment.amount_msat, title: 'Amount (mSats)', width: 50, type: DataTypeEnum.NUMBER },
+      { key: 'amount_sent_msat', value: selPayment.amount_sent_msat, title: 'Amount Sent (mSats)', width: 50, type: DataTypeEnum.NUMBER }]
     ];
     if (selPayment.bolt11 && selPayment.bolt11 !== '') {
       reorderedPayment?.unshift([{ key: 'bolt11', value: selPayment.bolt11, title: 'Bolt 11', width: 100, type: DataTypeEnum.STRING }]);
@@ -337,8 +337,11 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           break;
 
         case 'msatoshi_sent':
+          rowToFilter = ((rowData['msatoshi_sent'] || rowData['amount_sent_msat'] || 0) / 1000)?.toString() || '';
+          break;
+
         case 'msatoshi':
-          rowToFilter = ((+(rowData[this.selFilterBy] || 0)) / 1000)?.toString() || '';
+          rowToFilter = ((rowData['msatoshi'] || rowData['amount_msat'] || 0) / 1000)?.toString() || '';
           break;
 
         case 'type':
@@ -356,7 +359,18 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   loadPaymentsTable(payments: Payment[]) {
     this.payments = (payments) ? new MatTableDataSource<Payment>([...payments]) : new MatTableDataSource([]);
     this.payments.sort = this.sort;
-    this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+    this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => {
+      switch (sortHeaderId) {
+        case 'msatoshi_sent':
+          return data['msatoshi_sent'] || data['amount_sent_msat'];
+
+        case 'msatoshi':
+          return data['msatoshi'] || data['amount_msat'];
+
+        default:
+          return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+      }
+    };
     this.payments.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();
