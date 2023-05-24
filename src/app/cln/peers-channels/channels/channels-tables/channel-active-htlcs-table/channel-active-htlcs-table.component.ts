@@ -6,7 +6,6 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { CLNChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { Channel, ChannelHTLC } from '../../../../../shared/models/clnModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, CLN_PAGE_DEFS } from '../../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
@@ -103,7 +102,7 @@ export class CLNChannelActiveHTLCsTableComponent implements OnInit, AfterViewIni
       [{ key: 'amount_msat', value: ((selHtlc.amount_msat || 0) / 1000), title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER },
       { key: 'direction', value: this.commonService.titleCase(selHtlc.direction || ''), title: 'Direction', width: 50, type: DataTypeEnum.STRING }],
       [{ key: 'expiry', value: selHtlc.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.NUMBER },
-      { key: 'state', value: this.camelCaseWithReplace.transform(selHtlc.state || '', '_'), title: 'State', width: 50, type: DataTypeEnum.STRING }],
+      { key: 'state', value: this.camelCaseWithReplace.transform((selHtlc.state || '') || '', '_'), title: 'State', width: 50, type: DataTypeEnum.STRING }],
       [{ key: 'id', value: selHtlc.id, title: 'HTLC ID', width: 50, type: DataTypeEnum.STRING },
       { key: 'local_trimmed', value: selHtlc.local_trimmed, title: 'Local Trimmed', width: 50, type: DataTypeEnum.BOOLEAN }],
       [{ key: 'payment_hash', value: selHtlc.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }]
@@ -125,7 +124,7 @@ export class CLNChannelActiveHTLCsTableComponent implements OnInit, AfterViewIni
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : this.commonService.titleCase(column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform((returnColumn.column || ''), '_') : this.commonService.titleCase(column);
   }
 
   setFilterPredicate() {
@@ -150,7 +149,7 @@ export class CLNChannelActiveHTLCsTableComponent implements OnInit, AfterViewIni
           break;
 
         case 'state':
-          rowToFilter = rowData.htlcs?.map((htlc) => this.camelCaseWithReplace.transform(htlc.state || '', '_').toLowerCase() + ' ').toString() || '';
+          rowToFilter = rowData.htlcs?.map((htlc) => this.camelCaseWithReplace.transform((htlc.state || '') || '', '_').toLowerCase() + ' ').toString() || '';
           break;
 
         case 'payment_hash':

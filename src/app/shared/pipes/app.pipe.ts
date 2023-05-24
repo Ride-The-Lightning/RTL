@@ -39,7 +39,7 @@ export class CamelCaseWithSpacesPipe implements PipeTransform {
 export class CamelCaseWithReplacePipe implements PipeTransform {
 
   transform(value: string, arg1?: string, arg2?: string): string {
-    value = value?.toLowerCase().replace(/\s+/g, '')?.replace(/-/g, ' ');
+    value = value ? value.toLowerCase().replace(/\s+/g, '')?.replace(/-/g, ' ') : '';
     if (arg1) {
       value = value.replace(new RegExp(arg1, 'g'), ' ');
     }
