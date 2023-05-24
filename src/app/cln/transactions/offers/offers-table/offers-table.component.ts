@@ -180,10 +180,10 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
     this.dataService.decodePayment(selOffer.bolt12!, false).
       pipe(take(1)).subscribe((offerDecoded: OfferRequest) => {
         if (offerDecoded.offer_id && !offerDecoded.offer_amount_msat) {
-          offerDecoded.offer_amount_msat = '0msat';
+          offerDecoded.offer_amount_msat = 0;
           offerDecoded.offer_amount = 0;
         } else {
-          offerDecoded.offer_amount = offerDecoded.offer_amount ? +offerDecoded.offer_amount : offerDecoded.offer_amount_msat ? +offerDecoded.offer_amount_msat.slice(0, -4) : null;
+          offerDecoded.offer_amount = offerDecoded.offer_amount || offerDecoded.offer_amount_msat || null;
         }
         const documentDefinition = {
           pageSize: 'A5',

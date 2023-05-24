@@ -8,7 +8,7 @@ html {
   line-height: 1.5;
   overflow-x: hidden;
   font-family: $font-family !important;
-  font-size: 100%;
+  font-size: 95%;
   @include for_screensize(tab-port) {
     font-size: 90%;
   }
@@ -1039,6 +1039,10 @@ mat-card-content.mat-mdc-card-content:first-child {
   }
 }
 
+.mat-mdc-form-field-infix {
+	width: 14rem !important;
+}
+
 .flex-ellipsis {
   flex: 1;
   white-space: nowrap;
@@ -1490,8 +1494,14 @@ mat-cell:last-of-type, .mdc-data-table__header-cell:last-of-type, mat-footer-cel
   }
 }
 
-.dashboard-card .mat-mdc-card-header {
-  padding: 16px 0 0 16px
+.dashboard-card {
+  margin-bottom: 0;
+  & .mat-mdc-card-header {
+    padding: 16px 0 0 16px
+  }
+  & .mat-mdc-card-content.dashboard-card-content {
+    margin-bottom: 0;
+  }
 }
 
 .dashboard-tabs-group.mat-mdc-tab-group {
@@ -1575,6 +1585,10 @@ mat-cell:last-of-type, .mdc-data-table__header-cell:last-of-type, mat-footer-cel
   & input, mat-select, .mat-select-trigger, .mat-select-value, .mat-select-arro-wrapper, textarea, .mat-form-field-infix {
     cursor: not-allowed;
   }
+}
+
+.mat-mdc-tooltip-panel {
+  max-width: 25rem !important;
 }
 
 .ngx-charts-tooltip-content {

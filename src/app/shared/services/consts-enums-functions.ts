@@ -645,7 +645,9 @@ export const NODE_FEATURES_CLN = [
   { range: { min: 18, max: 19 }, description: 'Node can create large channels' },
   { range: { min: 20, max: 21 }, description: 'Anchor outputs' },
   { range: { min: 22, max: 23 }, description: 'Anchor commitment type with zero fee HTLC transactions' },
-  { range: { min: 26, max: 27 }, description: 'Future segwit versions allowed in shutdown' }
+  { range: { min: 26, max: 27 }, description: 'Future segwit versions allowed in shutdown' },
+  { range: { min: 30, max: 31 }, description: 'AMP support' },
+  { range: { min: 44, max: 45 }, description: 'Explicit commitment type' }
 ];
 
 export enum NodeFeaturesECL {

@@ -47,10 +47,10 @@ export class CLNOfferInformationComponent implements OnInit, OnDestroy {
       pipe(takeUntil(this.unSubs[1])).subscribe((decodedOffer: OfferRequest) => {
         this.offerDecoded = decodedOffer;
         if (this.offerDecoded.offer_id && !this.offerDecoded.offer_amount_msat) {
-          this.offerDecoded.offer_amount_msat = '0msat';
+          this.offerDecoded.offer_amount_msat = 0;
           this.offerDecoded.offer_amount = 0;
         } else {
-          this.offerDecoded.offer_amount = this.offerDecoded.offer_amount ? +this.offerDecoded.offer_amount : this.offerDecoded.offer_amount_msat ? +this.offerDecoded.offer_amount_msat.slice(0, -4) : null;
+          this.offerDecoded.offer_amount = this.offerDecoded.offer_amount || this.offerDecoded.offer_amount_msat || null;
         }
       });
   }

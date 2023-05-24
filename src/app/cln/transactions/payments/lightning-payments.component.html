@@ -96,11 +96,11 @@
           </ng-container>
           <ng-container matColumnDef="msatoshi_sent">
             <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Sats Sent</th>
-            <td *matCellDef="let payment" mat-cell><span fxLayoutAlign="end center">{{payment?.msatoshi_sent/1000 | number:payment?.msatoshi_sent < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
+            <td *matCellDef="let payment" mat-cell><span fxLayoutAlign="end center">{{payment?.amount_sent_msat/1000 | number:payment?.amount_sent_msat < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
           </ng-container>
           <ng-container matColumnDef="msatoshi">
             <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Sats Received</th>
-            <td *matCellDef="let payment" mat-cell><span fxLayoutAlign="end center">{{payment?.msatoshi/1000 | number:payment?.msatoshi < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
+            <td *matCellDef="let payment" mat-cell><span fxLayoutAlign="end center">{{payment?.amount_msat/1000 | number:payment?.amount_msat < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
           </ng-container>
           <ng-container matColumnDef="actions">
             <th *matHeaderCellDef mat-header-cell>
@@ -218,20 +218,20 @@
           </ng-container>
           <ng-container matColumnDef="group_msatoshi_sent">
             <td *matCellDef="let payment" mat-cell>
-              <span fxLayoutAlign="end center" class="mpp-row-span">{{payment?.msatoshi_sent/1000 | number:payment?.msatoshi_sent < 1000 ? '1.0-4' : '1.0-0'}}</span>
+              <span fxLayoutAlign="end center" class="mpp-row-span">{{payment?.amount_sent_msat/1000 | number:payment?.amount_sent_msat < 1000 ? '1.0-4' : '1.0-0'}}</span>
               <span *ngIf="payment.is_expanded">
                 <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="end center" class="mpp-row-span">
-                  {{mpp.msatoshi_sent/1000 | number:mpp.msatoshi_sent < 1000 ? '1.0-4' : '1.0-0'}}
+                  {{mpp.amount_sent_msat/1000 | number:mpp.amount_sent_msat < 1000 ? '1.0-4' : '1.0-0'}}
                 </span>
               </span>
             </td>
           </ng-container>
           <ng-container matColumnDef="group_msatoshi">
             <td *matCellDef="let payment" mat-cell>
-              <span fxLayoutAlign="end center" class="mpp-row-span">{{payment?.msatoshi/1000 | number:payment?.msatoshi < 1000 ? '1.0-4' : '1.0-0'}}</span>
+              <span fxLayoutAlign="end center" class="mpp-row-span">{{payment?.amount_msat/1000 | number:payment?.amount_msat < 1000 ? '1.0-4' : '1.0-0'}}</span>
               <span *ngIf="payment.is_expanded">
                 <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="end center" class="mpp-row-span">
-                  {{mpp.msatoshi/1000 | number:mpp.msatoshi < 1000 ? '1.0-4' : '1.0-0'}}
+                  {{mpp.amount_msat/1000 | number:mpp.amount_msat < 1000 ? '1.0-4' : '1.0-0'}}
                 </span>
               </span>
             </td>

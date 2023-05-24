@@ -326,14 +326,21 @@ export class CLNEffects implements OnDestroy {
     ofType(CLNActions.FETCH_CHANNELS_CLN),
     mergeMap(() => {
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchChannels', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<Channel[]>(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/listChannels');
+      return this.httpClient.get<Channel[]>(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/listPeerChannels');
     }),
     map((channels: Channel[]) => {
       this.logger.info(channels);
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchChannels', status: APICallStatusEnum.COMPLETED } }));
-      // this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.SETTLED } }));
       const sortedChannels = { activeChannels: <Channel[]>[], pendingChannels: <Channel[]>[], inactiveChannels: <Channel[]>[] };
       channels.forEach((channel) => {
+        if (channel.id) { channel.peer_id = channel.id; }
+        if (channel.connected) { channel.peer_connected = channel.connected; }
+        if (channel.msatoshi_to_us) { channel.to_us_msat = channel.msatoshi_to_us; }
+        if (channel.msatoshi_to_them) { channel.to_them_msat = channel.msatoshi_to_them; }
+        if (channel.msatoshi_total) { channel.total_msat = channel.msatoshi_total; }
+        if (channel.their_channel_reserve_satoshis) { channel.their_reserve_msat = +channel.their_channel_reserve_satoshis; }
+        if (channel.our_channel_reserve_satoshis) { channel.our_reserve_msat = +channel.our_channel_reserve_satoshis; }
+        if (channel.spendable_msatoshi) { channel.spendable_msat = +channel.spendable_msatoshi; }
         if (channel.state === 'CHANNELD_NORMAL') {
           if (channel.peer_connected) {
             sortedChannels.activeChannels.push(channel);
@@ -722,6 +729,7 @@ export class CLNEffects implements OnDestroy {
             this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'SaveNewInvoice', status: APICallStatusEnum.COMPLETED } }));
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.ADD_INVOICE }));
             postRes.msatoshi = action.payload.amount;
+            postRes.amount_msat = action.payload.amount;
             postRes.label = action.payload.label;
             postRes.expires_at = Math.round((new Date().getTime() / 1000) + action.payload.expiry);
             postRes.description = action.payload.description;
@@ -926,6 +934,11 @@ export class CLNEffects implements OnDestroy {
     map((utxos: any) => {
       this.logger.info(utxos);
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchUTXOs', status: APICallStatusEnum.COMPLETED } }));
+      utxos.outputs.forEach((output) => { // For backward compatibility
+        if (output.value) {
+          output.amount_msat = output.value;
+        }
+      });
       return {
         type: CLNActions.SET_UTXOS_CLN,
         payload: utxos.outputs || []

@@ -132,29 +132,6 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
   setFilterPredicate() {
     this.routingPeersIncoming.filterPredicate = (rpIn: RoutingPeer, fltr: string) => JSON.stringify(rpIn).toLowerCase().includes(fltr);
     this.routingPeersOutgoing.filterPredicate = (rpOut: RoutingPeer, fltr: string) => JSON.stringify(rpOut).toLowerCase().includes(fltr);
-    // this.routingPeersIncoming.filterPredicate = (rowData: RoutingPeer, fltr: string) => {
-    //   let rowToFilter = '';
-    //   switch (this.selFilterBy) {
-    //     case 'all':
-    //       for (let i = 0; i < this.displayedColumns.length - 1; i++) {
-    //         rowToFilter = rowToFilter + (
-    //           (this.displayedColumns[i] === '') ?
-    //             (rowData ? rowData..toLowerCase() : '') :
-    //             (rowData[this.displayedColumns[i]] ? rowData[this.displayedColumns[i]].toLowerCase() : '')
-    //         ) + ', ';
-    //       }
-    //       break;
-
-    //     case '':
-    //       rowToFilter = (rowData ? rowData..toLowerCase() : '');
-    //       break;
-
-    //     default:
-    //       rowToFilter = (rowData[this.selFilterBy] ? rowData[this.selFilterBy].toLowerCase() : '');
-    //       break;
-    //   }
-    //   return rowToFilter.includes(fltr);
-    // };
   }
 
   loadRoutingPeersTable(events: ForwardingEvent[]) {
@@ -187,18 +164,18 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
       const incoming: any = incomingResults?.find((result) => result.channel_id === event.in_channel);
       const outgoing: any = outgoingResults?.find((result) => result.channel_id === event.out_channel);
       if (!incoming) {
-        incomingResults.push({ channel_id: event.in_channel, alias: event.in_channel_alias, events: 1, total_amount: event.in_msatoshi, total_fee: ((event.in_msatoshi || 0) - (event.out_msatoshi || 0)) });
+        incomingResults.push({ channel_id: event.in_channel, alias: event.in_channel_alias, events: 1, total_amount: (event.in_msatoshi || +(event.in_msat || 0)), total_fee: ((event.in_msatoshi || +(event.in_msat || 0)) - (event.out_msatoshi || +(event.out_msat || 0))) });
       } else {
         incoming.events++;
-        incoming.total_amount = +incoming.total_amount + +(event.in_msatoshi || 0);
-        incoming.total_fee = +incoming.total_fee + ((event.in_msatoshi || 0) - (event.out_msatoshi || 0));
+        incoming.total_amount = +incoming.total_amount + +(event.in_msatoshi || event.in_msat || 0);
+        incoming.total_fee = +incoming.total_fee + ((event.in_msatoshi || +(event.in_msat || 0)) - (event.out_msatoshi || +(event.out_msat || 0)));
       }
       if (!outgoing) {
-        outgoingResults.push({ channel_id: event.out_channel, alias: event.out_channel_alias, events: 1, total_amount: event.out_msatoshi, total_fee: ((event.in_msatoshi || 0) - (event.out_msatoshi || 0)) });
+        outgoingResults.push({ channel_id: event.out_channel, alias: event.out_channel_alias, events: 1, total_amount: (event.out_msatoshi || +(event.out_msat || 0)), total_fee: ((event.in_msatoshi || +(event.in_msat || 0)) - (event.out_msatoshi || +(event.out_msat || 0))) });
       } else {
         outgoing.events++;
-        outgoing.total_amount = +outgoing.total_amount + +(event.out_msatoshi || 0);
-        outgoing.total_fee = +outgoing.total_fee + ((event.in_msatoshi || 0) - (event.out_msatoshi || 0));
+        outgoing.total_amount = +outgoing.total_amount + +(event.out_msatoshi || event.out_msat || 0);
+        outgoing.total_fee = +outgoing.total_fee + ((event.in_msatoshi || +(event.in_msat || 0)) - (event.out_msatoshi || +(event.out_msat || 0)));
       }
     });
     return [this.commonService.sortDescByKey(incomingResults, 'total_fee'), this.commonService.sortDescByKey(outgoingResults, 'total_fee')];

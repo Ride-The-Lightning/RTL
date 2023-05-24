@@ -64,7 +64,7 @@
                   <mat-label>Coin Selection</mat-label>
                   <mat-select tabindex="8" multiple [(value)]="selUTXOs" (selectionChange)="onUTXOSelectionChange($event)">
                     <mat-select-trigger>{{totalSelectedUTXOAmount | number}} Sats ({{selUTXOs.length > 1 ? selUTXOs.length + ' UTXOs' : '1 UTXO'}})</mat-select-trigger>
-                    <mat-option *ngFor="let utxo of utxos" [value]="utxo">{{utxo.value | number}} Sats</mat-option>
+                    <mat-option *ngFor="let utxo of utxos" [value]="utxo">{{utxo.amount_msat/1000 | number:'1.0-0'}} Sats</mat-option>
                   </mat-select>
                 </mat-form-field>
                 <div fxFlex="60" fxLayout="row" fxLayoutAlign="start center">

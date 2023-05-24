@@ -132,9 +132,9 @@ export class CLNRoutingReportComponent implements OnInit, OnDestroy {
       }
       this.filteredEventsBySelectedPeriod?.map((event) => {
         const monthNumber = event.received_time ? new Date((+event.received_time) * 1000).getMonth() : 12;
-        feeReport[monthNumber].value = event.fee ? feeReport[monthNumber].value + (+event.fee / 1000) : feeReport[monthNumber].value;
         feeReport[monthNumber].extra.totalEvents = feeReport[monthNumber].extra.totalEvents + 1;
-        this.totalFeeMsat = event.fee ? (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee : this.totalFeeMsat;
+        feeReport[monthNumber].value = feeReport[monthNumber].value + (+(event.fee || event.fee_msat || 0) / 1000);
+        this.totalFeeMsat = (this.totalFeeMsat || 0) + +(event.fee || event.fee_msat || 0);
         return this.filteredEventsBySelectedPeriod;
       });
     } else {
@@ -143,9 +143,9 @@ export class CLNRoutingReportComponent implements OnInit, OnDestroy {
       }
       this.filteredEventsBySelectedPeriod?.map((event) => {
         const dateNumber = event.received_time ? Math.floor((+event.received_time - startDateInSeconds) / this.secondsInADay) : 0;
-        feeReport[dateNumber].value = event.fee ? feeReport[dateNumber].value + (+event.fee / 1000) : feeReport[dateNumber].value;
         feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
-        this.totalFeeMsat = event.fee ? (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee : this.totalFeeMsat;
+        feeReport[dateNumber].value = feeReport[dateNumber].value + (+(event.fee || event.fee_msat || 0) / 1000);
+        this.totalFeeMsat = (this.totalFeeMsat || 0) + +(event.fee || event.fee_msat || 0);
         return this.filteredEventsBySelectedPeriod;
       });
     }
@@ -163,8 +163,8 @@ export class CLNRoutingReportComponent implements OnInit, OnDestroy {
       this.filteredEventsBySelectedPeriod?.map((event) => {
         const monthNumber = event.received_time ? new Date((+event.received_time) * 1000).getMonth() : 12;
         eventsReport[monthNumber].value = eventsReport[monthNumber].value + 1;
-        eventsReport[monthNumber].extra.totalFees = event.fee ? eventsReport[monthNumber].extra.totalFees + (+event.fee / 1000) : eventsReport[monthNumber].extra.totalFees;
-        this.totalFeeMsat = event.fee ? (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee : this.totalFeeMsat;
+        eventsReport[monthNumber].extra.totalFees = eventsReport[monthNumber].extra.totalFees + (+(event.fee || event.fee_msat || 0) / 1000);
+        this.totalFeeMsat = (this.totalFeeMsat || 0) + +(event.fee || event.fee_msat || 0);
         return this.filteredEventsBySelectedPeriod;
       });
     } else {
@@ -174,8 +174,8 @@ export class CLNRoutingReportComponent implements OnInit, OnDestroy {
       this.filteredEventsBySelectedPeriod?.map((event) => {
         const dateNumber = event.received_time ? Math.floor((+event.received_time - startDateInSeconds) / this.secondsInADay) : 0;
         eventsReport[dateNumber].value = eventsReport[dateNumber].value + 1;
-        eventsReport[dateNumber].extra.totalFees = event.fee ? eventsReport[dateNumber].extra.totalFees + (+event.fee / 1000) : eventsReport[dateNumber].extra.totalFees;
-        this.totalFeeMsat = event.fee ? (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee : this.totalFeeMsat;
+        eventsReport[dateNumber].extra.totalFees = eventsReport[dateNumber].extra.totalFees + (+(event.fee || event.fee_msat || 0) / 1000);
+        this.totalFeeMsat = (this.totalFeeMsat || 0) + +(event.fee || event.fee_msat || 0);
         return this.filteredEventsBySelectedPeriod;
       });
     }

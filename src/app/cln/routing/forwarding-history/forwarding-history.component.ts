@@ -129,16 +129,18 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
 
   onForwardingEventClick(selFEvent: ForwardingEvent, event: any) {
     const reorderedFHEvent = [
-      [{ key: 'payment_hash', value: selFEvent.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'status', value: 'Settled', title: 'Status', width: 50, type: DataTypeEnum.STRING },
-      { key: 'fee', value: selFEvent.fee, title: 'Fee (mSats)', width: 50, type: DataTypeEnum.NUMBER }],
+      { key: 'fee', value: (selFEvent.fee || selFEvent.fee_msat), title: 'Fee (mSats)', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'received_time', value: selFEvent.received_time, title: 'Received Time', width: 50, type: DataTypeEnum.DATE_TIME },
       { key: 'resolved_time', value: selFEvent.resolved_time, title: 'Resolved Time', width: 50, type: DataTypeEnum.DATE_TIME }],
       [{ key: 'in_channel', value: selFEvent.in_channel_alias, title: 'Inbound Channel', width: 50, type: DataTypeEnum.STRING },
       { key: 'out_channel', value: selFEvent.out_channel_alias, title: 'Outbound Channel', width: 50, type: DataTypeEnum.STRING }],
-      [{ key: 'in_msatoshi', value: selFEvent.in_msatoshi, title: 'In (mSats)', width: 50, type: DataTypeEnum.NUMBER },
-      { key: 'out_msatoshi', value: selFEvent.out_msatoshi, title: 'Out (mSats)', width: 50, type: DataTypeEnum.NUMBER }]
+      [{ key: 'in_msatoshi', value: (selFEvent.in_msatoshi || selFEvent.in_msat), title: 'In (mSats)', width: 50, type: DataTypeEnum.NUMBER },
+      { key: 'out_msatoshi', value: (selFEvent.out_msatoshi || selFEvent.out_msat), title: 'Out (mSats)', width: 50, type: DataTypeEnum.NUMBER }]
     ];
+    if (selFEvent.payment_hash) {
+      reorderedFHEvent.unshift([{ key: 'payment_hash', value: selFEvent.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }]);
+    }
     this.store.dispatch(openAlert({
       payload: {
         data: {
@@ -170,7 +172,8 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
           (rowData.resolved_time ? this.datePipe.transform(new Date(rowData.resolved_time * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() + ' ' : '') +
           (rowData.in_channel ? rowData.in_channel.toLowerCase() + ' ' : '') + (rowData.out_channel ? rowData.out_channel.toLowerCase() + ' ' : '') +
           (rowData.in_channel_alias ? rowData.in_channel_alias.toLowerCase() + ' ' : '') + (rowData.out_channel_alias ? rowData.out_channel_alias.toLowerCase() + ' ' : '') +
-          (rowData.in_msatoshi ? (rowData.in_msatoshi / 1000) + ' ' : '') + (rowData.out_msatoshi ? (rowData.out_msatoshi / 1000) + ' ' : '') + (rowData.fee ? rowData.fee + ' ' : '');
+          (rowData.in_msatoshi ? (rowData.in_msatoshi / 1000) + ' ' : '') + (rowData.out_msatoshi ? (rowData.out_msatoshi / 1000) + ' ' : '') + (rowData.fee ? rowData.fee + ' ' : '') +
+          (rowData.in_msat ? (+rowData.in_msat / 1000) + ' ' : '') + (rowData.out_msat ? (+rowData.out_msat / 1000) + ' ' : '') + (rowData.fee_msat ? rowData.fee_msat + ' ' : '');
           break;
 
         case 'received_time':
@@ -178,9 +181,16 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
           rowToFilter = this.datePipe.transform(new Date((rowData[this.selFilterBy] || 0) * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() || '';
           break;
 
+        case 'fee':
+          rowToFilter = ((+(rowData[this.selFilterBy] || rowData['fee_msat'] || 0)))?.toString() || '';
+          break;
+
         case 'in_msatoshi':
+          rowToFilter = ((+(rowData[this.selFilterBy] || rowData['in_msat'] || 0)) / 1000)?.toString() || '';
+          break;
+
         case 'out_msatoshi':
-          rowToFilter = ((+(rowData[this.selFilterBy] || 0)) / 1000)?.toString() || '';
+          rowToFilter = ((+(rowData[this.selFilterBy] || rowData['out_msat'] || 0)) / 1000)?.toString() || '';
           break;
 
         default:
@@ -194,7 +204,21 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   loadForwardingEventsTable(forwardingEvents: ForwardingEvent[]) {
     this.forwardingHistoryEvents = new MatTableDataSource<ForwardingEvent>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
-    this.forwardingHistoryEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+    this.forwardingHistoryEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => {
+      switch (sortHeaderId) {
+        case 'in_msatoshi':
+          return data['in_msatoshi'] || data['in_msat'];
+
+        case 'out_msatoshi':
+          return data['out_msatoshi'] || data['out_msat'];
+
+        case 'fee':
+          return data['fee'] || data['fee_msat'];
+
+        default:
+          return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+      }
+    };
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();
