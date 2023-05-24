@@ -60,15 +60,36 @@
       </ng-container>
       <ng-container matColumnDef="in_msatoshi">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Amount In (Sats)</th>
-        <td *matCellDef="let fhEvent" mat-cell><span fxLayoutAlign="end center">{{fhEvent?.in_msatoshi/1000 | number:fhEvent?.in_msatoshi < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
+        <td *matCellDef="let fhEvent" mat-cell>
+          <span *ngIf="fhEvent?.in_msatoshi" fxLayoutAlign="end center">
+            {{fhEvent?.in_msatoshi/1000 | number:fhEvent?.in_msatoshi < 1000 ? '1.0-4' : '1.0-0'}}
+          </span>
+          <span *ngIf="!fhEvent?.in_msatoshi && fhEvent?.in_msat" fxLayoutAlign="end center">
+            {{fhEvent?.in_msat/1000 | number:fhEvent?.in_msat < 1000 ? '1.0-4' : '1.0-0'}}
+          </span>
+        </td>
       </ng-container>
       <ng-container matColumnDef="out_msatoshi">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Amount Out (Sats)</th>
-        <td *matCellDef="let fhEvent" mat-cell><span fxLayoutAlign="end center">{{fhEvent?.out_msatoshi/1000 | number:fhEvent?.out_msatoshi < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
+        <td *matCellDef="let fhEvent" mat-cell>
+          <span *ngIf="fhEvent?.out_msatoshi" fxLayoutAlign="end center">
+            {{fhEvent?.out_msatoshi/1000 | number:fhEvent?.out_msatoshi < 1000 ? '1.0-4' : '1.0-0'}}
+          </span>
+          <span *ngIf="!fhEvent?.out_msatoshi && fhEvent?.out_msat" fxLayoutAlign="end center">
+            {{fhEvent?.out_msat/1000 | number:fhEvent?.out_msat < 1000 ? '1.0-4' : '1.0-0'}}
+          </span>
+        </td>
       </ng-container>
       <ng-container matColumnDef="fee">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Fee (mSat)</th>
-        <td *matCellDef="let fhEvent" mat-cell><span fxLayoutAlign="end center">{{fhEvent?.fee | number}}</span></td>
+        <td *matCellDef="let fhEvent" mat-cell>
+          <span *ngIf="fhEvent?.fee" fxLayoutAlign="end center">
+            {{fhEvent?.fee | number}}
+          </span>
+          <span *ngIf="!fhEvent?.fee && fhEvent?.fee_msat" fxLayoutAlign="end center">
+            {{fhEvent?.fee_msat | number}}
+          </span>
+        </td>
       </ng-container>
       <ng-container matColumnDef="actions">
         <th *matHeaderCellDef mat-header-cell>

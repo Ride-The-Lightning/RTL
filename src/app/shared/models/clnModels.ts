@@ -253,11 +253,11 @@ export interface ForwardingEvent {
   in_channel_alias?: string;
   out_channel_alias?: string;
   in_msatoshi?: number;
-  in_msat?: string;
+  in_msat?: string | number;
   out_msatoshi?: number;
-  out_msat?: string;
+  out_msat?: string | number;
   fee?: number;
-  fee_msat?: string;
+  fee_msat?: string | number;
   status?: string;
   received_time?: number;
   resolved_time?: number;
