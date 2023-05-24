@@ -122,15 +122,15 @@ export class CLNTransactionsReportComponent implements OnInit, OnDestroy {
       }
       filteredPayments?.map((payment) => {
         const monthNumber = new Date((payment.created_at || 0) * 1000).getMonth();
-        this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + (payment.msatoshi_sent || 0);
-        transactionsReport[monthNumber].series[0].value = transactionsReport[monthNumber].series[0].value + ((payment.msatoshi_sent || 0) / 1000);
+        this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + (payment.msatoshi_sent || payment.amount_sent_msat || 0);
+        transactionsReport[monthNumber].series[0].value = transactionsReport[monthNumber].series[0].value + ((payment.msatoshi_sent || payment.amount_sent_msat || 0) / 1000);
         transactionsReport[monthNumber].series[0].extra.total = transactionsReport[monthNumber].series[0].extra.total + 1;
         return this.transactionsReportSummary;
       });
       filteredInvoices?.map((invoice) => {
         const monthNumber = new Date(+(invoice.paid_at || 0) * 1000).getMonth();
-        this.transactionsReportSummary.amountReceivedSelectedPeriod = this.transactionsReportSummary.amountReceivedSelectedPeriod + (invoice.msatoshi_received || 0);
-        transactionsReport[monthNumber].series[1].value = transactionsReport[monthNumber].series[1].value + ((invoice.msatoshi_received || 0) / 1000);
+        this.transactionsReportSummary.amountReceivedSelectedPeriod = this.transactionsReportSummary.amountReceivedSelectedPeriod + (invoice.msatoshi_received || invoice.amount_received_msat || 0);
+        transactionsReport[monthNumber].series[1].value = transactionsReport[monthNumber].series[1].value + ((invoice.msatoshi_received || invoice.amount_received_msat || 0) / 1000);
         transactionsReport[monthNumber].series[1].extra.total = transactionsReport[monthNumber].series[1].extra.total + 1;
         return this.transactionsReportSummary;
       });
@@ -140,15 +140,15 @@ export class CLNTransactionsReportComponent implements OnInit, OnDestroy {
       }
       filteredPayments?.map((payment) => {
         const dateNumber = Math.floor((+(payment.created_at || 0) - startDateInSeconds) / this.secondsInADay);
-        this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + (payment.msatoshi_sent || 0);
-        transactionsReport[dateNumber].series[0].value = transactionsReport[dateNumber].series[0].value + ((payment.msatoshi_sent || 0) / 1000);
+        this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + (payment.msatoshi_sent || payment.amount_sent_msat || 0);
+        transactionsReport[dateNumber].series[0].value = transactionsReport[dateNumber].series[0].value + ((payment.msatoshi_sent || payment.amount_sent_msat || 0) / 1000);
         transactionsReport[dateNumber].series[0].extra.total = transactionsReport[dateNumber].series[0].extra.total + 1;
         return this.transactionsReportSummary;
       });
       filteredInvoices?.map((invoice) => {
         const dateNumber = Math.floor((+(invoice.paid_at || 0) - startDateInSeconds) / this.secondsInADay);
-        this.transactionsReportSummary.amountReceivedSelectedPeriod = this.transactionsReportSummary.amountReceivedSelectedPeriod + (invoice.msatoshi_received || 0);
-        transactionsReport[dateNumber].series[1].value = transactionsReport[dateNumber].series[1].value + ((invoice.msatoshi_received || 0) / 1000);
+        this.transactionsReportSummary.amountReceivedSelectedPeriod = this.transactionsReportSummary.amountReceivedSelectedPeriod + (invoice.msatoshi_received || invoice.amount_received_msat || 0);
+        transactionsReport[dateNumber].series[1].value = transactionsReport[dateNumber].series[1].value + ((invoice.msatoshi_received || invoice.amount_received_msat || 0) / 1000);
         transactionsReport[dateNumber].series[1].extra.total = transactionsReport[dateNumber].series[1].extra.total + 1;
         return this.transactionsReportSummary;
       });
