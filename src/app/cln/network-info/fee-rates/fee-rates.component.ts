@@ -13,14 +13,15 @@ export class CLNFeeRatesComponent implements AfterContentChecked {
   @Input() feeRates: FeeRates;
   @Input() errorMessage: string;
   perkbw: FeeRatePerObj = {};
+  displayedColumns: string[] = ['blockcount', 'feerate'];
 
   constructor() { }
 
   ngAfterContentChecked() {
     if (this.feeRateStyle === feeRateStyle.KB) {
-      this.perkbw = this.feeRates.perkb!;
+      this.perkbw = this.feeRates.perkb || {};
     } else if (this.feeRateStyle === feeRateStyle.KW) {
-      this.perkbw = this.feeRates.perkw!;
+      this.perkbw = this.feeRates.perkw || {};
     }
   }
 

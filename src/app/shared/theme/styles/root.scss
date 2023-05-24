@@ -297,7 +297,6 @@ mat-card-content.mat-mdc-card-content:first-child {
 
 .mat-mdc-card-content, .mat-mdc-card-subtitle, .mat-mdc-card-title {
   display: block;
-  margin-bottom: ($gap*2);
   & form {
     overflow: hidden;
   }
@@ -1575,6 +1574,10 @@ mat-cell:last-of-type, .mdc-data-table__header-cell:last-of-type, mat-footer-cel
   & input, mat-select, .mat-select-trigger, .mat-select-value, .mat-select-arro-wrapper, textarea, .mat-form-field-infix {
     cursor: not-allowed;
   }
+}
+
+.mat-mdc-tooltip-panel {
+  max-width: 25rem !important;
 }
 
 .ngx-charts-tooltip-content {

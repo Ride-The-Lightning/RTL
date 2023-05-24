@@ -288,7 +288,7 @@ export interface Routes {
   channel?: string;
   direction?: number;
   msatoshi?: number;
-  amount_msat?: string;
+  amount_msat?: number;
   delay?: number;
   alias?: string;
 }
@@ -378,6 +378,12 @@ export interface LookupNode {
   };
 }
 
+export interface FeeBlockEstimates {
+  blockcount?: number;
+  feerate?: number;
+  smoothed_feerate?: number;
+}
+
 export interface FeeRatePerObj {
   min_acceptable?: number;
   max_acceptable?: number;
@@ -387,6 +393,8 @@ export interface FeeRatePerObj {
   delayed_to_us?: number;
   htlc_resolution?: number;
   penalty?: number;
+  floor?: number;
+  estimates?: FeeBlockEstimates[];
 }
 
 export interface OnChainFeeEstimates {

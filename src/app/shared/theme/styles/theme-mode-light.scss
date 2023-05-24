@@ -310,6 +310,8 @@
 
   .material-icons {
     &.mat-icon-no-color, &.info-icon {
+      font-size: 100%;
+      margin: 0 0.25rem;
       color: $foreground-secondary-text;
       &.info-icon-primary {
         color: $primary-color;

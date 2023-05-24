@@ -22,7 +22,7 @@
   $hover-background-dark: rgba(255, 255, 255, 0.06);
 
   .mat-primary {
-    color: $primary-darker;
+    color: $primary-darker !important;
   }
 
   .mat-sidenav-container .mat-sidenav-content {
@@ -383,6 +383,8 @@
   }
   .material-icons {
     &.info-icon {
+      font-size: 100%;
+      margin: 0 0.25rem;
       color: $primary-darker;
       &.info-icon-primary {
         color: $primary-darker;

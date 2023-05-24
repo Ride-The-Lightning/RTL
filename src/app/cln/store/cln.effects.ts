@@ -326,7 +326,7 @@ export class CLNEffects implements OnDestroy {
     ofType(CLNActions.FETCH_CHANNELS_CLN),
     mergeMap(() => {
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchChannels', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<Channel[]>(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/listChannels');
+      return this.httpClient.get<Channel[]>(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/listPeerChannels');
     }),
     map((channels: Channel[]) => {
       this.logger.info(channels);

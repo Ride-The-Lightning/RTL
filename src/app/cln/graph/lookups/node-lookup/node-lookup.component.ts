@@ -38,6 +38,7 @@ export class CLNNodeLookupComponent implements OnInit, OnDestroy {
     this.addresses.sort = this.sort;
     this.addresses.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     if (this.lookupResult.features && this.lookupResult.features.trim() !== '') {
+      this.lookupResult.features = this.lookupResult.features.substring(this.lookupResult.features.length - 40);
       const featureHex = parseInt(this.lookupResult.features, 16);
       NODE_FEATURES_CLN.forEach((feature) => {
         if (featureHex & (1 << feature.range.min)) {
