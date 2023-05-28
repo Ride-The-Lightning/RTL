@@ -15,7 +15,7 @@
   <div class="channels-capacity-scroll" [perfectScrollbar]>
     <div *ngIf="activeChannels && activeChannels.length > 0;  else noChannelBlock" fxLayout="column"fxFlex="100">
       <div *ngFor="let channel of activeChannels" class="mt-2">
-        <a class="dashboard-capacity-header" [routerLink]="['../connections/channels/open']" [state]="{filter: channel.peer_id}" matTooltip="{{channel.alias || channel.peer_id}}" matTooltipDisabled="{{(channel.alias || channel.peer_id).length < 26}}">
+        <a class="dashboard-capacity-header" [routerLink]="['../connections/channels/open']" [state]="{filterColumn: channel.alias ? 'alias' : 'peer_id', filterValue: channel.alias || channel.peer_id}" matTooltip="{{channel.alias || channel.peer_id}}" matTooltipDisabled="{{(channel.alias || channel.peer_id).length < 26}}">
           {{(channel.alias || channel.peer_id) | slice:0:24}}{{(channel.alias || channel.peer_id).length > 25 ? '...' : ''}}
         </a>
         <div fxLayout="row" fxLayoutAlign="space-between start" class="w-100">

@@ -21,7 +21,7 @@ import { RTLState } from '../../store/rtl.state';
 import { addUpdateOfferBookmark, fetchBalance, fetchChannels, fetchFeeRates, fetchFees, fetchInvoices, fetchLocalRemoteBalance,
   fetchPayments, fetchPeers, fetchUTXOs, setLookup, setPeers, setQueryRoutes, updateCLAPICallStatus, updateInvoice, setOfferInvoice,
   sendPaymentStatus, setForwardingHistory, fetchPageSettings } from './cln.actions';
-import { allAPIsCallStatus } from './cln.selector';
+import { allAPIsCallStatus, clnNodeInformation, nodeInfoAndBalance } from './cln.selector';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 import { CLNOfferInformationComponent } from '../transactions/offers/offer-information-modal/offer-information.component';
 
@@ -29,6 +29,8 @@ import { CLNOfferInformationComponent } from '../transactions/offers/offer-infor
 export class CLNEffects implements OnDestroy {
 
   CHILD_API_URL = API_URL + '/cln';
+  API_VERION = '';
+  NODE_VERISON = '';
   private flgInitialized = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -94,6 +96,8 @@ export class CLNEffects implements OnDestroy {
           takeUntil(this.actions.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
           map((info) => {
             this.logger.info(info);
+            this.API_VERION = info.api_version || '';
+            this.NODE_VERISON = info.version || '';
             if (info.chains && info.chains.length && info.chains[0] &&
               (typeof info.chains[0] === 'object' && info.chains[0].hasOwnProperty('chain') && info?.chains[0].chain &&
                 (info?.chains[0].chain.toLowerCase().indexOf('bitcoin') < 0 && info?.chains[0].chain.toLowerCase().indexOf('liquid') < 0)
@@ -326,7 +330,11 @@ export class CLNEffects implements OnDestroy {
     ofType(CLNActions.FETCH_CHANNELS_CLN),
     mergeMap(() => {
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchChannels', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<Channel[]>(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/listPeerChannels');
+      const listChannelsEndpoint =
+        this.commonService.isVersionCompatible(this.NODE_VERISON, '23.02') &&
+        this.commonService.isVersionCompatible(this.API_VERION, '0.10.3') ?
+          '/listPeerChannels' : '/listChannels';
+      return this.httpClient.get<Channel[]>(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + listChannelsEndpoint);
     }),
     map((channels: Channel[]) => {
       this.logger.info(channels);
