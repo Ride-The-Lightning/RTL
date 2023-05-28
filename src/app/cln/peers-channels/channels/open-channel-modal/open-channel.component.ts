@@ -168,7 +168,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
 
   onUTXOSelectionChange(event: any) {
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
-      this.totalSelectedUTXOAmount = this.selUTXOs?.reduce((acc, curr: UTXO) => acc + (curr.value || 0), 0);
+      this.totalSelectedUTXOAmount = this.selUTXOs?.reduce((acc, curr: UTXO) => acc + ((curr.value || curr.amount_msat || 0) / 1000), 0);
       if (this.flgUseAllBalance) {
         this.onUTXOAllBalanceChange();
       }
