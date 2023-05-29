@@ -164,18 +164,18 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
       const incoming: any = incomingResults?.find((result) => result.channel_id === event.in_channel);
       const outgoing: any = outgoingResults?.find((result) => result.channel_id === event.out_channel);
       if (!incoming) {
-        incomingResults.push({ channel_id: event.in_channel, alias: event.in_channel_alias, events: 1, total_amount: (event.in_msatoshi || +(event.in_msat || 0)), total_fee: ((event.in_msatoshi || +(event.in_msat || 0)) - (event.out_msatoshi || +(event.out_msat || 0))) });
+        incomingResults.push({ channel_id: event.in_channel, alias: event.in_channel_alias, events: 1, total_amount: (+(event.in_msat || 0)), total_fee: ((+(event.in_msat || 0)) - (+(event.out_msat || 0))) });
       } else {
         incoming.events++;
-        incoming.total_amount = +incoming.total_amount + +(event.in_msatoshi || event.in_msat || 0);
-        incoming.total_fee = +incoming.total_fee + ((event.in_msatoshi || +(event.in_msat || 0)) - (event.out_msatoshi || +(event.out_msat || 0)));
+        incoming.total_amount = +incoming.total_amount + +(event.in_msat || 0);
+        incoming.total_fee = +incoming.total_fee + ((+(event.in_msat || 0)) - (+(event.out_msat || 0)));
       }
       if (!outgoing) {
-        outgoingResults.push({ channel_id: event.out_channel, alias: event.out_channel_alias, events: 1, total_amount: (event.out_msatoshi || +(event.out_msat || 0)), total_fee: ((event.in_msatoshi || +(event.in_msat || 0)) - (event.out_msatoshi || +(event.out_msat || 0))) });
+        outgoingResults.push({ channel_id: event.out_channel, alias: event.out_channel_alias, events: 1, total_amount: (+(event.out_msat || 0)), total_fee: ((+(event.in_msat || 0)) - (+(event.out_msat || 0))) });
       } else {
         outgoing.events++;
-        outgoing.total_amount = +outgoing.total_amount + +(event.out_msatoshi || event.out_msat || 0);
-        outgoing.total_fee = +outgoing.total_fee + ((event.in_msatoshi || +(event.in_msat || 0)) - (event.out_msatoshi || +(event.out_msat || 0)));
+        outgoing.total_amount = +outgoing.total_amount + +(event.out_msat || 0);
+        outgoing.total_fee = +outgoing.total_fee + ((+(event.in_msat || 0)) - (+(event.out_msat || 0)));
       }
     });
     return [this.commonService.sortDescByKey(incomingResults, 'total_fee'), this.commonService.sortDescByKey(outgoingResults, 'total_fee')];

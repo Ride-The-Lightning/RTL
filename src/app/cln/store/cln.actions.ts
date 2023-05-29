@@ -113,7 +113,7 @@ export const fetchUTXOs = createAction(CLNActions.FETCH_UTXOS_CLN);
 
 export const setUTXOs = createAction(CLNActions.SET_UTXOS_CLN, props<{ payload: UTXO[] }>());
 
-export const fetchOfferInvoice = createAction(CLNActions.FETCH_OFFER_INVOICE_CLN, props<{ payload: { offer: string, msatoshi?: number } }>());
+export const fetchOfferInvoice = createAction(CLNActions.FETCH_OFFER_INVOICE_CLN, props<{ payload: { offer: string, amount_msat?: number } }>());
 
 export const setOfferInvoice = createAction(CLNActions.SET_OFFER_INVOICE_CLN, props<{ payload: OfferInvoice }>());
 

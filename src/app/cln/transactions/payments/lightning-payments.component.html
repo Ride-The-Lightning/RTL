@@ -96,11 +96,11 @@
           </ng-container>
           <ng-container matColumnDef="msatoshi_sent">
             <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Sats Sent</th>
-            <td *matCellDef="let payment" mat-cell><span fxLayoutAlign="end center">{{payment?.amount_sent_msat/1000 | number:payment?.amount_sent_msat < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
+            <td *matCellDef="let payment" mat-cell><span fxLayoutAlign="end center">{{payment?.amount_sent_msat/1000 | number:'1.0-4'}}</span></td>
           </ng-container>
           <ng-container matColumnDef="msatoshi">
             <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Sats Received</th>
-            <td *matCellDef="let payment" mat-cell><span fxLayoutAlign="end center">{{payment?.amount_msat/1000 | number:payment?.amount_msat < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
+            <td *matCellDef="let payment" mat-cell><span fxLayoutAlign="end center">{{payment?.amount_msat/1000 | number:'1.0-4'}}</span></td>
           </ng-container>
           <ng-container matColumnDef="actions">
             <th *matHeaderCellDef mat-header-cell>

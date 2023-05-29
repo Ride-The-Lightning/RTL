@@ -29,7 +29,6 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
   public selectedPeer = new UntypedFormControl();
   public faExclamationTriangle = faExclamationTriangle;
   public alertTitle: string;
-  public isCompatibleVersion = false;
   public selNode: SelNodeChild | null = {};
   public peer: Peer | null;
   public peers: Peer[];
@@ -61,14 +60,12 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (this.data.message) {
-      this.isCompatibleVersion = this.data.message.isCompatibleVersion;
       this.information = this.data.message.information;
       this.totalBalance = this.data.message.balance;
       this.utxos = this.data.message.utxos;
       this.peer = this.data.message.peer || null;
       this.peers = this.data.message.peers || [];
     } else {
-      this.isCompatibleVersion = false;
       this.information = {};
       this.totalBalance = 0;
       this.utxos = [];
@@ -168,7 +165,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
 
   onUTXOSelectionChange(event: any) {
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
-      this.totalSelectedUTXOAmount = this.selUTXOs?.reduce((acc, curr: UTXO) => acc + ((curr.value || curr.amount_msat || 0) / 1000), 0);
+      this.totalSelectedUTXOAmount = this.selUTXOs?.reduce((acc, curr: UTXO) => acc + ((curr.amount_msat || 0) / 1000), 0);
       if (this.flgUseAllBalance) {
         this.onUTXOAllBalanceChange();
       }

@@ -74,7 +74,6 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public selFeeLimitType = FEE_LIMIT_TYPES[0];
   public feeLimitTypes = FEE_LIMIT_TYPES;
   public paymentError = '';
-  public isCompatibleVersion = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(
@@ -108,11 +107,6 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
     }
     this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => {
       this.selNode = nodeSettings;
-    });
-    this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => {
-      this.isCompatibleVersion =
-        this.commonService.isVersionCompatible(nodeInfo.version, '0.9.0') &&
-        this.commonService.isVersionCompatible(nodeInfo.api_version, '0.4.0');
     });
     this.store.select(channels).pipe(takeUntil(this.unSubs[2])).
       subscribe((channelsSeletor: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
@@ -227,7 +221,7 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
     } else if (this.paymentType === PaymentTypes.OFFER) {
       if (!this.offerInvoice) {
         if (this.zeroAmtOffer && this.offerAmount) {
-          this.store.dispatch(fetchOfferInvoice({ payload: { offer: this.offerRequest, msatoshi: this.offerAmount * 1000 } }));
+          this.store.dispatch(fetchOfferInvoice({ payload: { offer: this.offerRequest, amount_msat: this.offerAmount * 1000 } }));
         } else {
           this.store.dispatch(fetchOfferInvoice({ payload: { offer: this.offerRequest } }));
         }
@@ -296,9 +290,7 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.paymentDecoded.amount_msat = +event.target.value;
     }
     if (this.paymentType === PaymentTypes.OFFER) {
-      delete this.offerDecoded.offer_amount;
       delete this.offerDecoded.offer_amount_msat;
-      this.offerDecoded.offer_amount = +event.target.value * 1000;
       this.offerDecoded.offer_amount_msat = event.target.value;
     }
   }
@@ -313,15 +305,13 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
   setOfferDecodedDetails() {
     if (this.offerDecoded.offer_id && !this.offerDecoded.offer_amount_msat) {
       this.offerDecoded.offer_amount_msat = 0;
-      this.offerDecoded.offer_amount = 0;
       this.zeroAmtOffer = true;
       this.offerDescription = this.offerDecoded.offer_description || '';
       this.offerIssuer = this.offerDecoded.offer_issuer ? this.offerDecoded.offer_issuer : '';
       this.offerDecodedHint = 'Zero Amount Offer | Description: ' + this.offerDecoded.offer_description;
     } else {
       this.zeroAmtOffer = false;
-      this.offerDecoded.offer_amount = this.offerDecoded.offer_amount || this.offerDecoded.offer_amount_msat || null;
-      this.offerAmount = this.offerDecoded.offer_amount ? this.offerDecoded.offer_amount / 1000 : 0;
+      this.offerAmount = this.offerDecoded.offer_amount_msat ? this.offerDecoded.offer_amount_msat / 1000 : 0;
       this.offerDescription = this.offerDecoded.offer_description || '';
       this.offerIssuer = this.offerDecoded.offer_issuer ? this.offerDecoded.offer_issuer : '';
       if (this.selNode && this.selNode.fiatConversion) {

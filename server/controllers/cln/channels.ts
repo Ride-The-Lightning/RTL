@@ -14,8 +14,9 @@ export const listPeerChannels = (req, res, next) => {
     body?.map((channel) => {
       if (!channel.alias || channel.alias === '') { channel.alias = channel.peer_id.substring(0, 20); }
       const local = channel.to_us_msat || 0;
-      const remote = (channel.total_msat - channel.to_us_msat) || 0;
+      const remote = (channel.total_msat - local) || 0;
       const total = channel.total_msat || 0;
+      channel.to_them_msat = remote;
       channel.balancedness = (total === 0) ? 1 : (1 - Math.abs((local - remote) / total)).toFixed(3);
       return channel;
     });
@@ -31,17 +32,14 @@ export const listChannels = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Getting Channels..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  if (common.isVersionCompatible(req.session.selectedNode.api_version, '0.10.2')) {
-    options.url = req.session.selectedNode.ln_server_url + '/v1/channel/listPeerChannels';
-  } else {
-    options.url = req.session.selectedNode.ln_server_url + '/v1/channel/listChannels';
-  }
+  options.url = req.session.selectedNode.ln_server_url + '/v1/channel/listPeerChannels';
   request(options).then((body) => {
     body?.map((channel) => {
       if (!channel.alias || channel.alias === '') { channel.alias = channel.id.substring(0, 20); }
-      const local = (channel.msatoshi_to_us) ? channel.msatoshi_to_us : (channel.to_us_msat || 0);
-      const remote = (channel.msatoshi_to_them) ? channel.msatoshi_to_them : ((channel.total_msat - channel.to_us_msat) || 0);
-      const total = channel.msatoshi_total ? channel.msatoshi_total : (channel.total_msat || 0);
+      const local = channel.to_us_msat || 0;
+      const remote = (channel.total_msat - local) || 0;
+      const total = channel.total_msat || 0;
+      channel.to_them_msat = remote;
       channel.balancedness = (total === 0) ? 1 : (1 - Math.abs((local - remote) / total)).toFixed(3);
       return channel;
     });

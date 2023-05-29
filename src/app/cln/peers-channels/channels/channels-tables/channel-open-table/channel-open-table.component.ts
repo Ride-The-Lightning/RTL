@@ -286,10 +286,10 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
           rowToFilter = ((rowData.peer_connected) ? 'connected' : 'disconnected') + (rowData.channel_id ? rowData.channel_id.toLowerCase() : '') +
           (rowData.short_channel_id ? rowData.short_channel_id.toLowerCase() : '') + (rowData.id ? rowData.id.toLowerCase() : '') + (rowData.alias ? rowData.alias.toLowerCase() : '') +
           (rowData.private ? 'private' : 'public') + (rowData.state ? rowData.state.toLowerCase() : '') +
-          (rowData.funding_txid ? rowData.funding_txid.toLowerCase() : '') + (rowData.to_them_msat ? rowData.to_them_msat : '') +
-          (rowData.to_us_msat ? rowData.to_us_msat : '') + (rowData.total_msat ? rowData.total_msat : '') +
-          (rowData.their_reserve_msat ? rowData.their_reserve_msat : '') + (rowData.our_reserve_msat ? rowData.our_reserve_msat : '') +
-          (rowData.spendable_msat ? rowData.spendable_msat : '');
+          (rowData.funding_txid ? rowData.funding_txid.toLowerCase() : '') + (rowData.to_them_msat ? rowData.to_them_msat / 1000 : '') +
+          (rowData.to_us_msat ? rowData.to_us_msat / 1000 : '') + (rowData.total_msat ? rowData.total_msat / 1000 : '') +
+          (rowData.their_reserve_msat ? rowData.their_reserve_msat / 1000 : '') + (rowData.our_reserve_msat ? rowData.our_reserve_msat / 1000 : '') +
+          (rowData.spendable_msat ? rowData.spendable_msat / 1000 : '');
           break;
 
         case 'private':
@@ -301,19 +301,27 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
           break;
 
         case 'msatoshi_total':
-          rowToFilter = ((+(rowData[this.selFilterBy] || rowData['total_msat'] || 0)) / 1000)?.toString() || '';
+          rowToFilter = ((rowData['total_msat'] || 0) / 1000)?.toString() || '';
           break;
 
         case 'spendable_msatoshi':
-          rowToFilter = ((+(rowData[this.selFilterBy] || rowData['spendable_msat'] || 0)) / 1000)?.toString() || '';
+          rowToFilter = ((rowData['spendable_msat'] || 0) / 1000)?.toString() || '';
           break;
 
         case 'msatoshi_to_us':
-          rowToFilter = ((+(rowData[this.selFilterBy] || rowData['to_us_msat'] || 0)) / 1000)?.toString() || '';
+          rowToFilter = ((rowData['to_us_msat'] || 0) / 1000)?.toString() || '';
           break;
 
         case 'msatoshi_to_them':
-          rowToFilter = ((+(rowData[this.selFilterBy] || rowData['to_them_msat'] || 0)) / 1000)?.toString() || '';
+          rowToFilter = ((rowData['to_them_msat'] || 0) / 1000)?.toString() || '';
+          break;
+
+        case 'our_channel_reserve_satoshis':
+          rowToFilter = ((rowData['our_reserve_msat'] || 0) / 1000)?.toString() || '';
+          break;
+
+        case 'their_channel_reserve_satoshis':
+          rowToFilter = ((rowData['their_reserve_msat'] || 0) / 1000)?.toString() || '';
           break;
 
         default:
@@ -330,16 +338,22 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
     this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
         case 'msatoshi_total':
-          return data['msatoshi_total'] || data['total_msat'];
+          return data['total_msat'];
 
         case 'spendable_msatoshi':
-          return data['spendable_msatoshi'] || data['spendable_msat'];
+          return data['spendable_msat'];
 
         case 'msatoshi_to_us':
-          return data['msatoshi_to_us'] || data['to_us_msat'];
+          return data['to_us_msat'];
 
         case 'msatoshi_to_them':
-          return data['msatoshi_to_them'] || data['to_them_msat'];
+          return data['to_them_msat'];
+
+        case 'our_channel_reserve_satoshis':
+          return data['our_reserve_msat'];
+
+        case 'their_channel_reserve_satoshis':
+          return data['their_reserve_msat'];
 
         default:
           return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;

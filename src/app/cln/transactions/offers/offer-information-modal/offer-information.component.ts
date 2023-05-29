@@ -13,7 +13,6 @@ import { CLNOfferInformation } from '../../../../shared/models/alertData';
 import { ScreenSizeEnum } from '../../../../shared/services/consts-enums-functions';
 
 import { Offer, OfferRequest } from '../../../../shared/models/clnModels';
-import { RTLState } from '../../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-cln-offer-information',
@@ -34,7 +33,7 @@ export class CLNOfferInformationComponent implements OnInit, OnDestroy {
   public flgOfferPaid = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLNOfferInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNOfferInformation, private logger: LoggerService, private commonService: CommonService, private snackBar: MatSnackBar, private store: Store<RTLState>, private dataService: DataService) { }
+  constructor(public dialogRef: MatDialogRef<CLNOfferInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNOfferInformation, private logger: LoggerService, private commonService: CommonService, private snackBar: MatSnackBar, private dataService: DataService) { }
 
   ngOnInit() {
     this.offer = this.data.offer;
@@ -48,9 +47,6 @@ export class CLNOfferInformationComponent implements OnInit, OnDestroy {
         this.offerDecoded = decodedOffer;
         if (this.offerDecoded.offer_id && !this.offerDecoded.offer_amount_msat) {
           this.offerDecoded.offer_amount_msat = 0;
-          this.offerDecoded.offer_amount = 0;
-        } else {
-          this.offerDecoded.offer_amount = this.offerDecoded.offer_amount || this.offerDecoded.offer_amount_msat || null;
         }
       });
   }

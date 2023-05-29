@@ -59,10 +59,7 @@
       <ng-container matColumnDef="in_msatoshi">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Amount In (Sats)</th>
         <td *matCellDef="let fhEvent" mat-cell>
-          <span *ngIf="fhEvent?.in_msatoshi" fxLayoutAlign="end center">
-            {{fhEvent?.in_msatoshi/1000 | number:fhEvent?.in_msatoshi < 1000 ? '1.0-4' : '1.0-0'}}
-          </span>
-          <span *ngIf="!fhEvent?.in_msatoshi && fhEvent?.in_msat" fxLayoutAlign="end center">
+          <span fxLayoutAlign="end center">
             {{fhEvent?.in_msat/1000 | number:fhEvent?.in_msat < 1000 ? '1.0-4' : '1.0-0'}}
           </span>
         </td>
@@ -70,10 +67,7 @@
       <ng-container matColumnDef="out_msatoshi">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Amount Out (Sats)</th>
         <td *matCellDef="let fhEvent" mat-cell>
-          <span *ngIf="fhEvent?.out_msatoshi" fxLayoutAlign="end center">
-            {{fhEvent?.out_msatoshi/1000 | number:fhEvent?.out_msatoshi < 1000 ? '1.0-4' : '1.0-0'}}
-          </span>
-          <span *ngIf="!fhEvent?.out_msatoshi && fhEvent?.out_msat" fxLayoutAlign="end center">
+          <span fxLayoutAlign="end center">
             {{fhEvent?.out_msat/1000 | number:fhEvent?.out_msat < 1000 ? '1.0-4' : '1.0-0'}}
           </span>
         </td>

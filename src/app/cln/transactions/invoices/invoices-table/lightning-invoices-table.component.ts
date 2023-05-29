@@ -237,11 +237,11 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
           break;
 
         case 'msatoshi':
-          rowToFilter = ((rowData['msatoshi'] || rowData['amount_msat'] || 0) / 1000)?.toString() || '';
+          rowToFilter = ((rowData['amount_msat'] || 0) / 1000)?.toString() || '';
           break;
 
         case 'msatoshi_received':
-          rowToFilter = ((rowData['msatoshi_received'] || rowData['amount_received_msat'] || 0) / 1000)?.toString() || '';
+          rowToFilter = ((rowData['amount_received_msat'] || 0) / 1000)?.toString() || '';
           break;
 
         default:
@@ -281,10 +281,10 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
     this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
         case 'msatoshi':
-          return data['msatoshi'] || data['amount_msat'];
+          return data['amount_msat'];
 
         case 'msatoshi_received':
-          return data['msatoshi_received'] || data['amount_received_msat'];
+          return data['amount_received_msat'];
 
         default:
           return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
