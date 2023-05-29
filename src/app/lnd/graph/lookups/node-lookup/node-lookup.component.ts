@@ -46,7 +46,7 @@ export class NodeLookupComponent implements OnInit, OnDestroy {
     this.store.dispatch(openAlert({
       payload: {
         data: {
-          message: { peer: { pub_key: this.lookupResult.node?.pub_key, address: address }, information: this.information, balance: this.availableBalance },
+          message: { peer: { pub_key: this.lookupResult.node?.pub_key, address: address.addr }, information: this.information, balance: this.availableBalance },
           component: ConnectPeerComponent
         }
       }

@@ -43,7 +43,7 @@
     color: $foreground-text;
   }
   .mat-mdc-button-base.mat-mdc-unelevated-button.mat-primary {
-    color: $foreground-text;
+    color: $foreground-text !important;
   }
   .mat-mdc-option:hover:not(.mdc-list-item--disabled), .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-list-item--disabled) {
     & .mdc-list-item__primary-text {

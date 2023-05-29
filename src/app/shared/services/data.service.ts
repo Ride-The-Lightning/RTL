@@ -340,7 +340,7 @@ export class DataService implements OnDestroy {
       map((res: any) => res),
       catchError((err) => {
         this.handleErrorWithoutAlert('Rebalance Channel', UI_MESSAGES.REBALANCE_CHANNEL, err);
-        return throwError(() => new Error(this.extractErrorMessage(err)));
+        return throwError(() => err.error);
       })
     );
   }
