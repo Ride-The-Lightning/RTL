@@ -21,7 +21,7 @@
         <ng-container matColumnDef="is_dust">
           <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="Dust/Nondust"></th>
           <td *matCellDef="let utxo" mat-cell>
-            <span *ngIf="numDustUTXOs > 0 && !isDustUTXO && utxo.value < dustAmount; else emptySpace" matTooltip="Risk of dust attack" matTooltipPosition="right">
+            <span *ngIf="numDustUTXOs > 0 && !isDustUTXO && (utxo?.amount_msat / 1000) < dustAmount; else emptySpace" matTooltip="Risk of dust attack" matTooltipPosition="right">
               <mat-icon fxLayoutAlign="start center" color="warn" class="small-icon">warning</mat-icon>
             </span>
           </td>
@@ -65,8 +65,8 @@
         <ng-container matColumnDef="value">
           <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Value (Sats)</th>
           <td *matCellDef="let utxo" mat-cell>
-            <span *ngIf="utxo.value > 0 || utxo.value === 0" fxLayoutAlign="end center">{{utxo.value | number}}</span>
-            <span *ngIf="utxo.value < 0" fxLayoutAlign="end center" class="red">({{utxo.value * -1 | number}})</span>
+            <span *ngIf="utxo.amount_msat > 0 || utxo.amount_msat === 0" fxLayoutAlign="end center">{{utxo.amount_msat / 1000 | number:'1.0-0'}}</span>
+            <span *ngIf="utxo.amount_msat < 0" fxLayoutAlign="end center" class="red">({{utxo.amount_msat / 1000 * -1 | number:'1.0-0'}})</span>
           </td>
         </ng-container>
         <ng-container matColumnDef="blockheight">

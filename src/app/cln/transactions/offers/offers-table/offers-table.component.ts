@@ -180,10 +180,7 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
     this.dataService.decodePayment(selOffer.bolt12!, false).
       pipe(take(1)).subscribe((offerDecoded: OfferRequest) => {
         if (offerDecoded.offer_id && !offerDecoded.offer_amount_msat) {
-          offerDecoded.offer_amount_msat = '0msat';
-          offerDecoded.offer_amount = 0;
-        } else {
-          offerDecoded.offer_amount = offerDecoded.offer_amount ? +offerDecoded.offer_amount : offerDecoded.offer_amount_msat ? +offerDecoded.offer_amount_msat.slice(0, -4) : null;
+          offerDecoded.offer_amount_msat = 0;
         }
         const documentDefinition = {
           pageSize: 'A5',
@@ -211,7 +208,7 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
             },
             { text: offerDecoded.offer_description ? offerDecoded.offer_description.substring(0, 160) : '', alignment: 'center', fontSize: 16, color: '#5C5C5C' },
             { qr: selOffer.bolt12, eccLevel: 'M', fit: '227', alignment: 'center', absolutePosition: { x: 7, y: 205 } },
-            { text: (!offerDecoded?.offer_amount_msat || offerDecoded?.offer_amount === 0 ? 'Open amount' : (this.decimalPipe.transform((offerDecoded.offer_amount || 0) / 1000) + ' SATS')), fontSize: 20, bold: false, color: 'white', alignment: 'center', absolutePosition: { x: 0, y: 430 } },
+            { text: (!offerDecoded?.offer_amount_msat || offerDecoded?.offer_amount_msat === 0 ? 'Open amount' : (this.decimalPipe.transform((offerDecoded.offer_amount_msat || 0) / 1000) + ' SATS')), fontSize: 20, bold: false, color: 'white', alignment: 'center', absolutePosition: { x: 0, y: 430 } },
             { text: 'SCAN TO PAY', fontSize: 22, bold: true, color: 'white', alignment: 'center', absolutePosition: { x: 0, y: 455 } }
           ],
           footer: {

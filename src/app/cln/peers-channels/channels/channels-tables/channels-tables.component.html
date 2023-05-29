@@ -14,6 +14,11 @@
           <span matBadgeOverlap="false" class="tab-badge" matBadge="{{pendingChannels}}">Pending/Inactive</span>
         </ng-template>
       </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span matBadgeOverlap="false" class="tab-badge" matBadge="{{activeHTLCs}}">Active HTLCs</span>
+        </ng-template>
+      </mat-tab>
     </mat-tab-group>
     <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-x-large">
       <router-outlet></router-outlet>

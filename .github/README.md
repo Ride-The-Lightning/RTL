@@ -35,6 +35,7 @@ RTL is available on the below platforms/services:
 * [BCubium](https://bgeometrics.com)
 * [Start9Labs](https://start9labs.com)
 * [Umbrel](https://github.com/getumbrel/umbrel)
+* [Sovran Systems](https://sovransystems.com)
 
 Docker Image: https://hub.docker.com/r/shahanafarooqui/rtl
 

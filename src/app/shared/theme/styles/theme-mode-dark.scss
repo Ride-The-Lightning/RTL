@@ -22,16 +22,17 @@
   $hover-background-dark: rgba(255, 255, 255, 0.06);
 
   .mat-primary {
-    color: $primary-darker;
+    color: $primary-darker !important;
   }
-  .mat-mdc-button-base.mat-mdc-unelevated-button.mat-primary {
-    color: $foreground-text;
-  }
-  
-  .mat-mdc-option:hover:not(.mdc-list-item--disabled), .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-list-item--disabled) {
-    & .mdc-list-item__primary-text {
-      color: $primary-darker;
+
+  .mat-sidenav-container .mat-sidenav-content {
+    background-color: $dark-background-color;
+    & .mat-mdc-card.mdc-card {
+      background-color: $dark-card-background-color;
     }
+  }
+  .sidenav.mat-drawer {
+    background-color: $dark-card-background-color;
   }
   .rtl-top-toolbar {
     border-bottom: 1px solid $background-color;
@@ -41,6 +42,14 @@
     background-color: $primary-color;
     color: $foreground-text;
   }
+  .mat-mdc-button-base.mat-mdc-unelevated-button.mat-primary {
+    color: $foreground-text !important;
+  }
+  .mat-mdc-option:hover:not(.mdc-list-item--disabled), .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-list-item--disabled) {
+    & .mdc-list-item__primary-text {
+      color: $primary-darker;
+    }
+  }
   .mdc-tab__text-label {
     &.mdc-tab__text-label-active {
       color: $primary-darker;
@@ -49,7 +58,7 @@
       }          
     }
     & .tab-badge .mat-badge-content {
-      color: mat.get-color-from-palette($background, dialog);
+      color: $dark-card-background-color;
       background: $foreground-secondary-text;
     }  
   }
@@ -59,9 +68,11 @@
     font-weight: 700;
     & .mdc-snackbar__surface {
       max-width: 40vw;
+      background-color: $background-color;
     }
     & .mat-mdc-snack-bar-label.mdc-snackbar__label {
       max-width: 40vw;
+      color: $foreground-text;
     }
   }
   .rtl-warn-snack-bar.mat-mdc-snack-bar-container {
@@ -69,6 +80,7 @@
     font-weight: 700;
     & .mdc-snackbar__surface {
       max-width: 40vw;
+      background-color: $background-color;
     }
     & .mat-mdc-snack-bar-label.mdc-snackbar__label {
       max-width: 40vw;
@@ -80,6 +92,7 @@
     font-weight: 700;
     & .mdc-snackbar__surface {
       max-width: 40vw;
+      background-color: $background-color;
     }
     & .mat-mdc-snack-bar-label.mdc-snackbar__label {
       max-width: 40vw;
@@ -120,9 +133,37 @@
     & .mat-expansion-indicator::after, & .mat-expansion-panel-content, & .mat-expansion-panel-header-description {
       color: $foreground-base;
     }
-  }  
-  .mdc-text-field:not(.mdc-text-field--disabled) .mdc-floating-label {
+  }
+  .mat-mdc-select-panel.mdc-menu-surface, .mat-mdc-menu-panel.mdc-menu-surface, .mat-expansion-panel, .mat-mdc-dialog-container.mdc-dialog,
+  .mat-mdc-dialog-container .mdc-dialog__container, .mat-mdc-dialog-surface.mdc-dialog__surface,
+  .mdc-data-table__header-cell, .mat-mdc-paginator, .mat-mdc-form-field-focus-overlay, .mdc-text-field--disabled.mdc-text-field--filled {
+    background-color: $dark-card-background-color;
+  }
+  .mdc-text-field:not(.mdc-text-field--disabled) .mdc-floating-label, .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+    background-color: $dark-card-background-color;
     color: $primary-darker;
+  }
+  .cdk-overlay-pane.spinner-dialog-panel .mat-mdc-dialog-surface.mdc-dialog__surface,
+  .cdk-overlay-pane.spinner-dialog-panel .mat-mdc-dialog-container .mdc-dialog__container,
+  .cdk-overlay-pane.spinner-dialog-panel .mat-mdc-dialog-container.mdc-dialog {
+    background-color: transparent;
+  }
+  .mat-mdc-option:hover:not(.mdc-list-item--disabled) .mdc-list-item__primary-text,
+  .mat-mdc-option:hover:not(.mdc-list-item--disabled) .fa-icon, .mat-mdc-option:hover:not(.mdc-list-item--disabled) .fa-icon-small,
+  .mat-mdc-option:focus:not(.mdc-list-item--disabled) .mdc-list-item__primary-text, .mat-mdc-option:focus:not(.mdc-list-item--disabled) .fa-icon,
+  .mat-mdc-option:focus:not(.mdc-list-item--disabled) .fa-icon-small, .mat-mdc-option.mat-mdc-option-active .mdc-list-item__primary-text,
+  .mat-mdc-option.mat-mdc-option-active .fa-icon, .mat-mdc-option.mat-mdc-option-active .fa-icon-small,
+  .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-list-item--disabled) .mdc-list-item__primary-text,
+  .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-list-item--disabled) .fa-icon,
+  .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-list-item--disabled) .fa-icon-small,
+  .mat-mdc-menu-item:hover:not([disabled]) .mdc-list-item__primary-text,
+  .mat-mdc-menu-item:hover:not([disabled]) .fa-icon, .mat-mdc-menu-item:hover:not([disabled]) .fa-icon-small,
+  .mat-mdc-menu-item.cdk-program-focused:not([disabled]) .mdc-list-item__primary-text,
+  .mat-mdc-menu-item.cdk-program-focused:not([disabled]) .fa-icon, .mat-mdc-menu-item.cdk-program-focused:not([disabled]) .fa-icon-small,
+  .mat-mdc-menu-item.cdk-keyboard-focused:not([disabled]) .mdc-list-item__primary-text, .mat-mdc-menu-item.cdk-keyboard-focused:not([disabled]) .fa-icon,
+  .mat-mdc-menu-item.cdk-keyboard-focused:not([disabled]) .fa-icon-small, .mat-mdc-menu-item-highlighted:not([disabled]) .mdc-list-item__primary-text,
+  .mat-mdc-menu-item-highlighted:not([disabled]) .fa-icon, .mat-mdc-menu-item-highlighted:not([disabled]) .fa-icon-small {
+    color: $primary-darker !important;
   }
   .mdc-text-field--filled .mdc-line-ripple::after {
     border-bottom-color: $primary-darker;
@@ -131,8 +172,15 @@
     color: $foreground-base;
     background: $primary-color;
   }
+  a {
+    color: $primary-darker !important;
+    cursor: pointer;
+  }
   button.mdc-button.mat-mdc-button-base.mat-mdc-outlined-button{
     border-color: $foreground-disabled;
+    &.mat-warn {
+      border-color: $warn-color;
+    }
   }
   .mat-mdc-select-arrow svg {
     fill: $foreground-base;
@@ -185,20 +233,21 @@
       background: rgba(0, 0, 0, 0.6);
     }
     & .cdk-global-overlay-wrapper .mat-dialog-container .spinner-container {
-      color: $foreground-secondary-text;
-      & .mat-progress-spinner circle, .mat-spinner circle {
-        stroke: $foreground-secondary-text;
-      }
+      color: $primary-darker;
+    }
+    & .mat-mdc-progress-spinner .mdc-circular-progress__determinate-circle,
+    & .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic {
+      stroke: $primary-darker;
     }
   }
   .mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
     color: $primary-darker;
   }
   .mat-select-panel {
-    background-color: mat.get-color-from-palette($background, dialog);
+    background-color: $dark-card-background-color;
   }  
   .mat-tree {
-    background: mat.get-color-from-palette($background, dialog);
+    background: $dark-card-background-color;
   }
   h4 {
     color: $primary-darker;
@@ -234,10 +283,10 @@
     background-color:  $primary-color !important;
   }
   .mat-stepper-vertical {
-    background-color: mat.get-color-from-palette($background, dialog);
+    background-color: $dark-card-background-color;
   }
   .spinner-container h2 {
-    color: $primary-color;
+    color: $primary-darker;
   }
   table.mat-mdc-table {
     & thead tr th {
@@ -253,6 +302,8 @@
     & .stroke-color-thin { stroke:#B6B6B6; stroke-width: 11.625; stroke-miterlimit: 10; stroke-linecap:"round"; stroke-linejoin:"round"; }
     & .stroke-color-thiner { stroke:#B6B6B6; stroke-width: 10.125; stroke-linecap:"round"; stroke-linejoin:"round"; }
     & .stroke-color-thinest { stroke:#B6B6B6; stroke-width: 9.40381; stroke-linecap:"round"; stroke-linejoin:"round"; }
+    & .stroke-color-primary-lighter { stroke: $primary-lighter; }
+    & .stroke-color-primary { stroke: $primary-color; }
     & .fill-color-boltz-bk { fill: #171717; }
     & .fill-color-0 { fill: #171717; }
     & .fill-color-1 { fill: #232323; }
@@ -332,6 +383,7 @@
   }
   .material-icons {
     &.info-icon {
+      font-size: 100%;
       color: $primary-darker;
       &.info-icon-primary {
         color: $primary-darker;

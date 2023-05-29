@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
@@ -81,13 +80,15 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     private rtlEffects: RTLEffects,
     private decimalPipe: DecimalPipe,
     private loopService: LoopService,
-    private router: Router,
     private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
-    this.selFilter = this.router.getCurrentNavigation()?.extras?.state?.filter ? this.router.getCurrentNavigation()?.extras?.state?.filter : '';
   }
 
   ngOnInit() {
+    if (window.history.state && window.history.state.filterColumn) {
+      this.selFilterBy = window.history.state.filterColumn || 'all';
+      this.selFilter = window.history.state.filterValue || '';
+    }
     this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).
       subscribe((nodeSettings) => {
         this.selNode = nodeSettings;

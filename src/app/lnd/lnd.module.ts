@@ -137,9 +137,7 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     OnChainSendModalComponent,
     OnChainLabelModalComponent
   ],
-  providers: [
-    LNDUnlockedGuard
-  ],
+  providers: [],
   bootstrap: [LNDRootComponent]
 })
 export class LNDModule { }

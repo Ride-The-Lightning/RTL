@@ -166,6 +166,7 @@ export const postTransactions = (req, res, next) => {
   options.form = JSON.stringify(options.form);
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Send Payment Options', data: options.form });
   request.post(options).then((body) => {
+    body = body.result ? body.result : body;
     if (body.payment_error) {
       const err = common.handleError(body.payment_error, 'Channels', 'Send Payment Error', req.session.selectedNode);
       return res.status(err.statusCode).json({ message: err.message, error: err.error });

@@ -22,7 +22,7 @@
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Amount Requested (Sats)</h4>
             <span class="foreground-secondary-text">
-              {{ !offerDecoded?.offer_amount_msat || offerDecoded?.offer_amount === 0 ? 'Open Offer' : ((offerDecoded?.offer_amount / 1000) | number) }}
+              {{ !offerDecoded?.offer_amount_msat || offerDecoded?.offer_amount_msat === 0 ? 'Open Offer' : ((offerDecoded?.offer_amount_msat / 1000) | number) }}
             </span>
           </div>
           <div fxFlex="50">

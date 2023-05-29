@@ -34,54 +34,54 @@ export const EclRoutes: Routes = [
     path: '', component: ECLRootComponent,
     children: [
       { path: '', pathMatch: <PathMatch>'full', redirectTo: 'home' },
-      { path: 'home', component: ECLHomeComponent, canActivate: [ECLUnlockedGuard] },
+      { path: 'home', component: ECLHomeComponent, canActivate: [ECLUnlockedGuard()] },
       {
-        path: 'onchain', component: ECLOnChainComponent, canActivate: [ECLUnlockedGuard], children: [
+        path: 'onchain', component: ECLOnChainComponent, canActivate: [ECLUnlockedGuard()], children: [
           { path: '', pathMatch: <PathMatch>'full', redirectTo: 'receive' },
-          { path: 'receive', component: ECLOnChainReceiveComponent, canActivate: [ECLUnlockedGuard] },
-          { path: 'send', component: ECLOnChainSendComponent, canActivate: [ECLUnlockedGuard] }
+          { path: 'receive', component: ECLOnChainReceiveComponent, canActivate: [ECLUnlockedGuard()] },
+          { path: 'send', component: ECLOnChainSendComponent, canActivate: [ECLUnlockedGuard()] }
         ]
       },
       {
-        path: 'connections', component: ECLConnectionsComponent, canActivate: [ECLUnlockedGuard], children: [
+        path: 'connections', component: ECLConnectionsComponent, canActivate: [ECLUnlockedGuard()], children: [
           { path: '', pathMatch: <PathMatch>'full', redirectTo: 'channels' },
           {
-            path: 'channels', component: ECLChannelsTablesComponent, canActivate: [ECLUnlockedGuard], children: [
+            path: 'channels', component: ECLChannelsTablesComponent, canActivate: [ECLUnlockedGuard()], children: [
               { path: '', pathMatch: <PathMatch>'full', redirectTo: 'open' },
-              { path: 'open', component: ECLChannelOpenTableComponent, canActivate: [ECLUnlockedGuard] },
-              { path: 'pending', component: ECLChannelPendingTableComponent, canActivate: [ECLUnlockedGuard] },
-              { path: 'inactive', component: ECLChannelInactiveTableComponent, canActivate: [ECLUnlockedGuard] }
+              { path: 'open', component: ECLChannelOpenTableComponent, canActivate: [ECLUnlockedGuard()] },
+              { path: 'pending', component: ECLChannelPendingTableComponent, canActivate: [ECLUnlockedGuard()] },
+              { path: 'inactive', component: ECLChannelInactiveTableComponent, canActivate: [ECLUnlockedGuard()] }
             ]
           },
-          { path: 'peers', component: ECLPeersComponent, data: { sweepAll: false }, canActivate: [ECLUnlockedGuard] }
+          { path: 'peers', component: ECLPeersComponent, data: { sweepAll: false }, canActivate: [ECLUnlockedGuard()] }
         ]
       },
       {
-        path: 'transactions', component: ECLTransactionsComponent, canActivate: [ECLUnlockedGuard], children: [
+        path: 'transactions', component: ECLTransactionsComponent, canActivate: [ECLUnlockedGuard()], children: [
           { path: '', pathMatch: <PathMatch>'full', redirectTo: 'payments' },
-          { path: 'payments', component: ECLLightningPaymentsComponent, canActivate: [ECLUnlockedGuard] },
-          { path: 'invoices', component: ECLLightningInvoicesComponent, canActivate: [ECLUnlockedGuard] }
+          { path: 'payments', component: ECLLightningPaymentsComponent, canActivate: [ECLUnlockedGuard()] },
+          { path: 'invoices', component: ECLLightningInvoicesComponent, canActivate: [ECLUnlockedGuard()] }
         ]
       },
       {
-        path: 'routing', component: ECLRoutingComponent, canActivate: [ECLUnlockedGuard], children: [
+        path: 'routing', component: ECLRoutingComponent, canActivate: [ECLUnlockedGuard()], children: [
           { path: '', pathMatch: <PathMatch>'full', redirectTo: 'forwardinghistory' },
-          { path: 'forwardinghistory', component: ECLForwardingHistoryComponent, canActivate: [ECLUnlockedGuard] },
-          { path: 'peers', component: ECLRoutingPeersComponent, canActivate: [ECLUnlockedGuard] }
+          { path: 'forwardinghistory', component: ECLForwardingHistoryComponent, canActivate: [ECLUnlockedGuard()] },
+          { path: 'peers', component: ECLRoutingPeersComponent, canActivate: [ECLUnlockedGuard()] }
         ]
       },
       {
-        path: 'reports', component: ECLReportsComponent, canActivate: [ECLUnlockedGuard], children: [
+        path: 'reports', component: ECLReportsComponent, canActivate: [ECLUnlockedGuard()], children: [
           { path: '', pathMatch: <PathMatch>'full', redirectTo: 'routingreport' },
-          { path: 'routingreport', component: ECLRoutingReportComponent, canActivate: [ECLUnlockedGuard] },
-          { path: 'transactions', component: ECLTransactionsReportComponent, canActivate: [ECLUnlockedGuard] }
+          { path: 'routingreport', component: ECLRoutingReportComponent, canActivate: [ECLUnlockedGuard()] },
+          { path: 'transactions', component: ECLTransactionsReportComponent, canActivate: [ECLUnlockedGuard()] }
         ]
       },
       {
-        path: 'graph', component: ECLGraphComponent, canActivate: [ECLUnlockedGuard], children: [
+        path: 'graph', component: ECLGraphComponent, canActivate: [ECLUnlockedGuard()], children: [
           { path: '', pathMatch: <PathMatch>'full', redirectTo: 'lookups' },
-          { path: 'lookups', component: ECLLookupsComponent, canActivate: [ECLUnlockedGuard] },
-          { path: 'queryroutes', component: ECLQueryRoutesComponent, canActivate: [ECLUnlockedGuard] }
+          { path: 'lookups', component: ECLLookupsComponent, canActivate: [ECLUnlockedGuard()] },
+          { path: 'queryroutes', component: ECLQueryRoutesComponent, canActivate: [ECLUnlockedGuard()] }
         ]
       },
       { path: '**', component: NotFoundComponent }

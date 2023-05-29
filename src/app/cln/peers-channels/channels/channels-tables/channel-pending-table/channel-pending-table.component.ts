@@ -44,7 +44,6 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
   public colWidth = '20rem';
   public PAGE_ID = 'peers_channels';
   public tableSetting: TableSetting = { tableId: 'pending_inactive_channels', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING };
-  public isCompatibleVersion = false;
   public totalBalance = 0;
   public displayedColumns: any[] = [];
   public channelsData: Channel[] = [];
@@ -72,9 +71,6 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
     this.store.select(nodeInfoAndBalanceAndNumPeers).pipe(takeUntil(this.unSubs[0])).
       subscribe((infoBalNumpeersSelector: { information: GetInfo, balance: Balance, numPeers: number }) => {
         this.information = infoBalNumpeersSelector.information;
-        if (this.information.api_version) {
-          this.isCompatibleVersion = this.commonService.isVersionCompatible(this.information.api_version, '0.4.2');
-        }
         this.numPeers = infoBalNumpeersSelector.numPeers;
         this.totalBalance = infoBalNumpeersSelector.balance.totalBalance || 0;
         this.logger.info(infoBalNumpeersSelector);
@@ -172,7 +168,7 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : this.commonService.titleCase(column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform((returnColumn.column || ''), '_') : this.commonService.titleCase(column);
   }
 
   setFilterPredicate() {
@@ -180,12 +176,12 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
       let rowToFilter = '';
       switch (this.selFilterBy) {
         case 'all':
-          rowToFilter = ((rowData.connected) ? 'connected' : 'disconnected') + (rowData.channel_id ? rowData.channel_id.toLowerCase() : '') +
+          rowToFilter = ((rowData.peer_connected) ? 'connected' : 'disconnected') + (rowData.channel_id ? rowData.channel_id.toLowerCase() : '') +
           (rowData.short_channel_id ? rowData.short_channel_id.toLowerCase() : '') + (rowData.id ? rowData.id.toLowerCase() : '') + (rowData.alias ? rowData.alias.toLowerCase() : '') +
           (rowData.private ? 'private' : 'public') + ((rowData.state && this.CLNChannelPendingState[rowData.state]) ? this.CLNChannelPendingState[rowData.state].toLowerCase() : '') +
-          (rowData.funding_txid ? rowData.funding_txid.toLowerCase() : '') + (rowData.msatoshi_to_us ? rowData.msatoshi_to_us : '') +
-          (rowData.msatoshi_total ? rowData.msatoshi_total : '') + (rowData.their_channel_reserve_satoshis ? rowData.their_channel_reserve_satoshis : '') +
-          (rowData.our_channel_reserve_satoshis ? rowData.our_channel_reserve_satoshis : '') + (rowData.spendable_msatoshi ? rowData.spendable_msatoshi : '');
+          (rowData.funding_txid ? rowData.funding_txid.toLowerCase() : '') + (rowData.to_us_msat ? rowData.to_us_msat : '') + (rowData.to_them_msat ? rowData.to_them_msat / 1000 : '') +
+          (rowData.total_msat ? rowData.total_msat / 1000 : '') + (rowData.their_reserve_msat ? rowData.their_reserve_msat / 1000 : '') +
+          (rowData.our_reserve_msat ? rowData.our_reserve_msat / 1000 : '') + (rowData.spendable_msat ? rowData.spendable_msat / 1000 : '');
           break;
 
         case 'private':
@@ -193,14 +189,31 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
           break;
 
         case 'connected':
-          rowToFilter = rowData?.connected ? 'connected' : 'disconnected';
+          rowToFilter = rowData?.peer_connected ? 'connected' : 'disconnected';
           break;
 
         case 'msatoshi_total':
+          rowToFilter = ((rowData['total_msat'] || 0) / 1000)?.toString() || '';
+          break;
+
         case 'spendable_msatoshi':
+          rowToFilter = ((rowData['spendable_msat'] || 0) / 1000)?.toString() || '';
+          break;
+
         case 'msatoshi_to_us':
+          rowToFilter = ((rowData['to_us_msat'] || 0) / 1000)?.toString() || '';
+          break;
+
         case 'msatoshi_to_them':
-          rowToFilter = ((+(rowData[this.selFilterBy] || 0)) / 1000)?.toString() || '';
+          rowToFilter = ((rowData['to_them_msat'] || 0) / 1000)?.toString() || '';
+          break;
+
+        case 'our_channel_reserve_satoshis':
+          rowToFilter = ((rowData['our_reserve_msat'] || 0) / 1000)?.toString() || '';
+          break;
+
+        case 'their_channel_reserve_satoshis':
+          rowToFilter = ((rowData['their_reserve_msat'] || 0) / 1000)?.toString() || '';
           break;
 
         case 'state':
@@ -220,6 +233,24 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
     this.channels.sort = this.sort;
     this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
+        case 'msatoshi_total':
+          return data['total_msat'];
+
+        case 'spendable_msatoshi':
+          return data['spendable_msat'];
+
+        case 'msatoshi_to_us':
+          return data['to_us_msat'];
+
+        case 'msatoshi_to_them':
+          return data['to_them_msat'];
+
+        case 'our_channel_reserve_satoshis':
+          return data['our_reserve_msat'];
+
+        case 'their_channel_reserve_satoshis':
+          return data['their_reserve_msat'];
+
         case 'state':
           return this.CLNChannelPendingState[data.state];
 

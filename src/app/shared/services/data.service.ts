@@ -25,7 +25,12 @@ export class DataService implements OnDestroy {
   private APIUrl = API_URL;
   private lnImplementation = '';
   public lnImplementationUpdated: BehaviorSubject<any> = new BehaviorSubject(null);
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [
+    new Subject(), new Subject(), new Subject(),
+    new Subject(), new Subject(), new Subject(),
+    new Subject(), new Subject(), new Subject(),
+    new Subject(), new Subject(), new Subject(), new Subject()
+  ];
 
   constructor(private httpClient: HttpClient, private store: Store<RTLState>, private logger: LoggerService, private snackBar: MatSnackBar, private titleCasePipe: TitleCasePipe) { }
 
@@ -39,7 +44,7 @@ export class DataService implements OnDestroy {
   }
 
   decodePayment(payment: string, fromDialog: boolean) {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       let url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.PAYMENTS_API + '/decode/' + payment;
       if (updatedLnImplementation === 'cln') {
         url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.UTILITY_API + '/decode/' + payment;
@@ -64,7 +69,7 @@ export class DataService implements OnDestroy {
   }
 
   decodePayments(payments: string) {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       let url = '';
       let msg = '';
       if (updatedLnImplementation === 'ecl') {
@@ -93,7 +98,7 @@ export class DataService implements OnDestroy {
   }
 
   getAliasesFromPubkeys(pubkey: string, multiple: boolean) {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       if (multiple) {
         const pubkey_params = new HttpParams().set('pubkeys', pubkey);
         return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.NETWORK_API + '/nodes', { params: pubkey_params });
@@ -104,7 +109,7 @@ export class DataService implements OnDestroy {
   }
 
   signMessage(msg: string) {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       let url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.MESSAGE_API + '/sign';
       if (updatedLnImplementation === 'cln') {
         url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.UTILITY_API + '/sign';
@@ -125,7 +130,7 @@ export class DataService implements OnDestroy {
   }
 
   verifyMessage(msg: string, sign: string) {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       let url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.MESSAGE_API + '/verify';
       if (updatedLnImplementation === 'cln') {
         url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.UTILITY_API + '/verify';
@@ -146,7 +151,7 @@ export class DataService implements OnDestroy {
   }
 
   bumpFee(txid: string, outputIndex: number, targetConf: number | null, satPerByte: number | null) {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       const bumpFeeBody: any = { txid: txid, outputIndex: outputIndex };
       if (targetConf) {
         bumpFeeBody.targetConf = targetConf;
@@ -171,7 +176,7 @@ export class DataService implements OnDestroy {
   }
 
   labelUTXO(txid: string, label: string, overwrite: boolean = true) {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       const labelBody = { txid: txid, label: label, overwrite: overwrite };
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.LABEL_UTXO }));
       return this.httpClient.post(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.WALLET_API + '/label', labelBody).pipe(
@@ -188,7 +193,7 @@ export class DataService implements OnDestroy {
   }
 
   leaseUTXO(txid: string, output_index: number) {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       const leaseBody: any = { txid: txid, outputIndex: output_index };
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.LEASE_UTXO }));
       return this.httpClient.post(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.WALLET_API + '/lease', leaseBody).pipe(
@@ -198,12 +203,7 @@ export class DataService implements OnDestroy {
           this.store.dispatch(fetchTransactions());
           this.store.dispatch(fetchUTXOs());
           const expirationDate = new Date(res.expiration * 1000);
-          const expiryDateInSeconds = Math.round(expirationDate.getTime()) - (expirationDate.getTimezoneOffset() * 60);
-          this.snackBar.open('The UTXO has been leased till ' + new Date(expiryDateInSeconds).toString().
-            substring(4, 21).
-            replace(' ', '/').
-            replace(' ', '/').
-            toUpperCase() + '.');
+          return Math.round(expirationDate.getTime()) - (expirationDate.getTimezoneOffset() * 60);
         }), catchError((err) => {
           this.handleErrorWithoutAlert('Lease UTXO', UI_MESSAGES.LEASE_UTXO, err);
           return throwError(() => new Error(this.extractErrorMessage(err)));
@@ -281,7 +281,7 @@ export class DataService implements OnDestroy {
   }
 
   listNetworkNodes(queryParams: string = '') {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.LIST_NETWORK_NODES }));
       return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.NETWORK_API + '/listNodes' + queryParams).pipe(
         takeUntil(this.unSubs[9]),
@@ -297,7 +297,7 @@ export class DataService implements OnDestroy {
   }
 
   listConfigs() {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_LIST_CONFIGS }));
       return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.UTILITY_API + '/listConfigs').pipe(
         takeUntil(this.unSubs[10]),
@@ -313,7 +313,7 @@ export class DataService implements OnDestroy {
   }
 
   getOrUpdateFunderPolicy(policy?: any, policyMod?: any, lease_feeBaseMsat?: any, lease_fee_basis?: any, channelFeeMaxBaseMsat?: any, channelFeeMaxProportional?: any) {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       const postParams = policy ? { policy: policy, policy_mod: policyMod, lease_fee_base_msat: lease_feeBaseMsat, lease_fee_basis: lease_fee_basis, channel_fee_max_base_msat: channelFeeMaxBaseMsat, channel_fee_max_proportional_thousandths: channelFeeMaxProportional } : null;
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_FUNDER_POLICY }));
       return this.httpClient.post(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.CHANNELS_API + '/funderUpdate', postParams).pipe(
@@ -330,6 +330,19 @@ export class DataService implements OnDestroy {
         })
       );
     }));
+  }
+
+  circularRebalance(amountMSat: number, sourceShortChannelId: string = '', sourceNodeId: string = '', targetShortChannelId: string = '', targetNodeId: string = '', ignoreNodeIds: string[] = [], format: string = 'shortChannelId') {
+    const url = this.APIUrl + '/' + this.lnImplementation + API_END_POINTS.CHANNELS_API + '/circularRebalance';
+    const reqBody = { amountMsat: amountMSat, sourceShortChannelId: sourceShortChannelId, sourceNodeId: sourceNodeId, targetShortChannelId: targetShortChannelId, targetNodeId: targetNodeId, ignoreNodeIds: ignoreNodeIds, format: format };
+    return this.httpClient.post(url, reqBody).pipe(
+      takeUntil(this.unSubs[12]),
+      map((res: any) => res),
+      catchError((err) => {
+        this.handleErrorWithoutAlert('Rebalance Channel', UI_MESSAGES.REBALANCE_CHANNEL, err);
+        return throwError(() => err.error);
+      })
+    );
   }
 
   mapAliases = (payload: any, storedChannels: ChannelCLN[]) => {

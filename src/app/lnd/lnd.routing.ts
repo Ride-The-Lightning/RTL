@@ -46,77 +46,77 @@ export const LndRoutes: Routes = [
     path: '', component: LNDRootComponent,
     children: [
       { path: '', pathMatch: <PathMatch>'full', redirectTo: 'home' },
-      { path: 'home', component: HomeComponent, canActivate: [LNDUnlockedGuard] },
+      { path: 'home', component: HomeComponent, canActivate: [LNDUnlockedGuard()] },
       { path: 'wallet', component: WalletComponent, canActivate: [AuthGuard] },
       {
-        path: 'onchain', component: OnChainComponent, canActivate: [LNDUnlockedGuard], children: [
+        path: 'onchain', component: OnChainComponent, canActivate: [LNDUnlockedGuard()], children: [
           { path: '', pathMatch: <PathMatch>'full', redirectTo: 'receive/utxos' },
-          { path: 'receive/:selTab', component: OnChainReceiveComponent, canActivate: [LNDUnlockedGuard] },
-          { path: 'send/:selTab', component: OnChainSendComponent, data: { sweepAll: false }, canActivate: [LNDUnlockedGuard] },
-          { path: 'sweep/:selTab', component: OnChainSendComponent, data: { sweepAll: true }, canActivate: [LNDUnlockedGuard] }
+          { path: 'receive/:selTab', component: OnChainReceiveComponent, canActivate: [LNDUnlockedGuard()] },
+          { path: 'send/:selTab', component: OnChainSendComponent, data: { sweepAll: false }, canActivate: [LNDUnlockedGuard()] },
+          { path: 'sweep/:selTab', component: OnChainSendComponent, data: { sweepAll: true }, canActivate: [LNDUnlockedGuard()] }
         ]
       },
       {
-        path: 'connections', component: ConnectionsComponent, canActivate: [LNDUnlockedGuard], children: [
+        path: 'connections', component: ConnectionsComponent, canActivate: [LNDUnlockedGuard()], children: [
           { path: '', pathMatch: <PathMatch>'full', redirectTo: 'channels' },
           {
-            path: 'channels', component: ChannelsTablesComponent, canActivate: [LNDUnlockedGuard], children: [
+            path: 'channels', component: ChannelsTablesComponent, canActivate: [LNDUnlockedGuard()], children: [
               { path: '', pathMatch: <PathMatch>'full', redirectTo: 'open' },
-              { path: 'open', component: ChannelOpenTableComponent, canActivate: [LNDUnlockedGuard] },
-              { path: 'pending', component: ChannelPendingTableComponent, canActivate: [LNDUnlockedGuard] },
-              { path: 'closed', component: ChannelClosedTableComponent, canActivate: [LNDUnlockedGuard] },
-              { path: 'activehtlcs', component: ChannelActiveHTLCsTableComponent, canActivate: [LNDUnlockedGuard] }
+              { path: 'open', component: ChannelOpenTableComponent, canActivate: [LNDUnlockedGuard()] },
+              { path: 'pending', component: ChannelPendingTableComponent, canActivate: [LNDUnlockedGuard()] },
+              { path: 'closed', component: ChannelClosedTableComponent, canActivate: [LNDUnlockedGuard()] },
+              { path: 'activehtlcs', component: ChannelActiveHTLCsTableComponent, canActivate: [LNDUnlockedGuard()] }
             ]
           },
-          { path: 'peers', component: PeersComponent, data: { sweepAll: false }, canActivate: [LNDUnlockedGuard] }
+          { path: 'peers', component: PeersComponent, data: { sweepAll: false }, canActivate: [LNDUnlockedGuard()] }
         ]
       },
       {
-        path: 'transactions', component: TransactionsComponent, canActivate: [LNDUnlockedGuard], children: [
+        path: 'transactions', component: TransactionsComponent, canActivate: [LNDUnlockedGuard()], children: [
           { path: '', pathMatch: <PathMatch>'full', redirectTo: 'payments' },
-          { path: 'payments', component: LightningPaymentsComponent, canActivate: [LNDUnlockedGuard] },
-          { path: 'invoices', component: LightningInvoicesComponent, canActivate: [LNDUnlockedGuard] },
-          { path: 'lookuptransactions', component: LookupTransactionsComponent, canActivate: [LNDUnlockedGuard] }
+          { path: 'payments', component: LightningPaymentsComponent, canActivate: [LNDUnlockedGuard()] },
+          { path: 'invoices', component: LightningInvoicesComponent, canActivate: [LNDUnlockedGuard()] },
+          { path: 'lookuptransactions', component: LookupTransactionsComponent, canActivate: [LNDUnlockedGuard()] }
         ]
       },
       {
-        path: 'messages', component: SignVerifyMessageComponent, canActivate: [LNDUnlockedGuard], children: [
+        path: 'messages', component: SignVerifyMessageComponent, canActivate: [LNDUnlockedGuard()], children: [
           { path: '', pathMatch: <PathMatch>'full', redirectTo: 'sign' },
-          { path: 'sign', component: SignComponent, canActivate: [LNDUnlockedGuard] },
-          { path: 'verify', component: VerifyComponent, canActivate: [LNDUnlockedGuard] }
+          { path: 'sign', component: SignComponent, canActivate: [LNDUnlockedGuard()] },
+          { path: 'verify', component: VerifyComponent, canActivate: [LNDUnlockedGuard()] }
         ]
       },
       {
-        path: 'channelbackup', component: BackupComponent, canActivate: [LNDUnlockedGuard], children: [
+        path: 'channelbackup', component: BackupComponent, canActivate: [LNDUnlockedGuard()], children: [
           { path: '', pathMatch: <PathMatch>'full', redirectTo: 'bckup' },
-          { path: 'bckup', component: ChannelBackupTableComponent, canActivate: [LNDUnlockedGuard] },
-          { path: 'restore', component: ChannelRestoreTableComponent, canActivate: [LNDUnlockedGuard] }
+          { path: 'bckup', component: ChannelBackupTableComponent, canActivate: [LNDUnlockedGuard()] },
+          { path: 'restore', component: ChannelRestoreTableComponent, canActivate: [LNDUnlockedGuard()] }
         ]
       },
       {
-        path: 'routing', component: RoutingComponent, canActivate: [LNDUnlockedGuard], children: [
+        path: 'routing', component: RoutingComponent, canActivate: [LNDUnlockedGuard()], children: [
           { path: '', pathMatch: <PathMatch>'full', redirectTo: 'forwardinghistory' },
-          { path: 'forwardinghistory', component: ForwardingHistoryComponent, canActivate: [LNDUnlockedGuard] },
-          { path: 'peers', component: RoutingPeersComponent, canActivate: [LNDUnlockedGuard] },
-          { path: 'nonroutingprs', component: NonRoutingPeersComponent, canActivate: [LNDUnlockedGuard] }
+          { path: 'forwardinghistory', component: ForwardingHistoryComponent, canActivate: [LNDUnlockedGuard()] },
+          { path: 'peers', component: RoutingPeersComponent, canActivate: [LNDUnlockedGuard()] },
+          { path: 'nonroutingprs', component: NonRoutingPeersComponent, canActivate: [LNDUnlockedGuard()] }
         ]
       },
       {
-        path: 'reports', component: ReportsComponent, canActivate: [LNDUnlockedGuard], children: [
+        path: 'reports', component: ReportsComponent, canActivate: [LNDUnlockedGuard()], children: [
           { path: '', pathMatch: <PathMatch>'full', redirectTo: 'routingreport' },
-          { path: 'routingreport', component: RoutingReportComponent, canActivate: [LNDUnlockedGuard] },
-          { path: 'transactions', component: TransactionsReportComponent, canActivate: [LNDUnlockedGuard] }
+          { path: 'routingreport', component: RoutingReportComponent, canActivate: [LNDUnlockedGuard()] },
+          { path: 'transactions', component: TransactionsReportComponent, canActivate: [LNDUnlockedGuard()] }
         ]
       },
       {
-        path: 'graph', component: GraphComponent, canActivate: [LNDUnlockedGuard], children: [
+        path: 'graph', component: GraphComponent, canActivate: [LNDUnlockedGuard()], children: [
           { path: '', pathMatch: <PathMatch>'full', redirectTo: 'lookups' },
-          { path: 'lookups', component: LookupsComponent, canActivate: [LNDUnlockedGuard] },
-          { path: 'queryroutes', component: QueryRoutesComponent, canActivate: [LNDUnlockedGuard] }
+          { path: 'lookups', component: LookupsComponent, canActivate: [LNDUnlockedGuard()] },
+          { path: 'queryroutes', component: QueryRoutesComponent, canActivate: [LNDUnlockedGuard()] }
         ]
       },
-      { path: 'lookups', component: LookupsComponent, canActivate: [LNDUnlockedGuard] },
-      { path: 'network', component: NetworkInfoComponent, canActivate: [LNDUnlockedGuard] },
+      { path: 'lookups', component: LookupsComponent, canActivate: [LNDUnlockedGuard()] },
+      { path: 'network', component: NetworkInfoComponent, canActivate: [LNDUnlockedGuard()] },
       { path: '**', component: NotFoundComponent },
       { path: 'rates', redirectTo: 'network' }
     ]

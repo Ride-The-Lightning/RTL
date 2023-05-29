@@ -99,8 +99,11 @@
       color: $accent-color;
     }
   }
-  button.mdc-button.mat-mdc-button-base.mat-mdc-outlined-button{
+  button.mdc-button.mat-mdc-button-base.mat-mdc-outlined-button {
     border-color: $primary-color;
+    &.mat-warn {
+      border-color: $warn-color;
+    }
   }
 
   .mat-tree-node:hover, .mat-nested-tree-node-parent:hover, .mat-select-panel .mat-option:hover, .mat-menu-panel .mat-menu-content .mat-menu-item:hover,
@@ -116,10 +119,6 @@
     & .sidenav-img svg {
       fill: $primary-color;
     }
-  }
-
-  .mat-mdc-progress-spinner .mdc-circular-progress__determinate-circle, .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic {
-    stroke: $background-color;
   }
 
   .spinner-container h2 {
@@ -241,6 +240,8 @@
     & .stroke-color-thin { stroke:#404040; stroke-width: 11.625; stroke-miterlimit: 10; stroke-linecap:"round"; stroke-linejoin:"round"; }
     & .stroke-color-thiner { stroke:#404040; stroke-width: 10.125; stroke-linecap:"round"; stroke-linejoin:"round"; }
     & .stroke-color-thinest { stroke:#404040; stroke-width: 9.40381; stroke-linecap:"round"; stroke-linejoin:"round"; }
+    & .stroke-color-primary-lighter { stroke: $primary-lighter; }
+    & .stroke-color-primary { stroke: $primary-color; }
     & .fill-color-boltz-bk { fill: #313131; }
     & .fill-color-0 { fill: #CBCBCB; }
     & .fill-color-1 { fill: #FFFFFF; }
@@ -309,6 +310,7 @@
 
   .material-icons {
     &.mat-icon-no-color, &.info-icon {
+      font-size: 100%;
       color: $foreground-secondary-text;
       &.info-icon-primary {
         color: $primary-color;

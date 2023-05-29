@@ -51,7 +51,6 @@
               </mat-form-field>
             </div>
           </div>
-          <div *ngIf="isCompatibleVersion" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-sm="space-between center" fxLayout.gt-sm="row wrap">
           <mat-expansion-panel fxLayout="column" fxFlex="100" class="flat-expansion-panel mt-2" expanded="false" (closed)="onAdvancedPanelToggle(true)" (opened)="onAdvancedPanelToggle(false)">
             <mat-expansion-panel-header>
               <mat-panel-title>
@@ -64,7 +63,7 @@
                   <mat-label>Coin Selection</mat-label>
                   <mat-select tabindex="8" multiple [(value)]="selUTXOs" (selectionChange)="onUTXOSelectionChange($event)">
                     <mat-select-trigger>{{totalSelectedUTXOAmount | number}} Sats ({{selUTXOs.length > 1 ? selUTXOs.length + ' UTXOs' : '1 UTXO'}})</mat-select-trigger>
-                    <mat-option *ngFor="let utxo of utxos" [value]="utxo">{{utxo.value | number}} Sats</mat-option>
+                    <mat-option *ngFor="let utxo of utxos" [value]="utxo">{{utxo.amount_msat/1000 | number:'1.0-0'}} Sats</mat-option>
                   </mat-select>
                 </mat-form-field>
                 <div fxFlex="60" fxLayout="row" fxLayoutAlign="start center">
@@ -76,7 +75,6 @@
               </div>
             </div>
           </mat-expansion-panel>    
-        </div>
         <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch"></div>
         <div *ngIf="sendFundError !== ''" fxFlex="100" class="alert alert-danger mt-1">
           <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>

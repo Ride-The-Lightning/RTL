@@ -121,6 +121,9 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
         data: {
           type: AlertTypeEnum.INFORMATION,
           alertTitle: 'Peer Information',
+          goToFieldValue: selPeer.pub_key,
+          goToName: 'Graph lookup',
+          goToLink: '/lnd/graph/lookups',
           showQRName: 'Public Key',
           showQRField: selPeer.pub_key,
           message: reorderedPeer

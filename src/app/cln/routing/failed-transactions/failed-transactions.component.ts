@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -56,13 +55,11 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe, private router: Router, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
   ngOnInit() {
-    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-    this.router.onSameUrlNavigation = 'reload';
     this.store.dispatch(getForwardingHistory({ payload: { status: CLNForwardingEventsStatusEnum.FAILED } }));
     this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[0])).
       subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
@@ -110,9 +107,9 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
       { key: 'resolved_time', value: selFEvent.resolved_time, title: 'Resolved Time', width: 50, type: DataTypeEnum.DATE_TIME }],
       [{ key: 'in_channel_alias', value: selFEvent.in_channel_alias, title: 'Inbound Channel', width: 50, type: DataTypeEnum.STRING },
       { key: 'out_channel_alias', value: selFEvent.out_channel_alias, title: 'Outbound Channel', width: 50, type: DataTypeEnum.STRING }],
-      [{ key: 'in_msatoshi', value: selFEvent.in_msatoshi, title: 'Amount In (mSats)', width: 33, type: DataTypeEnum.NUMBER },
-      { key: 'out_msatoshi', value: selFEvent.out_msatoshi, title: 'Amount Out (mSats)', width: 33, type: DataTypeEnum.NUMBER },
-      { key: 'fee', value: selFEvent.fee, title: 'Fee (mSats)', width: 34, type: DataTypeEnum.NUMBER }]
+      [{ key: 'in_msatoshi', value: selFEvent.in_msat, title: 'Amount In (mSats)', width: 33, type: DataTypeEnum.NUMBER },
+      { key: 'out_msatoshi', value: selFEvent.out_msat, title: 'Amount Out (mSats)', width: 33, type: DataTypeEnum.NUMBER },
+      { key: 'fee', value: selFEvent.fee_msat, title: 'Fee (mSats)', width: 34, type: DataTypeEnum.NUMBER }]
     ];
     if (selFEvent.payment_hash) {
       reorderedFHEvent?.unshift([{ key: 'payment_hash', value: selFEvent.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }]);
@@ -142,12 +139,11 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
       let rowToFilter = '';
       switch (this.selFilterBy) {
         case 'all':
-          rowToFilter = (rowData.received_time ? this.datePipe.transform(new Date(rowData.received_time * 1000), 'dd/MMM/YYYY HH:mm')!.toLowerCase() : '') +
-          (rowData.resolved_time ? this.datePipe.transform(new Date(rowData.resolved_time * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() : '') +
-          (rowData.payment_hash ? rowData.payment_hash.toLowerCase() : '') +
-          (rowData.in_channel ? rowData.in_channel.toLowerCase() : '') + (rowData.out_channel ? rowData.out_channel.toLowerCase() : '') +
-          (rowData.in_channel_alias ? rowData.in_channel_alias.toLowerCase() : '') + (rowData.out_channel_alias ? rowData.out_channel_alias.toLowerCase() : '') +
-          (rowData.in_msatoshi ? (rowData.in_msatoshi / 1000) : '') + (rowData.out_msatoshi ? (rowData.out_msatoshi / 1000) : '') + (rowData.fee ? rowData.fee : '');
+          rowToFilter = (rowData.received_time ? this.datePipe.transform(new Date(rowData.received_time * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() + ' ' : '') +
+          (rowData.resolved_time ? this.datePipe.transform(new Date(rowData.resolved_time * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() + ' ' : '') +
+          (rowData.in_channel ? rowData.in_channel.toLowerCase() + ' ' : '') + (rowData.out_channel ? rowData.out_channel.toLowerCase() + ' ' : '') +
+          (rowData.in_channel_alias ? rowData.in_channel_alias.toLowerCase() + ' ' : '') + (rowData.out_channel_alias ? rowData.out_channel_alias.toLowerCase() + ' ' : '') +
+          (rowData.fee_msat ? rowData.fee_msat + ' ' : '') + (rowData.in_msat ? (+rowData.in_msat / 1000) + ' ' : '') + (rowData.out_msat ? (+rowData.out_msat / 1000) + ' ' : '') + (rowData.fee_msat ? rowData.fee_msat + ' ' : '');
           break;
 
         case 'received_time':
@@ -155,9 +151,16 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
           rowToFilter = this.datePipe.transform(new Date((rowData[this.selFilterBy] || 0) * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() || '';
           break;
 
+        case 'fee':
+          rowToFilter = ((rowData['fee_msat'] || 0))?.toString() || '';
+          break;
+
         case 'in_msatoshi':
+          rowToFilter = (+(rowData['in_msat'] || 0) / 1000)?.toString() || '';
+          break;
+
         case 'out_msatoshi':
-          rowToFilter = ((+(rowData[this.selFilterBy] || 0)) / 1000)?.toString() || '';
+          rowToFilter = (+(rowData['out_msat'] || 0) / 1000)?.toString() || '';
           break;
 
         default:
@@ -171,7 +174,21 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
   loadFailedEventsTable(forwardingEvents: ForwardingEvent[]) {
     this.failedForwardingEvents = new MatTableDataSource<ForwardingEvent>([...forwardingEvents]);
     this.failedForwardingEvents.sort = this.sort;
-    this.failedForwardingEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+    this.failedForwardingEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => {
+      switch (sortHeaderId) {
+        case 'in_msatoshi':
+          return data['in_msat'];
+
+        case 'out_msatoshi':
+          return data['out_msat'];
+
+        case 'fee':
+          return data['fee_msat'];
+
+        default:
+          return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+      }
+    };
     this.failedForwardingEvents.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

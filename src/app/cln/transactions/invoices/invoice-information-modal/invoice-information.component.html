@@ -33,7 +33,7 @@
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">{{screenSize === screenSizeEnum.XS ? 'Amount' : 'Amount Requested'}}</h4>
             <span class="foreground-secondary-text">
-              {{(invoice?.msatoshi/1000 || 0) | number}} Sats<ng-container *ngIf="!invoice?.msatoshi || invoice?.msatoshi === '0'"> (zero amount) </ng-container>
+              {{(invoice?.amount_msat/1000 || 0) | number}} Sats<ng-container *ngIf="!invoice?.amount_msat || invoice?.amount_msat === '0'"> (zero amount) </ng-container>
             </span>
           </div>
           <div fxFlex="50">
@@ -42,11 +42,11 @@
               <ng-container *ngIf="invoice?.status === 'paid'">
                 <div *ngIf="flgInvoicePaid" class="invoice-animation-container">
                   <div class="invoice-animation-div">
-                    <span class="wiggle">{{invoice?.msatoshi_received/1000 | number}} Sats</span>
+                    <span class="wiggle">{{invoice?.amount_received_msat/1000 | number}} Sats</span>
                     <span *ngFor="let i of [].constructor(35)" class="particles-circle"></span>
                   </div>
                 </div>
-                <div *ngIf="!flgInvoicePaid">{{invoice?.msatoshi_received/1000 | number}} Sats</div>
+                <div *ngIf="!flgInvoicePaid">{{invoice?.amount_received_msat/1000 | number}} Sats</div>
               </ng-container>
               <ng-container *ngIf="invoice?.status !== 'paid'">
                 <span *ngIf="invoice?.status !== 'unpaid' || !flgVersionCompatible">-</span>

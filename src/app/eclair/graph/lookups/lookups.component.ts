@@ -23,7 +23,6 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
 
   @ViewChild('form', { static: true }) form: any;
   public lookupKeyCtrl = new UntypedFormControl();
-  // Public lookupKey = '';
   public nodeLookupValue: LookupNode = {};
   public channelLookupValue = [];
   public flgSetLookupValue = false;
@@ -44,6 +43,10 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    if (window.history.state && window.history.state.lookupType) {
+      this.selectedFieldId = +window.history.state.lookupType || 0;
+      this.lookupKeyCtrl.setValue(window.history.state.lookupValue || '');
+    }
     this.actions.pipe(
       takeUntil(this.unSubs[0]),
       filter((action) => (action.type === ECLActions.SET_LOOKUP_ECL || action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL))).

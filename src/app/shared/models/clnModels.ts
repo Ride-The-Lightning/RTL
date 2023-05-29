@@ -42,8 +42,7 @@ export interface GetInfo {
   blockheight?: number;
   network?: string;
   chains?: GetInfoChain[];
-  msatoshi_fees_collected?: number;
-  fees_collected_msat?: string;
+  fees_collected_msat?: number;
   lnImplementation?: string;
 }
 
@@ -77,12 +76,10 @@ export interface Invoice {
   bolt11?: string;
   bolt12?: string;
   payment_hash?: string;
-  msatoshi?: number;
-  amount_msat?: string;
+  amount_msat?: number;
   status?: string;
   pay_index?: number;
-  msatoshi_received?: number;
-  amount_received_msat?: string;
+  amount_received_msat?: number;
   paid_at?: number;
   payment_preimage?: string;
   description?: string;
@@ -138,14 +135,12 @@ export interface Hop {
 }
 
 export interface MPP {
-  amount_msat?: string;
-  amount_sent_msat?: string;
   bolt11?: string;
   created_at?: number;
   destination?: string;
   id?: number;
-  msatoshi?: number;
-  msatoshi_sent?: number;
+  amount_msat?: number;
+  amount_sent_msat?: number;
   payment_hash?: string;
   payment_preimage?: string;
   status?: string;
@@ -153,15 +148,13 @@ export interface MPP {
 }
 
 export interface Payment {
-  amount_msat?: string;
-  amount_sent_msat?: string;
   bolt11?: string;
   bolt12?: string;
   created_at?: number;
   destination?: string;
   id?: number;
-  msatoshi?: number;
-  msatoshi_sent?: number;
+  amount_msat?: number;
+  amount_sent_msat?: number;
   payment_hash?: string;
   payment_preimage?: string;
   status?: string;
@@ -179,8 +172,7 @@ export interface PayRequest {
   created_at?: number;
   expiry?: number;
   payee?: string;
-  msatoshi?: number;
-  amount_msat?: string;
+  amount_msat?: number;
   description?: string;
   min_final_cltv_expiry?: number;
   payment_hash?: string;
@@ -212,8 +204,7 @@ interface Recurrence {
 
 export interface OfferRequest {
   offer_id?: string;
-  offer_amount?: number | null;
-  offer_amount_msat?: string;
+  offer_amount_msat?: number;
   type?: string;
   valid?: boolean;
   offer_node_id?: string;
@@ -252,12 +243,9 @@ export interface ForwardingEvent {
   out_channel?: string;
   in_channel_alias?: string;
   out_channel_alias?: string;
-  in_msatoshi?: number;
-  in_msat?: string;
-  out_msatoshi?: number;
-  out_msat?: string;
-  fee?: number;
-  fee_msat?: string;
+  in_msat?: number;
+  out_msat?: number;
+  fee_msat?: number;
   status?: string;
   received_time?: number;
   resolved_time?: number;
@@ -266,8 +254,7 @@ export interface ForwardingEvent {
 export interface LocalFailedEvent {
   in_channel?: string;
   in_channel_alias?: string;
-  in_msatoshi?: number;
-  in_msat?: string;
+  in_msat?: number;
   out_channel?: string;
   out_channel_alias?: string;
   status?: string;
@@ -287,8 +274,7 @@ export interface Routes {
   id?: string;
   channel?: string;
   direction?: number;
-  msatoshi?: number;
-  amount_msat?: string;
+  amount_msat?: number;
   delay?: number;
   alias?: string;
 }
@@ -297,22 +283,39 @@ export interface QueryRoutes {
   routes: Routes[];
 }
 
-export interface Channel {
+export interface ChannelHTLC {
+  direction?: string;
   id?: string;
+  amount_msat?: number;
+  expiry?: number;
+  payment_hash?: string;
+  state?: string;
+  local_trimmed?: boolean;
+}
+
+export interface Channel {
+  id?: string; // For Backward compatibility
+  peer_id?: string;
   alias?: string;
-  connected?: boolean;
+  connected?: boolean; // For Backward compatibility
+  peer_connected?: boolean;
   state?: string;
   short_channel_id?: string;
   channel_id?: string;
   funding_txid?: string;
   private?: boolean;
-  msatoshi_to_us?: number;
-  msatoshi_to_them?: number;
-  msatoshi_total?: number;
-  their_channel_reserve_satoshis?: string;
-  our_channel_reserve_satoshis?: string;
-  spendable_msatoshi?: string;
+  to_us_msat?: number;
+  to_them_msat?: number;
+  total_msat?: number;
+  their_reserve_msat?: number;
+  our_reserve_msat?: number;
+  spendable_msat?: number;
   direction?: number;
+  htlcs?: ChannelHTLC[];
+  receivable_msat?: number;
+  fee_base_msat?: number;
+  fee_proportional_millionths?: number;
+  dust_limit_msat?: number;
   balancedness?: number; // Between 0-1-0
 }
 
@@ -355,6 +358,12 @@ export interface LookupNode {
   };
 }
 
+export interface FeeBlockEstimates {
+  blockcount?: number;
+  feerate?: number;
+  smoothed_feerate?: number;
+}
+
 export interface FeeRatePerObj {
   min_acceptable?: number;
   max_acceptable?: number;
@@ -364,6 +373,8 @@ export interface FeeRatePerObj {
   delayed_to_us?: number;
   htlc_resolution?: number;
   penalty?: number;
+  floor?: number;
+  estimates?: FeeBlockEstimates[];
 }
 
 export interface OnChainFeeEstimates {
@@ -383,7 +394,7 @@ export interface FeeRates {
 export interface UTXO {
   txid?: string;
   output?: number;
-  value?: number;
+  amount_msat?: number;
   status?: string;
   blockheight?: string;
   scriptpubkey?: string;

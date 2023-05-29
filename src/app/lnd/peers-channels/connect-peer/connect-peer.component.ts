@@ -50,9 +50,10 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.totalBalance = this.data.message?.balance || 0;
+    const pAddr = this.data.message?.peer?.pub_key ? (this.data.message?.peer?.pub_key + (this.data.message?.peer?.address ? ('@' + this.data.message?.peer?.address) : '')) : '';
     this.peerFormGroup = this.formBuilder.group({
       hiddenAddress: ['', [Validators.required]],
-      peerAddress: ['', [Validators.required]]
+      peerAddress: [pAddr, [Validators.required]]
     });
     this.channelFormGroup = this.formBuilder.group({
       fundingAmount: ['', [Validators.required, Validators.min(1), Validators.max(this.totalBalance)]],

@@ -13,7 +13,6 @@
     "noImplicitAny": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "suppressImplicitAnyIndexErrors": true,
     "sourceMap": false,
     "declaration": false,
     "downlevelIteration": true,

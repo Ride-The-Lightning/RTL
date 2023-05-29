@@ -1,58 +1,60 @@
-<div *ngIf="errorMessage?.trim() === '';  else errorBlock" fxLayout="column" fxLayout.gt-xs="row" fxFlex="100" fxLayoutAlign="stretch stretch">
-  <div fxLayout="column" fxFlex="50" fxLayoutAlign="space-between stretch" class="mt-2">
-    <div>
-      <h4 fxLayoutAlign="start start" class="dashboard-info-title">
-        Opening Channel
-        <mat-icon matTooltip="Estimated cost of typical channel open" matTooltipPosition="below" class="info-icon info-icon-primary">info_outline</mat-icon>
-      </h4>
-      <div class="overflow-wrap dashboard-info-value">{{feeRates?.onchain_fee_estimates?.opening_channel_satoshis | number}}</div>
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="stretch stretch">
+  <div *ngIf="errorMessage?.trim() === '';  else errorBlock" fxLayout="column" fxLayout.gt-xs="row" fxFlex="62" fxLayoutAlign="stretch stretch">
+    <div fxLayout="column" fxFlex="50" fxLayoutAlign="space-between stretch" class="mt-2">
+      <div>
+        <h4 fxLayoutAlign="start start" class="dashboard-info-title">
+          Opening Channel
+          <mat-icon matTooltip="Estimated cost of typical channel open" matTooltipPosition="below" class="info-icon info-icon-primary">info_outline</mat-icon>
+        </h4>
+        <div class="overflow-wrap dashboard-info-value">{{feeRates?.onchain_fee_estimates?.opening_channel_satoshis | number}}</div>
+      </div>
+      <div>
+        <h4 fxLayoutAlign="start start" class="dashboard-info-title">
+          Mutual Close
+          <mat-icon matTooltip="Estimated cost of typical channel close" matTooltipPosition="below" class="info-icon info-icon-primary">info_outline</mat-icon>
+        </h4>
+        <div class="overflow-wrap dashboard-info-value">{{feeRates?.onchain_fee_estimates?.mutual_close_satoshis | number}}</div>
+      </div>
+      <div>
+        <h4 fxLayoutAlign="start start" class="dashboard-info-title">
+          Unilateral Close
+          <mat-icon matTooltip="Estimated cost of typical unilateral close (without HTLCs)" matTooltipPosition="below" class="info-icon info-icon-primary">info_outline</mat-icon>
+        </h4>
+        <div class="overflow-wrap dashboard-info-value">{{feeRates?.onchain_fee_estimates?.unilateral_close_satoshis | number}}</div>
+      </div>
+      <div fxFlex="12">
+        <h4 fxLayoutAlign="start start" class="dashboard-info-title"></h4>
+        <div class="overflow-wrap dashboard-info-value"></div>
+      </div>
     </div>
-    <div>
-      <h4 fxLayoutAlign="start start" class="dashboard-info-title">
-        Mutual Close
-        <mat-icon matTooltip="Estimated cost of typical channel close" matTooltipPosition="below" class="info-icon info-icon-primary">info_outline</mat-icon>
-      </h4>
-      <div class="overflow-wrap dashboard-info-value">{{feeRates?.onchain_fee_estimates?.mutual_close_satoshis | number}}</div>
-    </div>
-    <div>
-      <h4 fxLayoutAlign="start start" class="dashboard-info-title">
-        Unilateral Close
-        <mat-icon matTooltip="Estimated cost of typical unilateral close (without HTLCs)" matTooltipPosition="below" class="info-icon info-icon-primary">info_outline</mat-icon>
-      </h4>
-      <div class="overflow-wrap dashboard-info-value">{{feeRates?.onchain_fee_estimates?.unilateral_close_satoshis | number}}</div>
-    </div>
-    <div fxFlex="12">
-      <h4 fxLayoutAlign="start start" class="dashboard-info-title"></h4>
-      <div class="overflow-wrap dashboard-info-value"></div>
+    <div fxLayout="column" fxFlex="50" fxLayoutAlign="space-between stretch" class="mt-2">
+      <div>
+        <h4 fxLayoutAlign="start start" class="dashboard-info-title">
+          HTLC Timeout
+          <mat-icon matTooltip="Estimated cost of typical HTLC timeout transaction" matTooltipPosition="below" class="info-icon info-icon-primary">info_outline</mat-icon>
+        </h4>
+        <div class="overflow-wrap dashboard-info-value">{{feeRates?.onchain_fee_estimates?.htlc_timeout_satoshis | number}}</div>
+      </div>
+      <div>
+        <h4 fxLayoutAlign="start start" class="dashboard-info-title">
+          HTLC Success
+          <mat-icon matTooltip="Estimated cost of typical HTLC fulfillment transaction" matTooltipPosition="below" class="info-icon info-icon-primary">info_outline</mat-icon>
+        </h4>
+        <div class="overflow-wrap dashboard-info-value">{{feeRates?.onchain_fee_estimates?.htlc_success_satoshis | number}}</div>
+      </div>
+      <div fxFlex="12">
+        <h4 fxLayoutAlign="start start" class="dashboard-info-title"></h4>
+        <div class="overflow-wrap dashboard-info-value"></div>
+      </div>
+      <div fxFlex="12">
+        <h4 fxLayoutAlign="start start" class="dashboard-info-title"></h4>
+        <div class="overflow-wrap dashboard-info-value"></div>
+      </div>
     </div>
   </div>
-  <div fxLayout="column" fxFlex="50" fxLayoutAlign="space-between stretch" class="mt-2">
-    <div>
-      <h4 fxLayoutAlign="start start" class="dashboard-info-title">
-        HTLC Timeout
-        <mat-icon matTooltip="Estimated cost of typical HTLC timeout transaction" matTooltipPosition="below" class="info-icon info-icon-primary">info_outline</mat-icon>
-      </h4>
-      <div class="overflow-wrap dashboard-info-value">{{feeRates?.onchain_fee_estimates?.htlc_timeout_satoshis | number}}</div>
+  <ng-template #errorBlock>
+    <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between" class="p-2">
+      <p>{{errorMessage}}</p>
     </div>
-    <div>
-      <h4 fxLayoutAlign="start start" class="dashboard-info-title">
-        HTLC Success
-        <mat-icon matTooltip="Estimated cost of typical HTLC fulfillment transaction" matTooltipPosition="below" class="info-icon info-icon-primary">info_outline</mat-icon>
-      </h4>
-      <div class="overflow-wrap dashboard-info-value">{{feeRates?.onchain_fee_estimates?.htlc_success_satoshis | number}}</div>
-    </div>
-    <div fxFlex="12">
-      <h4 fxLayoutAlign="start start" class="dashboard-info-title"></h4>
-      <div class="overflow-wrap dashboard-info-value"></div>
-    </div>
-    <div fxFlex="12">
-      <h4 fxLayoutAlign="start start" class="dashboard-info-title"></h4>
-      <div class="overflow-wrap dashboard-info-value"></div>
-    </div>
-  </div>
+  </ng-template>
 </div>
-<ng-template #errorBlock>
-  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between" class="p-2">
-    <p>{{errorMessage}}</p>
-  </div>
-</ng-template>

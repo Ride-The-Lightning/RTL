@@ -72,17 +72,12 @@ export class CLWebSocketClient {
                 this.wsServer.sendEventsToAllLNClients(msgStr, clWsClt.selectedNode);
             };
             clWsClt.webSocketClient.onerror = (err) => {
-                if (clWsClt.selectedNode.api_version === '' || !clWsClt.selectedNode.api_version || this.common.isVersionCompatible(clWsClt.selectedNode.api_version, '0.6.0')) {
-                    this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'ERROR', fileName: 'CLWebSocket', msg: 'Web socket error', error: err });
-                    const errStr = ((typeof err === 'object' && err.message) ? JSON.stringify({ error: err.message }) : (typeof err === 'object') ? JSON.stringify({ error: err }) : ('{ "error": ' + err + ' }'));
-                    this.wsServer.sendErrorToAllLNClients(errStr, clWsClt.selectedNode);
-                    clWsClt.webSocketClient.close();
-                    if (clWsClt.reConnect) {
-                        this.reconnet(clWsClt);
-                    }
-                }
-                else {
-                    clWsClt.reConnect = false;
+                this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'ERROR', fileName: 'CLWebSocket', msg: 'Web socket error', error: err });
+                const errStr = ((typeof err === 'object' && err.message) ? JSON.stringify({ error: err.message }) : (typeof err === 'object') ? JSON.stringify({ error: err }) : ('{ "error": ' + err + ' }'));
+                this.wsServer.sendErrorToAllLNClients(errStr, clWsClt.selectedNode);
+                clWsClt.webSocketClient.close();
+                if (clWsClt.reConnect) {
+                    this.reconnet(clWsClt);
                 }
             };
         };

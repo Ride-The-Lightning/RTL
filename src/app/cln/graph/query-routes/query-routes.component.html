@@ -58,7 +58,7 @@
       </ng-container>
       <ng-container matColumnDef="msatoshi">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Amount (Sats)</th>
-        <td *matCellDef="let hop" mat-cell><span fxLayoutAlign="end center">{{hop?.msatoshi/1000 | number}}</span></td>
+        <td *matCellDef="let hop" mat-cell><span fxLayoutAlign="end center">{{hop?.amount_msat/1000 | number}}</span></td>
       </ng-container>
       <ng-container matColumnDef="actions">
         <th *matHeaderCellDef mat-header-cell>

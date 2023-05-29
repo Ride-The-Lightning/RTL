@@ -42,7 +42,7 @@ if (isDevMode()) { isDevEnvironemt = true; }
     routing,
     LayoutModule,
     HammerModule,
-    UserIdleModule.forRoot({ idle: (HOUR_SECONDS-10), timeout: 10, ping: 12000 }),
+    UserIdleModule.forRoot({ idle: (HOUR_SECONDS - 10), timeout: 10, ping: 12000 }),
     StoreModule.forRoot(
       { root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer },
       {
@@ -57,7 +57,7 @@ if (isDevMode()) { isDevEnvironemt = true; }
   declarations: [AppComponent],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    AuthGuard, SessionService, DataService, WebSocketClientService, LoopService, CommonService, BoltzService
+    SessionService, DataService, WebSocketClientService, LoopService, CommonService, BoltzService
   ],
   bootstrap: [AppComponent]
 })

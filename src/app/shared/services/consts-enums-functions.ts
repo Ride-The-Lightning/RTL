@@ -12,7 +12,7 @@ export const HOUR_SECONDS = 3600;
 
 export const DEFAULT_INVOICE_EXPIRY = HOUR_SECONDS * 24 * 7;
 
-export const VERSION = '0.13.6-beta';
+export const VERSION = '0.14.0-beta';
 
 export const API_URL = isDevMode() ? 'http://localhost:3000/rtl/api' : './api';
 
@@ -371,6 +371,7 @@ export const UI_MESSAGES = {
   GET_PAGE_SETTINGS: 'Getting Page Settings...',
   SET_PAGE_SETTINGS: 'Setting Page Settings...',
   UPDATE_PAGE_SETTINGS: 'Updating Page Layout...',
+  REBALANCE_CHANNEL: 'Rebalancing Channel...',
   LOG_OUT: 'Logging Out...'
 };
 
@@ -644,7 +645,9 @@ export const NODE_FEATURES_CLN = [
   { range: { min: 18, max: 19 }, description: 'Node can create large channels' },
   { range: { min: 20, max: 21 }, description: 'Anchor outputs' },
   { range: { min: 22, max: 23 }, description: 'Anchor commitment type with zero fee HTLC transactions' },
-  { range: { min: 26, max: 27 }, description: 'Future segwit versions allowed in shutdown' }
+  { range: { min: 26, max: 27 }, description: 'Future segwit versions allowed in shutdown' },
+  { range: { min: 30, max: 31 }, description: 'AMP support' },
+  { range: { min: 44, max: 45 }, description: 'Explicit commitment type' }
 ];
 
 export enum NodeFeaturesECL {
@@ -736,7 +739,10 @@ export const CLN_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
       columnSelection: ['alias', 'connected', 'state', 'msatoshi_total'] },
     { tableId: 'peers', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.ASCENDING,
       columnSelectionSM: ['alias', 'id'],
-      columnSelection: ['alias', 'id', 'netaddr'] }
+      columnSelection: ['alias', 'id', 'netaddr'] },
+    { tableId: 'active_HTLCs', recordsPerPage: PAGE_SIZE, sortBy: 'expiry', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['amount_msat', 'direction', 'expiry'],
+      columnSelection: ['amount_msat', 'direction', 'expiry', 'state'] }
   ] },
   { pageId: 'liquidity_ads', tables: [
     { tableId: 'liquidity_ads', recordsPerPage: PAGE_SIZE, sortBy: 'channel_opening_fee', sortOrder: SortOrderEnum.ASCENDING,
@@ -783,11 +789,11 @@ export const CLN_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
     { tableId: 'query_routes', recordsPerPage: PAGE_SIZE, sortBy: 'msatoshi', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['alias', 'direction', 'msatoshi'],
       columnSelection: ['alias', 'channel', 'direction', 'delay', 'msatoshi'] }
-  ] },
-  { pageId: 'peerswap', tables: [
-    { tableId: 'swaps', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,
-      columnSelectionSM: ['id', 'state', 'amount'],
-      columnSelection: ['id', 'alias', 'short_channel_id', 'created_at', 'state', 'amount'] }
+  // ] },
+  // { pageId: 'peerswap', tables: [
+  //   { tableId: 'swaps', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,
+  //     columnSelectionSM: ['id', 'state', 'amount'],
+  //     columnSelection: ['id', 'alias', 'short_channel_id', 'created_at', 'state', 'amount'] }
   ] }
 ];
 
@@ -820,6 +826,11 @@ export const CLN_PAGE_DEFS: CLNPageDefinitions = {
     peers: {
       maxColumns: 3,
       allowedColumns: [{ column:'alias' }, { column:'id' }, { column:'netaddr', label: 'Network Address' }]
+    },
+    active_HTLCs: {
+      maxColumns: 7,
+      allowedColumns: [{ column:'amount_msat', label: 'Amount (Sats)' }, { column:'direction' }, { column:'id', label: 'HTLC ID' }, { column:'state' },
+      { column:'expiry' }, { column:'payment_hash' }, { column:'local_trimmed' }]
     }
   },
   liquidity_ads: {
@@ -889,12 +900,12 @@ export const CLN_PAGE_DEFS: CLNPageDefinitions = {
       maxColumns: 6,
       allowedColumns: [{ column:'id' }, { column:'alias' }, { column:'channel' }, { column:'direction' }, { column:'delay' }, { column:'msatoshi', label: 'Amount' }]
     }
-  },
-  peerswap: {
-    swaps: {
-      maxColumns: 6,
-      allowedColumns: [{ column:'id' }, { column:'alias' }, { column:'short_channel_id' }, { column:'created_at' }, { column:'state' }, { column:'amount' }]
-    }
+  // },
+  // peerswap: {
+  //   swaps: {
+  //     maxColumns: 6,
+  //     allowedColumns: [{ column:'id' }, { column:'alias' }, { column:'short_channel_id' }, { column:'created_at' }, { column:'state' }, { column:'amount' }]
+  //   }
   }
 };
 

@@ -1,0 +1,34 @@
+@import "../../../../../shared/theme/styles/constants.scss";
+
+.mat-column-amount_msat {
+  .htlc-row-span:not(:first-of-type) {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+.htlc-row-span {
+  min-height: 3rem;
+  &.ellipsis-parent {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.mat-column-actions {
+  & .htlc-group-head, & .htlc-group-details {
+    min-height: 3rem;
+  }
+  
+  & .btn-htlc-expand {
+    min-width: $table-actions-min-width;
+    width: $table-actions-min-width;
+    margin: 0;
+  }
+
+  & .btn-htlc-info {
+    min-width: $table-actions-min-width - 1rem;
+    min-width: $table-actions-min-width - 1rem;
+    margin: 0;
+  }
+}
