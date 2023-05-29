@@ -57,7 +57,7 @@ if (isDevMode()) { isDevEnvironemt = true; }
   declarations: [AppComponent],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    AuthGuard, SessionService, DataService, WebSocketClientService, LoopService, CommonService, BoltzService
+    SessionService, DataService, WebSocketClientService, LoopService, CommonService, BoltzService
   ],
   bootstrap: [AppComponent]
 })

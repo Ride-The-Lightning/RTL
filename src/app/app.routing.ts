@@ -26,35 +26,35 @@ type PathMatch = 'full' | 'prefix' | undefined;
 
 export const routes: Routes = [
   { path: '', pathMatch: <PathMatch>'full', redirectTo: 'login' },
-  { path: 'lnd', loadChildren: () => import('./lnd/lnd.module').then((childModule) => childModule.LNDModule), canActivate: [AuthGuard] },
-  { path: 'cln', loadChildren: () => import('./cln/cln.module').then((childModule) => childModule.CLNModule), canActivate: [AuthGuard] },
-  { path: 'ecl', loadChildren: () => import('./eclair/ecl.module').then((childModule) => childModule.ECLModule), canActivate: [AuthGuard] },
+  { path: 'lnd', loadChildren: () => import('./lnd/lnd.module').then((childModule) => childModule.LNDModule), canActivate: [AuthGuard()] },
+  { path: 'cln', loadChildren: () => import('./cln/cln.module').then((childModule) => childModule.CLNModule), canActivate: [AuthGuard()] },
+  { path: 'ecl', loadChildren: () => import('./eclair/ecl.module').then((childModule) => childModule.ECLModule), canActivate: [AuthGuard()] },
   {
-    path: 'settings', component: SettingsComponent, canActivate: [AuthGuard], children: [
+    path: 'settings', component: SettingsComponent, canActivate: [AuthGuard()], children: [
       { path: '', pathMatch: <PathMatch>'full', redirectTo: 'app' },
-      { path: 'app', component: AppSettingsComponent, canActivate: [AuthGuard] },
-      { path: 'auth', component: AuthSettingsComponent, canActivate: [AuthGuard] },
-      { path: 'bconfig', component: BitcoinConfigComponent, canActivate: [AuthGuard] }
+      { path: 'app', component: AppSettingsComponent, canActivate: [AuthGuard()] },
+      { path: 'auth', component: AuthSettingsComponent, canActivate: [AuthGuard()] },
+      { path: 'bconfig', component: BitcoinConfigComponent, canActivate: [AuthGuard()] }
     ]
   },
   {
-    path: 'config', component: NodeConfigComponent, canActivate: [AuthGuard], children: [
+    path: 'config', component: NodeConfigComponent, canActivate: [AuthGuard()], children: [
       { path: '', pathMatch: <PathMatch>'full', redirectTo: 'nodesettings' },
-      { path: 'nodesettings', component: NodeSettingsComponent, canActivate: [AuthGuard] },
-      { path: 'pglayout', component: PageSettingsComponent, canActivate: [AuthGuard] },
+      { path: 'nodesettings', component: NodeSettingsComponent, canActivate: [AuthGuard()] },
+      { path: 'pglayout', component: PageSettingsComponent, canActivate: [AuthGuard()] },
       {
-        path: 'services', component: ServicesSettingsComponent, canActivate: [AuthGuard], children: [
+        path: 'services', component: ServicesSettingsComponent, canActivate: [AuthGuard()], children: [
           { path: '', pathMatch: <PathMatch>'full', redirectTo: 'loop' },
-          { path: 'loop', component: LoopServiceSettingsComponent, canActivate: [AuthGuard] },
-          { path: 'boltz', component: BoltzServiceSettingsComponent, canActivate: [AuthGuard] }
+          { path: 'loop', component: LoopServiceSettingsComponent, canActivate: [AuthGuard()] },
+          { path: 'boltz', component: BoltzServiceSettingsComponent, canActivate: [AuthGuard()] }
         ]
       },
-      { path: 'experimental', component: ExperimentalSettingsComponent, canActivate: [AuthGuard] },
-      { path: 'lnconfig', component: LNPConfigComponent, canActivate: [AuthGuard] }
+      { path: 'experimental', component: ExperimentalSettingsComponent, canActivate: [AuthGuard()] },
+      { path: 'lnconfig', component: LNPConfigComponent, canActivate: [AuthGuard()] }
     ]
   },
   {
-    path: 'services', component: LNServicesComponent, canActivate: [AuthGuard], children: [
+    path: 'services', component: LNServicesComponent, canActivate: [AuthGuard()], children: [
       { path: '', pathMatch: <PathMatch>'full', redirectTo: 'loop' },
       { path: 'loop', pathMatch: <PathMatch>'full', redirectTo: 'loop/loopout' },
       { path: 'loop/:selTab', component: LoopComponent },

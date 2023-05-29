@@ -97,9 +97,7 @@ import { ECLUnlockedGuard } from '../shared/services/auth.guard';
     ECLOnChainSendModalComponent,
     ECLChannelInformationComponent
   ],
-  providers: [
-    ECLUnlockedGuard
-  ],
+  providers: [],
   bootstrap: [ECLRootComponent]
 })
 export class ECLModule { }

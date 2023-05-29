@@ -125,9 +125,7 @@ import { CLNUnlockedGuard } from '../shared/services/auth.guard';
     CLNOpenLiquidityChannelComponent,
     CLNChannelActiveHTLCsTableComponent
   ],
-  providers: [
-    CLNUnlockedGuard
-  ],
+  providers: [],
   bootstrap: [CLNRootComponent]
 })
 export class CLNModule { }
