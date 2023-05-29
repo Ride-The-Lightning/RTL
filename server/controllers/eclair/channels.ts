@@ -189,20 +189,20 @@ export const circularRebalance = (req, res, next) => {
             return res.status(201).json({ flgReusingInvoice: !!foundExistingInvoice, invoice: invoice, paymentHash: paymentHash, paymentDetails: payToRouteCallRes, paymentStatus: payStatus });
           }).catch((errRes) => {
             const err = common.handleError(errRes, 'Channels', 'Channel Rebalance From Sent Info Error', req.session.selectedNode);
-            return res.status(err.statusCode).json({ flgReusingInvoice: !!foundExistingInvoice, invoice: invoice, paymentHash: paymentHash, paymentDetails: payToRouteCallRes, paymentStatus: { message: err.message, error: err.error } });
+            return res.status(err.statusCode).json({ flgReusingInvoice: !!foundExistingInvoice, invoice: invoice, paymentHash: paymentHash, paymentDetails: payToRouteCallRes, paymentStatus: err.error });
           });
         }, 3000);
       }).catch((errRes) => {
         const err = common.handleError(errRes, 'Channels', 'Channel Rebalance From Send Payment To Route Error', req.session.selectedNode);
-        return res.status(err.statusCode).json({ flgReusingInvoice: !!foundExistingInvoice, invoice: invoice, paymentHash: paymentHash, paymentDetails: {}, paymentStatus: { message: err.message, error: err.error } });
+        return res.status(err.statusCode).json({ flgReusingInvoice: !!foundExistingInvoice, invoice: invoice, paymentHash: paymentHash, paymentDetails: {}, paymentStatus: err.error });
       });
     }).catch((errRes) => {
       const err = common.handleError(errRes, 'Channels', 'Channel Rebalance From Find Routes Error', req.session.selectedNode);
-      return res.status(err.statusCode).json({ flgReusingInvoice: !!foundExistingInvoice, invoice: (foundExistingInvoice.serialized || ''), paymentHash: '', paymentDetails: {}, paymentStatus: { message: err.message, error: err.error } });
+      return res.status(err.statusCode).json({ flgReusingInvoice: !!foundExistingInvoice, invoice: (foundExistingInvoice.serialized || ''), paymentHash: '', paymentDetails: {}, paymentStatus: err.error });
     });
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Channels', 'Channel Rebalance From List Pending Invoices Error', req.session.selectedNode);
-    return res.status(err.statusCode).json({ flgReusingInvoice: false, invoice: '', paymentHash: '', paymentDetails: {}, paymentStatus: { message: err.message, error: err.error } });
+    return res.status(err.statusCode).json({ flgReusingInvoice: false, invoice: '', paymentHash: '', paymentDetails: {}, paymentStatus: err.error });
   });
 };
 

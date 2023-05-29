@@ -90,7 +90,7 @@ export class CLNQueryRoutesComponent implements OnInit, OnDestroy {
       [{ key: 'id', value: selHop.id, title: 'ID', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'channel', value: selHop.channel, title: 'Channel', width: 50, type: DataTypeEnum.STRING },
       { key: 'alias', value: selHop.alias, title: 'Peer Alias', width: 50, type: DataTypeEnum.STRING }],
-      [{ key: 'amount_msat', value: (selHop.msatoshi || selHop.amount_msat), title: 'Amount (mSat)', width: 34, type: selHop.msatoshi ? DataTypeEnum.STRING : DataTypeEnum.NUMBER },
+      [{ key: 'amount_msat', value: selHop.amount_msat, title: 'Amount (mSat)', width: 34, type: DataTypeEnum.NUMBER },
       { key: 'direction', value: selHop.direction, title: 'Direction', width: 33, type: DataTypeEnum.STRING },
       { key: 'delay', value: selHop.delay, title: 'Delay', width: 33, type: DataTypeEnum.NUMBER }]
     ];

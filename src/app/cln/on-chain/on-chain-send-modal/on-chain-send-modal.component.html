@@ -51,7 +51,6 @@
               </mat-form-field>
             </div>
           </div>
-          <div *ngIf="isCompatibleVersion" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-sm="space-between center" fxLayout.gt-sm="row wrap">
           <mat-expansion-panel fxLayout="column" fxFlex="100" class="flat-expansion-panel mt-2" expanded="false" (closed)="onAdvancedPanelToggle(true)" (opened)="onAdvancedPanelToggle(false)">
             <mat-expansion-panel-header>
               <mat-panel-title>
@@ -76,7 +75,6 @@
               </div>
             </div>
           </mat-expansion-panel>    
-        </div>
         <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch"></div>
         <div *ngIf="sendFundError !== ''" fxFlex="100" class="alert alert-danger mt-1">
           <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>

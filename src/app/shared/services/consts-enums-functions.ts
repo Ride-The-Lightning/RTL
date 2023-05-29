@@ -12,7 +12,7 @@ export const HOUR_SECONDS = 3600;
 
 export const DEFAULT_INVOICE_EXPIRY = HOUR_SECONDS * 24 * 7;
 
-export const VERSION = '0.13.7-beta';
+export const VERSION = '0.14.0-beta';
 
 export const API_URL = isDevMode() ? 'http://localhost:3000/rtl/api' : './api';
 
@@ -789,11 +789,11 @@ export const CLN_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
     { tableId: 'query_routes', recordsPerPage: PAGE_SIZE, sortBy: 'msatoshi', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['alias', 'direction', 'msatoshi'],
       columnSelection: ['alias', 'channel', 'direction', 'delay', 'msatoshi'] }
-  ] },
-  { pageId: 'peerswap', tables: [
-    { tableId: 'swaps', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,
-      columnSelectionSM: ['id', 'state', 'amount'],
-      columnSelection: ['id', 'alias', 'short_channel_id', 'created_at', 'state', 'amount'] }
+  // ] },
+  // { pageId: 'peerswap', tables: [
+  //   { tableId: 'swaps', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,
+  //     columnSelectionSM: ['id', 'state', 'amount'],
+  //     columnSelection: ['id', 'alias', 'short_channel_id', 'created_at', 'state', 'amount'] }
   ] }
 ];
 
@@ -900,12 +900,12 @@ export const CLN_PAGE_DEFS: CLNPageDefinitions = {
       maxColumns: 6,
       allowedColumns: [{ column:'id' }, { column:'alias' }, { column:'channel' }, { column:'direction' }, { column:'delay' }, { column:'msatoshi', label: 'Amount' }]
     }
-  },
-  peerswap: {
-    swaps: {
-      maxColumns: 6,
-      allowedColumns: [{ column:'id' }, { column:'alias' }, { column:'short_channel_id' }, { column:'created_at' }, { column:'state' }, { column:'amount' }]
-    }
+  // },
+  // peerswap: {
+  //   swaps: {
+  //     maxColumns: 6,
+  //     allowedColumns: [{ column:'id' }, { column:'alias' }, { column:'short_channel_id' }, { column:'created_at' }, { column:'state' }, { column:'amount' }]
+  //   }
   }
 };
 

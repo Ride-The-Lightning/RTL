@@ -7,7 +7,7 @@
           <mat-icon *ngIf="value.tooltip" matTooltipPosition="below" class="info-icon" [matTooltip]="value.tooltip">info_outline</mat-icon>
         </div>
         <span *ngIf="currencyUnit === currencyUnitEnum.SATS" class="cc-data-value">
-          {{value.dataValue | number}}
+          {{value.dataValue | number:'1.0-0'}}
         </span>
         <span *ngIf="currencyUnit === currencyUnitEnum.BTC" class="cc-data-value">
           {{value[currencyUnitEnum.BTC] | number:currencyUnitFormats.BTC}}

@@ -137,8 +137,8 @@ export class CLNPageDefinitions {
   graph_lookup: {
     query_routes: TableDefinition;
   };
-  peerswap: {
-    swaps: TableDefinition;
-  };
+  // peerswap: {
+  //   swaps: TableDefinition;
+  // };
 
 };

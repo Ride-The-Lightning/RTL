@@ -42,8 +42,7 @@ export interface GetInfo {
   blockheight?: number;
   network?: string;
   chains?: GetInfoChain[];
-  msatoshi_fees_collected?: number;
-  fees_collected_msat?: string;
+  fees_collected_msat?: number;
   lnImplementation?: string;
 }
 
@@ -77,11 +76,9 @@ export interface Invoice {
   bolt11?: string;
   bolt12?: string;
   payment_hash?: string;
-  msatoshi?: number; // For backward compatibility
   amount_msat?: number;
   status?: string;
   pay_index?: number;
-  msatoshi_received?: number; // For backward compatibility
   amount_received_msat?: number;
   paid_at?: number;
   payment_preimage?: string;
@@ -142,9 +139,7 @@ export interface MPP {
   created_at?: number;
   destination?: string;
   id?: number;
-  msatoshi?: number; // For Backward compatibility
   amount_msat?: number;
-  msatoshi_sent?: number; // For Backward compatibility
   amount_sent_msat?: number;
   payment_hash?: string;
   payment_preimage?: string;
@@ -158,9 +153,7 @@ export interface Payment {
   created_at?: number;
   destination?: string;
   id?: number;
-  msatoshi?: number; // For Backward compatibility
   amount_msat?: number;
-  msatoshi_sent?: number; // For Backward compatibility
   amount_sent_msat?: number;
   payment_hash?: string;
   payment_preimage?: string;
@@ -179,7 +172,6 @@ export interface PayRequest {
   created_at?: number;
   expiry?: number;
   payee?: string;
-  msatoshi?: number;
   amount_msat?: number;
   description?: string;
   min_final_cltv_expiry?: number;
@@ -212,7 +204,6 @@ interface Recurrence {
 
 export interface OfferRequest {
   offer_id?: string;
-  offer_amount?: number | null; // For Backward compatibility
   offer_amount_msat?: number;
   type?: string;
   valid?: boolean;
@@ -252,12 +243,9 @@ export interface ForwardingEvent {
   out_channel?: string;
   in_channel_alias?: string;
   out_channel_alias?: string;
-  in_msatoshi?: number;
-  in_msat?: string | number;
-  out_msatoshi?: number;
-  out_msat?: string | number;
-  fee?: number;
-  fee_msat?: string | number;
+  in_msat?: number;
+  out_msat?: number;
+  fee_msat?: number;
   status?: string;
   received_time?: number;
   resolved_time?: number;
@@ -266,8 +254,7 @@ export interface ForwardingEvent {
 export interface LocalFailedEvent {
   in_channel?: string;
   in_channel_alias?: string;
-  in_msatoshi?: number;
-  in_msat?: string;
+  in_msat?: number;
   out_channel?: string;
   out_channel_alias?: string;
   status?: string;
@@ -287,7 +274,6 @@ export interface Routes {
   id?: string;
   channel?: string;
   direction?: number;
-  msatoshi?: number;
   amount_msat?: number;
   delay?: number;
   alias?: string;
@@ -318,17 +304,11 @@ export interface Channel {
   channel_id?: string;
   funding_txid?: string;
   private?: boolean;
-  msatoshi_to_us?: number; // For Backward compatibility
   to_us_msat?: number;
-  msatoshi_to_them?: number; // For Backward compatibility
   to_them_msat?: number;
-  msatoshi_total?: number; // For Backward compatibility
   total_msat?: number;
-  their_channel_reserve_satoshis?: string; // For Backward compatibility
   their_reserve_msat?: number;
-  our_channel_reserve_satoshis?: string; // For Backward compatibility
   our_reserve_msat?: number;
-  spendable_msatoshi?: string; // For Backward compatibility
   spendable_msat?: number;
   direction?: number;
   htlcs?: ChannelHTLC[];
@@ -414,7 +394,6 @@ export interface FeeRates {
 export interface UTXO {
   txid?: string;
   output?: number;
-  value?: number; // For Backward compatibility
   amount_msat?: number;
   status?: string;
   blockheight?: string;

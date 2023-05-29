@@ -64,11 +64,11 @@
                 </mat-expansion-panel-header>
                 <div fxLayout="column"><span class="foreground-secondary-text">{{rebalanceStatus.invoice}}</span></div>
               </mat-expansion-panel>
-              <mat-progress-bar *ngIf="!rebalanceStatus.paymentStatus?.route && rebalanceStatus.paymentStatus?.type !== 'pending'" fxFlex="100" color="primary" mode="indeterminate"></mat-progress-bar>
+              <mat-progress-bar *ngIf="!rebalanceStatus.paymentStatus?.error && !rebalanceStatus.paymentStatus?.route && rebalanceStatus.paymentStatus?.type !== 'pending'" fxFlex="100" color="primary" mode="indeterminate"></mat-progress-bar>
               <mat-expansion-panel class="flat-expansion-panel mb-2" fxFlex="100">
                 <mat-expansion-panel-header>
                   <mat-panel-title>
-                    <span fxLayoutAlign="start center" fxFlex="100">{{!rebalanceStatus.paymentStatus?.route ? 'Searching route...' : rebalanceStatus.paymentStatus?.type === 'pending' ? 'Route info pending...' : 'Route used'}}<mat-icon *ngIf="rebalanceStatus.paymentStatus?.route" class="ml-1 icon-small">{{rebalanceStatus.paymentStatus?.route ? 'check' : 'close'}}</mat-icon></span>
+                    <span fxLayoutAlign="start center" fxFlex="100">{{rebalanceStatus.paymentStatus?.error ? 'Route search failed' : !rebalanceStatus.paymentStatus?.route ? 'Searching route...' : rebalanceStatus.paymentStatus?.type === 'pending' ? 'Route info pending...' : 'Route used'}}<mat-icon *ngIf="rebalanceStatus.paymentStatus" class="ml-1 icon-small">{{rebalanceStatus.paymentStatus?.route ? 'check' : 'close'}}</mat-icon></span>
                   </mat-panel-title>
                 </mat-expansion-panel-header>
                 <div fxLayout="column">

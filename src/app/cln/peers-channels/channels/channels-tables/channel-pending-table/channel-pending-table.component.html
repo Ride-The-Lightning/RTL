@@ -67,12 +67,12 @@
       <ng-container matColumnDef="our_channel_reserve_satoshis">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Local Reserve (Sats)</th>
         <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
-            {{channel?.our_reserve_msat | number:'1.0-0'}} </span></td>
+            {{channel?.our_reserve_msat/1000 | number:'1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="their_channel_reserve_satoshis">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Remote Reserve (Sats)</th>
         <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
-            {{channel?.their_reserve_msat | number:'1.0-0'}} </span></td>
+            {{channel?.their_reserve_msat/1000 | number:'1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="msatoshi_total">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Total (Sats)</th>
@@ -108,7 +108,7 @@
             <mat-select placeholder="Actions" tabindex="4" class="mr-0">
               <mat-select-trigger></mat-select-trigger>
               <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
-              <mat-option *ngIf="isCompatibleVersion && (channel.state === 'CHANNELD_SHUTTING_DOWN' || channel.state === 'CLOSINGD_SIGEXCHANGE' || (!channel.connected && channel.state === 'CHANNELD_NORMAL'))" (click)="onChannelClose(channel)">Close Channel</mat-option>
+              <mat-option *ngIf="(channel.state === 'CHANNELD_SHUTTING_DOWN' || channel.state === 'CLOSINGD_SIGEXCHANGE' || (!channel.connected && channel.state === 'CHANNELD_NORMAL'))" (click)="onChannelClose(channel)">Close Channel</mat-option>
               <mat-option *ngIf="channel.state === 'CHANNELD_AWAITING_LOCKIN'" (click)="onBumpFee(channel)">Bump Fee</mat-option>
             </mat-select>
           </div>

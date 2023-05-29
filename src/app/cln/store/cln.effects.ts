@@ -21,7 +21,7 @@ import { RTLState } from '../../store/rtl.state';
 import { addUpdateOfferBookmark, fetchBalance, fetchChannels, fetchFeeRates, fetchFees, fetchInvoices, fetchLocalRemoteBalance,
   fetchPayments, fetchPeers, fetchUTXOs, setLookup, setPeers, setQueryRoutes, updateCLAPICallStatus, updateInvoice, setOfferInvoice,
   sendPaymentStatus, setForwardingHistory, fetchPageSettings } from './cln.actions';
-import { allAPIsCallStatus } from './cln.selector';
+import { allAPIsCallStatus, clnNodeInformation, nodeInfoAndBalance } from './cln.selector';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 import { CLNOfferInformationComponent } from '../transactions/offers/offer-information-modal/offer-information.component';
 
@@ -29,6 +29,8 @@ import { CLNOfferInformationComponent } from '../transactions/offers/offer-infor
 export class CLNEffects implements OnDestroy {
 
   CHILD_API_URL = API_URL + '/cln';
+  API_VERION = '';
+  NODE_VERISON = '';
   private flgInitialized = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -94,6 +96,8 @@ export class CLNEffects implements OnDestroy {
           takeUntil(this.actions.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
           map((info) => {
             this.logger.info(info);
+            this.API_VERION = info.api_version || '';
+            this.NODE_VERISON = info.version || '';
             if (info.chains && info.chains.length && info.chains[0] &&
               (typeof info.chains[0] === 'object' && info.chains[0].hasOwnProperty('chain') && info?.chains[0].chain &&
                 (info?.chains[0].chain.toLowerCase().indexOf('bitcoin') < 0 && info?.chains[0].chain.toLowerCase().indexOf('liquid') < 0)
@@ -326,7 +330,11 @@ export class CLNEffects implements OnDestroy {
     ofType(CLNActions.FETCH_CHANNELS_CLN),
     mergeMap(() => {
       this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchChannels', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<Channel[]>(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/listPeerChannels');
+      const listChannelsEndpoint =
+        this.commonService.isVersionCompatible(this.NODE_VERISON, '23.02') &&
+        this.commonService.isVersionCompatible(this.API_VERION, '0.10.3') ?
+          '/listPeerChannels' : '/listChannels';
+      return this.httpClient.get<Channel[]>(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + listChannelsEndpoint);
     }),
     map((channels: Channel[]) => {
       this.logger.info(channels);
@@ -335,12 +343,6 @@ export class CLNEffects implements OnDestroy {
       channels.forEach((channel) => {
         if (channel.id) { channel.peer_id = channel.id; }
         if (channel.connected) { channel.peer_connected = channel.connected; }
-        if (channel.msatoshi_to_us) { channel.to_us_msat = channel.msatoshi_to_us; }
-        if (channel.msatoshi_to_them) { channel.to_them_msat = channel.msatoshi_to_them; }
-        if (channel.msatoshi_total) { channel.total_msat = channel.msatoshi_total; }
-        if (channel.their_channel_reserve_satoshis) { channel.their_reserve_msat = +channel.their_channel_reserve_satoshis; }
-        if (channel.our_channel_reserve_satoshis) { channel.our_reserve_msat = +channel.our_channel_reserve_satoshis; }
-        if (channel.spendable_msatoshi) { channel.spendable_msat = +channel.spendable_msatoshi; }
         if (channel.state === 'CHANNELD_NORMAL') {
           if (channel.peer_connected) {
             sortedChannels.activeChannels.push(channel);
@@ -468,7 +470,7 @@ export class CLNEffects implements OnDestroy {
   fetchOfferInvoiceCL = createEffect(
     () => this.actions.pipe(
       ofType(CLNActions.FETCH_OFFER_INVOICE_CLN),
-      mergeMap((action: { type: string, payload: { offer: string, msatoshi?: string } }) => {
+      mergeMap((action: { type: string, payload: { offer: string, amount_msat?: string } }) => {
         this.store.dispatch(openSpinner({ payload: UI_MESSAGES.FETCH_INVOICE }));
         this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchOfferInvoice', status: APICallStatusEnum.INITIATED } }));
         return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.OFFERS_API + '/fetchOfferInvoice', action.payload).
@@ -728,7 +730,6 @@ export class CLNEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'SaveNewInvoice', status: APICallStatusEnum.COMPLETED } }));
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.ADD_INVOICE }));
-            postRes.msatoshi = action.payload.amount;
             postRes.amount_msat = action.payload.amount;
             postRes.label = action.payload.label;
             postRes.expires_at = Math.round((new Date().getTime() / 1000) + action.payload.expiry);

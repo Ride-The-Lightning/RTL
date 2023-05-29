@@ -71,12 +71,12 @@
       <ng-container matColumnDef="our_channel_reserve_satoshis">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Local Reserve (Sats)</th>
         <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
-            {{channel?.our_reserve_msat | number:'1.0-0'}} </span></td>
+            {{channel?.our_reserve_msat / 1000 | number:'1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="their_channel_reserve_satoshis">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Remote Reserve (Sats)</th>
         <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
-            {{channel?.their_reserve_msat | number:'1.0-0'}} </span></td>
+            {{channel?.their_reserve_msat / 1000 | number:'1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="msatoshi_total">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Total (Sats)</th>

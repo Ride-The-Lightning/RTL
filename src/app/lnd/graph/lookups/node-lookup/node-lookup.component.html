@@ -54,7 +54,7 @@
             <mat-select placeholder="Actions" tabindex="1" class="mr-0">
               <mat-select-trigger></mat-select-trigger>
               <mat-option (click)="onConnectNode(address)">Connect</mat-option>
-              <mat-option rtlClipboard [payload]="lookupResult.node.pub_key + '@' + address.addr" (copied)="onCopyNodeURI($event)">Copy URI</mat-option>
+              <mat-option rtlClipboard [payload]="lookupResult.node.pub_key + '@' + address.addr" (copied)="onCopyNodeURI(address)">Copy URI</mat-option>
             </mat-select>
           </div>
         </td>

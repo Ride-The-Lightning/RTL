@@ -144,7 +144,7 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : column === 'is_dust' ? 'Dust' : this.commonService.titleCase(column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform((returnColumn.column || ''), '_') : column === 'is_dust' ? 'Dust' : this.commonService.titleCase(column);
   }
 
   setFilterPredicate() {
@@ -164,7 +164,7 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
           break;
 
         case 'value':
-          rowToFilter = (rowData?.value || ((rowData?.amount_msat || 0) / 1000)).toString();
+          rowToFilter = ((rowData?.amount_msat || 0) / 1000).toString();
           break;
 
         default:
@@ -180,8 +180,8 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
     this.listUTXOs.sort = this.sort;
     this.listUTXOs.sortingDataAccessor = (data: UTXO, sortHeaderId: string) => {
       switch (sortHeaderId) {
-        case 'is_dust': return (+(data.amount_msat || 0) / 1000) < this.dustAmount;
-        case 'value': return data.value || (+(data.amount_msat || 0) / 1000);
+        case 'is_dust': return ((data.amount_msat || 0) / 1000) < this.dustAmount;
+        case 'value': return ((data.amount_msat || 0) / 1000);
         default: return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     };

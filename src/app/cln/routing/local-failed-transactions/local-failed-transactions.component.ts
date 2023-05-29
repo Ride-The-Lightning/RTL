@@ -106,7 +106,7 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
     const reorderedFHEvent = [
       [{ key: 'received_time', value: selFEvent.received_time, title: 'Received Time', width: 50, type: DataTypeEnum.DATE_TIME },
       { key: 'in_channel_alias', value: selFEvent.in_channel_alias, title: 'Inbound Channel', width: 50, type: DataTypeEnum.STRING }],
-      [{ key: 'in_msatoshi', value: (selFEvent.in_msatoshi || selFEvent.in_msat), title: 'Amount In (mSats)', width: 100, type: DataTypeEnum.NUMBER }],
+      [{ key: 'in_msatoshi', value: selFEvent.in_msat, title: 'Amount In (mSats)', width: 100, type: DataTypeEnum.NUMBER }],
       [{ key: 'failreason', value: selFEvent.failreason ? this.CLNFailReason[selFEvent.failreason] : '', title: 'Reason for Failure', width: 100, type: DataTypeEnum.STRING }]
     ];
     this.store.dispatch(openAlert({
@@ -137,7 +137,7 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
           rowToFilter = (rowData.received_time ? this.datePipe.transform(new Date(rowData.received_time * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() : '') +
           (rowData.in_channel_alias ? rowData.in_channel_alias.toLowerCase() : '') +
           ((rowData.failreason && this.CLNFailReason[rowData.failreason]) ? this.CLNFailReason[rowData.failreason].toLowerCase() : '') +
-          (rowData.in_msatoshi ? (rowData.in_msatoshi / 1000) : '') + (rowData.in_msat ? rowData.in_msat : '');
+          (rowData.in_msat ? rowData.in_msat : '');
           break;
 
         case 'received_time':
@@ -145,7 +145,7 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
           break;
 
         case 'in_msatoshi':
-          rowToFilter = ((rowData['in_msatoshi'] || +(rowData['in_msat'] || 0)) / 1000)?.toString() || '';
+          rowToFilter = ((+(rowData['in_msat'] || 0)) / 1000)?.toString() || '';
           break;
 
         case 'failreason':
@@ -166,7 +166,7 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
     this.failedLocalForwardingEvents.sortingDataAccessor = (data: LocalFailedEvent, sortHeaderId: string) => {
       switch (sortHeaderId) {
         case 'in_msatoshi':
-          return data['in_msatoshi'] || data['in_msat'];
+          return data['in_msat'];
 
         case 'failreason':
           return data.failreason ? this.CLNFailReason[data.failreason] : '';

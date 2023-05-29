@@ -72,7 +72,7 @@ export interface OpenChannelAlert {
 export interface CLNOpenChannelAlert {
   alertTitle?: string;
   titleMessage?: string;
-  message?: { information: GetInfoCLN, balance: number, utxos: UTXOCLN[], peer?: PeerCLN, peers?: PeerCLN[], isCompatibleVersion: boolean };
+  message?: { information: GetInfoCLN, balance: number, utxos: UTXOCLN[], peer?: PeerCLN, peers?: PeerCLN[] };
   newlyAdded?: boolean;
   component?: any;
 }

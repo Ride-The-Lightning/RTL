@@ -66,20 +66,18 @@
                   </mat-form-field>
                 </div>
               </div>
-              <div *ngIf="isCompatibleVersion" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-sm="space-between center" fxLayout.gt-sm="row wrap">
-                <mat-form-field fxLayout="column" fxFlex="54" fxLayoutAlign="start end">
-                  <mat-label>Coin Selection</mat-label>
-                  <mat-select tabindex="6" multiple [(value)]="selUTXOs" (selectionChange)="onUTXOSelectionChange($event)">
-                    <mat-select-trigger>{{totalSelectedUTXOAmount | number}} Sats ({{selUTXOs.length > 1 ? selUTXOs.length + ' UTXOs' : '1 UTXO'}})</mat-select-trigger>
-                    <mat-option *ngFor="let utxo of utxos" [value]="utxo">{{utxo.amount_msat / 1000 | number:'1.0-0'}} Sats</mat-option>
-                  </mat-select>
-                </mat-form-field>
-                <div fxFlex="41" fxLayout="row" fxLayoutAlign="start center">
-                  <mat-slide-toggle tabindex="7" color="primary" name="flgUseAllBalance" [disabled]="selUTXOs.length < 1" [(ngModel)]="flgUseAllBalance" (change)="onUTXOAllBalanceChange()">
-                    Use selected UTXOs balance
-                  </mat-slide-toggle>
-                  <mat-icon matTooltip="Use selected UTXOs balance as the amount to be sent. Final amount sent will be less the mining fee." matTooltipPosition="before" class="info-icon">info_outline</mat-icon>
-                </div>
+              <mat-form-field fxLayout="column" fxFlex="54" fxLayoutAlign="start end">
+                <mat-label>Coin Selection</mat-label>
+                <mat-select tabindex="6" multiple [(value)]="selUTXOs" (selectionChange)="onUTXOSelectionChange($event)">
+                  <mat-select-trigger>{{totalSelectedUTXOAmount | number}} Sats ({{selUTXOs.length > 1 ? selUTXOs.length + ' UTXOs' : '1 UTXO'}})</mat-select-trigger>
+                  <mat-option *ngFor="let utxo of utxos" [value]="utxo">{{(utxo.amount_msat) / 1000 | number:'1.0-0'}} Sats</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <div fxFlex="41" fxLayout="row" fxLayoutAlign="start center">
+                <mat-slide-toggle tabindex="7" color="primary" name="flgUseAllBalance" [disabled]="selUTXOs.length < 1" [(ngModel)]="flgUseAllBalance" (change)="onUTXOAllBalanceChange()">
+                  Use selected UTXOs balance
+                </mat-slide-toggle>
+                <mat-icon matTooltip="Use selected UTXOs balance as the amount to be sent. Final amount sent will be less the mining fee." matTooltipPosition="before" class="info-icon">info_outline</mat-icon>
               </div>
             </div>
           </mat-expansion-panel>    
