@@ -1,6 +1,5 @@
 import * as fs from 'fs';
-import { join, dirname, sep } from 'path';
-import { fileURLToPath } from 'url';
+import { join, sep } from 'path';
 import { Common } from '../utils/common.js';
 import { Logger } from '../utils/logger.js';
 import { validateDocument, LNDCollection, ECLCollection, CLNCollection } from '../models/database.model.js';
@@ -8,7 +7,7 @@ export class DatabaseService {
     constructor() {
         this.common = Common;
         this.logger = Logger;
-        this.dbDirectory = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'database');
+        this.dbDirectory = join(this.common.db_directory_path, 'database');
         this.nodeDatabase = {};
     }
     loadDatabase(session) {

@@ -113,7 +113,7 @@ export const fetchUTXOs = createAction(CLNActions.FETCH_UTXOS_CLN);
 
 export const setUTXOs = createAction(CLNActions.SET_UTXOS_CLN, props<{ payload: UTXO[] }>());
 
-export const fetchOfferInvoice = createAction(CLNActions.FETCH_OFFER_INVOICE_CLN, props<{ payload: { offer: string, msatoshi?: number } }>());
+export const fetchOfferInvoice = createAction(CLNActions.FETCH_OFFER_INVOICE_CLN, props<{ payload: { offer: string, amount_msat?: number } }>());
 
 export const setOfferInvoice = createAction(CLNActions.SET_OFFER_INVOICE_CLN, props<{ payload: OfferInvoice }>());
 
@@ -121,7 +121,7 @@ export const fetchOffers = createAction(CLNActions.FETCH_OFFERS_CLN);
 
 export const setOffers = createAction(CLNActions.SET_OFFERS_CLN, props<{ payload: Offer[] }>());
 
-export const saveNewOffer = createAction(CLNActions.SAVE_NEW_OFFER_CLN, props<{ payload: { amount: string, description: string, vendor: string } }>());
+export const saveNewOffer = createAction(CLNActions.SAVE_NEW_OFFER_CLN, props<{ payload: { amount: string, description: string, issuer: string } }>());
 
 export const addOffer = createAction(CLNActions.ADD_OFFER_CLN, props<{ payload: Offer }>());
 

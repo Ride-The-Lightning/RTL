@@ -1,5 +1,4 @@
 import { Component, ViewChild, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -9,6 +8,8 @@ import { faMoneyBillWave } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 import { UTXO } from '../../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, WALLET_ADDRESS_TYPE, APICallStatusEnum, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS } from '../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
@@ -61,7 +62,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private camelCaseWithReplace: CamelCaseWithReplacePipe, private snackBar: MatSnackBar) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -133,7 +134,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
           break;
 
         case 'is_dust':
-          rowToFilter = (rowData?.amount_sat || 0) < this.dustAmount ? 'dust' : 'nondust';
+          rowToFilter = +(rowData?.amount_sat || 0) < this.dustAmount ? 'dust' : 'nondust';
           break;
 
         case 'tx_id':
@@ -230,7 +231,19 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
       pipe(takeUntil(this.unSubs[2])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.dataService.leaseUTXO((utxo.outpoint?.txid_bytes || ''), (utxo.outpoint?.output_index || 0));
+          this.dataService.leaseUTXO((utxo.outpoint?.txid_bytes || ''), (utxo.outpoint?.output_index || 0)).
+            pipe(takeUntil(this.unSubs[0])).
+            subscribe({
+              next: (expiryDateInSeconds) => {
+                this.snackBar.open('The UTXO has been leased till ' + new Date(expiryDateInSeconds).toString().
+                  substring(4, 21).
+                  replace(' ', '/').
+                  replace(' ', '/').
+                  toUpperCase() + '.');
+              }, error: (err) => {
+                this.snackBar.open(err + ' UTXO not leased.', '', { panelClass: 'rtl-warn-snack-bar' });
+              }
+            });
         }
       });
   }

@@ -22,8 +22,8 @@ function paymentReducer(accumulator, currentPayment) {
 }
 function summaryReducer(accumulator, mpp) {
     if (mpp.status === 'complete') {
-        accumulator.msatoshi = accumulator.msatoshi + mpp.msatoshi;
-        accumulator.msatoshi_sent = accumulator.msatoshi_sent + mpp.msatoshi_sent;
+        accumulator.amount_msat = accumulator.amount_msat + mpp.amount_msat;
+        accumulator.amount_sent_msat = accumulator.amount_sent_msat + mpp.amount_sent_msat;
         accumulator.status = mpp.status;
     }
     if (mpp.bolt11) {
@@ -47,10 +47,10 @@ function groupBy(payments) {
             delete temp.partid;
         }
         else {
-            const paySummary = curr?.reduce(summaryReducer, { msatoshi: 0, msatoshi_sent: 0, status: (curr[0] && curr[0].status) ? curr[0].status : 'failed' });
+            const paySummary = curr?.reduce(summaryReducer, { amount_msat: 0, amount_sent_msat: 0, status: (curr[0] && curr[0].status) ? curr[0].status : 'failed' });
             temp = {
                 is_group: true, is_expanded: false, total_parts: (curr.length ? curr.length : 0), status: paySummary.status, payment_hash: curr[0].payment_hash,
-                destination: curr[0].destination, msatoshi: paySummary.msatoshi, msatoshi_sent: paySummary.msatoshi_sent, created_at: curr[0].created_at,
+                destination: curr[0].destination, amount_msat: paySummary.amount_msat, amount_sent_msat: paySummary.amount_sent_msat, created_at: curr[0].created_at,
                 mpps: curr
             };
             if (paySummary.bolt11) {
@@ -104,8 +104,8 @@ export const postPayment = (req, res, next) => {
         if (req.body.paymentType === 'OFFER') {
             if (req.body.saveToDB && req.body.bolt12) {
                 const offerToUpdate = { bolt12: req.body.bolt12, amountMSat: (req.body.zeroAmtOffer ? 0 : req.body.amount), title: req.body.title, lastUpdatedAt: new Date(Date.now()).getTime() };
-                if (req.body.vendor) {
-                    offerToUpdate['vendor'] = req.body.vendor;
+                if (req.body.issuer) {
+                    offerToUpdate['issuer'] = req.body.issuer;
                 }
                 if (req.body.description) {
                     offerToUpdate['description'] = req.body.description;

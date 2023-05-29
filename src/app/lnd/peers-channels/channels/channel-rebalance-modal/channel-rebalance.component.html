@@ -1,8 +1,8 @@
-<div *ngIf="!flgShowInfo" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" [@opacityAnimation]>
-  <div fxFlex="100">
-    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
-      <div fxLayoutAlign="start start" [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '83' : '91'"><span class="page-title">{{channel ? ('Channel ' + loopDirectionCaption) : loopDirectionCaption}}</span></div>
-      <div fxLayoutAlign="space-between end" [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '17' : '9'">
+<div *ngIf="!flgShowInfo" fxLayout="column" [@opacityAnimation]>
+  <mat-card-header class="modal-info-header">
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
+      <div fxLayoutAlign="start center"><span class="page-title">Channel Rebalance</span></div>
+      <div fxLayoutAlign="end center">
         <button tabindex="21" class="btn-close-x p-0" mat-button (click)="showInfo()">?</button>
         <button tabindex="22" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
       </div>
@@ -15,103 +15,102 @@
             <span>Circular Rebalance is a payment you make to *yourself* to affect a relative change in the balances of two channels.
               This is accomplished by sending payment out from the selected channel and receiving it back on the channel with the selected peer.
               Please note, you will be paying routing fee to balance the channels in this manner.</span>
-          </div>
-        </div>
-        <div class="padding-gap-large" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="space-between stretch">
-          <p fxFlex="46"><strong>Channel Peer:&nbsp;</strong>{{selChannel.remote_alias | titlecase}}</p>
-          <p fxFlex="46"><strong>Channel ID:&nbsp;</strong>{{selChannel.chan_id}}</p>
-        </div>
-        <mat-vertical-stepper #stepper [linear]="true" (selectionChange)="stepSelectionChanged($event)">
-          <mat-step [stepControl]="inputFormGroup" [editable]="flgEditable">
-            <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="inputFormGroup">
-              <ng-template matStepLabel>{{inputFormLabel}}</ng-template>
-              <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">  
-                <mat-form-field fxLayout="column" fxFlex="48">
-                  <mat-label>Amount</mat-label>
-                  <input autoFocus matInput type="number" tabindex="1" formControlName="rebalanceAmount" required [step]="100">
-                  <mat-hint>(Local Bal: {{selChannel?.local_balance}}, Remaining: {{selChannel?.local_balance - ((inputFormGroup.controls.rebalanceAmount.value) ? inputFormGroup.controls.rebalanceAmount.value : 0)}})</mat-hint>
-                  <span matSuffix>Sats</span>
-                  <mat-error *ngIf="inputFormGroup.controls.rebalanceAmount.errors?.required">Amount is required.</mat-error>
-                  <mat-error *ngIf="inputFormGroup.controls.rebalanceAmount.errors?.min">Amount must be a positive number.</mat-error>
-                  <mat-error *ngIf="inputFormGroup.controls.rebalanceAmount.errors?.max">Amount must be less than or equal to {{selChannel?.local_balance}}.</mat-error>
-                </mat-form-field>
-                <mat-form-field fxLayout="column" fxFlex="48" fxLayoutAlign="start end">
-                  <mat-label>Receive from Peer</mat-label>
-                  <input type="text" aria-label="Receive from Peer" matInput formControlName="selRebalancePeer" tabindex="2" required [matAutocomplete]="auto" (change)="onSelectedPeerChanged()">
-                  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectedPeerChanged()">
-                    <mat-option *ngFor="let activeChannel of filteredActiveChannels | async" [value]="activeChannel">{{activeChannel.remote_alias}} - {{activeChannel.chan_id}}</mat-option>
-                  </mat-autocomplete>
-                  <mat-error *ngIf="inputFormGroup.controls.selRebalancePeer.errors?.required">Receive from Peer is required.</mat-error>
-                  <mat-error *ngIf="inputFormGroup.controls.selRebalancePeer.errors?.notfound">Receive from Peer not found in the list.</mat-error>
-                </mat-form-field>
-              </div>
-              <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-button color="primary" tabindex="3" type="submit" (click)="onSelectFee()">Select Fee</button>
-              </div>
-            </form>
-          </mat-step>
-          <mat-step [stepControl]="feeFormGroup" [editable]="flgEditable">
-            <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="feeFormGroup">
-              <ng-template matStepLabel disabled="true">{{feeFormLabel}}</ng-template>
-              <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
-                <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
-                  <mat-form-field fxLayout="column" fxFlex="48" fxLayoutAlign="start end">
-                    <mat-label>Fee Limits</mat-label>
-                    <mat-select tabindex="6" formControlName="selFeeLimitType" required>
-                      <mat-option *ngFor="let feeLimitType of feeLimitTypes" [value]="feeLimitType">
-                        {{feeLimitType.name}}
-                      </mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                  <mat-form-field fxLayout="column" fxFlex="48">
-                    <mat-label>{{feeFormGroup.controls.selFeeLimitType.value ? feeFormGroup.controls.selFeeLimitType.value.placeholder : feeLimitTypes[0].placeholder}}</mat-label>
-                    <input matInput formControlName="feeLimit" type="number" tabindex="7" required [step]="1">
-                    <mat-error *ngIf="feeFormGroup.controls.feeLimit.errors?.required">{{feeFormGroup.controls.selFeeLimitType.value ? feeFormGroup.controls.selFeeLimitType.value.placeholder : feeLimitTypes[0].placeholder}} is required.</mat-error>
-                    <mat-error *ngIf="feeFormGroup.controls.feeLimit.errors?.min">{{feeFormGroup.controls.selFeeLimitType.value ? feeFormGroup.controls.selFeeLimitType.value.placeholder : feeLimitTypes[0].placeholder}} must be a positive number.</mat-error>
-                  </mat-form-field>
-                </div>    
-              </div>
-              <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-button color="primary" tabindex="8" type="submit" (click)="onRebalance()">Rebalance</button>
-              </div>
-            </form>
-          </mat-step>
-          <mat-step [stepControl]="statusFormGroup">
-            <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="statusFormGroup">
-              <ng-template matStepLabel>Invoice/Payment</ng-template>
-              <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
-                <mat-expansion-panel class="flat-expansion-panel mb-2" fxFlex="100">
-                  <mat-expansion-panel-header>
-                    <mat-panel-title>
-                      <span fxLayoutAlign="start center" fxFlex="100">{{!flgInvoiceGenerated ? 'Generating invoice...' : flgReusingInvoice ? 'Invoice re-used' : 'Invoice generated'}}<mat-icon *ngIf="flgInvoiceGenerated" class="ml-1 icon-small">check</mat-icon></span>
-                    </mat-panel-title>
-                  </mat-expansion-panel-header>
-                  <div fxLayout="column"><span class="foreground-secondary-text">{{paymentRequest}}</span></div>
-                </mat-expansion-panel>
-                <mat-progress-bar *ngIf="!flgInvoiceGenerated" fxFlex="100" color="primary" mode="indeterminate"></mat-progress-bar>
-                <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="(flgInvoiceGenerated || flgReusingInvoice) && flgPaymentSent">
-                  <mat-expansion-panel-header>
-                    <mat-panel-title>
-                      <span fxLayoutAlign="start center" fxFlex="100">{{!flgInvoiceGenerated && !flgPaymentSent ? 'Payment waiting for Invoice' : (!flgPaymentSent ? 'Processing payment...' : (paymentStatus?.error ? 'Payment failed' : 'Payment successful'))}}<mat-icon *ngIf="flgPaymentSent" class="ml-1 icon-small">{{paymentStatus?.error ? 'close' : 'check'}}</mat-icon></span>
-                    </mat-panel-title>
-                  </mat-expansion-panel-header>
-                  <div *ngIf="!paymentStatus;  else paymentStatusBlock"fxLayout="column"></div>
-                </mat-expansion-panel>
-                <mat-progress-bar *ngIf="flgInvoiceGenerated && !flgPaymentSent" fxFlex="100" color="primary" mode="indeterminate"></mat-progress-bar>
-              </div>
-              <h4 *ngIf="flgInvoiceGenerated && flgPaymentSent" fxLayoutAlign="start" class="font-bold-500 mt-1">{{paymentStatus && paymentStatus.payment_hash ? 'Rebalance Successful.' : 'Rebalance Failed.'}}</h4>
-              <div class="mt-1" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button *ngIf="paymentStatus && paymentStatus.error" mat-button color="primary" tabindex="11" type="button" (click)="onRestart()">Start Again</button>
-              </div>
-            </form>
-          </mat-step>
-        </mat-vertical-stepper>
-        <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">        
-          <button mat-button color="primary" tabindex="12" type="button" default [mat-dialog-close]="false">Close</button>
         </div>
       </div>
-    </mat-card-content>
-  </div>
+      <div class="padding-gap-large" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="space-between stretch">
+        <p fxFlex="46"><strong>Channel Peer:&nbsp;</strong>{{selChannel.remote_alias | titlecase}}</p>
+        <p fxFlex="46"><strong>Channel ID:&nbsp;</strong>{{selChannel.chan_id}}</p>
+      </div>
+      <mat-vertical-stepper #stepper [linear]="true" (selectionChange)="stepSelectionChanged($event)">
+        <mat-step [stepControl]="inputFormGroup" [editable]="flgEditable">
+          <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="inputFormGroup">
+            <ng-template matStepLabel>{{inputFormLabel}}</ng-template>
+            <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">  
+              <mat-form-field fxLayout="column" fxFlex="48">
+                <mat-label>Amount</mat-label>
+                <input autoFocus matInput type="number" tabindex="1" formControlName="rebalanceAmount" required [step]="100">
+                <mat-hint>(Local Bal: {{selChannel?.local_balance}}, Remaining: {{selChannel?.local_balance - ((inputFormGroup.controls.rebalanceAmount.value) ? inputFormGroup.controls.rebalanceAmount.value : 0)}})</mat-hint>
+                <span matSuffix>Sats</span>
+                <mat-error *ngIf="inputFormGroup.controls.rebalanceAmount.errors?.required">Amount is required.</mat-error>
+                <mat-error *ngIf="inputFormGroup.controls.rebalanceAmount.errors?.min">Amount must be a positive number.</mat-error>
+                <mat-error *ngIf="inputFormGroup.controls.rebalanceAmount.errors?.max">Amount must be less than or equal to {{selChannel?.local_balance}}.</mat-error>
+              </mat-form-field>
+              <mat-form-field fxLayout="column" fxFlex="48" fxLayoutAlign="start end">
+                <mat-label>Receive from Peer</mat-label>
+                <input type="text" aria-label="Receive from Peer" matInput formControlName="selRebalancePeer" tabindex="2" required [matAutocomplete]="auto" (change)="onSelectedPeerChanged()">
+                <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectedPeerChanged()">
+                  <mat-option *ngFor="let activeChannel of filteredActiveChannels | async" [value]="activeChannel">{{activeChannel.remote_alias}} - {{activeChannel.chan_id}}</mat-option>
+                </mat-autocomplete>
+                <mat-error *ngIf="inputFormGroup.controls.selRebalancePeer.errors?.required">Receive from Peer is required.</mat-error>
+                <mat-error *ngIf="inputFormGroup.controls.selRebalancePeer.errors?.notfound">Receive from Peer not found in the list.</mat-error>
+              </mat-form-field>
+            </div>
+            <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+              <button mat-button color="primary" tabindex="3" type="submit" (click)="onSelectFee()">Select Fee</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="feeFormGroup" [editable]="flgEditable">
+          <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="feeFormGroup">
+            <ng-template matStepLabel disabled="true">{{feeFormLabel}}</ng-template>
+            <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
+              <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
+                <mat-form-field fxLayout="column" fxFlex="48" fxLayoutAlign="start end">
+                  <mat-label>Fee Limits</mat-label>
+                  <mat-select tabindex="6" formControlName="selFeeLimitType" required>
+                    <mat-option *ngFor="let feeLimitType of feeLimitTypes" [value]="feeLimitType">
+                      {{feeLimitType.name}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field fxLayout="column" fxFlex="48">
+                  <mat-label>{{feeFormGroup.controls.selFeeLimitType.value ? feeFormGroup.controls.selFeeLimitType.value.placeholder : feeLimitTypes[0].placeholder}}</mat-label>
+                  <input matInput formControlName="feeLimit" type="number" tabindex="7" required [step]="1">
+                  <mat-error *ngIf="feeFormGroup.controls.feeLimit.errors?.required">{{feeFormGroup.controls.selFeeLimitType.value ? feeFormGroup.controls.selFeeLimitType.value.placeholder : feeLimitTypes[0].placeholder}} is required.</mat-error>
+                  <mat-error *ngIf="feeFormGroup.controls.feeLimit.errors?.min">{{feeFormGroup.controls.selFeeLimitType.value ? feeFormGroup.controls.selFeeLimitType.value.placeholder : feeLimitTypes[0].placeholder}} must be a positive number.</mat-error>
+                </mat-form-field>
+              </div>    
+            </div>
+            <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+              <button mat-button color="primary" tabindex="8" type="submit" (click)="onRebalance()">Rebalance</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="statusFormGroup">
+          <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="statusFormGroup">
+            <ng-template matStepLabel>Invoice/Payment</ng-template>
+            <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
+              <mat-expansion-panel class="flat-expansion-panel mb-2" fxFlex="100">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <span fxLayoutAlign="start center" fxFlex="100">{{!flgInvoiceGenerated ? 'Generating invoice...' : flgReusingInvoice ? 'Invoice re-used' : 'Invoice generated'}}<mat-icon *ngIf="flgInvoiceGenerated" class="ml-1 icon-small">check</mat-icon></span>
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div fxLayout="column"><span class="foreground-secondary-text">{{paymentRequest}}</span></div>
+              </mat-expansion-panel>
+              <mat-progress-bar *ngIf="!flgInvoiceGenerated" fxFlex="100" color="primary" mode="indeterminate"></mat-progress-bar>
+              <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="(flgInvoiceGenerated || flgReusingInvoice) && flgPaymentSent">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <span fxLayoutAlign="start center" fxFlex="100">{{!flgInvoiceGenerated && !flgPaymentSent ? 'Payment waiting for Invoice' : (!flgPaymentSent ? 'Processing payment...' : (paymentStatus?.error ? 'Payment failed' : 'Payment successful'))}}<mat-icon *ngIf="flgPaymentSent" class="ml-1 icon-small">{{paymentStatus?.error ? 'close' : 'check'}}</mat-icon></span>
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div *ngIf="!paymentStatus;  else paymentStatusBlock"fxLayout="column"></div>
+              </mat-expansion-panel>
+              <mat-progress-bar *ngIf="flgInvoiceGenerated && !flgPaymentSent" fxFlex="100" color="primary" mode="indeterminate"></mat-progress-bar>
+            </div>
+            <h4 *ngIf="flgInvoiceGenerated && flgPaymentSent" fxLayoutAlign="start" class="font-bold-500 mt-1">{{paymentStatus && paymentStatus.payment_hash ? 'Rebalance Successful.' : 'Rebalance Failed.'}}</h4>
+            <div class="mt-1" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+              <button *ngIf="paymentStatus && paymentStatus.error" mat-button color="primary" tabindex="11" type="button" (click)="onRestart()">Start Again</button>
+            </div>
+          </form>
+        </mat-step>
+      </mat-vertical-stepper>
+      <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">        
+        <button mat-button color="primary" tabindex="12" type="button" default [mat-dialog-close]="false">Close</button>
+      </div>
+    </div>
+  </mat-card-content>
 </div>
 <ng-template #paymentStatusBlock>
   <ng-container *ngTemplateOutlet="paymentStatus.error ? paymentFailedBlock : paymentSuccessfulBlock"></ng-container>

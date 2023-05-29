@@ -1,6 +1,5 @@
 import * as fs from 'fs';
-import { join, dirname, sep } from 'path';
-import { fileURLToPath } from 'url';
+import { join, sep } from 'path';
 import { Common, CommonService } from '../utils/common.js';
 import { Logger, LoggerService } from '../utils/logger.js';
 import { Collections, CollectionsEnum, validateDocument, LNDCollection, ECLCollection, CLNCollection } from '../models/database.model.js';
@@ -10,7 +9,7 @@ export class DatabaseService {
 
   public common: CommonService = Common;
   public logger: LoggerService = Logger;
-  public dbDirectory = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'database');
+  public dbDirectory = join(this.common.db_directory_path, 'database');
   public nodeDatabase: { id?: { adapter: DatabaseAdapter, data: Collections } } = {};
 
   constructor() { }

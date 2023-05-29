@@ -13,7 +13,7 @@ import { ChannelRebalanceAlert } from '../../../../shared/models/alertData';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
 import { Channel, QueryRoutes, ListInvoices } from '../../../../shared/models/lndModels';
-import { FEE_LIMIT_TYPES, LNDActions, PAGE_SIZE, ScreenSizeEnum, UI_MESSAGES } from '../../../../shared/services/consts-enums-functions';
+import { DEFAULT_INVOICE_EXPIRY, FEE_LIMIT_TYPES, LNDActions, PAGE_SIZE, ScreenSizeEnum, UI_MESSAGES } from '../../../../shared/services/consts-enums-functions';
 
 import { RTLState } from '../../../../store/rtl.state';
 import { saveNewInvoice, sendPayment } from '../../../store/lnd.actions';
@@ -225,7 +225,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     } else {
       this.store.dispatch(saveNewInvoice({
         payload: {
-          uiMessage: UI_MESSAGES.NO_SPINNER, memo: 'Local-Rebalance-' + this.inputFormGroup.controls.rebalanceAmount.value + '-Sats', value: this.inputFormGroup.controls.rebalanceAmount.value, private: false, expiry: 3600, is_amp: false, pageSize: PAGE_SIZE, openModal: false
+          uiMessage: UI_MESSAGES.NO_SPINNER, memo: 'Local-Rebalance-' + this.inputFormGroup.controls.rebalanceAmount.value + '-Sats', value: this.inputFormGroup.controls.rebalanceAmount.value, private: false, expiry: DEFAULT_INVOICE_EXPIRY, is_amp: false, pageSize: PAGE_SIZE, openModal: false
         }
       }));
     }

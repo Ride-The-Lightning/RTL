@@ -22,13 +22,13 @@
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Amount Requested (Sats)</h4>
             <span class="foreground-secondary-text">
-              {{ !offerDecoded?.amount_msat || offerDecoded?.amount === 0 ? 'Open Offer' : ((offerDecoded?.amount / 1000) | number) }}
+              {{ !offerDecoded?.offer_amount_msat || offerDecoded?.offer_amount_msat === 0 ? 'Open Offer' : ((offerDecoded?.offer_amount_msat / 1000) | number) }}
             </span>
           </div>
           <div fxFlex="50">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Active</h4>
+            <h4 fxLayoutAlign="start" class="font-bold-500">Valid</h4>
             <span class="foreground-secondary-text">
-              {{!offer?.active ? 'N/K' : offer?.active ? 'Active' : 'Inactive'}}
+              {{ !offerDecoded?.valid ? 'N/K' : offerDecoded?.valid ? 'Yes' : 'No' }}
             </span>
           </div>
         </div>
@@ -37,14 +37,14 @@
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Description</h4>
             <span class="foreground-secondary-text">
-              {{offerDecoded?.description}}
+              {{offerDecoded?.offer_description}}
             </span>
           </div>
         </div>
         <mat-divider class="w-100 my-1"></mat-divider>   
         <div fxLayout="row">
           <div fxFlex="100">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Offer Request</h4>
+            <h4 fxLayoutAlign="start" class="font-bold-500">Offer</h4>
             <span class="foreground-secondary-text">{{offer?.bolt12}}</span>
           </div>
         </div>
@@ -63,12 +63,19 @@
                 {{ !offer?.single_use ? 'N/K' : offer?.single_use ? 'Yes' : 'No' }}
               </span>
             </div>
-          </div>
-          <mat-divider  *ngIf="offerDecoded?.vendor || offerDecoded?.issuer" class="w-100 my-1"></mat-divider>   
-          <div *ngIf="offerDecoded?.vendor || offerDecoded?.issuer" fxLayout="row">
+          </div>          
+          <mat-divider *ngIf="offerDecoded?.issuer" class="w-100 my-1"></mat-divider>
+          <div *ngIf="offerDecoded?.issuer" fxLayout="row">
             <div fxFlex="100">
-              <h4 fxLayoutAlign="start" class="font-bold-500">Vendor</h4>
-              <span class="overflow-wrap foreground-secondary-text">{{offerDecoded?.vendor || offerDecoded?.issuer}}</span>
+              <h4 fxLayoutAlign="start" class="font-bold-500">Issuer</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{offerDecoded?.offer_issuer}}</span>
+            </div>
+          </div>
+          <mat-divider *ngIf="offer.label" class="w-100 my-1"></mat-divider>
+          <div *ngIf="offer.label" fxLayout="row">
+            <div fxFlex="100">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Label</h4>
+              <span class="foreground-secondary-text">{{ offer.label }}</span>
             </div>
           </div>
           <mat-divider class="w-100 my-1"></mat-divider>
@@ -78,7 +85,14 @@
               <span class="foreground-secondary-text">{{ offerDecoded.offer_id }}</span>
             </div>
           </div>
-          <mat-divider class="w-100 my-1"></mat-divider>   
+          <mat-divider class="w-100 my-1"></mat-divider>
+          <div fxLayout="row">
+            <div fxFlex="100">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Offer Node ID</h4>
+              <span class="foreground-secondary-text">{{offerDecoded?.offer_node_id}}</span>
+            </div>
+          </div>
+          <mat-divider class="w-100 my-1"></mat-divider>  
         </div>
         <div fxLayout="row" fxLayoutAlign="end center" [ngClass]="{'mt-2': !showAdvanced, 'mt-1': showAdvanced}">
           <button class="mr-1" mat-button color="primary" type="reset" tabindex="1" (click)="onShowAdvanced()">

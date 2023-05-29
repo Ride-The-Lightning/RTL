@@ -113,6 +113,7 @@ export class CLNPageDefinitions {
     open_channels: TableDefinition;
     pending_inactive_channels: TableDefinition;
     peers: TableDefinition;
+    active_HTLCs: TableDefinition;
   };
   liquidity_ads: {
     liquidity_ads: TableDefinition;
@@ -136,8 +137,8 @@ export class CLNPageDefinitions {
   graph_lookup: {
     query_routes: TableDefinition;
   };
-  peerswap: {
-    swaps: TableDefinition;
-  };
+  // peerswap: {
+  //   swaps: TableDefinition;
+  // };
 
 };

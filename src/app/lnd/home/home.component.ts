@@ -237,7 +237,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   onNavigateTo(link: string) {
     if (link === 'inactive') {
-      this.router.navigateByUrl('/lnd/connections', { state: { filter: link } });
+      this.router.navigateByUrl('/lnd/connections', { state: { filterColumn: 'active', filterValue: link } });
     } else {
       this.router.navigateByUrl('/lnd/' + link);
     }

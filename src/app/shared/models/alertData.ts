@@ -55,6 +55,13 @@ export interface ChannelRebalanceAlert {
   component?: any;
 }
 
+export interface ECLChannelRebalanceAlert {
+  alertTitle?: string;
+  titleMessage?: string;
+  message?: { channels?: ChannelECL[], selChannel?: ChannelECL, information: GetInfoECL };
+  component?: any;
+}
+
 export interface OpenChannelAlert {
   alertTitle?: string;
   titleMessage?: string;
@@ -65,7 +72,7 @@ export interface OpenChannelAlert {
 export interface CLNOpenChannelAlert {
   alertTitle?: string;
   titleMessage?: string;
-  message?: { information: GetInfoCLN, balance: number, utxos: UTXOCLN[], peer?: PeerCLN, peers?: PeerCLN[], isCompatibleVersion: boolean };
+  message?: { information: GetInfoCLN, balance: number, utxos: UTXOCLN[], peer?: PeerCLN, peers?: PeerCLN[] };
   newlyAdded?: boolean;
   component?: any;
 }
@@ -186,6 +193,9 @@ export interface AlertData {
   titleMessage?: string;
   message?: Array<Array<MessageDataField>>;
   scrollable?: boolean;
+  goToFieldValue?: string;
+  goToName?: string;
+  goToLink?: string;
   showQRName?: string;
   showQRField?: string;
   newlyAdded?: boolean;
@@ -228,7 +238,7 @@ export interface DialogConfig {
   width?: string;
   maxWidth?: string;
   minHeight?: string;
-  data: AlertData | ConfirmationData | ErrorData | ChannelRebalanceAlert | OpenChannelAlert | CLNOpenChannelAlert | InvoiceInformation |
+  data: AlertData | ConfirmationData | ErrorData | ChannelRebalanceAlert | ECLChannelRebalanceAlert | OpenChannelAlert | CLNOpenChannelAlert | InvoiceInformation |
   CLNPaymentInformation | CLNInvoiceInformation | CLNOfferInformation | ECLInvoiceInformation | ECLPaymentInformation | ChannelInformation | CLNChannelInformation |
   PendingOpenChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | SwapAlert | AuthConfig |
   OnChainLabelUTXO | OnChainSendFunds | CLNOnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert;

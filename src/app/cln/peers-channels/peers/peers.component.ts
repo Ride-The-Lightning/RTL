@@ -131,6 +131,9 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
         data: {
           type: AlertTypeEnum.INFORMATION,
           alertTitle: 'Peer Information',
+          goToFieldValue: selPeer.id,
+          goToName: 'Graph lookup',
+          goToLink: '/cln/graph/lookups',
           showQRName: 'Public Key',
           showQRField: selPeer.id,
           message: reorderedPeer

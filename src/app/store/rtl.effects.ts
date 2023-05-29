@@ -557,7 +557,7 @@ export class RTLEffects implements OnDestroy {
       selNode['currencyUnits'] = [...CURRENCY_UNITS, node.settings.currencyUnit];
     }
     this.sessionService.removeItem('lndUnlocked');
-    this.sessionService.removeItem('clUnlocked');
+    this.sessionService.removeItem('clnUnlocked');
     this.sessionService.removeItem('eclUnlocked');
     this.store.dispatch(resetRootStore({ payload: node }));
     this.store.dispatch(resetLNDStore({ payload: selNode }));

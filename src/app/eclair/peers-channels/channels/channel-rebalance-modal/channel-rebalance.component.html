@@ -1,0 +1,168 @@
+<div *ngIf="!flgShowInfo" fxLayout="column" [@opacityAnimation]>
+  <mat-card-header class="modal-info-header">
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
+      <div fxLayoutAlign="start center"><span class="page-title">Channel Rebalance</span></div>
+      <div fxLayoutAlign="end center">
+        <button tabindex="21" class="btn-close-x p-0" mat-button (click)="showInfo()">?</button>
+        <button tabindex="22" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
+      </div>
+    </div>
+  </mat-card-header>
+  <mat-card-content class="padding-gap-x-large">
+    <div fxLayout="column">
+      <div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="space-between stretch">
+        <div fxFlex="100" class="alert alert-info">
+          <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle"></fa-icon>
+          <span>Circular Rebalance is a payment you make to *yourselves* to affect a relative change in the balances of two channels.
+            This is accomplished by sending payment out from the selected channel and receiving it back on the channel with the selected peer.
+            Please note, you will be paying routing fee to balance the channels in this manner.</span>
+        </div>
+      </div>
+      <div class="padding-gap-large" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="space-between stretch">
+        <p fxFlex="46"><strong>Channel Peer:&nbsp;</strong>{{selChannel.alias | titlecase}}</p>
+        <p fxFlex="46"><strong>Channel ID:&nbsp;</strong>{{selChannel.shortChannelId}}</p>
+      </div>
+      <mat-vertical-stepper #stepper [linear]="true">
+        <mat-step [stepControl]="inputFormGroup" [editable]="flgEditable">
+          <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="inputFormGroup">
+            <ng-template matStepLabel>{{inputFormLabel}}</ng-template>
+            <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">  
+              <mat-form-field fxLayout="column" fxFlex="48">
+                <mat-label>Amount</mat-label>
+                <input autoFocus matInput type="number" tabindex="1" formControlName="rebalanceAmount" required [step]="100">
+                <mat-hint>(Local Bal: {{selChannel?.toLocal}}, Remaining: {{selChannel?.toLocal - ((inputFormGroup.controls.rebalanceAmount.value) ? inputFormGroup.controls.rebalanceAmount.value : 0)}})</mat-hint>
+                <span matSuffix>Sats</span>
+                <mat-error *ngIf="inputFormGroup.controls.rebalanceAmount.errors?.required">Amount is required.</mat-error>
+                <mat-error *ngIf="inputFormGroup.controls.rebalanceAmount.errors?.min">Amount must be a positive number.</mat-error>
+                <mat-error *ngIf="inputFormGroup.controls.rebalanceAmount.errors?.max">Amount must be less than or equal to {{selChannel?.toLocal}}.</mat-error>
+              </mat-form-field>
+              <mat-form-field fxLayout="column" fxFlex="48" fxLayoutAlign="start end">
+                <mat-label>Receive from Peer</mat-label>
+                <input type="text" aria-label="Receive from Peer" matInput formControlName="selRebalancePeer" tabindex="2" required [matAutocomplete]="auto" (change)="onSelectedPeerChanged()">
+                <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectedPeerChanged()">
+                  <mat-option *ngFor="let activeChannel of filteredActiveChannels | async" [value]="activeChannel">{{activeChannel.alias}} - {{activeChannel.shortChannelId}}</mat-option>
+                </mat-autocomplete>
+                <mat-error *ngIf="inputFormGroup.controls.selRebalancePeer.errors?.required">Receive from Peer is required.</mat-error>
+                <mat-error *ngIf="inputFormGroup.controls.selRebalancePeer.errors?.notfound">Receive from Peer not found in the list.</mat-error>
+              </mat-form-field>
+            </div>
+            <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+              <button mat-button color="primary" tabindex="8" type="submit" (click)="onRebalance()">Rebalance</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="statusFormGroup">
+          <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="statusFormGroup">
+            <ng-template matStepLabel>Status</ng-template>
+            <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
+              <mat-progress-bar *ngIf="rebalanceStatus.invoice === ''" fxFlex="100" color="primary" mode="indeterminate"></mat-progress-bar>
+              <mat-expansion-panel class="flat-expansion-panel mb-2" fxFlex="100">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <span fxLayoutAlign="start center" fxFlex="100">{{rebalanceStatus.invoice === '' ? 'Searching invoice...' : rebalanceStatus.flgReusingInvoice ? 'Invoice re-used' : 'Invoice generated'}}<mat-icon *ngIf="rebalanceStatus.invoice !== ''" class="ml-1 icon-small">{{rebalanceStatus.invoice !== '' ? 'check' : 'close'}}</mat-icon></span>
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div fxLayout="column"><span class="foreground-secondary-text">{{rebalanceStatus.invoice}}</span></div>
+              </mat-expansion-panel>
+              <mat-progress-bar *ngIf="!rebalanceStatus.paymentStatus?.error && !rebalanceStatus.paymentStatus?.route && rebalanceStatus.paymentStatus?.type !== 'pending'" fxFlex="100" color="primary" mode="indeterminate"></mat-progress-bar>
+              <mat-expansion-panel class="flat-expansion-panel mb-2" fxFlex="100">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <span fxLayoutAlign="start center" fxFlex="100">{{rebalanceStatus.paymentStatus?.error ? 'Route search failed' : !rebalanceStatus.paymentStatus?.route ? 'Searching route...' : rebalanceStatus.paymentStatus?.type === 'pending' ? 'Route info pending...' : 'Route used'}}<mat-icon *ngIf="rebalanceStatus.paymentStatus" class="ml-1 icon-small">{{rebalanceStatus.paymentStatus?.route ? 'check' : 'close'}}</mat-icon></span>
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div fxLayout="column">
+                  <span *ngFor="let rt of rebalanceStatus.paymentStatus?.route" class="foreground-secondary-text">
+                    {{rt.nodeId}} ({{rt.shortChannelId}})
+                  </span>
+                </div>
+              </mat-expansion-panel>
+              <mat-progress-bar *ngIf="!rebalanceStatus.paymentStatus" fxFlex="100" color="primary" mode="indeterminate"></mat-progress-bar>
+              <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="!!rebalanceStatus.paymentStatus">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <span fxLayoutAlign="start center" fxFlex="100">{{!rebalanceStatus.paymentStatus || rebalanceStatus.paymentStatus?.type === 'pending' ? 'Payment status waiting...' : rebalanceStatus.paymentStatus?.error ? 'Payment failed' : rebalanceStatus.paymentStatus?.type === 'sent' ? 'Payment successful' : ''}}<mat-icon *ngIf="rebalanceStatus.paymentStatus && rebalanceStatus.paymentStatus?.type !== 'pending'" class="ml-1 icon-small">{{!rebalanceStatus.paymentStatus || rebalanceStatus.paymentStatus?.error ? 'close' : 'check'}}</mat-icon></span>
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div *ngIf="!rebalanceStatus.paymentStatus; else paymentStatusBlock"fxLayout="column"></div>
+              </mat-expansion-panel>
+            </div>
+            <h4 fxLayoutAlign="start" class="font-bold-500 mt-1">{{!rebalanceStatus.paymentStatus ? '' : rebalanceStatus.paymentStatus && rebalanceStatus.paymentStatus?.error ? 'Rebalance Failed.' : 'Rebalance Successful.'}}</h4>
+            <div class="mt-1" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+              <button *ngIf="rebalanceStatus.paymentStatus && rebalanceStatus.paymentStatus.error" mat-button color="primary" tabindex="11" type="button" (click)="onRestart()">Start Again</button>
+            </div>
+          </form>
+        </mat-step>
+      </mat-vertical-stepper>
+      <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">        
+        <button mat-button color="primary" tabindex="12" type="button" default [mat-dialog-close]="false">Close</button>
+      </div>
+    </div>
+  </mat-card-content>
+</div>
+<ng-template #paymentStatusBlock>
+  <ng-container *ngTemplateOutlet="rebalanceStatus.paymentStatus.error ? paymentFailedBlock : paymentSuccessfulBlock"></ng-container>
+</ng-template>
+<ng-template #paymentFailedBlock>
+  <div fxLayout="column"><span class="foreground-secondary-text">Error: {{rebalanceStatus.paymentStatus.error}}</span></div>
+</ng-template>
+<ng-template #paymentSuccessfulBlock>
+  <div fxLayout="column">
+    <div fxLayout="row">
+      <div fxFlex="50">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Total Fees (Sats)</h4>
+        <span class="foreground-secondary-text">{{rebalanceStatus.paymentStatus.feesPaid ? rebalanceStatus.paymentStatus.feesPaid / 1000 : 0}}</span>
+      </div>
+      <div fxFlex="50">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Number of Hops</h4>
+        <span class="foreground-secondary-text">{{rebalanceStatus.paymentStatus.route && rebalanceStatus.paymentStatus.route.length ? (rebalanceStatus.paymentStatus.route.length - 1) : 0}}</span>
+      </div>
+    </div>
+    <mat-divider class="w-100 my-1"></mat-divider>
+    <div fxLayout="row">
+      <div fxFlex="100">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Payment Hash</h4>
+        <span class="foreground-secondary-text">{{rebalanceStatus.paymentHash}}</span>
+      </div>
+    </div>
+    <mat-divider class="w-100 my-1"></mat-divider>
+    <div fxLayout="row">
+      <div fxFlex="100">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Payment ID</h4>
+        <span class="foreground-secondary-text">{{rebalanceStatus.paymentDetails.paymentId}}</span>
+      </div>
+    </div>
+    <mat-divider class="w-100 my-1"></mat-divider>
+    <div fxLayout="row">
+      <div fxFlex="100">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Parent ID</h4>
+        <span class="foreground-secondary-text">{{rebalanceStatus.paymentDetails.parentId}}</span>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<div *ngIf="flgShowInfo" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="info-graphics-container" [@opacityAnimation]>
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+    <mat-card-header fxLayout="row" fxFlex="8" fxLayoutAlign="space-between center" class="modal-info-header">
+      <div fxFlex="95" fxLayoutAlign="start start"><span class="page-title"></span></div>
+      <div fxFlex="5" fxLayoutAlign="end center">
+        <button tabindex="19" class="btn-close-x p-0" mat-button (click)="flgShowInfo=false;stepNumber=1;">X</button>
+      </div>
+    </mat-card-header>
+    <mat-card-content fxLayout="column" fxFlex="70" fxLayoutAlign="space-between center" class="padding-gap-x-large">
+      <rtl-ecl-channel-rebalance-infographics fxFlex="100" [animationDirection]="animationDirection" [(stepNumber)]="stepNumber"></rtl-ecl-channel-rebalance-infographics>
+    </mat-card-content>
+    <div fxLayout="row" fxFlex="10" fxLayoutAlign="center end" class="padding-gap-x-large padding-gap-bottom-large">
+      <span *ngFor="let i of [1, 2, 3, 4, 5];" fxLayoutAlign="center center" class="dots-stepper-block" (click) = "onStepChanged(i)">
+        <p class="dot tiny-dot mr-0" [ngClass]="{'dot-primary': stepNumber === i, 'dot-primary-lighter': stepNumber !== i}"></p>
+      </span>
+    </div>
+    <div fxLayout="row" fxFlex="10" fxLayoutAlign="end end" class="padding-gap-x-large padding-gap-bottom-large">
+      <button *ngIf="stepNumber === 5" mat-button class="mr-1" color="primary" tabindex="16" type="button" (click)="onStepChanged(4)">Back</button>
+      <button *ngIf="stepNumber === 5" mat-button color="primary" tabindex="17" type="button" (click)="flgShowInfo=false;stepNumber=1;">Close</button>
+      <button *ngIf="stepNumber < 5" mat-button class="mr-1" color="primary" tabindex="18" type="button" (click)="flgShowInfo=false;stepNumber=1;">Close</button>
+      <button *ngIf="stepNumber > 1 && stepNumber < 5" mat-button class="mr-1" color="primary" tabindex="19" type="button" (click)="onStepChanged(stepNumber - 1)">Back</button>
+      <button *ngIf="stepNumber < 5" mat-button color="primary" tabindex="20" type="button" (click)="onStepChanged(stepNumber + 1)">Next</button>
+    </div>
+  </div>
+</div>

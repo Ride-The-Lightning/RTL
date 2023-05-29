@@ -65,6 +65,7 @@ Ensure that the follow values are correct per your config:
   "multiPass": <password required for accessing RTL>,
   "port": "3000",
   "defaultNodeIndex": 1,
+  "dbDirectoryPath": "<Complete path of the folder where rtl's database file should be saved>",
   "SSO": {
     "rtlSSO": 0,
     "rtlCookiePath": "",

@@ -1,5 +1,4 @@
 import { Component, ViewChild, Input, AfterViewInit, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -55,13 +54,11 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private router: Router, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
   ngOnInit() {
-    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-    this.router.onSameUrlNavigation = 'reload';
     this.tableSetting.tableId = this.isDustUTXO ? 'dust_utxos' : 'utxos';
     this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[0])).
       subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
@@ -90,7 +87,7 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         if (utxosSelector.utxos && utxosSelector.utxos.length > 0) {
-          this.dustUtxos = utxosSelector.utxos?.filter((utxo) => +(utxo.value || 0) < this.dustAmount);
+          this.dustUtxos = utxosSelector.utxos?.filter((utxo) => +(utxo.amount_msat || 0) / 1000 < this.dustAmount);
           this.utxos = utxosSelector.utxos;
           if (this.isDustUTXO) {
             if (this.dustUtxos && this.dustUtxos.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
@@ -125,7 +122,7 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
     const reorderedUTXO = [
       [{ key: 'txid', value: selUtxo.txid, title: 'Transaction ID', width: 100 }],
       [{ key: 'output', value: selUtxo.output, title: 'Output', width: 50, type: DataTypeEnum.NUMBER },
-      { key: 'value', value: selUtxo.value, title: 'Value (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
+      { key: 'amount_msat', value: (selUtxo.amount_msat || 0) / 1000, title: 'Value (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'status', value: this.commonService.titleCase(selUtxo.status || ''), title: 'Status', width: 50, type: DataTypeEnum.STRING },
       { key: 'blockheight', value: selUtxo.blockheight, title: 'Blockheight', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'address', value: selUtxo.address, title: 'Address', width: 100 }]
@@ -147,7 +144,7 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : column === 'is_dust' ? 'Dust' : this.commonService.titleCase(column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform((returnColumn.column || ''), '_') : column === 'is_dust' ? 'Dust' : this.commonService.titleCase(column);
   }
 
   setFilterPredicate() {
@@ -159,11 +156,15 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
           break;
 
         case 'is_dust':
-          rowToFilter = (rowData?.value || 0) < this.dustAmount ? 'dust' : 'nondust';
+          rowToFilter = (rowData?.amount_msat || 0) / 1000 < this.dustAmount ? 'dust' : 'nondust';
           break;
 
         case 'status':
           rowToFilter = rowData?.status?.toLowerCase() || '';
+          break;
+
+        case 'value':
+          rowToFilter = ((rowData?.amount_msat || 0) / 1000).toString();
           break;
 
         default:
@@ -179,7 +180,8 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
     this.listUTXOs.sort = this.sort;
     this.listUTXOs.sortingDataAccessor = (data: UTXO, sortHeaderId: string) => {
       switch (sortHeaderId) {
-        case 'is_dust': return +(data.value || 0) < this.dustAmount;
+        case 'is_dust': return ((data.amount_msat || 0) / 1000) < this.dustAmount;
+        case 'value': return ((data.amount_msat || 0) / 1000);
         default: return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     };

@@ -13,7 +13,8 @@ export class CommonService {
   public initSelectedNode: CommonSelectedNode = null;
   public rtl_conf_file_path = '';
   public port = 3000;
-  public host = null;
+  public host = '';
+  public db_directory_path = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
   public rtl_pass = '';
   public flg_allow_password_update = true;
   public rtl_secret2fa = '';
@@ -236,7 +237,11 @@ export class CommonService {
   };
 
   public handleError = (errRes, fileName, errMsg, selectedNode: CommonSelectedNode) => {
-    const err = JSON.parse(JSON.stringify(errRes));
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err && err.error && Object.keys(err.error).length === 0 && errRes.error && (errRes.error.stack || errRes.error.message)) {
+      errRes.error = errRes.error.stack || errRes.error.message;
+      err = JSON.parse(JSON.stringify(errRes));
+    }
     if (!selectedNode) { selectedNode = this.initSelectedNode; }
     switch (selectedNode.ln_implementation) {
       case 'LND':
@@ -270,7 +275,7 @@ export class CommonService {
         if (err.options && err.options.headers) { delete err.options.headers; }
         break;
     }
-    this.logger.log({ selectedNode: selectedNode, level: 'ERROR', fileName: fileName, msg: errMsg, error: (typeof err === 'object' ? JSON.stringify(err) : (typeof err === 'string') ? err : 'Unknown Error') });
+    this.logger.log({ selectedNode: selectedNode, level: 'ERROR', fileName: fileName, msg: errMsg, error: (typeof err === 'object' ? JSON.stringify(err) : err) });
     let newErrorObj = { statusCode: 500, message: '', error: '' };
     if (err.code && err.code === 'ENOENT') {
       newErrorObj = {
@@ -330,7 +335,7 @@ export class CommonService {
       try {
         this.cookie_value = fs.readFileSync(this.rtl_cookie_path, 'utf-8');
       } catch (err) {
-        this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while reading cookie: \n' + err });
+        this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Something went wrong while reading cookie: \n' + err });
         throw new Error(err);
       }
     } else {
@@ -340,7 +345,7 @@ export class CommonService {
         fs.writeFileSync(this.rtl_cookie_path, crypto.randomBytes(64).toString('hex'));
         this.cookie_value = fs.readFileSync(this.rtl_cookie_path, 'utf-8');
       } catch (err) {
-        this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while reading the cookie: \n' + err });
+        this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Something went wrong while reading the cookie: \n' + err });
         throw new Error(err);
       }
     }
@@ -441,6 +446,7 @@ export class CommonService {
     if (selNode && selNode.index) {
       this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'PORT: ' + this.port });
       this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'HOST: ' + this.host });
+      this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'DB_DIRECTORY_PATH: ' + this.db_directory_path });
       this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'SSO: ' + this.rtl_sso });
       this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + selNode.index });
       this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'INDEX: ' + selNode.index });

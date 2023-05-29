@@ -1,7 +1,7 @@
 import { Database, DatabaseService } from '../../utils/database.js';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
-import { CollectionsEnum, PageSettings } from '../../models/database.model.js';
+import { CollectionsEnum } from '../../models/database.model.js';
 
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
@@ -9,7 +9,7 @@ const databaseService: DatabaseService = Database;
 
 export const getPageSettings = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Page Settings', msg: 'Getting Page Settings..' });
-  databaseService.find(req.session.selectedNode, CollectionsEnum.PAGE_SETTINGS).then((settings: PageSettings) => {
+  databaseService.find(req.session.selectedNode, CollectionsEnum.PAGE_SETTINGS).then((settings: any) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Page Settings', msg: 'Page Settings Received', data: settings });
     res.status(200).json(settings);
   }).catch((errRes) => {

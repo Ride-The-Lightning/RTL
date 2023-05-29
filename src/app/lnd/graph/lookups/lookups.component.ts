@@ -40,6 +40,10 @@ export class LookupsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    if (window.history.state && window.history.state.lookupType) {
+      this.selectedFieldId = +window.history.state.lookupType || 0;
+      this.lookupKey = window.history.state.lookupValue || '';
+    }
     this.actions.pipe(takeUntil(this.unSubs[0]), filter((action) => (action.type === LNDActions.SET_LOOKUP_LND || action.type === LNDActions.UPDATE_API_CALL_STATUS_LND))).
       subscribe((resLookup: any) => {
         if (resLookup.type === LNDActions.SET_LOOKUP_LND) {

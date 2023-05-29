@@ -48,7 +48,6 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
   public selectedAddress = ADDRESS_TYPES[1];
   public blockchainBalance: Balance = {};
   public information: GetInfo = {};
-  public isCompatibleVersion = false;
   public newAddress = '';
   public transaction: OnChain | any = {};
   public feeRateTypes = FEE_RATE_TYPES;
@@ -140,9 +139,6 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
     this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[2])).
       subscribe((nodeInfo: GetInfo) => {
         this.information = nodeInfo;
-        this.isCompatibleVersion =
-          this.commonService.isVersionCompatible(this.information.version, '0.9.0') &&
-          this.commonService.isVersionCompatible(this.information.api_version, '0.4.0');
       });
     this.store.select(utxos).pipe(takeUntil(this.unSubs[3])).
       subscribe((utxosSeletor: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
@@ -285,7 +281,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
 
   onUTXOSelectionChange(event: any) {
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
-      this.totalSelectedUTXOAmount = this.selUTXOs?.reduce((total, curr) => (total + (curr.value || 0)), 0);
+      this.totalSelectedUTXOAmount = this.selUTXOs?.reduce((total, curr) => (total + ((curr.amount_msat || 0) / 1000)), 0);
       if (this.flgUseAllBalance) {
         this.onUTXOAllBalanceChange();
       }

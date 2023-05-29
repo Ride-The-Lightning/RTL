@@ -19,17 +19,22 @@
       <mat-divider class="my-1"></mat-divider>
       <div fxLayout="column">
         <h4 class="font-bold-500">Last Update</h4>
-        <span class="foreground-secondary-text">{{lookupResult[0]?.last_update }}</span>
+        <span class="foreground-secondary-text">{{(lookupResult[0]?.last_update * 1000) | date:'dd/MMM/y HH:mm'}}</span>
       </div>
       <mat-divider class="my-1"></mat-divider>
       <div fxLayout="column">
-        <h4 class="font-bold-500">Amount (mSats)</h4>
-        <span class="foreground-secondary-text">{{lookupResult[0]?.amount_msat}}</span>
+        <h4 class="font-bold-500">Amount (Sats)</h4>
+        <span class="foreground-secondary-text">{{lookupResult[0]?.amount_msat / 1000 | number:'1.0-0'}}</span>
       </div>
       <mat-divider class="my-1"></mat-divider>
       <div fxLayout="column">
         <h4 class="font-bold-500">Base Fee (mSats)</h4>
         <span class="foreground-secondary-text">{{lookupResult[0]?.base_fee_millisatoshi | number}}</span>
+      </div>
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
+        <h4 class="font-bold-500">Fee/Millionth</h4>
+        <span class="foreground-secondary-text">{{lookupResult[0]?.fee_per_millionth | number}}</span>
       </div>
       <mat-divider class="my-1"></mat-divider>
       <div fxLayout="column">
@@ -43,23 +48,13 @@
       </div>
       <mat-divider class="my-1"></mat-divider>
       <div fxLayout="column">
-        <h4 class="font-bold-500">Destination</h4>
-        <span class="foreground-secondary-text">{{lookupResult[0]?.destination}}</span>
-      </div>
-      <mat-divider class="my-1"></mat-divider>
-      <div fxLayout="column">
-        <h4 class="font-bold-500">Fee/Millionth</h4>
-        <span class="foreground-secondary-text">{{lookupResult[0]?.fee_per_millionth | number}}</span>
-      </div>
-      <mat-divider class="my-1"></mat-divider>
-      <div fxLayout="column">
         <h4 class="font-bold-500">Max Htlc (mSat)</h4>
-        <span class="foreground-secondary-text">{{lookupResult[0]?.htlc_maximum_msat}}</span>
+        <span class="foreground-secondary-text">{{lookupResult[0]?.htlc_maximum_msat | number}}</span>
       </div>
       <mat-divider class="my-1"></mat-divider>
       <div fxLayout="column">
         <h4 class="font-bold-500">Min Htlc (mSat)</h4>
-        <span class="foreground-secondary-text">{{lookupResult[0]?.htlc_minimum_msat}}</span>
+        <span class="foreground-secondary-text">{{lookupResult[0]?.htlc_minimum_msat | number}}</span>
       </div>
       <mat-divider class="my-1"></mat-divider>
       <div fxLayout="column">
@@ -73,13 +68,13 @@
       </div>
       <mat-divider class="my-1"></mat-divider>
       <div fxLayout="column">
-        <h4 class="font-bold-500">Satoshis</h4>
-        <span class="foreground-secondary-text">{{lookupResult[0]?.satoshis | number}}</span>
+        <h4 class="font-bold-500">Source</h4>
+        <span class="foreground-secondary-text">{{lookupResult[0]?.source}}</span>
       </div>
       <mat-divider class="my-1"></mat-divider>
       <div fxLayout="column">
-        <h4 class="font-bold-500">Source</h4>
-        <span class="foreground-secondary-text">{{lookupResult[0]?.source}}</span>
+        <h4 class="font-bold-500">Destination</h4>
+        <span class="foreground-secondary-text">{{lookupResult[0]?.destination}}</span>
       </div>
     </div>
     <div fxLayout="column" fxFlex="49" fxLayoutAlign="start stretch" class="mt-1 bordered-box padding-gap-large">
@@ -104,13 +99,18 @@
       </div>
       <mat-divider class="my-1"></mat-divider>
       <div fxLayout="column">
-        <h4 class="font-bold-500">Amount (mSats)</h4>
-        <span class="foreground-secondary-text">{{lookupResult[1]?.amount_msat}}</span>
+        <h4 class="font-bold-500">Amount (Sats)</h4>
+        <span class="foreground-secondary-text">{{lookupResult[1]?.amount_msat / 1000 | number:'1.0-0'}}</span>
       </div>
       <mat-divider class="my-1"></mat-divider>
       <div fxLayout="column">
         <h4 class="font-bold-500">Base Fee (mSats)</h4>
         <span class="foreground-secondary-text">{{lookupResult[1]?.base_fee_millisatoshi | number}}</span>
+      </div>
+      <mat-divider class="my-1"></mat-divider>
+      <div fxLayout="column">
+        <h4 class="font-bold-500">Fee/Millionth</h4>
+        <span class="foreground-secondary-text">{{lookupResult[1]?.fee_per_millionth | number}}</span>
       </div>
       <mat-divider class="my-1"></mat-divider>
       <div fxLayout="column">
@@ -124,23 +124,13 @@
       </div>
       <mat-divider class="my-1"></mat-divider>
       <div fxLayout="column">
-        <h4 class="font-bold-500">Destination</h4>
-        <span class="foreground-secondary-text">{{lookupResult[1]?.destination}}</span>
-      </div>
-      <mat-divider class="my-1"></mat-divider>
-      <div fxLayout="column">
-        <h4 class="font-bold-500">Fee/Millionth</h4>
-        <span class="foreground-secondary-text">{{lookupResult[1]?.fee_per_millionth | number}}</span>
-      </div>
-      <mat-divider class="my-1"></mat-divider>
-      <div fxLayout="column">
         <h4 class="font-bold-500">Max Htlc (mSat)</h4>
-        <span class="foreground-secondary-text">{{lookupResult[1]?.htlc_maximum_msat}}</span>
+        <span class="foreground-secondary-text">{{lookupResult[1]?.htlc_maximum_msat | number}}</span>
       </div>
       <mat-divider class="my-1"></mat-divider>
       <div fxLayout="column">
         <h4 class="font-bold-500">Min Htlc (mSat)</h4>
-        <span class="foreground-secondary-text">{{lookupResult[1]?.htlc_minimum_msat}}</span>
+        <span class="foreground-secondary-text">{{lookupResult[1]?.htlc_minimum_msat | number}}</span>
       </div>
       <mat-divider class="my-1"></mat-divider>
       <div fxLayout="column">
@@ -154,13 +144,13 @@
       </div>
       <mat-divider class="my-1"></mat-divider>
       <div fxLayout="column">
-        <h4 class="font-bold-500">Satoshis</h4>
-        <span class="foreground-secondary-text">{{lookupResult[1]?.satoshis | number}}</span>
+        <h4 class="font-bold-500">Source</h4>
+        <span class="foreground-secondary-text">{{lookupResult[1]?.source}}</span>
       </div>
       <mat-divider class="my-1"></mat-divider>
       <div fxLayout="column">
-        <h4 class="font-bold-500">Source</h4>
-        <span class="foreground-secondary-text">{{lookupResult[1]?.source}}</span>
+        <h4 class="font-bold-500">Destination</h4>
+        <span class="foreground-secondary-text">{{lookupResult[1]?.destination}}</span>
       </div>
     </div>
   </div>

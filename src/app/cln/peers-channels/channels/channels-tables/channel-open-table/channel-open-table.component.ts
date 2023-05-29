@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -64,12 +63,15 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private clnEffects: CLNEffects, private commonService: CommonService, private router: Router, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private clnEffects: CLNEffects, private commonService: CommonService, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
-    this.selFilter = this.router?.getCurrentNavigation()?.extras?.state?.filter ? this.router?.getCurrentNavigation()?.extras?.state?.filter : '';
   }
 
   ngOnInit() {
+    if (window.history.state && window.history.state.filterColumn) {
+      this.selFilterBy = window.history.state.filterColumn || 'all';
+      this.selFilter = window.history.state.filterValue || '';
+    }
     this.store.select(nodeInfoAndBalanceAndNumPeers).pipe(takeUntil(this.unSubs[0])).
       subscribe((infoBalNumpeersSelector: { information: GetInfo, balance: Balance, numPeers: number }) => {
         this.information = infoBalNumpeersSelector.information;
@@ -155,7 +157,6 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       return;
     }
     if (channelToUpdate === 'all') {
-      const confirmationMsg = [];
       this.store.dispatch(openConfirmation({
         payload: {
           data: {
@@ -163,7 +164,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
             alertTitle: 'Update Fee Policy',
             noBtnText: 'Cancel',
             yesBtnText: 'Update All',
-            message: confirmationMsg,
+            message: [],
             titleMessage: 'Update fee policy for all channels',
             flgShowInput: true,
             getInputs: [
@@ -274,7 +275,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
 
   getLabel(column: string) {
     const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
-    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : this.commonService.titleCase(column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform((returnColumn.column || ''), '_') : this.commonService.titleCase(column);
   }
 
   setFilterPredicate() {
@@ -282,12 +283,13 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       let rowToFilter = '';
       switch (this.selFilterBy) {
         case 'all':
-          rowToFilter = ((rowData.connected) ? 'connected' : 'disconnected') + (rowData.channel_id ? rowData.channel_id.toLowerCase() : '') +
+          rowToFilter = ((rowData.peer_connected) ? 'connected' : 'disconnected') + (rowData.channel_id ? rowData.channel_id.toLowerCase() : '') +
           (rowData.short_channel_id ? rowData.short_channel_id.toLowerCase() : '') + (rowData.id ? rowData.id.toLowerCase() : '') + (rowData.alias ? rowData.alias.toLowerCase() : '') +
           (rowData.private ? 'private' : 'public') + (rowData.state ? rowData.state.toLowerCase() : '') +
-          (rowData.funding_txid ? rowData.funding_txid.toLowerCase() : '') + (rowData.msatoshi_to_us ? rowData.msatoshi_to_us : '') +
-          (rowData.msatoshi_total ? rowData.msatoshi_total : '') + (rowData.their_channel_reserve_satoshis ? rowData.their_channel_reserve_satoshis : '') +
-          (rowData.our_channel_reserve_satoshis ? rowData.our_channel_reserve_satoshis : '') + (rowData.spendable_msatoshi ? rowData.spendable_msatoshi : '');
+          (rowData.funding_txid ? rowData.funding_txid.toLowerCase() : '') + (rowData.to_them_msat ? rowData.to_them_msat / 1000 : '') +
+          (rowData.to_us_msat ? rowData.to_us_msat / 1000 : '') + (rowData.total_msat ? rowData.total_msat / 1000 : '') +
+          (rowData.their_reserve_msat ? rowData.their_reserve_msat / 1000 : '') + (rowData.our_reserve_msat ? rowData.our_reserve_msat / 1000 : '') +
+          (rowData.spendable_msat ? rowData.spendable_msat / 1000 : '');
           break;
 
         case 'private':
@@ -295,14 +297,31 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
           break;
 
         case 'connected':
-          rowToFilter = rowData?.connected ? 'connected' : 'disconnected';
+          rowToFilter = rowData?.peer_connected ? 'connected' : 'disconnected';
           break;
 
         case 'msatoshi_total':
+          rowToFilter = ((rowData['total_msat'] || 0) / 1000)?.toString() || '';
+          break;
+
         case 'spendable_msatoshi':
+          rowToFilter = ((rowData['spendable_msat'] || 0) / 1000)?.toString() || '';
+          break;
+
         case 'msatoshi_to_us':
+          rowToFilter = ((rowData['to_us_msat'] || 0) / 1000)?.toString() || '';
+          break;
+
         case 'msatoshi_to_them':
-          rowToFilter = ((+(rowData[this.selFilterBy] || 0)) / 1000)?.toString() || '';
+          rowToFilter = ((rowData['to_them_msat'] || 0) / 1000)?.toString() || '';
+          break;
+
+        case 'our_channel_reserve_satoshis':
+          rowToFilter = ((rowData['our_reserve_msat'] || 0) / 1000)?.toString() || '';
+          break;
+
+        case 'their_channel_reserve_satoshis':
+          rowToFilter = ((rowData['their_reserve_msat'] || 0) / 1000)?.toString() || '';
           break;
 
         default:
@@ -316,7 +335,30 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   loadChannelsTable(mychannels) {
     this.channels = new MatTableDataSource<Channel>([...mychannels]);
     this.channels.sort = this.sort;
-    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
+    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => {
+      switch (sortHeaderId) {
+        case 'msatoshi_total':
+          return data['total_msat'];
+
+        case 'spendable_msatoshi':
+          return data['spendable_msat'];
+
+        case 'msatoshi_to_us':
+          return data['to_us_msat'];
+
+        case 'msatoshi_to_them':
+          return data['to_them_msat'];
+
+        case 'our_channel_reserve_satoshis':
+          return data['our_reserve_msat'];
+
+        case 'their_channel_reserve_satoshis':
+          return data['their_reserve_msat'];
+
+        default:
+          return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+      }
+    };
     this.channels.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();

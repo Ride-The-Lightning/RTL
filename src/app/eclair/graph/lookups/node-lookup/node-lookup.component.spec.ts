@@ -1,6 +1,11 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { StoreModule } from '@ngrx/store';
 
+import { RootReducer } from '../../../../store/rtl.reducers';
+import { LNDReducer } from '../../../../lnd/store/lnd.reducers';
+import { CLNReducer } from '../../../../cln/store/cln.reducers';
+import { ECLReducer } from '../../../../eclair/store/ecl.reducers';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { SharedModule } from '../../../../shared/shared.module';
 
@@ -15,7 +20,8 @@ describe('ECLNodeLookupComponent', () => {
       declarations: [ECLNodeLookupComponent],
       imports: [
         BrowserAnimationsModule,
-        SharedModule
+        SharedModule,
+        StoreModule.forRoot({ root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer })
       ],
       providers: [LoggerService]
     }).

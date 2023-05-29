@@ -53,7 +53,7 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public offerRequest = '';
   public offerDecodedHint = '';
   public offerDescription = '';
-  public offerVendor = '';
+  public offerIssuer = '';
   public offerTitle = '';
   public zeroAmtOffer = false;
   public offerInvoice: OfferInvoice | null = null;
@@ -74,7 +74,6 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public selFeeLimitType = FEE_LIMIT_TYPES[0];
   public feeLimitTypes = FEE_LIMIT_TYPES;
   public paymentError = '';
-  public isCompatibleVersion = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(
@@ -109,11 +108,6 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
     this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => {
       this.selNode = nodeSettings;
     });
-    this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => {
-      this.isCompatibleVersion =
-        this.commonService.isVersionCompatible(nodeInfo.version, '0.9.0') &&
-        this.commonService.isVersionCompatible(nodeInfo.api_version, '0.4.0');
-    });
     this.store.select(channels).pipe(takeUntil(this.unSubs[2])).
       subscribe((channelsSeletor: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
         this.activeChannels = channelsSeletor.activeChannels;
@@ -132,7 +126,7 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
         }
         if (action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN && action.payload.status === APICallStatusEnum.ERROR) {
           if (action.payload.action === 'SendPayment') {
-            delete this.paymentDecoded.msatoshi;
+            delete this.paymentDecoded.amount_msat;
             this.paymentError = action.payload.message;
           }
           if (action.payload.action === 'DecodePayment') {
@@ -227,7 +221,7 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
     } else if (this.paymentType === PaymentTypes.OFFER) {
       if (!this.offerInvoice) {
         if (this.zeroAmtOffer && this.offerAmount) {
-          this.store.dispatch(fetchOfferInvoice({ payload: { offer: this.offerRequest, msatoshi: this.offerAmount * 1000 } }));
+          this.store.dispatch(fetchOfferInvoice({ payload: { offer: this.offerRequest, amount_msat: this.offerAmount * 1000 } }));
         } else {
           this.store.dispatch(fetchOfferInvoice({ payload: { offer: this.offerRequest } }));
         }
@@ -235,7 +229,7 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
         if (this.offerAmount) {
           this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.OFFER,
             invoice: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, bolt12: this.offerRequest, amount: this.offerAmount * 1000,
-            zeroAmtOffer: this.zeroAmtOffer, title: this.offerTitle, vendor: this.offerVendor, description: this.offerDescription,
+            zeroAmtOffer: this.zeroAmtOffer, title: this.offerTitle, issuer: this.offerIssuer, description: this.offerDescription,
             fromDialog: true } }));
         }
       }
@@ -292,14 +286,12 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
 
   onAmountChange(event: any) {
     if (this.paymentType === PaymentTypes.INVOICE) {
-      delete this.paymentDecoded.msatoshi;
-      this.paymentDecoded.msatoshi = +event.target.value;
+      delete this.paymentDecoded.amount_msat;
+      this.paymentDecoded.amount_msat = +event.target.value;
     }
     if (this.paymentType === PaymentTypes.OFFER) {
-      delete this.offerDecoded.amount;
-      delete this.offerDecoded.amount_msat;
-      this.offerDecoded.amount = +event.target.value * 1000;
-      this.offerDecoded.amount_msat = event.target.value + 'msat';
+      delete this.offerDecoded.offer_amount_msat;
+      this.offerDecoded.offer_amount_msat = event.target.value;
     }
   }
 
@@ -311,54 +303,53 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
   }
 
   setOfferDecodedDetails() {
-    if (this.offerDecoded.offer_id && !this.offerDecoded.amount_msat) {
-      this.offerDecoded.amount_msat = '0msat';
-      this.offerDecoded.amount = 0;
+    if (this.offerDecoded.offer_id && !this.offerDecoded.offer_amount_msat) {
+      this.offerDecoded.offer_amount_msat = 0;
       this.zeroAmtOffer = true;
-      this.offerDescription = this.offerDecoded.description || '';
-      this.offerVendor = this.offerDecoded.vendor ? this.offerDecoded.vendor : this.offerDecoded.issuer ? this.offerDecoded.issuer : '';
-      this.offerDecodedHint = 'Zero Amount Offer | Description: ' + this.offerDecoded.description;
+      this.offerDescription = this.offerDecoded.offer_description || '';
+      this.offerIssuer = this.offerDecoded.offer_issuer ? this.offerDecoded.offer_issuer : '';
+      this.offerDecodedHint = 'Zero Amount Offer | Description: ' + this.offerDecoded.offer_description;
     } else {
       this.zeroAmtOffer = false;
-      this.offerDecoded.amount = this.offerDecoded.amount ? +this.offerDecoded.amount : this.offerDecoded.amount_msat ? +this.offerDecoded.amount_msat.slice(0, -4) : null;
-      this.offerAmount = this.offerDecoded.amount ? this.offerDecoded.amount / 1000 : 0;
-      this.offerDescription = this.offerDecoded.description || '';
-      this.offerVendor = this.offerDecoded.vendor ? this.offerDecoded.vendor : this.offerDecoded.issuer ? this.offerDecoded.issuer : '';
+      this.offerAmount = this.offerDecoded.offer_amount_msat ? this.offerDecoded.offer_amount_msat / 1000 : 0;
+      this.offerDescription = this.offerDecoded.offer_description || '';
+      this.offerIssuer = this.offerDecoded.offer_issuer ? this.offerDecoded.offer_issuer : '';
       if (this.selNode && this.selNode.fiatConversion) {
         this.commonService.convertCurrency(this.offerAmount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
           pipe(takeUntil(this.unSubs[7])).
           subscribe({
             next: (data) => {
-              this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.offerAmount) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Description: ' + this.offerDecoded.description;
+              this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.offerAmount) + ' Sats (' + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit + ') | Description: ' + this.offerDecoded.offer_description;
             }, error: (error) => {
-              this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.offerAmount) + ' Sats | Description: ' + this.offerDecoded.description + '. Unable to convert currency.';
+              this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.offerAmount) + ' Sats | Description: ' + this.offerDecoded.offer_description + '. Unable to convert currency.';
             }
           });
       } else {
-        this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.offerAmount) + ' Sats | Description: ' + this.offerDecoded.description;
+        this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.offerAmount) + ' Sats | Description: ' + this.offerDecoded.offer_description;
       }
     }
   }
 
   setPaymentDecodedDetails() {
-    if (this.paymentDecoded.created_at && !this.paymentDecoded.msatoshi) {
-      this.paymentDecoded.msatoshi = 0;
+    if (this.paymentDecoded.created_at && !this.paymentDecoded.amount_msat) {
+      this.paymentDecoded.amount_msat = 0;
       this.zeroAmtInvoice = true;
       this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
     } else {
       this.zeroAmtInvoice = false;
       if (this.selNode && this.selNode.fiatConversion) {
-        this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
+        this.commonService.convertCurrency(this.paymentDecoded.amount_msat ? this.paymentDecoded.amount_msat / 1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
           pipe(takeUntil(this.unSubs[8])).
           subscribe({
             next: (data) => {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
+              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount_msat ? this.paymentDecoded.amount_msat / 1000 : 0) + ' Sats (' +
+              this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit + ') | Memo: ' + this.paymentDecoded.description;
             }, error: (error) => {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
+              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount_msat ? this.paymentDecoded.amount_msat / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
             }
           });
       } else {
-        this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
+        this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount_msat ? this.paymentDecoded.amount_msat / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
       }
     }
   }

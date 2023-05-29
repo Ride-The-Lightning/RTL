@@ -22,7 +22,8 @@
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
-              "zone.js"
+              "zone.js",
+              "src/polyfills.ts"
             ],
             "tsConfig": "src/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
@@ -34,6 +35,7 @@
               "node_modules/material-icons/iconfont/material-icons.css",
               "node_modules/roboto-fontface/css/roboto/roboto-fontface.css"
             ],
+            "scripts": [],
             "allowedCommonJsDependencies": [
               "buffer",
               "rfdc",
@@ -41,10 +43,8 @@
               "qrcode",
               "otplib",
               "pdfmake/build/pdfmake",
-              "pdfmake/build/vfs_fonts",
-              "clone-deep"
-            ],
-            "scripts": []
+              "pdfmake/build/vfs_fonts"
+            ]
           },
           "configurations": {
             "production": {
@@ -96,7 +96,8 @@
           "options": {
             "polyfills": [
               "zone.js",
-              "zone.js/testing"
+              "zone.js/testing",
+              "src/polyfills.ts"
             ],
             "tsConfig": "src/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
@@ -119,14 +120,11 @@
               "src/**/*.html"
             ]
           }
-        }
+        }        
       }
     }
   },
   "cli": {
-    "schematicCollections": [
-      "@angular-eslint/schematics"
-    ],
     "analytics": false
   }
 }

@@ -2,7 +2,7 @@ export enum OfferFieldsEnum {
   BOLT12 = 'bolt12',
   AMOUNTMSAT = 'amountMSat',
   TITLE = 'title',
-  VENDOR = 'vendor',
+  ISSUER = 'issuer',
   DESCRIPTION = 'description'
 }
 
@@ -12,7 +12,7 @@ export class Offer {
     public bolt12: string,
     public amountMSat: number,
     public title: string,
-    public vendor?: string,
+    public issuer?: string,
     public description?: string,
     public lastUpdatedAt?: number
   ) { }

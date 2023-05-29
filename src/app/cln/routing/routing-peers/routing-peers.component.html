@@ -5,16 +5,6 @@
       <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="page-sub-title-container w-100" [ngClass]="{'mt-2': screenSize === screenSizeEnum.XS, 'mt-1': screenSize === screenSizeEnum.SM}">
         <div fxFlex="70">Incoming</div>
         <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
-          <!-- <mat-form-field fxLayout="column" fxFlex="49">
-            <mat-label>Filter By</mat-label>
-            <mat-select tabindex="1" [(ngModel)]="selFilterByIn" (selectionChange)="selFilterIn=''; applyIncomingFilter()" name="filterByIn">
-              <perfect-scrollbar><mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option></perfect-scrollbar>
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field fxLayout="column" fxFlex="49">
-            <mat-label>Filter</mat-label>
-            <input matInput [(ngModel)]="selFilterIn" (input)="applyIncomingFilter()" (keyup)="applyIncomingFilter()" name="filterin">
-          </mat-form-field> -->
         </div>
       </div>
       <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="table-container" [perfectScrollbar]>
