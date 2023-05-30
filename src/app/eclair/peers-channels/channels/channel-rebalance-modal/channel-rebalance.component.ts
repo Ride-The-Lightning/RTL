@@ -5,6 +5,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatStepper } from '@angular/material/stepper';
 import { Subject, Observable, of } from 'rxjs';
 import { takeUntil, startWith } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { ECLChannelRebalanceAlert } from '../../../../shared/models/alertData';
@@ -13,6 +14,8 @@ import { Channel, GetInfo } from '../../../../shared/models/eclModels';
 import { opacityAnimation } from '../../../../shared/animation/opacity-animation';
 import { DataService } from '../../../../shared/services/data.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
+import { RTLState } from '../../../../store/rtl.state';
+import { fetchChannels, fetchInvoices } from '../../../store/ecl.actions';
 
 @Component({
   selector: 'rtl-ecl-channel-rebalance',
@@ -28,8 +31,8 @@ export class ECLChannelRebalanceComponent implements OnInit, OnDestroy {
   public selChannel: Channel = {};
   public activeChannels: Channel[] = [];
   public filteredActiveChannels: Observable<Channel[]>;
-  public rebalanceStatus: { flgReusingInvoice: boolean, invoice: string, paymentHash: string, paymentDetails: any, paymentStatus: any } =
-    { flgReusingInvoice: false, invoice: '', paymentHash: '', paymentDetails: null, paymentStatus: null };
+  public rebalanceStatus: { flgReusingInvoice: boolean, invoice: string, paymentRoute: string, paymentHash: string, paymentDetails: any, paymentStatus: any } =
+    { flgReusingInvoice: false, invoice: '', paymentRoute: '', paymentHash: '', paymentDetails: null, paymentStatus: null };
   public inputFormLabel = 'Amount to rebalance';
   public flgEditable = true;
   public flgShowInfo = false;
@@ -45,6 +48,7 @@ export class ECLChannelRebalanceComponent implements OnInit, OnDestroy {
     private logger: LoggerService,
     private dataService: DataService,
     private formBuilder: FormBuilder,
+    private store: Store<RTLState>,
     private decimalPipe: DecimalPipe) { }
 
   ngOnInit() {
@@ -113,13 +117,15 @@ export class ECLChannelRebalanceComponent implements OnInit, OnDestroy {
     }
     this.stepper.next();
     this.flgEditable = false;
-    this.rebalanceStatus = { flgReusingInvoice: false, invoice: '', paymentHash: '', paymentDetails: null, paymentStatus: null };
+    this.rebalanceStatus = { flgReusingInvoice: false, invoice: '', paymentRoute: '', paymentHash: '', paymentDetails: null, paymentStatus: null };
     this.dataService.circularRebalance((this.inputFormGroup.controls.rebalanceAmount.value * 1000), this.selChannel.shortChannelId, this.selChannel.nodeId, this.inputFormGroup.controls.selRebalancePeer.value.shortChannelId, this.inputFormGroup.controls.selRebalancePeer.value.nodeId, [this.information.nodeId || '']).
       pipe(takeUntil(this.unSubs[2])).subscribe({
         next: (rebalanceRes) => {
           this.logger.info(rebalanceRes);
           this.rebalanceStatus = rebalanceRes;
           this.flgEditable = true;
+          this.store.dispatch(fetchInvoices());
+          this.store.dispatch(fetchChannels({ payload: { fetchPayments: true } }));
         }, error: (error) => {
           this.logger.error(error);
           this.rebalanceStatus = error;

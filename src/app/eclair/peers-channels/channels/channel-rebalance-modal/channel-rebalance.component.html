@@ -13,7 +13,7 @@
       <div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="space-between stretch">
         <div fxFlex="100" class="alert alert-info">
           <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle"></fa-icon>
-          <span>Circular Rebalance is a payment you make to *yourselves* to affect a relative change in the balances of two channels.
+          <span>Circular Rebalance is a payment you make to *yourself* to affect a relative change in the balances of two channels.
             This is accomplished by sending payment out from the selected channel and receiving it back on the channel with the selected peer.
             Please note, you will be paying routing fee to balance the channels in this manner.</span>
         </div>
@@ -64,16 +64,16 @@
                 </mat-expansion-panel-header>
                 <div fxLayout="column"><span class="foreground-secondary-text">{{rebalanceStatus.invoice}}</span></div>
               </mat-expansion-panel>
-              <mat-progress-bar *ngIf="!rebalanceStatus.paymentStatus?.error && !rebalanceStatus.paymentStatus?.route && rebalanceStatus.paymentStatus?.type !== 'pending'" fxFlex="100" color="primary" mode="indeterminate"></mat-progress-bar>
+              <mat-progress-bar *ngIf="!rebalanceStatus.paymentStatus?.error && !rebalanceStatus.paymentRoute && rebalanceStatus.paymentStatus?.type !== 'pending'" fxFlex="100" color="primary" mode="indeterminate"></mat-progress-bar>
               <mat-expansion-panel class="flat-expansion-panel mb-2" fxFlex="100">
                 <mat-expansion-panel-header>
                   <mat-panel-title>
-                    <span fxLayoutAlign="start center" fxFlex="100">{{rebalanceStatus.paymentStatus?.error ? 'Route search failed' : !rebalanceStatus.paymentStatus?.route ? 'Searching route...' : rebalanceStatus.paymentStatus?.type === 'pending' ? 'Route info pending...' : 'Route used'}}<mat-icon *ngIf="rebalanceStatus.paymentStatus" class="ml-1 icon-small">{{rebalanceStatus.paymentStatus?.route ? 'check' : 'close'}}</mat-icon></span>
+                    <span fxLayoutAlign="start center" fxFlex="100">{{rebalanceStatus.paymentStatus?.error ? 'Route failed' : !rebalanceStatus.paymentRoute ? 'Searching route...' : 'Route used'}}<mat-icon *ngIf="rebalanceStatus.paymentStatus" class="ml-1 icon-small">{{rebalanceStatus.paymentRoute ? 'check' : 'close'}}</mat-icon></span>
                   </mat-panel-title>
                 </mat-expansion-panel-header>
-                <div fxLayout="column">
-                  <span *ngFor="let rt of rebalanceStatus.paymentStatus?.route" class="foreground-secondary-text">
-                    {{rt.nodeId}} ({{rt.shortChannelId}})
+                <div *ngIf="rebalanceStatus.paymentRoute !== ''" fxLayout="column">
+                  <span *ngFor="let rt of rebalanceStatus.paymentRoute.split(',')" class="foreground-secondary-text">
+                    {{rt}}
                   </span>
                 </div>
               </mat-expansion-panel>
@@ -81,7 +81,7 @@
               <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="!!rebalanceStatus.paymentStatus">
                 <mat-expansion-panel-header>
                   <mat-panel-title>
-                    <span fxLayoutAlign="start center" fxFlex="100">{{!rebalanceStatus.paymentStatus || rebalanceStatus.paymentStatus?.type === 'pending' ? 'Payment status waiting...' : rebalanceStatus.paymentStatus?.error ? 'Payment failed' : rebalanceStatus.paymentStatus?.type === 'sent' ? 'Payment successful' : ''}}<mat-icon *ngIf="rebalanceStatus.paymentStatus && rebalanceStatus.paymentStatus?.type !== 'pending'" class="ml-1 icon-small">{{!rebalanceStatus.paymentStatus || rebalanceStatus.paymentStatus?.error ? 'close' : 'check'}}</mat-icon></span>
+                    <span fxLayoutAlign="start center" fxFlex="100">{{!rebalanceStatus.paymentStatus || rebalanceStatus.paymentStatus?.type === 'pending' ? 'Payment status pending...' : rebalanceStatus.paymentStatus?.error ? 'Payment failed' : rebalanceStatus.paymentStatus?.type === 'sent' ? 'Payment successful' : ''}}<mat-icon *ngIf="rebalanceStatus.paymentStatus && rebalanceStatus.paymentStatus?.type !== 'pending'" class="ml-1 icon-small">{{!rebalanceStatus.paymentStatus || rebalanceStatus.paymentStatus?.error ? 'close' : 'check'}}</mat-icon></span>
                   </mat-panel-title>
                 </mat-expansion-panel-header>
                 <div *ngIf="!rebalanceStatus.paymentStatus; else paymentStatusBlock"fxLayout="column"></div>
@@ -115,7 +115,7 @@
       </div>
       <div fxFlex="50">
         <h4 fxLayoutAlign="start" class="font-bold-500">Number of Hops</h4>
-        <span class="foreground-secondary-text">{{rebalanceStatus.paymentStatus.route && rebalanceStatus.paymentStatus.route.length ? (rebalanceStatus.paymentStatus.route.length - 1) : 0}}</span>
+        <span class="foreground-secondary-text">{{rebalanceStatus.paymentRoute && rebalanceStatus.paymentRoute !== '' ? (rebalanceStatus.paymentRoute.split(',')?.length) : 0}}</span>
       </div>
     </div>
     <mat-divider class="w-100 my-1"></mat-divider>
