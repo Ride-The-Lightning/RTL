@@ -77,22 +77,22 @@
       <ng-container matColumnDef="msatoshi_total">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Total (Sats)</th>
         <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
-            {{channel?.total_msat/1000 | number:channel?.to_us_msat < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
+            {{channel?.total_msat/1000 | number:channel?.total_msat < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="spendable_msatoshi">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Spendable (Sats)</th>
         <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
-            {{channel?.spendable_msat/1000 | number:channel?.to_us_msat < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
-      </ng-container>
-      <ng-container matColumnDef="msatoshi_to_us">
-        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Local Balance (Sats)</th>
-        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
-            {{channel?.to_us_msat/1000 | number:channel?.to_us_msat < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
+            {{channel?.spendable_msat/1000 | number:channel?.spendable_msat < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="msatoshi_to_them">
-        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Remote Balance (Sats)</th>
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Local Balance (Sats)</th>
         <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
             {{channel?.to_them_msat/1000 | number:channel?.to_them_msat < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
+      </ng-container>
+      <ng-container matColumnDef="msatoshi_to_us">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Remote Balance (Sats)</th>
+        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
+            {{channel?.to_us_msat/1000 | number:channel?.to_us_msat < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="actions">
         <th *matHeaderCellDef mat-header-cell>
