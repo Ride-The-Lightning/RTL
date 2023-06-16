@@ -14,6 +14,7 @@
 * [Start The Server](#start)
 * [Access The Application](#access)
 * [Troubleshooting](#trouble)
+* [Support Us](#donations)
 
 ### <a name="intro"></a>Introduction
 RTL is a full function, device agnostic, web user interface to help manage lightning node operations.
@@ -186,3 +187,7 @@ E.g. if the IP address of your node is 192.168.0.15 then open your browser at th
 ### <a name="trouble"></a>Troubleshooting
 In case you are running into issues with the application or if you have feedback, feel free to open issues on our github repo.
 You can also reach out to us via twitter DM on [@Suheb__](https://twitter.com/Suheb__) or [@RTL_App](https://twitter.com/RTL_App). Thanks for your interest.
+
+### <a name="donations"></a> Support Us
+https://www.ridethelightning.info/donate/
+
